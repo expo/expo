@@ -12,8 +12,8 @@
     "expo": "~52.0.0",
     "expo-apple-authentication": "~7.1.2",
     "expo-blur": "~14.0.1",
-    "expo-dev-client": "~5.0.4",
     "expo-camera": "~16.0.7",
+    "expo-dev-client": "~5.0.4",
     "expo-image": "^2.0.2",
     "expo-linear-gradient": "~14.0.1",
     "expo-splash-screen": "~0.29.13",
@@ -31,7 +31,7 @@
   "private": true,
   "expo": {
     "autolinking": {
-      "exclude": [ ]
+      "exclude": []
     }
   }
 }

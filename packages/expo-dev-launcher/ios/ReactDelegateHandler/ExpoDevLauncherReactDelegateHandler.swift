@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
-  private weak var expoAppDelegate: ExpoAppDelegate? // todo(chrfalch) we're really just looking for the reactNativeFactory...
+  private weak var expoAppDelegate: ExpoReactNativeFactoryDelegate?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -50,13 +50,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    // todo: remove: Util so that can extract the target from EXAppDelegateWrapper
-    class DummySelectorHandler: NSObject { @objc func dummyMethod() {} }
-
-    guard let expoAppInstance = (UIApplication.shared.delegate as? ExpoAppDelegate) ??
-      // todo: Remove when EXAppDelegateWrapper is removed
-            (UIApplication.shared.delegate as? EXAppDelegateWrapper)?.forwardingTarget(for: #selector(DummySelectorHandler().dummyMethod)) as? ExpoAppDelegate else {
-        fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
+    guard let expoAppInstance = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
+      fatalError("The `UIApplication.shared.delegate` must conform to `ExpoReactNativeFactoryDelegate`")
     }
     self.expoAppDelegate = expoAppInstance
 
@@ -64,8 +59,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     if (expoAppInstance.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
       expoAppInstance.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-	  expoAppInstance.reactNativeFactory?.bridge = nil
-	  expoAppInstance.reactNativeFactory?.rootViewFactory.bridge = nil
+      expoAppInstance.reactNativeFactory?.bridge = nil
+      expoAppInstance.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
     let rootView = expoAppInstance.recreateRootView(

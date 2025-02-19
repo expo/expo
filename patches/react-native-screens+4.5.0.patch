@@ -1,61 +1,13 @@
-diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt
-index b11a19f..a0fa076 100644
---- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt
-+++ b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt
-@@ -651,7 +651,7 @@ class ScreenStackFragment :
-         // We set pointer events to BOX_NONE, because we don't want the ScreensCoordinatorLayout
-         // to be target of react gestures and effectively prevent interaction with screens
-         // underneath the current screen (useful in `modal` & `formSheet` presentation).
--        override fun getPointerEvents(): PointerEvents = PointerEvents.BOX_NONE
-+        override val pointerEvents: PointerEvents = PointerEvents.BOX_NONE
-     }
- 
-     private class ScreensAnimation(
-diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt
-index 80edd7c..bf55460 100644
---- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt
-+++ b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt
-@@ -68,7 +68,7 @@ class BottomSheetDialogRootView(
-     }
- 
-     override fun onChildStartedNativeGesture(
--        view: View,
-+        view: View?,
-         event: MotionEvent,
-     ) {
-         jsTouchDispatcher.onChildStartedNativeGesture(event, eventDispatcher)
-@@ -92,7 +92,7 @@ class BottomSheetDialogRootView(
-         // need to keep receiving events.
-     }
- 
--    override fun handleException(throwable: Throwable?) {
-+    override fun handleException(throwable: Throwable) {
-         // TODO: I need ThemedReactContext here.
-         // TODO: Determine where it is initially created & verify its lifecycle
-         //        reactContext?.reactApplicationContext?.handleException(RuntimeException(throwable))
-diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt
-index 4693a65..a6b42c8 100644
---- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt
-+++ b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt
-@@ -57,7 +57,7 @@ class DimmingView(
-         y: Float,
-     ) = blockGestures
- 
--    override fun getPointerEvents(): PointerEvents =
-+    override val pointerEvents: PointerEvents =
-         if (blockGestures) PointerEvents.AUTO else PointerEvents.NONE
- 
-     companion object {
-diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/GestureTransparentViewGroup.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/GestureTransparentViewGroup.kt
-index dd10115..bc05750 100644
---- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/GestureTransparentViewGroup.kt
-+++ b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/GestureTransparentViewGroup.kt
-@@ -16,7 +16,7 @@ class GestureTransparentViewGroup(
- ) : FrameLayout(context),
-     ReactPointerEventsView {
- 
--    override fun getPointerEvents(): PointerEvents = PointerEvents.BOX_NONE
-+    override val pointerEvents: PointerEvents = PointerEvents.BOX_NONE
- 
-     companion object {
-         const val TAG = "GestureTransparentFrameLayout"
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+index bfeeb00..e3b4234 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+@@ -1217,7 +1217,7 @@ RNS_IGNORE_SUPER_CALL_END
+                withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
+ {
+   for (const auto &mutation : transaction.getMutations()) {
+-    if (mutation.parentShadowView.tag == self.tag &&
++    if (mutation.parentTag == self.tag &&
+         (mutation.type == react::ShadowViewMutation::Type::Insert ||
+          mutation.type == react::ShadowViewMutation::Type::Remove)) {
+       // we need to wait until children have their layout set. At this point they don't have the layout

@@ -1,4 +1,4 @@
- #import <React-RCTAppDelegate/RCTReactNativeFactory.h>
+#import <React-RCTAppDelegate/RCTReactNativeFactory.h>
 
 @interface RCTReactNativeFactory (GetModuleClass)
 

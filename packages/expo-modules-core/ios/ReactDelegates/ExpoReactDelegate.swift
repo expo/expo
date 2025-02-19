@@ -22,15 +22,11 @@ public class ExpoReactDelegate: NSObject {
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
       ?? {
-        // TODO: Untill we can extract the target from EXAppDelegateWrapper
-        class DummySelectorHandler: NSObject { @objc func dummyMethod() {} }
-
-        guard let expoAppInstance = (UIApplication.shared.delegate as? ExpoAppInstance) ??
-          // todo: Remove when EXAppDelegateWrapper is removed
-          (UIApplication.shared.delegate as? EXAppDelegateWrapper)?.forwardingTarget(for: #selector(DummySelectorHandler().dummyMethod)) as? ExpoAppInstance else {
-            fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
+        guard let appDelegate = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
+          fatalError("The `UIApplication.shared.delegate` must conform to `ExpoReactNativeFactoryDelegate`")
         }
-        return expoAppInstance.recreateRootView(
+
+        return appDelegate.recreateRootView(
           withBundleURL: nil,
           moduleName: moduleName,
           initialProps: initialProperties,

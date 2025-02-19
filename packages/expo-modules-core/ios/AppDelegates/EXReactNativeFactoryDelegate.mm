@@ -13,8 +13,7 @@
 @implementation EXReactNativeFactoryDelegate
 
 - (instancetype) init {
-  self = [super init];
-  if (self != nil) {
+  if (self = [super init]) {
     self.dependencyProvider = [[RCTAppDependencyProvider alloc] init];
   }
   return self;
@@ -40,6 +39,14 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
+}
+
+- (nonnull UIView *)recreateRootViewWithBundleURL:(nullable NSURL *)bundleURL
+																			 moduleName:(nullable NSString *)moduleName
+																		 initialProps:(nullable NSDictionary *)initialProps
+																		launchOptions:(nullable NSDictionary *)launchOptions {
+	RCTFatal(RCTErrorWithMessage(@"EXReactNativeFactoryDelegate - recreateRootViewWithBundleURL should be overridden and implemented!"));
+	return nil;
 }
 
 @end

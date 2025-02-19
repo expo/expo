@@ -8,7 +8,6 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import <ExpoModulesCore/RCTAppDelegate+Recreate.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
@@ -281,11 +280,11 @@
       if (!self) {
         return;
       }
-      
+
       [self navigateToLauncher];
     });
   };
-  
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
   if (initialUrl) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
@@ -294,7 +293,7 @@
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-	if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
     // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
@@ -350,8 +349,6 @@
 
   [self _addInitModuleObserver];
 #endif
-  
-  // EXAppInstance* app = (EXAppInstance*)[UIApplication sharedApplication].delegate;
 
   UIView *rootView;
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -825,7 +822,7 @@
   NSProcessInfo *processInfo = [NSProcessInfo processInfo];
   NSArray *arguments = [processInfo arguments];
   BOOL nextIsUrl = NO;
-  
+
   for (NSString *arg in arguments) {
     if (nextIsUrl) {
       NSURL *url = [NSURL URLWithString:arg];
