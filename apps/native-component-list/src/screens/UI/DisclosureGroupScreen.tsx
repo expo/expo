@@ -5,15 +5,11 @@ import { Text } from 'react-native';
 
 export default function DisclosureGroupScreen() {
   return (
-    <>
-<Section title=''>
-    <DisclosureGroup title='Click me!' style={{flex: 1}}>
-      <Text>Hello, how are you?</Text>
+    <Section title=''>
+      <DisclosureGroup title='Click me!' style={{ flex: 1 }}>
+        <Text>Hello, how are you?</Text>
       </DisclosureGroup>
-  </Section>
-
-
-</>
+    </Section>
   );
 }
 
