@@ -74,7 +74,6 @@
     "fast-glob": "^3.3.2",
     "form-data": "^3.0.1",
     "freeport-async": "^2.0.0",
-    "fs-extra": "~8.1.0",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
     "internal-ip": "6.1.0",
