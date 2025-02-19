@@ -3,7 +3,9 @@ import { Text } from 'react-native';
 
 const worker = require.unstable_importWorker('../worker-one');
 
-//
+// Do not change this value, it is used in tests
+const input = 'ROUTE_VALUE';
+
 export default function Page() {
   const [data, setData] = useState([]);
 
@@ -24,6 +26,7 @@ export default function Page() {
         testID="test-anchor">
         Test
       </Text>
+      <Text testID="test-hmr">{input}</Text>
       {data.map((item, index) => (
         <Text key={index} testID={`data-${index}`}>
           {item}
