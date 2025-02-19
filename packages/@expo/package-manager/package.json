@@ -40,7 +40,6 @@
     "@expo/json-file": "^9.0.0",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
-    "find-up": "^5.0.0",
     "micromatch": "^4.0.8",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
