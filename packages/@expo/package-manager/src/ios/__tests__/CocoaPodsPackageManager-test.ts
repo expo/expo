@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import fs from 'fs-extra';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
@@ -261,7 +261,7 @@ it(`can detect if the CLI is installed`, async () => {
 it(`can get the directory of a pods project`, async () => {
   const projectRoot = getRoot('cocoapods-detect-pods');
   const iosRoot = path.join(projectRoot, 'ios');
-  await fs.ensureDir(iosRoot);
+  await fs.promises.mkdir(iosRoot, { recursive: true });
 
   // first test when no pod project exists
   expect(CocoaPodsPackageManager.getPodProjectRoot(projectRoot)).toBe(null);
@@ -305,7 +305,7 @@ describe('isAvailable', () => {
     });
     // create a fake project without a Podfile
     const projectRoot = getRoot('cocoapods-detect-available');
-    await fs.ensureDir(projectRoot);
+    await fs.promises.mkdir(projectRoot, { recursive: true });
 
     let message = '';
     console.log = jest.fn((msg) => (message = msg));
