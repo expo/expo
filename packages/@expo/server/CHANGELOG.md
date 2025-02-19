@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace `@remix-run/node` with `undici` / Node.js native Fetch polyfills. ([#34589](https://github.com/expo/expo/pull/34589) by [@kitten](https://github.com/kitten))
+
 ## 0.5.1 — 2025-01-19
 
 ### 🐛 Bug fixes
