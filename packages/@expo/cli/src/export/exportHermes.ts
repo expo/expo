@@ -44,8 +44,8 @@ export function parseGradleProperties(content: string): Record<string, string> {
     }
 
     const sepIndex = line.indexOf('=');
-    const key = line.substr(0, sepIndex);
-    const value = line.substr(sepIndex + 1);
+    const key = line.slice(0, sepIndex);
+    const value = line.slice(sepIndex + 1);
     result[key] = value;
   }
   return result;
@@ -176,12 +176,12 @@ const HERMES_MAGIC_HEADER = 'c61fbc03c103191f';
 
 export async function isHermesBytecodeBundleAsync(file: string): Promise<boolean> {
   const header = await readHermesHeaderAsync(file);
-  return header.slice(0, 8).toString('hex') === HERMES_MAGIC_HEADER;
+  return header.subarray(0, 8).toString('hex') === HERMES_MAGIC_HEADER;
 }
 
 export async function getHermesBytecodeBundleVersionAsync(file: string): Promise<number> {
   const header = await readHermesHeaderAsync(file);
-  if (header.slice(0, 8).toString('hex') !== HERMES_MAGIC_HEADER) {
+  if (header.subarray(0, 8).toString('hex') !== HERMES_MAGIC_HEADER) {
     throw new Error('Invalid hermes bundle file');
   }
   return header.readUInt32LE(8);
