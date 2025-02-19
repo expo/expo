@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Children } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
+import { DisclosureGroupProps } from './index.types';
 
 
 /**
@@ -12,28 +13,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
  *
  */
 
-export type DisclosureGroupProps = {
-  /**
-   * Title of the DisclosureGroup.
-   */
-  title: string;
 
-  /**
-   * A callback that is called when the state chnages.
-   */
-  onStateChange?: (isExpanded: boolean) => void;
-
- 
-  /**
-   * Additional styling.
-   */
-  style?: StyleProp<ViewStyle>;
-
-  /**
-   * Content of the DisclosureGroup as children.
-   */
-  children: React.ReactNode;
-};
 
 const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> = requireNativeView(
   'ExpoUI',

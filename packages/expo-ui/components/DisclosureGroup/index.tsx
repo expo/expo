@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleProp, TextStyle, View, ViewStyle, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { DisclosureGroupProps } from './index.types';
 
 /**
  * Displays a native DisclosureGroup
@@ -11,37 +12,6 @@ import { StyleProp, TextStyle, View, ViewStyle, Text, TouchableOpacity } from 'r
  *
  */
 
-
-export type DisclosureGroupProps = {
-  /**
-   * Title of the DisclosureGroup.
-   */
-
-  title: string;
-
-   /**
-   * A callback that is called when the state chnages.
-   */
-   onStateChange?: (isExpanded: boolean) => void;
-
-  
-
- /**
-   * Additional styling.
-   */
-  style?: StyleProp<ViewStyle>;
-
-  /**
-   * Styling for the title of the group 
-   * @platform web + android
-   */
-  webTitleStyle?: TextStyle;
-
-  /**
-   * Content of the DisclosureGroup as children.
-   */
-  children: React.ReactNode;
-};
 
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const [open, setOpen] = useState(false);

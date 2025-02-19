@@ -10,7 +10,9 @@ export type {
 } from '../components/ContextMenu';
 export type { Section, SectionProps } from '../components/Section';
 export type { Slider, SliderProps } from '../components/Slider';
-export type { DisclosureGroup, DisclosureGroupProps } from '../components/DisclosureGroup';
+export type { DisclosureGroup,  } from '../components/DisclosureGroup';
+export type { DisclosureGroupProps,  } from '../components/DisclosureGroup/index.types';
+
 /**
  * @hidden
  */
