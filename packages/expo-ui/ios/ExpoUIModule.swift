@@ -5,7 +5,6 @@ import ExpoModulesCore
 public class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
-    
     View(Button.self)
     View(PickerView.self)
     View(SwitchView.self)
