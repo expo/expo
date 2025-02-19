@@ -18,10 +18,10 @@ export type DisclosureGroupProps = {
    */
   title: string;
 
-   /**
+  /**
    * A callback that is called when the state chnages.
    */
-   onStateChange?: (isExpanded: boolean) => void;
+  onStateChange?: (isExpanded: boolean) => void;
 
   
 
