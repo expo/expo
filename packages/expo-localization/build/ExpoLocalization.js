@@ -125,13 +125,14 @@ export default {
                 }
             }
             catch { }
-            const { region, textInfo, language } = locale;
+            const { region, textInfo, language, script } = locale;
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
             }
             return {
                 languageTag,
                 languageCode: language || languageTag.split('-')[0] || 'en',
+                languageScriptCode: script || null,
                 textDirection: textInfo?.direction || null,
                 digitGroupingSeparator,
                 decimalSeparator,
