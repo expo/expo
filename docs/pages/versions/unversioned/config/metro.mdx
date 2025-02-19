@@ -513,6 +513,52 @@ export async function GET(req: Request) {
 }
 ```
 
+## Web Workers
+
+> This feature is experimental and subject to breaking changes.
+
+Expo Metro has experimental web worker support in SDK 53 and above. This feature is currently web-only and does not work on native.
+
+Web workers can be used to offload work to a separate thread on web, allowing the main thread to remain responsive. This is useful for computationally expensive tasks, such as image processing, cryptography, or other tasks that would otherwise block the main thread.
+
+Workers can be generated inline using `Blob` but sometimes you may want to leverage modern features like TypeScript or importing other modules. To support this we added the `require.unstable_importWorker()` API which can be used to import a file as a web worker.
+
+Web workers depend on Expo bundle splitting support, which means you need to either use Expo Router or install and import `@expo/metro-runtime`. You also cannot use the environment `EXPO_NO_METRO_LAZY=1` with web workers.
+
+Consider the following example of a worker that doubles a number:
+
+```ts worker.ts
+self.onmessage = ({ data }) => {
+  const result = data * 2; // Example: double the number
+  self.postMessage(result);
+};
+```
+
+This worker file can be imported as a `Worker` in the main app with `require.unstable_importWorker()`:
+
+```ts
+// worker is of type `Worker`
+const worker = require.unstable_importWorker('./worker');
+
+worker.onmessage = ({ data }) => {
+  console.log(`Worker responded: ${data}`);
+};
+
+worker.postMessage(5);
+```
+
+Behind the scenes, Expo CLI is generating code like this:
+
+```ts
+const worker = new Worker(
+  new URL('/worker.bundle?platform=web&dev=true&etc', window.location.href)
+);
+```
+
+The generated bundle URL changes based on development/production to ensure the worker is loaded and bundled correctly. Unlike traditional bundle splitting, a worker file needs to contain its own copy of all modules and cannot depend on common modules in the main bundle.
+
+The native API `Worker` is not traditionally available in React Native and not provided by the Expo SDK so even though this bundling feature technically works for all platforms, it's only useful on web. You could theoretically write a native Expo module that polyfills the `Worker` API if you want to support native platforms too. Alternatively, you can use "worklet" API in React Native Reanimated to offload work to a separate thread on native.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.

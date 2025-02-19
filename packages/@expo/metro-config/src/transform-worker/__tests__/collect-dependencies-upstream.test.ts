@@ -746,8 +746,9 @@ describe(`require.context`, () => {
 });
 
 it('collects dependency with worker definition', () => {
+  // const a = new Worker(new URL(require.resolveWorker("../path/to/module"), window.location.href));
   const ast = astFromCode(`
-    const a = new Worker(new URL(require.resolveWorker("../path/to/module"), window.location.href));
+    const a = require.unstable_importWorker("../path/to/module");
   `);
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
@@ -1346,7 +1347,7 @@ it('records locations of dependencies', () => {
   `);
 });
 
-test('integration: records locations of inlined dependencies (Metro ESM)', () => {
+it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';
@@ -1398,7 +1399,7 @@ test('integration: records locations of inlined dependencies (Metro ESM)', () =>
   expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
 });
 
-test('integration: records locations of inlined dependencies (Babel ESM)', () => {
+it('integration: records locations of inlined dependencies (Babel ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';

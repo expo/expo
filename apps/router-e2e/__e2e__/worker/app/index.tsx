@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-const entry = require.resolveWorker('../worker-one');
-const url = new URL(entry, window.location.href);
-console.log('url:', url, entry);
-const worker = new Worker(url);
-console.log('res:', worker);
+const worker = require.unstable_importWorker('../worker-one');
 
-worker.onmessage = (event) => {
-  console.log(`Worker responded: ${event.data}`);
-};
-
-worker.postMessage(5); // Send a number to the worker
-
+//
 export default function Page() {
   const [data, setData] = useState([]);
+
+  useEffect(() => {
+    worker.onmessage = (event) => {
+      setData((prev) => [...prev, event.data]);
+    };
+
+    worker.postMessage(5); // Send a number to the worker
+  }, []);
 
   return (
     <>
@@ -26,7 +25,9 @@ export default function Page() {
         Test
       </Text>
       {data.map((item, index) => (
-        <Text key={index}>{item}</Text>
+        <Text key={index} testID={`data-${index}`}>
+          {item}
+        </Text>
       ))}
     </>
   );

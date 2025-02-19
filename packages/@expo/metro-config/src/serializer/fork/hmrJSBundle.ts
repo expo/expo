@@ -104,8 +104,8 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
 function getInverseDependencies(
   path: string,
   graph: ReadOnlyGraph<any>,
-  inverseDependencies: { [key: string]: Array<string> } = {}
-): { [key: string]: Array<string> } {
+  inverseDependencies: { [key: string]: string[] } = {}
+): { [key: string]: string[] } {
   // Dependency alredy traversed.
   if (path in inverseDependencies) {
     return inverseDependencies;

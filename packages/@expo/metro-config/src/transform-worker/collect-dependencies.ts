@@ -222,7 +222,7 @@ function collectDependencies<TAst extends t.File>(
           callee.object.type === 'Identifier' &&
           callee.object.name === 'require' &&
           callee.property.type === 'Identifier' &&
-          callee.property.name === 'resolveWorker' &&
+          callee.property.name === 'unstable_importWorker' &&
           !callee.computed &&
           !path.scope.getBinding('require')
         ) {
@@ -455,7 +455,8 @@ function processResolveWorkerCall(path: NodePath<CallExpression>, state: State):
 
   if (state.collectOnly !== true) {
     path.replaceWith(
-      makeResolveTemplate({
+      makeImportWorkerTemplate({
+        URL: 'URL',
         DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
         MODULE_ID: createModuleIDExpression(dependency, state),
       })
@@ -717,8 +718,9 @@ const makeAsyncImportMaybeSyncTemplate = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 
-const makeResolveTemplate = template.expression(`
-  DEPENDENCY_MAP.paths[MODULE_ID]
+// TODO: Add base URL support like process.env.EXPO_BASE_URL
+const makeImportWorkerTemplate = template.expression(`
+  new Worker(new URL(DEPENDENCY_MAP.paths[MODULE_ID], window.location.href))
 `);
 
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`
