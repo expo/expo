@@ -10,15 +10,15 @@ export function isPictureInPictureSupported() {
     return NativeVideoModule.isPictureInPictureSupported();
 }
 /**
- * Cleans all video cache.
+ * Clears all video cache.
  * > This function can be called only if there are no existing `VideoPlayer` instances.
  *
  * @returns A promise that fulfills after the cache has been cleaned.
  * @platform android
  * @platform ios
  */
-export function cleanVideoCacheAsync() {
-    return NativeVideoModule.cleanVideoCacheAsync();
+export function clearVideoCacheAsync() {
+    return NativeVideoModule.clearVideoCacheAsync();
 }
 /**
  * Sets desired video cache size in bytes. The default video cache size is 1GB. Value set by this function is persistent.

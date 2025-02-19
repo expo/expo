@@ -5,7 +5,7 @@ import CoreServices
 import ExpoModulesCore
 
 /**
- * Class responsible for fulfiling data requests created  by the AVAsset. There are two types of requests/:
+ * Class responsible for fulfilling data requests created  by the AVAsset. There are two types of requests:
  * - Initial request  - The response contains most of the information about the data source such as support for content ranges, total size etc.
  *   this information is cached for offline playback support.
  * - Data request - For each range request from the player the delegate will request and receive multiple chunks of data. We have to return a correct subrange

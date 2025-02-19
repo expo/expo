@@ -4,11 +4,11 @@ import {
   useVideoPlayer,
   VideoView,
   VideoSource,
-  cleanVideoCacheAsync,
+  clearVideoCacheAsync,
   setVideoCacheSizeAsync,
   getCurrentVideoCacheSize,
 } from 'expo-video';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import {
@@ -16,7 +16,6 @@ import {
   elephantsDreamSource,
   hlsSource,
   forBiggerBlazesSource,
-  localVideoSource,
 } from './videoSources';
 import { styles } from './videoStyles';
 import Button from '../../components/Button';
@@ -47,19 +46,23 @@ const videoSources: VideoSource[] = [
 
 export default function VideoCacheScreen() {
   const ref = useRef<VideoView>(null);
-  const [currentSource, setCurrentSource] = React.useState(videoSources[1]);
+  const [currentSource, setCurrentSource] = useState(videoSources[1]);
+  const [cacheSize, setCacheSize] = useState(0);
 
   const player = useVideoPlayer(currentSource, (player) => {
     player.loop = true;
     player.play();
   });
 
-  const clearCache = useCallback(() => {
-    player.release();
-    cleanVideoCacheAsync().then(() => {
+  const clearCache = useCallback(async () => {
+    try {
+      player.release();
+      await clearVideoCacheAsync();
+    } catch (e) {
+      console.log('Failed to clear cache: ', e);
+    } finally {
       setCurrentSource(videoSources[0]);
-      console.log('Cache Cleared');
-    });
+    }
   }, [player]);
 
   const setSize200MB = useCallback(() => {
@@ -69,16 +72,20 @@ export default function VideoCacheScreen() {
     });
   }, [player]);
 
-  const refreshCurrentCacheSize = useCallback(() => {
-    console.log(getCurrentVideoCacheSize());
-  }, [player]);
-
   const setSize1GB = useCallback(() => {
     player.release();
     setVideoCacheSizeAsync(1024 * 1024 * 1024).then(() => {
       setCurrentSource(videoSources[0]);
     });
   }, [player]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCacheSize(getCurrentVideoCacheSize());
+    }, 500);
+
+    return () => clearInterval(interval);
+  });
 
   return (
     <View style={styles.contentContainer}>
@@ -100,11 +107,9 @@ export default function VideoCacheScreen() {
         <Button style={styles.button} title="Clear cache" onPress={clearCache} />
         <Button style={styles.button} title="Set cache size to 200MB" onPress={setSize200MB} />
         <Button style={styles.button} title="Set cache size to 1GB" onPress={setSize1GB} />
-        <Button
-          style={styles.button}
-          title="Print current cache size"
-          onPress={refreshCurrentCacheSize}
-        />
+        <Text style={styles.centerText}>
+          Current cache size: {Math.round(cacheSize / 1_000_0) / 100}MB
+        </Text>
       </ScrollView>
     </View>
   );

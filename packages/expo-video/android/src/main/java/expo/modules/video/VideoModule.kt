@@ -53,7 +53,7 @@ class VideoModule : Module() {
       VideoManager.cache.setMaxCacheSize(size)
     }
 
-    AsyncFunction("cleanVideoCacheAsync") {
+    AsyncFunction("clearVideoCacheAsync") {
       VideoManager.cache.clear()
     }
 

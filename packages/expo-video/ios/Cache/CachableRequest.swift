@@ -8,7 +8,7 @@ import ExpoModulesCore
 
 /**
  * Class used for easier management of loadingRequests and associating them with data tasks.
- * After the request is fulfilled or cancelled the dataChunk should be saved to file holding the cache
+ * After the request is fulfilled or canceled, the data chunk should be saved to file holding the cache
  */
 class CachableRequest: Equatable {
   let loadingRequest: AVAssetResourceLoadingRequest

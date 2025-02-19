@@ -9,7 +9,7 @@ final class MediaFileHandle {
   private lazy var writeHandle = FileHandle(forWritingAtPath: filePath)
 
   private let lock = NSLock()
-  private let queue = VideoCacheManager.shared.mediaFileDispatchQueue
+  private let queue = VideoCacheManager.shared.cacheQueue
 
   var attributes: [FileAttributeKey: Any]? {
     do {

@@ -1,6 +1,6 @@
 export {
   isPictureInPictureSupported,
-  cleanVideoCacheAsync,
+  clearVideoCacheAsync,
   setVideoCacheSizeAsync,
   getCurrentVideoCacheSize,
 } from './VideoModule';

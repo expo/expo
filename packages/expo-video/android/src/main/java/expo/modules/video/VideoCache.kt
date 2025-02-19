@@ -13,6 +13,12 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.util.UUID
 
+private const val SHARED_PREFERENCES_NAME = "ExpoVideoCache"
+private const val CACHE_SIZE_KEY = "cacheSize"
+private const val VIDEO_CACHE_PARENT_DIR = "ExpoVideoCache"
+private const val VIDEO_CACHE_DIR_KEY = "cacheDir"
+private const val DEFAULT_CACHE_SIZE = 1024 * 1024 * 1024L // 1GB
+
 @UnstableApi
 class VideoCache(context: Context) {
   // We don't want a strong reference to the context, as this class is used inside of a singleton (VideoManager)
@@ -22,14 +28,9 @@ class VideoCache(context: Context) {
       return weakContext.get() ?: throw Exceptions.ReactContextLost()
     }
   private val databaseProvider: DatabaseProvider = StandaloneDatabaseProvider(context)
-  private var cacheEvictor: LeastRecentlyUsedCacheEvictor
   private val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-  var instance: SimpleCache
-
-  init {
-    cacheEvictor = LeastRecentlyUsedCacheEvictor(getMaxCacheSize())
-    instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
-  }
+  private var cacheEvictor = LeastRecentlyUsedCacheEvictor(getMaxCacheSize())
+  var instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
 
   // Function that gets the cache size from shared preferences
   private fun getMaxCacheSize(): Long {
@@ -94,15 +95,11 @@ class VideoCache(context: Context) {
   }
 
   private fun getFileSize(file: File): Long {
-    var size: Long = 0
     if (file.isDirectory) {
-      file.listFiles()?.forEach {
-        size += getFileSize(it)
-      }
-    } else {
-      size = file.length()
+      return file.listFiles()?.fold(0L) { sum, element -> sum + getFileSize(element) } ?: 0L
     }
-    return size
+
+    return file.length()
   }
 
   private fun assertModificationReleaseConditions() {
@@ -113,13 +110,5 @@ class VideoCache(context: Context) {
     if (Looper.myLooper() == Looper.getMainLooper()) {
       Log.w("ExpoVideo", "Clearing cache on the main thread, this might cause performance issues")
     }
-  }
-
-  companion object {
-    private const val SHARED_PREFERENCES_NAME = "ExpoVideoCache"
-    private const val CACHE_SIZE_KEY = "cacheSize"
-    private const val VIDEO_CACHE_PARENT_DIR = "ExpoVideoCache"
-    private const val VIDEO_CACHE_DIR_KEY = "cacheDir"
-    private const val DEFAULT_CACHE_SIZE = 1024 * 1024 * 1024L // 1GB
   }
 }

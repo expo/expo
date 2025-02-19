@@ -15,11 +15,8 @@ class VideoCacheManager {
   // Files currently being used/modified by the player - they will be skipped when clearing the cache
   private var openFiles: Set<URL> = Set()
 
-  // To avoid conflicts whith multiple players reading/saving to a single cache file all caching read/write operations should run on this queue
-  let mediaFileDispatchQueue = DispatchQueue(label: "expo.video.mediaFile.queue")
-
-  // We run the clean commands on a separate queue to avoid trying to remove the same value twice when two cleans are called close to each other
-  private let clearingQueue = DispatchQueue(label: "\(VideoCacheManager.expoVideoCacheScheme)-dispatch-queue")
+  // All cache commands such as clean or adding new data should be run on this queue
+  let cacheQueue = DispatchQueue(label: "\(VideoCacheManager.expoVideoCacheScheme)-dispatch-queue")
 
   var maxCacheSize: Int {
     defaults.maybeInteger(forKey: maxCacheSizeKey) ?? Self.defaultMaxCacheSize
@@ -43,7 +40,7 @@ class VideoCacheManager {
   }
 
   func ensureCacheSize() {
-    clearingQueue.async { [weak self] in
+    cacheQueue.async { [weak self] in
       guard let self else {
         return
       }
@@ -56,9 +53,9 @@ class VideoCacheManager {
     }
   }
 
-  func cleanAllCache() async throws {
+  func clearAllCache() async throws {
     return try await withCheckedThrowingContinuation { continuation in
-      clearingQueue.async { [weak self] in
+      cacheQueue.async { [weak self] in
         do {
           try self?.deleteAllFilesInCacheDirectory()
           continuation.resume()

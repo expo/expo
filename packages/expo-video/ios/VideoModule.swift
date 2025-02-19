@@ -18,8 +18,8 @@ public final class VideoModule: Module {
       try VideoCacheManager.shared.setMaxCacheSize(newSize: size)
     }
 
-    AsyncFunction("cleanVideoCacheAsync") {
-      return try await VideoCacheManager.shared.cleanAllCache()
+    AsyncFunction("clearVideoCacheAsync") {
+      return try await VideoCacheManager.shared.clearAllCache()
     }
 
     View(VideoView.self) {

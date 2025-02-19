@@ -12,15 +12,15 @@ export function isPictureInPictureSupported(): boolean {
 }
 
 /**
- * Cleans all video cache.
+ * Clears all video cache.
  * > This function can be called only if there are no existing `VideoPlayer` instances.
  *
  * @returns A promise that fulfills after the cache has been cleaned.
  * @platform android
  * @platform ios
  */
-export function cleanVideoCacheAsync(): Promise<void> {
-  return NativeVideoModule.cleanVideoCacheAsync();
+export function clearVideoCacheAsync(): Promise<void> {
+  return NativeVideoModule.clearVideoCacheAsync();
 }
 
 /**

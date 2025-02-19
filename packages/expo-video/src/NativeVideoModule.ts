@@ -9,7 +9,7 @@ type ExpoVideoModule = {
 
   isPictureInPictureSupported(): boolean;
   setVideoCacheSizeAsync(sizeBytes: number): Promise<void>;
-  cleanVideoCacheAsync(): Promise<void>;
+  clearVideoCacheAsync(): Promise<void>;
   getCurrentVideoCacheSize(): number;
 };
 
