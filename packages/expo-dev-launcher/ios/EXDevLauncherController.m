@@ -294,7 +294,7 @@
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
+    // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
     [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:requestTimeout onSuccess:nil onError:navigateToLauncher];
@@ -356,9 +356,9 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [[[_appDelegate reactNativeFactory] rootViewFactory] viewWithModuleName:@"main"
-                                                                   initialProperties:nil
-                                                                       launchOptions:_launchOptions];
+  rootView = [_appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
+                                                               initialProperties:nil
+                                                                   launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 

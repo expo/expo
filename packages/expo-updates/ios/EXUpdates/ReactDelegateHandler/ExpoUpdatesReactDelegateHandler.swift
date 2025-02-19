@@ -63,9 +63,9 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       fatalError("`reactDelegate` should not be nil")
     }
     
-		guard let appDelegate = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
-			fatalError("The `UIApplication.shared.delegate` must conform to `ExpoRootViewRecreating`")
-		}
+    guard let appDelegate = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
+      fatalError("The `UIApplication.shared.delegate` must conform to `ExpoRootViewRecreating`")
+    }
 
     let rootView = appDelegate.recreateRootView(
       withBundleURL: AppController.sharedInstance.launchAssetUrl(),

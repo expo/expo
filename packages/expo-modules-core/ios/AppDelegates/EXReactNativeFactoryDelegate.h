@@ -1,3 +1,7 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
+#pragma once
+
 #import "RCTDefaultReactNativeFactoryDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,9 +18,9 @@ NS_SWIFT_NAME(ExpoReactNativeFactoryDelegate)
  This method should be used with `EXReactRootViewFactory` that to recreate a root view.
  */
 - (UIView *)recreateRootViewWithBundleURL:(nullable NSURL *)bundleURL
-															 moduleName:(nullable NSString *)moduleName
-														 initialProps:(nullable NSDictionary *)initialProps
-														launchOptions:(nullable NSDictionary *)launchOptions;
+                               moduleName:(nullable NSString *)moduleName
+                             initialProps:(nullable NSDictionary *)initialProps
+                            launchOptions:(nullable NSDictionary *)launchOptions;
 #endif
 
 @end

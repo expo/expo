@@ -10,34 +10,25 @@ import ExpoModulesCore
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegate, UISceneDelegate {
-	/**
-	 When using AppDelegate.mm which does not inherit ExpoAppDelegate directly,
-	 we pass an appDelegate to allow execute functions upon the true AppDelegate.
-	 */
-	private weak var factoryDelegate: RCTReactNativeFactoryDelegate?
+  /// The window object, used to render the UIViewControllers
+  public var window: UIWindow?
 
-//	private static var reactDelegateHandlers = [ExpoReactDelegateHandler]()
+  /// From RCTAppDelegate
+  @objc public var moduleName: String = ""
+  @objc public var initialProps: [AnyHashable: Any]?
 
-	/// The window object, used to render the UIViewControllers
-	public var window: UIWindow?
+  @objc public let reactDelegate = ExpoReactDelegate(
+    handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
+  )
 
-	/// From RCTAppDelegate
-	@objc public var moduleName: String = ""
-	@objc public var initialProps: [AnyHashable: Any]?
+  /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
+  private var automaticallyLoadReactNativeWindow = true
 
-//	@objc public private(set) var reactNativeFactory: ExpoReactNativeFactory?
-	@objc public let reactDelegate = ExpoReactDelegate(
-		handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
-	)
-
-	/// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
-	private var automaticallyLoadReactNativeWindow = true
-
-	// Default initializer
-	public override init() {
-		super.init()
-		self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
-	}
+  // Default initializer
+  public override init() {
+    super.init()
+    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
+  }
 
   #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
@@ -62,112 +53,112 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     }
   }
 
-	open func application(
-		_ application: UIApplication,
-		didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-	) -> Bool {
-		if (automaticallyLoadReactNativeWindow) {
-			loadReactNativeWindow(launchOptions: launchOptions)
-		}
+  open func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    if (automaticallyLoadReactNativeWindow) {
+      loadReactNativeWindow(launchOptions: launchOptions)
+    }
 
-		ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
-			// Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
-			_ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
-		}
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
+      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
+      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
+    }
 
-		return true
-	}
+    return true
+  }
 
-	func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-		guard let reactNativeFactory = self.reactNativeFactory else {
-			fatalError("loadReactNativeWindow: Missing reactNativeFactory in ExpoAppInstance")
-		}
-		let rootView = reactNativeFactory.rootViewFactory.view(
-			withModuleName: self.moduleName as String,
-			initialProperties: self.initialProps,
-			launchOptions: launchOptions
-		)
+  func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    guard let reactNativeFactory = self.reactNativeFactory else {
+      fatalError("loadReactNativeWindow: Missing reactNativeFactory in ExpoAppInstance")
+    }
+    let rootView = reactNativeFactory.rootViewFactory.view(
+      withModuleName: self.moduleName as String,
+      initialProperties: self.initialProps,
+      launchOptions: launchOptions
+    )
 
-		let window = UIWindow(frame: UIScreen.main.bounds)
-		let rootViewController = createRootViewController()
+    let window = UIWindow(frame: UIScreen.main.bounds)
+    let rootViewController = createRootViewController()
 
-		setRootView(rootView, toRootViewController: rootViewController)
+    setRootView(rootView, toRootViewController: rootViewController)
 
-		window.windowScene?.delegate = self
-		window.rootViewController = rootViewController
-		window.makeKeyAndVisible()
+    window.windowScene?.delegate = self
+    window.rootViewController = rootViewController
+    window.makeKeyAndVisible()
 
-		self.window = window
-	}
+    self.window = window
+  }
 
-	@objc
-	open override func createRootViewController() -> UIViewController {
-		return reactDelegate.createRootViewController()
-	}
+  @objc
+  open override func createRootViewController() -> UIViewController {
+    return reactDelegate.createRootViewController()
+  }
 
-	@objc public override func recreateRootView(withBundleURL: URL?,
-																		 moduleName: String?,
-																		 initialProps: [AnyHashable: Any]?,
-																		 launchOptions: [AnyHashable: Any]?) -> UIView {
+  @objc public override func recreateRootView(withBundleURL: URL?,
+                                     moduleName: String?,
+                                     initialProps: [AnyHashable: Any]?,
+                                     launchOptions: [AnyHashable: Any]?) -> UIView {
 
-		guard let reactNativeFactory = self.reactNativeFactory else {
-			fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
-		}
+    guard let reactNativeFactory = self.reactNativeFactory else {
+      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
+    }
 
-		let rootViewFactory = reactNativeFactory.rootViewFactory
+    let rootViewFactory = reactNativeFactory.rootViewFactory
 
-		if self.newArchEnabled() {
-			// chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
-			assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-		} else {
-			assert(rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-		}
+    if self.newArchEnabled() {
+      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
+      assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    } else {
+      assert(rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    }
 
-		let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
+    let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
 
-		if let bundleURL = withBundleURL {
-			configuration?.bundleURLBlock = {
-				return bundleURL
-			}
-		}
+    if let bundleURL = withBundleURL {
+      configuration?.bundleURLBlock = {
+        return bundleURL
+      }
+    }
 
-		if let moduleName = moduleName {
-			self.moduleName = moduleName
-		}
+    if let moduleName = moduleName {
+      self.moduleName = moduleName
+    }
 
-		if let initialProps = initialProps {
-			self.initialProps = initialProps
-		}
+    if let initialProps = initialProps {
+      self.initialProps = initialProps
+    }
 
-		let rootView: UIView
-		if let factory = rootViewFactory as? ExpoReactRootViewFactory {
-			// When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
-			// we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
-			rootView = factory.superView(withModuleName: self.moduleName as String,
-																	 initialProperties: self.initialProps ?? [:],
-																	 launchOptions: launchOptions ?? [:])
-		} else {
-			rootView = rootViewFactory.view(withModuleName: self.moduleName as String,
-																			initialProperties: self.initialProps,
-																			launchOptions: launchOptions)
-		}
+    let rootView: UIView
+    if let factory = rootViewFactory as? ExpoReactRootViewFactory {
+      // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
+      // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
+      rootView = factory.superView(withModuleName: self.moduleName as String,
+                                   initialProperties: self.initialProps ?? [:],
+                                   launchOptions: launchOptions ?? [:])
+    } else {
+      rootView = rootViewFactory.view(withModuleName: self.moduleName as String,
+                                      initialProperties: self.initialProps,
+                                      launchOptions: launchOptions)
+    }
 
-		return rootView
-	}
+    return rootView
+  }
 
-	open override func sourceURL(for bridge: RCTBridge) -> URL? {
-		// This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
-		return bundleURL()
-	}
+  open override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
+    return bundleURL()
+  }
 
-	// MARK: UISceneDelegate
+  // MARK: UISceneDelegate
 
-	func windowScene(_ windowScene: UIWindowScene,
-									 didUpdate previousCoordinateSpace: UICoordinateSpace,
-									 interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
-									 traitCollection previousTraitCollection: UITraitCollection) {
-		NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RCTWindowFrameDidChangeNotification"), object: self)
-	}
+  func windowScene(_ windowScene: UIWindowScene,
+                   didUpdate previousCoordinateSpace: UICoordinateSpace,
+                   interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
+                   traitCollection previousTraitCollection: UITraitCollection) {
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RCTWindowFrameDidChangeNotification"), object: self)
+  }
 
   // TODO: - Configuring and Discarding Scenes
 
