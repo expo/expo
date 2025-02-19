@@ -425,20 +425,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   }
 }
 
-- (void)disableRemoteDebugging
-{
-  if ([self enablesDeveloperTools]) {
-    [self.versionManager disableRemoteDebuggingForHost:self.reactHost];
-  }
-}
-
-- (void)toggleRemoteDebugging
-{
-  if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleRemoteDebuggingForHost:self.reactHost];
-  }
-}
-
 - (void)togglePerformanceMonitor
 {
   if ([self enablesDeveloperTools]) {
@@ -489,8 +475,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
               [[EXKernel sharedInstance] reloadVisibleApp];
             } else if ([name isEqualToString:@"toggleDevMenu"]) {
               [weakSelf toggleDevMenu];
-            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
-              [weakSelf toggleRemoteDebugging];
             } else if ([name isEqualToString:@"toggleElementInspector"]) {
               [weakSelf toggleElementInspector];
             } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {

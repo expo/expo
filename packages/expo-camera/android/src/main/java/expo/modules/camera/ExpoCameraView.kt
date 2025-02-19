@@ -68,8 +68,8 @@ import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
+import expo.modules.camera.utils.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
@@ -142,6 +142,12 @@ class ExpoCameraView(
     set(value) {
       field = value
       shouldCreateCamera = true
+    }
+
+  var flashMode = FlashMode.OFF
+    set(value) {
+      field = value
+      setCameraFlashMode(value)
     }
 
   var cameraMode: CameraMode = CameraMode.PICTURE
@@ -312,9 +318,7 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    if (imageCaptureUseCase?.flashMode != mode.mapToLens()) {
-      imageCaptureUseCase?.flashMode = mode.mapToLens()
-    }
+    imageCaptureUseCase?.flashMode = mode.mapToLens()
   }
 
   private fun setTorchEnabled(enabled: Boolean) {
@@ -444,6 +448,7 @@ class ExpoCameraView(
 
         imageCaptureUseCase = ImageCapture.Builder()
           .setResolutionSelector(resolutionSelector)
+          .setFlashMode(flashMode.mapToLens())
           .build()
 
         val videoCapture = createVideoCapture()
@@ -647,24 +652,24 @@ class ExpoCameraView(
     val landscape = getDeviceOrientation() % 2 != 0
 
     if (facingFront && portrait) {
-      cornerPoints.mapY { barcode.referenceImageHeight - cornerPoints[it] }
+      cornerPoints.mapY { barcode.height - cornerPoints[it] }
     }
     if (facingFront && landscape) {
-      cornerPoints.mapX { barcode.referenceImageWidth - cornerPoints[it] }
+      cornerPoints.mapX { barcode.width - cornerPoints[it] }
     }
 
     cornerPoints.mapX {
-      (cornerPoints[it] * previewWidth / barcode.referenceImageWidth.toFloat())
+      (cornerPoints[it] * previewWidth / barcode.width.toFloat())
         .roundToInt()
     }
     cornerPoints.mapY {
-      (cornerPoints[it] * previewHeight / barcode.referenceImageHeight.toFloat())
+      (cornerPoints[it] * previewHeight / barcode.height.toFloat())
         .roundToInt()
     }
 
     barcode.cornerPoints = cornerPoints
-    barcode.referenceImageHeight = height
-    barcode.referenceImageWidth = width
+    barcode.height = height
+    barcode.width = width
   }
 
   private fun getCornerPointsAndBoundingBox(
@@ -712,8 +717,8 @@ class ExpoCameraView(
       onBarcodeScanned(
         BarcodeScannedEvent(
           target = id,
-          data = barcode.value,
-          raw = barcode.raw,
+          data = barcode.value.toString(),
+          raw = barcode.raw.toString(),
           type = BarcodeType.mapFormatToString(barcode.type),
           cornerPoints = cornerPoints,
           bounds = boundingBox,

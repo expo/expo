@@ -39,6 +39,12 @@ extension Exceptions {
     }
   }
 
+  internal final class HeadingUnavailableException: Exception {
+    override var reason: String {
+      "Heading updates not available"
+    }
+  }
+
   internal final class GeofencingUnavailable: Exception {
     override var reason: String {
       "Geofencing is not available"

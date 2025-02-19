@@ -161,6 +161,16 @@ class VideoModule : Module() {
           }
         }
 
+      Property("availableVideoTracks")
+        .get { ref: VideoPlayer ->
+          ref.availableVideoTracks
+        }
+
+      Property("videoTrack")
+        .get { ref: VideoPlayer ->
+          ref.currentVideoTrack
+        }
+
       Property("availableSubtitleTracks")
         .get { ref: VideoPlayer ->
           ref.subtitles.availableSubtitleTracks

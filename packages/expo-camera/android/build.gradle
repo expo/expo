@@ -15,7 +15,7 @@ android {
 }
 
 dependencies {
-  def camerax_version = "1.4.0"
+  def camerax_version = "1.4.1"
 
   api "androidx.exifinterface:exifinterface:1.3.7"
   api "androidx.appcompat:appcompat:1.1.0"

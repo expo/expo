@@ -4,7 +4,7 @@ import { Picker } from '@expo/ui/components/Picker';
 import { Switch } from '@expo/ui/components/Switch';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
 import { Section } from '../../components/Page';
 
@@ -23,10 +23,15 @@ export default function ContextMenuScreen() {
   });
   const MenuItems = (
     <>
-      <Button systemImage="person.crop.circle.badge.xmark" onPress={() => console.log('Pressed1')}>
+      <Button
+        systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+        onPress={() => console.log('Pressed1')}>
         Hello
       </Button>
-      <Button variant="bordered" systemImage="heart" onPress={() => console.log('Pressed2')}>
+      <Button
+        variant="bordered"
+        systemImage={{ ios: 'heart' }}
+        onPress={() => console.log('Pressed2')}>
         I love
       </Button>
       <Picker
@@ -48,10 +53,10 @@ export default function ContextMenuScreen() {
         label="Will u marry doggos?"
         onValueChange={setSwitch2Checked}
       />
-      <Button role="destructive" systemImage="hand.thumbsdown">
+      <Button role="destructive" systemImage={{ ios: 'hand.thumbsdown' }}>
         I don't like doggos 😡
       </Button>
-      <Submenu button={<Button systemImage="heart.slash">Evil submenu</Button>}>
+      <Submenu button={<Button systemImage={{ ios: 'heart.slash' }}>Evil submenu</Button>}>
         <Button>I hate</Button>
         <Button>doggos</Button>
         <Submenu button={<Button>👹Very evil submenu 👺</Button>}>
@@ -78,6 +83,52 @@ export default function ContextMenuScreen() {
           </View>
         </ContextMenu>
       </Section>
+      {Platform.OS === 'android' && (
+        <Section title="Colorful Context Menu">
+          <ContextMenu
+            color="#e3b7ff"
+            Items={
+              <>
+                <Button variant="bordered" color="#ff0000">
+                  I'm red!
+                </Button>
+                <Button
+                  variant="bordered"
+                  elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}>
+                  My text is green!
+                </Button>
+                <Switch
+                  value={switchChecked}
+                  label="I'm very colorful!"
+                  variant="checkbox"
+                  elementColors={{
+                    checkedColor: '#ff0000',
+                    disabledCheckedColor: '#00ff00',
+                    uncheckedColor: '#0000ff',
+                    checkmarkColor: '#ffff00',
+                  }}
+                  onValueChange={setSwitchChecked}
+                />
+                <Switch
+                  value={switch2Checked}
+                  variant="switch"
+                  label="Switches can be colorul too!"
+                  onValueChange={setSwitch2Checked}
+                  elementColors={{
+                    checkedThumbColor: '#ff0000',
+                    checkedTrackColor: '#00ff00',
+                    uncheckedThumbColor: '#0000ff',
+                    uncheckedTrackColor: '#ffff00',
+                  }}
+                />
+              </>
+            }>
+            <Button variant="bordered" style={{ width: 200, height: 50 }}>
+              Show Colorful Menu
+            </Button>
+          </ContextMenu>
+        </Section>
+      )}
     </View>
   );
 }

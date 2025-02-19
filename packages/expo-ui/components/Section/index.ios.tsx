@@ -1,6 +1,5 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 export type SectionProps = {
   title: string;
@@ -13,16 +12,13 @@ export type SectionProps = {
   children: React.ReactNode;
 };
 
-const SectionNativeView: React.ComponentType<
-  SectionProps & {
-    heightOffset: number;
-  }
-> = requireNativeView('ExpoUI', 'SectionView');
-
-const HOSTING_CONTAINER_OFFSET = 65;
-const HORIZONTAL_PADDING = 20;
+const SectionNativeView: React.ComponentType<SectionProps> = requireNativeView(
+  'ExpoUI',
+  'SectionView'
+);
 
 export function Section(props: SectionProps) {
+
   const children = Children.toArray(props.children);
   return (
     <SectionNativeView {...props} heightOffset={-HOSTING_CONTAINER_OFFSET}>
@@ -61,3 +57,4 @@ export function Section(props: SectionProps) {
     </SectionNativeView>
   );
 }
+

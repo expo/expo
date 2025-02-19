@@ -29,6 +29,7 @@
 - Fixed Android unit test errors in BuilDataTest. ([#34510](https://github.com/expo/expo/pull/34510) by [@kudo](https://github.com/kudo))
 - Fixed incorrect error log on Android. ([#34785](https://github.com/expo/expo/pull/34785) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
+- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.26.10 - 2024-12-05
 

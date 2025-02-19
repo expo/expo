@@ -22,7 +22,7 @@ That said, many organizations are already heavily invested in their CI/CD infras
 
 ## Using EAS Update without EAS Build
 
-Most of the [installation and configuration steps](/eas-update/getting-started) are identical whether or not you use EAS Build. The primary difference is how the update [channel](/eas-update/eas-cli/) is configured. When using EAS Build, the channel from **eas.json** will automatically be added to your build's **AndroidManifest.xml** and **Expo.plist** at build time. When not using EAS build, this must be configured manually by [setting the request header in the app config](/eas-update/getting-started/#configure-update-channels-in-appjson), followed by manually creating the channel on the server.
+Most of the [installation and configuration steps](/eas-update/getting-started) are identical whether or not you use EAS Build. The primary difference is how the update [channel](/eas-update/eas-cli/) is configured. When using EAS Build, the channel from **eas.json** will automatically be added to your build's **AndroidManifest.xml** and **Expo.plist** at build time. When not using EAS Build, this must be configured manually by [setting the request header in the app config](/eas-update/getting-started/#configure-update-channels-in-appjson), followed by manually creating the channel on the server.
 
 <Terminal
   cmd={[

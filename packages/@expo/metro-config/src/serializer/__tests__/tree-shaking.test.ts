@@ -490,11 +490,21 @@ describe('metro require', () => {
         `,
     });
 
-    expectImports(graph, '/app/index.js').toEqual([]);
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({
+        absolutePath: '/app/math.js',
+        data: expect.objectContaining({
+          data: expect.objectContaining({
+            asyncType: 'weak',
+            exportNames: ['*'],
+          }),
+        }),
+      }),
+    ]);
     expect(artifacts[0].source).not.toMatch('subtract');
+    expect(artifacts[1].source).toMatch('subtract');
   });
 
-  // TODO: require.resolveWeak
   // TODO: Async import()
 });
 

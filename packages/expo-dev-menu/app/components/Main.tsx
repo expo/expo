@@ -22,7 +22,6 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform, ScrollView, Switch } from 'react-native';
-import semver from 'semver';
 
 import { Onboarding } from './Onboarding';
 import { useAppInfo } from '../hooks/useAppInfo';
@@ -56,19 +55,12 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
 
   const hasCopiedAppInfoContent = Boolean(appInfoClipboard.clipboardContent);
 
-  const {
-    isElementInspectorAvailable,
-    isHotLoadingAvailable,
-    isPerfMonitorAvailable,
-    isRemoteDebuggingAvailable,
-  } = devSettings;
+  const { isElementInspectorAvailable, isHotLoadingAvailable, isPerfMonitorAvailable } =
+    devSettings;
   const hasDisabledDevSettingOption =
-    [
-      isElementInspectorAvailable,
-      isHotLoadingAvailable,
-      isPerfMonitorAvailable,
-      isRemoteDebuggingAvailable,
-    ].filter((value) => value === false).length > 0;
+    [isElementInspectorAvailable, isHotLoadingAvailable, isPerfMonitorAvailable].filter(
+      (value) => value === false
+    ).length > 0;
 
   return (
     <View flex="1" bg="secondary">
@@ -233,35 +225,13 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
               />
             </View>
             <Divider />
-            {devSettings.isJSInspectorAvailable ? (
+            {devSettings.isJSInspectorAvailable && (
               <View bg="default">
                 <SettingsRowButton
                   disabled={!devSettings.isJSInspectorAvailable}
                   label="Open JS debugger"
                   icon={<DebugIcon />}
                   onPress={actions.openJSInspector}
-                />
-              </View>
-            ) : (
-              <View bg="default">
-                <SettingsRowSwitch
-                  disabled={
-                    appInfo?.sdkVersion && semver.lt(appInfo.sdkVersion, '49.0.0')
-                      ? !devSettings.isRemoteDebuggingAvailable
-                      : true
-                  }
-                  testID="remote-js-debugger"
-                  label="Remote JS debugger"
-                  icon={<DebugIcon />}
-                  isEnabled={devSettings.isDebuggingRemotely}
-                  setIsEnabled={actions.toggleDebugRemoteJS}
-                  description={
-                    !appInfo?.sdkVersion || semver.lt(appInfo.sdkVersion, '49.0.0')
-                      ? `This is not compatible with ${
-                          appInfo?.engine ?? 'JSC'
-                        } in this SDK version, please use Hermes to debug.`
-                      : undefined
-                  }
                 />
               </View>
             )}
