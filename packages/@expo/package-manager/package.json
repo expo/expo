@@ -42,13 +42,11 @@
     "chalk": "^4.0.0",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
-    "resolve-workspace-root": "^2.0.0",
-    "split": "^1.0.1"
+    "resolve-workspace-root": "^2.0.0"
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
-    "@types/split": "^1.0.0",
     "expo-module-scripts": "^4.0.0"
   },
   "publishConfig": {
