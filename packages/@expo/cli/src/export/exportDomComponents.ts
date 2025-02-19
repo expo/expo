@@ -168,12 +168,9 @@ export function updateDomComponentAssetsForMD5Naming({
       const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
       const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
       assert(searchBuffer.length === replaceBuffer.length);
-      // @ts-expect-error: Remove when we updates `@types/node`: https://github.com/microsoft/TypeScript/pull/59417
       let index = assetEntity.contents.indexOf(searchBuffer, 0);
       while (index !== -1) {
-        // @ts-expect-error: Remove when we updates `@types/node`: https://github.com/microsoft/TypeScript/pull/59417
         replaceBuffer.copy(assetEntity.contents, index);
-        // @ts-expect-error: Remove when we updates `@types/node`: https://github.com/microsoft/TypeScript/pull/59417
         index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
       }
     } else {
