@@ -28,7 +28,6 @@ export type DisclosureGroupProps = {
   /**
    * Additional styling.
    */
-
   style?: StyleProp<ViewStyle>;
 
   /**
