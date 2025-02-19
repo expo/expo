@@ -39,7 +39,6 @@
   "dependencies": {
     "@expo/json-file": "^9.0.0",
     "@expo/spawn-async": "^1.7.2",
-    "ansi-regex": "^5.0.0",
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
     "micromatch": "^4.0.8",
