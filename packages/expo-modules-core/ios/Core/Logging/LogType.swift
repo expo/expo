@@ -44,7 +44,7 @@ public enum LogType: Int {
   /**
    Maps the log types to the log types used by the `os.log` logger.
    */
-  @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+  @available(iOS 14.0, watchOS 7.0, tvOS 14.0, *)
   public func toOSLogType() -> OSLogType {
     switch self {
     case .trace, .timer, .stacktrace, .debug:

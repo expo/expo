@@ -21,6 +21,7 @@ const EventThrottleMs = 500;
 
 const _PICTURE_SAVED_CALLBACKS = {};
 
+let loggedRenderingChildrenWarning = false;
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
@@ -324,6 +325,14 @@ export default class CameraView extends Component<CameraViewProps> {
     const onBarcodeScanned = this.props.onBarcodeScanned
       ? this._onObjectDetected(this.props.onBarcodeScanned)
       : undefined;
+
+    // @ts-expect-error
+    if (nativeProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <CameraView> component does not support children. This may lead to inconsistent behaviour or crashes. If you want to render content on top of the Camera, consider using absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
+    }
 
     return (
       <ExpoCamera

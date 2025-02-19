@@ -15,11 +15,15 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
     val kotlinVersion = getKotlinVersion(project)
     val kspVersion = getKSPVersion(project, kotlinVersion)
 
+    // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
+    val expoModuleExtension = project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
+
     with(project) {
       applyDefaultPlugins()
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
+      applyPublishing(expoModuleExtension)
     }
 
     // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.
@@ -31,9 +35,6 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
         }
       }
     }
-
-    // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
-    project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
   }
 
   private fun getKotlinVersion(project: Project): String {

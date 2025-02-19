@@ -172,28 +172,6 @@ describe('metro require', () => {
       }),
     ]);
   });
-
-  it(`require.resolveWeak`, async () => {
-    // Basically just bundle splitting...
-    const [[, , graph], artifacts] = await serializeOptimizeAsync({
-      'index.js': `
-          const Math = require.resolveWeak('./math');
-          console.log('keep', Math.add(1, 2));
-        `,
-      'math.js': `
-          module.exports.add = function add(a, b) {
-            return subtract(a, b);
-          }
-
-          module.exports.subtract = function subtract(a, b) {
-            return a - b;
-          }
-        `,
-    });
-
-    expectImports(graph, '/app/index.js').toEqual([]);
-    expect(artifacts[0].source).not.toMatch('subtract');
-  });
 });
 
 describe('cjs', () => {

@@ -3,7 +3,13 @@
 package expo.modules.plugin
 
 import com.android.build.gradle.LibraryExtension
+import expo.modules.plugin.android.applyLinerOptions
+import expo.modules.plugin.android.applyPublishingVariant
+import expo.modules.plugin.android.applySDKVersions
+import expo.modules.plugin.android.createReleasePublication
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
 
 internal fun Project.applyDefaultPlugins() {
@@ -12,6 +18,9 @@ internal fun Project.applyDefaultPlugins() {
   }
   if (!plugins.hasPlugin("kotlin-android")) {
     plugins.apply("kotlin-android")
+  }
+  if (!plugins.hasPlugin("maven-publish")) {
+    plugins.apply("maven-publish")
   }
 }
 
@@ -30,16 +39,36 @@ internal fun Project.applyDefaultDependencies() {
 }
 
 internal fun Project.applyDefaultAndroidSdkVersions() {
-  extensions.getByType(LibraryExtension::class.java).apply {
-    compileSdk = rootProject.extra.safeGet("compileSdkVersion")
-      ?: logger.warnIfNotDefined("compileSdkVersion", 35)
-    defaultConfig {
+  with(androidLibraryExtension()) {
+    applySDKVersions(
+      compileSdk = rootProject.extra.safeGet("compileSdkVersion")
+        ?: logger.warnIfNotDefined("compileSdkVersion", 35),
       minSdk = rootProject.extra.safeGet("minSdkVersion")
-        ?: logger.warnIfNotDefined("minSdkVersion", 24)
+        ?: logger.warnIfNotDefined("minSdkVersion", 24),
       targetSdk = rootProject.extra.safeGet("targetSdkVersion")
         ?: logger.warnIfNotDefined("targetSdkVersion", 34)
-    }
-
-    lintOptions.isAbortOnError = false
+    )
+    applyLinerOptions()
   }
 }
+
+internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
+  val libraryExtension = androidLibraryExtension()
+
+  libraryExtension
+    .applyPublishingVariant()
+
+  afterEvaluate {
+    if (!expoModulesExtension.canBePublished) {
+      return@afterEvaluate
+    }
+
+    publishingExtension()
+      .publications
+      .createReleasePublication(this)
+  }
+}
+
+internal fun Project.androidLibraryExtension() = extensions.getByType(LibraryExtension::class.java)
+
+internal fun Project.publishingExtension() = extensions.getByType(PublishingExtension::class.java)

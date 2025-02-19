@@ -204,6 +204,8 @@ rules:
     mentions: ['chrfalch', 'bycedric']
   - patterns: ['packages/expo-tracking-transparency/**']
     mentions: ['alanjhughes']
+  - patterns: ['packages/expo-ui/**']
+    mentions: ['aleqsio', 'behenate']
   - patterns: ['packages/expo-updates/**']
     mentions: ['wschurman', 'douglowder']
   - patterns: ['packages/expo-updates-interface/**']

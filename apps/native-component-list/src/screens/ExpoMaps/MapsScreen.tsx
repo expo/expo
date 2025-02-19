@@ -120,6 +120,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps camera position',
+      route: 'expo-maps/camera-position',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsCameraPositionScreen'));
+      },
+    },
+    {
       name: 'Maps Annotations',
       route: 'expo-maps/annotations',
       options: {},

@@ -1,8 +1,7 @@
 import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
-import { readableStreamToString } from '@remix-run/node';
 import { AbortController } from 'abort-controller';
 
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 
 export function createRequestHandler({ build }: { build: string }) {
   const handleRequest = createExpoHandler(build);
@@ -12,6 +11,24 @@ export function createRequestHandler({ build }: { build: string }) {
 
     return respond(response);
   };
+}
+
+async function readableStreamToString(
+  stream: ReadableStream<Uint8Array>,
+  encoding: 'utf8' | 'base64'
+) {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let chunk: ReadableStreamReadResult<Uint8Array>;
+  try {
+    do {
+      chunk = await reader.read();
+      if (chunk.value) chunks.push(chunk.value);
+    } while (!chunk.done);
+  } finally {
+    reader.releaseLock();
+  }
+  return Buffer.concat(chunks).toString(encoding);
 }
 
 export async function respond(res: Response): Promise<HandlerResponse> {
