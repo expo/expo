@@ -110,6 +110,18 @@ function collectDependencies(ast, options) {
                 visited.add(path.node);
                 return;
             }
+            // Match:
+            if (callee.type === 'MemberExpression' &&
+                callee.object.type === 'Identifier' &&
+                callee.object.name === 'require' &&
+                callee.property.type === 'Identifier' &&
+                callee.property.name === 'resolveWorker' &&
+                !callee.computed &&
+                !path.scope.getBinding('require')) {
+                processResolveWorkerCall(path, state);
+                visited.add(path.node);
+                return;
+            }
             // Match `require.unstable_importMaybeSync`
             if (callee.type === 'MemberExpression' &&
                 // `require`
@@ -259,6 +271,24 @@ function processResolveWeakCall(path, state) {
     }, path);
     if (state.collectOnly !== true) {
         path.replaceWith(makeResolveWeakTemplate({
+            MODULE_ID: createModuleIDExpression(dependency, state),
+        }));
+    }
+}
+function processResolveWorkerCall(path, state) {
+    const name = getModuleNameFromCallArgs(path);
+    if (name == null) {
+        throw new InvalidRequireCallError(path);
+    }
+    const dependency = registerDependency(state, {
+        name,
+        asyncType: 'worker',
+        optional: isOptionalDependency(name, path, state),
+        exportNames: ['*'],
+    }, path);
+    if (state.collectOnly !== true) {
+        path.replaceWith(makeResolveTemplate({
+            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
     }
@@ -454,6 +484,9 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 `);
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+const makeResolveTemplate = template_1.default.expression(`
+  DEPENDENCY_MAP.paths[MODULE_ID]
 `);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)

@@ -745,21 +745,9 @@ describe(`require.context`, () => {
   });
 });
 
-it('collects dependency with require.resolve', () => {
-  const ast = astFromCode(`
-    const a = require.resolve('foo');
-  `);
-  const { dependencies } = collectDependencies(ast, opts);
-  expect(dependencies).toEqual([{ name: 'foo', data: objectContaining({ asyncType: 'worker' }) }]);
-  expect(codeFromAst(ast)).toEqual(
-    comparableCode(`
-      const a = _dependencyMap.paths[_dependencyMap[0]]; 
-    `)
-  );
-});
 it('collects dependency with worker definition', () => {
   const ast = astFromCode(`
-    const a = new Worker(new URL("../path/to/module", window.location.href));
+    const a = new Worker(new URL(require.resolveWorker("../path/to/module"), window.location.href));
   `);
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
