@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 52.0.36 — 2025-02-19
+
+### 🐛 Bug fixes
+
 - Fixed `expo/fetch` `cancelStreaming` issue on Android. ([#34892](https://github.com/expo/expo/pull/34892) by [@kudo](https://github.com/kudo))
 - Fixed `Cannot read property 'matchContents' of undefined` error for DOM Components. ([#34894](https://github.com/expo/expo/pull/34894) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 52.0.35 — 2025-02-14
 

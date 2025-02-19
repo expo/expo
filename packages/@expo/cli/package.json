@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.22.16",
+  "version": "0.22.17",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -48,11 +48,11 @@
     "@expo/env": "~0.4.2",
     "@expo/image-utils": "^0.6.5",
     "@expo/json-file": "^9.0.2",
-    "@expo/metro-config": "~0.19.10",
+    "@expo/metro-config": "~0.19.11",
     "@expo/osascript": "^2.1.6",
     "@expo/package-manager": "^1.7.2",
     "@expo/plist": "^0.2.2",
-    "@expo/prebuild-config": "^8.0.27",
+    "@expo/prebuild-config": "^8.0.28",
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",

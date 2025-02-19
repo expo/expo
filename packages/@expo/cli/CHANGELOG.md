@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed mixed content error when serving DOM Component using tunnel. ([#34916](https://github.com/expo/expo/pull/34916) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.22.17 — 2025-02-19
+
+### 🐛 Bug fixes
+
+- Fixed mixed content error when serving DOM Component using tunnel. ([#34916](https://github.com/expo/expo/pull/34916) by [@kudo](https://github.com/kudo))
 
 ## 0.22.16 — 2025-02-14
 

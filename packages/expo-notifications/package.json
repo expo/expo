@@ -44,7 +44,7 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~6.0.2",
-    "expo-constants": "~17.0.6"
+    "expo-constants": "~17.0.7"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.0.4",
