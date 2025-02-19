@@ -3747,10 +3747,10 @@
     pretty-format "^29.0.3"
     redent "^3.0.0"
 
-"@testing-library/react-native@^12.5.1", "@testing-library/react-native@^12.5.2":
-  version "12.5.2"
-  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-12.5.2.tgz#97dcf11e505d7cd05c9261c1f1c65387c4857673"
-  integrity sha512-utFXq9xVc2D/vZk80YzWPTPTNbVXh7jyLYW+DJ2mlmDhj5GaAKf1abf2Dwc6gitxAWn5R22GO3hBME03W0f82w==
+"@testing-library/react-native@^12.5.1", "@testing-library/react-native@^12.5.2", "@testing-library/react-native@v14.0.0-alpha.0":
+  version "14.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-14.0.0-alpha.0.tgz#1808e53b566f297ff66299173322a2b8200e0a85"
+  integrity sha512-K6Ivfc/bgjMWhqkkzVXGXeGQmgJyTA7cJWopyWnjLvxE2JB+dK0/Pz74/NP7MvldP7GEp+5vniSV7cR4Ks26sA==
   dependencies:
     jest-matcher-utils "^29.7.0"
     pretty-format "^29.7.0"
@@ -13551,13 +13551,12 @@ react-devtools-core@^6.0.1:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-dom@18.3.1:
-  version "18.3.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.3.1.tgz#c2265d79511b57d479b3dd3fdfa51536494c5cb4"
-  integrity sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==
+react-dom@18.3.1, react-dom@19.0.0:
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.0.0.tgz#43446f1f01c65a4cd7f7588083e686a6726cfb57"
+  integrity sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==
   dependencies:
-    loose-envify "^1.1.0"
-    scheduler "^0.23.2"
+    scheduler "^0.25.0"
 
 react-error-boundary@^4.0.11:
   version "4.0.11"
@@ -13719,10 +13718,10 @@ react-native-safe-area-context@5.1.0, react-native-safe-area-context@5.2.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.2.0.tgz#60a9faab2a6319a61411a652ed862ec0f59384be"
   integrity sha512-QpcGA6MRKe8Zbpf1hirCBudNQYGsMv0n/CTTROMOFcXbqRUoEXLCsYxUmYKi7JJb3ziL2DbyzWXyH2/gw4Tkfw==
 
-react-native-screens@~4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.5.0.tgz#748d47ed68763ea28822a5ecf304dbef38a15652"
-  integrity sha512-yBWeN5EHNeew9f0ia9VE7JSlUQzCZEwkb87r7A7/Sg41OJHuRKHNRhmdCOiMBUqwwQi3F+b4NZGywjeM/gWMyg==
+react-native-screens@4.9.0-beta.0, react-native-screens@~4.5.0:
+  version "4.9.0-beta.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.9.0-beta.0.tgz#9a1a43c1ee7f2d4998a4badd59b1ac43351ea234"
+  integrity sha512-Bxo3DSBxchxzDIj5Jn6kPDYbHWwcVNEa4tOXrQ9/UNJybYN2Bo30+JHEdI+kOJh/8p0uS6rMnccPpbc1eHmEMA==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
@@ -14482,7 +14481,7 @@ saxes@^6.0.0:
   dependencies:
     xmlchars "^2.2.0"
 
-scheduler@0.25.0:
+scheduler@0.25.0, scheduler@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.25.0.tgz#336cd9768e8cceebf52d3c80e3dcf5de23e7e015"
   integrity sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==
