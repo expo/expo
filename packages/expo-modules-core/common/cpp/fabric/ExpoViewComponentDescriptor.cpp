@@ -34,11 +34,11 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
     auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
     auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
 
-    if(widthProp.value().isDefined()) {
+    if (widthProp.value().isDefined()) {
       // view has fixed dimension size set in props, so we should not autosize it in that axis
       width = widthProp.value().unwrap();
     }
-    if(heightProp.value().isDefined()) {
+    if (heightProp.value().isDefined()) {
       height = heightProp.value().unwrap();
     }
 
