@@ -17,7 +17,7 @@ struct DisclosureGroupView: ExpoSwiftUI.View {
         .onChange(of: isExpanded) { newValue in
           let payload = ["isExpnaded": newValue == true ? true : false]
           props.onStateChange(payload)
-            }
-        }
+          }
+       }
     }
 }
