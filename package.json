@@ -47,5 +47,8 @@
   },
   "volta": {
     "node": "20.12.2"
+  },
+  "devDependencies": {
+    "universal-test-renderer": "^0.5.0"
   }
 }
