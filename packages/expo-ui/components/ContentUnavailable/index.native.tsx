@@ -15,12 +15,6 @@ export type ContentUnavailableProps = {
    */
   title?: string;
 
-     /**
-   * Visibiloty State
-   */
-
-     isExpanded?: boolean;
-
   /**
    * SF Symbol indicating why the content is not available.
    */
