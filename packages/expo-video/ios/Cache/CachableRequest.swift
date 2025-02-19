@@ -10,7 +10,7 @@ import ExpoModulesCore
  * Class used for easier management of loadingRequests and associating them with data tasks.
  * After the request is fulfilled or canceled, the data chunk should be saved to file holding the cache
  */
-class CachableRequest: Equatable {
+class CachableRequest: Equatable, Hashable {
   let loadingRequest: AVAssetResourceLoadingRequest
   let dataTask: URLSessionDataTask
   var dataRequest: AVAssetResourceLoadingDataRequest
@@ -38,5 +38,9 @@ class CachableRequest: Equatable {
 
   static func == (lhs: CachableRequest, rhs: CachableRequest) -> Bool {
     return lhs === rhs
+  }
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(ObjectIdentifier(self))
   }
 }

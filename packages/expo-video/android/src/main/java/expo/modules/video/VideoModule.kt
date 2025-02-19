@@ -9,7 +9,6 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
@@ -31,14 +30,11 @@ import kotlin.time.Duration
 @UnstableReactNativeAPI
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoModule : Module() {
-  private val reactContext
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
     OnCreate {
-      VideoManager.onModuleCreated(appContext, reactContext)
+      VideoManager.onModuleCreated(appContext)
     }
 
     Function("isPictureInPictureSupported") {

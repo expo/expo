@@ -22,7 +22,7 @@ private const val DEFAULT_CACHE_SIZE = 1024 * 1024 * 1024L // 1GB
 @UnstableApi
 class VideoCache(context: Context) {
   // We don't want a strong reference to the context, as this class is used inside of a singleton (VideoManager)
-  private val weakContext: WeakReference<Context> = WeakReference(context)
+  private val weakContext = WeakReference(context)
   private val context: Context
     get() {
       return weakContext.get() ?: throw Exceptions.ReactContextLost()
@@ -81,25 +81,15 @@ class VideoCache(context: Context) {
     sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheName).apply()
     instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
     oldCache.release()
-    deleteRecursive(oldCacheDirectory)
-  }
-
-  private fun deleteRecursive(fileOrDirectory: File) {
-    if (fileOrDirectory.isDirectory) {
-      for (child in fileOrDirectory.listFiles() ?: arrayOf()) {
-        deleteRecursive(child)
-      }
-    }
-
-    fileOrDirectory.delete()
+    oldCacheDirectory.deleteRecursively()
   }
 
   private fun getFileSize(file: File): Long {
-    if (file.isDirectory) {
-      return file.listFiles()?.fold(0L) { sum, element -> sum + getFileSize(element) } ?: 0L
-    }
-
-    return file.length()
+    return file
+      .walkTopDown()
+      .filter { it.isFile }
+      .map { it.length() }
+      .sum()
   }
 
   private fun assertModificationReleaseConditions() {

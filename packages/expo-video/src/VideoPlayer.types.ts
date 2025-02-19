@@ -303,10 +303,8 @@ export type VideoSource =
       headers?: Record<string, string>;
 
       /**
-       * @experimental
        * Specifies whether the player should use caching for the video.
-       * > Due to platform limitations caching HLS video sources on iOS is not supported.
-       * > Caching DRM-protected videos is not supported.
+       * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
        * @default false
        * @platform android
        * @platform ios

@@ -54,7 +54,7 @@ class CachedResource {
     do {
       mediaInfo?.addDataRange(newDataRange: (Int(offset), Int(offset) + data.count))
       mediaInfo?.saveToFile()
-      try await fileHandle.write(data: data, atOffset: Int(offset))
+      try fileHandle.write(data: data, atOffset: Int(offset))
     } catch {
       log.warn("Failed to write at offset with the file handle")
     }

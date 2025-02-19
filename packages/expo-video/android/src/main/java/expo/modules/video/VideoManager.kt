@@ -1,9 +1,9 @@
 package expo.modules.video
 
-import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.player.VideoPlayer
 import java.lang.ref.WeakReference
 
@@ -22,7 +22,9 @@ object VideoManager {
   private lateinit var audioFocusManager: AudioFocusManager
   lateinit var cache: VideoCache
 
-  fun onModuleCreated(appContext: AppContext, context: Context) {
+  fun onModuleCreated(appContext: AppContext) {
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
     if (!this::audioFocusManager.isInitialized) {
       audioFocusManager = AudioFocusManager(appContext)
     }

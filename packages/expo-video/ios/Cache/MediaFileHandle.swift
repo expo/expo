@@ -3,13 +3,15 @@
 import Foundation
 import ExpoModulesCore
 
-final class MediaFileHandle {
+/**
+ * Class meant to be used as a helper for handling files by the ResourceLoaderDelegate.
+ * All operations should be dispatched from the ResourceLoaderDelegate queue.
+ */
+internal class MediaFileHandle {
   private let filePath: String
+  private let lock = NSLock()
   private lazy var readHandle = FileHandle(forReadingAtPath: filePath)
   private lazy var writeHandle = FileHandle(forWritingAtPath: filePath)
-
-  private let lock = NSLock()
-  private let queue = VideoCacheManager.shared.cacheQueue
 
   var attributes: [FileAttributeKey: Any]? {
     do {
@@ -52,53 +54,41 @@ final class MediaFileHandle {
   }
 
   func readData(withOffset offset: Int, forLength length: Int) -> Data? {
-    queue.sync {
-      readHandle?.seek(toFileOffset: UInt64(offset))
-      return readHandle?.readData(ofLength: length)
-    }
+    lock.lock()
+    defer { lock.unlock() }
+
+    readHandle?.seek(toFileOffset: UInt64(offset))
+    return readHandle?.readData(ofLength: length)
   }
 
-  func write(data: Data, atOffset offset: Int) async throws {
+  func write(data: Data, atOffset offset: Int) throws {
+    lock.lock()
+    defer { lock.unlock() }
+
     guard let writeHandle = writeHandle else {
       return
     }
 
-    return try await withCheckedThrowingContinuation { continuation in
-      queue.async { [writeHandle] in
-        do {
-          try writeHandle.seek(toOffset: UInt64(offset))
-        } catch {
-          continuation.resume(throwing: error)
-        }
-        writeHandle.write(data)
-        writeHandle.synchronizeFile()
-        continuation.resume()
-      }
-    }
+    try writeHandle.seek(toOffset: UInt64(offset))
+
+    writeHandle.write(data)
+    writeHandle.synchronizeFile()
   }
 
   func append(data: Data) {
-    queue.async { [writeHandle] in
-      guard let writeHandle = writeHandle else {
-        return
-      }
-
-      writeHandle.seekToEndOfFile()
-      writeHandle.write(data)
-      writeHandle.synchronizeFile()
+    lock.lock()
+    defer { lock.unlock() }
+    guard let writeHandle = writeHandle else {
+      return
     }
+
+    writeHandle.seekToEndOfFile()
+    writeHandle.write(data)
+    writeHandle.synchronizeFile()
   }
 
   func close() {
     readHandle?.closeFile()
     writeHandle?.closeFile()
-  }
-
-  func deleteFile() {
-    do {
-      try FileManager.default.removeItem(atPath: filePath)
-    } catch let error {
-      log.warn("Failed to delete file at \(filePath): \(error.localizedDescription)")
-    }
   }
 }

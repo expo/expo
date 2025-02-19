@@ -55,7 +55,7 @@ public class CachingPlayerItem: AVPlayerItem {
     self.createCacheDirectoryIfNeeded()
     VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
     resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, owner: self)
-    urlAsset.resourceLoader.setDelegate(resourceLoaderDelegate, queue: DispatchQueue.main)
+    urlAsset.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
   }
 
   deinit {
@@ -80,8 +80,8 @@ public class CachingPlayerItem: AVPlayerItem {
       appropriateFor: nil,
       create: true)
     else {
-      return nil
       log.warn("CachingPlayerItem error: Can't access default cache directory")
+      return nil
     }
 
     cachesDirectory.appendPathComponent(VideoCacheManager.expoVideoCacheScheme, isDirectory: true)

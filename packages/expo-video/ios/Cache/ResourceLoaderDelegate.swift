@@ -18,7 +18,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let fileExtension: String
   private let cachedResource: CachedResource
 
-  private var cachableRequests: NSHashTable<CachableRequest> = NSHashTable()
+  private var cachableRequests: SynchronizedHashTable<CachableRequest> = SynchronizedHashTable()
   private var session: URLSession?
 
   /**
