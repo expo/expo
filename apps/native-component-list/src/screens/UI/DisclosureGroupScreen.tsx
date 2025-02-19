@@ -1,7 +1,7 @@
 import { DisclosureGroup } from '@expo/ui/components/DisclosureGroup';
 import { Section } from '@expo/ui/components/Section';
 import * as React from 'react';
-import {  Text } from 'react-native';
+import { Text } from 'react-native';
 
 export default function DisclosureGroupScreen() {
   return (
