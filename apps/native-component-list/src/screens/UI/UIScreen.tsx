@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
