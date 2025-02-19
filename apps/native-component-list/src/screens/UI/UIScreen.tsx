@@ -58,7 +58,6 @@ export const UIScreens = [
       return optionalRequire(() => require('./ColorPickerScreen'));
     },
   },
-
   {
     name: 'DisclosureGroup component',
     route: 'ui/disclosure-group',
