@@ -8,24 +8,24 @@ extension ExpoSwiftUI {
       self.rawValue = rawValue
     }
     public let rawValue: Int
-    
+
     public static let horizontal = AxisSet(rawValue: 1 << 0)
     public static let vertical = AxisSet(rawValue: 1 << 1)
-    
+
     public static let both: AxisSet = [.horizontal, .vertical]
   }
-  
+
   public struct AutoSizingStack<Content: SwiftUI.View>: SwiftUI.View {
     let content: Content
     let proxy: ShadowNodeProxy
     let axis: AxisSet
-    
+
     public init(shadowNodeProxy: ShadowNodeProxy, axis: AxisSet = .both, @ViewBuilder _ content: () -> Content) {
       self.proxy = shadowNodeProxy
       self.content = content()
       self.axis = axis
     }
-    
+
     public var body: some SwiftUI.View {
       if #available(iOS 16.0, tvOS 16.0, *) {
         if proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY {
