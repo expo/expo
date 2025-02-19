@@ -14,7 +14,6 @@ import { DisclosureGroupProps } from './index.types';
  */
 
 
-
 const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> = requireNativeView(
   'ExpoUI',
   'DisclosureGroupView'
