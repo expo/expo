@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import findUp from 'find-up';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
 import prompts from 'prompts';
@@ -95,7 +95,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!targetDir) {
     return;
   }
-  await fs.ensureDir(targetDir);
+  await fs.promises.mkdir(targetDir, { recursive: true });
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
@@ -133,14 +133,14 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
     // We should remove it after all.
-    await fs.remove(packagePath);
+    await fs.promises.rm(packagePath, { recursive: true, force: true });
   }
   if (!options.local && data.type !== 'local') {
     if (!options.withReadme) {
-      await fs.remove(path.join(targetDir, 'README.md'));
+      await fs.promises.rm(path.join(targetDir, 'README.md'), { force: true });
     }
     if (!options.withChangelog) {
-      await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
+      await fs.promises.rm(path.join(targetDir, 'CHANGELOG.md'), { force: true });
     }
     if (options.example) {
       // Create "example" folder
@@ -182,7 +182,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
   const files: string[] = [];
   const baseDir = dir ? path.join(root, dir) : root;
 
-  for (const file of await fs.readdir(baseDir)) {
+  for (const file of await fs.promises.readdir(baseDir)) {
     const relativePath = dir ? path.join(dir, file) : file;
 
     if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
@@ -190,8 +190,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
     }
 
     const fullPath = path.join(baseDir, file);
-    const stat = await fs.lstat(fullPath);
-
+    const stat = await fs.promises.lstat(fullPath);
     if (stat.isDirectory()) {
       files.push(...(await getFilesAsync(root, relativePath)));
     } else {
@@ -308,10 +307,13 @@ async function createModuleFromTemplate(
     });
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
-    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
+    const template = await fs.promises.readFile(fromPath, 'utf8');
     const renderedContent = ejs.render(template, data);
 
-    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+    if (!fs.existsSync(path.dirname(toPath))) {
+      await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
+    }
+    await fs.promises.writeFile(toPath, renderedContent, 'utf8');
   }
 }
 
@@ -419,8 +421,7 @@ async function askForSubstitutionDataAsync(
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
  */
 async function confirmTargetDirAsync(targetDir: string): Promise<void> {
-  const files = await fs.readdir(targetDir);
-
+  const files = await fs.promises.readdir(targetDir);
   if (files.length === 0) {
     return;
   }
