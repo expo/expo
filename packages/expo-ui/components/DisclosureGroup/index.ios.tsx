@@ -16,7 +16,6 @@ export type DisclosureGroupProps = {
   /**
    * Title of the DisclosureGroup.
    */
-
   title: string;
 
    /**
