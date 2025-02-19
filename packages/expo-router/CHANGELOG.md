@@ -24,6 +24,7 @@
 - Fix linting errors ([#34033](https://github.com/expo/expo/pull/34033) by [@marklawlor](https://github.com/marklawlor))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Add Sitemap to exported views ([#34144](https://github.com/expo/expo/pull/34144) by [@davidavz](https://github.com/davidavz))
+- Fix tests after dependency update
 
 ### 🐛 Bug fixes
 
