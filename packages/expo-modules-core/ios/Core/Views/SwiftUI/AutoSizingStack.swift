@@ -37,7 +37,8 @@ extension ExpoSwiftUI {
                 size.width = axis.contains(.horizontal) ? size.width : ShadowNodeProxy.UNDEFINED_SIZE
                 size.height = axis.contains(.vertical) ? size.height : ShadowNodeProxy.UNDEFINED_SIZE
                 proxy.setViewSize?(size)
-          })}
+              })
+          }
         } else {
           content
         }
