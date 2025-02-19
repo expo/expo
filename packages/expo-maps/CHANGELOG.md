@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- [iOS] Implement setCameraPosition ([#34886](https://github.com/expo/expo/pull/34886) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
