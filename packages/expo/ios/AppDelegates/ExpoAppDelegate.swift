@@ -151,15 +151,6 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     return bundleURL()
   }
 
-  // MARK: UISceneDelegate
-
-  func windowScene(_ windowScene: UIWindowScene,
-                   didUpdate previousCoordinateSpace: UICoordinateSpace,
-                   interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
-                   traitCollection previousTraitCollection: UITraitCollection) {
-    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RCTWindowFrameDidChangeNotification"), object: self)
-  }
-
   // TODO: - Configuring and Discarding Scenes
 
   // MARK: - Responding to App Life-Cycle Events
