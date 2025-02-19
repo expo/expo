@@ -5,8 +5,10 @@ import ExpoModulesCore
 
 class SectionProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
-  @Field var heightOffset: CGFloat = 0
 }
+
+let IPAD_OFFSET: CGFloat = 30
+let IPHONE_OFFSET: CGFloat = 40
 
 struct SectionView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SectionProps
@@ -14,7 +16,12 @@ struct SectionView: ExpoSwiftUI.View {
   var body: some View {
     let form = Form {
       Section(header: Text(props.title ?? "")) {
-        Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
+        UnwrappedChildren { child, isHostingView in
+          child
+            .if(!isHostingView) {
+              $0.offset(x: UIDevice.current.userInterfaceIdiom == .pad ? IPAD_OFFSET : IPHONE_OFFSET)
+            }
+        }
       }
     }
 

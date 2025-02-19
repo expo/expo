@@ -3,17 +3,23 @@
 import CoreLocation
 import ExpoModulesCore
 
-internal class DeviceHeadingStreamer: BaseLocationProvider {
+internal class DeviceHeadingStreamer: BaseStreamer {
   typealias DeviceHeadingStream = AsyncThrowingStream<CLHeading, Error>
 
   private var headingStream: DeviceHeadingStream?
   private var continuation: DeviceHeadingStream.Continuation?
 
   deinit {
-    stopStreaming()
+    if continuation != nil {
+      stopStreaming()
+    }
   }
 
-  func streamDeviceHeading() -> DeviceHeadingStream {
+  func streamDeviceHeading() throws -> DeviceHeadingStream {
+    if !CLLocationManager.headingAvailable() {
+      // Throw error
+      throw Exceptions.HeadingUnavailableException()
+    }
     if let stream = headingStream {
       return stream
     }
@@ -25,7 +31,7 @@ internal class DeviceHeadingStreamer: BaseLocationProvider {
     return stream
   }
 
-  func stopStreaming() {
+  override func stopStreaming() {
     manager.stopUpdatingHeading()
     continuation?.finish()
 
@@ -40,8 +46,7 @@ internal class DeviceHeadingStreamer: BaseLocationProvider {
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    // TODO: Make HeadingUnavailableException
-    continuation?.finish(throwing: Exceptions.LocationUnavailable().causedBy(error))
+    continuation?.finish(throwing: Exceptions.HeadingUnavailableException().causedBy(error))
     headingStream = nil
     continuation = nil
   }

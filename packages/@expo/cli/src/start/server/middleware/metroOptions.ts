@@ -68,7 +68,7 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   // to support async imports. If it's not installed, we can't support async imports.
   // If it is installed, the user MUST import it somewhere in their project.
   // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime/package.json') != null;
 }
 
 function withDefaults({

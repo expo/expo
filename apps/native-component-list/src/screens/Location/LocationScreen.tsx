@@ -85,12 +85,12 @@ export default function LocationScreen({
       />
       <SubscriptionDemo
         title="watchPositionAsync"
-        subscribe={(setValue) => Location.watchPositionAsync({}, setValue)}
+        subscribe={(setValue) => Location.watchPositionAsync({}, setValue, setValue)}
       />
       <SimpleActionDemo title="getHeadingAsync" action={() => Location.getHeadingAsync()} />
       <SubscriptionDemo
         title="watchHeadingAsync"
-        subscribe={(setValue) => Location.watchHeadingAsync(setValue)}
+        subscribe={(setValue) => Location.watchHeadingAsync(setValue, setValue)}
       />
 
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>

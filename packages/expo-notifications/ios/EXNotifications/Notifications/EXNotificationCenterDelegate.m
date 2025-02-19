@@ -4,7 +4,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#if __has_include(<EXNotifications/EXNotifications-Swift.h>)
 #import <EXNotifications/EXNotifications-Swift.h>
 #else
 #import "EXNotifications-Swift.h"

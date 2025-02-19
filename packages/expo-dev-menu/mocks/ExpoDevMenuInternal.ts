@@ -11,8 +11,6 @@ export async function togglePerformanceMonitor(): Promise<void> {}
 
 export async function toggleInspector(): Promise<void> {}
 
-export async function toggleRemoteDebug(): Promise<void> {}
-
 export async function openJSInspector(): Promise<void> {}
 
 export async function toggleFastRefresh(): Promise<void> {}

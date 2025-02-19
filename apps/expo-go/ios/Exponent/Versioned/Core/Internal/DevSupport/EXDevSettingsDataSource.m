@@ -12,7 +12,6 @@ NSString *const EXDevSettingProfilingEnabled = @"profilingEnabled";
 NSString *const EXDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 NSString *const EXDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 NSString *const EXDevSettingIsInspectorShown = @"showInspector";
-NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 
 @interface EXDevSettingsDataSource ()
 
@@ -41,7 +40,6 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
       EXDevSettingHotLoadingEnabled,
       EXDevSettingLiveReloadEnabled,
       EXDevSettingIsInspectorShown,
-      EXDevSettingIsDebuggingRemotely,
     ]];
     if (defaultValues) {
       [self _reloadWithDefaults:defaultValues];

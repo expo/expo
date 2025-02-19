@@ -107,9 +107,6 @@ object DevMenuManager : DevMenuManagerInterface {
   fun toggleInspector() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
-  fun toggleRemoteDebug() {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
   fun openJSInspector() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }

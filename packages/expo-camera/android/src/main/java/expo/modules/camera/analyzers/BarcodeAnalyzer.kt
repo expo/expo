@@ -11,7 +11,7 @@ import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraType
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult
 import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)

@@ -11,5 +11,6 @@ public typealias UIApplicationDelegate = NSApplicationDelegate
 public typealias UIWindow = NSWindow
 public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
+public typealias UILabel = NSLabel
 
 #endif // os(macOS)

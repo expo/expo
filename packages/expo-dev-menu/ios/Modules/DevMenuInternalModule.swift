@@ -23,7 +23,6 @@ public class DevMenuInternalModule: Module {
     AsyncFunction("reload", DevMenuManager.shared.reload)
     AsyncFunction("togglePerformanceMonitor", DevMenuManager.shared.togglePerformanceMonitor)
     AsyncFunction("toggleInspector", DevMenuManager.shared.toggleInspector)
-    AsyncFunction("toggleRemoteDebug", DevMenuManager.shared.toggleRemoteDebug)
     AsyncFunction("openJSInspector", DevMenuManager.shared.openJSInspector)
     AsyncFunction("toggleFastRefresh", DevMenuManager.shared.toggleFastRefresh)
 

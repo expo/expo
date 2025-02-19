@@ -76,7 +76,7 @@ export async function normalizeOptionsAsync(
     // Options from config
     ...config,
     // Explicit options
-    ...options,
+    ...Object.fromEntries(Object.entries(options ?? {}).filter(([_, v]) => v != null)),
     // These options are computed by both default and explicit options, so we put them last.
     enableReactImportsPatcher:
       options?.enableReactImportsPatcher ??

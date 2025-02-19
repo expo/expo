@@ -129,7 +129,7 @@ export function getDomComponentHtml(src?: string, { title }: { title?: string } 
     <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
         <!-- Root element for the DOM component. -->
         <div id="root"></div>
-        ${src ? `<script crossorigin src="${src}"></script>` : ''}
+        ${src ? `<script crossorigin src="${src.replace(/^https?:/, '')}"></script>` : ''}
     </body>
 </html>`;
 }

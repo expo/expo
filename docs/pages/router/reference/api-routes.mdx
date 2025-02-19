@@ -283,7 +283,7 @@ Notes about automatic server deployment for native apps:
 - Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
 - You can manually deploy the server and set the `origin` URL before building the app if you'd like.
 - Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
-- Automatic deployment does not support `app.config.js` files yet.
+- Automatic deployment does not support [dynamic app config](/workflow/configuration/#dynamic-configuration) (**app.config.js** and **app.config.ts**) files yet.
 - Logs from the deployment will be written to `.expo/logs/deploy.log`.
 - Deployment will not run in `EXPO_OFFLINE` mode.
 

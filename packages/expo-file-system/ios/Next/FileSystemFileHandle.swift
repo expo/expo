@@ -1,7 +1,7 @@
 import Foundation
 import ExpoModulesCore
 
-@available(iOS 14, macOS 11, tvOS 14, *)
+@available(iOS 14, tvOS 14, *)
 internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let file: FileSystemFile
   let handle: FileHandle

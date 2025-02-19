@@ -360,11 +360,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     devToolsDelegate?.toggleElementInspector()
   }
 
-  fun toggleRemoteDebug() {
-    val devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.toggleRemoteDebugging()
-  }
-
   fun openJSInspector() {
     val devToolsDelegate = getDevToolsDelegate()
     // If internal setting aren't available we can't open inspector

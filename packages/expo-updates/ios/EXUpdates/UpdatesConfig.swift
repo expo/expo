@@ -203,7 +203,7 @@ public final class UpdatesConfig: NSObject {
     return try UpdatesConfig.config(fromDictionary: config, configOverride: UpdatesConfigOverride.load())
   }
 
-  private static func config(
+  internal static func config(
     fromDictionary config: [String: Any],
     configOverride: UpdatesConfigOverride?
   ) throws -> UpdatesConfig {

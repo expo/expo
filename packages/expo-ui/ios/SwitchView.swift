@@ -42,7 +42,6 @@ struct SwitchView: ExpoSwiftUI.View {
       .if(props.variant == "checkbox") {
         $0.toggleStyle(IOSCheckboxToggleStyle())
       }
-      .fixedSize()
     }
   }
 }

@@ -106,27 +106,6 @@ object VersionedUtils {
     }
   }
 
-  private fun toggleRemoteJSDebugging() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to toggle remote JS debugging because the current activity could not be found."
-      )
-    }
-    val devSupportManager = currentActivity.devSupportManager ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to get the DevSupportManager from current activity."
-      )
-    }
-
-    val devSettings = devSupportManager.devSettings
-    if (devSettings != null) {
-      val isRemoteJSDebugEnabled = devSettings.isRemoteJSDebugEnabled
-      devSettings.isRemoteJSDebugEnabled = !isRemoteJSDebugEnabled
-    }
-  }
-
   private fun reconnectReactDevTools() {
     val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
@@ -151,11 +130,6 @@ object VersionedUtils {
           when (params.getNullable<String>("name")) {
             "reload" -> reloadExpoApp()
             "toggleDevMenu" -> toggleExpoDevMenu()
-            "toggleRemoteDebugging" -> {
-              toggleRemoteJSDebugging()
-              // Reload the app after toggling debugging, this is based on what we do in DevSupportManagerBase.
-              reloadExpoApp()
-            }
             "toggleElementInspector" -> toggleElementInspector()
             "togglePerformanceMonitor" -> togglePerformanceMonitor()
             "reconnectReactDevTools" -> reconnectReactDevTools()

@@ -3,18 +3,19 @@ package expo.modules.ui.menu
 import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEventCallback
+import expo.modules.ui.DynamicTheme
+import expo.modules.ui.ThemedHybridSwitch
+import expo.modules.ui.compose
+import expo.modules.ui.composeOrNull
 
 @Composable
 private fun SectionTitle(text: String) {
@@ -50,6 +55,15 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
     val id = element.contextMenuElementID
     element.button?.let {
       DropdownMenuItem(
+        colors = MenuItemColors(
+          textColor = it.elementColors.contentColor.compose,
+          leadingIconColor = null.compose,
+          trailingIconColor = null.compose,
+          disabledTextColor = it.elementColors.disabledContentColor.compose,
+          disabledLeadingIconColor = null.compose,
+          disabledTrailingIconColor = null.compose
+        ),
+        modifier = Modifier.background(it.elementColors.containerColor.compose),
         text = { Text(it.text) },
         onClick = {
           dispatchers.buttonPressed(ContextMenuButtonPressedEvent(id))
@@ -63,23 +77,15 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(it.label)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-              if (it.variant == "checkbox") {
-                Checkbox(
-                  checked = it.value,
-                  onCheckedChange = null,
-                  modifier = Modifier
-                    .padding(horizontal = 5.dp)
-                    .wrapContentSize(Alignment.CenterEnd)
-                )
-              } else {
-                Switch(
-                  checked = it.value,
-                  onCheckedChange = null,
-                  modifier = Modifier
-                    .padding(start = 5.dp)
-                    .wrapContentSize(Alignment.CenterEnd)
-                )
-              }
+              ThemedHybridSwitch(
+                variant = it.variant,
+                checked = it.value,
+                onCheckedChange = null,
+                colors = it.elementColors,
+                modifier = Modifier
+                  .padding(horizontal = 5.dp)
+                  .wrapContentSize(Alignment.CenterEnd)
+              )
             }
           }
         },
@@ -139,20 +145,26 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
   init {
     setContent {
       var elements by remember { props.elements }
+      val color by remember { props.color }
 
       return@setContent Box {
-        DropdownMenu(
-          expanded = expanded.value,
-          onDismissRequest = { expanded.value = !expanded.value }
-        ) {
-          FlatMenu(
-            elements,
-            null,
-            dispatchers = ContextMenuDispatchers(
-              buttonPressed = onContextMenuButtonPressed,
-              switchCheckedChanged = onContextMenuSwitchValueChanged
+        DynamicTheme {
+          DropdownMenu(
+            containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
+            expanded = expanded.value,
+            onDismissRequest = {
+              expanded.value = !expanded.value
+            }
+          ) {
+            FlatMenu(
+              elements,
+              null,
+              dispatchers = ContextMenuDispatchers(
+                buttonPressed = onContextMenuButtonPressed,
+                switchCheckedChanged = onContextMenuSwitchValueChanged
+              )
             )
-          )
+          }
         }
       }
     }

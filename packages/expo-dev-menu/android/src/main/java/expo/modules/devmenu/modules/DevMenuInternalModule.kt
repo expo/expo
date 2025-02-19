@@ -27,7 +27,6 @@ class DevMenuInternalModule : Module() {
     AsyncFunction("reload", DevMenuManager::reload)
     AsyncFunction("togglePerformanceMonitor", DevMenuManager::togglePerformanceMonitor)
     AsyncFunction("toggleInspector", DevMenuManager::toggleInspector)
-    AsyncFunction("toggleRemoteDebug", DevMenuManager::toggleRemoteDebug)
     AsyncFunction("openJSInspector", DevMenuManager::openJSInspector)
     AsyncFunction("toggleFastRefresh", DevMenuManager::toggleFastRefresh)
 

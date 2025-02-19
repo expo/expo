@@ -1,6 +1,5 @@
 import React_RCTAppDelegate
-
-private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
+import ExpoModulesCore
 
 @objc(EXAppInstance)
 open class ExpoAppInstance: RCTAppDelegate {
@@ -17,7 +16,9 @@ open class ExpoAppInstance: RCTAppDelegate {
   }
 
   @objc
-  public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
+  public let reactDelegate = ExpoReactDelegate(
+    handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
+  )
 
   @objc
   open override func createRootViewController() -> UIViewController {
@@ -92,18 +93,5 @@ open class ExpoAppInstance: RCTAppDelegate {
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
     // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
     return bundleURL()
-  }
-
-  // MARK: - Statics
-
-  @objc
-  public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
-    modulesProvider.getReactDelegateHandlers()
-      .sorted { tuple1, tuple2 -> Bool in
-        return ModulePriorities.get(tuple1.packageName) > ModulePriorities.get(tuple2.packageName)
-      }
-      .forEach { handlerTuple in
-        reactDelegateHandlers.append(handlerTuple.handler.init())
-      }
   }
 }
