@@ -177,7 +177,7 @@ index f991b7b..17c24b0 100644
 +
  # Resolve react_native_pods.rb with node to allow for hoisting
 @@ -17,3 +20,16 @@ end
- target 'SimpleTest' do
+ target '<YourAppTarget>' do
 -  config = use_native_modules!()
 +  # Need to be added inside the target block
 +  use_expo_modules!
