@@ -23,8 +23,7 @@ export type DisclosureGroupProps = {
    */
   onStateChange?: (isExpanded: boolean) => void;
 
-  
-
+ 
   /**
    * Additional styling.
    */
