@@ -1,7 +1,3 @@
-
-
-
-
 import { DisclosureGroup } from '@expo/ui/components/DisclosureGroup';
 import { Section } from '@expo/ui/components/Section';
 import * as React from 'react';
