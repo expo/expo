@@ -14,7 +14,7 @@ import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { UIScreens } from '../screens/UI/UIScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
-import { ScreenConfig } from '../types/ScreenConfig';
+import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
@@ -371,12 +371,14 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
     },
     name: 'Video (expo-av)',
+    route: 'video-expo-av',
   },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/Video/VideoScreen'));
     },
     name: 'Video (expo-video)',
+    route: 'video-expo-video',
   },
   {
     getComponent() {
@@ -440,15 +442,23 @@ export const Screens: ScreenConfig[] = [
   ...MapsScreens,
 ];
 
+export const screenApiItems: ScreenApiItem[] = Screens.map(({ name, route }) => ({
+  name,
+  route: '/components/' + (route ?? name.toLowerCase()),
+  isAvailable: true,
+}));
+
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   const { theme } = useTheme();
   return (
     <Stack.Navigator {...props} {...getStackNavWithConfig(props.navigation, theme)}>
       <Stack.Screen
         name="ExpoComponents"
-        options={{ title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK' }}
-        component={ExpoComponents}
-      />
+        options={{
+          title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK',
+        }}>
+        {() => <ExpoComponents apis={screenApiItems} />}
+      </Stack.Screen>
       {Screens.map(({ name, getComponent, options }) => (
         <Stack.Screen name={name} key={name} getComponent={getComponent} options={options ?? {}} />
       ))}
