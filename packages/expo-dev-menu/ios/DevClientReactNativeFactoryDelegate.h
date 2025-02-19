@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DevClientAppDelegate : EXReactNativeFactoryDelegate
+@interface DevClientReactNativeFactoryDelegate : EXReactNativeFactoryDelegate
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
 

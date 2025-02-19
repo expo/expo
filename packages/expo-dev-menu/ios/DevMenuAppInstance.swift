@@ -5,7 +5,7 @@ import ExpoModulesCore
 import React
 
 @objc
-class DevMenuAppInstance: DevMenuRCTAppDelegate {
+class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 

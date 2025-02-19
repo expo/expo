@@ -125,11 +125,11 @@
 
 @end
 
-@interface DevClientAppDelegate (DevMenuRCTAppDelegate)
+@interface DevClientReactNativeFactoryDelegate (DevMenuRCTAppDelegate)
 
 @end
 
-@implementation DevMenuRCTAppDelegate
+@implementation DevMenuReactNativeFactoryDelegate
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {

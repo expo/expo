@@ -1,9 +1,4 @@
-//
-//  EXDevClientReactNativeFactory.h
-//  Pods
-//
-//  Created by Vojtech Novak on 14.02.2025.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #ifndef EXDevClientReactNativeFactory_h
 #define EXDevClientReactNativeFactory_h
@@ -12,6 +7,7 @@
 
 @interface EXDevClientReactNativeFactory : EXReactNativeFactory
 
+// TODO vonovak move into a category / extension
 - (NSURL *)bundleURL;
 - (BOOL)fabricEnabled;
 - (BOOL)turboModuleEnabled;

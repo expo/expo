@@ -1,4 +1,4 @@
-#import <EXDevMenu/DevClientAppDelegate.h>
+#import <EXDevMenu/DevClientReactNativeFactoryDelegate.h>
 #import <EXDevMenu/DevClientRootViewFactory.h>
 
 #import <React/RCTBundleURLProvider.h>
@@ -29,7 +29,7 @@
 
 #endif
 
-@implementation DevClientAppDelegate
+@implementation DevClientReactNativeFactoryDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {

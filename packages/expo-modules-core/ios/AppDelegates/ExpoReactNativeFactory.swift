@@ -35,7 +35,9 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
 
     configuration.customizeRootView = { rootView in
       // @tsapeta: We cannot just call `self.customize(rootView)` – see the comment of the `customizeRootView:byAppDelegate:` function in EXAppDelegateWrapper.h
-      // TODO(chrfalch) bring back this: return EXAppDelegateWrapper.customizeRootView(rootView, by: appDelegate as! RCTAppDelegate)
+      // TODO(chrfalch) bring back this:
+      //  return EXAppDelegateWrapper.customizeRootView(rootView, by: appDelegate as! RCTAppDelegate)
+      return (self.delegate?.customize(rootView as? RCTRootView))!
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
@@ -59,7 +61,6 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
       }
     }
 
-  // this doesn't work because self.reactNativeFactory is nil at this point; this should be in a subclass of RCTReactNativeFactory?
     return ExpoReactRootViewFactory(
       reactDelegate: reactDelegate,
       configuration: configuration,

@@ -1,12 +1,7 @@
-//
-//  EXDevClientReactNativeFactory.m
-//  expo-dev-menu
-//
-//  Created by Vojtech Novak on 14.02.2025.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevClientReactNativeFactory.h"
-#import <EXDevMenu/DevClientAppDelegate.h>
+#import <EXDevMenu/DevClientReactNativeFactoryDelegate.h>
 #import <EXDevMenu/DevClientRootViewFactory.h>
 
 @implementation EXDevClientReactNativeFactory
