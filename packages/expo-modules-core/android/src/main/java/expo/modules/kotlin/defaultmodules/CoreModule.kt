@@ -1,7 +1,11 @@
 package expo.modules.kotlin.defaultmodules
 
+import android.content.Context
+import android.net.Uri
 import com.facebook.react.ReactActivity
+import expo.modules.BuildConfig
 import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -10,7 +14,35 @@ import expo.modules.kotlin.uuidv5.uuidv5
 import java.util.UUID
 
 class CoreModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+
   override fun definition() = ModuleDefinition {
+    Property("expoModulesCoreVersion") {
+      return@Property BuildConfig.EXPO_MODULES_CORE_VERSION.let { version ->
+        version.split(".").map { it.toInt() }.let { (major, minor, patch) ->
+          mapOf(
+            "version" to version,
+            "major" to major,
+            "minor" to minor,
+            "patch" to patch
+          )
+        }
+      }
+    }
+
+    Property("isNewArchitectureEnabled") {
+      return@Property BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+    }
+
+    Property("cacheDir") {
+      return@Property Uri.fromFile(context.cacheDir).toString() + "/"
+    }
+
+    Property("documentsDir") {
+      return@Property Uri.fromFile(context.filesDir).toString() + "/"
+    }
+
     // Expose some common classes and maybe even the `modules` host object in the future.
     Function("uuidv4") {
       return@Function UUID.randomUUID().toString()

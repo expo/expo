@@ -31,6 +31,33 @@ export interface ExpoGlobal {
    */
   NativeModule: typeof NativeModule;
 
+  // Properties
+
+  /**
+   * The version of the `expo-modules-core` package.
+   */
+  expoModulesCoreVersion?: {
+    version: string;
+    major: number;
+    minor: number;
+    patch: number;
+  };
+
+  /**
+   * Boolean value indicating whether the new architecture is enabled.
+   */
+  isNewArchitectureEnabled?: string;
+
+  /**
+   * The path to the cache directory
+   */
+  cacheDir?: string;
+
+  /**
+   * The path to the documents directory
+   */
+  documentsDir?: string;
+
   // Utils
 
   /**
