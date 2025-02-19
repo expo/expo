@@ -52,7 +52,6 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/FileSystem'),
-    require('./tests/FileSystemNext'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
     require('./tests/ModulesCore'),
@@ -75,7 +74,7 @@ export function getTestModules() {
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/SQLite'));
+    modules.push(require('./tests/FileSystemNext'), require('./tests/SQLite'));
   }
 
   if (Platform.OS === 'android') {
