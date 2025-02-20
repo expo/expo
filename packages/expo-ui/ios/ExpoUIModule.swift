@@ -5,7 +5,6 @@ import ExpoModulesCore
 public class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
-
     View(Button.self)
     View(PickerView.self)
     View(SwitchView.self)
@@ -14,5 +13,6 @@ public class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
+    View(ExpoContentUnavailableView.self)
   }
 }
