@@ -144,6 +144,9 @@ Pod::Spec.new do |s|
     test_spec.requires_app_host = true
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
+    if reactNativeTargetVersion >= 77
+      s.dependency 'ReactAppDependencyProvider'
+    end
     test_spec.dependency 'React'
     test_spec.platforms = {
       :ios => '15.1'

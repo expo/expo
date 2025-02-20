@@ -104,10 +104,6 @@ Pod::Spec.new do |s|
   s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
-  
-  if reactNativeTargetVersion >= 77
-    s.dependency 'ReactAppDependencyProvider'
-  end
 
   install_modules_dependencies(s)
 
