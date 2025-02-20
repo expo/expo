@@ -57,7 +57,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    if (automaticallyLoadReactNativeWindow) {
+    if automaticallyLoadReactNativeWindow {
       loadReactNativeWindow(launchOptions: launchOptions)
     }
 
@@ -96,11 +96,12 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     return reactDelegate.createRootViewController()
   }
 
-  @objc public override func recreateRootView(withBundleURL: URL?,
-                                     moduleName: String?,
-                                     initialProps: [AnyHashable: Any]?,
-                                     launchOptions: [AnyHashable: Any]?) -> UIView {
-
+  @objc public override func recreateRootView(
+    withBundleURL: URL?,
+    moduleName: String?,
+    initialProps: [AnyHashable: Any]?,
+    launchOptions: [AnyHashable: Any]?
+  ) -> UIView {
     guard let reactNativeFactory = self.reactNativeFactory else {
       fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
     }
@@ -134,13 +135,17 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     if let factory = rootViewFactory as? ExpoReactRootViewFactory {
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
-      rootView = factory.superView(withModuleName: self.moduleName as String,
-                                   initialProperties: self.initialProps ?? [:],
-                                   launchOptions: launchOptions ?? [:])
+      rootView = factory.superView(
+        withModuleName: self.moduleName as String,
+        initialProperties: self.initialProps ?? [:],
+        launchOptions: launchOptions ?? [:]
+      )
     } else {
-      rootView = rootViewFactory.view(withModuleName: self.moduleName as String,
-                                      initialProperties: self.initialProps,
-                                      launchOptions: launchOptions)
+      rootView = rootViewFactory.view(
+        withModuleName: self.moduleName as String,
+        initialProperties: self.initialProps,
+        launchOptions: launchOptions
+      )
     }
 
     return rootView

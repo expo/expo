@@ -53,7 +53,7 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
       configuration.extraLazyModuleClassesForBridge = { bridge in
-	    return weakDelegate.extraLazyModuleClasses?(for: bridge) ?? [:]
+        return weakDelegate.extraLazyModuleClasses?(for: bridge) ?? [:]
       }
     }
 
