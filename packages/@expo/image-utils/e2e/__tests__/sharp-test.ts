@@ -1,12 +1,13 @@
-import { mkdirSync } from 'fs';
+import spawnAsync from '@expo/spawn-async';
+import { randomBytes } from 'crypto';
+import { realpathSync, mkdirSync } from 'fs';
+import { tmpdir } from 'os';
 import { join } from 'path';
 
-import spawnAsync from '@expo/spawn-async';
-import tempDir from 'temp-dir';
-import uniqueString from 'unique-string';
-
 function temporaryDirectory() {
-  const directory = join(tempDir, uniqueString());
+  const tempDir = realpathSync(tmpdir());
+  const uniqueString = randomBytes(16).toString('hex');
+  const directory = join(tempDir, uniqueString);
   mkdirSync(directory);
   return directory;
 }
