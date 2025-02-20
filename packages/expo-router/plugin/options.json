@@ -92,7 +92,8 @@
               },
               "temporary": {
                 "description": "Whether the redirect is temporary or permanent. Defaults to `false`.",
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               }
             }
           }

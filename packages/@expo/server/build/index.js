@@ -92,50 +92,6 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     });
 }, } = {}) {
     let routesManifest;
-    function updateRequestWithConfig(request, config) {
-        const params = {};
-        const url = new URL(request.url);
-        const match = config.namedRegex.exec(url.pathname);
-        if (match?.groups) {
-            for (const [key, value] of Object.entries(match.groups)) {
-                const namedKey = config.routeKeys[key];
-                params[namedKey] = value;
-            }
-        }
-        return params;
-    }
-    function getRedirectLocation(request, route) {
-        const params = updateRequestWithConfig(request, route);
-        const urlSearchParams = new URL(request.url).searchParams;
-        console.log(route.page);
-        let location = route.page
-            .split('/')
-            .map((segment) => {
-            let match = matchDynamicName(segment);
-            if (match) {
-                const value = params[match];
-                delete params[match];
-                return value;
-            }
-            match = matchDeepDynamicRouteName(segment);
-            if (match) {
-                const value = params[match];
-                delete params[match];
-                return value;
-            }
-            return segment;
-        })
-            .join('/');
-        if (Object.keys(params).length > 0 || urlSearchParams.toString()) {
-            location +=
-                '?' +
-                    new URLSearchParams({
-                        ...params,
-                        ...Object.fromEntries(urlSearchParams.entries()),
-                    }).toString();
-        }
-        return location;
-    }
     return async function handler(request) {
         if (getInternalRoutesManifest) {
             const manifest = await getInternalRoutesManifest(distFolder);
@@ -294,5 +250,49 @@ function matchDynamicName(name) {
 // Ported from `expo-router/src/matchers.tsx`
 function matchDeepDynamicRouteName(name) {
     return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+}
+function updateRequestWithConfig(request, config) {
+    const params = {};
+    const url = new URL(request.url);
+    const match = config.namedRegex.exec(url.pathname);
+    if (match?.groups) {
+        for (const [key, value] of Object.entries(match.groups)) {
+            const namedKey = config.routeKeys[key];
+            params[namedKey] = value;
+        }
+    }
+    return params;
+}
+function getRedirectLocation(request, route) {
+    const params = updateRequestWithConfig(request, route);
+    const urlSearchParams = new URL(request.url).searchParams;
+    let location = route.page
+        .split('/')
+        .map((segment) => {
+        let match = matchDynamicName(segment);
+        if (match) {
+            const value = params[match];
+            delete params[match];
+            // If we are redirecting from a catch-all route, we need to remove the extra segments
+            return value.split('/')[0];
+        }
+        match = matchDeepDynamicRouteName(segment);
+        if (match) {
+            const value = params[match];
+            delete params[match];
+            return value;
+        }
+        return segment;
+    })
+        .join('/');
+    if (Object.keys(params).length > 0 || urlSearchParams.size > 0) {
+        location +=
+            '?' +
+                new URLSearchParams({
+                    ...params,
+                    ...Object.fromEntries(urlSearchParams.entries()),
+                }).toString();
+    }
+    return location;
 }
 //# sourceMappingURL=index.js.map

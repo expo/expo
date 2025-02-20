@@ -72,7 +72,7 @@ function getDirectoryTree(contextModule, options) {
                 }
                 const fakeContextKey = `./${source}.tsx`;
                 contextKeys.push(fakeContextKey);
-                redirects[fakeContextKey] = { source, destination, permanent: redirect.permanent };
+                redirects[fakeContextKey] = { source, destination, permanent: Boolean(redirect.permanent) };
             }
         }
         if (options.rewrites) {

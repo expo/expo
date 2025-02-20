@@ -1066,6 +1066,7 @@ describe.only('redirects', () => {
           internal_stripLoadRoute: true,
           skipGenerated: true,
           redirects: [{ source: '/old/[slug]', destination: '/(app)/[slug]' }],
+          preserveRedirectAndRewrites: true,
         }
       )
     ).toEqual({
@@ -1093,7 +1094,7 @@ describe.only('redirects', () => {
         },
         {
           children: [],
-          contextKey: '/old/[slug]',
+          contextKey: './old/[slug].tsx',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -1103,7 +1104,8 @@ describe.only('redirects', () => {
           ],
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
           generated: true,
-          route: '/old/[slug]',
+          permanent: false,
+          route: 'old/[slug]',
           type: 'redirect',
         },
       ],
