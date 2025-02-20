@@ -1,9 +1,8 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import AVFoundation
 import ExpoModulesCore
 
-class VideoPlayerItem: AVPlayerItem {
+class VideoPlayerItem: CachingPlayerItem {
   let videoSource: VideoSource
   let isHls: Bool
   var videoTracks: [VideoTrack] {
@@ -14,10 +13,16 @@ class VideoPlayerItem: AVPlayerItem {
 
   private var tracksLoadingTask: Task<[VideoTrack], Never>?
 
-  init(asset: AVAsset, videoSource: VideoSource) {
+  init(url: URL, videoSource: VideoSource, avUrlAssetOptions: [String: Any]? = nil) {
     self.videoSource = videoSource
     self.isHls = videoSource.uri?.pathExtension == "m3u8"
-    super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
+    let canCache = Self.canCache(videoSource: videoSource)
+    let shouldCache = videoSource.useCaching && canCache
+
+    if !canCache && videoSource.useCaching {
+      log.warn("Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
+    }
+    super.init(url: url, useCaching: shouldCache, avUrlAssetOptions: avUrlAssetOptions)
 
     // Preload info about HLS tracks if exists
     tracksLoadingTask = Task { [weak self] in
@@ -67,5 +72,12 @@ class VideoPlayerItem: AVPlayerItem {
     return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
       VideoTrack.from(hlsHeaderLine: line, idLine: nextLine)
     }
+  }
+
+  static func canCache(videoSource: VideoSource) -> Bool {
+    guard videoSource.uri?.scheme?.starts(with: "http") == true else {
+      return false
+    }
+    return videoSource.drm == nil
   }
 }

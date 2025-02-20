@@ -157,16 +157,17 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let asset = if let headers = videoSource.headers {
-      AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+    let playerItem = if let headers = videoSource.headers {
+      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: ["AVURLAssetHTTPHeaderFieldsKey": headers])
     } else {
-      AVURLAsset(url: url)
+      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: nil)
     }
-    let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
+
+    pointer.automaticallyWaitsToMinimizeStalling = false
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
-      contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
+      contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
@@ -216,7 +217,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   // MARK: - VideoPlayerObserverDelegate
 
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {
-    let errorRecord = error != nil ? PlaybackError(message: error?.localizedDescription) : nil
+    let errorRecord = error != nil ? PlaybackError(message: error?.description) : nil
     let payload = StatusChangedEventPayload(status: newStatus, oldStatus: oldStatus, error: errorRecord)
     safeEmit(event: "statusChange", payload: payload)
     status = newStatus
