@@ -45,7 +45,10 @@ jobs:
         with:
           node-version: lts/*
       - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(yarn global bin)" >> $GITHUB_PATH
+        run: |
+          # Ensure yarn global uses the correct Node version
+          yarn config set prefix $(dirname $(which node))
+          echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
