@@ -142,7 +142,6 @@ it('strips web-only href attributes', () => {
   );
 });
 
-<<<<<<< HEAD
 it('can preserve the initialRoute', () => {
   renderRouter({
     index: function MyIndexRoute() {
