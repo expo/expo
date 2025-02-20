@@ -146,7 +146,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 18
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
