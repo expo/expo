@@ -1769,7 +1769,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (5.2.0):
+  - react-native-safe-area-context (5.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1782,8 +1782,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.2.0)
-    - react-native-safe-area-context/fabric (= 5.2.0)
+    - react-native-safe-area-context/common (= 5.1.0)
+    - react-native-safe-area-context/fabric (= 5.1.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1792,7 +1792,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.2.0):
+  - react-native-safe-area-context/common (5.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1813,7 +1813,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.2.0):
+  - react-native-safe-area-context/fabric (5.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2338,7 +2338,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (4.0.0-beta.2):
+  - RNReanimated (3.16.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2358,10 +2358,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.0.0-beta.2)
-    - RNReanimated/worklets (= 4.0.0-beta.2)
+    - RNReanimated/reanimated (= 3.16.7)
+    - RNReanimated/worklets (= 3.16.7)
     - Yoga
-  - RNReanimated/reanimated (4.0.0-beta.2):
+  - RNReanimated/reanimated (3.16.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2381,52 +2381,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.0.0-beta.2)
+    - RNReanimated/reanimated/apple (= 3.16.7)
     - Yoga
-  - RNReanimated/reanimated/apple (4.0.0-beta.2):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - RNReanimated/worklets (4.0.0-beta.2):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 4.0.0-beta.2)
-    - Yoga
-  - RNReanimated/worklets/apple (4.0.0-beta.2):
+  - RNReanimated/reanimated/apple (3.16.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2447,7 +2404,28 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.9.0-beta.0):
+  - RNReanimated/worklets (3.16.7):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNScreens (4.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2468,9 +2446,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.9.0-beta.0)
+    - RNScreens/common (= 4.5.0)
     - Yoga
-  - RNScreens/common (4.9.0-beta.0):
+  - RNScreens/common (4.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2720,12 +2698,12 @@ DEPENDENCIES:
   - React-logger (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-maps (from `../../../node_modules/react-native-maps`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
-  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../modules/react-native-view-shot`)
   - react-native-webview (from `../modules/react-native-webview`)
@@ -2763,10 +2741,10 @@ DEPENDENCIES:
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
-  - RNScreens (from `../../../node_modules/react-native-screens`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - SocketRocket
-  - "stripe-react-native (from `../../../node_modules/@stripe/stripe-react-native`)"
+  - "stripe-react-native (from `../node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
 
@@ -3024,17 +3002,17 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-maps:
-    :path: "../../../node_modules/react-native-maps"
+    :path: "../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
     :path: "../../../node_modules/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "../../../node_modules/react-native-safe-area-context"
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/@shopify/react-native-skia"
+    :path: "../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -3110,11 +3088,11 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/react-native-screens"
+    :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/react-native-svg"
   stripe-react-native:
-    :path: "../../../node_modules/@stripe/stripe-react-native"
+    :path: "../node_modules/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../../../packages/unimodules-app-loader/ios"
   Yoga:
@@ -3211,7 +3189,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: f9a2d084c7c8f315727872389a89fe0327513d67
+  hermes-engine: d2361c7bc98b837c714c337901f6655c97a366ee
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3258,7 +3236,7 @@ SPEC CHECKSUMS:
   react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: abc5ef92699233eb726442c7f452cac82f73d0cb
-  react-native-safe-area-context: a95e75ab816db4438a319aa4b43dfe6def22026f
+  react-native-safe-area-context: cbadf383376f589bb611c8ae0280c1d4b7b447e9
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
   react-native-slider: 124ce99f9cd2d04c79f020da6dee9f8d38a6b8c7
@@ -3297,8 +3275,8 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
   RNFlashList: 2ad2738637fa763b87b763578feab47d3e67c4c1
   RNGestureHandler: 8ce7a079c513f96f9b580bcb2ecee621d511361f
-  RNReanimated: 90f3e07e0d3615f9e00453b924cbd1fc641d8272
-  RNScreens: 69970414af0cc0a1b99febe4f7f80e941ee38bd7
+  RNReanimated: 2f392a1850fd9c7da1f189c3c21955e4ee0b61c4
+  RNScreens: b02af14099030cc1e63f74f2791574e909fc1541
   RNSVG: ea3e35f0375ac20449384fa89ce056ee0e0690ee
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
