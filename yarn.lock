@@ -3747,10 +3747,10 @@
     pretty-format "^29.0.3"
     redent "^3.0.0"
 
-"@testing-library/react-native@^12.5.1", "@testing-library/react-native@^12.5.2", "@testing-library/react-native@v14.0.0-alpha.0":
-  version "14.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-14.0.0-alpha.0.tgz#1808e53b566f297ff66299173322a2b8200e0a85"
-  integrity sha512-K6Ivfc/bgjMWhqkkzVXGXeGQmgJyTA7cJWopyWnjLvxE2JB+dK0/Pz74/NP7MvldP7GEp+5vniSV7cR4Ks26sA==
+"@testing-library/react-native@^12.5.1", "@testing-library/react-native@^12.5.2":
+  version "12.9.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-12.9.0.tgz#9c727d9ffec91024be3288ed9376df3673154784"
+  integrity sha512-wIn/lB1FjV2N4Q7i9PWVRck3Ehwq5pkhAef5X5/bmQ78J/NoOsGbVY2/DG5Y9Lxw+RfE+GvSEh/fe5Tz6sKSvw==
   dependencies:
     jest-matcher-utils "^29.7.0"
     pretty-format "^29.7.0"
@@ -13833,13 +13833,6 @@ react-reconciler@0.27.0:
     loose-envify "^1.1.0"
     scheduler "^0.21.0"
 
-react-reconciler@^0.31.0-rc-fb9a90fa48-20240614:
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.31.0.tgz#6b7390fe8fab59210daf523d7400943973de1458"
-  integrity sha512-7Ob7Z+URmesIsIVRjnLoDGwBEG/tVitidU0nMsqX/eeJaLY89RISO/10ERe0MqmzuKUUB1rmY+h1itMbUHg9BQ==
-  dependencies:
-    scheduler "^0.25.0"
-
 react-redux@^7.2.0:
   version "7.2.6"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.2.6.tgz#49633a24fe552b5f9caf58feb8a138936ddfe9aa"
@@ -16154,13 +16147,6 @@ unique-string@^2.0.0, unique-string@~2.0.0:
   integrity sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==
   dependencies:
     crypto-random-string "^2.0.0"
-
-universal-test-renderer@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/universal-test-renderer/-/universal-test-renderer-0.5.0.tgz#280693237919ff4b7295181c3063bf181e88bd8a"
-  integrity sha512-eZkbYhg53fE3hu20/O0CnM18clS06UwzVDKG2l8Dz0QA5KL3/Ocl9OmR3dCzxI8VJujv7mMz4jcDfVHs6LQFjA==
-  dependencies:
-    react-reconciler "^0.31.0-rc-fb9a90fa48-20240614"
 
 universalify@^0.1.0:
   version "0.1.2"
