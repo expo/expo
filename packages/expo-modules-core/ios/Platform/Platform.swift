@@ -13,4 +13,8 @@ public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 
+extension UIApplication {
+  public typealias LaunchOptionsKey = NSString
+}
+
 #endif // os(macOS)
