@@ -43,6 +43,7 @@
 - Add fallback resolution strategy for dependencies and optional peer dependencies of `expo` and `expo-router` to prevent broken resolution for isolated dependencies and hoisting issues. ([#34286](https://github.com/expo/expo/pull/34286) by [@kitten](https://github.com/kitten))
 - Preserve proxy leases on webcontainers ([#34831](https://github.com/expo/expo/pull/34831) by [@kitten](https://github.com))
 - Fixed mixed content error when serving DOM Component using tunnel. ([#34916](https://github.com/expo/expo/pull/34916) by [@kudo](https://github.com/kudo))
+- Fixed EAS Update support for DOM Components. ([#35042](https://github.com/expo/expo/pull/35042) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
