@@ -1,5 +1,4 @@
 import fs from 'fs/promises';
-import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -148,6 +147,14 @@ async function legacyTypedRoutes({
     new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
     new Set(dynamicRoutes.keys())
   );
+}
+
+function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: number): T {
+  let timeoutId: NodeJS.Timeout | undefined;
+  return function (this: U, ...args: any[]) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+  } as T;
 }
 
 /**
