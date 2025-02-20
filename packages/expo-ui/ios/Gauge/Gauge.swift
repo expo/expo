@@ -14,11 +14,7 @@ struct GaugeView: ExpoSwiftUI.View {
       ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
         Gauge(value: props.current.value, in: range) {
           if let label = props.label {
-            if let color = props.labelColor {
-              Text(label).foregroundColor(color)
-            } else {
-              Text(label)
-            }
+            Text(label).let(props.labelColor) { $0.foregroundColor($1) }
           }
         } currentValueLabel: {
           optionalLabelFor(props.current)
@@ -43,11 +39,7 @@ struct GaugeView: ExpoSwiftUI.View {
   @ViewBuilder
   private func optionalLabelFor(_ options: ValueOptions?) -> some View {
     if let label = options?.label {
-      if let color = options?.color {
-        Text(label).foregroundStyle(color)
-      } else {
-        Text(label)
-      }
+      Text(label).let(options?.color) { $0.foregroundColor($1) }
     }
   }
 }
