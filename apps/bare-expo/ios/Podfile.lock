@@ -145,6 +145,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -3338,7 +3339,7 @@ SPEC CHECKSUMS:
   EXNotifications: 3b6c5a91673a5fe7eae005c1fa79889f645111aa
   Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
   expo-dev-client: 8c99b4979086a27f19e773e96ef10219102a5c4f
-  expo-dev-launcher: fe9233c51a6697795d49c8ce84df70506cd5f734
+  expo-dev-launcher: 83848ace78576dbb26528db334b06cdb90120b60
   expo-dev-menu: 69c0a1e6a0a4b68c5c6e453a5b34774f3cdb9142
   expo-dev-menu-interface: 4baf2f8b3b79ce37cf4b900e4b3ba6df3384f0a1
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
