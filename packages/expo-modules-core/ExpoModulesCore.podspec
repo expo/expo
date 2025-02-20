@@ -114,6 +114,9 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
+    if reactNativeTargetVersion >= 77
+      test_spec.dependency 'ReactAppDependencyProvider'
+    end
 
     test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
   end
