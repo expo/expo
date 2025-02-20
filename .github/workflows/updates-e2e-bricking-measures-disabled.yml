@@ -41,7 +41,11 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '20'
+      - name: 🔍 Verify Node version
+        run: |
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -49,6 +53,10 @@ jobs:
         id: expo-caches
         with:
           yarn-workspace: 'true'
+      - name: 🔍 Verify Node version
+        run: |
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
