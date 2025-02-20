@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -67,6 +69,16 @@ export const UIScreens = [
     },
   },
 ];
+if (Platform.OS === 'ios') {
+  UIScreens.push({
+    name: 'Gauge component',
+    route: 'ui/gauge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GaugeScreen'));
+    },
+  });
+}
 
 export default function UIScreen() {
   const apis: ListElement[] = UIScreens.map((screen) => {
