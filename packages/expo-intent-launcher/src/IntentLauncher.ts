@@ -185,7 +185,7 @@ export async function startActivityAsync(
  * Opens an application by its package name.
  * @param packageName For example: `com.google.android.gm` for Gmail.
  */
-export function openApplication(packageName: string) {
+export function openApplication(packageName: string): void {
   if (!ExpoIntentLauncher.openApplication) {
     throw new UnavailabilityError('IntentLauncher', 'openApplication');
   }

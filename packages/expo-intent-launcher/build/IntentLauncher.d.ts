@@ -160,7 +160,7 @@ export declare function startActivityAsync(activityAction: ActivityAction | stri
  * Opens an application by its package name.
  * @param packageName For example: `com.google.android.gm` for Gmail.
  */
-export declare function openApplication(packageName: string): any;
+export declare function openApplication(packageName: string): void;
 /**
  * Returns the icon of the specified application as a base64-encoded PNG image string.
  * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an [`expo-image`](./image/)
