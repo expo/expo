@@ -93,7 +93,7 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
       val jsonElement = json.parseToJsonElement(expoModuleConfig.readText())
       val newJsonElement = jsonElement.jsonObject.toMutableMap().apply {
         val newAndroidObject = getOrDefault("android", JsonObject(emptyMap())).jsonObject.toMutableMap().apply {
-          put("released", JsonObject(mapOf(
+          put("publication", JsonObject(mapOf(
             "groupId" to publicationInfo.groupId.toJsonElement(),
             "artifactId" to publicationInfo.artifactId.toJsonElement(),
             "version" to publicationInfo.version.toJsonElement(),
