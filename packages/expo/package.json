@@ -92,7 +92,8 @@
     "expo-module-scripts": "^4.0.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.78.0"
+    "react-native": "0.78.0",
+    "ws": "^8.18.0"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",

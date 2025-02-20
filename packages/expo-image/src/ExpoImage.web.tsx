@@ -85,7 +85,8 @@ export default function ExpoImage({
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
-    containerViewRef as React.MutableRefObject<HTMLDivElement | null>,
+    // TODO vonovak this cast is a workaround
+    containerViewRef as unknown as React.RefObject<HTMLDivElement | null>,
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
