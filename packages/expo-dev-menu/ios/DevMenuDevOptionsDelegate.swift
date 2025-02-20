@@ -49,19 +49,6 @@ class DevMenuDevOptionsDelegate {
     URLSession.shared.dataTask(with: request as URLRequest).resume()
   }
 
-  internal func toggleRemoteDebugging() {
-    guard let devSettings = devSettings else {
-      return
-    }
-
-    DevMenuManager.shared.hideMenu()
-
-    DispatchQueue.main.async {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
-      (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI
-    }
-  }
-
   internal func togglePerformanceMonitor() {
     #if DEBUG
     guard let perfMonitor = perfMonitor else {

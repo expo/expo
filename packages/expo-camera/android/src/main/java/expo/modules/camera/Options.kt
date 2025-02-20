@@ -13,7 +13,14 @@ data class PictureOptions(
   @Field val fastMode: Boolean = false,
   @Field val id: Int? = null,
   @Field val maxDownsampling: Int = 1,
-  @Field val shutterSound: Boolean = true
+  @Field val shutterSound: Boolean = true,
+  @Field val pictureRef: Boolean = false
+) : Record
+
+data class SavePictureOptions(
+  @Field val quality: Double = 1.0,
+  @Field val base64: Boolean = false,
+  @Field val metadata: Map<String, Any>? = emptyMap()
 ) : Record
 
 data class RecordingOptions(

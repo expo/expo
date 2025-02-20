@@ -1,6 +1,6 @@
 ---
-title: Example workflows
-description: Common workflows that are useful for your project.
+title: Example CI/CD workflows
+description: Common CI/CD workflows that are useful for your project.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -71,21 +71,24 @@ After you've configured your project and devices, add the following build profil
 
 The following workflow creates a build for each platform and for both physical devices, Android emulators, and iOS simulators. They all will run in parallel.
 
-```yaml .eas/workflows/development-build.yml
-name: Development Build
+```yaml .eas/workflows/create-development-builds.yml
+name: Create development builds
 
 jobs:
   android_development_build:
+    name: Build Android
     type: build
     params:
       platform: android
       profile: development
   ios_device_development_build:
+    name: Build iOS device
     type: build
     params:
       platform: ios
       profile: development
   ios_simulator_development_build:
+    name: Build iOS simulator
     type: build
     params:
       platform: ios
@@ -94,9 +97,9 @@ jobs:
 
 Run the about workflow with:
 
-<Terminal cmd={['$ eas workflow:run .eas/workflows/development-build.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/create-development-builds.yml']} />
 
-## PR preview workflow
+## Preview updates workflow
 
 Once you've made changes to your project, you can share a preview of your changes with your team by publishing a [preview update](/review/share-previews-with-your-team/).
 
@@ -114,8 +117,8 @@ After that, you'll need to create new [development builds](/develop/development-
 
 The following workflow publishes a preview update for every commit on every branch.
 
-```yaml .eas/workflows/pr-preview.yml
-name: Publish Preview Update
+```yaml .eas/workflows/publish-preview-update.yml
+name: Publish preview update
 
 on:
   push:
@@ -123,6 +126,7 @@ on:
 
 jobs:
   publish_preview_update:
+    name: Publish preview update
     type: update
     params:
       branch: ${{ github.ref || 'test' }}
@@ -207,12 +211,14 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
   get_ios_build:
     name: Check for existing ios build
     needs: [fingerprint]
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
   build_android:
     name: Build Android
     needs: [get_android_build]
@@ -247,7 +253,7 @@ jobs:
     if: ${{ needs.get_android_build.outputs.build_id }}
     type: update
     params:
-      branch: ${{ github.ref }}
+      branch: production
       platform: android
   publish_ios_update:
     name: Publish iOS update
@@ -255,6 +261,6 @@ jobs:
     if: ${{ needs.get_ios_build.outputs.build_id }}
     type: update
     params:
-      branch: ${{ github.ref }}
+      branch: production
       platform: ios
 ```

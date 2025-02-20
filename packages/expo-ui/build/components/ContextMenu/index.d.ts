@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
@@ -10,9 +10,7 @@ export type ContextMenuContentProps = {
 };
 export type EventHandlers = {
     [key: string]: {
-        [key: string]: (event: {
-            nativeEvent: any;
-        }) => void;
+        [key: string]: (event: NativeSyntheticEvent<any>) => void;
     };
 };
 export type ContextMenuElementBase = {
@@ -45,6 +43,12 @@ export type ContextMenuProps = {
      * The children will be wrapped in a pressable element, which triggers opening of the context menu.
      */
     children: ReactNode;
+    /**
+     * The color of the container holding the context menu items.
+     *
+     * @platform android
+     */
+    color?: string;
     /**
      * Optional styles to apply to the `ContextMenu`
      */

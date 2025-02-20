@@ -13,6 +13,7 @@ import expo.modules.plugin.gradle.linkPlugin
 import expo.modules.plugin.gradle.linkProject
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.Emojis
+import expo.modules.plugin.text.withColor
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.internal.extensions.core.extra
@@ -75,7 +76,7 @@ class SettingsManager(
         .allPlugins
         .filter { it.applyToRootProject }
         .forEach { plugin ->
-          androidApplication.logger.quiet(" ${Emojis.INFORMATION}  ${Colors.YELLOW}Applying gradle plugin${Colors.RESET} '${Colors.GREEN}${plugin.id}${Colors.RESET}'")
+          androidApplication.logger.quiet(" ${Emojis.INFORMATION}  ${"Applying gradle plugin".withColor(Colors.YELLOW)} '${plugin.id.withColor(Colors.GREEN)}'")
           androidApplication.applyPlugin(plugin)
         }
     }

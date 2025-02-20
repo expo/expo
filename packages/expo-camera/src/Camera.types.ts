@@ -9,6 +9,7 @@ import {
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
+import { AndroidBarcode } from './AndroidBarcode.types';
 import { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
@@ -109,6 +110,7 @@ export type CameraCapturedPicture = {
 export type CameraPictureOptions = {
   /**
    * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
+   * @default 1
    */
   quality?: number;
   /**
@@ -303,6 +305,12 @@ export type BarcodeScanningResult = {
    * For some types, they will represent the area used by the scanner.
    */
   bounds: BarcodeBounds;
+
+  /**
+   * Extra information returned by the specific type of barcode.
+   * @platform android
+   */
+  extra?: AndroidBarcode;
 };
 
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds' | 'cornerPoints'>;

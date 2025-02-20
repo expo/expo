@@ -114,7 +114,7 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should not be able to override preset headers
-    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
+    val actual = FileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -142,7 +142,7 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
+    val actual = FileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -239,6 +239,7 @@ class FileDownloaderTest {
     FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
+      JSONObject("{}"),
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -288,6 +289,7 @@ class FileDownloaderTest {
     FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
+      JSONObject("{}"),
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e

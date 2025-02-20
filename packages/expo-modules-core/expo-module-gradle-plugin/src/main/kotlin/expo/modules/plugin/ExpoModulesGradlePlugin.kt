@@ -8,18 +8,22 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
-private const val defaultKotlinVersion = "2.0.21"
+private val lock = Any()
 
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
     val kspVersion = getKSPVersion(project, kotlinVersion)
 
+    // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
+    val expoModuleExtension = project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
+
     with(project) {
       applyDefaultPlugins()
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
+      applyPublishing(expoModuleExtension)
     }
 
     // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.
@@ -31,26 +35,15 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
         }
       }
     }
-
-    // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
-    project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
   }
 
   private fun getKotlinVersion(project: Project): String {
-    return project.extra.safeGet<String>("kotlinVersion") ?: defaultKotlinVersion
+    return project.rootProject.extra.safeGet<String>("kotlinVersion")
+      ?: project.logger.warnIfNotDefined("kotlinVersion", "2.0.21")
   }
 
   private fun getKSPVersion(project: Project, kotlinVersion: String): String {
-    return project.extra.safeGet<String>("kspVersion")
-      ?: getKSPVersionForKotlin(kotlinVersion)
-  }
-
-  private fun getKSPVersionForKotlin(kotlinVersion: String): String {
-    return KSPLookup[kotlinVersion]
-      ?: throw IllegalStateException("Couldn't find KSP version for Kotlin version $kotlinVersion")
-  }
-
-  companion object {
-    private val lock = Any()
+    return project.rootProject.extra.safeGet<String>("kspVersion")
+      ?: project.logger.warnIfNotDefined("kspVersion", "2.0.21-1.0.28")
   }
 }

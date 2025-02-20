@@ -324,7 +324,6 @@ export const general = [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
@@ -347,6 +346,7 @@ export const general = [
         makePage('guides/using-logrocket.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/using-bugsnag.mdx'),
+        makePage('guides/using-vexo.mdx'),
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
@@ -386,6 +386,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/upgrade.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -499,6 +500,7 @@ export const eas = [
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
+      makePage('eas-update/estimate-bandwidth.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),

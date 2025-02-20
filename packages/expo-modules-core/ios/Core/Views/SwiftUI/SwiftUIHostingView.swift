@@ -5,12 +5,14 @@ import SwiftUI
 /**
  A type-erased protocol that hosting views must conform to.
  */
-internal protocol AnyExpoSwiftUIHostingView {
+public protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
+  func getContentView() -> any ExpoSwiftUI.View
+  func getProps() -> ExpoSwiftUI.ViewProps
 }
 
 extension ExpoSwiftUI {
-  typealias AnyHostingView = AnyExpoSwiftUIHostingView
+  public typealias AnyHostingView = AnyExpoSwiftUIHostingView
 
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
@@ -21,6 +23,7 @@ extension ExpoSwiftUI {
      It's an environment object that is observed by the content view.
      */
     private let props: Props
+    private let contentView: any ExpoSwiftUI.View
 
     /**
      Additiional utilities for controlling shadow node behavior.
@@ -36,10 +39,15 @@ extension ExpoSwiftUI {
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      let rootView = ContentView().environmentObject(props).environmentObject(shadowNodeProxy)
-
+      self.contentView = ContentView()
+      let rootView = AnyView(contentView.environmentObject(props).environmentObject(shadowNodeProxy))
       self.props = props
-      self.hostingController = UIHostingController(rootView: rootView)
+      let controller = UIHostingController(rootView: rootView)
+
+      if #available(iOS 16.0, *) {
+        controller.sizingOptions = [.intrinsicContentSize]
+      }
+      self.hostingController = controller
 
       super.init(appContext: appContext)
 
@@ -77,6 +85,20 @@ extension ExpoSwiftUI {
       } catch let error {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
+    }
+
+    /**
+     Returns inner SwiftUI view.
+     */
+    public func getContentView() -> any ExpoSwiftUI.View {
+      return contentView
+    }
+
+    /**
+     Returns the view's props
+     */
+    public func getProps() -> ExpoSwiftUI.ViewProps {
+      return props
     }
 
     /**

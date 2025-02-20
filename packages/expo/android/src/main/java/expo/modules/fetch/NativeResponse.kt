@@ -78,7 +78,6 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
       emit("didFailWithError", error)
     }
     state = ResponseState.ERROR_RECEIVED
-    emit("readyForJSFinalization")
   }
 
   fun waitForStates(states: List<ResponseState>, callback: (ResponseState) -> Unit) {
@@ -98,6 +97,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   //region Callback implementations
 
   override fun onFailure(call: Call, e: IOException) {
+    // Canceled request should be handled by emitRequestCancelled
+    if (e.message === "Canceled") {
+      return
+    }
+
     if (isInvalidState(
         ResponseState.STARTED,
         ResponseState.RESPONSE_RECEIVED,

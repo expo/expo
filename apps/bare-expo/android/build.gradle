@@ -1,25 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext {
-    buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
-    minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
-    compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
-    targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-    kotlinVersion = findProperty('android.kotlinVersion') ?: '2.0.21'
-    ndkVersion = "27.1.12297006"
-  }
   repositories {
     google()
     mavenCentral()
   }
   dependencies {
     classpath("com.android.tools.build:gradle")
-
     classpath("com.facebook.react:react-native-gradle-plugin")
-
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-
     classpath("com.diffplug.spotless:spotless-plugin-gradle:6.23.3")
   }
 }
@@ -94,4 +83,5 @@ subprojects {
   }
 }
 
+apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"

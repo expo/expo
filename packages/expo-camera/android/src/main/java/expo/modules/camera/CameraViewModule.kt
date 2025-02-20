@@ -2,6 +2,9 @@ package expo.modules.camera
 
 import android.Manifest
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -16,11 +19,13 @@ import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.camera.tasks.writeStreamToFile
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -29,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 val cameraEvents = arrayOf(
@@ -139,8 +145,52 @@ class CameraViewModule : Module() {
     OnDestroy {
       try {
         moduleScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
+      } catch (_: IllegalStateException) {
         Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
+
+    Class("Picture", PictureRef::class) {
+      Property("width") { picture: PictureRef ->
+        picture.ref.width
+      }
+
+      Property("height") { picture: PictureRef ->
+        picture.ref.height
+      }
+
+      AsyncFunction("savePictureAsync") { picture: PictureRef, options: SavePictureOptions?, promise: Promise ->
+        val image = picture.ref
+        val response = Bundle()
+
+        cacheDirectory.let {
+          response.apply {
+            putInt("width", image.width)
+            putInt("height", image.height)
+          }
+
+          val quality = options?.quality ?: 1
+          // Cache compressed image in imageStream
+          ByteArrayOutputStream().use { imageStream ->
+            image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
+            // Write compressed image to file in cache directory
+            try {
+              val filePath = writeStreamToFile(it, imageStream)
+              image.recycle()
+              val imageFile = File(filePath)
+              val fileUri = Uri.fromFile(imageFile).toString()
+              response.putString("uri", fileUri)
+
+              // Write base64-encoded image to the response if requested
+              if (options?.base64 == true) {
+                response.putString("base64", Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP))
+              }
+              promise.resolve(response)
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
+          }
+        }
       }
     }
 
@@ -149,20 +199,38 @@ class CameraViewModule : Module() {
 
       Prop("facing") { view, facing: CameraType? ->
         facing?.let {
-          if (view.lensFacing != facing) {
+          if (view.lensFacing != it) {
             view.lensFacing = it
+          }
+        } ?: run {
+          if (view.lensFacing != CameraType.BACK) {
+            view.lensFacing = CameraType.BACK
           }
         }
       }
 
       Prop("flashMode") { view, flashMode: FlashMode? ->
         flashMode?.let {
-          view.setCameraFlashMode(it)
+          if (view.flashMode != it) {
+            view.flashMode = it
+          }
+        } ?: run {
+          if (view.flashMode != FlashMode.OFF) {
+            view.flashMode = FlashMode.OFF
+          }
         }
       }
 
       Prop("enableTorch") { view, enabled: Boolean? ->
-        view.enableTorch = enabled ?: false
+        enabled?.let {
+          if (view.enableTorch != it) {
+            view.enableTorch = it
+          }
+        } ?: run {
+          if (view.enableTorch) {
+            view.enableTorch = false
+          }
+        }
       }
 
       Prop("animateShutter") { view, animate: Boolean? ->
@@ -170,42 +238,49 @@ class CameraViewModule : Module() {
       }
 
       Prop("zoom") { view, zoom: Float? ->
-        view.zoom = zoom ?: 0f
+        zoom?.let {
+          if (view.zoom != it) {
+            view.zoom = it
+          }
+        } ?: run {
+          if (view.zoom != 0f) {
+            view.zoom = 0f
+          }
+        }
       }
 
       Prop("mode") { view, mode: CameraMode? ->
         mode?.let {
-          if (view.cameraMode != mode) {
+          if (view.cameraMode != it) {
             view.cameraMode = it
+          }
+        } ?: run {
+          if (view.cameraMode != CameraMode.PICTURE) {
+            view.cameraMode = CameraMode.PICTURE
           }
         }
       }
 
       Prop("mute") { view, muted: Boolean? ->
-        muted?.let {
-          if (it != view.mute) {
-            view.mute = it
-          }
-        }
+        view.mute = muted ?: false
       }
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
         quality?.let {
-          if (view.videoQuality != quality) {
+          if (view.videoQuality != it) {
             view.videoQuality = it
           }
-          return@Prop
-        }
-        if (view.videoQuality != VideoQuality.VIDEO1080P) {
-          view.videoQuality = VideoQuality.VIDEO1080P
+        } ?: run {
+          if (view.videoQuality != VideoQuality.VIDEO1080P) {
+            view.videoQuality = VideoQuality.VIDEO1080P
+          }
         }
       }
 
       Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
-        if (settings == null) {
-          return@Prop
+        settings?.let {
+          view.setBarcodeScannerSettings(it)
         }
-        view.setBarcodeScannerSettings(settings)
       }
 
       Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
@@ -216,45 +291,61 @@ class CameraViewModule : Module() {
 
       Prop("pictureSize") { view, pictureSize: String? ->
         pictureSize?.let {
-          if (view.pictureSize != pictureSize) {
+          if (view.pictureSize != it) {
             view.pictureSize = it
           }
-          return@Prop
-        }
-        if (view.pictureSize.isNotEmpty()) {
-          view.pictureSize = ""
+        } ?: run {
+          if (view.pictureSize.isNotEmpty()) {
+            view.pictureSize = ""
+          }
         }
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
-        view.autoFocus = autoFocus ?: FocusMode.OFF
+        autoFocus?.let {
+          if (view.autoFocus != it) {
+            view.autoFocus = it
+          }
+        } ?: run {
+          if (view.autoFocus != FocusMode.OFF) {
+            view.autoFocus = FocusMode.OFF
+          }
+        }
       }
 
       Prop("ratio") { view, ratio: CameraRatio? ->
-        if (view.ratio != ratio) {
-          view.ratio = ratio
+        ratio?.let {
+          if (view.ratio != it) {
+            view.ratio = it
+          }
+        } ?: run {
+          if (view.ratio != null) {
+            view.ratio = null
+          }
         }
       }
 
       Prop("mirror") { view, mirror: Boolean? ->
         mirror?.let {
-          if (view.mirror != mirror) {
+          if (view.mirror != it) {
             view.mirror = it
-            return@Prop
           }
-        }
-        if (view.mirror != false) {
-          view.mirror = false
+        } ?: run {
+          if (view.mirror) {
+            view.mirror = false
+          }
         }
       }
 
       Prop("videoBitrate") { view, bitrate: Int? ->
         bitrate?.let {
-          view.videoEncodingBitrate = it
-          return@Prop
-        }
-        if (view.videoEncodingBitrate != null) {
-          view.videoEncodingBitrate = null
+          if (view.videoEncodingBitrate != it) {
+            view.videoEncodingBitrate = it
+          }
+        } ?: run {
+          if (view.videoEncodingBitrate != null) {
+            view.videoEncodingBitrate = null
+          }
         }
       }
 
@@ -264,11 +355,11 @@ class CameraViewModule : Module() {
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
-          view.takePicture(options, promise, cacheDirectory)
+          view.takePicture(options, promise, cacheDirectory, runtimeContext)
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakenPicture(image, promise, options, false, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, false, runtimeContext, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }
@@ -301,12 +392,6 @@ class CameraViewModule : Module() {
 
       AsyncFunction("pausePreview") { view: ExpoCameraView ->
         view.pausePreview()
-      }
-
-      OnViewDestroys { view ->
-        view.orientationEventListener.disable()
-        view.cancelCoroutineScope()
-        view.releaseCamera()
       }
     }
   }

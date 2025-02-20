@@ -21,7 +21,7 @@ export type ContextMenuContentProps = {
 
 export type EventHandlers = {
   [key: string]: {
-    [key: string]: (event: { nativeEvent: any }) => void;
+    [key: string]: (event: NativeSyntheticEvent<any>) => void;
   };
 };
 
@@ -59,6 +59,13 @@ export type ContextMenuProps = {
   children: ReactNode;
 
   /**
+   * The color of the container holding the context menu items.
+   *
+   * @platform android
+   */
+  color?: string;
+
+  /**
    * Optional styles to apply to the `ContextMenu`
    */
   style?: StyleProp<ViewStyle>;
@@ -83,10 +90,10 @@ type NativeMenuProps = ContextMenuProps & {
   onContextMenuButtonPressed: (
     event: NativeSyntheticEvent<{ contextMenuElementID: string }>
   ) => void;
-  onContextMenuSwitchCheckedChanged: (
+  onContextMenuSwitchValueChanged: (
     event: NativeSyntheticEvent<{
       contextMenuElementID: string;
-      checked: boolean;
+      value: boolean;
     }>
   ) => void;
   onContextMenuPickerOptionSelected: (
@@ -139,7 +146,7 @@ export function ContextMenu(props: ContextMenuProps) {
       style={props.style}
       elements={processedElements}
       onContextMenuButtonPressed={createEventHandler('onPress')}
-      onContextMenuSwitchCheckedChanged={createEventHandler('onCheckedChanged')}
+      onContextMenuSwitchValueChanged={createEventHandler('onValueChange')}
       onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')}
       {...props}
     />

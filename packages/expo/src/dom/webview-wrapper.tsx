@@ -19,7 +19,7 @@ import { useDebugZeroHeight } from './webview/useDebugZeroHeight';
 
 interface Props {
   children?: any;
-  dom: DOMProps;
+  dom?: DOMProps;
   filePath: string;
 }
 
@@ -108,6 +108,7 @@ const RawWebView = React.forwardRef<object, Props>(
       originWhitelist: ['*'],
       allowFileAccess: true,
       allowFileAccessFromFileURLs: true,
+      allowingReadAccessToURL: 'file://',
       allowsAirPlayForMediaPlayback: true,
       allowsFullscreenVideo: true,
       onContentProcessDidTerminate: () => {
@@ -126,7 +127,7 @@ const RawWebView = React.forwardRef<object, Props>(
       },
       ...dom,
       containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
-      onLayout: __DEV__ ? debugOnLayout : dom.onLayout,
+      onLayout: __DEV__ ? debugOnLayout : dom?.onLayout,
       injectedJavaScriptBeforeContentLoaded: [
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,

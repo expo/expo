@@ -15,4 +15,6 @@ class CameraExceptions {
 
   class BarcodeScanningFailedException :
     CodedException("Barcode scanning failed")
+
+  class WriteImageException(cause: String?) : CodedException("Writing image has failed: $cause")
 }
