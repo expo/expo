@@ -5,7 +5,8 @@ import { fetchSite } from 'sitefetch';
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME = 'llms-sdk.txt';
 const TITLE = 'Expo SDK Documentation';
-const DESCRIPTION = 'Documentation for Expo SDK libraries, configuration, and API reference.';
+const DESCRIPTION =
+  'Documentation for Expo SDK libraries, app configuration files, Expo CLI, create-expo-app, and more.';
 const BASE_URL = 'https://docs.expo.dev';
 const PATHS_TO_CRAWL = ['/versions/latest/', '/more/', '/technical-specs/'];
 
