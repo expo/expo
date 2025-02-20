@@ -64,7 +64,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     guard let appDelegate = (UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate) ??
-      (UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
       fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
 
