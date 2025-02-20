@@ -72,13 +72,6 @@ open class ExpoAppDelegate: ExpoAppInstance {
       $0.responds(to: #selector(applicationWillFinishLaunching(_:)))
     }
 
-    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
-    // the `didFinishLaunchingWithOptions` method by returning `true` here.
-    //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
-    if parsedSubscribers.isEmpty {
-      return
-    }
-
     parsedSubscribers.forEach { subscriber in
       subscriber.applicationWillFinishLaunching?(notification)
     }
@@ -273,10 +266,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
     let selector = #selector(application(_:didReceiveRemoteNotification:))
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
 
-    if !subs.isEmpty {
-      subs.forEach { subscriber in
-        subscriber.application?(application, didReceiveRemoteNotification: userInfo)
-      }
+    subs.forEach { subscriber in
+      subscriber.application?(application, didReceiveRemoteNotification: userInfo)
     }
   }
 #endif
