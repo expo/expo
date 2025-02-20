@@ -10,6 +10,18 @@ public final class VideoModule: Module {
       return AVPictureInPictureController.isPictureInPictureSupported()
     }
 
+    Function("getCurrentVideoCacheSize") {
+      VideoCacheManager.shared.getCacheDirectorySize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size in
+      try VideoCacheManager.shared.setMaxCacheSize(newSize: size)
+    }
+
+    AsyncFunction("clearVideoCacheAsync") {
+      return try await VideoCacheManager.shared.clearAllCache()
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
@@ -240,6 +252,14 @@ public final class VideoModule: Module {
       }
       .set { player, audioMixingMode in
         player.audioMixingMode = audioMixingMode
+      }
+
+      Property("availableVideoTracks") { player -> [VideoTrack] in
+        return player.availableVideoTracks
+      }
+
+      Property("videoTrack") { player -> VideoTrack? in
+        return player.currentVideoTrack
       }
 
       Property("availableSubtitleTracks") { player -> [SubtitleTrack] in

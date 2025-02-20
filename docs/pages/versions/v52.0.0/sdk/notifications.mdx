@@ -436,7 +436,7 @@ Learn how to configure the native projects in the [installation instructions in 
 ### Android
 
 - On Android, this module requires permission to subscribe to the device boot. It's used to set up scheduled notifications when the device (re)starts.
-  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library's **AndroidManifest.xml**.
 
 - Starting from Android 12 (API level 31), to schedule a notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.

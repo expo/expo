@@ -43,7 +43,7 @@ Let's create a new [build profile](/build/eas-json/#build-profiles) called `test
 {
   "build": {
     /* @hide ... */ /* @end */
-    "production": {
+    "test": {
       "config": "test.yml",
     },
 }
@@ -55,7 +55,7 @@ If you wish to use separate configs for each platform, you can create separate Y
 {
   "build": {
     /* @hide ... */ /* @end */
-    "production": {
+    "test": {
       "ios": {
         "config": "hello-ios.yml",
       },
@@ -74,7 +74,7 @@ If you wish to use separate configs for each platform, you can create separate Y
 
 To test the custom build config, run the following command:
 
-<Terminal cmd={['$ eas build -p android -e production']} />
+<Terminal cmd={['$ eas build -p android -e test']} />
 
 After the build is complete, you can verify that the `echo "Hello World!"` script was executed by checking the logs on the build's detail page.
 

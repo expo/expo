@@ -20,7 +20,7 @@ struct MenuItems: View {
         }
       }
       if let `switch` = element.switch {
-        `switch`.onCheckedChanged.onEventSent = { map in
+        `switch`.onValueChange.onEventSent = { map in
           props?.onContextMenuSwitchCheckedChanged(addId(id, toMap: map))
         }
       }
@@ -63,11 +63,15 @@ struct SinglePressContextMenu<ActivationElement: View>: View {
   let props: ContextMenuProps?
 
   var body: some View {
+    #if !os(tvOS)
     SwiftUI.Menu {
       MenuItems(fromElements: elements, props: props)
     } label: {
       activationElement
     }
+    #else
+    Text("SinglePressContextMenu is not supported on this platform")
+    #endif
   }
 }
 

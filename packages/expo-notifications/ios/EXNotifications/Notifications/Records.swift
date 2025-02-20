@@ -198,10 +198,10 @@ struct CategoryTextInputActionRecord: Record {
     self.submitButtonTitle = textInputAction.textInputButtonTitle
   }
 
-  func toUNTextInputNotificationAction(identifier: String) -> UNTextInputNotificationAction {
+  func toUNTextInputNotificationAction(identifier: String, title: String) -> UNTextInputNotificationAction {
     return UNTextInputNotificationAction(
       identifier: identifier,
-      title: title ?? "",
+      title: title,
       textInputButtonTitle: submitButtonTitle ?? "",
       textInputPlaceholder: placeholder ?? ""
     )
@@ -252,7 +252,7 @@ struct CategoryActionRecord: Record {
       return nil
     }
     if let textInput = textInput {
-      return textInput.toUNTextInputNotificationAction(identifier: identifier)
+      return textInput.toUNTextInputNotificationAction(identifier: identifier, title: buttonTitle)
     }
     var notificationOptions: UNNotificationActionOptions = []
     if let optionsParams = options {

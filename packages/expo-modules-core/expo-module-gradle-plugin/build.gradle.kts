@@ -15,6 +15,7 @@ dependencies {
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
   implementation("com.facebook.react:react-native-gradle-plugin")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.2")

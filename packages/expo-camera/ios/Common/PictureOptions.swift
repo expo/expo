@@ -5,7 +5,7 @@ struct TakePictureOptions: Record {
   var id: Int = 0
 
   @Field
-  var quality: Double = 0
+  var quality: Double = 1
 
   @Field
   var base64: Bool = false
@@ -31,7 +31,7 @@ struct TakePictureOptions: Record {
 
 struct SavePictureOptions: Record {
   @Field
-  var quality: Double = 0
+  var quality: Double = 1
 
   @Field
   var metadata: [String: Any]? = [:]

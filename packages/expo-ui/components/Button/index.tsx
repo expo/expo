@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
+import { MaterialIcon } from './types';
 import { ViewEvent } from '../../src';
 
 /**
@@ -29,9 +30,6 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * Android-only styles:
  * - `outlined` - A button with an outline.
  * - `elevated` - A filled button with a shadow.
- *
- * @platform android
- * @platform ios
  */
 export type ButtonVariant =
   // Common
@@ -57,9 +55,12 @@ export type ButtonProps = {
   onPress?: () => void;
   /**
    * A string describing the system image to display in the button.
-   * @platform ios
+   * Uses SF Symbols on iOS and Material Icons on Android.
    */
-  systemImage?: string;
+  systemImage?: {
+    ios?: string;
+    android?: MaterialIcon;
+  };
   /**
    * Indicated the role of the button.
    * @platform ios
@@ -81,17 +82,25 @@ export type ButtonProps = {
    * Colors for button's core elements.
    * @platform android
    */
-  colors?: {
+  elementColors?: {
     containerColor?: string;
     contentColor?: string;
     disabledContainerColor?: string;
     disabledContentColor?: string;
   };
+  /**
+   * Button color.
+   */
+  color?: string;
 };
 
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
+export type NativeButtonProps = Omit<
+  ButtonProps,
+  'role' | 'onPress' | 'children' | 'systemImage'
+> & {
   buttonRole?: ButtonRole;
   text: string;
+  systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -101,13 +110,20 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 );
 
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
+  const { role, children, onPress, systemImage, ...restProps } = props;
   return {
-    text: props.children ?? '',
-    buttonRole: props.role,
-    onButtonPressed: props.onPress,
-    systemImage: props.systemImage,
-    variant: props.variant,
-    colors: props.colors,
+    ...restProps,
+    text: children ?? '',
+    buttonRole: role,
+    systemImage: systemImage?.[Platform.OS as 'ios' | 'android'],
+    onButtonPressed: onPress,
+    elementColors: props.elementColors
+      ? props.elementColors
+      : props.color
+        ? {
+            containerColor: props.color,
+          }
+        : undefined,
   };
 }
 
@@ -115,8 +131,11 @@ export function Button(props: ButtonProps) {
   // Min height from https://m3.material.io/components/buttons/specs, minWidth
   return (
     <ButtonNativeView
-      style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
       {...transformButtonProps(props)}
+      style={StyleSheet.compose(
+        Platform.OS === 'android' ? { minWidth: 80, minHeight: 40 } : {},
+        props.style
+      )}
     />
   );
 }

@@ -6,10 +6,11 @@ import Combine
 /**
  A protocol for SwiftUI views that need to access props.
  */
-public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
+public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument {
   associatedtype Props: ExpoSwiftUI.ViewProps
 
   var props: Props { get }
+  static func getDynamicType() -> AnyDynamicType
 
   init()
 }
@@ -22,6 +23,39 @@ public extension ExpoSwiftUIView {
     ZStack(alignment: .topLeading) {
       ForEach(props.children ?? []) { $0 }
     }
+  }
+
+  /**
+   Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
+   */
+  func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
+    @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
+    -> T = { child, _ in  child }
+  ) -> some View {
+    guard let children = props.children else {
+      return AnyView(EmptyView())
+    }
+    let childrenArray = Array(children)
+    return AnyView(
+      ForEach(0..<childrenArray.count, id: \.self) { index in
+        let child = childrenArray[index]
+        if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
+          let content = hostingView.getContentView()
+          let propsObject = hostingView.getProps() as any ObservableObject
+          transform(
+            AnyView(
+              content
+                .environmentObject(propsObject)
+                .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)), true)
+        } else {
+          transform(AnyView(child), false)
+        }
+      }
+    )
+  }
+
+  static func getDynamicType() -> AnyDynamicType {
+    return DynamicSwiftUIViewType(innerType: Self.self)
   }
 }
 
@@ -41,6 +75,10 @@ extension ExpoSwiftUI {
       // We assume SwiftUI views are exported as named views under the class name
       let nameDefinitionElement = ViewNameDefinition(name: String(describing: viewType))
       super.init(HostingView<Props, ViewType>.self, elements: [nameDefinitionElement])
+    }
+
+    init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
+      super.init(HostingView<Props, ViewType>.self, elements: elements)
     }
 
     public override func createView(appContext: AppContext) -> UIView? {

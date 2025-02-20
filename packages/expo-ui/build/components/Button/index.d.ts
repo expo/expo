@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
+import { MaterialIcon } from './types';
 import { ViewEvent } from '../../src';
 /**
  * The role of the button.
@@ -25,9 +26,6 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * Android-only styles:
  * - `outlined` - A button with an outline.
  * - `elevated` - A filled button with a shadow.
- *
- * @platform android
- * @platform ios
  */
 export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link' | 'outlined' | 'elevated';
 export type ButtonProps = {
@@ -37,9 +35,12 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
-     * @platform ios
+     * Uses SF Symbols on iOS and Material Icons on Android.
      */
-    systemImage?: string;
+    systemImage?: {
+        ios?: string;
+        android?: MaterialIcon;
+    };
     /**
      * Indicated the role of the button.
      * @platform ios
@@ -61,16 +62,21 @@ export type ButtonProps = {
      * Colors for button's core elements.
      * @platform android
      */
-    colors?: {
+    elementColors?: {
         containerColor?: string;
         contentColor?: string;
         disabledContainerColor?: string;
         disabledContentColor?: string;
     };
+    /**
+     * Button color.
+     */
+    color?: string;
 };
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
     buttonRole?: ButtonRole;
     text: string;
+    systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
 export declare function Button(props: ButtonProps): import("react").JSX.Element;

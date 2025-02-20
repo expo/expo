@@ -15,7 +15,7 @@ class ExpoUIModule : Module() {
     }
 
     View(SwitchView::class) {
-      Events("onCheckedChanged")
+      Events("onValueChange")
     }
 
     View(Button::class) {
@@ -26,11 +26,15 @@ class ExpoUIModule : Module() {
       Events("onValueChanged")
     }
 
+    View(DateTimePickerView::class) {
+      Events("onDateSelected")
+    }
+
     View(ContextMenu::class) {
       Events(
         "onContextMenuButtonPressed",
         "onContextMenuPickerOptionSelected",
-        "onContextMenuSwitchCheckedChanged",
+        "onContextMenuSwitchValueChanged",
         "onExpandedChanged"
       )
     }
