@@ -40,7 +40,7 @@ const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
 
 export function getFontWeight(filename: string) {
   for (const weight of weights) {
-    if (filename.toLowerCase().includes(weight)) {
+    if (filename.replaceAll('_', '').includes(weight)) {
       return weightMap[weight];
     }
   }
@@ -48,13 +48,22 @@ export function getFontWeight(filename: string) {
   return 400;
 }
 
+export function normalizeFilename(filename: string): string {
+  return filename
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_')
+    .replace(/[^a-z0-9_]/g, '')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
 export function generateFontFamilyXml(files: string[]) {
   let xml = `<?xml version="1.0" encoding="utf-8"?>\n<font-family xmlns:app="http://schemas.android.com/apk/res-auto">\n`;
 
   files.forEach((file) => {
-    const filename = path.basename(file, path.extname(file));
+    const filename = normalizeFilename(path.basename(file, path.extname(file)));
     const fontWeight = getFontWeight(filename);
-    const fontStyle = filename.toLowerCase().includes('italic') ? 'italic' : 'normal';
+    const fontStyle = filename.includes('italic') ? 'italic' : 'normal';
 
     xml += `    <font app:fontStyle="${fontStyle}" app:fontWeight="${fontWeight}" app:font="@font/${filename}" />\n`;
   });
