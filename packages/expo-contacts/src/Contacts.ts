@@ -697,7 +697,6 @@ export async function addContactAsync(contact: Contact, containerId?: string): P
 
 /**
  * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
- * > **info** On Android, you can use [`presentFormAsync`](#contactspresentformasynccontactid-contact-formoptions) to make edits to contacts.
  * @param contact A contact object including the wanted changes.
  * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
  * @example
@@ -709,7 +708,6 @@ export async function addContactAsync(contact: Contact, containerId?: string): P
  * };
  * await Contacts.updateContactAsync(contact);
  * ```
- * @platform ios
  */
 export async function updateContactAsync(contact: Contact): Promise<string> {
   if (!ExpoContacts.updateContactAsync) {
@@ -1025,6 +1023,17 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   }
 
   return await ExpoContacts.requestPermissionsAsync();
+}
+
+/**
+ * Presents a modal which allows the user to select which contacts the app has access to.
+ * Using this function is reasonable only when the app has "limited" permissions.
+ * @return A promise that resolves with an array of contact identifiers that were newly granted to the app.
+ * Contacts which the app lost access to are not listed. On platforms other than iOS and below 18.0, the promise rejects immediately.
+ * @platform ios 18.0+
+ */
+export async function presentAccessPickerAsync(): Promise<string[]> {
+  return await ExpoContacts.presentAccessPickerAsync();
 }
 
 /** @private */

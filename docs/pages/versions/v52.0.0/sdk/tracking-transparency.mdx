@@ -8,7 +8,7 @@ platforms: ['android', 'ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -16,7 +16,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, and more. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](/versions/latest/config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
+A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, and more. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](../config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
 
 For more information on Apple's new App Tracking Transparency framework, see their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
@@ -24,7 +24,7 @@ For more information on Apple's new App Tracking Transparency framework, see the
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-tracking-transparency` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -115,7 +115,11 @@ import * as ExpoTrackingTransparency from 'expo-tracking-transparency';
 
 ### Android
 
-<AndroidPermissions permissions={['com.google.android.gms.permission.AD_ID']} />
+The following permissions are added automatically through the library's **AndroidManifest.xml**.
+
+| Android Permission                        | Description                                                                                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `com.google.android.gms.permission.AD_ID` | Allows access to the Advertising ID for tracking and analytics. Required for apps targeting Android 13 (API level 33) or higher that use Google Play services' Advertising ID. |
 
 ### iOS
 

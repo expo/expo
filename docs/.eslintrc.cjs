@@ -3,6 +3,54 @@ const TAILWIND_DEFAULTS = {
   classRegex: '^(confirmation|container|icon)?(c|C)lass(Name)?$',
 };
 
+const CORE_RULES = {
+  'prettier/prettier': 'error',
+  'no-void': ['warn', { allowAsStatement: true }],
+  'no-return-await': 'off',
+  'import/order': [
+    'warn',
+    {
+      groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
+      'newlines-between': 'always',
+      alphabetize: {
+        order: 'asc',
+      },
+      pathGroups: [
+        {
+          pattern: '~/**',
+          group: 'internal',
+        },
+      ],
+    },
+  ],
+  curly: 'warn',
+  eqeqeq: ['error', 'always', { null: 'ignore' }],
+  'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'lodash/import-scope': [2, 'method'],
+  'unicorn/new-for-builtins': 'warn',
+  'unicorn/no-useless-spread': 'warn',
+  'unicorn/prefer-array-some': 'warn',
+  'unicorn/prefer-at': 'warn',
+  'unicorn/prefer-includes': 'warn',
+  'unicorn/prefer-regexp-test': 'warn',
+  'unicorn/throw-new-error': 'warn',
+  'unicorn/prefer-node-protocol': 'warn',
+  'unicorn/prefer-date-now': 'warn',
+  'unicorn/better-regex': 'warn',
+  'unicorn/prevent-abbreviations': [
+    'warn',
+    {
+      extendDefaultReplacements: false,
+      replacements: {
+        e: {
+          error: true,
+          event: true,
+        },
+      },
+    },
+  ],
+};
+
 module.exports = {
   root: true,
   extends: [
@@ -26,7 +74,7 @@ module.exports = {
       },
       extends: ['plugin:@next/next/recommended', 'plugin:tailwindcss/recommended'],
       rules: {
-        'prettier/prettier': 'error',
+        ...CORE_RULES,
         'no-console': ['warn', { allow: ['warn', 'error'] }],
         '@typescript-eslint/explicit-function-return-type': [
           'off',
@@ -78,8 +126,6 @@ module.exports = {
           },
         ],
         '@typescript-eslint/no-floating-promises': 'error',
-        'no-void': ['warn', { allowAsStatement: true }],
-        'no-return-await': 'off',
         '@typescript-eslint/return-await': ['error', 'always'],
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
         '@typescript-eslint/no-extra-non-null-assertion': 'warn',
@@ -106,30 +152,18 @@ module.exports = {
             },
           },
         ],
-        'import/order': [
-          'warn',
-          {
-            groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
-            'newlines-between': 'always',
-            alphabetize: {
-              order: 'asc',
-            },
-            pathGroups: [
-              {
-                pattern: '~/**',
-                group: 'internal',
-              },
-            ],
-          },
-        ],
-        curly: 'warn',
-        eqeqeq: ['error', 'always', { null: 'ignore' }],
-        'import/no-cycle': ['error', { maxDepth: '∞' }],
-        'lodash/import-scope': [2, 'method'],
         'react/no-this-in-sfc': 'off',
         'react/no-unknown-property': ['error', { ignore: ['css', 'mask-type'] }],
-        '@next/next/no-img-element': 'off',
         'react/no-unescaped-entities': 'off',
+        'react/jsx-key': [
+          'error',
+          {
+            checkFragmentShorthand: true,
+            checkKeyMustBeforeSpread: true,
+            warnOnDuplicates: true,
+          },
+        ],
+        '@next/next/no-img-element': 'off',
         'tailwindcss/classnames-order': 'off',
         'tailwindcss/enforces-negative-arbitrary-values': 'error',
         'tailwindcss/enforces-shorthand': 'error',
@@ -145,19 +179,12 @@ module.exports = {
               'dialog-.+',
               'terminal-snippet',
               'table-wrapper',
+              'tutorial-code-annotation',
             ],
             ...TAILWIND_DEFAULTS,
           },
         ],
         'tailwindcss/no-unnecessary-arbitrary-value': ['error', TAILWIND_DEFAULTS],
-        'react/jsx-key': [
-          'error',
-          {
-            checkFragmentShorthand: true,
-            checkKeyMustBeforeSpread: true,
-            warnOnDuplicates: true,
-          },
-        ],
         'no-restricted-properties': [
           'warn',
           {
@@ -176,33 +203,12 @@ module.exports = {
             message: 'describe.only should not be committed to main.',
           },
         ],
-        'unicorn/new-for-builtins': 'warn',
-        'unicorn/no-useless-spread': 'warn',
-        'unicorn/prefer-array-some': 'warn',
-        'unicorn/prefer-at': 'warn',
-        'unicorn/prefer-includes': 'warn',
-        'unicorn/prefer-regexp-test': 'warn',
-        'unicorn/throw-new-error': 'warn',
-        'unicorn/prefer-node-protocol': 'warn',
-        'unicorn/prefer-date-now': 'warn',
-        'unicorn/better-regex': 'warn',
-        'unicorn/prevent-abbreviations': [
-          'warn',
-          {
-            extendDefaultReplacements: false,
-            replacements: {
-              e: {
-                error: true,
-                event: true,
-              },
-            },
-          },
-        ],
       },
     },
     {
       files: ['*.js', '*.cjs', '*.ts'],
       extends: ['universe/node'],
+      rules: CORE_RULES,
     },
     {
       files: ['*.md', '*.mdx'],

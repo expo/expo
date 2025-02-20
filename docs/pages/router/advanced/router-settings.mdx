@@ -5,12 +5,12 @@ sidebar_title: Settings
 hideTOC: true
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 
 > **warning** **Warning:** `unstable_settings` currently do not work with [async routes](/router/reference/async-routes/) (development-only). This is why the feature is designated _unstable_.
 
-<APIBox header="initialRouteName">
+<PaddedAPIBox header="initialRouteName">
 
 When deep linking to a route, you may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
 
@@ -44,4 +44,13 @@ export const unstable_settings = {
 };
 ```
 
-</APIBox>
+The `initialRouteName` is only used when deep-linking to a route. During app navigation, the route you are navigating to will be the initial route. You can disable this behavior using the `initial` prop on the `<Link />` component or by passing the option to the imperative APIs.
+
+```js
+// If this navigates to a new _layout, don't override the initial route
+<Link href="/route" initial={false} />;
+
+router.push('/route', { overrideInitialScreen: false });
+```
+
+</PaddedAPIBox>

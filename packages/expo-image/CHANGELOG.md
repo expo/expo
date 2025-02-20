@@ -6,11 +6,18 @@
 
 ### 🎉 New features
 
+- type-compatibility with react-native 0.77 ([#34027](https://github.com/expo/expo/pull/34027) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
+
+- Fixed `tintColor="currentColor"` conflicts on web. ([#34604](https://github.com/expo/expo/pull/34604) by [@bradleyayers](https://github.com/bradleyayers))
+- [Android] Add headers to `loadAsync` requests. ([#34767](https://github.com/expo/expo/pull/34767) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fixes a regression in `loadAsync` from [#34767](https://github.com/expo/expo/pull/34767). ([#34965](https://github.com/expo/expo/pull/34965) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.0.3 - 2024-11-29
 

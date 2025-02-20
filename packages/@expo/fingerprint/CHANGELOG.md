@@ -6,6 +6,42 @@
 
 ### 🎉 New features
 
+- Add `SourceSkips.GitIgnore` to allow `.gitignore` changes to be excluded from the fingerpint ([#34220](https://github.com/expo/expo/pull/34220) by [@ball-hayden](https://github.com/ball-hayden))
+
+### 🐛 Bug fixes
+
+- Run the React imports patcher for any platform if iOS sources are detected ([#34760](https://github.com/expo/expo/pull/34760) by [@capezzbr](https://github.com/capezzbr))
+- Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+- Fix typo in help output and debug. ([#34766](https://github.com/expo/expo/pull/34766) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed `fingerprint.config.js` options be overwritten by CLI. ([#34935](https://github.com/expo/expo/pull/34935) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
+- Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
+- Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
+- Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))
+- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.ExpoConfigExtraSection`. ([#34697](https://github.com/expo/expo/pull/34697) by [@kudo](https://github.com/kudo))
+
+## 0.11.6 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed CLI `console.log` regression. ([#33828](https://github.com/expo/expo/pull/33828) by [@kudo](https://github.com/kudo))
+
+## 0.11.5 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed `expo-modules-autolinking` resolving issue on PNPM isolated mode. ([#33818](https://github.com/expo/expo/pull/33818) by [@kudo](https://github.com/kudo))
+- Fixed `ExpoConfigLoader` error when people has `console.log` in their `app.config.js` or `app.config.ts`. ([#33821](https://github.com/expo/expo/pull/33821) by [@kudo](https://github.com/kudo))
+- Fixed absolute paths inside `aarProjects` autolinking data. ([#33826](https://github.com/expo/expo/pull/33826) by [@kudo](https://github.com/kudo))
+
+## 0.11.4 - 2024-12-16
+
+### 🎉 New features
+
 - Introduced `fileHookTransform` to support contents or file chunk customization before hashing. ([#33610](https://github.com/expo/expo/pull/33610) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

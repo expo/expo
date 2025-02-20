@@ -7,6 +7,8 @@ public protocol AnyViewDefinition {
    */
   var props: [AnyViewProp] { get }
 
+  var name: String { get }
+
   /**
    Names of the events that the view can send to JavaScript.
    */
@@ -26,6 +28,11 @@ public protocol AnyViewDefinition {
    Returns a list of prop names supported by the view.
    */
   func getSupportedPropNames() -> [String]
+
+  /**
+   Returns a list of event names supported by the view.
+   */
+  func getSupportedEventNames() -> [String]
 
   /**
    Calls defined lifecycle methods with the given type.

@@ -49,19 +49,6 @@ class DevMenuDevOptionsDelegate {
     URLSession.shared.dataTask(with: request as URLRequest).resume()
   }
 
-  internal func toggleRemoteDebugging() {
-    guard let devSettings = devSettings else {
-      return
-    }
-
-    DevMenuManager.shared.hideMenu()
-
-    DispatchQueue.main.async {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
-      (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI
-    }
-  }
-
   internal func togglePerformanceMonitor() {
     #if DEBUG
     guard let perfMonitor = perfMonitor else {
@@ -73,7 +60,18 @@ class DevMenuDevOptionsDelegate {
     }
 
     DispatchQueue.main.async {
-      devSettings.isPerfMonitorShown ? perfMonitor.hide() : perfMonitor.show()
+      if devSettings.isPerfMonitorShown {
+        perfMonitor.hide()
+      } else {
+        let devMenuWindow = DevMenuManager.shared.window
+        // RCTPerfMonitor adds its view to the window using RCTKeyWindow().
+        // The key window when the dev menu is shown is actually the DevMenuWindow.
+        // To prevent RCTPerfMonitor from adding its view to the incorrect window,
+        // we temporarily hide and resign the key status of the DevMenuWindow.
+        devMenuWindow?.isHidden = true
+        perfMonitor.show()
+        devMenuWindow?.isHidden = false
+      }
       devSettings.isPerfMonitorShown = !devSettings.isPerfMonitorShown
     }
     #endif

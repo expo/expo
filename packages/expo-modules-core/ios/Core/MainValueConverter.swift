@@ -4,10 +4,7 @@
  A converter associated with the specific app context that delegates value conversions to the dynamic type converters.
  */
 public struct MainValueConverter {
-  /**
-   It holds a strong reference as the AppContext is the only owner of the converter.
-   */
-  internal let appContext: AppContext
+  private(set) weak var appContext: AppContext?
 
   /**
    Casts the given JavaScriptValue to a non-JS value.
@@ -15,6 +12,9 @@ public struct MainValueConverter {
    */
   public func toNative(_ value: JavaScriptValue, _ type: AnyDynamicType) throws -> Any {
     // Preliminary cast from JS value to a common native type.
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
     let rawValue = try type.cast(jsValue: value, appContext: appContext)
 
     // Cast common native type to more complex types (e.g. records, convertibles, enumerables, shared objects).
@@ -46,6 +46,9 @@ public struct MainValueConverter {
    Converts the given value to the type compatible with JavaScript.
    */
   public func toJS<ValueType>(_ value: ValueType, _ type: AnyDynamicType) throws -> JavaScriptValue {
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
     let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: type)
     return try type.castToJS(result, appContext: appContext)
   }

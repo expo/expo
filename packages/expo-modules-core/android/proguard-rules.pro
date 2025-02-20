@@ -29,3 +29,7 @@
 -keepclassmembers class * {
   expo.modules.kotlin.viewevent.ViewEventDelegate *;
 }
+
+-keep class * implements expo.modules.kotlin.views.ComposeProps {
+  *;
+}

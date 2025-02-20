@@ -76,7 +76,7 @@ try {
 ### Using legacy FileSystem API
 
 ```ts example.ts
-import { FileSystem } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 import { File, Paths } from 'expo-file-system/next';
 
 try {
@@ -110,6 +110,42 @@ try {
 } catch (error) {
   console.error(error);
 }
+```
+
+### Uploading files using `expo/fetch`
+
+You can upload files as blobs directly with fetch built into the Expo package:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+import { File } from 'expo-file-system/next';
+
+const src = new File(testDirectory, 'file.txt');
+file.write('Hello, world!');
+const blob = src.blob();
+
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: blob,
+});
+```
+
+Or using the `FormData` constructor:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+
+const src = new File(testDirectory, 'file.txt');
+file.write('Hello, world!');
+const blob = src.blob();
+
+const formData = new FormData();
+formData.append('data', blob);
+
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: formData,
+});
 ```
 
 ## API

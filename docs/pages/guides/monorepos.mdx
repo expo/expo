@@ -14,7 +14,7 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 Starting from **SDK 48**, Expo automatically detects monorepos and configures new app projects added to a monorepo when using [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), or [yarn](https://yarnpkg.com/features/workspaces). From **SDK 52**, Expo also performs this automatic configuration when using [pnpm](https://pnpm.io/workspaces). The detection is based on the workspaces configuration in your project.
 
-> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
+> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which directories Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
 
 ## Manual configuration
 
@@ -64,7 +64,7 @@ After copying or creating the first app, run `yarn` to check for common warnings
 
 #### Modify the Metro config
 
-Expo's Metro config has monorepo support for bun, npm, yarn, and pnpm. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
+Expo's Metro config has monorepo support for Bun, npm, pnpm and Yarn. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
 
 To configure a monorepo with Metro manually, there are two main changes:
 
@@ -199,7 +199,7 @@ Let's go back to the root and create the **packages** directory. This directory 
   cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init"
 />
 
-We won't go into too much detail in creating a package. If you are not familiar with this, please consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
+We won't go into too much detail in creating a package. If you are not familiar with this, consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
 
 ```js index.js
 export const greeting = 'Hello!';
@@ -277,7 +277,7 @@ You can check if your monorepo has multiple React Native versions and why they a
     '# https://pnpm.io/cli/why',
     '$ pnpm why --recursive react-native',
     '',
-    '# yarn supports the `yarn why` command',
+    '# Yarn supports the `yarn why` command',
     '# https://classic.yarnpkg.com/en/docs/cli/why',
     '$ yarn why react-native',
   ]}

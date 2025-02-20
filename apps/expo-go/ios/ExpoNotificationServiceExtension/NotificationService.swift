@@ -9,6 +9,9 @@
  * to trigger this handler.
  */
 
+// TODO: rework the new Swift Notification code for ExpoGo
+
+/*
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
@@ -22,3 +25,4 @@ class NotificationService: UNNotificationServiceExtension {
     }
   }
 }
+ */

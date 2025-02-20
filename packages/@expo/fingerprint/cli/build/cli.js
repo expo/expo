@@ -36,9 +36,9 @@ const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
 // Setup before requiring `debug`.
 if ((0, getenv_1.boolish)('EXPO_DEBUG', false)) {
-    debug_1.default.enable('@expo/fingeprint:*');
+    debug_1.default.enable('@expo/fingerprint:*');
 }
-else if (debug_1.default.enabled('@expo/fingeprint:')) {
+else if (debug_1.default.enabled('@expo/fingerprint:')) {
     process.env.EXPO_DEBUG = '1';
 }
 const commands = {
@@ -67,7 +67,7 @@ const commandArgs = args._.slice(1);
 if ((args['--help'] && !command) || !command) {
     Log.exit((0, chalk_1.default) `
 {bold Usage}
-  {dim $} npx @expo/fingeprint <command>
+  {dim $} npx @expo/fingerprint <command>
 
 {bold Commands}
   ${Object.keys(commands).sort().join(', ')}
@@ -76,7 +76,7 @@ if ((args['--help'] && !command) || !command) {
   --help, -h      Displays this message
 
 For more information run a command with the --help flag
-  {dim $} npx @expo/fingeprint fingerprint:generate --help
+  {dim $} npx @expo/fingerprint fingerprint:generate --help
   `, 0);
 }
 // Push the help flag to the subcommand args.

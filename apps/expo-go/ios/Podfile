@@ -54,9 +54,9 @@ target 'Expo Go' do
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
-      'expo-face-detector',
       'expo-splash-screen',
-      'expo-audio'
+      'expo-audio',
+      '@expo/ui'
     ],
     includeTests: true,
     flags: {

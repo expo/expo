@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
+- Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
+- Resolve `reactNativePath` to its realpath to prevent incorrect relative paths from being generated for isolated dependencies. ([#34203](https://github.com/expo/expo/pull/34203) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

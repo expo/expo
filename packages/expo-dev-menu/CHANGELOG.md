@@ -6,12 +6,21 @@
 
 ### 🎉 New features
 
+- support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
+
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `task ':expo-dev-menu:generateDebugLintModel' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency`. ([#34688](https://github.com/expo/expo/pull/34688) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
+- [6/n] upgrade to react-native 0.77 - improve 0.76 compatibility ([#34078](https://github.com/expo/expo/pull/34078) by [@vonovak](https://github.com/vonovak))
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
 - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Removed remote debugging dead code. ([#34977](https://github.com/expo/expo/pull/34977) by [@kudo](https://github.com/kudo))
 
 ## 6.0.14 - 2024-12-10
 

@@ -80,7 +80,7 @@ class ErrorRecoverySpec : ExpoSpec {
   override class func spec() {
     func setUp() -> (DispatchQueue, ErrorRecovery) {
       let testQueue = DispatchQueue(label: "expo.errorRecoveryTestQueue")
-      return (testQueue, ErrorRecovery(errorRecoveryQueue: testQueue, remoteLoadTimeout: 500))
+      return (testQueue, ErrorRecovery(logger: UpdatesLogger(), errorRecoveryQueue: testQueue, remoteLoadTimeout: 500))
     }
     
     describe("handleError") {

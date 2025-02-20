@@ -27,7 +27,7 @@ import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -111,7 +111,7 @@ To use Background Location methods, the following requirements apply:
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
   specified in **Info.plist** file. See [background tasks configuration
-  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
+  guide](./task-manager/#configuration-in-appjsonappconfigjs).
 
 ### Geofencing methods
 

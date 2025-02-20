@@ -6,8 +6,15 @@ description: Learn how to configure iOS Universal Links to open your Expo app fr
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 To configure iOS Universal Links for your app, you need to set up the **two-way association** to verify your website and native app.
+
+<VideoBoxLink
+  videoId="kNbEEYlFIPs"
+  time={68}
+  title="Watch: Set up iOS Universal Links with Expo Router"
+/>
 
 ## Set up two-way association
 
@@ -175,7 +182,7 @@ If you're having trouble setting up the banner, run the following command to aut
 If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then add the HTML tag to the `<head>` component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
 
 ```tsx app/+html.tsx
-import { type PropsWithChildren } from "react";
+import { type PropsWithChildren } from 'react';
 
 export default function Root({ children }: PropsWithChildren) {
   return (

@@ -4,17 +4,27 @@
 
 ### 🛠 Breaking changes
 
+- `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+- [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+- Add better error when Firebase is not set up ([#34694](https://github.com/expo/expo/pull/34694) by [@vonovak](https://github.com/vonovak))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Swift conversion 6: refactor Record classes. ([#34413](https://github.com/expo/expo/pull/34413) by [@douglowder](https://github.com/douglowder))
 
 ### ⚠️ Notices
 
 - [iOS] Swift conversion 1: badge and server registration. ([#32069](https://github.com/expo/expo/pull/32069) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 2: push token module. ([#32612](https://github.com/expo/expo/pull/32612) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 3: scheduling, notification builder. ([#33253](https://github.com/expo/expo/pull/33253) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 4: Categories. ([#33976](https://github.com/expo/expo/pull/33976) by [@douglowder](https://github.com/douglowder))
 
 ## 0.29.11 - 2024-12-05
 
@@ -22,6 +32,7 @@
 
 - [android] fix data serialization for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
 - Add additional fallback value for project ID in `getExpoPushTokenAsync` ([#33359](https://github.com/expo/expo/pull/33359) by [@bradjones1](https://github.com/bradjones1))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.29.10 - 2024-12-02
 

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = exports.getRoutesManifest = void 0;
-require("@expo/server/install");
+require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const debug = process.env.NODE_ENV === 'development'
@@ -69,7 +69,15 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     return import(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
-}, handleApiRouteError = async () => {
+}, handleApiRouteError = async (error) => {
+    if ('statusCode' in error && typeof error.statusCode === 'number') {
+        return new Response(error.message, {
+            status: error.statusCode,
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        });
+    }
     return new Response('Internal server error', {
         status: 500,
         headers: {

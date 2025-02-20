@@ -6,7 +6,10 @@ description: An in-depth guide on configuring an Expo project with TypeScript.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+
+<TabsGroup>
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of Expo SDK is written in TypeScript.
 
@@ -45,15 +48,35 @@ Rename files to convert them to TypeScript. For example, start with the root com
 
 To install required `devDependencies` such as `typescript` and `@types/react` in **package.json**:
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
   cmd={[
-    '# For all other package managers',
-    '$ npx expo install -- --save-dev typescript @types/react',
+    '$ npx expo install typescript @types/react  -- --save-dev',
     '',
-    '# For yarn',
-    '$ yarn add -D typescript @types/react',
+    '# For Bun and Yarn',
+    '$ npx expo install typescript @types/react -- --dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install typescript @types/react "--" --save-dev',
+    '',
+    '# For Bun and Yarn',
+    '$ npx expo install typescript @types/react "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 > **info** Alternatively, run `npx expo start` command to install `typescript` and `@types/react` dev dependencies.
 
@@ -175,15 +198,35 @@ Some Expo libraries provide both static types and type generation capabilities. 
 
 Additional setup is required to use TypeScript for configuration files such as **metro.config.js** or **app.config.js**. You need to utilize [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to import TypeScript files within your JS config file. This hook allows TypeScript imports while keeping the root file as JavaScript.
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
   cmd={[
-    '# For all other package managers',
-    '$ npx expo install -- --save-dev ts-node',
+    '$ npx expo install ts-node -- --save-dev',
     '',
-    '# For yarn',
-    '$ yarn add -D ts-node',
+    '# For Bun and Yarn',
+    '$ npx expo install ts-node -- --dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install ts-node "--" --save-dev',
+    '',
+    '# For Bun and Yarn',
+    '$ npx expo install ts-node "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 ### metro.config.js
 
@@ -251,3 +294,5 @@ Some language features may require additional configuration. For example, if you
 A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html).
 
 **For TypeScript and React components,** we recommend referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react) to learn how to type your React components in a variety of common situations.
+
+</TabsGroup>

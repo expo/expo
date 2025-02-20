@@ -25,7 +25,36 @@ Run `eas build -p [all|android|ios]` and verify that your builds for each platfo
 
 If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
 
-## Configure your app for CI
+## Using EAS Workflows
+
+[EAS Workflows](/eas/workflows/get-started) is a service from Expo that allows you to run builds, and many other types of jobs, on EAS. You can use EAS Workflows to automate your development and release processes, like creating development builds or automatically building and submitting to the app stores.
+
+To create a build with EAS Workflows, start by adding the following code in **.eas/workflows/build.yml**:
+
+```yaml
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_android:
+    name: Build Android App
+    type: build
+    params:
+      platform: android
+  build_ios:
+    name: Build iOS App
+    type: build
+    params:
+      platform: ios
+```
+
+When a commit is pushed to the main branch, this workflow will create Android and iOS builds. You can learn how to modify this workflow and sequence other types of jobs in the [EAS Workflows documentation](/eas/workflows/get-started).
+
+## Configuring your app for other CI services
 
 {/* TODO: We can probably leave this out -- users can figure out on their own if they want to do this or use npx */}
 
@@ -118,7 +147,7 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .npm
-    # or with yarn:
+    # or with Yarn:
     #- .yarn
 
 stages:
@@ -126,7 +155,7 @@ stages:
 
 before_script:
   - npm ci --cache .npm
-  # or with yarn:
+  # or with Yarn:
   #- yarn install --cache-folder .yarn
 
 eas-build:

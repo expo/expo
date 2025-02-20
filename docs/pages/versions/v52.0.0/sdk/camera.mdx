@@ -7,9 +7,12 @@ iconUrl: '/static/images/packages/expo-camera.png'
 platforms: ['android*', 'ios*', 'web']
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -23,7 +26,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-camera` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -158,6 +161,15 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+### Advanced usage
+
+<BoxLink
+  title="Camera app example"
+  description="A complete example that shows how to take a picture and display it. Written in TypeScript."
+  Icon={GithubIcon}
+  href="https://github.com/expo/examples/tree/master/with-camera"
+/>
+
 ## Web support
 
 Most browsers support a version of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream). Image URIs are always returned as base64 strings because local file system paths are unavailable in the browser.
@@ -184,7 +196,7 @@ import { CameraView } from 'expo-camera';
 
 ### Android
 
-This package automatically adds the `CAMERA` permission to your app. If you want to record videos with audio, you have to include the `RECORD_AUDIO` in your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+This package automatically adds the `CAMERA` permission to your app. If you want to record videos with audio, you have to include the `RECORD_AUDIO` in your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['CAMERA', 'RECORD_AUDIO']} />
 

@@ -1,4 +1,5 @@
 import { boolish, int, string } from 'getenv';
+import process from 'node:process';
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 
@@ -229,6 +230,41 @@ class Env {
   get EXPO_NO_REACT_NATIVE_WEB(): boolean {
     return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
   }
+
+  /** Enable unstable/experimental support for deploying the native server in `npx expo run` commands. */
+  get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
+    return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
+  }
+
+  /** Is running in EAS Build. This is set by EAS: https://docs.expo.dev/eas/environment-variables/ */
+  get EAS_BUILD(): boolean {
+    return boolish('EAS_BUILD', false);
+  }
+
+  /** Disable the React Native Directory compatibility check for new architecture when installing packages */
+  get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+  }
+
+  /** Disable the dependency validation when installing other dependencies and starting the project */
+  get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
+    // Default to disabling when running in a web container (stackblitz, bolt, etc).
+    const isWebContainer = process.versions.webcontainer != null;
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
+  }
+
+  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
+  get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
+    return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
+  }
 }
 
 export const env = new Env();
+
+export function envIsWebcontainer() {
+  // See: https://github.com/unjs/std-env/blob/4b1e03c4efce58249858efc2cc5f5eac727d0adb/src/providers.ts#L134-L143
+  return (
+    env.EXPO_FORCE_WEBCONTAINER_ENV ||
+    (process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer)
+  );
+}

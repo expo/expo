@@ -14,11 +14,9 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
-> **warning** This page documents an upcoming version of the Audio library. **Expo audio is currently in alpha and subject to breaking changes.**
+> **warning** This page documents an upcoming version of the Audio library. **Expo Audio is currently in alpha and subject to breaking changes.**
 
 `expo-audio` is a cross-platform audio library for accessing the native audio capabilities of the device.
-
-> **Info** Audio recording APIs are not available on tvOS (Apple TV).
 
 Note that audio automatically stops if headphones/bluetooth audio devices are disconnected.
 
@@ -77,6 +75,8 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { useAudioPlayer } from 'expo-audio';
 
+const audioSource = require('./assets/Hello.mp3');
+
 export default function App() {
   const player = useAudioPlayer(audioSource);
 
@@ -111,7 +111,10 @@ import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } fro
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
-  const record = () => audioRecorder.record();
+  const record = async () => {
+    await audioRecorder.prepareToRecordAsync();
+    audioRecorder.record();
+  };
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.

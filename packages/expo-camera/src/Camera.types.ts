@@ -4,9 +4,13 @@ import {
   PermissionExpiration,
   PermissionHookOptions,
   EventSubscription,
+  NativeModule,
 } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
+
+import { AndroidBarcode } from './AndroidBarcode.types';
+import { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
 
@@ -106,6 +110,7 @@ export type CameraCapturedPicture = {
 export type CameraPictureOptions = {
   /**
    * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
+   * @default 1
    */
   quality?: number;
   /**
@@ -178,6 +183,10 @@ export type CameraPictureOptions = {
    * @default true
    */
   shutterSound?: boolean;
+  /**
+   * Whether the camera should return an image ref that can be used directly in the `Image` component.
+   */
+  pictureRef?: boolean;
 };
 
 // @needsAudit
@@ -296,6 +305,12 @@ export type BarcodeScanningResult = {
    * For some types, they will represent the area used by the scanner.
    */
   bounds: BarcodeBounds;
+
+  /**
+   * Extra information returned by the specific type of barcode.
+   * @platform android
+   */
+  extra?: AndroidBarcode;
 };
 
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds' | 'cornerPoints'>;
@@ -439,9 +454,12 @@ export type CameraViewProps = ViewProps & {
  * @hidden
  */
 export interface CameraViewRef {
-  readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+  readonly takePicture: (
+    options: CameraPictureOptions
+  ) => Promise<CameraCapturedPicture | PictureRef>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
+  readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;
   readonly launchModernScanner: () => Promise<void>;
   readonly resumePreview: () => Promise<void>;
@@ -532,3 +550,66 @@ export {
   PermissionHookOptions,
   EventSubscription as Subscription,
 };
+
+export type PhotoResult = {
+  /**
+   * A URI to the modified image (usable as the source for an `Image` or `Video` element).
+   */
+  uri: string;
+  /**
+   * Width of the image.
+   */
+  width: number;
+  /**
+   * Height of the image.
+   */
+  height: number;
+  /**
+   * A Base64 representation of the image.
+   */
+  base64?: string;
+};
+
+// @needsAudit
+/**
+ * A map defining how modified image should be saved.
+ */
+export type SavePictureOptions = {
+  /**
+   * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
+   */
+  quality?: number;
+  /**
+   * Additional metadata to be included for the image.
+   */
+  metadata?: Record<string, any>;
+  /**
+   * Whether to also include the image data in Base64 format.
+   */
+  base64?: boolean;
+};
+
+export type CameraEvents = {
+  onModernBarcodeScanned: (event: ScanningResult) => void;
+};
+export declare class CameraNativeModule extends NativeModule<CameraEvents> {
+  /**
+   * @hidden
+   */
+  Picture: typeof PictureRef;
+
+  readonly isModernBarcodeScannerAvailable: boolean;
+  readonly toggleRecordingAsyncAvailable: boolean;
+  readonly isAvailableAsync: () => Promise<boolean>;
+  readonly launchScanner: (options?: ScanningOptions) => Promise<void>;
+  readonly dismissScanner: () => Promise<void>;
+  readonly scanFromURLAsync: (
+    url: string,
+    barcodeTypes?: BarcodeType[]
+  ) => Promise<BarcodeScanningResult[]>;
+  readonly getCameraPermissionsAsync: () => Promise<PermissionResponse>;
+  readonly requestCameraPermissionsAsync: () => Promise<PermissionResponse>;
+  readonly getMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
+  readonly requestMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
+  readonly getAvailableVideoCodecsAsync: () => Promise<VideoCodec[]>;
+}

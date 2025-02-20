@@ -1,5 +1,5 @@
 import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions } from '@react-navigation/native';
-import { ReactNode } from 'react';
+import { ReactNode, PropsWithChildren } from 'react';
 import { ViewProps } from 'react-native';
 import { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
 import { ScreenTrigger } from './common';
@@ -7,6 +7,7 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
+export { ExpoTabsResetValue } from './TabRouter';
 /**
  * Options to provide to the Tab Router.
  */
@@ -33,9 +34,7 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export declare function Tabs(props: TabsProps): import("react").JSX.Element;
-export type UseTabsWithChildrenOptions = UseTabsOptions & {
-    children: ReactNode;
-};
+export type UseTabsWithChildrenOptions = PropsWithChildren<UseTabsOptions>;
 export type UseTabsWithTriggersOptions = UseTabsOptions & {
     triggers: ScreenTrigger[];
 };
@@ -67,6 +66,9 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         }> | ((state: Readonly<Readonly<{
             key: string;
             index: number;
+            /**
+             * Options to provide to the Tab Router.
+             */
             routeNames: string[];
             history?: unknown[] | undefined;
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];

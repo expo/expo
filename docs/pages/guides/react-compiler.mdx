@@ -24,9 +24,9 @@ This will generally verify if your app is following the [**rules of React**](htt
 
 <Step label="2">
 
-Install `babel-plugin-react-compiler` in your project:
+Install `babel-plugin-react-compiler` and the React compiler runtime in your project:
 
-<Terminal cmd={['$ npx expo install babel-plugin-react-compiler']} />
+<Terminal cmd={['$ npx expo install babel-plugin-react-compiler react-compiler-runtime@beta']} />
 
 </Step>
 
@@ -44,17 +44,9 @@ Toggle on the React Compiler experiment in your app config file:
 
 </Step>
 
-<Step label="4">
-
-Install the React compiler runtime module:
-
-<Terminal cmd={['$ npx expo install react-compiler-runtime@beta']} />
-
-</Step>
-
 ### Enabling the linter
 
-> In the future, all of these steps below will be automated by Expo CLI.
+> In the future, all of the following steps below will be automated by Expo CLI.
 
 Additionally, you should use the ESLint plugin to continuously enforce the rules of React in your project.
 
@@ -89,7 +81,10 @@ You can incrementally adopt the React Compiler in your app using a few strategie
 
 <Step label="1">
 
-Configure the Babel plugin to only run on specific files or components. To do this, add the following to your project's Babel configuration:
+Configure the Babel plugin to only run on specific files or components. To do this:
+
+1. If your project doesn't have [**babel.config.js**](/versions/latest/config/babel/), create one by running `npx expo customize babel.config.js`.
+2. Add the following configuration to **babel.config.js**:
 
 ```js babel.config.js
 module.exports = function (api) {

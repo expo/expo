@@ -28,7 +28,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-secure-store` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -102,7 +102,7 @@ Additionally, any data protected with the `requireAuthentication` option set to 
 
 Apple App Store Connect prompts you to select the type of encryption algorithm your app implements. This is known as **Export Compliance Information**. It is asked when publishing the app or submitting for TestFlight.
 
-When using `expo-secure-store`, you can set the [`ios.config.usesNonExemptEncryption`](/versions/latest/config/app/#usesnonexemptencryption) property to `false` in the app config:
+When using `expo-secure-store`, you can set the [`ios.config.usesNonExemptEncryption`](../config/app/#usesnonexemptencryption) property to `false` in the app config:
 
 {/* prettier-ignore */}
 ```json app.json

@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix building for macOS. ([#35033](https://github.com/expo/expo/pull/35033) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.2.0 - 2024-11-29
 

@@ -10,6 +10,10 @@ import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
 import java.lang.ref.WeakReference
+import expo.modules.updatesinterface.UpdatesControllerRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
   private val contextHolder = WeakReference(context)
@@ -35,5 +39,19 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
       return JSCExecutorFactory(applicationContext.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
     }
     return HermesExecutorFactory()
+  }
+
+  override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
+    super.onWillCreateReactInstance(useDeveloperSupport)
+    // On New Architecture mode, `onWillCreateReactInstance()` would be called
+    // inside `DevLauncherController.initialize()`.
+    // The `DevLauncherController.instance` is not available at this point.
+    // Posting the updates interface setup to next run loop.
+    CoroutineScope(Dispatchers.Main).launch {
+      UpdatesControllerRegistry.controller?.get()?.let {
+        DevLauncherController.instance.updatesInterface = it
+        it.updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
+      }
+    }
   }
 }

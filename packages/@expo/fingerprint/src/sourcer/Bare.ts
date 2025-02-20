@@ -5,6 +5,7 @@ import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
@@ -69,6 +70,9 @@ export async function getPackageJsonScriptSourcesAsync(
 }
 
 export async function getGitIgnoreSourcesAsync(projectRoot: string, options: NormalizedOptions) {
+  if (options.sourceSkips & SourceSkips.GitIgnore) {
+    return [];
+  }
   const result = await getFileBasedHashSourceAsync(projectRoot, '.gitignore', 'bareGitIgnore');
   if (result != null) {
     debug(`Adding file - ${chalk.dim('.gitignore')}`);
@@ -110,8 +114,14 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
   }
   try {
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'android'],
+      'node',
+      [
+        resolveExpoAutolinkingCliPath(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'android',
+      ],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);
@@ -138,8 +148,14 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
   }
   try {
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'ios'],
+      'node',
+      [
+        resolveExpoAutolinkingCliPath(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'ios',
+      ],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);

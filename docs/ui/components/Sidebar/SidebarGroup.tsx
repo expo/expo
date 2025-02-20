@@ -3,14 +3,15 @@ import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
-import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
@@ -178,7 +179,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
     return true;
   } else if (
     info.children &&
-    (info.children[0]?.sidebarTitle || info.children[0]?.name) === info.name
+    (info.children[0]?.sidebarTitle ?? info.children[0]?.name) === info.name
   ) {
     // If the first child post in the group has the same name as the group, then hide the
     // group title, lest we be very repetitive
@@ -196,6 +197,8 @@ function getIconElement(iconName?: string) {
       return StoplightIcon;
     case 'Deploy':
       return Rocket01Icon;
+    case 'Monitor':
+      return DataIcon;
     case 'Development process':
       return CodeSquare01Icon;
     case 'EAS Build':
@@ -210,12 +213,14 @@ function getIconElement(iconName?: string) {
       return DataIcon;
     case 'EAS Workflows':
       return Dataflow01Icon;
+    case 'EAS Hosting':
+      return Cloud01Icon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':
       return RouterLogo;
     case 'Push notifications':
-      return Bell03Icon;
+      return NotificationBoxIcon;
     case 'Distribution':
       return Phone01Icon;
     case 'UI programming':

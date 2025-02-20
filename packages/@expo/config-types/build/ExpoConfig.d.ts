@@ -207,6 +207,10 @@ export interface ExpoConfig {
          * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
          */
         assetPatternsToBeBundled?: string[];
+        /**
+         * Whether to disable the built-in expo-updates anti-bricking measures. Defaults to false. If set to true, this will allow overriding certain configuration options from the JS API, which is liable to leave an app in a bricked state if not done carefully. This should not be used in production.
+         */
+        disableAntiBrickingMeasures?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -525,6 +529,10 @@ export interface IOS {
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
+    /**
+     * Your iOS app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `ios.buildNumber` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `CFBundleShortVersionString`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+     */
+    version?: string;
 }
 /**
  * Configuration that is specific to the iOS platform icons.
@@ -773,6 +781,10 @@ export interface Android {
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
+    /**
+     * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+     */
+    version?: string;
 }
 export interface AndroidIntentFiltersData {
     /**

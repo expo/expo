@@ -21,8 +21,7 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import url from 'url';
+import url, { pathToFileURL } from 'node:url';
 
 import { getPossibleProjectRoot } from './common';
 
@@ -131,23 +130,80 @@ export function reactServerActionsPlugin(
       ])
     );
 
-    // TODO: this is cacheable, no need to recompute
-    const programBody = moduleScope.path.get('body');
-    const lastImportPath = findLast(
-      Array.isArray(programBody) ? programBody : [programBody],
-      (stmt) => stmt.isImportDeclaration()
-    );
+    // Insert the declaration as close to the original declaration as possible.
 
-    const [inserted] = lastImportPath!.insertAfter(functionDeclaration);
-    moduleScope.registerBinding(bindingKind, inserted);
+    const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
 
-    inserted.addComment(
-      'leading',
-      ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
-      true
-    );
+    const decl = isPathFunctionInTopLevel ? path : findImmediatelyEnclosingDeclaration(path);
+    let inserted: NodePath<types.ExportNamedDeclaration>;
+
+    const canInsertExportNextToPath = (decl: NodePath) => {
+      if (!decl) {
+        return false;
+      }
+      if (decl.parentPath?.isProgram()) {
+        return true;
+      }
+
+      return false;
+    };
+
+    const findNearestPathThatSupportsInsertBefore = (decl: NodePath) => {
+      let current = decl;
+
+      // Check if current scope is suitable for `export` insertion
+      while (current && !current.isProgram()) {
+        if (canInsertExportNextToPath(current)) {
+          return current;
+        }
+        const parentPath = current.parentPath;
+        if (!parentPath) {
+          return null;
+        }
+        current = parentPath;
+      }
+
+      if (current.isFunction()) {
+        // Don't insert exports inside functions
+        return null;
+      }
+
+      return current;
+    };
+
+    const topLevelDecl = decl ? findNearestPathThatSupportsInsertBefore(decl) : null;
+
+    if (topLevelDecl) {
+      // If it's a variable declaration, insert before its parent statement to avoid syntax errors
+      const targetPath = topLevelDecl.isVariableDeclarator()
+        ? topLevelDecl.parentPath
+        : topLevelDecl;
+      [inserted] = targetPath.insertBefore(functionDeclaration);
+      moduleScope.registerBinding(bindingKind, inserted);
+      inserted.addComment(
+        'leading',
+        ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
+        true
+      );
+    } else {
+      // Fallback to inserting after the last import if no enclosing declaration is found
+      const programBody = moduleScope.path.get('body');
+      const lastImportPath = findLast(
+        Array.isArray(programBody) ? programBody : [programBody],
+        (stmt) => stmt.isImportDeclaration()
+      );
+
+      [inserted] = lastImportPath!.insertAfter(functionDeclaration);
+      moduleScope.registerBinding(bindingKind, inserted);
+      inserted.addComment(
+        'leading',
+        ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
+        true
+      );
+    }
 
     return {
+      inserted,
       extractedIdentifier,
       getReplacement: () =>
         getInlineActionReplacement({
@@ -289,8 +345,7 @@ export function reactServerActionsPlugin(
           // so we can't just remove this node.
           // replace the function decl with a (hopefully) equivalent var declaration
           // `var [name] = $$INLINE_ACTION_{N}`
-          // TODO: this'll almost certainly break when using default exports,
-          // but tangle's build doesn't support those anyway
+
           const bindingKind = 'var';
           const [inserted] = path.replaceWith(
             t.variableDeclaration(bindingKind, [t.variableDeclarator(fnId, extractedIdentifier)])
@@ -649,7 +704,7 @@ const getFreeVariables = (path: FnPath) => {
 };
 
 const getFnPathName = (path: FnPath) => {
-  return path.isArrowFunctionExpression() ? undefined : path.node!.id!.name;
+  return path.isArrowFunctionExpression() ? undefined : path.node?.id?.name;
 };
 
 const isChildScope = ({

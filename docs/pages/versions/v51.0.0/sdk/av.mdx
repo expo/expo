@@ -28,7 +28,7 @@ See the [playlist example app](https://github.com/expo/playlist-example) for an 
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-av` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -71,7 +71,7 @@ Learn how to configure the native projects in the [installation instructions in 
 
 ## Usage
 
-On this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
+On this page, we reference operations on `playbackObject`. Here is an example of obtaining access to the reference for both sound and video:
 
 ### Example: `Audio.Sound`
 
@@ -185,7 +185,7 @@ import { Audio, Video } from 'expo-av';
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['RECORD_AUDIO']} />
 

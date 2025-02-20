@@ -53,7 +53,7 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
     {
       name: 'supportsPictureInPicture',
       description:
-        'A boolean value to enable Picture-in-Picture on Android and iOS. Configures the `android:supportsPictureInPicture` property on Android and the `UIBackgroundModes` array in the **Info.plist** file on iOS. When `undefined`, the configuration is not modified.',
+        'A boolean value to enable Picture-in-Picture on Android and iOS. If `true`, enables the `android:supportsPictureInPicture` property on Android and adds the `audio` key to the `UIBackgroundModes` array in the **Info.plist** file on iOS. If `false`, the key is removed. When `undefined`, the configuration is not modified.',
       default: 'undefined',
     },
   ]}
@@ -293,6 +293,22 @@ In those cases, the `VideoPlayer` can be created using the [`createVideoPlayer`]
 import { createVideoPlayer } from 'expo-video';
 const player = createVideoPlayer(videoSource);
 ```
+
+### Caching videos
+
+If your app frequently replays the same video, caching can be utilized to minimize network usage and enhance user experience, albeit at the cost of increased device storage usage. `expo-video` supports video caching on `Android` and `iOS` platforms. This feature can be activated by setting the [`useCaching`](#videosource) property of a [`VideoSource`](#videosource) object to `true`.
+
+The cache is persistent and will be cleared on a least-recently-used basis once the preferred size is exceeded. Furthermore, the system can clear the cache due to low storage availability, so it's not advisable to depend on the cache to store critical data.
+
+The cache functions offline. If a portion or the entirety of a video is cached, it can be played from the cache even when the device is offline until the cached data is exhausted.
+
+> Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+
+### Managing the cache
+
+- The preferred cache size in bytes can be defined using the [`setVideoCacheSizeAsync`](#videosetvideocachesizeasyncsizebytes) function. The default cache size is 1GB.
+- The [`getCurrentVideoCacheSize`](#videogetcurrentvideocachesize) can be used to get the current storage occupied by the cache in bytes.
+- All cached videos can be cleared using the [`clearVideoCacheAsync`](#videoclearvideocacheasync) function.
 
 ## API
 

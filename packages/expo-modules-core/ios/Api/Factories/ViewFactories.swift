@@ -19,6 +19,13 @@ public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>
   return ExpoSwiftUI.ViewDefinition(ViewType.self)
 }
 
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+  _ viewType: ViewType.Type,
+  @ExpoSwiftUI.ViewDefinitionBuilder<ViewType> _ elements: @escaping () -> [AnyViewDefinitionElement]
+) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
+  return ExpoSwiftUI.ViewDefinition(ViewType.self, elements: elements())
+}
+
 // MARK: Props
 
 /**
@@ -44,4 +51,11 @@ public func OnViewDidUpdateProps<ViewType: UIView>(
   @_implicitSelfCapture _ closure: @escaping (_ view: ViewType) -> Void
 ) -> ViewLifecycleMethod<ViewType> {
   return ViewLifecycleMethod(type: .didUpdateProps, closure: closure)
+}
+
+/**
+ Sets the name of the view that is exported to the JavaScript world.
+ */
+public func ViewName(_ name: String) -> ViewNameDefinition {
+  return ViewNameDefinition(name: name)
 }

@@ -1,21 +1,25 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { H2, MONOSPACE, RawH3 } from '~/ui/components/Text';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2 } from '~/ui/components/Text';
 
-import { AccessorDefinitionData, MethodDefinitionData, PropData } from './APIDataTypes';
+import {
+  AccessorDefinitionData,
+  CommentTagData,
+  MethodDefinitionData,
+  PropData,
+} from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   getMethodName,
   renderParams,
   resolveTypeName,
-  getCodeHeadingWithBaseNestingLevel,
   getTagData,
   getAllTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionMethodsProps = {
@@ -30,8 +34,10 @@ export type RenderMethodOptions = {
   apiName?: string;
   sdkVersion: string;
   header?: string;
+  nested?: boolean;
   exposeInSidebar?: boolean;
   baseNestingLevel?: number;
+  parentPlatforms?: CommentTagData[];
 };
 
 function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
@@ -57,38 +63,41 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
+  {
+    apiName,
+    exposeInSidebar = true,
+    nested = false,
+    sdkVersion,
+    parentPlatforms,
+    ...options
+  }: RenderMethodOptions
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
 
   return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
     const returnComment = getTagData('returns', comment);
+    const platforms = getAllTagData('platform', comment);
     return (
       <div
         key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
-        className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
-        <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <HeaderComponent>
-            <MONOSPACE
-              weight="medium"
-              className={mergeClasses(
-                'wrap-anywhere !text-base',
-                !exposeInSidebar && 'mb-1 inline-block'
-              )}>
-              {getMethodName(
-                method as MethodDefinitionData,
-                apiName,
-                name,
-                parameters,
-                typeParameter
-              )}
-            </MONOSPACE>
-          </HeaderComponent>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        className={mergeClasses(
+          !nested && STYLES_APIBOX,
+          !nested && STYLES_APIBOX_NESTED,
+          nested && 'border-b border-palette-gray4 last:border-b-0'
+        )}>
+        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APIBoxHeader
+          name={getMethodName(
+            method as MethodDefinitionData,
+            apiName,
+            name,
+            parameters,
+            typeParameter
+          )}
+          platforms={platforms.length > 0 ? platforms : parentPlatforms}
+          baseNestingLevel={baseNestingLevel}
+        />
         {parameters && parameters.length > 0 && (
           <>
             {renderParams(parameters, sdkVersion)}
@@ -114,7 +123,10 @@ export const renderMethod = (
                 </div>
                 {returnComment ? (
                   <div className="mb-1 mt-1.5 flex flex-col pl-6">
-                    <APICommentTextBlock comment={{ summary: returnComment.content }} />
+                    <APICommentTextBlock
+                      comment={{ summary: returnComment.content }}
+                      includeSpacing={false}
+                    />
                   </div>
                 ) : undefined}
               </>

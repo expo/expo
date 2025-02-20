@@ -2,15 +2,29 @@
 
 ## Unpublished
 
+- Fixed an issue on iOS where social profile urls were badly stored. ([#31771](https://github.com/expo/expo/pull/31771) by [@mlecoq](https://github.com/mlecoq))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- added the ability to change isFavorite property of contacts on Android (using updateContactAsync) ([#34483](https://github.com/expo/expo/pull/34483) by [@NorseGaud](https://github.com/NorseGaud))
 - added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
+- Add `presentAccessPickerAsync` function that presents the iOS 18.0+ picker for limited contacts access. ([#33771](https://github.com/expo/expo/pull/33771) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Exposed `ContactAccessButton` from SwiftUI. ([#33782](https://github.com/expo/expo/pull/33782) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed saving a contact with photos on Android. ([#34432](https://github.com/expo/expo/pull/34432) by [@chrfalch](https://github.com/chrfalch))
+- Fixed `the native view manager required by name (ExpoContactAccessButton) from NativeViewManagerAdapter isn't exported` warning. ([#33993](https://github.com/expo/expo/pull/33993) by [@lukmccall](https://github.com/lukmccall))
+- Fixed corrupted contact after `updateContactAsync`. ([#34186](https://github.com/expo/expo/pull/34186) by [@freeboub](https://github.com/34186))
+
 ### 💡 Others
+
+- [docs] Removed iOS platform only for the `updateContactAsync` method ([#34488](https://github.com/expo/expo/pull/34488) by [@chrfalch](https://github.com/chrfalch))
+- Use the `src` folder as the Metro target. ([#33781](https://github.com/expo/expo/pull/33781) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 14.0.2 — 2024-11-07
 

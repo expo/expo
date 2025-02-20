@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed crash when multiple threads access same member in swift ([#33572](https://github.com/expo/expo/pull/33572) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fixed ScreenOrientation.addOrientationChangeListener() Freezes iOS Devices in Expo SDK 52, issue 33853 ([#33867](https://github.com/expo/expo/pull/33867) by [@pjdemers](https://github.com/pjdemers)
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+
+## 8.0.2 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed crash when multiple threads access same member in swift ([#33572](https://github.com/expo/expo/pull/33572) by [@chrfalch](https://github.com/chrfalch))
 
 ## 8.0.1 - 2024-12-05
 

@@ -78,7 +78,7 @@ function normalizeArgs(
 }
 
 export function installFormDataPatch(formData: typeof FormData): typeof ExpoFormData {
-  formData.prototype.append = function append(this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.append = function append(this: ReactNativeFormDataInternal, ...props: any[]) {
     ensureMinArgCount('append', props, 2);
     // @ts-ignore: When inferred FormData.append from React Native types, it does not support the 3rd blobFilename argument.
     const [name, value, blobFilename] = props;
@@ -86,7 +86,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
   };
 
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.set = function set(this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.set = function set(this: ReactNativeFormDataInternal, ...props: any[]) {
     ensureMinArgCount('set', props, 2);
     const [name, value, blobFilename] = props;
     const args = normalizeArgs(name, value, blobFilename);
@@ -110,7 +110,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
   };
 
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.delete ??= function (this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.delete ??= function (this: ReactNativeFormDataInternal, ...props: any[]) {
     ensureMinArgCount('delete', props, 1);
     let [name] = props;
     name = String(name);
@@ -125,7 +125,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
   // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.get ??= function (
     this: ReactNativeFormDataInternal,
-    ...props
+    ...props: any[]
   ): FormDataEntryValue | null {
     ensureMinArgCount('get', props, 1);
     let [name] = props;
@@ -141,7 +141,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
   };
 
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.has ??= function (this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.has ??= function (this: ReactNativeFormDataInternal, ...props: any[]) {
     ensureMinArgCount('has', props, 1);
     let [name] = props;
     name = String(name);
@@ -155,7 +155,10 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
 
   // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-dom-bindings/src/server/ReactFizzConfigDOM.js#L1056
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.forEach ??= function forEach(this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.forEach ??= function forEach(
+    this: ReactNativeFormDataInternal,
+    ...props: any[]
+  ) {
     ensureMinArgCount('forEach', props, 1);
 
     const [callback, thisArg] = props;

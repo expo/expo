@@ -6,6 +6,7 @@ final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable, Hashable {
   let databasePath: String
   let openOptions: OpenDatabaseOptions
   var isClosed = false
+  var extraPointer: OpaquePointer?
 
   init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions) {
     self.databasePath = databasePath

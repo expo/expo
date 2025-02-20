@@ -1,6 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+import { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
@@ -25,6 +26,13 @@ export default class CameraView extends Component<CameraViewProps> {
      * The list varies across Android devices but is the same for every iOS.
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
+    /**
+     * Returns an object with the supported features of the camera on the current device.
+     */
+    getSupportedFeatures(): {
+        isModernBarcodeScannerAvailable: boolean;
+        toggleRecordingAsyncAvailable: boolean;
+    };
     /**
      * Resumes the camera preview.
      */
@@ -67,7 +75,10 @@ export default class CameraView extends Component<CameraViewProps> {
      *
      * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
-    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
+    takePictureAsync(options: CameraPictureOptions & {
+        pictureRef: true;
+    }): Promise<PictureRef>;
+    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     /**
      * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
      * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
@@ -103,6 +114,21 @@ export default class CameraView extends Component<CameraViewProps> {
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
     } | undefined>;
+    /**
+     * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+     *
+     * @example
+     * ```ts
+     * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+     *
+     * return (
+     *  {toggleRecordingAsyncAvailable && (
+     *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+     *  )}
+     * )
+     * ```
+     */
+    toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
      */

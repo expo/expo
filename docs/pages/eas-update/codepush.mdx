@@ -51,7 +51,7 @@ The instructions in the [EAS Update Getting Started guide](/eas-update/getting-s
 
 Since you have changed the update provider from CodePush to EAS Update, you will need to rebuild your app and submit the new build to the respective app stores (Google Play Store and Apple App Store) to ensure the update mechanism works as expected for your end-users.
 
-Please follow the respective store guidelines for submitting a new build of your application:
+Follow the respective store guidelines for submitting a new build of your application:
 
 - [Submitting to Apple App Store](/submit/ios)
 - [Submitting to Google Play Store](/submit/android)
@@ -68,7 +68,7 @@ CodePush and EAS Update are both services that allow you to send hotfixes to the
 
 **CodePush has single streams of updates for deployments**. What this means is that you can point a build to a deployment, and it will pull updates from that. If you want to change the deployment that is targeted by a build, you can do this at runtime through a JavaScript API.
 
-**EAS Update has multiple streams of updates** — one that correspond to your source control branches (called branches), and another called channels, which point to branches. The mapping between channels and branches is handled on the server side, and a channel can point to different branches for each runtime version (additionally, more advanced logic may be expressed, such as to support incremental rollouts). Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. The reason for this is that it ensures that certain branches (eg: development, staging) don't automatically go out to production -- your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
+**EAS Update has multiple streams of updates** — one that correspond to your source control branches (called branches), and another called channels, which point to branches. The mapping between channels and branches is handled on the server side, and a channel can point to different branches for each runtime version (additionally, more advanced logic may be expressed, such as to support incremental rollouts). Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. The reason for this is that it ensures that certain branches (eg: development, staging) don't automatically go out to production &mdash; your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
 
 </Collapsible>
 

@@ -10,6 +10,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const ExpoResolver_1 = require("../ExpoResolver");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const Path_1 = require("../utils/Path");
@@ -63,6 +64,9 @@ async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
 }
 exports.getPackageJsonScriptSourcesAsync = getPackageJsonScriptSourcesAsync;
 async function getGitIgnoreSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.GitIgnore) {
+        return [];
+    }
     const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, '.gitignore', 'bareGitIgnore');
     if (result != null) {
         debug(`Adding file - ${chalk_1.default.dim('.gitignore')}`);
@@ -96,7 +100,13 @@ async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, us
         return [];
     }
     try {
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'android'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [
+            (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
+            'react-native-config',
+            '--json',
+            '--platform',
+            'android',
+        ], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
@@ -117,7 +127,13 @@ async function getCoreAutolinkingSourcesFromExpoIos(projectRoot, options, useRNC
         return [];
     }
     try {
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'ios'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [
+            (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
+            'react-native-config',
+            '--json',
+            '--platform',
+            'ios',
+        ], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,

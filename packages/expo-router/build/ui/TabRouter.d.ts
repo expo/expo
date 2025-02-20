@@ -11,7 +11,7 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
     payload: {
         name: string;
         reset?: ExpoTabsResetValue;
-        params?: object | undefined;
+        params?: object;
     };
 };
 export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {

@@ -8,7 +8,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Gestures are a great way to provide an intuitive user experience in an app. The [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) library provides built-in native components that can handle gestures. It recognizes pan, tap, rotation, and other gestures using the platform's native touch handling system. In this chapter, we'll to add two different gestures using this library:
+Gestures are a great way to provide an intuitive user experience in an app. The [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) library provides built-in native components that can handle gestures. It recognizes pan, tap, rotation, and other gestures using the platform's native touch handling system. In this chapter, we'll add two different gestures using this library:
 
 - Double tap to scale the size of the emoji sticker and reduce the scale when double tapped again.
 - Pan to move the emoji sticker around the screen so that the user can place the sticker anywhere on the image.
@@ -28,7 +28,7 @@ To get gesture interactions to work in the app, we'll render `<GestureHandlerRoo
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
 // ... rest of the import statements remain same
-/* @tutinfo Import <CODE>GestureHandlerRootView</CODE> from <CODE>react-native-gesture-handler-library</CODE>. */import { GestureHandlerRootView } from "react-native-gesture-handler";/* @end */
+/* @tutinfo Import <CODE>GestureHandlerRootView</CODE> from <CODE>react-native-gesture-handler-library</CODE>. */import { GestureHandlerRootView } from 'react-native-gesture-handler';/* @end */
 
 export default function Index() {
   return (
@@ -57,8 +57,8 @@ An `Animated` component looks at the `style` prop of the component and determine
 {/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { type ImageSource } from "expo-image";
+/* @tutinfo Import <CODE>Animated</CODE> from <CODE>react-native-reanimated</CODE>. */import Animated from 'react-native-reanimated';/* @end */
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
@@ -148,7 +148,7 @@ Next, wrap the `<Animated.Image>` component with the `<GestureDetector>` and mod
 import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
@@ -197,7 +197,7 @@ Let's take a look at our app on Android, iOS and the web:
 
 <ContentSpotlight file="tutorial/tap-gesture.mp4" />
 
-> For a complete reference of the tap gesture API, see the [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/api/gestures/tap-gesture) documentation.
+> For a complete reference of the tap gesture API, see the [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/tap-gesture) documentation.
 
 </Step>
 
@@ -269,7 +269,7 @@ Next, inside the JSX code:
 ```tsx components/EmojiSticker.tsx
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;

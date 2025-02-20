@@ -14,7 +14,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 `expo-build-properties` is a [config plugin](/config-plugins/introduction/) configuring the native build properties
 of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
 
-> **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** folders
+> **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** directories
 > and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
 
 ## Installation
@@ -37,12 +37,12 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "34.0.0"
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.4"
+            "deploymentTarget": "15.1"
           }
         }
       ]
@@ -63,12 +63,12 @@ export default {
         'expo-build-properties',
         {
           android: {
-            compileSdkVersion: 34,
-            targetSdkVersion: 34,
-            buildToolsVersion: '34.0.0',
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+            buildToolsVersion: '35.0.0',
           },
           ios: {
-            deploymentTarget: '13.4',
+            deploymentTarget: '15.1',
           },
         },
       ],

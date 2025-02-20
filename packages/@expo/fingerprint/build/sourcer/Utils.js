@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringifyJsonSorted = exports.getFileBasedHashSourceAsync = void 0;
+exports.relativizeJsonPaths = exports.stringifyJsonSorted = exports.getFileBasedHashSourceAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const Path_1 = require("../utils/Path");
@@ -30,6 +30,22 @@ function stringifyJsonSorted(target, space) {
     return JSON.stringify(target, (_, value) => sortJson(value), space);
 }
 exports.stringifyJsonSorted = stringifyJsonSorted;
+/**
+ * Transform absolute paths in JSON to relative paths based on the project root.
+ */
+function relativizeJsonPaths(value, projectRoot) {
+    if (typeof value === 'string' && value.startsWith(projectRoot)) {
+        return (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, value));
+    }
+    if (Array.isArray(value)) {
+        return value.map((item) => relativizeJsonPaths(item, projectRoot));
+    }
+    if (value && typeof value === 'object') {
+        return Object.fromEntries(Object.entries(value).map(([key, val]) => [key, relativizeJsonPaths(val, projectRoot)]));
+    }
+    return value;
+}
+exports.relativizeJsonPaths = relativizeJsonPaths;
 function sortJson(json) {
     if (Array.isArray(json)) {
         return json.sort((a, b) => {

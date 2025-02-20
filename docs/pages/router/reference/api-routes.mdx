@@ -3,19 +3,41 @@ title: API Routes
 description: Learn how to create server endpoints with Expo Router.
 ---
 
-> **warning** API Routes is an experimental feature. Available from Expo Router v3.
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 
+import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Expo Router enables you to write server code for all platforms, right in your **app** directory.
+Expo Router enables you to write secure server code for all platforms, right in your **app** directory.
+
+```ts app/hello+api.ts
+export function GET(request: Request) {
+  return Response.json({ hello: 'world' });
+}
+```
+
+Server features require a custom server, which can be deployed to EAS or most [other hosting providers](#deployment).
+
+## What are API Routes
+
+API Routes are functions that are executed on a server when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic, such as exchanging auth codes for access tokens. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
+
+In Expo, API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following API route is executed when the route `/hello` is matched.
+
+<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
+
+## Create an API route
+
+<Step label="1">
+
+Ensure your project is using server output, this will configure the export and production builds to generate a server bundle as well as the client bundle.
 
 ```json app.json
 {
   "web": {
-    "bundler": "metro",
     /* @info Output a dynamic server. */
     "output": "server"
     /* @end */
@@ -23,19 +45,9 @@ Expo Router enables you to write server code for all platforms, right in your **
 }
 ```
 
-Server features require a custom Node.js server. Most hosting providers support Node.js, including [Netlify](#netlify), [Cloudflare](https://www.cloudflare.com/), and [Vercel](https://vercel.com).
+</Step>
 
-## What are API Routes
-
-API Routes are functions that are executed when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
-
-API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following route handler is executed when the route `/hello` is matched.
-
-<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
-
-## Create an API route
-
-<Step label="1">
+<Step label="2">
 
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
@@ -49,7 +61,7 @@ You can export any of the following functions `GET`, `POST`, `PUT`, `PATCH`, `DE
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 Start the development server with Expo CLI:
 
@@ -57,7 +69,7 @@ Start the development server with Expo CLI:
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 You can make a network request to the route to access the data. Run the following command to test the route:
 
@@ -79,7 +91,7 @@ export default function App() {
 }
 ```
 
-This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in the app config file. It can be a mock URL in development. For example:
+Relative fetch requests automatically fetch relative to the dev server origin in development, and can be configured in production using the `origin` field in the **app.json**:
 
 ```json app.json
 {
@@ -96,9 +108,11 @@ This won't work by default on native as `/hello` does not provide an origin URL.
 }
 ```
 
+This URL can be automatically configured during EAS Builds by setting the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable. This will trigger a versioned server deployment which sets the origin to a preview deploy URL automatically.
+
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 Deploy the website and server to a [hosting provider](#deployment) to access the routes in production on both native and web.
 
@@ -198,6 +212,141 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 ## Deployment
 
+When you're ready to deploy to production, run [`npx expo export --platform web`](/more/expo-cli#exporting) to create the server bundle in the **dist** directory. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and higher), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
+You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
+
+<BoxLink
+  title="Deploy instantly with EAS"
+  description="EAS Hosting is the best way to deploy your Expo API routes and servers."
+  href="/eas/hosting/get-started"
+  Icon={Cloud01Icon}
+/>
+
+### Native deployment
+
+> **warning** This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+
+Server features (API routes, and React Server Components) in Expo Router are centered around native implementations of `window.location` and `fetch` which point to the remote server. In development, we automatically point to the dev server running with `npx expo start`, but for production native builds to work you'll need to deploy the server to a secure host and set the `origin` property of the Expo Router Config Plugin.
+
+When configured, features like relative fetch requests `fetch('/my-endpoint')` will automatically point to the server origin.
+
+This deployment process can experimentally be automated to ensure correct versioning during native builds with the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable.
+
+Here's how to configure your native app to automatically deploy and link a versioned production server on build:
+
+<Step label="1">
+
+Ensure the `origin` field is **NOT** set in the **app.json** or in the `expo.extra.router.origin` field. Also, ensure you aren't using **app.config.js** as this is not supported with automatically linked deployments yet.
+
+</Step>
+
+<Step label="2">
+
+Setup [EAS Hosting](/eas/hosting/get-started) for the project by deploying once locally first.
+
+<Terminal cmd={['$ npx expo export -p web', '$ eas deploy']} />
+
+</Step>
+
+<Step label="3">
+
+Set the `EXPO_UNSTABLE_DEPLOY_SERVER` environment variable in your `.env` file. This will be used to enable the experimental server deployment functionality during EAS Build.
+
+```sh .env
+EXPO_UNSTABLE_DEPLOY_SERVER=1
+```
+
+</Step>
+
+<Step label="4">
+
+You're now ready to use automatic server deployment! Run the build command to start the process.
+
+<Terminal cmd={['$ eas build']} />
+
+You can also run this locally with:
+
+<Terminal
+  cmd={[
+    '# Android',
+    '$ npx expo run:android --variant release',
+    '',
+    '# iOS',
+    '$ npx expo run:ios --configuration Release',
+  ]}
+/>
+
+</Step>
+
+Notes about automatic server deployment for native apps:
+
+- Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
+- You can manually deploy the server and set the `origin` URL before building the app if you'd like.
+- Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
+- Automatic deployment does not support [dynamic app config](/workflow/configuration/#dynamic-configuration) (**app.config.js** and **app.config.ts**) files yet.
+- Logs from the deployment will be written to `.expo/logs/deploy.log`.
+- Deployment will not run in `EXPO_OFFLINE` mode.
+
+### Testing the native production app locally
+
+It can often be useful to test the production build against a local dev server to ensure everything is working as expected. This can speed up the debugging process substantially.
+
+<Step label="1">
+
+Export the production server:
+
+<Terminal cmd={['$ npx expo export']} />
+
+</Step>
+<Step label="2">
+
+Host the production server locally:
+
+<Terminal cmd={['$ npx expo serve']} />
+
+</Step>
+
+<Step label="3">
+
+Set the origin in the **app.json**'s `origin` field. Ensure no generated value is in `expo.extra.router.origin`. This should be `http://localhost:8081` (assuming `npx expo serve` is running on the default port).
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "http://localhost:8081"
+        }
+      ]
+    ]
+  }
+}
+```
+
+Remember to remove this `origin` value when deploying to production.
+
+</Step>
+
+<Step label="4">
+
+Build the app in release mode on to a simulator:
+
+<Terminal cmd={['$ EXPO_NO_DEPLOY=1 npx expo run:ios --configuration Release']} />
+
+</Step>
+
+You should now see requests coming in to the local server. Use a tool like [Proxyman](https://proxyman.com/) to inspect network traffic for the simulator and gain better insight.
+
+You can experimentally change the URL and quickly rebuild for iOS using the `--unstable-rebundle` flag. This will swap out the **app.json** and client assets for new ones, skipping the native rebuild.
+
+For example, you can run `eas deploy` to get a new deployment URL, add it to the **app.json**, then run `npx expo run:ios --unstable-rebundle --configuration Release` to quickly rebuild the app with the new URL.
+
+You will want to make a clean build before sending to the store to ensure no transient issues are present.
+
+## Hosting on third-party services
+
 > **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
@@ -209,10 +358,6 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - The `@expo/server` package is included with `expo` and delegates requests to the server routes.
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
-
-### Testing Locally
-
-You can test the local production server in Expo SDK 52 by running `npx expo serve`. This will start the production server locally and serve the static files and API routes. Visit the URL in a web browser or create a native build with the origin set to the local server URL.
 
 ### Express
 
@@ -302,7 +447,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('@expo/server/adapter/netlify');
 
 const handler = createRequestHandler({
-  /* @info Points to the root `dist/` (output) folder */
+  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
   build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
 });
@@ -383,7 +528,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('@expo/server/adapter/vercel');
 
 module.exports = createRequestHandler({
-  /* @info Points to the root `dist/` (output) folder */
+  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
 });
@@ -477,8 +622,10 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
   cmd={[
     '# Install the Vercel CLI globally if needed.',
     '$ npm install vercel -g',
+    '# Build the website.',
+    '$ vercel build',
     '# Deploy the website.',
-    '$ vercel deploy',
+    '$ vercel deploy --prebuilt',
   ]}
 />
 

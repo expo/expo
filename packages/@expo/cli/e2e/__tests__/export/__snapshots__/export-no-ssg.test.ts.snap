@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`export-no-ssg has expected routes manifest entries 1`] = `
+{
+  "apiRoutes": [
+    {
+      "file": "_expo/functions/(a,b)/multi-group-api+api.js",
+      "namedRegex": "^(?:/\\((?:a|b)\\))?/multi\\-group\\-api(?:/)?$",
+      "page": "/(b)/multi-group-api",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/methods+api.js",
+      "namedRegex": "^/methods(?:/)?$",
+      "page": "/methods",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/json+api.js",
+      "namedRegex": "^/api/json(?:/)?$",
+      "page": "/api/json",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/empty+api.js",
+      "namedRegex": "^/api/empty(?:/)?$",
+      "page": "/api/empty",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/error+api.js",
+      "namedRegex": "^/api/error(?:/)?$",
+      "page": "/api/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/env-vars+api.js",
+      "namedRegex": "^/api/env\\-vars(?:/)?$",
+      "page": "/api/env-vars",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/redirect+api.js",
+      "namedRegex": "^/api/redirect(?:/)?$",
+      "page": "/api/redirect",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/externals+api.js",
+      "namedRegex": "^/api/externals(?:/)?$",
+      "page": "/api/externals",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/problematic+api.js",
+      "namedRegex": "^/api/problematic(?:/)?$",
+      "page": "/api/problematic",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/matching-route/alpha+api.js",
+      "namedRegex": "^/matching\\-route/alpha(?:/)?$",
+      "page": "/matching-route/alpha",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/[dynamic]+api.js",
+      "namedRegex": "^/api/(?<dynamic>[^/]+?)(?:/)?$",
+      "page": "/api/[dynamic]",
+      "routeKeys": {
+        "dynamic": "dynamic",
+      },
+    },
+    {
+      "file": "_expo/functions/api/a/[...spread]+api.js",
+      "namedRegex": "^/api/a(?:/(?<spread>.+?))?(?:/)?$",
+      "page": "/api/a/[...spread]",
+      "routeKeys": {
+        "spread": "spread",
+      },
+    },
+  ],
+  "htmlRoutes": [],
+  "notFoundRoutes": [],
+}
+`;

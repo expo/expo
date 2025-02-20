@@ -27,7 +27,7 @@ On iOS, contacts have a multi-layered grouping system that you can also access t
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-contacts` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -124,7 +124,7 @@ import * as Contacts from 'expo-contacts';
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+This library automatically adds `READ_CONTACTS` and `WRITE_CONTACTS` permissions to your app:
 
 <AndroidPermissions permissions={['READ_CONTACTS', 'WRITE_CONTACTS']} />
 

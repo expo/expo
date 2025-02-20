@@ -191,7 +191,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation "com.github.CanHub:Android-Image-Cropper:4.3.1"
+  implementation "com.vanniktech:android-image-cropper:4.6.0"
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'
@@ -200,9 +200,6 @@ dependencies {
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
   implementation "androidx.tracing:tracing-ktx:1.1.0"
-
-  // expo-face-detector
-  implementation 'com.google.mlkit:face-detection:16.1.5'
 
   api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'

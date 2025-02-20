@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
+- Add support for Bun's text-based lock file format `bun.lock` ([#33825](https://github.com/expo/expo/pull/33825) by [@tharakadesilva](https://github.com/tharakadesilva))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove unused `sudo-prompt` dependency ([#34559](https://github.com/expo/expo/pull/34559) by [@kitten](https://github.com/kitten))
+- Remove unused dependencies. ([#35038](https://github.com/expo/expo/pull/35038) by [@kitten](https://github.com/kitten))
 
 ## 1.6.1 — 2024-11-13
 

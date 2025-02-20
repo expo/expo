@@ -220,3 +220,9 @@ export function getUpdatesRequestHeadersStringified(
 
   return JSON.stringify(metadata);
 }
+
+export function getDisableAntiBrickingMeasures(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): boolean | undefined {
+  return config.updates?.disableAntiBrickingMeasures;
+}

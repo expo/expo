@@ -3,6 +3,7 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
@@ -19,7 +20,7 @@ class ListTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic): List<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?): List<*> {
     if (value.type != ReadableType.Array) {
       return listOf(
         exceptionDecorator({ cause ->
@@ -30,16 +31,16 @@ class ListTypeConverter(
             cause
           )
         }) {
-          elementConverter.convert(value)
+          elementConverter.convert(value, context)
         }
       )
     }
 
     val jsArray = value.asArray()
-    return convertFromReadableArray(jsArray)
+    return convertFromReadableArray(jsArray, context)
   }
 
-  override fun convertFromAny(value: Any): List<*> {
+  override fun convertFromAny(value: Any, context: AppContext?): List<*> {
     return if (elementConverter.isTrivial()) {
       value as List<*>
     } else {
@@ -52,13 +53,13 @@ class ListTypeConverter(
             cause
           )
         }) {
-          elementConverter.convert(it)
+          elementConverter.convert(it, context)
         }
       }
     }
   }
 
-  private fun convertFromReadableArray(jsArray: ReadableArray): List<*> {
+  private fun convertFromReadableArray(jsArray: ReadableArray, context: AppContext?): List<*> {
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {
         exceptionDecorator({ cause ->
@@ -69,7 +70,7 @@ class ListTypeConverter(
             cause
           )
         }) {
-          elementConverter.convert(this)
+          elementConverter.convert(this, context)
         }
       }
     }

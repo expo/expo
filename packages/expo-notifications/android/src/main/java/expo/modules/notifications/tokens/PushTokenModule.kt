@@ -44,15 +44,15 @@ class PushTokenModule : Module(), PushTokenListener {
      * @param promise Promise to be resolved with the token.
      */
     AsyncFunction("getDevicePushTokenAsync") { promise: Promise ->
-      FirebaseMessaging.getInstance().token
+      val instance = getFirebaseMessagingInstance(promise) ?: return@AsyncFunction
+      instance.token
         .addOnCompleteListener { task ->
           if (!task.isSuccessful) {
             val exception = task.exception
             promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed: ${exception?.message ?: "unknown"}", exception)
             return@addOnCompleteListener
           }
-          val token = task.result
-          if (token == null) {
+          val token = task.result ?: run {
             promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed. Invalid token.", null)
             return@addOnCompleteListener
           }
@@ -63,7 +63,8 @@ class PushTokenModule : Module(), PushTokenListener {
     }
 
     AsyncFunction("unregisterForNotificationsAsync") { promise: Promise ->
-      FirebaseMessaging.getInstance().deleteToken()
+      val instance = getFirebaseMessagingInstance(promise) ?: return@AsyncFunction
+      instance.deleteToken()
         .addOnCompleteListener { task ->
           if (!task.isSuccessful) {
             val exception = task.exception
@@ -72,6 +73,19 @@ class PushTokenModule : Module(), PushTokenListener {
           }
           promise.resolve(null)
         }
+    }
+  }
+
+  private fun getFirebaseMessagingInstance(promise: Promise): FirebaseMessaging? {
+    return try {
+      FirebaseMessaging.getInstance()
+    } catch (e: IllegalStateException) {
+      promise.reject(
+        REGISTRATION_FAIL_CODE,
+        "Make sure to complete the guide at https://docs.expo.dev/push-notifications/fcm-credentials/ : ${e.message}",
+        e
+      )
+      null
     }
   }
 

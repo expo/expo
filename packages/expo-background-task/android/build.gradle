@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.0.1'
+
+dependencies {
+  implementation 'androidx.work:work-runtime-ktx:2.9.1'
+  implementation 'com.facebook.react:react-android'
+}
+
+android {
+  namespace "expo.modules.backgroundtask"
+  defaultConfig {
+    versionCode 23
+    versionName "0.0.1"
+  }
+}

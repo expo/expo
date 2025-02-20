@@ -9,6 +9,7 @@ import { Options } from './resolveOptions';
 import * as Log from '../log';
 import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
@@ -67,7 +68,7 @@ export async function installAsync(
   }
 
   // note(simek): check out the packages compatibility with New Architecture against RND API
-  if (!process.env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
+  if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
     await checkPackagesCompatibility(otherPackages);
   }
 

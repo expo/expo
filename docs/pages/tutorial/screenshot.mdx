@@ -72,7 +72,7 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { useState, useRef } from 'react';
+/* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */import { useState, useRef } from 'react';/* @end */
 /* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
@@ -116,7 +116,7 @@ import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';

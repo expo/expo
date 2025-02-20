@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -68,7 +68,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Name of your app.
@@ -142,7 +142,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Edit the 'Display Name' field in Xcode
@@ -151,7 +151,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -215,7 +215,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for the bottom navigation bar on Android.
@@ -289,7 +289,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Set this property using AppConstants.java.
@@ -365,7 +365,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Set this property using just Xcode
@@ -373,7 +373,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -451,7 +451,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
@@ -525,7 +525,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
           >
             <p
-              class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+              class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
               data-text="true"
             >
               Set this property using Xcode.
@@ -533,7 +533,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </details>
         <div
-          class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -611,7 +611,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </span>
           </div>
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Test sub-sub-property
@@ -619,7 +619,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -697,7 +697,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -705,7 +705,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           6 character long hex color string, eg: 
@@ -719,7 +719,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -783,7 +783,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
@@ -857,7 +857,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             This is set in AndroidManifest.xml directly.
@@ -893,7 +893,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -971,14 +971,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
         </p>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
@@ -1056,7 +1056,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <div
-          class="rounded-lg border border-palette-gray4 pb-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"

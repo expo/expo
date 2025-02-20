@@ -7,7 +7,7 @@ iconUrl: '/static/images/packages/expo-notifications.png'
 platforms: ['android*', 'ios*']
 ---
 
-import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
@@ -26,7 +26,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
   title="Notification guides"
   description="Do not miss our guides on how to set up, send, and handle push notifications."
   href="/push-notifications/overview/"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 > **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) will be required to use push notifications. Local notifications (in-app notifications) will remain available in Expo Go.
@@ -386,7 +386,7 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
     {
       name: 'sounds',
       description:
-        'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
+        'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds. Sound will not be played when focus mode does not permit it or silent mode is on.',
     },
     {
       name: 'enableBackgroundRemoteNotifications',
@@ -436,7 +436,7 @@ Learn how to configure the native projects in the [installation instructions in 
 ### Android
 
 - On Android, this module requires permission to subscribe to the device boot. It's used to set up scheduled notifications when the device (re)starts.
-  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library's **AndroidManifest.xml**.
 
 - Starting from Android 12 (API level 31), to schedule a notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
@@ -643,9 +643,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app.mdx#notification) and [`notification.color`](../config/app.mdx#notification) keys
-in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties).
-These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.

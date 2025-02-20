@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+- Add support for `require.resolveWeak` with tree shaking. ([#34988](https://github.com/expo/expo/pull/34988) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-- Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.19.8 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
 
 ## 0.19.7 - 2024-12-10
 

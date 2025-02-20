@@ -16,6 +16,7 @@ import {
   isValidElement,
   useContext,
   useMemo,
+  PropsWithChildren,
 } from 'react';
 import { StyleSheet, ViewProps, View } from 'react-native';
 
@@ -41,6 +42,7 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
+export { ExpoTabsResetValue } from './TabRouter';
 
 /**
  * Options to provide to the Tab Router.
@@ -96,10 +98,10 @@ export function Tabs(props: TabsProps) {
   );
 }
 
-export type UseTabsWithChildrenOptions = UseTabsOptions & {
-  children: ReactNode;
-};
+// @docsMissing
+export type UseTabsWithChildrenOptions = PropsWithChildren<UseTabsOptions>;
 
+// @docsMissing
 export type UseTabsWithTriggersOptions = UseTabsOptions & {
   triggers: ScreenTrigger[];
 };
@@ -246,7 +248,7 @@ function parseTriggersFromChildren(
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
         console.warn(
-          `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have a href.`
+          `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have an href.`
         );
       }
       return;

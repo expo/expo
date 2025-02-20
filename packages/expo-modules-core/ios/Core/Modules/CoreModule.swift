@@ -18,18 +18,19 @@ internal final class CoreModule: Module {
       return uuidv5(name: name, namespace: namespaceUuid).uuidString.lowercased()
     }
 
-    Function("getViewConfig") { (viewName: String) -> [String: Any]? in
+    // swiftlint:disable:next unused_closure_parameter
+    Function("getViewConfig") { (moduleName: String, viewName: String?) -> [String: Any]? in
       var validAttributes: [String: Any] = [:]
       var directEventTypes: [String: Any] = [:]
-      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: getHolderName(viewName))
+      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: getHolderName(moduleName))
 
-      guard let viewDefinition = moduleHolder?.definition.view else {
+      guard let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] else {
         return nil
       }
       for propName in viewDefinition.getSupportedPropNames() {
         validAttributes[propName] = true
       }
-      for eventName in viewDefinition.eventNames {
+      for eventName in viewDefinition.getSupportedEventNames() {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
           continue
         }

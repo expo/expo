@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [iOS] Allow setting of the `com.apple.developer.ubiquity-kvstore-identifier` entitlement directly. ([#34338](https://github.com/expo/expo/pull/34338) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [web] Add option to disable file reader to read base64 from file on successfull picking. ([#34739](https://github.com/expo/expo/pull/34739) by [@danilaplee](https://github.com/danilaplee))
 
 ## 13.0.1 — 2024-10-22
 

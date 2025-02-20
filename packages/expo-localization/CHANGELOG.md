@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Add languageScriptCode ([#34984](https://github.com/expo/expo/pull/34984) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 16.0.0 — 2024-10-22
 

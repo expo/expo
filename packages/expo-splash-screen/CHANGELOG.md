@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, show the splashscreen again when the app is reloaded. ([#33793](https://github.com/expo/expo/pull/33793) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.29.18 - 2024-12-10
 

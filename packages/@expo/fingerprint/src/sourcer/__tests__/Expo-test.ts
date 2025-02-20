@@ -9,6 +9,7 @@ import resolveFrom from 'resolve-from';
 import { HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
+import { spawnWithIpcAsync } from '../../utils/SpawnIPC';
 import {
   getConfigPluginProps,
   getEasBuildSourcesAsync,
@@ -24,7 +25,8 @@ jest.mock('find-up');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
-jest.mock('../../ExpoVersions');
+jest.mock('../../ExpoResolver');
+jest.mock('../../utils/SpawnIPC');
 
 // NOTE(cedric): this is a workaround to also mock `node:fs`
 jest.mock('node:fs', () => require('memfs').fs);
@@ -210,6 +212,23 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toEqual(sources2);
   });
 
+  it('should transform expo config paths as relative paths', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    appJson.expo.extra ||= {};
+    appJson.expo.extra.testFile = '/app/test-file.txt';
+    appJson.expo.extra.testNestedFile = '/app/nested/test-file.txt';
+    vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig.extra.testFile).toBe('test-file.txt');
+    expect(expoConfig.extra.testNestedFile).toBe('nested/test-file.txt');
+  });
+
   it('should contain external icon file in app.json', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');
@@ -231,10 +250,14 @@ describe(getExpoConfigSourcesAsync, () => {
     const config = {
       exp: JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString()).expo,
     };
-    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    mockSpawnAsync.mockResolvedValueOnce({
+    const configResult = JSON.stringify({ config, loadedModules: [] });
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
       output: [],
-      stdout: JSON.stringify({ config, loadedModules: [] }),
+      stdout: configResult,
+      message: configResult,
       stderr: '',
       signal: null,
       status: 0,
@@ -251,17 +274,20 @@ describe(getExpoConfigSourcesAsync, () => {
   it('should contain extra files from config plugins', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const config = await getConfig('/app', { skipSDKVersionRequirement: true });
-    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    const stdout = JSON.stringify({
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    const configResult = JSON.stringify({
       config,
       loadedModules: [
         'node_modules/third-party/index.js',
         'node_modules/third-party/node_modules/transitive-third-party/index.js',
       ],
     });
-    mockSpawnAsync.mockResolvedValueOnce({
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
       output: [],
-      stdout,
+      stdout: configResult,
+      message: configResult,
       stderr: '',
       signal: null,
       status: 0,
@@ -336,6 +362,47 @@ const { SourceSkips } = require('@expo/fingerprint');
 /** @type {import('@expo/fingerprint').Config} */
 const config = {
   sourceSkips: SourceSkips.ExpoConfigAndroidPackage | SourceSkips.ExpoConfigIosBundleIdentifier | SourceSkips.ExpoConfigVersions,
+};
+module.exports = config;
+`;
+      vol.writeFileSync('/app/fingerprint.config.js', configContents);
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+
+      const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+      const expoConfigSource = sources.find<HashSourceContents>(
+        (source): source is HashSourceContents =>
+          source.type === 'contents' && source.id === 'expoConfig'
+      );
+      const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+      expect(expoConfig).not.toBeNull();
+      expect(expoConfig.version).toBeUndefined();
+      expect(expoConfig.android.versionCode).toBeUndefined();
+      expect(expoConfig.android.package).toBeUndefined();
+      expect(expoConfig.ios.buildNumber).toBeUndefined();
+      expect(expoConfig.ios.bundleIdentifier).toBeUndefined();
+    });
+  });
+
+  it('should support sourceSkips specified as string array in config', async () => {
+    await jest.isolateModulesAsync(async () => {
+      vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+      vol.writeFileSync(
+        '/app/app.config.js',
+        `\
+export default ({ config }) => {
+  config.android = { versionCode: 1, package: 'com.example.app' };
+  config.ios = { buildNumber: '1', bundleIdentifier: 'com.example.app' };
+  return config;
+};`
+      );
+
+      const configContents = `\
+const { SourceSkips } = require('@expo/fingerprint');
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  sourceSkips: ['ExpoConfigAndroidPackage', 'ExpoConfigIosBundleIdentifier', 'ExpoConfigVersions'],
 };
 module.exports = config;
 `;

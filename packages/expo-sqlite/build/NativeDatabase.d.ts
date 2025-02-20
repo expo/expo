@@ -16,6 +16,7 @@ export declare class NativeDatabase {
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+    syncLibSQL(): void;
 }
 /**
  * Options for opening a database.
@@ -43,5 +44,29 @@ export interface SQLiteOpenOptions {
      * @hidden
      */
     finalizeUnusedStatementsBeforeClosing?: boolean;
+    /**
+     * Options for libSQL integration.
+     */
+    libSQLOptions?: {
+        /** The URL of the libSQL server. */
+        url: string;
+        /** The auth token for the libSQL server. */
+        authToken: string;
+        /**
+         * Whether to use remote-only without syncing to local database.
+         * @default false
+         */
+        remoteOnly?: boolean;
+    };
 }
+type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
+    libSQLUrl?: string;
+    libSQLAuthToken?: string;
+    libSQLRemoteOnly?: boolean;
+};
+/**
+ * Flattens the SQLiteOpenOptions that are passed to the native module.
+ */
+export declare function flattenOpenOptions(options: SQLiteOpenOptions): FlattenedOpenOptions;
+export {};
 //# sourceMappingURL=NativeDatabase.d.ts.map

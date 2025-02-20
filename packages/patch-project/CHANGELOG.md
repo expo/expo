@@ -10,7 +10,15 @@
 
 ### 💡 Others
 
+## 0.1.24 - 2024-12-19
+
+### 💡 Others
+
 - Uses `*` version for the `expo` peerDependencies. ([#33763](https://github.com/expo/expo/pull/33763) by [@kudo](https://github.com/kudo))
+
+## 0.1.23 - 2024-12-19
+
+_This version does not introduce any user-facing changes._
 
 ## 0.1.22 - 2024-12-10
 

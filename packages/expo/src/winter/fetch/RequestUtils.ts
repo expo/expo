@@ -97,7 +97,7 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
   }
   if (headers instanceof Headers) {
     const results: [string, string][] = [];
-    headers.forEach((value, key) => {
+    headers.forEach((value: any, key: any) => {
       results.push([key, value]);
     });
     return results;

@@ -257,9 +257,11 @@ function processResolveWeakCall(path, state) {
         optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
-    path.replaceWith(makeResolveWeakTemplate({
-        MODULE_ID: createModuleIDExpression(dependency, state),
-    }));
+    if (state.collectOnly !== true) {
+        path.replaceWith(makeResolveWeakTemplate({
+            MODULE_ID: createModuleIDExpression(dependency, state),
+        }));
+    }
 }
 function getExportNamesFromPath(path) {
     if (path.node.source) {

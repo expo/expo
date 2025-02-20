@@ -172,6 +172,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
+  func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws
 }
 
 @objc(EXUpdatesAppControllerDelegate)
@@ -267,7 +268,7 @@ public class AppController: NSObject {
       let updatesDatabase = UpdatesDatabase()
       do {
         let directory = try initializeUpdatesDirectory()
-        try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
+        try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory, logger: logger)
         _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
       } catch {
         let cause = UpdatesError.appControllerInitializationError(cause: error)
@@ -307,12 +308,14 @@ public class AppController: NSObject {
       config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
     }
 
+    let logger = UpdatesLogger()
+
     var updatesDirectory: URL?
     let updatesDatabase = UpdatesDatabase()
     var directoryDatabaseException: Error?
     do {
       updatesDirectory = try initializeUpdatesDirectory()
-      try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: updatesDirectory!)
+      try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: updatesDirectory!, logger: logger)
     } catch {
       directoryDatabaseException = error
     }
@@ -331,12 +334,12 @@ public class AppController: NSObject {
     return try UpdatesUtils.initializeUpdatesDirectory()
   }
 
-  private static func initializeUpdatesDatabase(updatesDatabase: UpdatesDatabase, inUpdatesDirectory updatesDirectory: URL) throws {
+  private static func initializeUpdatesDatabase(updatesDatabase: UpdatesDatabase, inUpdatesDirectory updatesDirectory: URL, logger: UpdatesLogger) throws {
     var dbError: Error?
     let semaphore = DispatchSemaphore(value: 0)
     updatesDatabase.databaseQueue.async {
       do {
-        try updatesDatabase.openDatabase(inDirectory: updatesDirectory)
+        try updatesDatabase.openDatabase(inDirectory: updatesDirectory, logger: logger)
       } catch {
         dbError = error
       }

@@ -10,21 +10,21 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Creating custom workflows for EAS Build helps customize the build process for your project.
+Creating custom builds for EAS Build helps customize the build process for your project.
 
-## YAML syntax for workflows
+## YAML syntax for custom builds
 
-Workflow files are stored inside the **.eas/build** directory path. They use YAML syntax and must have a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+Custom build config files are stored inside the **.eas/build** directory path. They use YAML syntax and must have a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
 
 ## `build`
 
-Defined to describe a custom workflow. All config options to create a workflow are specified under it.
+Defined to describe a custom build configuration. All config options to create a custom build are specified under it.
 
 ### `name`
 
-The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
+The name of your custom build that is used to identify it in the build logs. EAS Build uses this property to display the name of your build in the dashboard.
 
-For example, the workflow name is `Run tests`:
+For example, the build name is `Run tests`:
 
 ```yaml
 build:
@@ -40,7 +40,7 @@ build:
 
 ### `steps`
 
-Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
+Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a custom build runs on EAS Build. You can define single or multiple steps in a build config. However, it is **required** to define at least one step per build.
 
 Each step is configured with the following properties:
 
@@ -76,7 +76,7 @@ build:
 
 #### Use a single step
 
-For example, a workflow with the following `steps` will print "Hello world":
+For example, a build config with the following `steps` will print "Hello world":
 
 ```yaml
 build:
@@ -91,7 +91,7 @@ build:
 
 #### Use multiple steps
 
-When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first check out the project, install npm dependencies, and then run a command to run tests:
+When multiple `steps` are defined, they are executed sequentially. For example, a build config with the following `steps` will first check out the project, install npm dependencies, and then run a command to run tests:
 
 ```yaml
 build:
@@ -131,7 +131,7 @@ build:
           ENV_TEST_LOCAL="present-only-in-current-shell-context"
           # Set and export variable
           export ENV_TEST_LOCAL_EXPORT="present-in-current-step"
-          # Set shared EAS Workflow variable
+          # Set shared variable
           set-env ENV_TEST_SET_ENV "present-in-following-steps"
 
           # Will print "ENV_TEST_LOCAL: present-only-in-current-shell-context"
@@ -303,7 +303,7 @@ functions:
     command: set-output value `random_number`
 ```
 
-In a workflow, let's use the `random` function to generate two random numbers and print them:
+In a build config, let's use the `random` function to generate two random numbers and print them:
 
 ```yaml
 build:
@@ -325,7 +325,7 @@ build:
 
 #### Use output from one step to another
 
-For example, the following workflow demonstrates how to use output from one step to another:
+For example, the following build config demonstrates how to use output from one step to another:
 
 ```yaml
 build:
@@ -348,7 +348,7 @@ build:
 
 ## `functions`
 
-Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
+Defined to describe a reusable function that can be used in a build config. All config options to create a function are specified with the following properties:
 
 ### `functions.[function_name]`
 
@@ -596,9 +596,9 @@ functions:
 
 A config file path list used to import functions from other config files. Imported files cannot have the `build` section.
 
-For example, the following workflow imports two files and calls two imported functions - `say_hi` and `say_bye`.
+For example, the following build config imports two files and calls two imported functions - `say_hi` and `say_bye`.
 
-```yaml workflow.yml
+```yaml build-and-test.yml
 import:
   - common-functions.yml
   - another-file.yml
@@ -627,13 +627,13 @@ functions:
 
 ### Built-in EAS functions
 
-EAS provides a set of built-in reusable functions that you can use in a workflow without defining the function definition.
+EAS provides a set of built-in reusable functions that you can use in a build config without defining the function definition.
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
 
 #### `eas/build`
 
-The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build workflow configuration based on your build profile's settings from [**eas.json**](/eas/json/).
+The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build configuration based on your build profile's settings from [**eas.json**](/eas/json/).
 
 It's ideal for people who want to have the build done without worrying about altering and configuring the build process manually. It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
 
@@ -755,9 +755,9 @@ build:
     - eas/maestro_test:
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -771,9 +771,9 @@ build:
         app_path: ./fixtures/my_app.app
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -787,9 +787,9 @@ build:
         app_path: ./fixtures/my_app.apk
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -806,7 +806,7 @@ Behind the scenes, it uses:
 
 If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
 
-<Collapsible summary={<>An example Android workflow with <code>eas/maestro_test</code> expanded</>}>
+<Collapsible summary={<>An example Android build config with <code>eas/maestro_test</code> expanded</>}>
 
 ```yaml build-and-test-android-expanded.yml
 build:
@@ -841,7 +841,7 @@ build:
           fi
     - run:
         command: |
-          maestro test maestro/flow.yaml
+          maestro test maestro/flow.yml
     - eas/upload_artifact:
         name: Upload test artifact
         if: ${ always() }
@@ -853,7 +853,7 @@ build:
 
 </Collapsible>
 
-<Collapsible summary={<>An example iOS workflow with <code>eas/maestro_test</code> expanded</>}>
+<Collapsible summary={<>An example iOS build config with <code>eas/maestro_test</code> expanded</>}>
 
 ```yaml build-and-test-ios-expanded.yml
 build:
@@ -884,7 +884,7 @@ steps:
         fi
   - run:
       command: |
-        maestro test maestro/flow.yaml
+        maestro test maestro/flow.yml
   - eas/upload_artifact:
       name: Upload test artifact
       if: ${ always() }
@@ -907,7 +907,7 @@ steps:
 
 Checks out your project source files.
 
-For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
+For example, a build config with the following `steps` will check out the project and list the files in the **assets** directory:
 
 ```yaml upload.yml
 build:
@@ -1550,11 +1550,11 @@ build:
 
 #### `eas/find_and_upload_build_artifacts`
 
-> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
+> **Warning** **You can currently upload each artifact type only once per build job.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML if you need to call it there.
 
 Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the EAS servers.
 
-```yaml example.yml
+```yaml example.yml|collapseHeight=440
 build:
   name: Build iOS app
   steps:
@@ -1616,9 +1616,9 @@ build:
 
 Uploads build artifacts from provided paths.
 
-> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
+> **Warning** **You can currently upload each artifact type only once per build job.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML if you need to call it there.
 
-For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
+For example, a build config with the following `steps` will upload an artifact to the EAS servers:
 
 ```yaml upload.yml
 build:
@@ -1868,11 +1868,11 @@ build:
 
 ### Using built-in EAS functions to build an app
 
-Using the built-in EAS functions you can recreate the default EAS Build workflow for different build types.
+Using the built-in EAS functions you can recreate the default EAS Build process for different build types.
 
 For example, to trigger a build that creates internal distribution build for Android and a simulator build for iOS you can use the following configuration:
 
-```json eas.json
+```json eas.json|collapseHeight=420
 {
   /* @hide ... */ /* @end */
   "build": {
@@ -1910,7 +1910,7 @@ build:
     - eas/find_and_upload_build_artifacts
 ```
 
-```yaml .eas/build/development-build-ios.yml
+```yaml .eas/build/development-build-ios.yml|collapseHeight=440
 build:
   name: Simple simulator iOS build
   steps:
@@ -2005,14 +2005,14 @@ Check out the **example repository** for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"
-  description="A custom EAS Build example that includes examples for workflows such as setting up functions, using environment variables, uploading artifacts, and more."
+  description="A custom EAS Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-custom-builds-example/tree/main"
 />
 
 ### Use a reusable function in a `build`
 
-For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
+For example, a custom build config with the following reusable function contains a single command to print a message that is echoed.
 
 ```yaml
 functions:
@@ -2057,7 +2057,7 @@ functions:
   # @end #
 ```
 
-When `list_files` is called in a workflow, it lists all files in the root directory of a project:
+When `list_files` is called in a build config, it lists all files in the root directory of a project:
 
 ```yaml
 build:

@@ -7,11 +7,13 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
+import { getFileBasedHashSourceAsync, relativizeJsonPaths, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { spawnWithIpcAsync } from '../utils/SpawnIPC';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -34,21 +36,15 @@ export async function getExpoConfigSourcesAsync(
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
   const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
   try {
-    const { stdout } = await spawnAsync(
+    const { message } = await spawnWithIpcAsync(
       'node',
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
       { cwd: projectRoot }
     );
-    const stdoutJson = JSON.parse(stdout);
+    const stdoutJson = JSON.parse(message);
     config = stdoutJson.config;
-    expoConfig = normalizeExpoConfig(config.exp, options);
+    expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
     loadedModules = stdoutJson.loadedModules;
-    results.push({
-      type: 'contents',
-      id: 'expoConfig',
-      contents: stringifyJsonSorted(expoConfig),
-      reasons: ['expoConfig'],
-    });
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
@@ -132,6 +128,14 @@ export async function getExpoConfigSourcesAsync(
   ).filter(Boolean) as HashSource[];
   results.push(...externalFileSources);
 
+  expoConfig = postUpdateExpoConfig(expoConfig, projectRoot);
+  results.push({
+    type: 'contents',
+    id: 'expoConfig',
+    contents: stringifyJsonSorted(expoConfig),
+    reasons: ['expoConfig'],
+  });
+
   // config plugins
   const configPluginModules: HashSource[] = loadedModules.map((modulePath) => ({
     type: 'file',
@@ -143,7 +147,11 @@ export async function getExpoConfigSourcesAsync(
   return results;
 }
 
-function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): ExpoConfig {
+function normalizeExpoConfig(
+  config: ExpoConfig,
+  projectRoot: string,
+  options: NormalizedOptions
+): ExpoConfig {
   // Deep clone by JSON.parse/stringify that assumes the config is serializable.
   const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
 
@@ -210,7 +218,26 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
     delete normalizedConfig.web?.splash;
   }
 
-  return normalizedConfig;
+  if (sourceSkips & SourceSkips.ExpoConfigExtraSection) {
+    delete normalizedConfig.extra;
+  }
+
+  return relativizeJsonPaths(normalizedConfig, projectRoot);
+}
+
+/**
+ * Gives the last chance to modify the ExpoConfig.
+ * For example, we can remove some fields that are already included in the fingerprint.
+ */
+function postUpdateExpoConfig(config: ExpoConfig, projectRoot: string): ExpoConfig {
+  // The config is already a clone, so we can modify it in place for performance.
+
+  // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+  // Given we include googleServicesFile as external files already, we can remove it from the config.
+  delete config.android?.googleServicesFile;
+  delete config.ios?.googleServicesFile;
+
+  return config;
 }
 
 /**
@@ -255,8 +282,8 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     const reasons = ['expoAutolinkingAndroid'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'],
+      'node',
+      [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', 'android', '--json'],
       { cwd: projectRoot }
     );
     const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
@@ -273,6 +300,13 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
           results.push({ type: 'dir', filePath, reasons });
+        }
+      }
+      if (module.aarProjects) {
+        for (const aarProject of module.aarProjects) {
+          // use relative path for aarProject fields
+          aarProject.aarFilePath = toPosixPath(path.relative(projectRoot, aarProject.aarFilePath));
+          aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
         }
       }
     }
@@ -318,8 +352,8 @@ export async function getExpoAutolinkingIosSourcesAsync(
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'],
+      'node',
+      [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', platform, '--json'],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);

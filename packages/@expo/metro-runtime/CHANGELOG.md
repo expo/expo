@@ -8,7 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- Only reload RSC for a given platform. ([#34216](https://github.com/expo/expo/pull/34216) by [@EvanBacon](https://github.com/EvanBacon))
+- Parse errors with Babel code frames as syntax errors on Windows. ([#34017](https://github.com/expo/expo/pull/34017) by [@byCedric](https://github.com/byCedric))
+- Fixed broken async import. ([#34824](https://github.com/expo/expo/pull/34824) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- fix: add e2e testing to server function errors ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `window.location` polyfill for server requests. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.0 — 2024-11-11
 

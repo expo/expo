@@ -80,7 +80,9 @@ static NSString *normalizeEventName(NSString *eventName)
  */
 static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _componentFlavorsCache;
 
-@implementation ExpoFabricViewObjC
+@implementation ExpoFabricViewObjC {
+  ExpoViewShadowNode::ConcreteState::Shared _state;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -156,9 +158,21 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   // Implemented in `ExpoFabricView.swift`
 }
 
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+{
+  _state = std::static_pointer_cast<const ExpoViewShadowNode::ConcreteState>(state);
+}
+
 - (void)viewDidUpdateProps
 {
   // Implemented in `ExpoFabricView.swift`
+}
+
+- (void)setShadowNodeSize:(float)width height:(float)height
+{
+  if (_state) {
+    _state->updateState(ExpoViewState(width,height));
+  }
 }
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name

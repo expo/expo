@@ -51,7 +51,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     addEventListener(event: 'open', listener: () => void): void;
     addEventListener(event: 'error', listener: (event: WebSocketErrorEvent) => void): void;
     addEventListener(event: 'close', listener: (event: WebSocketCloseEvent) => void): void;
-    removeEventListener(event: string, listener: (event: any) => void): void;
+    removeEventListener(_event: string, listener: (event: any) => void): void;
     private connect;
     send(data: string | ArrayBufferView | Blob | ArrayBufferLike): void;
     private handleOpen;
@@ -73,9 +73,9 @@ export declare class WebSocketWithReconnect implements WebSocket {
     get protocol(): string;
     ping(): void;
     dispatchEvent(event: Event): boolean;
-    set onclose(value: ((e: WebSocketCloseEvent) => any) | null);
-    set onerror(value: ((e: Event) => any) | null);
-    set onmessage(value: ((e: WebSocketMessageEvent) => any) | null);
-    set onopen(value: (() => any) | null);
+    set onclose(_value: ((e: WebSocketCloseEvent) => any) | null);
+    set onerror(_value: ((e: Event) => any) | null);
+    set onmessage(_value: ((e: WebSocketMessageEvent) => any) | null);
+    set onopen(_value: (() => any) | null);
 }
 //# sourceMappingURL=WebSocketWithReconnect.d.ts.map

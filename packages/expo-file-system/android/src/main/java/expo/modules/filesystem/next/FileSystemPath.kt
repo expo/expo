@@ -12,11 +12,25 @@ import kotlin.io.path.moveTo
 // The URL, URI classes seem like a less suitable choice.
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
 abstract class FileSystemPath(public var file: File) : SharedObject() {
-  fun delete() {
-    if (!file.exists()) {
-      throw UnableToDeleteException("path does not exist")
+  fun delete(fileOrDirectory: File = file) {
+    if (!fileOrDirectory.exists()) {
+      throw UnableToDeleteException("path '${fileOrDirectory.path}' does not exist")
     }
-    file.delete()
+    if (fileOrDirectory.isDirectory) {
+      fileOrDirectory.listFiles()?.forEach { child ->
+        if (child.isDirectory) {
+          // Recursively delete subdirectories
+          delete(child)
+        } else {
+          if (!child.delete()) {
+            throw UnableToDeleteException("failed to delete '${child.path}'")
+          }
+        }
+      }
+    }
+    if (!fileOrDirectory.delete()) {
+      throw UnableToDeleteException("failed to delete '${fileOrDirectory.path}'")
+    }
   }
 
   abstract fun validateType()

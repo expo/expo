@@ -1,16 +1,23 @@
 require 'json'
 
+absolute_react_native_path = ''
+if !ENV['REACT_NATIVE_PATH'].nil?
+  absolute_react_native_path = File.expand_path(ENV['REACT_NATIVE_PATH'], Pod::Config.instance.project_root)
+else
+  absolute_react_native_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`)
+end
+
 unless defined?(install_modules_dependencies)
   # `install_modules_dependencies` and `add_dependency` are defined in react_native_pods.rb.
   # When running with `pod ipc spec`, these methods are not defined and we have to require manually.
-  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+  require File.join(absolute_react_native_path, "scripts/react_native_pods")
 end
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 reactNativeVersion = '0.0.0'
 begin
-  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+  reactNativeVersion = `node --print "require('#{absolute_react_native_path}/package.json').version"`
 rescue
   reactNativeVersion = '0.0.0'
 end
@@ -29,6 +36,12 @@ if new_arch_enabled
   compiler_flags << ' ' << new_arch_compiler_flags
 end
 
+# List of features that are required by linked modules
+coreFeatures = []
+if defined?(Expo::PackagesConfig)
+  coreFeatures = Expo::PackagesConfig.instance.coreFeatures
+end
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']
@@ -39,7 +52,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms       = {
     :ios => '15.1',
-    :osx => '10.15',
+    :osx => '11.0',
     :tvos => '15.1'
   }
   s.swift_version  = '5.4'

@@ -9,6 +9,7 @@ type CopyActionProps = SnippetActionProps & {
 
 export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
   const [copyDone, setCopyDone] = useState(false);
+
   const onCopyClick = () => {
     void navigator.clipboard?.writeText(text);
     setCopyDone(true);

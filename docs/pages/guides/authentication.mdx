@@ -19,9 +19,9 @@ Here are some **important rules** that apply to all authentication providers:
 
 ## Obtaining access tokens
 
-Most provides in this guide use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
+Most providers in this guide use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
 
-Since [your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a context (for example, your server). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+Since [your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a server such as with [API routes](/router/reference/api-routes) or [React Server Components](/guides/server-components). This will allow you to securely store and use a client secret to access the provider's token endpoint.
 
 ## Guides
 
@@ -152,9 +152,9 @@ export default function App() {
 ```tsx Asgardeo Auth Example
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import jwtDecode from "jwt-decode";
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import jwtDecode from 'jwt-decode';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -507,8 +507,8 @@ import {
   makeRedirectUri,
   useAuthRequest,
   exchangeCodeAsync,
-} from "expo-auth-session";
-import { useEffect, useState } from "react";
+} from 'expo-auth-session';
+import { useEffect, useState } from 'react';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native, this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -681,17 +681,33 @@ export default function App() {
   }, [discoveryDocument, request, response]);
 
   const logout = async () => {
-    const revokeResponse = await revokeAsync(
-      {
-        clientId: clientId,
-        token: authTokens.refreshToken,
-      },
-      discoveryDocument
-    );
-    if (revokeResponse) {
-      setAuthTokens(null);
+    if (!authTokens?.refreshToken || !discoveryDocument || !config.clientId) {
+      return;
     }
-  };
+    try {
+      const urlParams = new URLSearchParams({
+        client_id: config.clientId || '',
+        logout_uri: redirectUri,
+      });
+      // Open the logout page in the browser
+      await WebBrowser.openAuthSessionAsync(`${config.webBaseUrl}/logout?${urlParams.toString()}`);
+      // Revoke the refresh token
+      const revokeResponse = await revokeAsync(
+        {
+          clientId: config.clientId || '',
+          token: authTokens?.refreshToken,
+        },
+        discoveryDocument
+      );
+      if (revokeResponse) {
+        setAuthTokens(undefined);
+      }
+    } catch (error) {
+      // Log the error but don't throw it since we want to continue with clearing tokens
+      console.error('Error during token revocation:', error);
+    }
+  }
+
   console.log('authTokens: ' + JSON.stringify(authTokens));
   return authTokens ? (
     <Button title="Logout" onPress={() => logout()} />
@@ -741,10 +757,10 @@ import {
   makeRedirectUri,
   TokenResponse,
   useAuthRequest,
-} from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import { useEffect, useMemo, useReducer, useRef } from "react";
-import { Button } from "react-native";
+} from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -830,7 +846,7 @@ function useAutoExchange(code?: string): State {
       /* @end */
       {
         clientId: CLIENT_ID,
-        /* @info <b>Never</b> store your client secret in the application code! */
+        /* @info <b>Never</b> store your client secret in the application code! Use an API Route or React Server Function to exchange the code. */
         clientSecret: "CLIENT_SECRET",
         /* @end */
         code,
@@ -1347,7 +1363,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```jsx Logto Auth Example
-import { LogtoProvider, useLogto } from "@logto/rn";
+import { LogtoProvider, useLogto } from '@logto/rn';
 
 // Use `useLogto()` hook to sign in and sign out
 const Content = () => {

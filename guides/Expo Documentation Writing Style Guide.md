@@ -108,6 +108,12 @@ In most cases, to refer to multiple platforms (Android, iOS, and Web) in one sen
 
 When referencing Expo Go, the supported text should avoid implying: "running an app", "developing an app", or "previewing an app". One alternative to avoid these constraints is: "testing your project".
 
+### Referencing app.json/app.config.json/app.config.js/app.config.ts
+
+When referencing the multiple variants of app config file, such as app.json, app.config.json, app.config.js, or app.config.ts, use "**app config**" or "**app config** file" and link to its [documentation page](https://docs.expo.dev/workflow/configuration/). This helps the reader understand that these files are interchangeable and can be used in the same context.
+
+If there is a need to reference a specific file format, use the appropriate file name.
+
 ## Punctuation
 
 ### Use double quotes in prose
@@ -199,6 +205,10 @@ Link the appropriate text rather than using the word "here". The linked text sho
 Use [internal links](https://github.com/expo/expo/blob/main/docs/README.md#internal-linking) when referencing a documentation page/topic that already exists. This helps avoid referencing the same piece of information copied from multiple places and gives the subject a single source of truth. For example:
 
 - When referencing Expo CLI in a standalone apps document, instead of going through the steps of installing the Expo CLI from scratch, mention that Expo CLI is required and use internal linking to Expo CLI installation steps mentioned in the "Getting Started" section.
+
+#### Linking to Expo FYI pages
+
+When linking to the [Expo FYI pages](https://github.com/expo/fyi), use shorthand links, such as https://expo.fyi/bundle-identifier instead of the full URL (https://github.com/expo/fyi/blob/main/bundle-identifier.md).
 
 ### Accessibility
 

@@ -10,8 +10,8 @@ import * as Log from './utils/log';
 
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
-  Debug.enable('@expo/fingeprint:*');
-} else if (Debug.enabled('@expo/fingeprint:')) {
+  Debug.enable('@expo/fingerprint:*');
+} else if (Debug.enabled('@expo/fingerprint:')) {
   process.env.EXPO_DEBUG = '1';
 }
 
@@ -54,7 +54,7 @@ if ((args['--help'] && !command) || !command) {
   Log.exit(
     chalk`
 {bold Usage}
-  {dim $} npx @expo/fingeprint <command>
+  {dim $} npx @expo/fingerprint <command>
 
 {bold Commands}
   ${Object.keys(commands).sort().join(', ')}
@@ -63,7 +63,7 @@ if ((args['--help'] && !command) || !command) {
   --help, -h      Displays this message
 
 For more information run a command with the --help flag
-  {dim $} npx @expo/fingeprint fingerprint:generate --help
+  {dim $} npx @expo/fingerprint fingerprint:generate --help
   `,
     0
   );

@@ -75,7 +75,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
     '.eslintrc.js',
     'App.js',
     'app.json',
-    'bun.lockb',
+    'bun.lock',
     'metro.config.js',
     'package.json',
   ]);
@@ -109,7 +109,7 @@ it('runs `npx expo customize .eslintrc.js` to install lint in a project', async 
     '.eslintrc.js',
     'App.js',
     'app.json',
-    'bun.lockb',
+    'bun.lock',
     'metro.config.js',
     'package.json',
   ]);

@@ -129,6 +129,9 @@ export function getRscMiddleware(options: {
       if (err instanceof Response) {
         return err;
       }
+      if (process.env.NODE_ENV !== 'development') {
+        throw err;
+      }
       console.error(err);
 
       return new Response(`Unexpected server error rendering RSC: ` + err.message, {

@@ -141,7 +141,7 @@ class FileDownloader(
 
     val isMultipart = responseBody.contentType()?.type == "multipart"
     if (isMultipart) {
-      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, callback)
+      parseMultipartRemoteUpdateResponse(response, responseBody, responseHeaderData, callback)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
@@ -174,38 +174,39 @@ class FileDownloader(
     }
   }
 
-  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, callback: RemoteUpdateDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(response: Response, responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
     var directivePartBodyAndHeaders: Pair<String, Headers>? = null
 
-    try {
-      MultipartReader(responseBody).use { reader ->
-        while (true) {
-          val nextPart = reader.nextPart() ?: break
-          nextPart.use { part ->
-            val headers = part.headers
-            val body = part.body
-            val contentDispositionValue = headers["content-disposition"]
-            if (contentDispositionValue != null) {
-              val contentDispositionName =
-                contentDispositionValue.parseContentDispositionNameParameter()
-              if (contentDispositionName != null) {
-                when (contentDispositionName) {
-                  "manifest" -> manifestPartBodyAndHeaders = Pair(body.readUtf8(), headers)
-                  "extensions" -> extensionsBody = body.readUtf8()
-                  "certificate_chain" -> certificateChainString = body.readUtf8()
-                  "directive" -> directivePartBodyAndHeaders = Pair(body.readUtf8(), headers)
+    val isEmpty = response.peekBody(1).bytes().isEmpty()
+    if (!isEmpty) {
+      try {
+        MultipartReader(responseBody).use { reader ->
+          while (true) {
+            val nextPart = reader.nextPart() ?: break
+            nextPart.use { part ->
+              val headers = part.headers
+              val body = part.body
+              val contentDispositionValue = headers["content-disposition"]
+              if (contentDispositionValue != null) {
+                val contentDispositionName =
+                  contentDispositionValue.parseContentDispositionNameParameter()
+                if (contentDispositionName != null) {
+                  when (contentDispositionName) {
+                    "manifest" -> manifestPartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                    "extensions" -> extensionsBody = body.readUtf8()
+                    "certificate_chain" -> certificateChainString = body.readUtf8()
+                    "directive" -> directivePartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                  }
                 }
               }
             }
           }
         }
-      }
-    } catch (e: Exception) {
-      // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
-      if (responseBody.bytes().isNotEmpty()) {
+      } catch (e: Exception) {
+        // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
         val message = "Error while reading multipart remote update response"
         logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
         callback.onFailure(IOException(message, e))
@@ -449,6 +450,7 @@ class FileDownloader(
   fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
+    extraHeaders: JSONObject,
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {
@@ -466,7 +468,7 @@ class FileDownloader(
     } else {
       try {
         downloadAssetAndVerifyHashAndWriteToPath(
-          createRequestForAsset(asset, configuration, context),
+          createRequestForAsset(asset, extraHeaders, configuration, context),
           asset.expectedHash,
           path,
           object : FileDownloadCallback {
@@ -594,12 +596,14 @@ class FileDownloader(
 
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
+      extraHeaders: JSONObject,
       configuration: UpdatesConfiguration,
       context: Context
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
         .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
+        .addHeadersFromJSONObject(extraHeaders)
         .header("Expo-Platform", "android")
         .header("Expo-Protocol-Version", "1")
         .header("Expo-API-Version", "1")
@@ -696,6 +700,26 @@ class FileDownloader(
             OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) }).serialize()
           )
         }
+      }
+
+      return extraHeaders
+    }
+
+    fun getExtraHeadersForRemoteAssetRequest(
+      launchedUpdate: UpdateEntity?,
+      embeddedUpdate: UpdateEntity?,
+      requestedUpdate: UpdateEntity?
+    ): JSONObject {
+      val extraHeaders = JSONObject()
+
+      launchedUpdate?.let {
+        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+      }
+      embeddedUpdate?.let {
+        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+      requestedUpdate?.let {
+        extraHeaders.put("Expo-Requested-Update-ID", it.id.toString().lowercase())
       }
 
       return extraHeaders

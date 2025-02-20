@@ -11,6 +11,17 @@ import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';
 
+const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+
+let loggedExpoGoWarning = false;
+
+if (isExpoGo && !loggedExpoGoWarning) {
+  console.warn(
+    'Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build'
+  );
+  loggedExpoGoWarning = true;
+}
+
 // @needsAudit
 export type PermissionResponse = EXPermissionResponse & {
   /**
@@ -28,7 +39,7 @@ export type PermissionResponse = EXPermissionResponse & {
  */
 export type GranularPermission = 'audio' | 'photo' | 'video';
 
-export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown' | 'pairedVideo';
 
 /**
  * Represents the possible types of media that the app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
@@ -145,6 +156,12 @@ export type AssetInfo = Asset & {
    * @platform ios
    */
   orientation?: number;
+  /**
+   * Contains information about the video paired with the image file.
+   * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
+   * @platform ios
+   */
+  pairedVideoAsset?: Asset | null;
 };
 
 /**
@@ -427,7 +444,7 @@ export async function isAvailableAsync(): Promise<boolean> {
  */
 export async function requestPermissionsAsync(
   writeOnly: boolean = false,
-  granularPermissions: GranularPermission[] = ['audio', 'photo', 'video']
+  granularPermissions?: GranularPermission[]
 ): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
@@ -448,7 +465,7 @@ export async function requestPermissionsAsync(
  */
 export async function getPermissionsAsync(
   writeOnly: boolean = false,
-  granularPermissions: GranularPermission[] = ['audio', 'photo', 'video']
+  granularPermissions?: GranularPermission[]
 ): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
@@ -497,6 +514,12 @@ export const usePermissions = createPermissionHook<
 export async function presentPermissionsPickerAsync(
   mediaTypes: MediaTypeFilter[] = ['photo', 'video']
 ): Promise<void> {
+  if (Platform.OS === 'android' && isExpoGo) {
+    throw new UnavailabilityError(
+      'MediaLibrary',
+      'presentPermissionsPickerAsync is unavailable in Expo Go'
+    );
+  }
   if (Platform.OS === 'android' && Platform.Version >= 34) {
     await MediaLibrary.requestPermissionsAsync(false, mediaTypes);
     return;

@@ -14,7 +14,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll set up and configure a development build with EAS for our example app.
 
-<VideoBoxLink videoId="LUFHXsBcW6w" title="Watch: How to make a development build with EAS Build" />
+<VideoBoxLink videoId="uQCE9zl3dXU" title="Watch: How to configure a development build" />
 
 ---
 
@@ -97,13 +97,19 @@ On running, this command:
 
 - Requests verification of the account owner by entering our Expo account credentials and asks if we want to create a new EAS project:
 
-  ```sh
-  # Output after running eas init
-  ✔ Which account should own this project? > your-username
-  ✔ Would you like to create a project for @your-username/sticker-smash? … yes
-  ✔ Created @your-username/sticker-smash
-  ✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)
-  ```
+{/* vale off */}
+
+<Terminal
+  cmd={[
+    '# Output after running eas init',
+    '✔ Which account should own this project? > your-username',
+    '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
+    '✔ Created @your-username/sticker-smash',
+    '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
+  ]}
+/>
+
+{/* vale on */}
 
 - Creates EAS project and provides a link to that project which we can open in the Expo dashboard:
 
@@ -149,22 +155,21 @@ On running, this command:
 ```json eas.json
 {
   "cli": {
-    "version": ">= 8.0.0"
+    "version": ">= 14.2.0",
+    "appVersionSource": "remote"
   },
-
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal"
     },
-
     "preview": {
       "distribution": "internal"
     },
-
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
-
   "submit": {
     "production": {}
   }

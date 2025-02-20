@@ -17,6 +17,8 @@ import {
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
+> From **SDK 52**, due to changes supporting the latest Android splash screen API, Expo Go and development builds cannot fully replicate the splash screen experience your users will see in your [standalone app](/more/glossary-of-terms/#standalone-app). Expo Go will show your app icon instead of the splash screen, and the splash screen on development builds will not reflect all properties set in the config plugin. **It is highly recommended that you test your splash screen on a release build to ensure it looks as expected.**
+
 Also, see the guide on [creating a splash screen image](/develop/user-interface/splash-screen-and-app-icon/#splash-screen), or [quickly generate an icon and splash screen using your browser](https://buildicon.netlify.app/).
 
 ## Installation
@@ -52,7 +54,7 @@ export default function App() {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Entypo.font);
         // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
+        // experience. Remove this if you copy and paste the code!
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         console.warn(e);
@@ -161,14 +163,20 @@ You can configure `expo-splash-screen` using its built-in [config plugin](/confi
       description: 'An object containing properties for configuring the splash screen on iOS.',
       default: 'undefined',
     },
+    {
+      name: 'resizeMode',
+      description:
+        'Determines how the image is scaled to fit the container defined by `imageWidth`. Possible values: `contain`, `cover`, or `native`.',
+      default: 'undefined',
+    },
   ]}
 />
 
 You can also configure `expo-splash-screen`, using the following [app config](/workflow/configuration/) properties but the config plugin should be preferred.
 
-- [`splash`](../config/app.mdx#splash)
-- [`android.splash`](../config/app.mdx#splash-2)
-- [`ios.splash`](../config/app.mdx#splash-1)
+- [`splash`](../config/app/#splash)
+- [`android.splash`](../config/app/#splash-2)
+- [`ios.splash`](../config/app/#splash-1)
 
 <ConfigReactNative>
 

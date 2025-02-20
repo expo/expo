@@ -417,7 +417,7 @@ Learn how to configure the native projects in the [installation instructions in 
 ### Android
 
 - On Android, this module requires permission to subscribe to the device boot. It's used to setup scheduled notifications when the device (re)starts.
-  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library's **AndroidManifest.xml**.
 
 - Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
@@ -635,9 +635,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app.mdx#notification) and [`notification.color`](../config/app.mdx#notification) keys
-in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#expo-config).
-These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.
