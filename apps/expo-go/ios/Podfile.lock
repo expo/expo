@@ -30,6 +30,8 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.11):
     - ExpoModulesCore
+    - React-RCTAppDelegate
+    - React-RCTFabric
   - ExpoAppleAuthentication (7.1.2):
     - ExpoModulesCore
   - ExpoAsset (11.0.1):
@@ -1767,7 +1769,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (5.1.0):
+  - react-native-safe-area-context (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1780,8 +1782,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.1.0)
-    - react-native-safe-area-context/fabric (= 5.1.0)
+    - react-native-safe-area-context/common (= 5.2.0)
+    - react-native-safe-area-context/fabric (= 5.2.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1790,7 +1792,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.1.0):
+  - react-native-safe-area-context/common (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1811,7 +1813,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.1.0):
+  - react-native-safe-area-context/fabric (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2336,7 +2338,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.16.7):
+  - RNReanimated (4.0.0-beta.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2356,10 +2358,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.16.7)
-    - RNReanimated/worklets (= 3.16.7)
+    - RNReanimated/reanimated (= 4.0.0-beta.2)
+    - RNReanimated/worklets (= 4.0.0-beta.2)
     - Yoga
-  - RNReanimated/reanimated (3.16.7):
+  - RNReanimated/reanimated (4.0.0-beta.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2379,30 +2381,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.16.7)
+    - RNReanimated/reanimated/apple (= 4.0.0-beta.2)
     - Yoga
-  - RNReanimated/reanimated/apple (3.16.7):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - RNReanimated/worklets (3.16.7):
+  - RNReanimated/reanimated/apple (4.0.0-beta.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2423,7 +2404,50 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.5.0):
+  - RNReanimated/worklets (4.0.0-beta.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/worklets/apple (= 4.0.0-beta.2)
+    - Yoga
+  - RNReanimated/worklets/apple (4.0.0-beta.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNScreens (4.9.0-beta.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2444,9 +2468,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.5.0)
+    - RNScreens/common (= 4.9.0-beta.0)
     - Yoga
-  - RNScreens/common (4.5.0):
+  - RNScreens/common (4.9.0-beta.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3108,12 +3132,12 @@ SPEC CHECKSUMS:
   EASClient: 720af5473430a688e792ffa91f33d11fe72fcb89
   EXApplication: e1ad9c950c98b2b134578092c948b10b403f3ea7
   EXAV: 9773c9799767c9925547b05e41a26a0240bb8ef2
-  EXConstants: cbc88b1dd39656a14066b8a4d7e1dcd0400e7ed1
+  EXConstants: ce04ec1ab4b0b9e0f8a6c39211ce51e6ea61797a
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: 3b6c5a91673a5fe7eae005c1fa79889f645111aa
-  Expo: 148aac4ce0da148c63447d09ae41ddb153f35506
+  Expo: a4a2be129047c6573525cbd8d984ab480dae778d
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
@@ -3126,29 +3150,29 @@ SPEC CHECKSUMS:
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
   ExpoContacts: 209f0739c712bf808413c691722ce1bb1e2ea0af
-  ExpoCrypto: 8465f71eb3798c194c0a509d4a76e5c429656d83
+  ExpoCrypto: a5c0a86f3e7a4cf3e99ab6c4bb9733fc13e2a747
   ExpoDevice: e24dd19a43065182eb246bc0e7f84186862f1e83
   ExpoDocumentPicker: 4a89fd8a0cb90010214a416c858d7dece1c1eb10
   ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
-  ExpoFileSystem: dc2679a2b5d4c465ca881129074da95faee943d5
-  ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
+  ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
+  ExpoFont: 73d44c5cd85eab8034bc5165ca2230315097d728
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
   ExpoHaptics: 6ef4fe4bd9db68df4d5d30bcbc4e37db77727970
   ExpoHead: a623db43433938dcfbd6a38c27381055d01a0f3a
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
-  ExpoKeepAwake: 783e68647b969b210a786047c3daa7b753dcac1f
+  ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
   ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
   ExpoLivePhoto: e50e26d529b71b998c948db4d2d4e9f7b7b088f3
-  ExpoLocalAuthentication: fb519b5d39df0cc216e43fef3cc8e2db1930a01e
+  ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
-  ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
-  ExpoModulesCore: bb3f481a7912159f2289a653e4195146170f0a00
+  ExpoMediaLibrary: 778e8fd37b0172f8a7984c0ab1b3a1f91a837eef
+  ExpoMeshGradient: 10206dfd6045700677d876bf58a27f065f4b9f70
+  ExpoModulesCore: 7d12cbf3e60f09664d34ca3ef3fcca04e47ad313
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   ExpoNetwork: f07b371f7e143812980075fda6768702c154a0a0
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
@@ -3162,7 +3186,7 @@ SPEC CHECKSUMS:
   ExpoSQLite: 0a97e8932a344abb39882001ca15307c9f172396
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
-  ExpoSystemUI: 97ec8f20af5e8ca18d3191c5c72e8a04e6e2f02d
+  ExpoSystemUI: 50e8cc9cd38bfbbca20d250f76f8548c0a8ba24c
   ExpoTrackingTransparency: 10b0304d6d2b95ea41391bf92684c1078f633e39
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
@@ -3187,7 +3211,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 0829245d6cd78102e2a7209ea56ef3d418d62ca9
+  hermes-engine: f9a2d084c7c8f315727872389a89fe0327513d67
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3234,7 +3258,7 @@ SPEC CHECKSUMS:
   react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: abc5ef92699233eb726442c7f452cac82f73d0cb
-  react-native-safe-area-context: cbadf383376f589bb611c8ae0280c1d4b7b447e9
+  react-native-safe-area-context: a95e75ab816db4438a319aa4b43dfe6def22026f
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
   react-native-slider: 124ce99f9cd2d04c79f020da6dee9f8d38a6b8c7
@@ -3273,8 +3297,8 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
   RNFlashList: 2ad2738637fa763b87b763578feab47d3e67c4c1
   RNGestureHandler: 8ce7a079c513f96f9b580bcb2ecee621d511361f
-  RNReanimated: b21a82102242b9f472b855dbb5f7fc3c8385e9ef
-  RNScreens: b02af14099030cc1e63f74f2791574e909fc1541
+  RNReanimated: 90f3e07e0d3615f9e00453b924cbd1fc641d8272
+  RNScreens: 69970414af0cc0a1b99febe4f7f80e941ee38bd7
   RNSVG: ea3e35f0375ac20449384fa89ce056ee0e0690ee
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
