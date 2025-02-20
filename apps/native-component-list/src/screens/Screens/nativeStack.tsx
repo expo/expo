@@ -3,7 +3,7 @@ import { StyleSheet, Button, View, TextInput } from 'react-native';
 import { Screen, ScreenStack } from 'react-native-screens';
 
 type StackProps = {
-  renderScreen: (key: string) => JSX.Element;
+  renderScreen: (key: string) => React.ReactElement;
 };
 
 type StackState = {
