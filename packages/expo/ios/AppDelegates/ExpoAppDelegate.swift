@@ -268,7 +268,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 #elseif os(macOS)
   open override func application(
     _ application: NSApplication,
-    didReceiveRemoteNotification userInfo: [String : Any]
+    didReceiveRemoteNotification userInfo: [String: Any]
   ) {
     let selector = #selector(application(_:didReceiveRemoteNotification:))
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
