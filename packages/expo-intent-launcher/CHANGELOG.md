@@ -15,6 +15,7 @@
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [docs] Add cross-references to related APIs in mail-composer types. ([#35067](https://github.com/expo/expo/pull/35067) by [@reichhartd](https://github.com/reichhartd))
 
 ## 12.0.1 — 2024-10-22
 
