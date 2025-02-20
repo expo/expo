@@ -7,11 +7,12 @@ const OUTPUT_FILENAME = 'llms-sdk.txt';
 const TITLE = 'Expo SDK Documentation';
 const DESCRIPTION = 'Documentation for Expo SDK libraries, configuration, and API reference.';
 const BASE_URL = 'https://docs.expo.dev';
+const PATHS_TO_CRAWL = ['/versions/latest/', '/more/', '/technical-specs/'];
 
 const processedContent = new Set();
 
 function cleanContent(content) {
-  const processContent = content
+  return content
     .replace(/^#\s+.+\n\n[^\n]+\n\n/m, '')
     .replace(/^(?:\*\s*){3}$/gm, '')
     .replace(/^(.+)\n-+\n/gm, '## $1\n')
@@ -27,8 +28,6 @@ function cleanContent(content) {
       /Only for:\s*\n+\s*((?:Android[^]*?|iOS|Web)(?:\s*\n+\s*(?:Android[^]*?|iOS|Web))*)/g,
       (_, platforms) => 'Only for: ' + platforms.split(/\s*\n+\s*/).join(', ')
     );
-
-  return processContent;
 }
 
 async function processContent(content, url) {
@@ -45,8 +44,7 @@ async function processContent(content, url) {
     formattedContent += `${description}\n\n`;
   }
 
-  const cleanedContent = cleanContent(content);
-  formattedContent += cleanedContent;
+  formattedContent += cleanContent(content);
 
   const normalizedContent = formattedContent.trim().toLowerCase();
 
@@ -63,7 +61,7 @@ async function generateFullMarkdown() {
 
   try {
     const fetchedContent = await fetchSite(BASE_URL, {
-      match: ['/versions/latest/**', '/more/**', '/technical-specs/**'],
+      match: PATHS_TO_CRAWL.map(path => `${path}**`),
       concurrency: 5,
       format: 'markdown',
     });
@@ -71,14 +69,7 @@ async function generateFullMarkdown() {
     const uniquePages = new Map();
 
     const sortedPages = Array.from(fetchedContent.entries())
-      .filter(
-        ([url]) =>
-          url !== '/' &&
-          (url.startsWith('/versions/latest/') ||
-            url.startsWith('/more/') ||
-            url.startsWith('/technical-specs/'))
-      )
-
+      .filter(([url]) => url !== '/' && PATHS_TO_CRAWL.find(path => url.startsWith(path)))
       .sort(([urlA], [urlB]) => urlA.localeCompare(urlB));
 
     for (const [url, pageData] of sortedPages) {
