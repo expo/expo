@@ -76,7 +76,7 @@
           "type": "boolean"
         },
         "redirects": {
-          "description": "Enable or disable partial route type generation. Defaults to `true`.",
+          "description": "Enable static redirects. Defaults to `true`.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -89,6 +89,10 @@
               "destination": {
                 "description": "The target file path that this route should redirect to",
                 "type": "string"
+              },
+              "temporary": {
+                "description": "Whether the redirect is temporary or permanent. Defaults to `false`.",
+                "type": "boolean"
               }
             }
           }
