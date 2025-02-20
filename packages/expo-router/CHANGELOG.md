@@ -13,8 +13,8 @@
 
 - Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
-- # Fix Fast Refresh not detecting file system updates. ([#34509](https://github.com/expo/expo/pull/34509) by [@marklawlor](https://github.com/marklawlor))
-- Fix getPathFromState generating an invalid path for hoisted index routes. ([#34668](https://github.com/expo/expo/pull/34668) by [@marklawlor](https://github.com/marklawlor))
+- Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
+- Fix Fast Refresh not detecting file system updates. ([#34509](https://github.com/expo/expo/pull/34509) by [@marklawlor](https://github.com/marklawlor))
 - Fix getPathFromState generating an invalid path for hoisted index routes. ([#34668](https://github.com/expo/expo/pull/34668) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
