@@ -91,6 +91,7 @@ export async function resolveModuleAsync(
     .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
+  const publication = revision.config?.androidPublication();
 
   return {
     packageName,
@@ -99,6 +100,7 @@ export async function resolveModuleAsync(
     modules: revision.config?.androidModules() ?? [],
     ...(aarProjects.length > 0 ? { aarProjects } : {}),
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
+    ...(publication ? { publication } : {}),
   };
 }
 

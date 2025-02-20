@@ -1,6 +1,7 @@
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
+  AndroidPublication,
   RawExpoModuleConfig,
   RawModuleConfigApple,
   SupportedPlatform,
@@ -115,6 +116,13 @@ export class ExpoModuleConfig {
    */
   androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[] {
     return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+  }
+
+  /**
+   * Returns the publication config for Android.
+   */
+  androidPublication(): AndroidPublication | undefined {
+    return this.rawConfig.android?.publication;
   }
 
   /**

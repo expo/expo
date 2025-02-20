@@ -99,6 +99,12 @@ class ExpoModuleConfig {
         return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
     }
     /**
+     * Returns the publication config for Android.
+     */
+    androidPublication() {
+        return this.rawConfig.android?.publication;
+    }
+    /**
      * Returns core features required by the module author.
      */
     coreFeatures() {

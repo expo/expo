@@ -85,6 +85,7 @@ export interface ModuleDescriptorAndroid extends CommonModuleDescriptor {
   projects: ModuleAndroidProjectInfo[];
   plugins?: ModuleAndroidPluginInfo[];
   aarProjects?: ModuleAndroidAarProjectInfo[];
+  publication?: AndroidPublication;
 }
 
 export interface ModuleIosPodspecInfo {
@@ -144,6 +145,28 @@ export interface AndroidGradleAarProjectDescriptor {
    * Path to the AAR file
    */
   aarFilePath: string;
+}
+
+/**
+ * Information about the available publication of an Android AAR file.
+ */
+export interface AndroidPublication {
+  /**
+   * The Maven artifact ID.
+   */
+  id: string;
+  /**
+   * The Maven group ID.
+   */
+  group: string;
+  /**
+   * The Maven version.
+   */
+  version: string;
+  /**
+   * The Maven repository.
+   */
+  repository: string;
 }
 
 /**
@@ -241,6 +264,11 @@ export interface RawExpoModuleConfig {
      * Gradle projects containing AAR files.
      */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+
+    /**
+     * Information about the prebuilt AAR file.
+     */
+    publication?: AndroidPublication;
   };
 
   /**
