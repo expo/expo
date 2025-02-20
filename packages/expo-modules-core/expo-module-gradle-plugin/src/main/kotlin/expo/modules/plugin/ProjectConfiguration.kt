@@ -3,10 +3,13 @@
 package expo.modules.plugin
 
 import com.android.build.gradle.LibraryExtension
+import expo.modules.plugin.android.PublicationInfo
 import expo.modules.plugin.android.applyLinerOptions
 import expo.modules.plugin.android.applyPublishingVariant
 import expo.modules.plugin.android.applySDKVersions
+import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
@@ -51,16 +54,24 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
   }
 }
 
-internal fun Project.applyPublishing() {
+internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
   val libraryExtension = androidLibraryExtension()
 
   libraryExtension
     .applyPublishingVariant()
 
   afterEvaluate {
+    if (!expoModulesExtension.canBePublished) {
+      return@afterEvaluate
+    }
+    
+    val publicationInfo = PublicationInfo(this)
+
     publishingExtension()
       .publications
-      .createReleasePublication(this)
+      .createReleasePublication(publicationInfo)
+
+    createExpoPublishToMavenLocalTask(publicationInfo)
   }
 }
 
