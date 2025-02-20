@@ -11,6 +11,7 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
+const Preview_1 = require("../Preview");
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 const useLinkHooks_1 = require("./useLinkHooks");
@@ -81,9 +82,10 @@ exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, preview, children, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
+    const [showPreview, setShowPreview] = (0, react_1.useState)(false);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
     const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
     const resolvedHref = (0, react_1.useMemo)(() => {
@@ -104,6 +106,7 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref)
         event,
         relativeToDirectory,
         withAnchor,
+        setShowPreview: preview ? setShowPreview : undefined,
     });
     const onPress = (e) => {
         if ('onPress' in rest) {
@@ -111,13 +114,24 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref)
         }
         props.onPress(e);
     };
+    const onLongPress = (e) => {
+        if ('onLongPress' in rest) {
+            rest.onLongPress?.(e);
+        }
+        props.onLongPress();
+    };
     const Element = asChild ? Slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-    return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
+    return (<>
+      <Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,
         },
-        default: { onPress },
-    })}/>);
+        default: { onPress, onLongPress },
+    })}>
+        {children}
+      </Element>
+      {showPreview ? <Preview_1.Preview href={resolvedHref} onDismiss={() => setShowPreview(false)}/> : null}
+    </>);
 }
 //# sourceMappingURL=Link.js.map

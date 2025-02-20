@@ -1,6 +1,6 @@
 import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { ComponentType } from 'react';
-import { LinkToOptions } from './routing';
+import { LinkToOptions, getStateForHref } from './routing';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
@@ -26,6 +26,7 @@ export declare class RouterStore {
     rootStateSubscribers: Set<() => void>;
     storeSubscribers: Set<() => void>;
     linkTo: any;
+    getStateForHref: typeof getStateForHref;
     getSortedRoutes: any;
     goBack: any;
     canGoBack: any;

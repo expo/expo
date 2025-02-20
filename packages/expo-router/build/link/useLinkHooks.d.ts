@@ -194,6 +194,10 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Replaces the initial screen with the current route.
      */
     withAnchor?: boolean;
+    /**
+     * Preview the route inside a context menu before navigating.
+     */
+    preview?: boolean;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];

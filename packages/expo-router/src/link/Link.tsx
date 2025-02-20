@@ -1,11 +1,20 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef, JSX } from 'react';
+import {
+  PropsWithChildren,
+  useState,
+  forwardRef,
+  useMemo,
+  MouseEvent,
+  ForwardedRef,
+  JSX,
+} from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
+import { Preview } from '../Preview';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
@@ -131,12 +140,16 @@ function ExpoRouterLink(
     target,
     download,
     withAnchor,
+    preview,
+    children,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.
   const style = useInteropClassName(rest);
+
+  const [showPreview, setShowPreview] = useState(false);
 
   // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
   const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
@@ -158,6 +171,7 @@ function ExpoRouterLink(
     event,
     relativeToDirectory,
     withAnchor,
+    setShowPreview: preview ? setShowPreview : undefined,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
@@ -167,23 +181,34 @@ function ExpoRouterLink(
     props.onPress(e);
   };
 
+  const onLongPress = (e: GestureResponderEvent) => {
+    if ('onLongPress' in rest) {
+      rest.onLongPress?.(e);
+    }
+    props.onLongPress();
+  };
+
   const Element = asChild ? Slot : Text;
 
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   return (
-    <Element
-      ref={ref}
-      {...props}
-      {...hrefAttrs}
-      {...rest}
-      style={style}
-      {...Platform.select({
-        web: {
-          onClick: onPress,
-        } as any,
-        default: { onPress },
-      })}
-    />
+    <>
+      <Element
+        ref={ref}
+        {...props}
+        {...hrefAttrs}
+        {...rest}
+        style={style}
+        {...Platform.select({
+          web: {
+            onClick: onPress,
+          } as any,
+          default: { onPress, onLongPress },
+        })}>
+        {children}
+      </Element>
+      {showPreview ? <Preview href={resolvedHref} onDismiss={() => setShowPreview(false)} /> : null}
+    </>
   );
 }
 

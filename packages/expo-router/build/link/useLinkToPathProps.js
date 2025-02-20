@@ -26,7 +26,7 @@ function eventShouldPreventDefault(e) {
     }
     return false;
 }
-function useLinkToPathProps({ href, ...options }) {
+function useLinkToPathProps({ href, setShowPreview, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
@@ -35,6 +35,9 @@ function useLinkToPathProps({ href, ...options }) {
             }
             linkTo(href, options);
         }
+    };
+    const onLongPress = () => {
+        setShowPreview?.(true);
     };
     let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
     // Append base url only if needed.
@@ -45,6 +48,7 @@ function useLinkToPathProps({ href, ...options }) {
         href: strippedHref,
         role: 'link',
         onPress,
+        onLongPress,
     };
 }
 exports.default = useLinkToPathProps;

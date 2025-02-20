@@ -1,3 +1,4 @@
+import { PartialRoute } from '@react-navigation/native';
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
@@ -24,5 +25,30 @@ export type LinkToOptions = {
      */
     withAnchor?: boolean;
 };
+export declare function getStateForHref(this: RouterStore, href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
+    key: string;
+    index: number;
+    routeNames: string[];
+    history?: unknown[] | undefined;
+    routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+    type: string;
+    stale: false;
+}>, "stale" | "routes">> & Readonly<{
+    stale?: true | undefined;
+    routes: PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+}> & {
+    state?: (Partial<Omit<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>, "stale" | "routes">> & Readonly<{
+        stale?: true | undefined;
+        routes: PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+    }> & any) | undefined;
+}) | undefined;
 export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map

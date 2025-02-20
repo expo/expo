@@ -1,4 +1,5 @@
-import { useGlobalSearchParams } from 'expo-router';
+import { Link, useGlobalSearchParams } from 'expo-router';
+import React from 'react';
 import { Text } from 'react-native';
 
 export async function generateStaticParams() {
@@ -7,5 +8,12 @@ export async function generateStaticParams() {
 
 export default function Post() {
   const params = useGlobalSearchParams();
-  return <Text>Post: {params.post}</Text>;
+  return (
+    <>
+      <Text>Post: {params.post}</Text>
+      <Link preview href="/test/value">
+        Test
+      </Link>
+    </>
+  );
 }

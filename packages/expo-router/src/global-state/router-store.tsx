@@ -23,6 +23,7 @@ import {
   setParams,
   dismissTo,
   LinkToOptions,
+  getStateForHref,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -62,6 +63,7 @@ export class RouterStore {
   storeSubscribers = new Set<() => void>();
 
   linkTo = linkTo.bind(this);
+  getStateForHref: typeof getStateForHref = getStateForHref.bind(this);
   getSortedRoutes = getSortedRoutes.bind(this);
   goBack = goBack.bind(this);
   canGoBack = canGoBack.bind(this);
