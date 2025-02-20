@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.downloadImage = exports.downloadOrUseCachedImage = void 0;
+const crypto_1 = require("crypto");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
+const os_1 = require("os");
 const path_1 = __importDefault(require("path"));
 const stream_1 = __importDefault(require("stream"));
-const temp_dir_1 = __importDefault(require("temp-dir"));
-const unique_string_1 = __importDefault(require("unique-string"));
 const util_1 = __importDefault(require("util"));
 // cache downloaded images into memory
 const cacheDownloadedKeys = {};
@@ -18,7 +18,9 @@ function stripQueryParams(url) {
     return url.split('?')[0].split('#')[0];
 }
 function temporaryDirectory() {
-    const directory = path_1.default.join(temp_dir_1.default, (0, unique_string_1.default)());
+    const tempDir = fs_extra_1.default.realpathSync((0, os_1.tmpdir)());
+    const uniqueString = (0, crypto_1.randomBytes)(16).toString('hex');
+    const directory = path_1.default.join(tempDir, uniqueString);
     fs_extra_1.default.mkdirSync(directory);
     return directory;
 }
