@@ -322,9 +322,9 @@ open class ExpoAppDelegate: ExpoAppInstance {
     let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
-    var allRestorableObjects = [UIUserActivityRestoring]()
+    var allRestorableObjects = [NSUserActivityRestoring]()
 
-    let handler = { (restorableObjects: [UIUserActivityRestoring]?) in
+    let handler = { (restorableObjects: [NSUserActivityRestoring]?) in
       dispatchQueue.sync {
         if let restorableObjects = restorableObjects {
           allRestorableObjects.append(contentsOf: restorableObjects)
