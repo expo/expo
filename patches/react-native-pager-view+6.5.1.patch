@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-pager-view/src/specs/LEGACY_PagerViewNativeComponent.ts b/node_modules/react-native-pager-view/src/specs/LEGACY_PagerViewNativeComponent.ts
+index 746385a..f2f0a95 100644
+--- a/node_modules/react-native-pager-view/src/specs/LEGACY_PagerViewNativeComponent.ts
++++ b/node_modules/react-native-pager-view/src/specs/LEGACY_PagerViewNativeComponent.ts
+@@ -31,7 +31,7 @@ type OnPageSelectedEventData = Readonly<{
+ }>;
+ 
+ type OnPageScrollStateChangedEventData = Readonly<{
+-  pageScrollState: 'idle' | 'dragging' | 'settling';
++  pageScrollState: string; //'idle' | 'dragging' | 'settling';
+ }>;
+ 
+ interface NativeProps extends ViewProps {
+diff --git a/node_modules/react-native-pager-view/src/specs/PagerViewNativeComponent.ts b/node_modules/react-native-pager-view/src/specs/PagerViewNativeComponent.ts
+index cb322b8..af79fa3 100644
+--- a/node_modules/react-native-pager-view/src/specs/PagerViewNativeComponent.ts
++++ b/node_modules/react-native-pager-view/src/specs/PagerViewNativeComponent.ts
+@@ -20,7 +20,7 @@ export type OnPageSelectedEventData = Readonly<{
+ }>;
+ 
+ export type OnPageScrollStateChangedEventData = Readonly<{
+-  pageScrollState: 'idle' | 'dragging' | 'settling';
++  pageScrollState: string; //'idle' | 'dragging' | 'settling';
+ }>;
+ 
+ export interface NativeProps extends ViewProps {
