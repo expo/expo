@@ -51,13 +51,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     guard let appDelegate = (UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate) ??
-        ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
       fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
     self.expoAppDelegate = appDelegate
 
     // Reset rctAppDelegate so we can relaunch the app
-    if (appDelegate.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
+    if appDelegate.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
       appDelegate.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
       appDelegate.reactNativeFactory?.bridge = nil

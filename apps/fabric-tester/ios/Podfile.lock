@@ -2144,8 +2144,8 @@ SPEC CHECKSUMS:
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
   expo-dev-client: 8c99b4979086a27f19e773e96ef10219102a5c4f
-  expo-dev-launcher: fe9233c51a6697795d49c8ce84df70506cd5f734
-  expo-dev-menu: 0cf63885e1656ed654da9a29591ebf1ef85d115e
+  expo-dev-launcher: 4eb5b75b5e09c77498957df81ec7bc5559df8041
+  expo-dev-menu: fc4dfe3225d0ce571d2ed7a7d2867f946efd9e2b
   expo-dev-menu-interface: 4baf2f8b3b79ce37cf4b900e4b3ba6df3384f0a1
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
@@ -2156,11 +2156,11 @@ SPEC CHECKSUMS:
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
-  ExpoModulesCore: b75c7c49de23567d1166732415079cf7329889d7
-  ExpoSplashScreen: 43692d041bf848883410ed9d8836871ca5cf4d6a
+  ExpoModulesCore: b6b61a12e4d46689c9dfcecb96452642163ecd28
+  ExpoSplashScreen: 47a5c337586329223b70b5ef777d34c1f9edf412
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
-  EXUpdates: d058f908357f7a924c64c33c1bfdfa619e2a3a17
+  EXUpdates: dffe7cf35068747c7f77bcde34663d90fa103fe8
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 02c329abf797385573e0b2e901274b7fc4820550
@@ -2205,10 +2205,10 @@ SPEC CHECKSUMS:
   React-performancetimeline: 34e73c0da8e6ad855218cfec7db0a5c2834466b2
   React-RCTActionSheet: c32efd32f661f888acf55edf30d742d80386ab4f
   React-RCTAnimation: e8ec262e00d3eb8f0bed786f720b01b035961cec
-  React-RCTAppDelegate: d9a2b2610a582fe7099087cd69ac455d837be9c5
+  React-RCTAppDelegate: eb5b35353d1f436fd6e29d085ce0fd4907702701
   React-RCTBlob: 846c0e2ec3da1cc5da03a1d94dde794e445ce8c1
-  React-RCTFabric: 05392addbc532b6f3410ba914d2252f9c629affb
-  React-RCTFBReactNativeSpec: db8ccb471152b3cee8c7abeaf6f524ba2bd75fc1
+  React-RCTFabric: a5a522ad41191cfc4be76168a9d2419cc98927dd
+  React-RCTFBReactNativeSpec: 94be872229e19e010579f05b8ef5c6a9e345101e
   React-RCTImage: 6abbb45d7f6025cd1e5180928d24322fd1885a9f
   React-RCTLinking: 5cca7087d943d24269bf232f63af9fa1746eeb09
   React-RCTNetwork: 2fad4baf76e21afd4ddb2316ac5d1390f219efbe

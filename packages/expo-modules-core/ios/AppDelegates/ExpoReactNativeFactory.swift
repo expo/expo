@@ -5,13 +5,12 @@
 public class ExpoReactNativeFactory: EXReactNativeFactory {
   private var reactDelegate: ExpoReactDelegate?
 
-  @objc public init(delegate: any RCTReactNativeFactoryDelegate, reactDelegate: ExpoReactDelegate) {
+  @objc public init(delegate: ExpoReactNativeFactoryDelegate, reactDelegate: ExpoReactDelegate) {
     self.reactDelegate = reactDelegate
     super.init(delegate: delegate)
   }
 
   @objc func internalCreateRCTRootViewFactory() -> RCTRootViewFactory {
-
     guard let weakDelegate = self.delegate else {
       fatalError("ExpoReactNativeFactory: delegate is nil.")
     }
@@ -26,15 +25,21 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
     )
 
     configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      return weakDelegate.createRootView!(with: bridge, moduleName: moduleName, initProps: initProps)
+      guard let createRootView = weakDelegate.createRootView else {
+        fatalError("ExpoReactNativeFactory: createRootView is nil.")
+      }
+      return createRootView(bridge, moduleName, initProps)
     }
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      return weakDelegate.createBridge!(with: delegate, launchOptions: launchOptions)
+      guard let createBridge = weakDelegate.createBridge else {
+        fatalError("ExpoReactNativeFactory: createBridge is nil.")
+      }
+      return createBridge(delegate, launchOptions)
     }
 
     configuration.customizeRootView = { rootView in
-      self.delegate?.customize(rootView as? RCTRootView)
+      weakDelegate.customize(rootView as? RCTRootView)
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
@@ -42,19 +47,19 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
       configuration.extraModulesForBridge = { bridge in
-        return weakDelegate.extraModules!(for: bridge)
+        return weakDelegate.extraModules?(for: bridge) ?? []
       }
     }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
       configuration.extraLazyModuleClassesForBridge = { bridge in
-        return weakDelegate.extraLazyModuleClasses!(for: bridge)
+	    return weakDelegate.extraLazyModuleClasses?(for: bridge) ?? [:]
       }
     }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.bridge(_:didNotFindModule:))) {
       configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        return weakDelegate.bridge!(bridge, didNotFindModule: moduleName)
+        weakDelegate.bridge?(bridge, didNotFindModule: moduleName) ?? false
       }
     }
 
