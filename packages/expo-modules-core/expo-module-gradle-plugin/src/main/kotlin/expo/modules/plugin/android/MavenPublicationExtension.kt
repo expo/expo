@@ -105,6 +105,8 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
 
       val newJsonString = json.encodeToString(JsonObject.serializer(), newJsonElement)
 
+      logger.quiet("Updating 'expo-module.config.json' in ${expoModuleConfig.parent}")
+
       expoModuleConfig.writeText(newJsonString)
       providers.exec { env ->
         env.workingDir(layout.projectDirectory.file(".."))
