@@ -60,6 +60,7 @@ it(`supports worker bundle`, async () => {
   ]);
   expect(artifacts[0].source).toMatch('runtime');
   expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[0].source).toMatch('"paths":{"/app/math.js":"/_expo/');
   expect(artifacts[1].source).toMatch('runtime');
   expect(artifacts[1].source).toMatch('TEST_RUN_MODULE');
 });
@@ -114,6 +115,8 @@ it(`supports worker bundle with nested async chunk`, async () => {
   expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
   expect(artifacts[1].source).not.toMatch('runtime');
   expect(artifacts[1].source).not.toMatch('TEST_RUN_MODULE');
+  expect(artifacts[1].source).toMatch('"paths":{"/app/c.js":"/_expo/');
+
   expect(artifacts[2].source).toMatch('runtime');
   expect(artifacts[2].source).toMatch('TEST_RUN_MODULE');
 });

@@ -64,18 +64,6 @@ const sourceMapString =
     ? sourceMapStringMod.sourceMapString
     : sourceMapStringMod;
 
-function collectWorkerDependencies(graph: ReadOnlyGraph<MixedOutput>) {
-  const workerDependencies = new Set<Module>();
-  for (const module of graph.dependencies.values()) {
-    for (const dependency of module.dependencies.values()) {
-      if (dependency.data.data.asyncType === 'worker') {
-        workerDependencies.add(module);
-      }
-    }
-  }
-  return workerDependencies;
-}
-
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
@@ -91,103 +79,95 @@ export async function graphToSerialAssetsAsync(
     projectRoot: options.projectRoot,
   });
 
-  const workerDependencies = collectWorkerDependencies(graph);
+  // Create chunks for splitting.
+  const chunks = new Set<Chunk>();
 
-  async function getAssetsForEntry(entryFile: string) {
-    // Create chunks for splitting.
-    const chunks = new Set<Chunk>();
+  [
+    {
+      test: pathToRegex(entryFile),
+    },
+  ].map((chunkSettings) =>
+    gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true)
+  );
 
-    [
-      {
-        test: pathToRegex(entryFile),
-      },
-    ].map((chunkSettings) =>
-      gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false)
-    );
-
-    // Get the common modules and extract them into a separate chunk.
-    const entryChunk = [...chunks.values()].find(
-      (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
-    );
-    if (entryChunk) {
-      for (const chunk of chunks.values()) {
-        if (chunk !== entryChunk && chunk.isAsync) {
-          for (const dep of chunk.deps.values()) {
-            if (entryChunk.deps.has(dep)) {
-              // Remove the dependency from the async chunk since it will be loaded in the main chunk.
-              chunk.deps.delete(dep);
-            }
-          }
-        }
-      }
-
-      const toCompare = [...chunks.values()];
-
-      const commonDependencies = [];
-
-      while (toCompare.length) {
-        const chunk = toCompare.shift()!;
-        for (const chunk2 of toCompare) {
-          if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-            const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-
-            for (const dep of commonDeps) {
-              chunk.deps.delete(dep);
-              chunk2.deps.delete(dep);
-            }
-
-            commonDependencies.push(...commonDeps);
-          }
-        }
-      }
-
-      // If common dependencies were found, extract them to the entry chunk.
-      // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
-      if (commonDependencies.length) {
-        for (const dep of commonDependencies) {
-          entryChunk.deps.add(dep);
-        }
-        // const commonDependenciesUnique = [...new Set(commonDependencies)];
-        // const commonChunk = new Chunk(
-        //   chunkIdForModules(commonDependenciesUnique),
-        //   commonDependenciesUnique,
-        //   graph,
-        //   options,
-        //   false,
-        //   true
-        // );
-        // entryChunk.requiredChunks.add(commonChunk);
-        // chunks.add(commonChunk);
-      }
-
-      // TODO: Optimize this pass more.
-      // Remove all dependencies from async chunks that are already in the common chunk.
-      for (const chunk of [...chunks.values()]) {
-        if (chunk !== entryChunk) {
-          for (const dep of chunk.deps) {
-            if (entryChunk.deps.has(dep)) {
-              chunk.deps.delete(dep);
-            }
+  // Get the common modules and extract them into a separate chunk.
+  const entryChunk = [...chunks.values()].find(
+    (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
+  );
+  if (entryChunk) {
+    for (const chunk of chunks.values()) {
+      if (!chunk.isEntry && chunk.isAsync) {
+        for (const dep of chunk.deps.values()) {
+          if (entryChunk.deps.has(dep)) {
+            // Remove the dependency from the async chunk since it will be loaded in the main chunk.
+            chunk.deps.delete(dep);
           }
         }
       }
     }
 
-    const jsAssets = await serializeChunksAsync(
-      chunks,
-      config.serializer ?? {},
-      serializeChunkOptions
-    );
+    const toCompare = [...chunks.values()];
 
-    return jsAssets;
+    const commonDependencies = [];
+
+    while (toCompare.length) {
+      const chunk = toCompare.shift()!;
+      for (const chunk2 of toCompare) {
+        if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+          const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+
+          for (const dep of commonDeps) {
+            chunk.deps.delete(dep);
+            chunk2.deps.delete(dep);
+          }
+
+          commonDependencies.push(...commonDeps);
+        }
+      }
+    }
+
+    // If common dependencies were found, extract them to the entry chunk.
+    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
+    if (commonDependencies.length) {
+      for (const dep of commonDependencies) {
+        entryChunk.deps.add(dep);
+      }
+      // const commonDependenciesUnique = [...new Set(commonDependencies)];
+      // const commonChunk = new Chunk(
+      //   chunkIdForModules(commonDependenciesUnique),
+      //   commonDependenciesUnique,
+      //   graph,
+      //   options,
+      //   false,
+      //   true
+      // );
+      // entryChunk.requiredChunks.add(commonChunk);
+      // chunks.add(commonChunk);
+    }
+
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+      if (!chunk.isEntry) {
+        for (const dep of chunk.deps) {
+          if (entryChunk.deps.has(dep)) {
+            chunk.deps.delete(dep);
+          }
+        }
+      }
+    }
   }
 
-  const jsAssets = await getAssetsForEntry(entryFile);
+  const jsAssets = await serializeChunksAsync(
+    chunks,
+    config.serializer ?? {},
+    serializeChunkOptions
+  );
 
-  for (const workerDependency of workerDependencies.values()) {
-    const moreAssets = await getAssetsForEntry(workerDependency.path);
-    jsAssets.push(...moreAssets);
-  }
+  // for (const workerDependency of workerDependencies.values()) {
+  //   const moreAssets = await getAssetsForEntry(workerDependency.path);
+  //   jsAssets.push(...moreAssets);
+  // }
 
   // TODO: Can this be anything besides true?
   const isExporting = true;
@@ -320,7 +300,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType && dependency.data.data.asyncType !== 'worker') {
+        if (dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -704,17 +684,32 @@ function gatherChunks(
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
         const isEntry = dependency.data.data.asyncType === 'worker';
-        if (!isEntry)
-          gatherChunks(
-            runtimePremodules,
-            chunks,
-            { test: pathToRegex(dependency.absolutePath) },
-            isEntry ? runtimePremodules : [],
-            graph,
-            options,
-            true,
-            isEntry
-          );
+        // if (!isEntry) {
+        gatherChunks(
+          runtimePremodules,
+          chunks,
+          { test: pathToRegex(dependency.absolutePath) },
+          isEntry ? runtimePremodules : [],
+          graph,
+          options,
+          true,
+          isEntry
+        );
+        // } else {
+        //   // Worker chunks are split but they act as entry points meaning they have the original pre-modules and they shouldn't diff shared modules with any other chunk.
+        //   gatherChunks(
+        //     runtimePremodules,
+        //     chunks,
+        //     {
+        //       test: pathToRegex(dependency.absolutePath),
+        //     },
+        //     runtimePremodules,
+        //     graph,
+        //     options,
+        //     true,
+        //     isEntry
+        //   );
+        // }
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
         if (module) {

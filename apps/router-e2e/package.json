@@ -14,7 +14,7 @@
     "export:04-server-error-boundaries": "E2E_SERVER_FUNCTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=04-server-error-boundaries expo export",
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
     "export:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo export -p web",
-    "start:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
+    "start:web-workers": "E2E_ROUTER_ASYNC=development E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
