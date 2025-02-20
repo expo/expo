@@ -32,23 +32,27 @@ describe('server api redirects', () => {
             },
             {
               source: '/redirect/dynamic/[slug]/index+api',
-              destination: '/[slug]/index+api',
+              destination: '/dynamic/[slug]/index+api',
             },
             {
               source: '/redirect/dynamic/[other]/[slug]+api',
-              destination: '/[slug]/[other]+api',
-            },
-            {
-              source: '/redirect/dynamic/[slug]/[query]/[params]+api',
-              destination: '/[slug]/index+api',
+              destination: '/dynamic/[slug]/[other]+api',
             },
             {
               source: '/redirect/dynamic/[slug]/to/[catchAll]+api',
-              destination: '/[...catchAll]/index+api',
+              destination: '/dynamic/[...catchAll]/index+api',
+            },
+            {
+              source: '/redirect/dynamic/[slug]/[query]/[params]+api',
+              destination: '/dynamic/[slug]/index+api',
             },
             {
               source: '/redirect/catch-all/[...catchAll]+api',
-              destination: '/[...catchAll]/index+api',
+              destination: '/dynamic/[...catchAll]/index+api',
+            },
+            {
+              source: '/redirect/catch-all-to-slug/[...slug]+api',
+              destination: '/dynamic/[slug]/index+api',
             },
           ] as RedirectConfig[]),
         },
@@ -92,7 +96,7 @@ describe('server api redirects', () => {
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/hello');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/hello');
     });
 
     it(`can restructure [dynamic] routes`, async () => {
@@ -101,7 +105,7 @@ describe('server api redirects', () => {
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/hello/world');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/hello/world');
     });
 
     it(`will preserve extra params as query params`, async () => {
@@ -109,7 +113,7 @@ describe('server api redirects', () => {
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/extra');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/extra');
       expect(new URL(response.url).search).toEqual('?query=my-query&params=my-params&foo=1');
     });
 
@@ -118,7 +122,7 @@ describe('server api redirects', () => {
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/hello/world');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/hello/world');
     });
 
     it(`can rewrite [...catchAll] routes with query params`, async () => {
@@ -128,17 +132,28 @@ describe('server api redirects', () => {
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/hello/world');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/hello/world');
       expect(new URL(response.url).search).toEqual('?hello=world&foo=bar');
     });
 
-    it.skip(`can rewrite a [slug] to a [...catchAll]`, async () => {
-      const response = await server.fetchAsync('/redirect/dynamic/slug/to/catch-all');
+    it(`will match based upon variable names [slug] -> [...catchAll]`, async () => {
+      const response = await server.fetchAsync(
+        '/redirect/dynamic/my-slug/to/this-is-the-catch-all'
+      );
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/hello/world');
-      expect(new URL(response.url).search).toEqual('?hello=world&foo=bar');
+      expect(new URL(response.url).pathname).toEqual('/dynamic/this-is-the-catch-all');
+      expect(new URL(response.url).search).toEqual('?slug=my-slug');
+    });
+
+    it(`will match based upon variable names [...catchAll] -> [...slug]`, async () => {
+      const response = await server.fetchAsync('/redirect/catch-all-to-slug/this/is/the/catch-all');
+
+      expect(response.status).toEqual(200);
+      expect(response.redirected).toEqual(true);
+      expect(new URL(response.url).pathname).toEqual('/dynamic/this');
+      expect(new URL(response.url).search).toEqual('');
     });
   });
 });

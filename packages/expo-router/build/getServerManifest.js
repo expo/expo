@@ -38,19 +38,15 @@ function getServerManifest(route) {
         return [[key, '/' + absoluteRoute, route]];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
-    const flat = getFlatNodes(route)
-        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
-        .reverse();
+    const flat = getFlatNodes(route).sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a));
     const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-rewrite'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' || route.type === 'rewrite'), ([path]) => path);
-    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect' || route.type === 'api-redirect'), ([path]) => path)
-        .map((redirect) => {
+    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect' || route.type === 'api-redirect'), ([path]) => path).map((redirect) => {
         redirect[1] =
             flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
                 '/';
         return redirect;
-    })
-        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(a, b));
+    });
     const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
     return {
