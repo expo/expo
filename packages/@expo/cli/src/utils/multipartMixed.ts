@@ -13,10 +13,10 @@ export interface EncodedFormData {
 }
 
 const CRLF = '\r\n';
-const BOUNDARY = '-'.repeat(2);
+const BOUNDARY_HYPHEN_CHARACTERS = '-'.repeat(2);
 
 const getFormHeader = (boundary: string, field: FormDataField): string => {
-  let header = `${BOUNDARY}${boundary}${CRLF}`;
+  let header = `${BOUNDARY_HYPHEN_CHARACTERS}${boundary}${CRLF}`;
   header += `Content-Disposition: form-data; name="${field.name}"`;
   if (typeof field.value !== 'string') {
     header += `; filename="${(field.value as File).name ?? 'blob'}"${CRLF}`;
@@ -32,7 +32,8 @@ const getFormHeader = (boundary: string, field: FormDataField): string => {
   return `${header}${CRLF}${CRLF}`;
 };
 
-const getFormFooter = (boundary: string) => `${BOUNDARY}${boundary}${BOUNDARY}${CRLF}${CRLF}`;
+const getFormFooter = (boundary: string) =>
+  `${BOUNDARY_HYPHEN_CHARACTERS}${boundary}${BOUNDARY_HYPHEN_CHARACTERS}${CRLF}${CRLF}`;
 
 export async function encodeMultipartMixed(fields: FormDataField[]): Promise<EncodedFormData> {
   const boundary = `formdata-${randomBytes(8).toString('hex')}`;
