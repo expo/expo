@@ -18,6 +18,8 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (14.0.1):
     - ExpoModulesCore
+  - ExpoLinking (7.0.3):
+    - ExpoModulesCore
   - ExpoLocalAuthentication (15.0.1):
     - ExpoModulesCore
   - ExpoMeshGradient (0.1.0):
@@ -1777,6 +1779,7 @@ DEPENDENCIES:
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
+  - ExpoLinking (from `../../../packages/expo-linking/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -1885,6 +1888,9 @@ EXTERNAL SOURCES:
   ExpoKeepAwake:
     inhibit_warnings: false
     :path: "../../../packages/expo-keep-awake/ios"
+  ExpoLinking:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-linking/ios"
   ExpoLocalAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-local-authentication/ios"
@@ -2053,6 +2059,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
   ExpoFont: 73d44c5cd85eab8034bc5165ca2230315097d728
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
+  ExpoLinking: 5addac9b3a9c25b8032efc0d604162427c62912e
   ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoMeshGradient: 10206dfd6045700677d876bf58a27f065f4b9f70
   ExpoModulesCore: 11dda0a8dea834f584c4ab0070cbfdca733e8fdf
@@ -2131,6 +2138,6 @@ SPEC CHECKSUMS:
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 21dd9d47026f46578fd67d9d5a2fc0bb8197096a
 
-PODFILE CHECKSUM: da8cb6efd0293a05846acf4bf269a9dc6ba7ca35
+PODFILE CHECKSUM: 56c8acc7e7eafa2b542cdb57dfc945abb6366b78
 
 COCOAPODS: 1.16.2

@@ -10,11 +10,21 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     return false
   }()
 
+#if os(iOS) || os(tvOS)
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     ExpoLinkingRegistry.shared.initialURL = url
     NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
     return false
   }
+#elseif os(macOS)
+  public func application(_ application: NSApplication, open urls: [URL]) {
+    guard let url = urls.first else {
+      return
+    }
+    ExpoLinkingRegistry.shared.initialURL = url
+    NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
+  }
+#endif
 
   public func application(
     _ application: UIApplication,
