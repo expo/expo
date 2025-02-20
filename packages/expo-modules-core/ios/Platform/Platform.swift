@@ -5,6 +5,7 @@ import SwiftUI
 
 public typealias UIApplication = NSApplication
 public typealias UIView = NSView
+public typealias UIUserActivityRestoring = NSUserActivityRestoring
 public typealias UIViewController = NSViewController
 public typealias UIResponder = NSResponder
 public typealias UIApplicationDelegate = NSApplicationDelegate
@@ -14,7 +15,7 @@ public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 
 extension UIApplication {
-  public typealias LaunchOptionsKey = NSString
+  public typealias LaunchOptionsKey = String
 }
 
 #endif // os(macOS)
