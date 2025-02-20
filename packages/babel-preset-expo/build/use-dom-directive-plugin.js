@@ -84,7 +84,7 @@ function expoUseDomDirectivePlugin(api) {
                 ];
                 if (isProduction) {
                     // MUST MATCH THE EXPORT COMMAND!
-                    const hash = crypto_1.default.createHash('sha1').update(outputKey).digest('hex');
+                    const hash = crypto_1.default.createHash('md5').update(outputKey).digest('hex');
                     proxyModule.push(`const filePath = "${hash}.html";`);
                 }
                 else {

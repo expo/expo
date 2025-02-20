@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed EAS Update support for DOM Components. ([#35042](https://github.com/expo/expo/pull/35042) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.0.8 — 2025-02-14

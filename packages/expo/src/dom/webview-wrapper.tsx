@@ -97,6 +97,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
     originWhitelist: ['*'],
     allowFileAccess: true,
     allowFileAccessFromFileURLs: true,
+    allowingReadAccessToURL: 'file://',
     allowsAirPlayForMediaPlayback: true,
     allowsFullscreenVideo: true,
     onContentProcessDidTerminate: () => {

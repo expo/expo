@@ -109,7 +109,7 @@ export function expoUseDomDirectivePlugin(
 
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
-          const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
+          const hash = crypto.createHash('md5').update(outputKey).digest('hex');
           proxyModule.push(`const filePath = "${hash}.html";`);
         } else {
           proxyModule.push(
