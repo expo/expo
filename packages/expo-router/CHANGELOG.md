@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Add static redirects to config plugin.
+- Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
