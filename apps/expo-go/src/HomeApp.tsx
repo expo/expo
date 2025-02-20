@@ -198,7 +198,6 @@ export default function HomeApp() {
 
   return (
     <ThemeProvider themePreference={theme as ThemePreference}>
-      {/* @ts-expect-error TODO TS2786: View cannot be used as a JSX component. */}
       <View
         style={[
           styles.container,

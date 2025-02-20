@@ -20,6 +20,7 @@
     ]
   },
   "resolutions": {
+    "@types/react": "19.0.10",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/core": "7.3.1",
     "@react-navigation/drawer": "^7.1.1",
