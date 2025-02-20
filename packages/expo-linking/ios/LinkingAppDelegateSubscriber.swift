@@ -18,7 +18,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 #elseif os(macOS)
   public func application(_ application: NSApplication, open urls: [URL]) {
-    guard let url = urls.first else { return }
+    guard let url = urls.first else {
+      return
+    }
     ExpoLinkingRegistry.shared.initialURL = url
     NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
   }
