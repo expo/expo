@@ -46,7 +46,6 @@ struct TextInputView: ExpoSwiftUI.View {
   @EnvironmentObject var props: TextInputProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var value: String = ""
-  
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
       if #available(iOS 16.0, *) {
