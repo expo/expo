@@ -46,8 +46,11 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   var isScanningBarcodes = false {
     didSet {
-      Task {
-        await barcodeScanner?.setIsEnabled(isScanningBarcodes)
+      sessionQueue.async { [weak self] in
+        guard let self else {
+          return
+        }
+        barcodeScanner?.setIsEnabled(isScanningBarcodes)
       }
     }
   }
@@ -293,9 +296,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     session.commitConfiguration()
     addErrorNotification()
     changePreviewOrientation()
-    Task.detached(priority: .userInitiated, operation: {
-      await self.barcodeScanner?.maybeStartBarcodeScanning()
-    })
+    barcodeScanner?.maybeStartBarcodeScanning()
     updateCameraIsActive()
     onCameraReady()
     enableTorch()
@@ -335,8 +336,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
-    Task {
-      await barcodeScanner?.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    sessionQueue.async {
+      self.barcodeScanner?.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
     }
   }
 
@@ -689,13 +690,11 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   func updateCameraIsActive() {
-    if session.isRunning == active {
-      return
-    }
-
     sessionQueue.async {
       if self.active {
-        self.session.startRunning()
+        if !self.session.isRunning {
+          self.session.startRunning()
+        }
       } else {
         self.session.stopRunning()
       }
@@ -767,9 +766,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     for output in session.outputs {
       session.removeOutput(output)
     }
-    Task {
-      await barcodeScanner?.stopBarcodeScanning()
-    }
+    barcodeScanner?.stopBarcodeScanning()
     session.commitConfiguration()
 
     motionManager.stopAccelerometerUpdates()
@@ -805,15 +802,13 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
 
-    Task {
-      await scanner.setPreviewLayer(layer: previewLayer)
-      await scanner.setOnBarcodeScanned { [weak self] body in
-        guard let self else {
-          return
-        }
-        if let body {
-          self.onBarcodeScanned(body)
-        }
+    scanner.setPreviewLayer(layer: previewLayer)
+    scanner.setOnBarcodeScanned { [weak self] body in
+      guard let self else {
+        return
+      }
+      if let body {
+        self.onBarcodeScanned(body)
       }
     }
 

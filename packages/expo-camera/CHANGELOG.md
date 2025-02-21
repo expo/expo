@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Control barcode scanner on session queue. ([#35107](https://github.com/expo/expo/pull/35107) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 16.0.17 — 2025-02-19
