@@ -7,5 +7,5 @@ export interface SrcSetSource extends ImageSource {
     uri: string;
     type: 'srcset';
 }
-export default function useSourceSelection(sources: ImageSource[] | SharedRefType<'image'> | undefined, responsivePolicy: "live" | "initial" | "static" | undefined, containerRef: React.MutableRefObject<HTMLDivElement | null>, measurementCallback?: ((target: HTMLElement, size: DOMRect) => void) | null): ImageSource | SrcSetSource | SharedRefType<'image'> | null;
+export default function useSourceSelection(sources: ImageSource[] | SharedRefType<'image'> | undefined, responsivePolicy: "live" | "initial" | "static" | undefined, containerRef: React.RefObject<HTMLDivElement | null>, measurementCallback?: ((target: HTMLElement, size: DOMRect) => void) | null): ImageSource | SrcSetSource | SharedRefType<'image'> | null;
 //# sourceMappingURL=useSourceSelection.d.ts.map

@@ -1,7 +1,7 @@
 import React
 import Expo
 
-@UIApplicationMain
+@main
 public class AppDelegate: ExpoAppDelegate {
   public override func application(
     _ application: UIApplication,

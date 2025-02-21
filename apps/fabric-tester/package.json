@@ -20,9 +20,9 @@
     "expo-status-bar": "~2.0.0",
     "expo-updates": "~0.26.9",
     "expo-video": "~2.0.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-native": "0.77.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.78.0",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {

@@ -147,12 +147,16 @@ class GLCameraScreen extends React.Component<object, State> {
           style={StyleSheet.absoluteFill}
           facing={this.state.type}
           zoom={this.state.zoom}
-          ref={(ref) => (this.camera = ref!)}
+          ref={(ref) => {
+            this.camera = ref!;
+          }}
         />
         <GLView
           style={StyleSheet.absoluteFill}
           onContextCreate={this.onContextCreate}
-          ref={(ref) => (this.glView = ref!)}
+          ref={(ref) => {
+            this.glView = ref!;
+          }}
         />
 
         <View style={styles.buttons}>

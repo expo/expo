@@ -31,15 +31,19 @@ const runtimeVersion = '1.0.0';
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
 
-  await initAsync(projectRoot, {
-    repoRoot,
-    runtimeVersion,
-    localCliBin,
-    configureE2E: true,
-    transformAppJson: transformAppJsonForUpdatesDisabledE2E,
-    shouldGenerateTestUpdateBundles: false,
-    shouldConfigureCodeSigning: false,
-  });
+  try {
+    await initAsync(projectRoot, {
+      repoRoot,
+      runtimeVersion,
+      localCliBin,
+      configureE2E: true,
+      transformAppJson: transformAppJsonForUpdatesDisabledE2E,
+      shouldGenerateTestUpdateBundles: false,
+      shouldConfigureCodeSigning: false,
+    });
 
-  await setupUpdatesDisabledE2EAppAsync(projectRoot, { localCliBin, repoRoot });
+    await setupUpdatesDisabledE2EAppAsync(projectRoot, { localCliBin, repoRoot });
+  } catch (err) {
+    console.error(err);
+  }
 })();
