@@ -399,7 +399,7 @@ export const eas = [
     makePage('build/building-from-github.mdx'),
     makePage('build/orbit.mdx'),
     makeGroup(
-      'App Signing',
+      'App signing',
       [
         makePage('app-signing/app-credentials.mdx'),
         makePage('app-signing/managed-credentials.mdx'),
