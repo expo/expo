@@ -30,45 +30,6 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
     self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
   }
 
-  #if os(iOS) || os(tvOS)
-  // MARK: - Initializing the App
-
-  open func application(
-    _ application: UIApplication,
-    willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
-      $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
-    }
-
-    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
-    // the `didFinishLaunchingWithOptions` method by returning `true` here.
-    //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
-    if parsedSubscribers.isEmpty {
-      return true
-    }
-
-    return parsedSubscribers.reduce(false) { result, subscriber in
-      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
-    }
-  }
-
-  open func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-    if automaticallyLoadReactNativeWindow {
-      loadReactNativeWindow(launchOptions: launchOptions)
-    }
-
-    ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
-      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
-      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
-    }
-
-    return true
-  }
-
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
     guard let reactNativeFactory = self.reactNativeFactory else {
       fatalError("loadReactNativeWindow: Missing reactNativeFactory in ExpoAppInstance")
@@ -154,6 +115,45 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
     // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
     return bundleURL()
+  }
+
+  // MARK: - Initializing the App
+  #if os(iOS) || os(tvOS)
+
+  open func application(
+    _ application: UIApplication,
+    willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
+      $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
+    }
+
+    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
+    // the `didFinishLaunchingWithOptions` method by returning `true` here.
+    //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
+    if parsedSubscribers.isEmpty {
+      return true
+    }
+
+    return parsedSubscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
+    }
+  }
+
+  open func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    if automaticallyLoadReactNativeWindow {
+      loadReactNativeWindow(launchOptions: launchOptions)
+    }
+
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
+      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
+      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    return true
   }
 
   // TODO: - Configuring and Discarding Scenes
