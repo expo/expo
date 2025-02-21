@@ -559,6 +559,12 @@ The generated bundle URL changes based on development/production to ensure the w
 
 The native API `Worker` is not traditionally available in React Native and not provided by the Expo SDK so even though this bundling feature technically works for all platforms, it's only useful on web. You could theoretically write a native Expo module that polyfills the `Worker` API if you want to support native platforms too. Alternatively, you can use "worklet" API in React Native Reanimated to offload work to a separate thread on native.
 
+Alternatively, you can import Workers using the public path by first putting a transformed JS file in the `/public` directory, then referencing it in the worker import:
+
+```ts
+const worker = new Worker(new URL('/worker.js', window.location.href));
+```
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
