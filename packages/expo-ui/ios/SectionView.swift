@@ -1,10 +1,12 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
+import SwiftUI
 
 class SectionProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
+  @Field var displayTitleUppercase: Bool = true
+  @Field var heightOffset: CGFloat = 0
 }
 
 let IPAD_OFFSET: CGFloat = 30
@@ -15,6 +17,8 @@ struct SectionView: ExpoSwiftUI.View {
 
   var body: some View {
     let form = Form {
+      Section(header: Text(props.title ?? "").textCase(props.displayTitleUppercase ? .uppercase : nil)) {
+        Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
       Section(header: Text(props.title ?? "")) {
         UnwrappedChildren { child, isHostingView in
           child
