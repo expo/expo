@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+
 ## 3.1.3 - 2024-11-29
 
 ### 🐛 Bug fixes

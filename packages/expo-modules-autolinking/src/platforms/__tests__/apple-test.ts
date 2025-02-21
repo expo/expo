@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
 import fs from 'fs';
+import { glob } from 'glob';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -11,7 +11,7 @@ import {
   resolveModuleAsync,
 } from '../apple';
 
-jest.mock('fast-glob');
+jest.mock('glob');
 jest.mock('fs');
 
 const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
