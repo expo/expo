@@ -70,6 +70,7 @@ async function resolveModuleAsync(packageName, revision) {
         // Filter out projects that are already linked by plugins
         .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
     const coreFeatures = revision.config?.coreFeatures() ?? [];
+    const publication = revision.config?.androidPublication();
     return {
         packageName,
         projects,
@@ -77,6 +78,7 @@ async function resolveModuleAsync(packageName, revision) {
         modules: revision.config?.androidModules() ?? [],
         ...(aarProjects.length > 0 ? { aarProjects } : {}),
         ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
+        ...(publication ? { publication } : {}),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
