@@ -61,7 +61,11 @@ export default function MailComposerScreen() {
           <Text>{label}</Text>
           <Button
             onPress={Platform.select({
-              android: () => packageName && openApplication(packageName),
+              android: () => {
+                if (packageName) {
+                  openApplication(packageName);
+                }
+              },
               ios: () => url && openURL(url),
             })}
             title="Open client"

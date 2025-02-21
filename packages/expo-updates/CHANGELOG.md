@@ -31,6 +31,7 @@
 - Fixed incorrect error log on Android. ([#34785](https://github.com/expo/expo/pull/34785) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
 - Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
 ## 0.26.10 - 2024-12-05
 

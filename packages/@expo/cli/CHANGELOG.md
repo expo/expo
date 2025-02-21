@@ -63,6 +63,7 @@
 - Bump `bplist-creator` to `0.1.0` (aligning with `simple-plist@1.3.1`). ([#35041](https://github.com/expo/expo/pull/35041) by [@kitten](https://github.com/kitten))
 - Drop `is-wsl`, `is-docker`, and `lodash.debounce`. ([#35040](https://github.com/expo/expo/pull/35040) by [@kitten](https://github.com/kitten))
 - Drop `form-data` dependency. ([#35048](https://github.com/expo/expo/pull/35048) by [@kitten](https://github.com/35048))
+- Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
 ## 0.22.7 - 2024-12-19
 

@@ -43,6 +43,7 @@
 - Allowed extending `process.env` types. ([#34112](https://github.com/expo/expo/pull/34112) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin.
 - [Android] Remove `BarCodeScannerInterface`. ([#34966](https://github.com/expo/expo/pull/34966) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make ExpoComposeView builder function optional. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### ⚠️ Notices
 

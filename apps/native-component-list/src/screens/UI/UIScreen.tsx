@@ -68,6 +68,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ColorPickerScreen'));
     },
   },
+  {
+    name: 'Progress component',
+    route: 'ui/progress',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ProgressScreen'));
+    },
+  },
 ];
 if (Platform.OS === 'ios') {
   UIScreens.push({

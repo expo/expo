@@ -14,6 +14,7 @@
 
 - Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
 - [Android] Fixed `task ':expo-dev-menu:generateDebugLintModel' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency`. ([#34688](https://github.com/expo/expo/pull/34688) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Add `ReactAppDependencyProvider` as a dependency when running React Native 0.77. ([#35092](https://github.com/expo/expo/pull/35092) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

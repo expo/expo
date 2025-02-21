@@ -260,7 +260,7 @@ The `if` conditional determines if a job should run.
 jobs:
   my_job:
     # @info #
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref_name == 'main' }}
     # @end #
 ```
 
