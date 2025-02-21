@@ -248,9 +248,6 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class)
   private fun initDb(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
-    if (database.openOptions.enableCRSQLite) {
-      loadCRSQLiteExtension(database)
-    }
     if (database.openOptions.enableChangeListener) {
       addUpdateHook(database)
     }
@@ -374,18 +371,6 @@ class SQLiteModule : Module() {
     statement.isFinalized = true
   }
 
-  private fun loadCRSQLiteExtension(database: NativeDatabase) {
-    var errCode = database.ref.sqlite3_enable_load_extension(1)
-    if (errCode != NativeDatabaseBinding.SQLITE_OK) {
-      Log.e(TAG, "Failed to enable sqlite3 extensions - errCode[$errCode]")
-      return
-    }
-    errCode = database.ref.sqlite3_load_extension("libcrsqlite", "sqlite3_crsqlite_init")
-    if (errCode != NativeDatabaseBinding.SQLITE_OK) {
-      Log.e(TAG, "Failed to load crsqlite extension - errCode[$errCode]")
-    }
-  }
-
   private fun addUpdateHook(database: NativeDatabase) {
     database.ref.enableUpdateHook { databaseName, tableName, operationType, rowID ->
       if (!hasListeners) {
@@ -410,9 +395,6 @@ class SQLiteModule : Module() {
     maybeThrowForClosedDatabase(database)
     maybeRemoveAllCachedStatements(database).forEach {
       it.ref.sqlite3_finalize()
-    }
-    if (database.openOptions.enableCRSQLite) {
-      database.ref.sqlite3_exec("SELECT crsql_finalize()")
     }
     val ret = database.ref.sqlite3_close()
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
