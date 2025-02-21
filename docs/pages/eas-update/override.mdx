@@ -4,9 +4,9 @@ sidebar_title: Override update configuration at runtime
 description: Learn how to override the update URL and request headers at runtime to control which update is loaded in preview builds.
 ---
 
-> **warning** The features described in this guide are available in Expo SDK 52 with the expo-updates package version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it should only be used in preview environments. 
+> **warning** The features described in this guide are available in Expo SDK 52 with the expo-updates package version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it should only be used in preview environments.
 
-The typical way to use EAS Update is to have a single update URL and a set of request headers (such as update channel name) embedded in a build of your app. In order to control which update is loaded you make changes on the server through the `eas update` command or the EAS dashboard. For example, you publish a new update to a channel that your build is pointing to, then the build fetches that update on the next launch. Updates published to a channel different from the one your build is pointing to will not be downloaded with this approach.
+The typical way to use EAS Update is to have a single update URL and a set of request headers (such as update channel name) embedded in a build of your app. To control which update is loaded you make changes on the server through the `eas update` command or the EAS dashboard. For example, you publish a new update to a channel that your build is pointing to, then the build fetches that update on the next launch. Updates published to a channel different from the one your build is pointing to will not be downloaded with this approach.
 
 This guide explains is how you can change the update URL and request headers at runtime, making it possible for load a specific update by ID or change the channel that updates are pulled from without creating and installing a new build.
 
@@ -26,7 +26,7 @@ There are two relevant APIs:
 How to use these APIs:
 
 1. **Override the update URL/headers, instruct user to close the app**: Somewhere in your app, you would provide a way for users to trigger the change to the URL and/or request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism depending on your use case. When the parameters are changed, notify the user that they need to close and re-open the app, such as via an alert. The `expo-updates` library, with methods like `checkForUpdateAsync()`, will not use the new overridden URL and request headers until the app is closed and reopened.
-2. **The new update will be downloaded and launched on the next app open**: After the app is completely closed (”killed” and not just backgrounded) and re-opened, the update and its related assets will all be downloaded. Once they are ready, the app will launch. While it's downloading, the user will have to wait on the splash screen. We understand that waiting on the splash screen is not ideal, and we intend to improve this experience in the future if this feature is widely used. For the currently recommended use case (previews), this is likely an acceptable compromise.
+2. **The new update will be downloaded and launched on the next app open**: After the app is completely closed ("killed" and not just backgrounded) and re-opened, the update and its related assets will all be downloaded. Once they are ready, the app will launch. While it's downloading, the user will have to wait on the splash screen. We understand that waiting on the splash screen is not ideal, and we intend to improve this experience in the future if this feature is widely used. For the currently recommended use case (previews), this is likely an acceptable compromise.
 
 ## Example code
 
