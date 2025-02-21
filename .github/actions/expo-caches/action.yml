@@ -17,6 +17,9 @@ inputs:
   bare-expo-pods:
     description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
+  bare-expo-macos-pods:
+    description: 'Restore /apps/bare-expo/macos pods cache'
+    required: false
   native-tests-pods:
     description: 'Restore /apps/native-tests/ios pods cache'
     required: false
@@ -60,6 +63,9 @@ outputs:
   bare-expo-pods-hit:
     description: 'Returns true, if /apps/bare-expo/ios pods cache is up-to-date'
     value: steps.bare-expo-pods-cache.outputs.cache-hit
+  bare-expo-macos-pods-hit:
+    description: 'Returns true, if /apps/bare-expo/macos pods cache is up-to-date'
+    value: steps.bare-expo-macos-pods-cache.outputs.cache-hit
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
     value: steps.native-tests-pods-cache.outputs.cache-hit
@@ -127,6 +133,14 @@ runs:
       with:
         path: apps/bare-expo/ios/Pods
         key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+
+    - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
+      if: inputs.bare-expo-macos-pods == 'true'
+      uses: actions/cache@v4
+      id: bare-expo-macos-pods-cache
+      with:
+        path: apps/bare-expo/macos/Pods
+        key: ${{ runner.os }}-bare-expo-macos-pods-${{ hashFiles('apps/bare-expo/macos/Podfile.lock') }}
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
       if: inputs.native-tests-pods == 'true'
