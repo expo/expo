@@ -7,7 +7,7 @@ let shouldWarnAboutEdgeToEdge = Platform.OS === 'android' && isEdgeToEdge();
 function potentiallyWarnAboutEdgeToEdge() {
     if (shouldWarnAboutEdgeToEdge) {
         shouldWarnAboutEdgeToEdge = false; // warn once
-        console.warn('Avoid using expo-navigation-bar with edge-to-edge, as it may cause interference. Instead, use the SystemBars component from react-native-edge-to-edge.');
+        console.warn('Using expo-navigation-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: (https://github.com/zoontek/react-native-edge-to-edge#systembars)');
     }
 }
 /**
