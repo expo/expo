@@ -46,7 +46,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   var isScanningBarcodes = false {
     didSet {
-      sessionQueue.async{ [weak self] in
+      sessionQueue.async { [weak self] in
         guard let self else {
           return
         }
