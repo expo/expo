@@ -47,7 +47,7 @@ export function AppJSBanner() {
       <div className="z-10 flex items-center gap-3">
         <Button
           size="xs"
-          href="https://docs.google.com/forms/d/e/1FAIpQLSeKSqxwrTdJJavOFgK-UA25K-hJPmZ5wnZDY7UUo9ULDuckkA/viewform"
+          href="https://appjs.co/#CFP"
           openInNewTab
           rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
           className={mergeClasses(
