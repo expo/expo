@@ -586,23 +586,17 @@ public final class SQLiteModule: Module {
     }
   }
 
-  // MARK: - cachedStatements managements
+  // MARK: - statements managements
   private func maybeFinalizeAllStatements(_ database: NativeDatabase) throws {
     if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
       return
     }
-    var stmt = exsqlite3_next_stmt(database.pointer, nil)
-    if stmt == nil {
-      // No active statements found to finalize.
-      return
-    }
-    // Iterate over any remaining open statements.
-    // Use nil to represent a null pointer.
-    while stmt != nil {
-      if exsqlite3_finalize(stmt) != SQLITE_OK {
+    while let currentStmt = stmt {
+      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
+      if exsqlite3_finalize(currentStmt) != SQLITE_OK {
         throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
-      stmt = exsqlite3_next_stmt(database.pointer, nil)
+      stmt = nextStmt
     }
   }
 }
