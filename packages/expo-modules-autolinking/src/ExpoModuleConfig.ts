@@ -47,9 +47,7 @@ export class ExpoModuleConfig {
    */
   appleModules() {
     const appleConfig = this.getAppleConfig();
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+    return appleConfig?.modules ?? [];
   }
 
   /**
@@ -92,9 +90,7 @@ export class ExpoModuleConfig {
    */
   androidModules() {
     const androidConfig = this.rawConfig.android;
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
+    return androidConfig?.modules ?? [];
   }
 
   /**
