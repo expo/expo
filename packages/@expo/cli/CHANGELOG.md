@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop `internal-ip` and determine local network IP address and gateway with UDP sockets. ([#35102](https://github.com/expo/expo/pull/35102) by [@kitten](https://github.com/kitten))
+
 ## 0.24.0 — 2025-04-11
 
 ### 🎉 New features
