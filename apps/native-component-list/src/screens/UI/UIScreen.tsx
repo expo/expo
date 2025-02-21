@@ -66,6 +66,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ColorPickerScreen'));
     },
   },
+  {
+    name: 'TextInput component',
+    route: 'ui/textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
