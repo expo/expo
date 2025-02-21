@@ -16,6 +16,18 @@
 
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
+## 0.19.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.10 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.9 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.19.8 - 2024-12-16
 
 ### 🐛 Bug fixes

@@ -12,6 +12,18 @@
 
 ### 💡 Others
 
+## 3.1.6 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.4 - 2025-01-08
+
+_This version does not introduce any user-facing changes._
+
 ## 3.1.3 - 2024-11-29
 
 ### 🐛 Bug fixes
