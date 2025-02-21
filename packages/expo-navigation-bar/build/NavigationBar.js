@@ -1,7 +1,15 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { processColor } from 'react-native';
+import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 import ExpoNavigationBar from './ExpoNavigationBar';
+let shouldWarnAboutEdgeToEdge = Platform.OS === 'android' && isEdgeToEdge();
+function potentiallyWarnAboutEdgeToEdge() {
+    if (shouldWarnAboutEdgeToEdge) {
+        shouldWarnAboutEdgeToEdge = false; // warn once
+        console.warn('Avoid using expo-navigation-bar with edge-to-edge, as it may cause interference. Instead, use the SystemBars component from react-native-edge-to-edge.');
+    }
+}
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -14,6 +22,9 @@ import ExpoNavigationBar from './ExpoNavigationBar';
  * ```
  */
 export function addVisibilityListener(listener) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     // Assert so the type is non-nullable.
     if (!ExpoNavigationBar.addListener) {
         throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
@@ -30,6 +41,9 @@ export function addVisibilityListener(listener) {
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setBackgroundColorAsync` is only available on Android');
         return;
@@ -47,6 +61,9 @@ export async function setBackgroundColorAsync(color) {
  * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
 export async function getBackgroundColorAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`getBackgroundColorAsync` is only available on Android');
         return `#00000000`;
@@ -63,6 +80,9 @@ export async function getBackgroundColorAsync() {
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBorderColorAsync(color) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setBorderColorAsync` is only available on Android');
         return;
@@ -80,6 +100,9 @@ export async function setBorderColorAsync(color) {
  * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
 export async function getBorderColorAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`getBorderColorAsync` is only available on Android');
         return `#00000000`;
@@ -96,6 +119,9 @@ export async function getBorderColorAsync() {
  * @param visibility Based on CSS visibility property.
  */
 export async function setVisibilityAsync(visibility) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setVisibilityAsync` is only available on Android');
         return;
@@ -112,6 +138,9 @@ export async function setVisibilityAsync(visibility) {
  * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */
 export async function getVisibilityAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`getVisibilityAsync` is only available on Android');
         return 'hidden';
@@ -128,6 +157,9 @@ export async function getVisibilityAsync() {
  * @param style Dictates the color of the foreground element color.
  */
 export async function setButtonStyleAsync(style) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setButtonStyleAsync` is only available on Android');
         return;
@@ -144,6 +176,9 @@ export async function setButtonStyleAsync(style) {
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
 export async function getButtonStyleAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`getButtonStyleAsync` is only available on Android');
         return 'light';
@@ -167,6 +202,9 @@ export async function getButtonStyleAsync() {
  * @param position Based on CSS position property.
  */
 export async function setPositionAsync(position) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setPositionAsync` is only available on Android');
         return;
@@ -187,6 +225,9 @@ export async function setPositionAsync(position) {
  * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
 export async function unstable_getPositionAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`unstable_getPositionAsync` is only available on Android');
         return 'relative';
@@ -210,6 +251,9 @@ export async function unstable_getPositionAsync() {
  * @param behavior Dictates the interaction behavior of the navigation bar.
  */
 export async function setBehaviorAsync(behavior) {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`setBehaviorAsync` is only available on Android');
         return;
@@ -226,6 +270,9 @@ export async function setBehaviorAsync(behavior) {
  * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
 export async function getBehaviorAsync() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     if (Platform.OS !== 'android') {
         console.warn('`getBehaviorAsync` is only available on Android');
         return 'inset-touch';
@@ -245,6 +292,9 @@ export async function getBehaviorAsync() {
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export function useVisibility() {
+    if (__DEV__) {
+        potentiallyWarnAboutEdgeToEdge();
+    }
     const [visibility, setVisible] = useState(null);
     useEffect(() => {
         let isMounted = true;
