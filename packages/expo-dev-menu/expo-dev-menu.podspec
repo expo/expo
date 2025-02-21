@@ -120,7 +120,6 @@ Pod::Spec.new do |s|
     if reactNativeTargetVersion >= 77
       main.dependency 'ReactAppDependencyProvider'
     end
-    
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
