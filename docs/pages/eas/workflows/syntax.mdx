@@ -4,8 +4,6 @@ description: Reference guide for the EAS Workflows configuration file syntax.
 maxHeadingDepth: 5
 ---
 
-{/* vale off */}
-
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -262,7 +260,7 @@ The `if` conditional determines if a job should run.
 jobs:
   my_job:
     # @info #
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref_name == 'main' }}
     # @end #
 ```
 
@@ -295,6 +293,26 @@ jobs:
     params:
       platform: ios | android # required
       profile: string # optional, default: production
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "build_id": string,
+  "app_build_version": string | null,
+  "app_identifier": string | null,
+  "app_version": string | null,
+  "channel": string | null,
+  "distribution": "internal" | "store" | null,
+  "fingerprint_hash": string | null,
+  "git_commit_hash": string | null,
+  "platform": "ios" | "android" | null,
+  "profile": string | null,
+  "runtime_version": string | null,
+  "sdk_version": string | null,
+  "simulator": "true" | "false" | null
+}
 ```
 
 Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
@@ -337,6 +355,26 @@ jobs:
       sdk_version: string # optional
       runtime_version: string # optional
       simulator: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "build_id": string,
+  "app_build_version": string | null,
+  "app_identifier": string | null,
+  "app_version": string | null,
+  "channel": string | null,
+  "distribution": "internal" | "store" | null,
+  "fingerprint_hash": string | null,
+  "git_commit_hash": string | null,
+  "platform": "ios" | "android" | null,
+  "profile": string | null,
+  "runtime_version": string | null,
+  "sdk_version": string | null,
+  "simulator": "true" | "false" | null
+}
 ```
 
 #### `submit`
@@ -410,16 +448,20 @@ jobs:
     # @end #
 ```
 
+{/* vale off */}
+
 | Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                                |
 | ---------------------------------- | ---- | ---------------- | --------- | ------------------------------------ |
 | linux-medium                       | 4    | 16               | 14        | Default worker.                      |
 | linux-large                        | 8    | 32               | 28        |                                      |
-| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android emulators.    |
-| linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android emulators.    |
-| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
-| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
+| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators.    |
+| linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android Emulators.    |
+| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including Simulators. |
+| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including Simulators. |
 
-Note: For iOS builds and iOS simulator jobs, you must use a `macos-*` worker. For Android emulator jobs, you must use a `linux-*-nested-virtualization` worker.
+{/* vale on */}
+
+Note: For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker. For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker.
 
 ### `jobs.<job_id>.outputs`
 

@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertRequest = exports.convertHeaders = exports.createRequestHandler = void 0;
-const stream_1 = require("@remix-run/node/dist/stream");
-const __1 = require("..");
+const node_stream_1 = require("node:stream");
+const promises_1 = require("node:stream/promises");
+const index_1 = require("../index");
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
 function createRequestHandler({ build }, setup) {
-    const handleRequest = (0, __1.createRequestHandler)(build, setup);
+    const handleRequest = (0, index_1.createRequestHandler)(build, setup);
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
             return next();
@@ -42,6 +43,13 @@ function convertHeaders(requestHeaders) {
     return headers;
 }
 exports.convertHeaders = convertHeaders;
+function convertRawHeaders(requestHeaders) {
+    const headers = new Headers();
+    for (let index = 0; index < requestHeaders.length; index += 2) {
+        headers.append(requestHeaders[index], requestHeaders[index + 1]);
+    }
+    return headers;
+}
 function convertRequest(req, res) {
     const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
     // Abort action/loaders once we can no longer write a response
@@ -49,13 +57,13 @@ function convertRequest(req, res) {
     res.on('close', () => controller.abort());
     const init = {
         method: req.method,
-        headers: convertHeaders(req.headers),
+        headers: convertRawHeaders(req.rawHeaders),
         // Cast until reason/throwIfAborted added
         // https://github.com/mysticatea/abort-controller/issues/36
         signal: controller.signal,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-        init.body = (0, stream_1.createReadableStreamFromReadable)(req);
+        init.body = node_stream_1.Readable.toWeb(req);
         init.duplex = 'half';
     }
     return new Request(url.href, init);
@@ -64,11 +72,16 @@ exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.status(expoRes.status);
-    for (const [key, value] of expoRes.headers.entries()) {
-        res.append(key, value);
+    if (typeof res.setHeaders === 'function') {
+        res.setHeaders(expoRes.headers);
+    }
+    else {
+        for (const [key, value] of expoRes.headers.entries()) {
+            res.appendHeader(key, value);
+        }
     }
     if (expoRes.body) {
-        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await (0, promises_1.pipeline)(node_stream_1.Readable.fromWeb(expoRes.body), res);
     }
     else {
         res.end();

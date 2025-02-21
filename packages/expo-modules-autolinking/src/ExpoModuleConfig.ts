@@ -1,6 +1,7 @@
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
+  AndroidPublication,
   RawExpoModuleConfig,
   RawModuleConfigApple,
   SupportedPlatform,
@@ -46,9 +47,7 @@ export class ExpoModuleConfig {
    */
   appleModules() {
     const appleConfig = this.getAppleConfig();
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+    return appleConfig?.modules ?? [];
   }
 
   /**
@@ -91,9 +90,7 @@ export class ExpoModuleConfig {
    */
   androidModules() {
     const androidConfig = this.rawConfig.android;
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
+    return androidConfig?.modules ?? [];
   }
 
   /**
@@ -115,6 +112,13 @@ export class ExpoModuleConfig {
    */
   androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[] {
     return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+  }
+
+  /**
+   * Returns the publication config for Android.
+   */
+  androidPublication(): AndroidPublication | undefined {
+    return this.rawConfig.android?.publication;
   }
 
   /**

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatArrayOfReactDelegateHandler = exports.generateModulesProviderAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const fileUtils_1 = require("../fileUtils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -61,7 +61,7 @@ exports.resolveModuleAsync = resolveModuleAsync;
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     const propsFile = path_1.default.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
     try {
-        const contents = await fs_extra_1.default.readFile(propsFile, 'utf8');
+        const contents = await fs_1.default.promises.readFile(propsFile, 'utf8');
         const podfileJson = JSON.parse(contents);
         if (podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]) {
             // expo-build-properties would serialize the extraPods as JSON string, we should parse it again.
@@ -80,7 +80,9 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
     const entitlements = await parseEntitlementsAsync(entitlementPath);
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements);
-    await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
+    const parentPath = path_1.default.dirname(targetPath);
+    await fs_1.default.promises.mkdir(parentPath, { recursive: true });
+    await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 exports.generateModulesProviderAsync = generateModulesProviderAsync;
 /**

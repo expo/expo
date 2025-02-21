@@ -2,10 +2,23 @@ import React from 'react';
 import {
   Appearance,
   StatusBar as NativeStatusBar,
+  Platform,
   useColorScheme,
   type ColorSchemeName,
   type ColorValue,
 } from 'react-native';
+import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
+
+let shouldWarnAboutEdgeToEdge = Platform.OS === 'android' && isEdgeToEdge();
+
+function potentiallyWarnAboutEdgeToEdge() {
+  if (shouldWarnAboutEdgeToEdge) {
+    shouldWarnAboutEdgeToEdge = false; // warn once
+    console.warn(
+      'Using expo-status-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: (https://github.com/zoontek/react-native-edge-to-edge#systembars)'
+    );
+  }
+}
 
 // @docsMissing
 export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
@@ -80,6 +93,10 @@ export function StatusBar({
   backgroundColor: backgroundColorProp,
   ...props
 }: StatusBarProps) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
@@ -110,6 +127,9 @@ export function StatusBar({
  * @param animated If the transition should be animated.
  */
 export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setBarStyle(styleToBarStyle(style), animated);
 }
 
@@ -120,6 +140,9 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
 export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setHidden(hidden, animation);
 }
 
@@ -131,6 +154,9 @@ export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimati
  * @platform android
  */
 export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setBackgroundColor(backgroundColor, animated);
 }
 
@@ -141,6 +167,9 @@ export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animate
  * @platform ios
  */
 export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setNetworkActivityIndicatorVisible(visible);
 }
 
@@ -152,6 +181,9 @@ export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
  * @platform android
  */
 export function setStatusBarTranslucent(translucent: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setTranslucent(translucent);
 }
 
