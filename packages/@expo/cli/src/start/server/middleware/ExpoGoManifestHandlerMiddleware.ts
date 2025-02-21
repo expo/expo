@@ -2,7 +2,6 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
-import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
@@ -17,6 +16,11 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
+import {
+  encodeMultipartMixed,
+  FormDataField,
+  EncodedFormData,
+} from '../../../utils/multipartMixed';
 import { stripPort } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
@@ -181,14 +185,14 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     switch (requestOptions.responseContentType) {
       case ResponseContentType.MULTIPART_MIXED: {
-        const form = this.getFormData({
+        const encoded = await this.encodeFormDataAsync({
           stringifiedManifest,
           manifestPartHeaders,
           certificateChainBody,
         });
-        headers.set('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
+        headers.set('content-type', `multipart/mixed; boundary=${encoded.boundary}`);
         return {
-          body: form.getBuffer().toString(),
+          body: encoded.body,
           version: runtimeVersion,
           headers,
         };
@@ -232,7 +236,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     }
   }
 
-  private getFormData({
+  private encodeFormDataAsync({
     stringifiedManifest,
     manifestPartHeaders,
     certificateChainBody,
@@ -240,20 +244,23 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     stringifiedManifest: string;
     manifestPartHeaders: { 'expo-signature': string } | null;
     certificateChainBody: string | null;
-  }): FormData {
-    const form = new FormData();
-    form.append('manifest', stringifiedManifest, {
-      contentType: 'application/json',
-      header: {
-        ...manifestPartHeaders,
+  }): Promise<EncodedFormData> {
+    const fields: FormDataField[] = [
+      {
+        name: 'manifest',
+        value: stringifiedManifest,
+        contentType: 'application/json',
+        partHeaders: manifestPartHeaders,
       },
-    });
+    ];
     if (certificateChainBody && certificateChainBody.length > 0) {
-      form.append('certificate_chain', certificateChainBody, {
+      fields.push({
+        name: 'certificate_chain',
+        value: certificateChainBody,
         contentType: 'application/x-pem-file',
       });
     }
-    return form;
+    return encodeMultipartMixed(fields);
   }
 
   private static async getScopeKeyAsync({

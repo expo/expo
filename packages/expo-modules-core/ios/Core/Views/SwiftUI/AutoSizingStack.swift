@@ -27,7 +27,7 @@ extension ExpoSwiftUI {
     }
 
     public var body: some SwiftUI.View {
-      if #available(iOS 16.0, tvOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         if proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY {
           content.overlay {
             content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
