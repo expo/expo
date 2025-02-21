@@ -492,13 +492,8 @@ class SQLiteModule : Module() {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    // Iterate over any remaining open statements.
-    // Use 0L to represent a null pointer.
-    var stmt: Long = database.ref.sqlite3_next_stmt(0L)
-    // if (stmt == 0L) { Log.d(TAG, "No open prepared statements found for database: ${database.ref}") }
-    while (stmt != 0L) {
-      database.ref.sqlite3_finalize_stmt(stmt)
-      stmt = database.ref.sqlite3_next_stmt(stmt)
+    if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }
 

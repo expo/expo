@@ -20,10 +20,8 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("initHybrid", NativeDatabaseBinding::initHybrid),
       makeNativeMethod("sqlite3_changes",
                        NativeDatabaseBinding::sqlite3_changes),
-      makeNativeMethod("sqlite3_next_stmt", 
-                       NativeDatabaseBinding::sqlite3_next_stmt),
-      makeNativeMethod("sqlite3_finalize_stmt", 
-                       NativeDatabaseBinding::sqlite3_finalize_stmt),
+      makeNativeMethod("sqlite3_finalize_all_statement", 
+                       NativeDatabaseBinding::sqlite3_finalize_all_statement),
       makeNativeMethod("sqlite3_close", NativeDatabaseBinding::sqlite3_close),
       makeNativeMethod("sqlite3_db_filename",
                        NativeDatabaseBinding::sqlite3_db_filename),
@@ -52,15 +50,17 @@ void NativeDatabaseBinding::registerNatives() {
 
 int NativeDatabaseBinding::sqlite3_changes() { return ::exsqlite3_changes(db); }
 
-long NativeDatabaseBinding::sqlite3_next_stmt(long stmt) {
-  exsqlite3_stmt* nativeStmt = reinterpret_cast<exsqlite3_stmt*>(stmt);
-  exsqlite3_stmt* next = ::exsqlite3_next_stmt(db, nativeStmt);
-  return reinterpret_cast<jlong>(next);
-}
-
-int NativeDatabaseBinding::sqlite3_finalize_stmt(long stmt) {
-  exsqlite3_stmt* nativeStmt = reinterpret_cast<exsqlite3_stmt*>(stmt);
-  return ::exsqlite3_finalize(nativeStmt);
+int NativeDatabaseBinding::sqlite3_finalize_all_statement() {
+  ::exsqlite3_stmt *stmt = ::exsqlite3_next_stmt(db, nullptr); 
+  while (stmt) {
+    ::exsqlite3_stmt *nextStmt = ::exsqlite3_next_stmt(db, stmt);
+    int result = ::exsqlite3_finalize(stmt);
+    if (result != SQLITE_OK) {
+      return result;
+    }
+    stmt = nextStmt;
+  }
+   return SQLITE_OK;
 }
 
 int NativeDatabaseBinding::sqlite3_close() {
