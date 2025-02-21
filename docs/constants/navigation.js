@@ -144,6 +144,7 @@ export const home = [
     makePage('deploy/submit-to-app-stores.mdx'),
     makePage('deploy/app-stores-metadata.mdx'),
     makePage('deploy/send-over-the-air-updates.mdx'),
+    makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
