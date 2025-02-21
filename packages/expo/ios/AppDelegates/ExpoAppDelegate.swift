@@ -8,6 +8,8 @@ import ExpoModulesCore
  by forwarding `UIApplicationDelegate` events to the subscribers.
 
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
+
+ TODO vonovak check macOS support once RN macOS 78 goes out
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegate, UISceneDelegate {

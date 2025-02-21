@@ -11,7 +11,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~52.0.11",
+    "expo": "canary",
     "expo-status-bar": "~2.0.0",
     "react": "19.0.0",
     "react-native": "0.78.0"
