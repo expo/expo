@@ -25,7 +25,7 @@ function addAssetsToTarget(config, assets) {
         config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
         const images = validAssets.filter((asset) => utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
         const assetsForResourcesDir = validAssets.filter((asset) => !utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
-        await addImageAssets(images, config.modRequest.projectRoot);
+        await addImageAssets(images, config.modRequest.projectRoot, config.modRequest.platform);
         addResourceFiles(project, platformProjectRoot, assetsForResourcesDir);
         return config;
     });
@@ -42,8 +42,8 @@ function addResourceFiles(project, platformRoot, assets) {
         });
     }
 }
-async function addImageAssets(assets, root) {
-    const iosNamedProjectRoot = config_plugins_1.IOSConfig.Paths.getSourceRoot(root);
+async function addImageAssets(assets, root, platform) {
+    const iosNamedProjectRoot = config_plugins_1.IOSConfig.Paths.getSourceRoot(root, platform);
     for (const asset of assets) {
         const name = path_1.default.basename(asset, path_1.default.extname(asset));
         const image = path_1.default.basename(asset);

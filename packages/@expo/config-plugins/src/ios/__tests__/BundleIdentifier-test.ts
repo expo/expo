@@ -22,6 +22,8 @@ jest.mock('fs');
 const originalFs = jest.requireActual('fs');
 
 describe('BundleIdentifier module', () => {
+  const platform = 'ios';
+
   describe(getBundleIdentifier, () => {
     it('returns null if no bundleIdentifier is provided', () => {
       expect(getBundleIdentifier(baseExpoConfig)).toBe(null);
@@ -41,7 +43,9 @@ describe('BundleIdentifier module', () => {
 
     it('returns null if no project.pbxproj exists', () => {
       vol.mkdirpSync(projectRoot);
-      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, { targetName: 'testproject' });
+      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, platform, {
+        targetName: 'testproject',
+      });
       expect(bundleId).toBeNull();
     });
 
@@ -53,7 +57,9 @@ describe('BundleIdentifier module', () => {
         },
         projectRoot
       );
-      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, { targetName: 'HelloWorld' });
+      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, platform, {
+        targetName: 'HelloWorld',
+      });
       expect(bundleId).toBe('org.name.HelloWorld');
     });
 
@@ -73,7 +79,7 @@ describe('BundleIdentifier module', () => {
           },
           projectRoot
         );
-        const bundleId = getBundleIdentifierFromPbxproj(projectRoot, {
+        const bundleId = getBundleIdentifierFromPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
         });
         expect(bundleId).toBe('com.swmansion.dominik.multitarget');
@@ -94,7 +100,7 @@ describe('BundleIdentifier module', () => {
           },
           projectRoot
         );
-        const bundleId = getBundleIdentifierFromPbxproj(projectRoot, {
+        const bundleId = getBundleIdentifierFromPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
           buildConfiguration: 'Debug',
         });
@@ -137,7 +143,7 @@ describe('BundleIdentifier module', () => {
     afterEach(() => vol.reset());
 
     it('sets the bundle identifier in the pbxproj file', () => {
-      setBundleIdentifierForPbxproj(projectRoot, 'com.swmansion.dominik.abcd.v2');
+      setBundleIdentifierForPbxproj(projectRoot, platform, 'com.swmansion.dominik.abcd.v2');
       const pbxprojContents = memfs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
       const otherPbxprojContents = memfs.readFileSync(
         path.join(projectRoot, otherPbxProjPath),

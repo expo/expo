@@ -26,6 +26,7 @@ describe('iOS Locales', () => {
 
 describe('e2e: iOS locales', () => {
   const projectRoot = '/app';
+  const platform = 'ios';
   beforeAll(async () => {
     vol.fromJSON(
       {
@@ -45,7 +46,7 @@ describe('e2e: iOS locales', () => {
   });
 
   it('writes all the image files expected', async () => {
-    let project = getPbxproj(projectRoot);
+    let project = getPbxproj(projectRoot, platform);
 
     project = await setLocalesAsync(
       {
@@ -57,7 +58,7 @@ describe('e2e: iOS locales', () => {
           es: { CFBundleDisplayName: 'spanish-name' },
         },
       },
-      { project, projectRoot }
+      { project, projectRoot, platform }
     );
     // Sync the Xcode project with the changes.
     fs.writeFileSync(project.filepath, project.writeSync());

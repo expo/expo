@@ -1,3 +1,5 @@
+import { ModPlatform } from '@expo/config-plugins';
+
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
@@ -9,6 +11,7 @@ import { BuildProps, Options } from '../XcodeBuild.types';
 /** Resolve arguments for the `run:ios` command. */
 export async function resolveOptionsAsync(
   projectRoot: string,
+  platform: ModPlatform,
   options: Options
 ): Promise<BuildProps> {
   const xcodeProject = resolveXcodeProject(projectRoot);
@@ -19,6 +22,7 @@ export async function resolveOptionsAsync(
   // whichever scheme is selected (i.e. don't present TV devices if the scheme cannot be run on a TV).
   const { osType, name: scheme } = await resolveNativeSchemePropsAsync(
     projectRoot,
+    platform,
     options,
     xcodeProject
   );
@@ -46,6 +50,7 @@ export async function resolveOptionsAsync(
 
   return {
     ...bundlerProps,
+    platform,
     shouldStartBundler: options.configuration === 'Debug' || bundlerProps.shouldStartBundler,
     projectRoot,
     isSimulator,

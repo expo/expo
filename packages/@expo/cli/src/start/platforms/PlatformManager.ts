@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import { ModPlatform } from '@expo/config-plugins';
 import assert from 'assert';
 import chalk from 'chalk';
 
@@ -31,7 +32,7 @@ export class PlatformManager<
   constructor(
     protected projectRoot: string,
     protected props: {
-      platform: 'ios' | 'android';
+      platform: ModPlatform;
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
       /** Expo Go URL. */
