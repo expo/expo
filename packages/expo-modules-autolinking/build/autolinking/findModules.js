@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findModulesAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
@@ -22,7 +22,7 @@ async function findModulesAsync(providedOptions) {
     const results = new Map();
     const nativeModuleNames = new Set();
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = new Set(options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+    const searchPaths = new Set(options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...options.searchPaths]
         : options.searchPaths);
     // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
@@ -30,7 +30,7 @@ async function findModulesAsync(providedOptions) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
         for (const packageConfigPath of packageConfigPaths) {
-            const packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
+            const packagePath = await fs_1.default.promises.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
             const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,

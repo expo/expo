@@ -25,9 +25,9 @@ function _imageUtils() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -244,17 +244,19 @@ const createAdaptiveIconXmlString = (backgroundImage, monochromeImage) => {
 exports.createAdaptiveIconXmlString = createAdaptiveIconXmlString;
 async function createAdaptiveIconXmlFiles(projectRoot, icLauncherXmlString, add) {
   const anyDpiV26Directory = _path().default.resolve(projectRoot, ANDROID_RES_PATH, MIPMAP_ANYDPI_V26);
-  await _fsExtra().default.ensureDir(anyDpiV26Directory);
+  await _fs().default.promises.mkdir(anyDpiV26Directory, {
+    recursive: true
+  });
   const launcherPath = _path().default.resolve(anyDpiV26Directory, IC_LAUNCHER_XML);
   const launcherRoundPath = _path().default.resolve(anyDpiV26Directory, IC_LAUNCHER_ROUND_XML);
   if (add) {
-    await Promise.all([_fsExtra().default.writeFile(launcherPath, icLauncherXmlString), _fsExtra().default.writeFile(launcherRoundPath, icLauncherXmlString)]);
+    await Promise.all([_fs().default.promises.writeFile(launcherPath, icLauncherXmlString, 'utf8'), _fs().default.promises.writeFile(launcherRoundPath, icLauncherXmlString, 'utf8')]);
   } else {
     // Remove the xml if the icon switches from adaptive to standard.
     await Promise.all([launcherPath, launcherRoundPath].map(async path => {
-      if (_fsExtra().default.existsSync(path)) {
-        return _fsExtra().default.remove(path);
-      }
+      return _fs().default.promises.rm(path, {
+        force: true
+      });
     }));
   }
 }
@@ -292,7 +294,7 @@ async function generateMultiLayerImageAsync(projectRoot, {
         isAdaptive
       });
       if (backgroundImageFileName) {
-        await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
+        await _fs().default.promises.writeFile(_path().default.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
       } else {
         iconLayer = await (0, _imageUtils().compositeImagesAsync)({
           foreground: iconLayer,
@@ -303,8 +305,10 @@ async function generateMultiLayerImageAsync(projectRoot, {
       // Remove any instances of ic_launcher_background.png that are there from previous icons
       await deleteIconNamedAsync(projectRoot, backgroundImageFileName);
     }
-    await _fsExtra().default.ensureDir(dpiFolder);
-    await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, outputImageFileName), iconLayer);
+    await _fs().default.promises.mkdir(dpiFolder, {
+      recursive: true
+    });
+    await _fs().default.promises.writeFile(_path().default.resolve(dpiFolder, outputImageFileName), iconLayer);
   });
 }
 async function generateMonochromeImageAsync(projectRoot, {
@@ -323,8 +327,10 @@ async function generateMonochromeImageAsync(projectRoot, {
       backgroundColor: 'transparent',
       isAdaptive: true
     });
-    await _fsExtra().default.ensureDir(dpiFolder);
-    await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, outputImageFileName), monochromeIcon);
+    await _fs().default.promises.mkdir(dpiFolder, {
+      recursive: true
+    });
+    await _fs().default.promises.writeFile(_path().default.resolve(dpiFolder, outputImageFileName), monochromeIcon);
   });
 }
 function iterateDpiValues(projectRoot, callback) {
@@ -337,7 +343,9 @@ async function deleteIconNamedAsync(projectRoot, name) {
   return iterateDpiValues(projectRoot, ({
     dpiFolder
   }) => {
-    return _fsExtra().default.remove(_path().default.resolve(dpiFolder, name));
+    return _fs().default.promises.rm(_path().default.resolve(dpiFolder, name), {
+      force: true
+    });
   });
 }
 async function generateIconAsync(projectRoot, {
