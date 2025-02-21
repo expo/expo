@@ -48,6 +48,9 @@ it(`supports worker bundle`, async () => {
   );
 
   expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/expo-mock/async-require',
+    }),
     {
       absolutePath: '/app/math.js',
       data: expect.objectContaining({
@@ -97,10 +100,13 @@ it(`supports worker bundle with nested async chunk`, async () => {
       }),
     },
     expect.objectContaining({
-      //   name: 'expo-mock/async-require',
+      absolutePath: '/app/expo-mock/async-require',
     }),
   ]);
   expectImports(graph, '/app/b.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/expo-mock/async-require',
+    }),
     {
       absolutePath: '/app/c.js',
       data: expect.objectContaining({
@@ -154,6 +160,11 @@ it(`supports worker bundle with shared deps`, async () => {
         }),
       }),
     },
+    expect.objectContaining({
+      data: expect.objectContaining({
+        name: 'expo-mock/async-require',
+      }),
+    }),
     expect.objectContaining({
       absolutePath: '/app/c.js',
     }),

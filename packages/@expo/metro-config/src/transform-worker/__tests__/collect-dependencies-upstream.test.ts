@@ -753,10 +753,11 @@ it('collects dependency with worker definition', () => {
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
     { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+    { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
   ]);
   expect(codeFromAst(ast)).toEqual(
     comparableCode(`
-      const a = new Worker(new URL(_dependencyMap.paths[_dependencyMap[0]], window.location.href));
+      const a = require(_dependencyMap[1], "asyncRequire").unstable_importWorker(_dependencyMap[0], _dependencyMap.paths);
     `)
   );
 });

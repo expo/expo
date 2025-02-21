@@ -61,6 +61,7 @@ export function getModuleParams(
 
   const paths: { [moduleID: number | string]: any } = {};
   let hasPaths = false;
+
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
     let modulePath = dependency.absolutePath;
 

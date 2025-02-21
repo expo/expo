@@ -110,7 +110,7 @@ function collectDependencies(ast, options) {
                 visited.add(path.node);
                 return;
             }
-            // Match:
+            // Match `require.unstable_importWorker`
             if (callee.type === 'MemberExpression' &&
                 callee.object.type === 'Identifier' &&
                 callee.object.name === 'require' &&
@@ -288,7 +288,7 @@ function processResolveWorkerCall(path, state) {
     }, path);
     if (state.collectOnly !== true) {
         path.replaceWith(makeImportWorkerTemplate({
-            URL: 'URL',
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
@@ -486,9 +486,8 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-// TODO: Add base URL support like process.env.EXPO_BASE_URL
 const makeImportWorkerTemplate = template_1.default.expression(`
-  new Worker(new URL(DEPENDENCY_MAP.paths[MODULE_ID], window.location.href))
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importWorker(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
