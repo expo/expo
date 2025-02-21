@@ -8,7 +8,6 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -59,10 +58,6 @@ Client environment variable inlining can be disabled with the environment variab
 
 Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported.
 
-<Tabs>
-
-<Tab label="SDK 50 and above">
-
 CSS support is enabled by default. You can disable the feature by setting `isCSSEnabled` in the Metro config.
 
 ```js metro.config.js
@@ -72,23 +67,6 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: false,
 });
 ```
-
-</Tab>
-
-<Tab label="SDK 49">
-
-To enable CSS support, set `isCSSEnabled` to `true` in the Metro config.
-
-```js metro.config.js
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  isCSSEnabled: true,
-});
-```
-
-</Tab>
-
-</Tabs>
 
 ### Global CSS
 
@@ -404,7 +382,7 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 ## Bundle splitting
 
-> This feature is web-only in SDK 50.
+> This feature is web-only in SDK 50 and above.
 
 In SDK 50, Expo CLI automatically splits web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (available by default in Expo Router).
 
