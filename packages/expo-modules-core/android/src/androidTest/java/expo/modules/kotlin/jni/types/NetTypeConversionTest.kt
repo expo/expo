@@ -320,7 +320,6 @@ class NetTypeConversionTest {
     try {
       conversionTest<URL>(stringValue = fileWithUtf8)
     } catch (e: JavaScriptEvaluateException) {
-//      Truth.assertThat(e).isEqualTo(MalformedURLException())
       Truth.assertThat(e.message).contains("MalformedURLException")
     }
   }
