@@ -146,7 +146,7 @@ export const TableOfContents = forwardRef<
   );
 
   return (
-    <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-sidebar>
+    <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
       <CALLOUT
         weight="medium"
         className={mergeClasses(
