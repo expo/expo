@@ -63,7 +63,7 @@ function setMinBuildScriptExtVersion(buildGradle, {
   return buildGradle.replace(regex, `$1${Math.max(minVersion, currentVersionNum)}`);
 }
 function getVersionName(config) {
-  return config.version ?? null;
+  return config.android?.version ?? config.version ?? null;
 }
 function setVersionName(config, buildGradle) {
   const versionName = getVersionName(config);
