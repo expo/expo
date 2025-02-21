@@ -142,7 +142,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [strongSelf loadSourceForHost:sourceURL onComplete:loadCallback];
   }];
   
-  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
+//  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
   _reactAppInstance = appInstance;
 }
 

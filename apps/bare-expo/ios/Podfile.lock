@@ -2907,7 +2907,7 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
-  - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -3314,7 +3314,7 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../node_modules/react-native-reanimated"
+    :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/react-native-screens"
   RNSVG:
@@ -3369,7 +3369,7 @@ SPEC CHECKSUMS:
   ExpoInsights: 98f3aeaafd8481e5c0983ce3a59ebd594f1339aa
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
-  ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
+  ExpoLinking: 5addac9b3a9c25b8032efc0d604162427c62912e
   ExpoLivePhoto: e50e26d529b71b998c948db4d2d4e9f7b7b088f3
   ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
@@ -3488,7 +3488,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 8fcea61ffc2b8ee230ad29c7f423dc639359780c
   RNFlashList: 02eeae97ff66bf61219471c514fbe17cc2542a8a
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
-  RNReanimated: e36b3a497f2d9730e41806d6876383b0351fb6df
+  RNReanimated: 0aad82a8ddb4e29a59ba48cd407ee674f70c5861
   RNScreens: e6fdafd9b91fc790c7e4b1e01e8f1d0fdc4d89cb
   RNSVG: 5cc41ec9df69fd4950e141eb9a39eb69a6622a7e
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
