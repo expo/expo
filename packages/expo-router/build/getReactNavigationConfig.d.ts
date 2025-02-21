@@ -5,6 +5,7 @@ export type Screen = string | {
     _route?: RouteNode;
     initialRouteName?: string;
 };
+export declare function parseRouteSegments(segments: string): string;
 export declare function getReactNavigationScreensConfig(nodes: RouteNode[], metaOnly: boolean): Record<string, Screen>;
 export declare function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean): {
     initialRouteName: undefined;

@@ -170,6 +170,7 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
   const rootState = navigationRef.getRootState();
 
   href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+  href = this.applyRedirects(href);
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 

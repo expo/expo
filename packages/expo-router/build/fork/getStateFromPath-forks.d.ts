@@ -44,7 +44,7 @@ export declare function spreadParamsAcrossAllStates(state: InitialState, params?
 export declare function stripBaseUrl(path: string, baseUrl?: string | undefined): string;
 export declare function matchForEmptyPath(configs: RouteConfig[]): {
     path: string;
-    type: "layout" | "static" | "dynamic";
+    type: "layout" | "dynamic" | "static";
     userReadableName: string;
     isIndex: boolean;
     isInitial?: boolean | undefined;
@@ -62,5 +62,6 @@ export declare function matchForEmptyPath(configs: RouteConfig[]): {
 export declare function appendIsInitial(initialRoutes: InitialRouteConfig[]): (config: RouteConfig) => RouteConfig;
 export declare function getRouteConfigSorter(previousSegments?: string[]): (a: RouteConfig, b: RouteConfig) => number;
 export declare function parseQueryParams(path: string, route: ParsedRoute, parseConfig?: Record<string, (value: string) => any>, hash?: string): Record<string, string | string[]> | undefined;
-/*** ????????? */
+export declare function cleanPath(path: string): string;
+export declare function routePatternToRegex(pattern: string): RegExp;
 //# sourceMappingURL=getStateFromPath-forks.d.ts.map

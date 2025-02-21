@@ -9,7 +9,7 @@ function getNavigationConfig(routes, metaOnly = true) {
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
 }
 exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
+function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -37,12 +37,14 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
+                        initialUrl = store.applyRedirects(initialUrl);
                         if (typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
+                            url = store.applyRedirects(url);
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }
@@ -54,7 +56,7 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking),
+        subscribe: (0, linking_1.addEventListener)(nativeLinking, store),
         getStateFromPath: linking_1.getStateFromPath.bind(store),
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {

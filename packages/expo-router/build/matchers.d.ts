@@ -12,8 +12,10 @@ export declare function matchLastGroupName(name: string): string | undefined;
 export declare function matchArrayGroupName(name: string): string | undefined;
 export declare function getNameFromFilePath(name: string): string;
 export declare function getContextKey(name: string): string;
-/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx`, and the +api suffix */
 export declare function removeSupportedExtensions(name: string): string;
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+export declare function removeFileSystemExtensions(name: string): string;
 export declare function removeFileSystemDots(filePath: string): string;
 export declare function stripGroupSegmentsFromPath(path: string): string;
 export declare function stripInvisibleSegmentsFromPath(path: string): string;
