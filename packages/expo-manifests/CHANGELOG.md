@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.15.7 — 2025-02-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.15.6 — 2025-02-14
 
 _This version does not introduce any user-facing changes._

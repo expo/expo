@@ -32,7 +32,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-eas-client": "~0.13.2"
+    "expo-eas-client": "~0.13.3"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.0.4"
