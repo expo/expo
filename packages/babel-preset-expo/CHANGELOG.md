@@ -14,6 +14,7 @@
 
 - Add all missing dependencies for package resolution with NPM. ([#34628](https://github.com/expo/expo/pull/34628) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server action scope position during extraction. ([#33933](https://github.com/expo/expo/pull/33933) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed EAS Update support for DOM Components. ([#35042](https://github.com/expo/expo/pull/35042) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
