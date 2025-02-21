@@ -17,8 +17,6 @@ export default function ExpoCoreModuleScreen() {
 
       <HeadingText>expoModulesCoreVersion</HeadingText>
       <MonoText>{JSON.stringify(globalThis.expo.expoModulesCoreVersion, null, 2)}</MonoText>
-      <HeadingText>isNewArchitectureEnabled</HeadingText>
-      <MonoText>{globalThis.expo.isNewArchitectureEnabled?.toString()}</MonoText>
       <HeadingText>cacheDir</HeadingText>
       <MonoText>{globalThis.expo.cacheDir}</MonoText>
       <HeadingText>documentsDir</HeadingText>

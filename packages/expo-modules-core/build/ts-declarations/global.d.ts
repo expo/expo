@@ -25,6 +25,8 @@ export interface ExpoGlobal {
     NativeModule: typeof NativeModule;
     /**
      * The version of the `expo-modules-core` package.
+     * @platform android
+     * @platform ios
      */
     expoModulesCoreVersion?: {
         version: string;
@@ -33,15 +35,15 @@ export interface ExpoGlobal {
         patch: number;
     };
     /**
-     * Boolean value indicating whether the new architecture is enabled.
-     */
-    isNewArchitectureEnabled?: string;
-    /**
      * The path to the cache directory
+     * @platform android
+     * @platform ios
      */
     cacheDir?: string;
     /**
      * The path to the documents directory
+     * @platform android
+     * @platform ios
      */
     documentsDir?: string;
     /**

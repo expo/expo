@@ -20,7 +20,7 @@ class CoreModule : Module() {
   override fun definition() = ModuleDefinition {
     Property("expoModulesCoreVersion") {
       return@Property BuildConfig.EXPO_MODULES_CORE_VERSION.let { version ->
-        version.split(".").map { it.toInt() }.let { (major, minor, patch) ->
+        version.split("-")[0].split(".").map { it.toInt() }.let { (major, minor, patch) ->
           mapOf(
             "version" to version,
             "major" to major,
@@ -29,10 +29,6 @@ class CoreModule : Module() {
           )
         }
       }
-    }
-
-    Property("isNewArchitectureEnabled") {
-      return@Property BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
     }
 
     Property("cacheDir") {

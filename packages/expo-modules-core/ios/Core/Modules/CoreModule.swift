@@ -7,8 +7,8 @@ import Foundation
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
     Property("expoModulesCoreVersion") {
-      let version = CoreModuleHelper.getVersion() ?? "0.0.0"
-      let components = version.split(separator: ".").map { Int($0) ?? 0 }
+      let version = CoreModuleHelper.getVersion()
+      let components = version.split(separator: "-")[0].split(separator: ".").compactMap { Int($0) }
 
       return [
         "version": version,
@@ -16,14 +16,6 @@ internal final class CoreModule: Module {
         "minor": components[1],
         "patch": components[2]
       ]
-    }
-
-    Property("isNewArchitectureEnabled") {
-      #if RCT_NEW_ARCH_ENABLED
-      true
-      #else
-      false
-      #endif
     }
 
     Property("cacheDir") {
