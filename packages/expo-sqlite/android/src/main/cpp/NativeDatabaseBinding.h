@@ -21,6 +21,8 @@ public:
 
   // sqlite3 bindings
   int sqlite3_changes();
+  int sqlite3_finalize_stmt(long stmt);
+  long sqlite3_next_stmt(long stmt);
   int sqlite3_close();
   std::string sqlite3_db_filename(const std::string &databaseName);
   int sqlite3_enable_load_extension(int onoff);
