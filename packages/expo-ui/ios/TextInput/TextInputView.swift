@@ -2,44 +2,44 @@ import SwiftUI
 import ExpoModulesCore
 
 class TextInputProps: ExpoSwiftUI.ViewProps {
-    @Field var initialValue: String = ""
-    @Field var placeholder: String = ""
-    @Field var multiline: Bool = false
-    @Field var numberOfLines: Int?
-    @Field var keyboardType: String = "default"
-    @Field var autocorrection: Bool = true
-    var onValueChanged = EventDispatcher()
+  @Field var initialValue: String = ""
+  @Field var placeholder: String = ""
+  @Field var multiline: Bool = false
+  @Field var numberOfLines: Int?
+  @Field var keyboardType: String = "default"
+  @Field var autocorrection: Bool = true
+  var onValueChanged = EventDispatcher()
 }
 
 func getKeyboardType(_ keyboardType: String?) -> UIKeyboardType {
-    switch keyboardType ?? "" {
-      case "default":
-          return .default
-      case "email-address":
-          return .emailAddress
-      case "numeric":
-          return .numberPad
-      case "phone-pad":
-          return .phonePad
-      case "ascii-capable":
-          return .asciiCapable
-      case "numbers-and-punctuation":
-          return .numbersAndPunctuation
-      case "url":
-          return .URL
-      case "name-phone-pad":
-          return .namePhonePad
-      case "decimal-pad":
-          return .decimalPad
-      case "twitter":
-          return .twitter
-      case "web-search":
-          return .webSearch
-      case "ascii-capable-number-pad":
-          return .asciiCapableNumberPad
-      default:
-          return .default
-    }
+  switch keyboardType ?? "" {
+  case "default":
+    return .default
+  case "email-address":
+    return .emailAddress
+  case "numeric":
+    return .numberPad
+  case "phone-pad":
+    return .phonePad
+  case "ascii-capable":
+    return .asciiCapable
+  case "numbers-and-punctuation":
+    return .numbersAndPunctuation
+  case "url":
+    return .URL
+  case "name-phone-pad":
+    return .namePhonePad
+  case "decimal-pad":
+    return .decimalPad
+  case "twitter":
+    return .twitter
+  case "web-search":
+    return .webSearch
+  case "ascii-capable-number-pad":
+    return .asciiCapableNumberPad
+  default:
+    return .default
+  }
 }
 
 struct TextInputView: ExpoSwiftUI.View {
