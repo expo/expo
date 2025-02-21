@@ -1,9 +1,9 @@
 import { PropsWithChildren } from 'react';
-import { ViewProps } from 'react-native';
+import { ColorValue, ViewProps } from 'react-native';
 
 export type NativeLinearGradientProps = ViewProps &
   PropsWithChildren<{
-    colors: readonly number[];
+    colors: readonly ColorValue[];
     locations?: readonly number[] | null;
     startPoint?: NativeLinearGradientPoint | null;
     endPoint?: NativeLinearGradientPoint | null;
@@ -11,7 +11,7 @@ export type NativeLinearGradientProps = ViewProps &
   }>;
 
 export type getLinearGradientBackgroundImage = (
-  colors: readonly number[],
+  colors: readonly ColorValue[],
   width?: number,
   height?: number,
   locations?: readonly number[] | null,
