@@ -4,7 +4,6 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
