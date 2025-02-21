@@ -49,6 +49,8 @@ PODS:
     - Yoga
   - ExpoSQLite (15.0.3):
     - ExpoModulesCore
+  - ExpoUI (0.0.2):
+    - ExpoModulesCore
   - fast_float (6.1.4)
   - FBLazyVector (0.77.0)
   - fmt (11.0.2)
@@ -1784,6 +1786,7 @@ DEPENDENCIES:
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
+  - ExpoUI (from `../../../packages/expo-ui/ios`)
   - fast_float (from `../../../node_modules/react-native-macos/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../../../node_modules/react-native-macos/Libraries/FBLazyVector`)
   - fmt (from `../../../node_modules/react-native-macos/third-party-podspecs/fmt.podspec`)
@@ -1903,6 +1906,9 @@ EXTERNAL SOURCES:
   ExpoSQLite:
     inhibit_warnings: false
     :path: "../../../packages/expo-sqlite/ios"
+  ExpoUI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-ui/ios"
   fast_float:
     :podspec: "../../../node_modules/react-native-macos/third-party-podspecs/fast_float.podspec"
   FBLazyVector:
@@ -2064,6 +2070,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: 10206dfd6045700677d876bf58a27f065f4b9f70
   ExpoModulesCore: 11dda0a8dea834f584c4ab0070cbfdca733e8fdf
   ExpoSQLite: 0a97e8932a344abb39882001ca15307c9f172396
+  ExpoUI: 9a686f0b7b1193bf5f0a8d90007745485b72d9b3
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: 553e6ebf09a761967edead2afac79ee59955b01d
   fmt: f6af2d677a106e3e44c9536a4c0c7f03ab53c854
@@ -2138,6 +2145,6 @@ SPEC CHECKSUMS:
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 21dd9d47026f46578fd67d9d5a2fc0bb8197096a
 
-PODFILE CHECKSUM: 56c8acc7e7eafa2b542cdb57dfc945abb6366b78
+PODFILE CHECKSUM: 9d12e58e194fe3eee9636409586b64f4dde94819
 
 COCOAPODS: 1.16.2
