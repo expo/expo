@@ -18,7 +18,7 @@ struct DateTimePickerView: ExpoSwiftUI.View {
   var body: some View {
     let displayedComponents = props.displayedComponents.toDatePickerComponent()
 
-    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy) {
+    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
       DatePicker(props.title, selection: $date, displayedComponents: displayedComponents)
         .onAppear {
           date = props.initialDate ?? Date()
