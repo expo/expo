@@ -117,6 +117,10 @@ Pod::Spec.new do |s|
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
+    if reactNativeTargetVersion >= 77
+      main.dependency 'ReactAppDependencyProvider'
+    end
+    
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
