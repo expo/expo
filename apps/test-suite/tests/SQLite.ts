@@ -736,26 +736,6 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
   });
 
-  describe('CR-SQLite', () => {
-    it('should load crsqlite extension correctly', async () => {
-      const db = await SQLite.openDatabaseAsync('test.db', { enableCRSQLite: true });
-      await db.execAsync(`
-DROP TABLE IF EXISTS foo;
-CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
-`);
-
-      await db.getFirstAsync(`SELECT crsql_as_crr("foo")`);
-      await db.runAsync('INSERT INTO foo (a, b) VALUES (?, ?)', 1, 2);
-      await db.runAsync('INSERT INTO foo (a, b) VALUES (?, ?)', [3, 4]);
-      const result = await db.getFirstAsync<any>(`SELECT * FROM crsql_changes`);
-      expect(result.table).toEqual('foo');
-      expect(result.val).toEqual(2);
-
-      await db.closeAsync();
-      await SQLite.deleteDatabaseAsync('test.db');
-    });
-  });
-
   describe('onDatabaseChange', () => {
     it('should emit onDatabaseChange event when `enableChangeListener` is true', async () => {
       const db = await SQLite.openDatabaseAsync('test.db', { enableChangeListener: true });
