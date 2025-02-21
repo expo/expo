@@ -33,4 +33,12 @@ describe('Checkbox', () => {
     expect(onChange).toBeCalledWith(expect.any(Object));
     expect(onValueChange).toBeCalledWith(!checked);
   });
+
+  it('sets the correct id on the input element', () => {
+    const testId = 'my-test-id';
+    const { getByRole } = render(<Checkbox id={testId} />);
+    const checkboxInput = getByRole('checkbox');
+
+    expect(checkboxInput.getAttribute('id')).toBe('my-test-id');
+  });
 });
