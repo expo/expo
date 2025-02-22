@@ -1,12 +1,12 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
+import hmrJSBundle from '@expo/metro-config/build/serializer/fork/hmrJSBundle';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
-import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
 import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
@@ -309,7 +309,7 @@ export async function instantiateMetroAsync(
   };
 
   if (hmrServer) {
-    // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs.
+    // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.
     hmrServer._prepareMessage = async function (this: MetroHmrServer, group, options, changeEvent) {
       // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
       // with patch for `_createModuleId`.
