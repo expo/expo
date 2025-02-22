@@ -16,6 +16,8 @@ struct SectionView: ExpoSwiftUI.View {
 
   var body: some View {
     let form = Form {
+      Section(header: Text(props.title ?? "").textCase(props.displayTitleUppercase ? .uppercase : nil)) {
+        Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
       Section(header: Text(props.title ?? "")) {
         UnwrappedChildren { child, isHostingView in
           child
