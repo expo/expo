@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchGradlePropertyFirst = exports.convertPackageWithGradleToProjectName = exports.convertPackageToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -14,7 +14,11 @@ const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
  */
 async function generatePackageListAsync(modules, targetPath, namespace) {
     const generatedFileContent = await generatePackageListFileContentAsync(modules, namespace);
-    await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
+    const parentPath = path_1.default.dirname(targetPath);
+    if (!fs_1.default.existsSync(parentPath)) {
+        await fs_1.default.promises.mkdir(parentPath, { recursive: true });
+    }
+    await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 exports.generatePackageListAsync = generatePackageListAsync;
 async function findGradleFilesAsync(revision) {
@@ -66,6 +70,7 @@ async function resolveModuleAsync(packageName, revision) {
         // Filter out projects that are already linked by plugins
         .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
     const coreFeatures = revision.config?.coreFeatures() ?? [];
+    const publication = revision.config?.androidPublication();
     return {
         packageName,
         projects,
@@ -73,13 +78,14 @@ async function resolveModuleAsync(packageName, revision) {
         modules: revision.config?.androidModules() ?? [],
         ...(aarProjects.length > 0 ? { aarProjects } : {}),
         ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
+        ...(publication ? { publication } : {}),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
     try {
-        const contents = await fs_extra_1.default.readFile(propsFile, 'utf8');
+        const contents = await fs_1.default.promises.readFile(propsFile, 'utf8');
         const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
         if (extraMavenReposString) {
             const extraMavenRepos = JSON.parse(extraMavenReposString);
@@ -145,7 +151,7 @@ async function findAndroidPackagesAsync(modules) {
             cwd: sourceDir,
         });
         for (const file of files) {
-            const fileContent = await fs_extra_1.default.readFile(path_1.default.join(sourceDir, file), 'utf8');
+            const fileContent = await fs_1.default.promises.readFile(path_1.default.join(sourceDir, file), 'utf8');
             const packageRegex = (() => {
                 if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
                     return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;

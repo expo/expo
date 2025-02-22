@@ -1,18 +1,43 @@
 require File.join(File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
 prepare_react_native_project!
 
 target 'BareExpo-macOS' do
-  platform :macos, '10.15'
-  config = use_native_modules!
+  platform :macos, '11.0'
+  config_command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
 
   use_expo_modules!
 
   use_react_native!(
     :path => "#{config[:reactNativePath]}-macos",
-    :hermes_enabled => false,
+    :hermes_enabled => true,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
+  post_install do |installer|
+    installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+
+      # Set `REACT_NATIVE_PATH` to react-native-macos root node_modules
+      target_installation_result.native_target.build_configurations.each do |config|
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "../../../../", 'node_modules/react-native-macos')
+      end
+    end
+
+    react_native_post_install(installer)
+  end
 end

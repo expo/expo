@@ -34,7 +34,6 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "~4.0.0",
     "minimatch": "^3.0.4"
   },
@@ -44,7 +43,6 @@
     "commander": "^7.2.0",
     "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",
-    "fs-extra": "^9.1.0",
     "require-from-string": "^2.0.2",
     "resolve-from": "^5.0.0"
   }

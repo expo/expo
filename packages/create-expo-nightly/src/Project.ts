@@ -1,5 +1,5 @@
 import type { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
-import fs from 'fs-extra';
+import fs from 'fs';
 import assert from 'node:assert';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -40,7 +40,7 @@ export async function createExpoApp(
 ): Promise<string> {
   const template = props.template ?? 'blank-typescript';
   const templateVersion = props.templateVersion ?? 'canary';
-  if (await fs.pathExists(projectRoot)) {
+  if (fs.existsSync(projectRoot)) {
     throw new Error(`Project already exists at ${projectRoot}`);
   }
   await runAsync('bunx', [
@@ -117,7 +117,7 @@ async function setupProjectPackageJsonAsync(
  * Setup the metro.config.js for monorepo.
  */
 async function setupMetroConfigAsync(projectRoot: string, expoRepoPath: string) {
-  await fs.writeFile(
+  await fs.promises.writeFile(
     path.join(projectRoot, 'metro.config.js'),
     `\
 const { getDefaultConfig } = require('expo/metro-config');

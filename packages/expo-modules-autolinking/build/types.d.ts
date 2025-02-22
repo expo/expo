@@ -69,6 +69,7 @@ export interface ModuleDescriptorAndroid extends CommonModuleDescriptor {
     projects: ModuleAndroidProjectInfo[];
     plugins?: ModuleAndroidPluginInfo[];
     aarProjects?: ModuleAndroidAarProjectInfo[];
+    publication?: AndroidPublication;
 }
 export interface ModuleIosPodspecInfo {
     podName: string;
@@ -118,6 +119,27 @@ export interface AndroidGradleAarProjectDescriptor {
     aarFilePath: string;
 }
 /**
+ * Information about the available publication of an Android AAR file.
+ */
+export interface AndroidPublication {
+    /**
+     * The Maven artifact ID.
+     */
+    id: string;
+    /**
+     * The Maven group ID.
+     */
+    group: string;
+    /**
+     * The Maven version.
+     */
+    version: string;
+    /**
+     * The Maven repository.
+     */
+    repository: string;
+}
+/**
  * Represents a raw config specific to Apple platforms.
  */
 export type RawModuleConfigApple = {
@@ -125,11 +147,6 @@ export type RawModuleConfigApple = {
      * Names of Swift native modules classes to put to the generated modules provider file.
      */
     modules?: string[];
-    /**
-     * Names of Swift native modules classes to put to the generated modules provider file.
-     * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
-     */
-    modulesClassNames?: string[];
     /**
      * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
      */
@@ -168,7 +185,6 @@ export interface RawExpoModuleConfig {
     apple?: RawModuleConfigApple;
     /**
      * The legacy config previously used for iOS platform. For backwards compatibility it's used as the fallback for `apple`.
-     * Also due to backwards compatibility, it includes the deprecated `modulesClassNames` field.
      * @deprecated As the module can now support more than iOS platform, use the generic `apple` config instead.
      */
     ios?: RawModuleConfigApple;
@@ -180,11 +196,6 @@ export interface RawExpoModuleConfig {
          * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
          */
         modules?: string[];
-        /**
-         * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
-         * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
-         */
-        modulesClassNames?: string[];
         /**
          * build.gradle relative path.
          * To have multiple build.gradle projects, string array type is also supported.
@@ -198,6 +209,10 @@ export interface RawExpoModuleConfig {
          * Gradle projects containing AAR files.
          */
         gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+        /**
+         * Information about the prebuilt AAR file.
+         */
+        publication?: AndroidPublication;
     };
     /**
      * List of core features that this module requires.

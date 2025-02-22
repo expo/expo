@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import { XML, AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { Workflow } from '../../utils/build/workflow';
@@ -111,8 +111,8 @@ async function writeExpoPlistAsync(
 }
 
 async function readPlistAsync(plistPath: string): Promise<object | null> {
-  if (await fs.pathExists(plistPath)) {
-    const expoPlistContent = await fs.readFile(plistPath, 'utf8');
+  if (fs.existsSync(plistPath)) {
+    const expoPlistContent = await fs.promises.readFile(plistPath, 'utf8');
     try {
       return plist.parse(expoPlistContent);
     } catch (err: any) {
@@ -129,6 +129,6 @@ async function writePlistAsync(
   plistObject: IOSConfig.ExpoPlist | IOSConfig.InfoPlist
 ): Promise<void> {
   const contents = plist.build(plistObject);
-  await fs.mkdirp(path.dirname(plistPath));
-  await fs.writeFile(plistPath, contents);
+  await fs.promises.mkdir(path.dirname(plistPath), { recursive: true });
+  await fs.promises.writeFile(plistPath, contents, 'utf8');
 }

@@ -44,7 +44,7 @@ export async function exportDomComponentAsync({
   const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
   debug('Bundle DOM Component:', filePath);
   // MUST MATCH THE BABEL PLUGIN!
-  const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+  const hash = crypto.createHash('md5').update(filePath).digest('hex');
   const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
   const generatedEntryPath = toPosixPath(
     filePath.startsWith('file://') ? url.fileURLToPath(filePath) : filePath
@@ -157,15 +157,28 @@ export function updateDomComponentAssetsForMD5Naming({
   const htmlContent = files.get(htmlOutputName);
   assert(htmlContent);
   const htmlMd5 = crypto.createHash('md5').update(htmlContent.contents.toString()).digest('hex');
-  const hash = crypto.createHash('sha1').update(domComponentReference).digest('hex');
+  const hash = crypto.createHash('md5').update(domComponentReference).digest('hex');
   for (const artifact of nativeBundle.artifacts) {
     if (artifact.type !== 'js') {
       continue;
     }
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
-    const regexp = new RegExp(`(['"])${hash}\\.html(['"])`, 'g');
-    assetEntity.contents = assetEntity.contents.toString().replace(regexp, `$1${htmlMd5}.html$2`);
+    if (Buffer.isBuffer(assetEntity.contents)) {
+      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
+      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
+      assert(searchBuffer.length === replaceBuffer.length);
+      let index = assetEntity.contents.indexOf(searchBuffer, 0);
+      while (index !== -1) {
+        replaceBuffer.copy(assetEntity.contents, index);
+        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
+      }
+    } else {
+      const search = `${hash}.html`;
+      const replace = `${htmlMd5}.html`;
+      assert(search.length === replace.length);
+      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
+    }
   }
   assetsMetadata.push({
     path: htmlOutputName,

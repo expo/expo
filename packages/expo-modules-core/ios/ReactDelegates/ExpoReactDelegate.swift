@@ -11,7 +11,6 @@ public class ExpoReactDelegate: NSObject {
     self.handlers = handlers
   }
 
-  #if os(iOS) || os(tvOS)
   @objc
   public func createReactRootView(
     moduleName: String,
@@ -33,16 +32,6 @@ public class ExpoReactDelegate: NSObject {
         )
       }()
   }
-  #elseif os(macOS)
-  @objc
-  public func createReactRootView(
-    moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    launchOptions: [AnyHashable: Any]?
-  ) -> UIView {
-    return UIView()
-  }
-  #endif
 
   @objc
   public func bundleURL() -> URL? {

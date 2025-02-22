@@ -1,7 +1,9 @@
 import type { ExpoConfig } from '@expo/config';
+import fs from 'fs';
 import * as path from 'node:path';
 
 import {
+  maybeThrowFromInconsistentEngineAsync,
   getHermesBytecodeBundleVersionAsync,
   isEnableHermesManaged,
   isHermesBytecodeBundleAsync,
@@ -9,6 +11,34 @@ import {
 } from '../exportHermes';
 
 jest.unmock('fs');
+
+const existsSync = jest.spyOn(fs, 'existsSync');
+const readFile = jest.spyOn(fs.promises, 'readFile');
+
+afterEach(() => {
+  existsSync.mockReset();
+  readFile.mockReset();
+});
+
+function addMockedFiles(fileContentMap: Record<string, string>) {
+  const readPaths: string[] = [];
+
+  existsSync.mockImplementation((file: fs.PathLike) =>
+    Object.keys(fileContentMap).includes(`${file}`)
+  );
+
+  readFile.mockImplementation((file: fs.PathLike | fs.promises.FileHandle) => {
+    for (const [fileName, content] of Object.entries(fileContentMap)) {
+      if (`${file}` === fileName) {
+        readPaths.push(fileName);
+        return Promise.resolve(content);
+      }
+    }
+    return Promise.reject(new Error('File not found.'));
+  });
+
+  return readPaths;
+}
 
 describe('parseGradleProperties', () => {
   it('should return array of key-value tuple', () => {
@@ -109,27 +139,8 @@ describe('isHermesBytecodeBundleAsync', () => {
 });
 
 describe('maybeThrowFromInconsistentEngineAsync - common', () => {
-  // To customize fs-extra mock logic, instead of importing globally,
-  // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
-  // so that fs-extra inside HermesBundler could honor our mock logic.
-  let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
-
-  beforeAll(() => {
-    jest.resetModules();
-    jest.doMock('fs-extra');
-    fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync =
-      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
-  });
-  afterAll(() => {
-    jest.dontMock('fs-extra');
-    jest.resetModules();
-  });
-
   it('should resolve for managed project', async () => {
-    const mockFsExistSync = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
-    mockFsExistSync.mockReturnValue(false);
+    existsSync.mockReturnValue(false);
     await expect(
       maybeThrowFromInconsistentEngineAsync(
         '/expo',
@@ -142,45 +153,8 @@ describe('maybeThrowFromInconsistentEngineAsync - common', () => {
 });
 
 describe('maybeThrowFromInconsistentEngineAsync - android', () => {
-  // To customize fs-extra mock logic, instead of importing globally,
-  // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
-  // so that fs-extra inside HermesBundler could honor our mock logic.
-  let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
-
-  beforeAll(() => {
-    jest.resetModules();
-    jest.doMock('fs-extra');
-    fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync =
-      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
-  });
-  afterAll(() => {
-    jest.dontMock('fs-extra');
-    jest.resetModules();
-  });
-
-  function addMockedFiles(fileContentMap: Record<string, string>) {
-    // add mock for `fs.existsSync`
-    const mockFsExistSync = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
-    mockFsExistSync.mockImplementation((file: string) =>
-      Object.keys(fileContentMap).includes(file)
-    );
-
-    // add mock for `fs.readFile`
-    const mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-    mockFsReadFile.mockImplementation((file: string) => {
-      for (const [fileName, content] of Object.entries(fileContentMap)) {
-        if (file === fileName) {
-          return Promise.resolve(content);
-        }
-      }
-      return Promise.reject(new Error('File not found.'));
-    });
-  }
-
   it('should resolve if "hermesEnabled=true" in gradle.properties and "jsEngine: \'hermes\'" in app.json', async () => {
-    addMockedFiles({
+    const readPaths = addMockedFiles({
       '/expo/android/gradle.properties': 'hermesEnabled=true',
     });
 
@@ -192,10 +166,12 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
         /* isHermesManaged */ true
       )
     ).resolves.toBeUndefined();
+
+    expect(readPaths).toEqual(['/expo/android/gradle.properties']);
   });
 
   it('should resolve if "hermesEnabled=false" in gradle.properties but no "jsEngine: \'hermes\'" in app.json', async () => {
-    addMockedFiles({
+    const readPaths = addMockedFiles({
       '/expo/android/gradle.properties': 'hermesEnabled=true',
     });
 
@@ -207,10 +183,12 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
         /* isHermesManaged */ true
       )
     ).resolves.toBeUndefined();
+
+    expect(readPaths).toEqual(['/expo/android/gradle.properties']);
   });
 
   it('should throw if "hermesEnabled=true" in gradle.properties and "jsEngine: \'jsc\'" in app.json', async () => {
-    addMockedFiles({
+    const readPaths = addMockedFiles({
       '/expo/android/gradle.properties': 'hermesEnabled=true',
     });
 
@@ -222,47 +200,12 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
         /* isHermesManaged */ false
       )
     ).rejects.toThrow();
+
+    expect(readPaths).toEqual(['/expo/android/gradle.properties']);
   });
 });
 
 describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
-  // To customize fs-extra mock logic, instead of importing globally,
-  // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
-  // so that fs-extra inside HermesBundler could honor our mock logic.
-  let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
-
-  function addMockedFiles(fileContentMap: Record<string, string>) {
-    // add mock for `fs.existsSync`
-    const mockFsExistSync = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
-    mockFsExistSync.mockImplementation((file: string) =>
-      Object.keys(fileContentMap).includes(file)
-    );
-
-    // add mock for `fs.readFile`
-    const mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-    mockFsReadFile.mockImplementation((file: string) => {
-      for (const [fileName, content] of Object.entries(fileContentMap)) {
-        if (file === fileName) {
-          return Promise.resolve(content);
-        }
-      }
-      return Promise.reject(new Error('File not found.'));
-    });
-  }
-
-  beforeAll(() => {
-    jest.resetModules();
-    jest.doMock('fs-extra');
-    fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync =
-      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
-  });
-  afterAll(() => {
-    jest.dontMock('fs-extra');
-    jest.resetModules();
-  });
-
   it('should resolve if ":hermes_enabled => true" in Podfile and "jsEngine: \'hermes\'" in app.json', async () => {
     const podfileTestCases = [
       `
@@ -278,7 +221,7 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     ];
 
     for (const content of podfileTestCases) {
-      addMockedFiles({
+      const readPaths = addMockedFiles({
         '/expo/ios/Podfile': content,
       });
 
@@ -290,11 +233,13 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
           /* isHermesManaged */ true
         )
       ).resolves.toBeUndefined();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile']);
     }
   });
 
   it('should throw if ":hermes_enabled => true" in Podfile but no "jsEngine: \'hermes\'" in app.json', async () => {
-    addMockedFiles({
+    const readPaths = addMockedFiles({
       '/expo/ios/Podfile': `
   use_react_native!(
     :path => config[:reactNativePath],
@@ -310,6 +255,8 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
         /* isHermesManaged */ false
       )
     ).rejects.toThrow();
+
+    expect(readPaths).toEqual(['/expo/ios/Podfile']);
   });
 
   it('should throw if (":hermes_enabled => false" or not existed in Podfile) and "jsEngine: \'hermes\'" in app.json', async () => {
@@ -326,7 +273,7 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     ];
 
     for (const content of podfileTestCases) {
-      addMockedFiles({
+      const readPaths = addMockedFiles({
         '/expo/ios/Podfile': content,
       });
 
@@ -338,11 +285,13 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
           /* isHermesManaged */ true
         )
       ).rejects.toThrow();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile']);
     }
   });
 
   it('should resolve if "expo.jsEngine": \'hermes\' in Podfile.properties.json and "jsEngine: \'hermes\'" in app.json', async () => {
-    addMockedFiles({
+    const readPaths = addMockedFiles({
       '/expo/ios/Podfile.properties.json': '{"expo.jsEngine":"hermes"}',
     });
 
@@ -354,25 +303,53 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
         /* isHermesManaged */ true
       )
     ).resolves.toBeUndefined();
+
+    expect(readPaths).toEqual(['/expo/ios/Podfile.properties.json']);
   });
 
-  it('should handle the inconsistency between Podfile and Podfile.properties.json', async () => {
-    addMockedFiles({
-      '/expo/ios/Podfile': `
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => false
-  )`,
-      '/expo/ios/Podfile.properties.json': '{"expo.jsEngine":"hermes"}',
+  describe('should handle the inconsistency between Podfile and Podfile.properties.json', () => {
+    it('inconsistent /expo/ios/Podfile', async () => {
+      const readPaths = addMockedFiles({
+        '/expo/ios/Podfile': `
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => false
+    )`,
+        '/expo/ios/Podfile.properties.json': '{"expo.jsEngine":"hermes"}',
+      });
+
+      await expect(
+        maybeThrowFromInconsistentEngineAsync(
+          '/expo',
+          '/expo/app.json',
+          'ios',
+          /* isHermesManaged */ true
+        )
+      ).rejects.toThrow();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile']);
     });
 
-    await expect(
-      maybeThrowFromInconsistentEngineAsync(
-        '/expo',
-        '/expo/app.json',
-        'ios',
-        /* isHermesManaged */ true
-      )
-    ).rejects.toThrow();
+    it('inconsistent /expo/ios/Podfile.properties.json', async () => {
+      const readPaths = addMockedFiles({
+        '/expo/ios/Podfile': `
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => true
+    )`,
+        '/expo/ios/Podfile.properties.json': '{"expo.jsEngine":"jsc"}',
+      });
+
+      await expect(
+        maybeThrowFromInconsistentEngineAsync(
+          '/expo',
+          '/expo/app.json',
+          'ios',
+          /* isHermesManaged */ true
+        )
+      ).rejects.toThrow();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile', '/expo/ios/Podfile.properties.json']);
+    });
   });
 });

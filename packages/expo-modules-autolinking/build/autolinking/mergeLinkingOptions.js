@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathSync = exports.getProjectPackageJsonPathAsync = void 0;
 const find_up_1 = __importDefault(require("find-up"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
@@ -88,7 +88,7 @@ async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd });
     const projectRoot = packageJsonPath != null ? path_1.default.join(packageJsonPath, '..') : cwd;
     const resolvedPath = path_1.default.resolve(projectRoot, nativeModulesDir || 'modules');
-    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
+    return fs_1.default.existsSync(resolvedPath) ? resolvedPath : null;
 }
 /**
  * Gets the platform-specific autolinking options from the base options.

@@ -5,20 +5,22 @@ import { type BundleOutput, type ExportAssetMap } from '../saveAssets';
 
 jest.mock('crypto');
 describe(updateDomComponentAssetsForMD5Naming, () => {
-  const mockMd5 = jest.fn().mockReturnValue('MOCK_MD5_HASH');
-  const mockSha1 = jest.fn().mockReturnValue('MOCK_SHA1_HASH');
+  const mockFilenameMd5 = jest.fn().mockReturnValue('MOCK_FILENAME_MD5_HASH');
+  const mockMd5 = jest.fn().mockReturnValue('MOCK_CONTENTS_MD5_HASH');
 
   (crypto.createHash as jest.Mock).mockImplementation((algorithm: string) => {
     if (algorithm === 'md5') {
-      return {
-        update: jest.fn().mockReturnThis(),
-        digest: mockMd5,
+      const self = {
+        isFilename: false,
+        update: jest.fn().mockImplementation((source) => {
+          self.isFilename = source.startsWith('file://');
+          return self;
+        }),
+        digest: jest.fn().mockImplementation(() => {
+          return self.isFilename ? mockFilenameMd5() : mockMd5();
+        }),
       };
-    } else if (algorithm === 'sha1') {
-      return {
-        update: jest.fn().mockReturnThis(),
-        digest: mockSha1,
-      };
+      return self;
     }
     return jest.fn();
   });
@@ -34,7 +36,7 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
   exports.default = undefined;
   var _react = _interopRequireDefault(require(_dependencyMap[1]));
   var _internal = require(_dependencyMap[2]);
-  var filePath = "${mockSha1()}.html";
+  var filePath = "${mockFilenameMd5()}.html";
   var _default = exports.default = _react.default.forwardRef((props, ref) => {
     return _react.default.createElement(_internal.WebView, {
       ref,
@@ -196,10 +198,10 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
 
     const domHtmlContents = files.get('www.bundle/dom1.html').contents;
     expect(domHtmlContents).not.toEqual(domHtml1);
-    expect(domHtmlContents).toContain('MOCK_MD5_HASH');
+    expect(domHtmlContents).toContain('MOCK_CONTENTS_MD5_HASH');
 
     const nativeJsContents = files.get('_expo/static/js/ios/entry-native1.js').contents;
     expect(nativeJsContents).not.toEqual(nativeBundle1Chunk);
-    expect(nativeJsContents).toContain('MOCK_MD5_HASH');
+    expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
   });
 });

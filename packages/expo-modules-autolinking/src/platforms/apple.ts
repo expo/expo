@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { fileExistsAsync } from '../fileUtils';
@@ -82,7 +82,7 @@ export async function resolveExtraBuildDependenciesAsync(
 ): Promise<ExtraDependencies | null> {
   const propsFile = path.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
   try {
-    const contents = await fs.readFile(propsFile, 'utf8');
+    const contents = await fs.promises.readFile(propsFile, 'utf8');
     const podfileJson = JSON.parse(contents);
     if (podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]) {
       // expo-build-properties would serialize the extraPods as JSON string, we should parse it again.
@@ -108,8 +108,9 @@ export async function generateModulesProviderAsync(
     className,
     entitlements
   );
-
-  await fs.outputFile(targetPath, generatedFileContent);
+  const parentPath = path.dirname(targetPath);
+  await fs.promises.mkdir(parentPath, { recursive: true });
+  await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 
 /**

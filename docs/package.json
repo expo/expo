@@ -114,6 +114,7 @@
     "remark-validate-links": "^13.0.2",
     "rimraf": "^6.0.1",
     "semver": "^7.6.3",
+    "sitefetch": "^0.0.17",
     "sitemap": "^7.1.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.6.3",

@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 // @ts-ignore
 import Jimp from 'jimp-compact';
 import path from 'path';
@@ -17,7 +17,7 @@ function stripQueryParams(url: string): string {
 
 function temporaryDirectory() {
   const directory = path.join(tempDir, uniqueString());
-  fs.mkdirSync(directory);
+  fs.mkdirSync(directory, { recursive: true });
   return directory;
 }
 
@@ -56,7 +56,12 @@ export async function downloadImage(url: string): Promise<string> {
   const mime = img.getMIME().split('/').pop()!;
   if (!localPath.endsWith(mime)) {
     const newPath = path.join(outputPath, `image.${mime}`);
-    await fs.move(localPath, newPath);
+    const parentPath = path.dirname(newPath);
+    if (!fs.existsSync(parentPath)) {
+      await fs.promises.mkdir(parentPath, { recursive: true });
+    }
+    // NOTE: EXDEV can't happen since we're just renaming the file in the same directory
+    await fs.promises.rename(localPath, newPath);
     return newPath;
   }
 

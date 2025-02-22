@@ -1,5 +1,5 @@
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -12,9 +12,9 @@ import type { findModulesAsync as findModulesAsyncType } from '../findModules';
 const expoRoot = path.join(__dirname, '..', '..', '..', '..', '..');
 
 jest.mock('fast-glob');
-jest.mock('fs-extra');
 
 const mockProjectPackageJsonPath = jest.fn().mockResolvedValue(path.join(expoRoot, 'package.json'));
+
 jest.mock('../mergeLinkingOptions', () => {
   const actualModule = jest.requireActual('../mergeLinkingOptions');
   return {
@@ -23,16 +23,22 @@ jest.mock('../mergeLinkingOptions', () => {
   };
 });
 
+const mockFsRealpath = jest.spyOn(fs.promises, 'realpath');
+
 const {
   findModulesAsync,
 }: { findModulesAsync: typeof findModulesAsyncType } = require('../findModules');
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe(findModulesAsync, () => {
   let globMockedPathMap: Record<string, string[]>;
 
   beforeEach(() => {
     globMockedPathMap = {};
-    (fs.realpath as jest.MockedFunction<any>).mockImplementation((path) => Promise.resolve(path));
+    mockFsRealpath.mockImplementation((path) => Promise.resolve(`${path}`));
   });
 
   afterEach(() => {
@@ -314,7 +320,7 @@ describe(findModulesAsync, () => {
     registerMultiGlobMock(glob, globPaths);
 
     // Mock `fs.realpath` to "fake" `expo` and `expo-dev-client` being linked from the isolated store
-    const fsSpy = jest.spyOn(fs, 'realpath').mockImplementation(async (filePath) => {
+    mockFsRealpath.mockImplementation(async (filePath) => {
       const linkedModules = {
         [path.join(modulesRoot, 'expo')]: path.join(expoModulesDir, 'expo'),
         [path.join(modulesRoot, 'expo-dev-client')]: path.join(devModulesDir, 'expo-dev-client'),
@@ -340,8 +346,6 @@ describe(findModulesAsync, () => {
     // Validate `expo-dev-client` and nested dependencies are linked
     expect(result['expo-dev-client']).not.toBeUndefined();
     expect(result['expo-dev-launcher']).not.toBeUndefined();
-
-    fsSpy.mockRestore();
   });
 
   /**
@@ -406,7 +410,7 @@ describe(findModulesAsync, () => {
     registerMultiGlobMock(glob, globPaths);
 
     // Mock `fs.realpath` to "fake" `expo` and `expo-application` being linked from the isolated store
-    const fsSpy = jest.spyOn(fs, 'realpath').mockImplementation(async (filePath) => {
+    mockFsRealpath.mockImplementation(async (filePath) => {
       const linkedModules = {
         [path.join(modulesRoot, 'expo')]: path.join(expoModulesDir, 'expo'),
         [path.join(modulesRoot, 'expo-application')]: path.join(appModulesDir, 'expo-application'),
@@ -436,7 +440,5 @@ describe(findModulesAsync, () => {
         path: path.join(expoModulesDir, 'expo-application'),
       }),
     ]);
-
-    fsSpy.mockRestore();
   });
 });

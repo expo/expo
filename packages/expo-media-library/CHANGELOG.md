@@ -14,7 +14,16 @@
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 17.0.6 - 2025-02-14
+
+### 💡 Others
+
 - Add guards when using the module in expo go. ([#34738](https://github.com/expo/expo/pull/34738) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 17.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.4 - 2024-12-19
 

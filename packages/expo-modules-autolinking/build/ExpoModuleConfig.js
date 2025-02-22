@@ -39,8 +39,7 @@ class ExpoModuleConfig {
      */
     appleModules() {
         const appleConfig = this.getAppleConfig();
-        // `modulesClassNames` is a legacy name for the same config.
-        return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+        return appleConfig?.modules ?? [];
     }
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
@@ -77,8 +76,7 @@ class ExpoModuleConfig {
      */
     androidModules() {
         const androidConfig = this.rawConfig.android;
-        // `modulesClassNames` is a legacy name for the same config.
-        return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
+        return androidConfig?.modules ?? [];
     }
     /**
      * Returns build.gradle file paths defined by the module author.
@@ -97,6 +95,12 @@ class ExpoModuleConfig {
      */
     androidGradleAarProjects() {
         return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+    }
+    /**
+     * Returns the publication config for Android.
+     */
+    androidPublication() {
+        return this.rawConfig.android?.publication;
     }
     /**
      * Returns core features required by the module author.

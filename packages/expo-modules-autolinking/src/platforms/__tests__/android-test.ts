@@ -1,5 +1,5 @@
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -12,13 +12,15 @@ import {
 } from '../android';
 
 jest.mock('fast-glob');
-jest.mock('fs-extra');
+jest.mock('fs');
+
+const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe(resolveModuleAsync, () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   it('should resolve android/build.gradle', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
@@ -159,13 +161,6 @@ describe(convertPackageWithGradleToProjectName, () => {
 });
 
 describe(resolveExtraBuildDependenciesAsync, () => {
-  let mockFsReadFile;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-  });
-
   it('should resolve extra build dependencies from gradle.properties', async () => {
     mockFsReadFile.mockResolvedValueOnce(`
 # gradle.properties
