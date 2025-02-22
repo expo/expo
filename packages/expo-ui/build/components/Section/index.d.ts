@@ -5,9 +5,8 @@ export type SectionProps = {
     title: string;
     children: any;
 };
-export declare function Section({ title, children, displayTitleUppercase }: {
+export declare function Section({ title, children }: {
     title: string;
     children: React.ReactNode;
-    displayTitleUppercase?: boolean;
 }): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map
