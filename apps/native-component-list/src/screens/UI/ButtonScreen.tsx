@@ -48,7 +48,6 @@ export default function UIScreen() {
           </Button>
           <Button style={styles.button}>Enabled</Button>
         </Section>
-
         {Platform.OS === 'ios' && (
           <Section title="Button Roles">
             <Button style={styles.button} role="default">
