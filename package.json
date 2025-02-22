@@ -33,6 +33,7 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
+    "@tsconfig/node22": "^22.0.0",
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
@@ -41,6 +42,6 @@
     "yarn-deduplicate": "^6.0.2"
   },
   "volta": {
-    "node": "20.12.2"
+    "node": "22.13.1"
   }
 }
