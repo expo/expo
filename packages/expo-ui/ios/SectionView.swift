@@ -5,6 +5,7 @@ import ExpoModulesCore
 
 class SectionProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
+  @Field var displayTitleUppercase: Bool = true
 }
 
 let IPAD_OFFSET: CGFloat = 30
@@ -15,7 +16,7 @@ struct SectionView: ExpoSwiftUI.View {
 
   var body: some View {
     let form = Form {
-      Section(header: Text(props.title ?? "")) {
+        Section(header: Text(props.title ?? "").textCase(props.displayTitleUppercase == true ? .uppercase : nil)) {
         UnwrappedChildren { child, isHostingView in
           child
             .if(!isHostingView) {

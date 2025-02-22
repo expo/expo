@@ -23,7 +23,7 @@ function OutlinedCard(props: { children: React.ReactNode }) {
   );
 }
 
-export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+export function Section({ title, children, displayTitleUppercase }: { title: string; children: React.ReactNode, displayTitleUppercase?: boolean }) {
   return (
     <OutlinedCard>
       <Text style={{ fontSize: 30, fontWeight: 'bold', paddingHorizontal: 20 }}>{title}</Text>
