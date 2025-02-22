@@ -39,5 +39,6 @@ class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
   @Field var color: Color?
   @Field var buttonRole: ButtonRole? = .default
   @Field var variant: ButtonVariant? = .default
+  @Field var disabled: Bool = false
   var onButtonPressed = EventDispatcher()
 }
