@@ -1,20 +1,22 @@
 ---
 title: Override update configuration at runtime
 sidebar_title: Override update configuration at runtime
-description: Learn how to override the update URL and request headers at runtime to control which update is loaded in preview builds.
+description: Learn how to override the update URL and request headers at runtime to control which update is loaded on the client side.
 ---
 
-> **warning** The features described in this guide are available in Expo SDK 52 with the expo-updates package version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it should only be used in preview environments.
+import { Collapsible } from '~/ui/components/Collapsible';
+
+> **warning** The features described in this guide are available in Expo SDK 52 with the `expo-updates` version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it is currently primarily intended for preview environments.
 
 The typical way to use EAS Update is to have a single update URL and a set of request headers (such as update channel name) embedded in a build of your app. To control which update is loaded you make changes on the server through the `eas update` command or the EAS dashboard. For example, you publish a new update to a channel that your build is pointing to, then the build fetches that update on the next launch. Updates published to a channel different from the one your build is pointing to will not be downloaded with this approach.
 
-This guide explains is how you can change the update URL and request headers at runtime, making it possible to load a specific update by ID or change the channel that updates are pulled from without creating and installing a new build.
+This guide explains how you can change the update URL and request headers at runtime, making it possible to load a specific update by ID or change the channel that updates are pulled from without creating and installing a new build.
 
 ## Use cases for changing the update URL and request headers at runtime
 
 The primary use case that this is intended for is to **enable switching between updates in a preview build**, similar to what is possible in a development build. This is useful to enable non-technical stakeholders to test and validate updates of work-in-progress (such as from a pull request or different feature branches) without having to use a development build or create a separate preview build for each change.
 
-Another potential future use case is to provide different updates to different users, for example so that employees receive updates before end-users. We do not recommend using the approach described in this guide for this use case yet, because the level of stability of the feature is only suitable for preview builds.
+Another potential use case is to provide different updates to different users, for example so that a group of internal users (such as employees) receive updates before end-users. It is important to be familiar with the [security considerations](#security-considerations) before deciding to use this feature in production. In the future, we may add support for a more restricted version of the feature that would be more suitable for this use case.
 
 ## How it works
 
@@ -27,6 +29,16 @@ How to use these APIs:
 
 1. **Override the update URL/headers, instruct user to close the app**: Somewhere in your app, you would provide a way for users to trigger the change to the URL and/or request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism depending on your use case. When the parameters are changed, notify the user that they need to close and re-open the app, such as via an alert. The `expo-updates` library, with methods like `checkForUpdateAsync()`, will not use the new overridden URL and request headers until the app is closed and reopened.
 2. **The new update will be downloaded and launched on the next app open**: After the app is completely closed ("killed" and not just backgrounded) and re-opened, the update and its related assets will all be downloaded. Once they are ready, the app will launch. While it's downloading, the user will have to wait on the splash screen. We understand that waiting on the splash screen is not ideal, and we intend to improve this experience in the future if this feature is widely used. For the currently recommended use case (previews), this is likely an acceptable compromise.
+
+## Security considerations
+
+The anti-bricking measures that can be disabled with `disableAntiBrickingMeasures` ensure that, no matter what update is published, you can always publish another update afterwards that will be applied. By disabling the anti-bricking measures, certain categories of attacks and exploits become possible, especially around in-house (malicious employee) publishing of malicious updates. For example, an employee with the ability to publish updates could publish a malicious update that changes the update URL and request headers to point to their own server, and take over installations of the app. This risk can be mitigated, but not eliminated, by using [code signing](/eas-update/code-signing/) for production updates and limiting access to the key.
+
+<Collapsible summary="Did similar usage of CodePush carry the same risk?">
+
+Yes. CodePush allowed developers to swap deployment keys with `sync({ deploymentKey: string })` which could be used maliciously take over an app installation in this same way.
+
+</Collapsible>
 
 ## Example code
 
@@ -52,7 +64,7 @@ function overrideUpdateURLAndHeaders() {
 {
   "expo": {
     "updates": {
-      // Be sure to enable this only in your preview builds.
+      // We recommend only enabling this in preview builds.
       // You can use app.config.js to configure it dynamically.
       "disableAntiBrickingMeasures": true
       // etc..
