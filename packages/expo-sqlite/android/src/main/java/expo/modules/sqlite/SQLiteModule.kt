@@ -18,7 +18,6 @@ private const val MEMORY_DB_NAME = ":memory:"
 @Suppress("unused")
 class SQLiteModule : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
-  private val cachedStatements: MutableMap<NativeDatabase, MutableList<NativeStatement>> = mutableMapOf()
   private var hasListeners = false
 
   private val context: Context
@@ -275,7 +274,6 @@ class SQLiteModule : Module() {
     if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    maybeAddCachedStatement(database, statement)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
@@ -367,7 +365,6 @@ class SQLiteModule : Module() {
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    maybeRemoveCachedStatement(database, statement)
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
@@ -408,9 +405,7 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
-    maybeRemoveAllCachedStatements(database).forEach {
-      it.ref.sqlite3_finalize()
-    }
+    maybeFinilizeAllStatements(database)
     if (database.openOptions.enableCRSQLite) {
       database.ref.sqlite3_exec("SELECT crsql_finalize()")
     }
@@ -490,35 +485,16 @@ class SQLiteModule : Module() {
 
   // endregion
 
-  // region cachedStatements managements
+  // region statements managements
 
   @Synchronized
-  private fun maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+  private fun maybeFinilizeAllStatements(database: NativeDatabase){
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    val statements = cachedStatements[database]
-    if (statements != null) {
-      statements.add(statement)
-    } else {
-      cachedStatements[database] = mutableListOf(statement)
+    if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-  }
-
-  @Synchronized
-  private fun maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
-      return
-    }
-    cachedStatements[database]?.remove(statement)
-  }
-
-  @Synchronized
-  private fun maybeRemoveAllCachedStatements(database: NativeDatabase): List<NativeStatement> {
-    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
-      return emptyList()
-    }
-    return cachedStatements.remove(database) ?: emptyList()
   }
 
   // endregion
