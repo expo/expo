@@ -12,9 +12,9 @@ import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage
 import com.reactnativecommunity.netinfo.NetInfoModule
 import com.reactnativecommunity.picker.RNCPickerPackage
 import com.reactnativecommunity.slider.ReactSliderPackage
-//import com.reactnativecommunity.webview.RNCWebViewModule
-//import com.reactnativecommunity.webview.RNCWebViewPackage
-//import com.reactnativepagerview.PagerViewPackage
+// import com.reactnativecommunity.webview.RNCWebViewModule
+// import com.reactnativecommunity.webview.RNCWebViewPackage
+// import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
