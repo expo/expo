@@ -2465,7 +2465,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.9.0-beta.0):
+  - RNScreens (4.9.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2486,9 +2486,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.9.0-beta.0)
+    - RNScreens/common (= 4.9.0)
     - Yoga
-  - RNScreens/common (4.9.0-beta.0):
+  - RNScreens/common (4.9.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3220,7 +3220,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: 8e915e1120894daead363cf31ff85cd4d182cd89
-  EXUpdates: ef7becb4c9cd86b7de782d056b4eb68a8a57f70c
+  EXUpdates: 08c2a7b9be4374aae97c1fb0fca09a13b38f9112
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 6fe148afcef2e3213e484758e3459609d40d57f5
@@ -3328,7 +3328,7 @@ SPEC CHECKSUMS:
   RNFlashList: 02eeae97ff66bf61219471c514fbe17cc2542a8a
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
   RNReanimated: 4330cfda4dbae89b0f92312e767c0bee7a5e9364
-  RNScreens: e6fdafd9b91fc790c7e4b1e01e8f1d0fdc4d89cb
+  RNScreens: 2faba2591006e59fa14b9b665599ce29435a749a
   RNSVG: 5cc41ec9df69fd4950e141eb9a39eb69a6622a7e
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90

@@ -13516,10 +13516,10 @@ react-native-safe-area-context@5.2.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.2.0.tgz#60a9faab2a6319a61411a652ed862ec0f59384be"
   integrity sha512-QpcGA6MRKe8Zbpf1hirCBudNQYGsMv0n/CTTROMOFcXbqRUoEXLCsYxUmYKi7JJb3ziL2DbyzWXyH2/gw4Tkfw==
 
-react-native-screens@4.9.0-beta.0:
-  version "4.9.0-beta.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.9.0-beta.0.tgz#9a1a43c1ee7f2d4998a4badd59b1ac43351ea234"
-  integrity sha512-Bxo3DSBxchxzDIj5Jn6kPDYbHWwcVNEa4tOXrQ9/UNJybYN2Bo30+JHEdI+kOJh/8p0uS6rMnccPpbc1eHmEMA==
+react-native-screens@4.9.0:
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.9.0.tgz#6c6058d4c18cd6336095469a95f9809a8b54e2bf"
+  integrity sha512-Pp+Jl3Hzon6oCAUzIP3HxK1TabMTRcTZB+3LKdA8ZQtHolAJdHJWJgNyN6GBG41vXRBnSkXgcvUUbHmMCCNpNQ==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
