@@ -12,9 +12,9 @@ import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage
 import com.reactnativecommunity.netinfo.NetInfoModule
 import com.reactnativecommunity.picker.RNCPickerPackage
 import com.reactnativecommunity.slider.ReactSliderPackage
-import com.reactnativecommunity.webview.RNCWebViewModule
-import com.reactnativecommunity.webview.RNCWebViewPackage
-import com.reactnativepagerview.PagerViewPackage
+//import com.reactnativecommunity.webview.RNCWebViewModule
+//import com.reactnativecommunity.webview.RNCWebViewPackage
+//import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
@@ -130,11 +130,11 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNAWSCognitoModule(reactContext))
-        nativeModules.add(RNCWebViewModule(reactContext))
+//        nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
-        nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
+//        nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
-        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name(), reactContext)!! })
+        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
@@ -172,12 +172,12 @@ class ExponentPackage : ReactPackage {
         LottiePackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
-        RNCWebViewPackage(),
+//        RNCWebViewPackage(),
         RNDateTimePickerPackage(),
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
         ReactSliderPackage(),
-        PagerViewPackage(),
+//        PagerViewPackage(),
         SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
