@@ -36,10 +36,8 @@ describe('<DeepLinkModal />', () => {
 
     expect(queryByText(fakeDeepLink)).toBe(null);
 
-    await act(async () => {
-      expect(getPendingDeepLink).toHaveBeenCalled();
-      await waitFor(() => getByText(fakeDeepLink));
-    });
+    expect(getPendingDeepLink).toHaveBeenCalled();
+    await waitFor(() => getByText(fakeDeepLink));
   });
 
   test('shows dev sessions in modal', async () => {
@@ -81,10 +79,8 @@ describe('<DeepLinkModal />', () => {
 
     expect(queryByText(/unable to find any packagers/i)).toBe(null);
 
-    await act(async () => {
-      expect(queryByText(/unable to find any packagers/i)).toBe(null);
-      await waitFor(() => getAllByText(/unable to find any packagers/i));
-    });
+    expect(queryByText(/unable to find any packagers/i)).toBe(null);
+    await waitFor(() => getAllByText(/unable to find any packagers/i));
   });
 
   test('calls subscription on mount', async () => {

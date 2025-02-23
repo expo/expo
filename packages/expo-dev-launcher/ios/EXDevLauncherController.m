@@ -8,7 +8,6 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import <ExpoModulesCore/RCTAppDelegate+Recreate.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
@@ -16,7 +15,7 @@
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherAppDelegate.h>
+#import <EXDevLauncher/EXDevLauncherReactNativeFactoryDelegate.h>
 
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
 
@@ -58,7 +57,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
-@property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
+@property (nonatomic, strong) EXDevLauncherReactNativeFactoryDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
@@ -87,7 +86,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
-    self.appDelegate = [[EXDevLauncherAppDelegate alloc] initWithBundleURLGetter:^NSURL * {
+    self.appDelegate = [[EXDevLauncherReactNativeFactoryDelegate alloc] initWithBundleURLGetter:^NSURL * {
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf != nil) {
         return [strongSelf getSourceURL];
@@ -281,11 +280,11 @@
       if (!self) {
         return;
       }
-      
+
       [self navigateToLauncher];
     });
   };
-  
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
   if (initialUrl) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
@@ -295,7 +294,7 @@
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
+    // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
     [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:requestTimeout onSuccess:nil onError:navigateToLauncher];
@@ -341,8 +340,6 @@
   // Reset app react host
   [self.delegate destroyReactInstance];
 
-  _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-
 #if RCT_DEV
   NSURL *url = [self devLauncherURL];
   if (url != nil) {
@@ -359,9 +356,9 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
-                                                     initialProperties:nil
-                                                     launchOptions:_launchOptions];
+  rootView = [_appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
+                                                               initialProperties:nil
+                                                                   launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -414,7 +411,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_appDelegate.rootViewFactory.reactHost == nil) {
+  if (_appDelegate.reactNativeFactory.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 
@@ -825,7 +822,7 @@
   NSProcessInfo *processInfo = [NSProcessInfo processInfo];
   NSArray *arguments = [processInfo arguments];
   BOOL nextIsUrl = NO;
-  
+
   for (NSString *arg in arguments) {
     if (nextIsUrl) {
       NSURL *url = [NSURL URLWithString:arg];
