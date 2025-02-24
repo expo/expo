@@ -14,6 +14,7 @@ const processedContent = new Set();
 
 function cleanContent(content) {
   return content
+    .replace(/\[\]\([^)]+\s+"[^"]+"\)/g, '')
     .replace(/^#\s+.+\n\n[^\n]+\n\n/m, '')
     .replace(/^(?:\*\s*){3}$/gm, '')
     .replace(/^(.+)\n-+\n/gm, '## $1\n')
