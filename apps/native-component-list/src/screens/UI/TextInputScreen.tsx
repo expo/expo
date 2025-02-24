@@ -12,14 +12,14 @@ export default function TextInputScreen() {
         <Text>{JSON.stringify(value)}</Text>
       </Section>
       <Section title="Text Input">
-        <TextInput autocorrection={false} initialValue="hey there" onChangeText={setValue} />
+        <TextInput autocorrection={false} defaultValue="hey there" onChangeText={setValue} />
       </Section>
       <Section title="Multiline Text Input">
         <TextInput
           multiline
           numberOfLines={5}
           autocorrection={false}
-          initialValue="hey there"
+          defaultValue="hey there"
           onChangeText={setValue}
         />
       </Section>

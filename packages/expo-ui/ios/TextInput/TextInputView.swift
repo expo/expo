@@ -2,7 +2,7 @@ import SwiftUI
 import ExpoModulesCore
 
 class TextInputProps: ExpoSwiftUI.ViewProps {
-  @Field var initialValue: String = ""
+  @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
   @Field var numberOfLines: Int?
@@ -51,7 +51,7 @@ struct TextInputView: ExpoSwiftUI.View {
       if #available(iOS 16.0, *) {
         TextField(props.placeholder, text: $value, axis: props.multiline ? .vertical : .horizontal)
           .lineLimit(props.multiline ? props.numberOfLines : 1)
-          .onAppear { value = props.initialValue }
+          .onAppear { value = props.defaultValue }
           .onChange(of: value) { newValue in
             props.onValueChanged(["value": newValue])
           }
