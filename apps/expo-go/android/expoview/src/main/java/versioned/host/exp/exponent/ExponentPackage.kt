@@ -132,7 +132,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNAWSCognitoModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
-//        nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
+        nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
