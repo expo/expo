@@ -456,12 +456,12 @@ jobs:
 | linux-large                        | 8    | 32               | 28        |                                      |
 | linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators.    |
 | linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android Emulators.    |
-| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including Simulators. |
-| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including Simulators. |
+| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
+| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
 
 {/* vale on */}
 
-Note: For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker. For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker.
+> Note: For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 
 ### `jobs.<job_id>.outputs`
 
