@@ -20,10 +20,11 @@ export declare class Chunk {
     options: ExpoSerializerOptions;
     isAsync: boolean;
     isVendor: boolean;
+    isEntry: boolean;
     deps: Set<Module>;
     preModules: Set<Module>;
     requiredChunks: Set<Chunk>;
-    constructor(name: string, entries: Module<MixedOutput>[], graph: ReadOnlyGraph<MixedOutput>, options: ExpoSerializerOptions, isAsync?: boolean, isVendor?: boolean);
+    constructor(name: string, entries: Module<MixedOutput>[], graph: ReadOnlyGraph<MixedOutput>, options: ExpoSerializerOptions, isAsync?: boolean, isVendor?: boolean, isEntry?: boolean);
     private getPlatform;
     private getFilename;
     private getStableChunkSource;

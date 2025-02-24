@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
 };
