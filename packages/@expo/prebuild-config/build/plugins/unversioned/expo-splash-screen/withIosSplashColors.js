@@ -68,7 +68,8 @@ async function configureColorAssets({
 
   // ensure old SplashScreen colorSet is removed
   await _fs().default.promises.rm(colorsetPath, {
-    force: true
+    force: true,
+    recursive: true
   });
   await writeColorsContentsJsonFileAsync({
     assetPath: colorsetPath,
