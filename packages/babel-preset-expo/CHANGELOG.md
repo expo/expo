@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin. ([#34647](https://github.com/expo/expo/pull/34647) by [@EvanBacon](https://github.com/EvanBacon))
