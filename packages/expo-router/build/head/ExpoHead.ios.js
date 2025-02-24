@@ -1,14 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Head = void 0;
-const native_1 = require("@react-navigation/native");
-const react_1 = __importDefault(require("react"));
-const ExpoHeadModule_1 = require("./ExpoHeadModule");
-const url_1 = require("./url");
-const hooks_1 = require("../hooks");
+import { useIsFocused } from '@react-navigation/native';
+import React from 'react';
+import { ExpoHead } from './ExpoHeadModule';
+import { getStaticUrlFromExpoRouter } from './url';
+import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 function urlToId(url) {
     return url.replace(/[^a-zA-Z0-9]/g, '-');
 }
@@ -19,17 +13,17 @@ function getLastSegment(path) {
 }
 // TODO: Use Head Provider to collect all props so only one Head is rendered for a given route.
 function useAddressableLink() {
-    const pathname = (0, hooks_1.useUnstableGlobalHref)();
-    const params = (0, hooks_1.useLocalSearchParams)();
-    const url = (0, url_1.getStaticUrlFromExpoRouter)(pathname);
+    const pathname = useUnstableGlobalHref();
+    const params = useLocalSearchParams();
+    const url = getStaticUrlFromExpoRouter(pathname);
     return { url, pathname, params };
 }
 function useMetaChildren(children) {
-    return react_1.default.useMemo(() => {
+    return React.useMemo(() => {
         const renderableChildren = [];
         const metaChildren = [];
-        react_1.default.Children.forEach(children, (child) => {
-            if (!react_1.default.isValidElement(child)) {
+        React.Children.forEach(children, (child) => {
+            if (!React.isValidElement(child)) {
                 return;
             }
             if (typeof child.type === 'string') {
@@ -64,21 +58,21 @@ function serializedMetaChildren(meta) {
 }
 function useActivityFromMetaChildren(meta) {
     const { url: href, pathname } = useAddressableLink();
-    const previousMeta = react_1.default.useRef([]);
-    const cachedActivity = react_1.default.useRef({});
-    const sortedMeta = react_1.default.useMemo(() => serializedMetaChildren(meta), [meta]);
-    const url = react_1.default.useMemo(() => {
+    const previousMeta = React.useRef([]);
+    const cachedActivity = React.useRef({});
+    const sortedMeta = React.useMemo(() => serializedMetaChildren(meta), [meta]);
+    const url = React.useMemo(() => {
         const urlMeta = sortedMeta.find((child) => child.type === 'meta' && child.props.property === 'og:url');
         if (urlMeta) {
             // Support =`/foo/bar` -> `https://example.com/foo/bar`
             if (urlMeta.props.content?.startsWith('/')) {
-                return (0, url_1.getStaticUrlFromExpoRouter)(urlMeta.props.content);
+                return getStaticUrlFromExpoRouter(urlMeta.props.content);
             }
             return urlMeta.props.content;
         }
         return href;
     }, [sortedMeta, href]);
-    const title = react_1.default.useMemo(() => {
+    const title = React.useMemo(() => {
         const titleTag = sortedMeta.find((child) => child.type === 'title');
         if (titleTag) {
             return titleTag.props.children ?? '';
@@ -89,7 +83,7 @@ function useActivityFromMetaChildren(meta) {
         }
         return getLastSegment(pathname);
     }, [sortedMeta, pathname]);
-    const activity = react_1.default.useMemo(() => {
+    const activity = React.useMemo(() => {
         if (!!previousMeta.current &&
             !!cachedActivity.current &&
             deepObjectCompare(previousMeta.current, sortedMeta)) {
@@ -130,7 +124,7 @@ function useActivityFromMetaChildren(meta) {
         ...activity,
         title,
         webpageURL: url,
-        activityType: ExpoHeadModule_1.ExpoHead.activities.INDEXED_ROUTE,
+        activityType: ExpoHead.activities.INDEXED_ROUTE,
         userInfo: {
             // TODO: This may need to be  versioned in the future, e.g. `_v1` if we change the format.
             href,
@@ -142,7 +136,7 @@ function isTruthy(value) {
     return [true, 'true'].includes(value);
 }
 function HeadNative(props) {
-    const isFocused = (0, native_1.useIsFocused)();
+    const isFocused = useIsFocused();
     if (!isFocused) {
         return <UnfocusedHead />;
     }
@@ -163,10 +157,10 @@ const activities = new Map();
 function useRegisterCurrentActivity(activity) {
     // ID is tied to Expo Router and agnostic of URLs to ensure dynamic parameters are not considered.
     // Using all segments ensures that cascading routes are considered.
-    const activityId = urlToId((0, hooks_1.usePathname)() || '/');
-    const cascadingId = urlToId((0, hooks_1.useSegments)().join('-') || '-');
+    const activityId = urlToId(usePathname() || '/');
+    const cascadingId = urlToId(useSegments().join('-') || '-');
     const activityIds = Array.from(activities.keys());
-    const cascadingActivity = react_1.default.useMemo(() => {
+    const cascadingActivity = React.useMemo(() => {
         // Get all nested activities together, then update the id to match the current pathname.
         // This enables cases like `/user/[name]/post/[id]` to match all nesting, while still having a URL-specific ID, i.e. `/user/evanbacon/post/123`
         const cascadingActivity = activities.has(cascadingId)
@@ -182,8 +176,8 @@ function useRegisterCurrentActivity(activity) {
         activities.set(cascadingId, cascadingActivity);
         return cascadingActivity;
     }, [cascadingId, activityId, activity, activityIds]);
-    const previousActivity = react_1.default.useRef(null);
-    react_1.default.useEffect(() => {
+    const previousActivity = React.useRef(null);
+    React.useEffect(() => {
         if (!cascadingActivity) {
             return () => { };
         }
@@ -197,14 +191,14 @@ function useRegisterCurrentActivity(activity) {
         }
         // If no features are enabled, then skip registering the activity
         if (cascadingActivity.isEligibleForHandoff || cascadingActivity.isEligibleForSearch) {
-            ExpoHeadModule_1.ExpoHead?.createActivity(cascadingActivity);
+            ExpoHead?.createActivity(cascadingActivity);
         }
         return () => { };
     }, [cascadingActivity]);
-    react_1.default.useEffect(() => {
+    React.useEffect(() => {
         return () => {
             if (activityId) {
-                ExpoHeadModule_1.ExpoHead?.suspendActivity(activityId);
+                ExpoHead?.suspendActivity(activityId);
             }
         };
     }, [activityId]);
@@ -236,11 +230,11 @@ function deepObjectCompare(a, b) {
     }
     return a === b;
 }
-HeadNative.Provider = react_1.default.Fragment;
+HeadNative.Provider = React.Fragment;
 function HeadShim(props) {
     return null;
 }
-HeadShim.Provider = react_1.default.Fragment;
+HeadShim.Provider = React.Fragment;
 // Native Head is only enabled in bare iOS apps.
-exports.Head = ExpoHeadModule_1.ExpoHead ? HeadNative : HeadShim;
+export const Head = ExpoHead ? HeadNative : HeadShim;
 //# sourceMappingURL=ExpoHead.ios.js.map

@@ -1,34 +1,8 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNativeStackNavigator = void 0;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
-const React = __importStar(require("react"));
+import { createNavigatorFactory, StackActions, StackRouter, useNavigationBuilder, } from '@react-navigation/native';
+import { NativeStackView, } from '@react-navigation/native-stack';
+import * as React from 'react';
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_getStateForRouteNamesChange, ...rest }) {
-    const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+    const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder(StackRouter, {
         id,
         initialRouteName,
         children,
@@ -49,18 +23,17 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
                 // When user taps on already focused tab and we're inside the tab,
                 // reset the stack to replicate native behaviour
                 navigation.dispatch({
-                    ...native_1.StackActions.popToTop(),
+                    ...StackActions.popToTop(),
                     target: state.key,
                 });
             }
         });
     }), [navigation, state.index, state.key]);
     return (<NavigationContent>
-      <native_stack_1.NativeStackView {...rest} state={state} navigation={navigation} descriptors={descriptors} describe={describe}/>
+      <NativeStackView {...rest} state={state} navigation={navigation} descriptors={descriptors} describe={describe}/>
     </NavigationContent>);
 }
-function createNativeStackNavigator(config) {
-    return (0, native_1.createNavigatorFactory)(NativeStackNavigator)(config);
+export function createNativeStackNavigator(config) {
+    return createNavigatorFactory(NativeStackNavigator)(config);
 }
-exports.createNativeStackNavigator = createNativeStackNavigator;
 //# sourceMappingURL=createNativeStackNavigator.js.map

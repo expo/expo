@@ -1,108 +1,86 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
-require("./expect");
-require("./mocks");
-const react_native_1 = require("@testing-library/react-native");
-const react_1 = __importDefault(require("react"));
-const mock_config_1 = require("./mock-config");
-Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
-Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
-const ExpoRoot_1 = require("../ExpoRoot");
-const getPathFromState_1 = require("../fork/getPathFromState");
-const router_store_1 = require("../global-state/router-store");
-const imperative_api_1 = require("../imperative-api");
+import './expect';
+import './mocks';
+import { act, render, screen } from '@testing-library/react-native';
+import React from 'react';
+import { getMockConfig, getMockContext } from './mock-config';
+import { ExpoRoot } from '../ExpoRoot';
+import { getPathFromState } from '../fork/getPathFromState';
+import { store } from '../global-state/router-store';
+import { router } from '../imperative-api';
 // re-export everything
-__exportStar(require("@testing-library/react-native"), exports);
+export * from '@testing-library/react-native';
 afterAll(() => {
-    router_store_1.store.cleanup();
+    store.cleanup();
 });
-function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
+export { getMockConfig, getMockContext };
+export function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
-    const mockContext = (0, mock_config_1.getMockContext)(context);
+    const mockContext = getMockContext(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    const result = render(<ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
     /**
      * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
      * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
      * (that the app will briefly be in the right state, but then update to an invalid state)
      */
-    router_store_1.store.subscribeToRootState(() => jest.runOnlyPendingTimers());
+    store.subscribeToRootState(() => jest.runOnlyPendingTimers());
     return Object.assign(result, {
         getPathname() {
-            return router_store_1.store.routeInfoSnapshot().pathname;
+            return store.routeInfoSnapshot().pathname;
         },
         getSegments() {
-            return router_store_1.store.routeInfoSnapshot().segments;
+            return store.routeInfoSnapshot().segments;
         },
         getSearchParams() {
-            return router_store_1.store.routeInfoSnapshot().params;
+            return store.routeInfoSnapshot().params;
         },
         getPathnameWithParams() {
-            return (0, getPathFromState_1.getPathFromState)(router_store_1.store.rootState, router_store_1.store.linking.config);
+            return getPathFromState(store.rootState, store.linking.config);
         },
         getRouterState() {
-            return router_store_1.store.rootStateSnapshot();
+            return store.rootStateSnapshot();
         },
     });
 }
-exports.renderRouter = renderRouter;
-exports.testRouter = {
+export const testRouter = {
     /** Navigate to the provided pathname and the pathname */
     navigate(path) {
-        (0, react_native_1.act)(() => imperative_api_1.router.navigate(path));
-        expect(react_native_1.screen).toHavePathnameWithParams(path);
+        act(() => router.navigate(path));
+        expect(screen).toHavePathnameWithParams(path);
     },
     /** Push the provided pathname and assert the pathname */
     push(path) {
-        (0, react_native_1.act)(() => imperative_api_1.router.push(path));
-        expect(react_native_1.screen).toHavePathnameWithParams(path);
+        act(() => router.push(path));
+        expect(screen).toHavePathnameWithParams(path);
     },
     /** Replace with provided pathname and assert the pathname */
     replace(path) {
-        (0, react_native_1.act)(() => imperative_api_1.router.replace(path));
-        expect(react_native_1.screen).toHavePathnameWithParams(path);
+        act(() => router.replace(path));
+        expect(screen).toHavePathnameWithParams(path);
     },
     /** Go back in history and asset the new pathname */
     back(path) {
-        expect(imperative_api_1.router.canGoBack()).toBe(true);
-        (0, react_native_1.act)(() => imperative_api_1.router.back());
+        expect(router.canGoBack()).toBe(true);
+        act(() => router.back());
         if (path) {
-            expect(react_native_1.screen).toHavePathnameWithParams(path);
+            expect(screen).toHavePathnameWithParams(path);
         }
     },
     /** If there's history that supports invoking the `back` function. */
     canGoBack() {
-        return imperative_api_1.router.canGoBack();
+        return router.canGoBack();
     },
     /** Update the current route query params and assert the new pathname */
     setParams(params, path) {
-        imperative_api_1.router.setParams(params);
+        router.setParams(params);
         if (path) {
-            expect(react_native_1.screen).toHavePathnameWithParams(path);
+            expect(screen).toHavePathnameWithParams(path);
         }
     },
     /** If there's history that supports invoking the `back` function. */
     dismissAll() {
-        (0, react_native_1.act)(() => imperative_api_1.router.dismissAll());
+        act(() => router.dismissAll());
     },
 };
 //# sourceMappingURL=index.js.map

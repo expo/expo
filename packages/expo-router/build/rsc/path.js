@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -8,8 +7,6 @@
  *
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/path.ts#L1
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
 // Terminology:
 // - filePath: posix-like file path, e.g. `/foo/bar.js` or `c:/foo/bar.js`
 //   This is used by Vite.
@@ -18,7 +15,7 @@ exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = expor
 // - osPath: os dependent path, e.g. `/foo/bar.js` or `c:\foo\bar.js`
 //   This is used by node:fs.
 const ABSOLUTE_WIN32_PATH_REGEXP = /^\/[a-zA-Z]:\//;
-const encodeFilePathToAbsolute = (filePath) => {
+export const encodeFilePathToAbsolute = (filePath) => {
     if (ABSOLUTE_WIN32_PATH_REGEXP.test(filePath)) {
         throw new Error('Unsupported absolute file path');
     }
@@ -27,18 +24,15 @@ const encodeFilePathToAbsolute = (filePath) => {
     }
     return '/' + filePath;
 };
-exports.encodeFilePathToAbsolute = encodeFilePathToAbsolute;
-const decodeFilePathFromAbsolute = (filePath) => {
+export const decodeFilePathFromAbsolute = (filePath) => {
     if (ABSOLUTE_WIN32_PATH_REGEXP.test(filePath)) {
         return filePath.slice(1);
     }
     return filePath;
 };
-exports.decodeFilePathFromAbsolute = decodeFilePathFromAbsolute;
-const filePathToFileURL = (filePath) => 'file://' + encodeURI(filePath);
-exports.filePathToFileURL = filePathToFileURL;
+export const filePathToFileURL = (filePath) => 'file://' + encodeURI(filePath);
 /** Return the original "osPath" based on the file URL */
-const fileURLToFilePath = (fileURL) => {
+export const fileURLToFilePath = (fileURL) => {
     if (!fileURL.startsWith('file://')) {
         throw new Error('Not a file URL');
     }
@@ -50,9 +44,8 @@ const fileURLToFilePath = (fileURL) => {
         ? filePath.slice(1).replace(/\//g, '\\')
         : filePath;
 };
-exports.fileURLToFilePath = fileURLToFilePath;
 // for filePath
-const joinPath = (...paths) => {
+export const joinPath = (...paths) => {
     const isAbsolute = paths[0]?.startsWith('/');
     const items = [].concat(...paths.map((path) => path.split('/')));
     let i = 0;
@@ -75,13 +68,11 @@ const joinPath = (...paths) => {
     }
     return (isAbsolute ? '/' : '') + items.join('/') || '.';
 };
-exports.joinPath = joinPath;
-const extname = (filePath) => {
+export const extname = (filePath) => {
     const index = filePath.lastIndexOf('.');
     return index > 0 ? filePath.slice(index) : '';
 };
-exports.extname = extname;
-const parsePathWithSlug = (path) => path
+export const parsePathWithSlug = (path) => path
     .split('/')
     .filter(Boolean)
     .map((name) => {
@@ -98,8 +89,7 @@ const parsePathWithSlug = (path) => path
     }
     return { type, name };
 });
-exports.parsePathWithSlug = parsePathWithSlug;
-const getPathMapping = (pathSpec, pathname) => {
+export const getPathMapping = (pathSpec, pathname) => {
     const actual = pathname.split('/').filter(Boolean);
     if (pathSpec.length > actual.length) {
         return null;
@@ -152,11 +142,10 @@ const getPathMapping = (pathSpec, pathname) => {
     }
     return mapping;
 };
-exports.getPathMapping = getPathMapping;
 /**
  * Transform a path spec to a regular expression.
  */
-const path2regexp = (path) => {
+export const path2regexp = (path) => {
     const parts = path.map(({ type, name }) => {
         if (type === 'literal') {
             return name;
@@ -170,5 +159,4 @@ const path2regexp = (path) => {
     });
     return `^/${parts.join('/')}$`;
 };
-exports.path2regexp = path2regexp;
 //# sourceMappingURL=path.js.map

@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMemoryHistory = void 0;
-const non_secure_1 = require("nanoid/non-secure");
-function createMemoryHistory() {
+import { nanoid } from 'nanoid/non-secure';
+export function createMemoryHistory() {
     let index = 0;
     let items = [];
     // Pending callbacks for `history.go(n)`
@@ -43,7 +40,7 @@ function createMemoryHistory() {
         },
         push({ path, state }) {
             interrupt();
-            const id = (0, non_secure_1.nanoid)();
+            const id = nanoid();
             // When a new entry is pushed, all the existing entries after index will be inaccessible
             // So we remove any existing entries after the current index to clean them up
             items = items.slice(0, index + 1);
@@ -57,7 +54,7 @@ function createMemoryHistory() {
         },
         replace({ path, state }) {
             interrupt();
-            const id = window.history.state?.id ?? (0, non_secure_1.nanoid)();
+            const id = window.history.state?.id ?? nanoid();
             // Need to keep the hash part of the path if there was no previous history entry
             // or the previous history entry had the same path
             let pathWithHash = path;
@@ -177,5 +174,4 @@ function createMemoryHistory() {
     };
     return history;
 }
-exports.createMemoryHistory = createMemoryHistory;
 //# sourceMappingURL=createMemoryHistory.js.map

@@ -1,17 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseQueryParams = exports.getRouteConfigSorter = exports.appendIsInitial = exports.matchForEmptyPath = exports.stripBaseUrl = exports.spreadParamsAcrossAllStates = exports.handleUrlParams = exports.getParamValue = exports.replacePart = exports.isDynamicPart = exports.configRegExp = exports.assertScreens = exports.createConfig = exports.getUrlWithReactNavigationConcessions = exports.safelyDecodeURIComponent = exports.populateParams = void 0;
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const matchers_1 = require("../matchers");
+import escape from 'escape-string-regexp';
+import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes
  * @returns
  */
-function populateParams(routes, params) {
+export function populateParams(routes, params) {
     if (!routes || !params || Object.keys(params).length === 0)
         return;
     for (const route of routes) {
@@ -19,8 +13,7 @@ function populateParams(routes, params) {
     }
     return routes;
 }
-exports.populateParams = populateParams;
-function safelyDecodeURIComponent(str) {
+export function safelyDecodeURIComponent(str) {
     try {
         return decodeURIComponent(str);
     }
@@ -28,8 +21,7 @@ function safelyDecodeURIComponent(str) {
         return str;
     }
 }
-exports.safelyDecodeURIComponent = safelyDecodeURIComponent;
-function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
+export function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
     let parsed;
     try {
         parsed = new URL(path, 'https://phony.example');
@@ -45,7 +37,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
     }
     const pathname = parsed.pathname;
     const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
-    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
+    const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl));
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
@@ -55,8 +47,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         pathWithoutGroups,
     };
 }
-exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
-function createConfig(screen, pattern, routeNames, config = {}) {
+export function createConfig(screen, pattern, routeNames, config = {}) {
     const parts = [];
     let isDynamic = false;
     const isIndex = screen === 'index' || screen.endsWith('/index');
@@ -64,7 +55,7 @@ function createConfig(screen, pattern, routeNames, config = {}) {
         if (part) {
             // If any part is dynamic, then the route is dynamic
             isDynamic ||= part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
-            if (!(0, matchers_1.matchGroupName)(part)) {
+            if (!matchGroupName(part)) {
                 parts.push(part);
             }
         }
@@ -85,28 +76,23 @@ function createConfig(screen, pattern, routeNames, config = {}) {
         }),
     };
 }
-exports.createConfig = createConfig;
-function assertScreens(options) {
+export function assertScreens(options) {
     if (!options?.screens) {
         throw Error("You must pass a 'screens' object to 'getStateFromPath' to generate a path.");
     }
 }
-exports.assertScreens = assertScreens;
-function configRegExp(config) {
+export function configRegExp(config) {
     return config.pattern
         ? new RegExp(`^(${config.pattern.split('/').map(formatRegexPattern).join('')})$`)
         : undefined;
 }
-exports.configRegExp = configRegExp;
-function isDynamicPart(p) {
+export function isDynamicPart(p) {
     return p.length > 1 && (p.startsWith(':') || p.startsWith('*'));
 }
-exports.isDynamicPart = isDynamicPart;
-function replacePart(p) {
+export function replacePart(p) {
     return p.replace(/^[:*]/, '').replace(/\?$/, '');
 }
-exports.replacePart = replacePart;
-function getParamValue(p, value) {
+export function getParamValue(p, value) {
     if (p.startsWith('*')) {
         const values = value.split('/').filter((v) => v !== '');
         return values.length === 0 && p.endsWith('?') ? undefined : values;
@@ -115,7 +101,6 @@ function getParamValue(p, value) {
         return value;
     }
 }
-exports.getParamValue = getParamValue;
 function formatRegexPattern(it) {
     // Allow spaces in file path names.
     it = it.replace(' ', '%20');
@@ -127,15 +112,15 @@ function formatRegexPattern(it) {
         return `((.*\\/)${it.endsWith('?') ? '?' : ''})`;
     }
     // Strip groups from the matcher
-    if ((0, matchers_1.matchGroupName)(it) != null) {
+    if (matchGroupName(it) != null) {
         // Groups are optional segments
         // this enables us to match `/bar` and `/(foo)/bar` for the same route
         // NOTE(EvanBacon): Ignore this match in the regex to avoid capturing the group
-        return `(?:${(0, escape_string_regexp_1.default)(it)}\\/)?`;
+        return `(?:${escape(it)}\\/)?`;
     }
-    return (0, escape_string_regexp_1.default)(it) + `\\/`;
+    return escape(it) + `\\/`;
 }
-function handleUrlParams(route, params) {
+export function handleUrlParams(route, params) {
     if (params) {
         route.params = Object.assign(Object.create(null), route.params);
         for (const [name, value] of Object.entries(params)) {
@@ -154,24 +139,21 @@ function handleUrlParams(route, params) {
         }
     }
 }
-exports.handleUrlParams = handleUrlParams;
-function spreadParamsAcrossAllStates(state, params) {
+export function spreadParamsAcrossAllStates(state, params) {
     while (state) {
         const route = state.routes[0];
         route.params = Object.assign({}, route.params, params);
     }
 }
-exports.spreadParamsAcrossAllStates = spreadParamsAcrossAllStates;
-function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
+export function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
-            return path.replace(/^\/+/g, '/').replace(new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(baseUrl)}`, 'g'), '');
+            return path.replace(/^\/+/g, '/').replace(new RegExp(`^\\/?${escape(baseUrl)}`, 'g'), '');
         }
     }
     return path;
 }
-exports.stripBaseUrl = stripBaseUrl;
-function matchForEmptyPath(configs) {
+export function matchForEmptyPath(configs) {
     // We need to add special handling of empty path so navigation to empty path also works
     // When handling empty path, we should only look at the root level config
     // NOTE(EvanBacon): We only care about matching leaf nodes.
@@ -182,7 +164,7 @@ function matchForEmptyPath(configs) {
             ...value,
             // Collapse all levels of group segments before testing.
             // This enables `app/(one)/(two)/index.js` to be matched.
-            path: (0, matchers_1.stripGroupSegmentsFromPath)(value.path),
+            path: stripGroupSegmentsFromPath(value.path),
         };
     });
     const match = leafNodes.find((config) => 
@@ -196,8 +178,7 @@ function matchForEmptyPath(configs) {
         leafNodes.find((config) => config.path.startsWith('*') && config.regex.test('/'));
     return match;
 }
-exports.matchForEmptyPath = matchForEmptyPath;
-function appendIsInitial(initialRoutes) {
+export function appendIsInitial(initialRoutes) {
     const resolvedInitialPatterns = initialRoutes.map((route) => joinPaths(...route.parentScreens, route.initialRouteName));
     return function (config) {
         // TODO(EvanBacon): Probably a safer way to do this
@@ -206,12 +187,11 @@ function appendIsInitial(initialRoutes) {
         return config;
     };
 }
-exports.appendIsInitial = appendIsInitial;
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
     .filter(Boolean)
     .join('/');
-function getRouteConfigSorter(previousSegments = []) {
+export function getRouteConfigSorter(previousSegments = []) {
     return function sortConfigs(a, b) {
         // Sort config so that:
         // - the most exhaustive ones are always at the beginning
@@ -350,8 +330,7 @@ function getRouteConfigSorter(previousSegments = []) {
         return b.parts.length - a.parts.length;
     };
 }
-exports.getRouteConfigSorter = getRouteConfigSorter;
-function parseQueryParams(path, route, parseConfig, hash) {
+export function parseQueryParams(path, route, parseConfig, hash) {
     const searchParams = new URL(path, 'https://phony.example').searchParams;
     const params = Object.create(null);
     if (hash) {
@@ -374,7 +353,6 @@ function parseQueryParams(path, route, parseConfig, hash) {
     }
     return Object.keys(params).length ? params : undefined;
 }
-exports.parseQueryParams = parseQueryParams;
 /*** ????????? */
 // export function mutateRouteParams(
 //   route: ParsedRoute,

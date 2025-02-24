@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReactNavigationConfig = exports.getReactNavigationScreensConfig = void 0;
-const matchers_1 = require("./matchers");
+import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 // `[page]` -> `:page`
 // `page` -> `page`
 function convertDynamicRouteToReactNavigation(segment) {
@@ -12,11 +9,11 @@ function convertDynamicRouteToReactNavigation(segment) {
     if (segment === '+not-found') {
         return '*not-found';
     }
-    const rest = (0, matchers_1.matchDeepDynamicRouteName)(segment);
+    const rest = matchDeepDynamicRouteName(segment);
     if (rest != null) {
         return '*' + rest;
     }
-    const dynamicName = (0, matchers_1.matchDynamicName)(segment);
+    const dynamicName = matchDynamicName(segment);
     if (dynamicName != null) {
         return `:${dynamicName}`;
     }
@@ -65,11 +62,10 @@ function convertRouteNodeToScreen(node, metaOnly) {
     }
     return screen;
 }
-function getReactNavigationScreensConfig(nodes, metaOnly) {
+export function getReactNavigationScreensConfig(nodes, metaOnly) {
     return Object.fromEntries(nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)]));
 }
-exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
-function getReactNavigationConfig(routes, metaOnly) {
+export function getReactNavigationConfig(routes, metaOnly) {
     const config = {
         initialRouteName: undefined,
         screens: getReactNavigationScreensConfig(routes.children, metaOnly),
@@ -81,5 +77,4 @@ function getReactNavigationConfig(routes, metaOnly) {
     }
     return config;
 }
-exports.getReactNavigationConfig = getReactNavigationConfig;
 //# sourceMappingURL=getReactNavigationConfig.js.map

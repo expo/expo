@@ -1,10 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStaticUrlFromExpoRouter = exports.getOriginFromConstants = void 0;
-const expo_constants_1 = __importDefault(require("expo-constants"));
+import Constants from 'expo-constants';
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
 function memoize(fn) {
@@ -35,7 +29,7 @@ function sanitizeUrl(url) {
 const memoSanitizeUrl = memoize(sanitizeUrl);
 function getHeadOriginFromConstants() {
     // This will require a rebuild in bare-workflow to update.
-    const manifest = expo_constants_1.default.expoConfig;
+    const manifest = Constants.expoConfig;
     const origin = manifest?.extra?.router?.headOrigin ??
         manifest?.extra?.router?.origin ??
         manifest?.extra?.router?.generatedOrigin;
@@ -51,9 +45,9 @@ function getHeadOriginFromConstants() {
     // Return the development URL last so the user gets all production warnings first.
     return memoSanitizeUrl(origin);
 }
-function getOriginFromConstants() {
+export function getOriginFromConstants() {
     // This will require a rebuild in bare-workflow to update.
-    const manifest = expo_constants_1.default.expoConfig;
+    const manifest = Constants.expoConfig;
     const origin = manifest?.extra?.router?.headOrigin ??
         manifest?.extra?.router?.origin ??
         manifest?.extra?.router?.generatedOrigin;
@@ -65,7 +59,6 @@ function getOriginFromConstants() {
     // Return the development URL last so the user gets all production warnings first.
     return memoSanitizeUrl(origin);
 }
-exports.getOriginFromConstants = getOriginFromConstants;
 function throwOrAlert(msg) {
     // Production apps fatally crash which is often not helpful.
     if (
@@ -78,10 +71,9 @@ function throwOrAlert(msg) {
         throw new Error(msg);
     }
 }
-function getStaticUrlFromExpoRouter(pathname) {
+export function getStaticUrlFromExpoRouter(pathname) {
     // const host = "https://expo.io";
     // Append the URL we'd find in context
     return getHeadOriginFromConstants() + pathname;
 }
-exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 //# sourceMappingURL=url.js.map

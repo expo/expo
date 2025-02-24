@@ -1,36 +1,7 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStateFromPath = void 0;
-const native_1 = require("@react-navigation/native");
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const findFocusedRoute_1 = require("./findFocusedRoute");
-const expo = __importStar(require("./getStateFromPath-forks"));
+import { validatePathConfig } from '@react-navigation/native';
+import escape from 'escape-string-regexp';
+import { findFocusedRoute } from './findFocusedRoute';
+import * as expo from './getStateFromPath-forks';
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -52,7 +23,7 @@ const expo = __importStar(require("./getStateFromPath-forks"));
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-function getStateFromPath(
+export function getStateFromPath(
 // END FORK
 path, options) {
     const { initialRoutes, configs, configWithRegexes } = getConfigResources(options, this?.routeInfo?.segments);
@@ -129,7 +100,6 @@ path, options) {
     }
     return result;
 }
-exports.getStateFromPath = getStateFromPath;
 /**
  * Reference to the last used config resources. This is used to avoid recomputing the config resources when the options are the same.
  */
@@ -152,7 +122,7 @@ previousSegments
 }
 function prepareConfigResources(options, previousSegments) {
     if (options) {
-        (0, native_1.validatePathConfig)(options);
+        validatePathConfig(options);
     }
     const initialRoutes = getInitialRoutes(options);
     const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
@@ -307,7 +277,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 // Get the number of segments in the initial pattern
                 const numInitialSegments = routeConfig?.pattern
                     // Extract the prefix from the pattern by removing the ending path pattern (e.g pattern=`a/b/c/d` and normalizedPath=`c/d` becomes `a/b`)
-                    .replace(new RegExp(`${(0, escape_string_regexp_1.default)(normalizedPath)}$`), '')
+                    .replace(new RegExp(`${escape(normalizedPath)}$`), '')
                     ?.split('/').length;
                 const params = normalizedPath
                     ?.split('/')
@@ -398,7 +368,7 @@ const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, 
             if (it.startsWith(':')) {
                 return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
             }
-            return `${it === '*' ? '.*' : (0, escape_string_regexp_1.default)(it)}\\/`;
+            return `${it === '*' ? '.*' : escape(it)}\\/`;
         })
             .join('')})`)
         : undefined;
@@ -492,7 +462,7 @@ const createNestedStateObject = ({ path, ...expoURL }, routes, initialRoutes, fl
             parentScreens.push(route.name);
         }
     }
-    route = (0, findFocusedRoute_1.findFocusedRoute)(state);
+    route = findFocusedRoute(state);
     // START FORK
     route.path = expoURL.pathWithoutGroups;
     // route.path = path;

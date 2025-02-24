@@ -8,16 +8,13 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 'use client';
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
-const react_slot_1 = require("@radix-ui/react-slot");
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const common_js_1 = require("./common.js");
-const host_js_1 = require("./host.js");
-const href_1 = require("../../link/href");
-const useLinkHooks_1 = require("../../link/useLinkHooks");
+import { Slot as ReactSlot } from '@radix-ui/react-slot';
+import { startTransition, useCallback, useContext, useEffect, useRef, useTransition, createElement, createContext, useState, Fragment, forwardRef, useMemo, } from 'react';
+import { Text } from 'react-native';
+import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
+import { prefetchRSC, Root, Slot, useRefetch } from './host.js';
+import { resolveHref } from '../../link/href';
+import { useInteropClassName, useHrefAttrs } from '../../link/useLinkHooks';
 const normalizeRoutePath = (path) => {
     for (const suffix of ['/', '/index.html']) {
         if (path.endsWith(suffix)) {
@@ -31,8 +28,8 @@ const parseRoute = (url) => {
         return { path: '/404', query: '', hash: '' };
     }
     const { pathname, searchParams, hash } = url;
-    if (searchParams.has(common_js_1.PARAM_KEY_SKIP)) {
-        console.warn(`The search param "${common_js_1.PARAM_KEY_SKIP}" is reserved`);
+    if (searchParams.has(PARAM_KEY_SKIP)) {
+        console.warn(`The search param "${PARAM_KEY_SKIP}" is reserved`);
     }
     return {
         path: normalizeRoutePath(pathname),
@@ -53,14 +50,14 @@ const equalRouteProps = (a, b) => {
     }
     return true;
 };
-const RouterContext = (0, react_1.createContext)(null);
+const RouterContext = createContext(null);
 const InnerRouter = ({ routerData }) => {
-    const refetch = (0, host_js_1.useRefetch)();
-    const initialRouteRef = (0, react_1.useRef)();
+    const refetch = useRefetch();
+    const initialRouteRef = useRef();
     if (!initialRouteRef.current) {
         initialRouteRef.current = parseRoute(new URL(getHref()));
     }
-    const [route, setRoute] = (0, react_1.useState)(() => ({
+    const [route, setRoute] = useState(() => ({
         // This is the first initialization of the route, and it has
         // to ignore the hash, because on server side there is none.
         // Otherwise there will be a hydration error.
@@ -69,7 +66,7 @@ const InnerRouter = ({ routerData }) => {
         hash: '',
     }));
     // Update the route post-load to include the current hash.
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         const initialRoute = initialRouteRef.current;
         setRoute((prev) => {
             if (prev.path === initialRoute.path &&
@@ -80,7 +77,7 @@ const InnerRouter = ({ routerData }) => {
             return initialRoute;
         });
     }, []);
-    const componentIds = (0, common_js_1.getComponentIds)(route.path);
+    const componentIds = getComponentIds(route.path);
     //  const refetchRoute = () => {
     //   const loc = parseRoute(new URL(getHref()));
     //   const input = getInputString(loc.path);
@@ -88,19 +85,19 @@ const InnerRouter = ({ routerData }) => {
     //   refetch(input, JSON.stringify({ query: route.query }));
     // };
     // globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__ = refetchRoute;
-    const [cached, setCached] = (0, react_1.useState)(() => {
+    const [cached, setCached] = useState(() => {
         return Object.fromEntries(componentIds.map((id) => [id, route]));
     });
-    const cachedRef = (0, react_1.useRef)(cached);
-    (0, react_1.useEffect)(() => {
+    const cachedRef = useRef(cached);
+    useEffect(() => {
         cachedRef.current = cached;
     }, [cached]);
-    const changeRoute = (0, react_1.useCallback)((route, options) => {
+    const changeRoute = useCallback((route, options) => {
         const { checkCache, skipRefetch } = options || {};
-        (0, react_1.startTransition)(() => {
+        startTransition(() => {
             setRoute(route);
         });
-        const componentIds = (0, common_js_1.getComponentIds)(route.path);
+        const componentIds = getComponentIds(route.path);
         if (checkCache &&
             componentIds.every((id) => {
                 const cachedLoc = cachedRef.current[id];
@@ -113,29 +110,29 @@ const InnerRouter = ({ routerData }) => {
         if (componentIds.every((id) => skip.includes(id))) {
             return; // everything is skipped
         }
-        const input = (0, common_js_1.getInputString)(route.path);
+        const input = getInputString(route.path);
         if (!skipRefetch) {
             refetch(input, JSON.stringify({ query: route.query, skip }));
         }
-        (0, react_1.startTransition)(() => {
+        startTransition(() => {
             setCached((prev) => ({
                 ...prev,
                 ...Object.fromEntries(componentIds.flatMap((id) => (skip.includes(id) ? [] : [[id, route]]))),
             }));
         });
     }, [refetch, routerData]);
-    const prefetchRoute = (0, react_1.useCallback)((route) => {
-        const componentIds = (0, common_js_1.getComponentIds)(route.path);
+    const prefetchRoute = useCallback((route) => {
+        const componentIds = getComponentIds(route.path);
         const shouldSkip = routerData[0];
         const skip = getSkipList(shouldSkip, componentIds, route, cachedRef.current);
         if (componentIds.every((id) => skip.includes(id))) {
             return; // everything is cached
         }
-        const input = (0, common_js_1.getInputString)(route.path);
-        (0, host_js_1.prefetchRSC)(input, JSON.stringify({ query: route.query, skip }));
+        const input = getInputString(route.path);
+        prefetchRSC(input, JSON.stringify({ query: route.query, skip }));
         globalThis.__EXPO_ROUTER_PREFETCH__?.(route.path);
     }, [routerData]);
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         const callback = () => {
             const route = parseRoute(new URL(getHref()));
             changeRoute(route, { checkCache: true });
@@ -148,7 +145,7 @@ const InnerRouter = ({ routerData }) => {
         }
         return () => { };
     }, [changeRoute]);
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         const callback = (pathname, searchParamsString) => {
             const url = new URL(getHref());
             url.pathname = pathname;
@@ -167,7 +164,7 @@ const InnerRouter = ({ routerData }) => {
             listeners.delete(callback);
         };
     }, [changeRoute, routerData]);
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         const { hash } = window.location;
         const { state } = getHistory();
         const element = hash && document.getElementById(hash.slice(1));
@@ -183,8 +180,8 @@ const InnerRouter = ({ routerData }) => {
             // console.log('window.scrollTo is not available');
         }
     });
-    const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
-    return (0, react_1.createElement)(RouterContext.Provider, { value: { route, changeRoute, prefetchRoute } }, children);
+    const children = componentIds.reduceRight((acc, id) => createElement(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
+    return createElement(RouterContext.Provider, { value: { route, changeRoute, prefetchRoute } }, children);
 };
 function getHistory() {
     if (process.env.EXPO_OS === 'web') {
@@ -199,47 +196,47 @@ function getHistory() {
         state: {},
     };
 }
-function useRouter_UNSTABLE() {
-    const router = (0, react_1.useContext)(RouterContext);
+export function useRouter_UNSTABLE() {
+    const router = useContext(RouterContext);
     if (!router) {
         throw new Error('Missing Router');
     }
     const { route, changeRoute, prefetchRoute } = router;
-    const push = (0, react_1.useCallback)((href, options) => {
+    const push = useCallback((href, options) => {
         if (options) {
             // TODO(Bacon): Implement options
             console.warn('options prop of router.push() is not supported in React Server Components yet');
         }
-        const url = new URL((0, href_1.resolveHref)(href), getHref());
+        const url = new URL(resolveHref(href), getHref());
         getHistory().pushState({
             ...getHistory().state,
             expo_new_path: url.pathname !== window.location.pathname,
         }, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
-    const replace = (0, react_1.useCallback)((href, options) => {
+    const replace = useCallback((href, options) => {
         if (options) {
             // TODO(Bacon): Implement options
             console.warn('options prop of router.replace() is not supported in React Server Components yet');
         }
-        const url = new URL((0, href_1.resolveHref)(href), getHref());
+        const url = new URL(resolveHref(href), getHref());
         getHistory().replaceState(getHistory().state, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
-    const reload = (0, react_1.useCallback)(() => {
+    const reload = useCallback(() => {
         const url = new URL(getHref());
         changeRoute(parseRoute(url));
     }, [changeRoute]);
-    const back = (0, react_1.useCallback)(() => {
+    const back = useCallback(() => {
         // FIXME is this correct?
         getHistory().back();
     }, []);
-    const forward = (0, react_1.useCallback)(() => {
+    const forward = useCallback(() => {
         // FIXME is this correct?
         getHistory().forward();
     }, []);
-    const prefetch = (0, react_1.useCallback)((href) => {
-        const url = new URL((0, href_1.resolveHref)(href), getHref());
+    const prefetch = useCallback((href) => {
+        const url = new URL(resolveHref(href), getHref());
         prefetchRoute(parseRoute(url));
     }, [prefetchRoute]);
     return {
@@ -272,14 +269,13 @@ function useRouter_UNSTABLE() {
         prefetch,
     };
 }
-exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {
     // const unstable_shouldRenderPrev = (_err: unknown) => {
     //   const shouldSkip = routerData[0];
     //   const skip = getSkipList(shouldSkip, [id], route, cachedRef.current);
     //   return skip.length > 0;
     // };
-    return (0, react_1.createElement)(host_js_1.Slot, { id, fallback }, children);
+    return createElement(Slot, { id, fallback }, children);
 };
 const getSkipList = (shouldSkip, componentIds, route, cached) => {
     const shouldSkipObj = Object.fromEntries(shouldSkip || []);
@@ -302,14 +298,13 @@ const getSkipList = (shouldSkip, componentIds, route, cached) => {
     });
 };
 const DEFAULT_ROUTER_DATA = [];
-function Router({ routerData = DEFAULT_ROUTER_DATA }) {
+export function Router({ routerData = DEFAULT_ROUTER_DATA }) {
     const route = parseRoute(new URL(getHref()));
-    const initialInput = (0, common_js_1.getInputString)(route.path);
+    const initialInput = getInputString(route.path);
     const initialParams = JSON.stringify({ query: route.query });
     const unstable_onFetchData = () => { };
-    return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialParams, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter, { routerData }));
+    return createElement(Root, { initialInput, initialParams, unstable_onFetchData }, createElement(InnerRouter, { routerData }));
 }
-exports.Router = Router;
 const notAvailableInServer = (name) => () => {
     throw new Error(`${name} is not in the server`);
 };
@@ -317,8 +312,8 @@ const notAvailableInServer = (name) => () => {
  * ServerRouter for SSR
  * This is not a public API.
  */
-function ServerRouter({ children, route }) {
-    return (0, react_1.createElement)(react_1.Fragment, null, (0, react_1.createElement)(RouterContext.Provider, {
+export function ServerRouter({ children, route }) {
+    return createElement(Fragment, null, createElement(RouterContext.Provider, {
         value: {
             route,
             changeRoute: notAvailableInServer('changeRoute'),
@@ -326,9 +321,8 @@ function ServerRouter({ children, route }) {
         },
     }, children));
 }
-exports.ServerRouter = ServerRouter;
-exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
-exports.Link.resolveHref = href_1.resolveHref;
+export const Link = forwardRef(ExpoRouterLink);
+Link.resolveHref = resolveHref;
 function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, 
@@ -338,16 +332,16 @@ relativeToDirectory, asChild, rel, target, download,
 // unstable_prefetchOnView,
 children, ...props }, ref) {
     // Mutate the style prop to add the className on web.
-    const style = (0, useLinkHooks_1.useInteropClassName)(props);
+    const style = useInteropClassName(props);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
-    const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
-    const resolvedHref = (0, react_1.useMemo)(() => {
+    const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
+    const resolvedHref = useMemo(() => {
         if (href == null) {
             throw new Error('Link: href is required');
         }
-        return (0, href_1.resolveHref)(href);
+        return resolveHref(href);
     }, [href]);
-    const router = (0, react_1.useContext)(RouterContext);
+    const router = useContext(RouterContext);
     const changeRoute = router
         ? router.changeRoute
         : () => {
@@ -359,7 +353,7 @@ children, ...props }, ref) {
             throw new Error('Missing Router');
         };
     // TODO: Implement support for pending states in the future.
-    const [, startTransition] = (0, react_1.useTransition)();
+    const [, startTransition] = useTransition();
     // const elementRef = useRef<HTMLAnchorElement>();
     // useEffect(() => {
     //   if (unstable_prefetchOnView && process.env.EXPO_OS === 'web' && ref.current) {
@@ -411,8 +405,8 @@ children, ...props }, ref) {
     //       props.onMouseEnter?.(event);
     //     }
     //   : props.onMouseEnter;
-    const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
-    const ele = (0, react_1.createElement)(
+    const Element = asChild ? ReactSlot : Text;
+    const ele = createElement(
     // @ts-expect-error
     Element, {
         ...hrefAttrs,

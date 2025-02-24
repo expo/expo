@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTypedRoutesDeclarationFile = void 0;
-const getRoutes_1 = require("../getRoutes");
-const matchers_1 = require("../matchers");
+import { getRoutes } from '../getRoutes';
+import { removeSupportedExtensions } from '../matchers';
 // /[...param1]/ - Match [...param1]
 const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
@@ -10,10 +7,10 @@ const SLUG = /\[.+?\]/g;
 // /(group)/path/(group2)/route - Match [(group), (group2)]
 const GROUP = /(?:^|\/)\(.*?\)/g;
 const urlParams = "${`?${string}` | `#${string}` | ''}";
-function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
+export function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
     let routeNode = null;
     try {
-        routeNode = (0, getRoutes_1.getRoutes)(ctx, {
+        routeNode = getRoutes(ctx, {
             ignore: [/_layout\.[tj]sx?$/],
             platformRoutes: false,
             notFound: false,
@@ -92,7 +89,6 @@ declare module 'expo-router' {
 }
 `;
 }
-exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 function groupRouteNodes(routeNode, groupedContextKeys = {
     static: new Set(),
     dynamic: new Map(),
@@ -118,7 +114,7 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         routeKey = routeNode.route;
     }
     else {
-        routeKey = (0, matchers_1.removeSupportedExtensions)(routeNode.contextKey)
+        routeKey = removeSupportedExtensions(routeNode.contextKey)
             .replace(/\/index$/, '') // Remove any trailing /index
             .replace(/^\./, ''); // Remove any leading .
     }

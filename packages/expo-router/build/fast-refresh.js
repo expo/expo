@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * This is a hack for Expo Router to support Fast Refresh on _layout files
  *
@@ -67,4 +65,5 @@ if (process.env.NODE_ENV === 'development') {
         });
     }
 }
+export {};
 //# sourceMappingURL=fast-refresh.js.map

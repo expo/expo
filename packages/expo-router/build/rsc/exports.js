@@ -1,96 +1,73 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.router = exports.ErrorBoundary = exports.Unmatched = exports.useRouter = exports.useUnstableGlobalHref = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useNavigationContainerRef = exports.withLayoutContext = exports.useNavigation = exports.useFocusEffect = exports.ExpoRoot = exports.Redirect = exports.Navigator = exports.Tabs = exports.Stack = exports.Slot = exports.useGlobalSearchParams = exports.useLocalSearchParams = exports.usePathname = exports.Link = void 0;
-const client_1 = require("./router/client");
-Object.defineProperty(exports, "useRouter", { enumerable: true, get: function () { return client_1.useRouter_UNSTABLE; } });
-const host_1 = require("./router/host");
-var client_2 = require("./router/client");
-Object.defineProperty(exports, "Link", { enumerable: true, get: function () { return client_2.Link; } });
-function usePathname() {
-    const router = (0, client_1.useRouter_UNSTABLE)();
+import { useRouter_UNSTABLE } from './router/client';
+import { Children } from './router/host';
+export { Link } from './router/client';
+export function usePathname() {
+    const router = useRouter_UNSTABLE();
     return router.path;
 }
-exports.usePathname = usePathname;
 // TODO: This doesn't work the same as the classic version.
-function useLocalSearchParams() {
-    const router = (0, client_1.useRouter_UNSTABLE)();
+export function useLocalSearchParams() {
+    const router = useRouter_UNSTABLE();
     return Object.fromEntries([...new URLSearchParams(router.query).entries()]);
 }
-exports.useLocalSearchParams = useLocalSearchParams;
-function useGlobalSearchParams() {
-    const router = (0, client_1.useRouter_UNSTABLE)();
+export function useGlobalSearchParams() {
+    const router = useRouter_UNSTABLE();
     return Object.fromEntries([...new URLSearchParams(router.query).entries()]);
 }
-exports.useGlobalSearchParams = useGlobalSearchParams;
-function Slot() {
-    return <host_1.Children />;
+export function Slot() {
+    return <Children />;
 }
-exports.Slot = Slot;
-function Stack() {
+export function Stack() {
     console.warn('Stack is not implemented in React Server Components yet');
-    return <host_1.Children />;
+    return <Children />;
 }
-exports.Stack = Stack;
-function Tabs() {
+export function Tabs() {
     console.warn('Tabs is not implemented in React Server Components yet');
-    return <host_1.Children />;
+    return <Children />;
 }
-exports.Tabs = Tabs;
-function Navigator() {
+export function Navigator() {
     throw new Error('Navigator is not implemented in React Server Components yet');
 }
-exports.Navigator = Navigator;
 /**
  * Redirects to the `href` as soon as the component is mounted.
  */
-function Redirect({ href }) {
-    const router = (0, client_1.useRouter_UNSTABLE)();
+export function Redirect({ href }) {
+    const router = useRouter_UNSTABLE();
     router.replace(href);
     return null;
 }
-exports.Redirect = Redirect;
-function ExpoRoot() {
+export function ExpoRoot() {
     throw new Error('ExpoRoot is not implemented in React Server Components yet');
 }
-exports.ExpoRoot = ExpoRoot;
-function useFocusEffect() {
+export function useFocusEffect() {
     console.warn('useFocusEffect is not implemented in React Server Components yet');
 }
-exports.useFocusEffect = useFocusEffect;
-function useNavigation() {
+export function useNavigation() {
     console.warn('useNavigation is not implemented in React Server Components yet');
 }
-exports.useNavigation = useNavigation;
-function withLayoutContext() {
+export function withLayoutContext() {
     throw new Error('withLayoutContext is not implemented in React Server Components yet');
 }
-exports.withLayoutContext = withLayoutContext;
-function useNavigationContainerRef() {
+export function useNavigationContainerRef() {
     throw new Error('useNavigationContainerRef is not implemented in React Server Components yet');
 }
-exports.useNavigationContainerRef = useNavigationContainerRef;
-function useSegments() {
+export function useSegments() {
     throw new Error('useSegments is not implemented in React Server Components yet');
 }
-exports.useSegments = useSegments;
-function useRootNavigation() {
+export function useRootNavigation() {
     throw new Error('useRootNavigation is not implemented in React Server Components yet');
 }
-exports.useRootNavigation = useRootNavigation;
-function useRootNavigationState() {
+export function useRootNavigationState() {
     throw new Error('useRootNavigationState is not implemented in React Server Components yet');
 }
-exports.useRootNavigationState = useRootNavigationState;
-function useUnstableGlobalHref() {
+export function useUnstableGlobalHref() {
     throw new Error('useUnstableGlobalHref is not implemented in React Server Components yet');
 }
-exports.useUnstableGlobalHref = useUnstableGlobalHref;
+export { useRouter_UNSTABLE as useRouter };
 // Expo Router Views
-var Unmatched_1 = require("../views/Unmatched");
-Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function () { return Unmatched_1.Unmatched; } });
-var ErrorBoundary_1 = require("../views/ErrorBoundary");
-Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return ErrorBoundary_1.ErrorBoundary; } });
-exports.router = new Proxy({}, {
+export { Unmatched } from '../views/Unmatched';
+export { ErrorBoundary } from '../views/ErrorBoundary';
+export const router = new Proxy({}, {
     get(target, prop, receiver) {
         throw new Error(`The router object is not available in React Server Components. Use the useRouter hook instead.`);
     },

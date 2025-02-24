@@ -1,88 +1,54 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
-const native_1 = require("@react-navigation/native");
-const dom_1 = require("expo/dom");
-const Linking = __importStar(require("expo-linking"));
-const non_secure_1 = require("nanoid/non-secure");
-const react_native_1 = require("react-native");
-const href_1 = require("../link/href");
-const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
-const matchers_1 = require("../matchers");
-const url_1 = require("../utils/url");
+import { StackActions } from '@react-navigation/native';
+import { IS_DOM } from 'expo/dom';
+import * as Linking from 'expo-linking';
+import { nanoid } from 'nanoid/non-secure';
+import { Platform } from 'react-native';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { emitDomDismiss, emitDomDismissAll, emitDomGoBack, emitDomLinkEvent, emitDomSetParams, } from '../link/useDomComponentNavigation';
+import { matchDynamicName } from '../matchers';
+import { shouldLinkExternally } from '../utils/url';
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
-function navigate(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
+export function navigate(url, options) {
+    return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
-exports.navigate = navigate;
-function reload() {
+export function reload() {
     // TODO(EvanBacon): add `reload` support.
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
-exports.reload = reload;
-function push(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
+export function push(url, options) {
+    return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
-exports.push = push;
-function dismiss(count) {
-    if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
+export function dismiss(count) {
+    if (emitDomDismiss(count)) {
         return;
     }
-    this.navigationRef?.dispatch(native_1.StackActions.pop(count));
+    this.navigationRef?.dispatch(StackActions.pop(count));
 }
-exports.dismiss = dismiss;
-function dismissTo(href, options) {
-    return this.linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
+export function dismissTo(href, options) {
+    return this.linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
 }
-exports.dismissTo = dismissTo;
-function replace(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
+export function replace(url, options) {
+    return this.linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
 }
-exports.replace = replace;
-function dismissAll() {
-    if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
+export function dismissAll() {
+    if (emitDomDismissAll()) {
         return;
     }
-    this.navigationRef?.dispatch(native_1.StackActions.popToTop());
+    this.navigationRef?.dispatch(StackActions.popToTop());
 }
-exports.dismissAll = dismissAll;
-function goBack() {
-    if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
+export function goBack() {
+    if (emitDomGoBack()) {
         return;
     }
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-exports.goBack = goBack;
-function canGoBack() {
-    if (dom_1.IS_DOM) {
+export function canGoBack() {
+    if (IS_DOM) {
         throw new Error('canGoBack imperative method is not supported. Pass the property to the DOM component instead.');
     }
     // Return a default value here if the navigation hasn't mounted yet.
@@ -95,9 +61,8 @@ function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-exports.canGoBack = canGoBack;
-function canDismiss() {
-    if (dom_1.IS_DOM) {
+export function canDismiss() {
+    if (IS_DOM) {
         throw new Error('canDismiss imperative method is not supported. Pass the property to the DOM component instead.');
     }
     let state = this.rootState;
@@ -112,21 +77,19 @@ function canDismiss() {
     }
     return false;
 }
-exports.canDismiss = canDismiss;
-function setParams(params = {}) {
-    if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
+export function setParams(params = {}) {
+    if (emitDomSetParams(params)) {
         return;
     }
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-exports.setParams = setParams;
-function linkTo(href, options = {}) {
-    if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+export function linkTo(href, options = {}) {
+    if (emitDomLinkEvent(href, options)) {
         return;
     }
-    if ((0, url_1.shouldLinkExternally)(href)) {
-        if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
+    if (shouldLinkExternally(href)) {
+        if (href.startsWith('//') && Platform.OS !== 'web') {
             href = `https:${href}`;
         }
         Linking.openURL(href);
@@ -145,7 +108,7 @@ function linkTo(href, options = {}) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
+    href = resolveHrefStringWithSegments(href, this.routeInfo, options);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
@@ -153,7 +116,6 @@ function linkTo(href, options = {}) {
     }
     return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor));
 }
-exports.linkTo = linkTo;
 function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -176,7 +138,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         actionStateRoute = actionState.routes[actionState.routes.length - 1];
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
-        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const dynamicName = matchDynamicName(actionStateRoute.name);
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||
@@ -228,7 +190,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
          *
          */
         if (navigationState.type === 'stack') {
-            rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+            rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
     if (navigationState.type === 'expo-tab') {

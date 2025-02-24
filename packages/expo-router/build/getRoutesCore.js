@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getRoutes = void 0;
-const matchers_1 = require("./matchers");
+import { matchArrayGroupName, matchDeepDynamicRouteName, matchDynamicName, matchGroupName, matchLastGroupName, removeSupportedExtensions, } from './matchers';
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -15,7 +12,7 @@ const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-function getRoutes(contextModule, options) {
+export function getRoutes(contextModule, options) {
     const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
@@ -27,7 +24,6 @@ function getRoutes(contextModule, options) {
     }
     return rootNode;
 }
-exports.getRoutes = getRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -272,9 +268,9 @@ function getFileMeta(key, options) {
     // Remove the leading `./`
     key = key.replace(/^\.\//, '');
     const parts = key.split('/');
-    let route = (0, matchers_1.removeSupportedExtensions)(key);
+    let route = removeSupportedExtensions(key);
     const filename = parts[parts.length - 1];
-    const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
+    const [filenameWithoutExtensions, platformExtension] = removeSupportedExtensions(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -323,21 +319,20 @@ function getFileMeta(key, options) {
         isApi,
     };
 }
-function getIgnoreList(options) {
+export function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
     if (options?.preserveApiRoutes !== true) {
         ignore.push(/\+api\.[tj]sx?$/);
     }
     return ignore;
 }
-exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
-function extrapolateGroups(key, keys = new Set()) {
-    const match = (0, matchers_1.matchArrayGroupName)(key);
+export function extrapolateGroups(key, keys = new Set()) {
+    const match = matchArrayGroupName(key);
     if (!match) {
         keys.add(key);
         return keys;
@@ -356,8 +351,7 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-exports.extrapolateGroups = extrapolateGroups;
-function generateDynamic(path) {
+export function generateDynamic(path) {
     const dynamic = path
         .split('/')
         .map((part) => {
@@ -368,8 +362,8 @@ function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
-        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
+        const deepDynamicName = matchDeepDynamicRouteName(part);
+        const dynamicName = deepDynamicName ?? matchDynamicName(part);
         if (!dynamicName)
             return null;
         return { name: dynamicName, deep: !!deepDynamicName };
@@ -377,7 +371,6 @@ function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
-exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory, options) {
     if (!directory.files.has('_sitemap') && options.getSystemRoute) {
         directory.files.set('_sitemap', [
@@ -404,7 +397,7 @@ function getLayoutNode(node, options) {
      * Each of these layouts will have a different anchor based upon the first group name.
      */
     // We may strip loadRoute during testing
-    const groupName = (0, matchers_1.matchLastGroupName)(node.route);
+    const groupName = matchLastGroupName(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
@@ -453,7 +446,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
          * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
          * Each of these layouts will have a different anchor based upon the first group.
          */
-        const groupName = (0, matchers_1.matchGroupName)(node.route);
+        const groupName = matchGroupName(node.route);
         const childMatchingGroup = node.children.find((child) => {
             return child.route.replace(/\/index$/, '') === groupName;
         });

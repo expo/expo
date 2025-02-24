@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateToAction = exports.triggersToScreens = exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
-const href_1 = require("../link/href");
-const sortRoutes_1 = require("../sortRoutes");
-const useScreens_1 = require("../useScreens");
-const Slot_1 = require("./Slot");
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { sortRoutesWithInitial } from '../sortRoutes';
+import { routeToScreen } from '../useScreens';
+import { Slot } from './Slot';
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
-exports.ViewSlot = Slot_1.Slot;
-exports.SafeAreaViewSlot = Slot_1.Slot;
-function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey) {
+export const ViewSlot = Slot;
+export const SafeAreaViewSlot = Slot;
+export function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey) {
     const configs = [];
     for (const trigger of triggers) {
         if (trigger.name in parentTriggerMap) {
@@ -25,14 +22,14 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             configs.push(trigger);
             continue;
         }
-        let resolvedHref = (0, href_1.resolveHref)(trigger.href);
+        let resolvedHref = resolveHref(trigger.href);
         if (resolvedHref.startsWith('../')) {
             throw new Error('Trigger href cannot link to a parent directory');
         }
         const segmentsWithoutGroups = contextKey.split('/').filter((segment) => {
             return !(segment.startsWith('(') && segment.endsWith(')'));
         });
-        resolvedHref = (0, href_1.resolveHrefStringWithSegments)(resolvedHref, {
+        resolvedHref = resolveHrefStringWithSegments(resolvedHref, {
             ...routeInfo,
             segments: segmentsWithoutGroups,
         }, { relativeToDirectory: true });
@@ -83,7 +80,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             action: stateToAction(state, layoutRouteNode.route),
         });
     }
-    const sortFn = (0, sortRoutes_1.sortRoutesWithInitial)(initialRouteName);
+    const sortFn = sortRoutesWithInitial(initialRouteName);
     const sortedConfigs = configs.sort((a, b) => {
         // External routes should be last. They will eventually be dropped
         if (a.type === 'external' && b.type === 'external') {
@@ -102,7 +99,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
     for (const [index, config] of sortedConfigs.entries()) {
         triggerMap[config.name] = { ...config, index };
         if (config.type === 'internal') {
-            children.push((0, useScreens_1.routeToScreen)(config.routeNode));
+            children.push(routeToScreen(config.routeNode));
         }
     }
     return {
@@ -110,8 +107,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         triggerMap,
     };
 }
-exports.triggersToScreens = triggersToScreens;
-function stateToAction(state, startAtRoute) {
+export function stateToAction(state, startAtRoute) {
     const rootPayload = {};
     let payload = rootPayload;
     let foundStartingPoint = !startAtRoute || !state?.state;
@@ -145,5 +141,4 @@ function stateToAction(state, startAtRoute) {
         payload: rootPayload,
     };
 }
-exports.stateToAction = stateToAction;
 //# sourceMappingURL=common.js.map

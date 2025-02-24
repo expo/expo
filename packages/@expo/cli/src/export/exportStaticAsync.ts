@@ -7,7 +7,6 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -57,6 +56,19 @@ type HtmlRequestLocation = {
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
+}
+
+// Mirrors the file in expo-router/build/matchers but without needing a more complex transformation on the expo-router output to support directly importing in the CLI.
+function stripGroupSegmentsFromPath(path: string): string {
+  return path
+    .split('/')
+    .reduce((acc, v) => {
+      if (matchGroupName(v) == null) {
+        acc.push(v);
+      }
+      return acc;
+    }, [] as string[])
+    .join('/');
 }
 
 export async function getFilesToExportFromServerAsync(
