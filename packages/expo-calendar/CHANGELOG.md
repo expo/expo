@@ -11,7 +11,6 @@
 ### 🐛 Bug fixes
 
 - Updated `Event.location` type to allow a `null` value if not set. ([#33802](https://github.com/expo/expo/pull/33802) by [@rklomp](https://github.com/rklomp)
-- [iOS] Correctly type `organizer` and document it. ([#34052](https://github.com/expo/expo/pull/34052) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -19,6 +18,12 @@
 - [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 14.0.6 - 2025-01-10
+
+### 🐛 Bug fixes
+
+- [iOS] Correctly type `organizer` and document it. ([#34052](https://github.com/expo/expo/pull/34052) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.0.4 - 2024-11-29
 

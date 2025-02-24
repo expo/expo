@@ -223,6 +223,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -3281,14 +3282,16 @@ SPEC CHECKSUMS:
   EXApplication: e1ad9c950c98b2b134578092c948b10b403f3ea7
   EXAV: 9773c9799767c9925547b05e41a26a0240bb8ef2
   EXConstants: ce04ec1ab4b0b9e0f8a6c39211ce51e6ea61797a
+  EXConstants: ce04ec1ab4b0b9e0f8a6c39211ce51e6ea61797a
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: 3b6c5a91673a5fe7eae005c1fa79889f645111aa
   Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
+  Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
   expo-dev-client: 8c99b4979086a27f19e773e96ef10219102a5c4f
   expo-dev-launcher: a302f66ace34c0a2ed0fa33d3213d51a0783b9d8
-  expo-dev-menu: da5b84d5cb9a7e6b8bea402c2b39dc1da5e00c10
+  expo-dev-menu: 56beae942ac9834a49b2384e1174d1d5d2bc3a87
   expo-dev-menu-interface: 4baf2f8b3b79ce37cf4b900e4b3ba6df3384f0a1
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
@@ -3304,9 +3307,12 @@ SPEC CHECKSUMS:
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
   ExpoContacts: 209f0739c712bf808413c691722ce1bb1e2ea0af
   ExpoCrypto: a5c0a86f3e7a4cf3e99ab6c4bb9733fc13e2a747
+  ExpoCrypto: a5c0a86f3e7a4cf3e99ab6c4bb9733fc13e2a747
   ExpoDevice: e24dd19a43065182eb246bc0e7f84186862f1e83
   ExpoDocumentPicker: 4a89fd8a0cb90010214a416c858d7dece1c1eb10
   ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
+  ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
+  ExpoFont: 73d44c5cd85eab8034bc5165ca2230315097d728
   ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
   ExpoFont: 73d44c5cd85eab8034bc5165ca2230315097d728
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
@@ -3316,9 +3322,11 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
   ExpoInsights: 98f3aeaafd8481e5c0983ce3a59ebd594f1339aa
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
+  ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
-  ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
+  ExpoLinking: 5addac9b3a9c25b8032efc0d604162427c62912e
   ExpoLivePhoto: e50e26d529b71b998c948db4d2d4e9f7b7b088f3
+  ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05

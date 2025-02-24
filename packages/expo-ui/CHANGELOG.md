@@ -6,8 +6,10 @@
 
 ### 🎉 New features
 
+- Add Radio option to Picker Component for Android. ([#34629](https://github.com/expo/expo/pull/34629)) by [@benjaminkomen](https://github.com/benjaminkomen)
 - Add color support for `ContextMenu` components. ([#34787](https://github.com/expo/expo/pull/34787) by [@behenate](https://github.com/behenate))
 - Adds `DateTimePicker` component. ([#34883](https://github.com/expo/expo/pull/34883) by [@alanjhughes](https://github.com/alanjhughes))
+- Add CircularProgress and LinearProgress component. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
 - Add Gauge component ([#35032](https://github.com/expo/expo/pull/35032) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes

@@ -1,6 +1,6 @@
 import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 export async function assertEngineMismatchAsync(
@@ -44,8 +44,8 @@ export function parseGradleProperties(content: string): Record<string, string> {
     }
 
     const sepIndex = line.indexOf('=');
-    const key = line.substr(0, sepIndex);
-    const value = line.substr(sepIndex + 1);
+    const key = line.slice(0, sepIndex);
+    const value = line.slice(sepIndex + 1);
     result[key] = value;
   }
   return result;
@@ -97,7 +97,7 @@ export async function maybeInconsistentEngineAndroidAsync(
   // Check gradle.properties from prebuild template
   const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
   if (fs.existsSync(gradlePropertiesPath)) {
-    const props = parseGradleProperties(await fs.readFile(gradlePropertiesPath, 'utf8'));
+    const props = parseGradleProperties(await fs.promises.readFile(gradlePropertiesPath, 'utf8'));
     const isHermesBare = props['hermesEnabled'] === 'true';
     if (isHermesManaged !== isHermesBare) {
       return true;
@@ -147,7 +147,7 @@ export async function maybeInconsistentEngineIosAsync(
   // Check ios/Podfile for ":hermes_enabled => true"
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
-    const content = await fs.readFile(podfilePath, 'utf8');
+    const content = await fs.promises.readFile(podfilePath, 'utf8');
     const isPropsReference =
       content.search(
         /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m
@@ -176,22 +176,22 @@ const HERMES_MAGIC_HEADER = 'c61fbc03c103191f';
 
 export async function isHermesBytecodeBundleAsync(file: string): Promise<boolean> {
   const header = await readHermesHeaderAsync(file);
-  return header.slice(0, 8).toString('hex') === HERMES_MAGIC_HEADER;
+  return header.subarray(0, 8).toString('hex') === HERMES_MAGIC_HEADER;
 }
 
 export async function getHermesBytecodeBundleVersionAsync(file: string): Promise<number> {
   const header = await readHermesHeaderAsync(file);
-  if (header.slice(0, 8).toString('hex') !== HERMES_MAGIC_HEADER) {
+  if (header.subarray(0, 8).toString('hex') !== HERMES_MAGIC_HEADER) {
     throw new Error('Invalid hermes bundle file');
   }
   return header.readUInt32LE(8);
 }
 
 async function readHermesHeaderAsync(file: string): Promise<Buffer> {
-  const fd = await fs.open(file, 'r');
+  const fd = await fs.promises.open(file, 'r');
   const buffer = Buffer.alloc(12);
-  await fs.read(fd, buffer, 0, 12, null);
-  await fs.close(fd);
+  await fd.read(buffer, 0, 12, null);
+  await fd.close();
   return buffer;
 }
 
@@ -199,7 +199,7 @@ async function parsePodfilePropertiesAsync(
   podfilePropertiesPath: string
 ): Promise<Record<string, string>> {
   try {
-    return JSON.parse(await fs.readFile(podfilePropertiesPath, 'utf8'));
+    return JSON.parse(await fs.promises.readFile(podfilePropertiesPath, 'utf8'));
   } catch {
     return {};
   }

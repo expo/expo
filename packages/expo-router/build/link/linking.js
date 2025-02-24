@@ -64,6 +64,9 @@ let _rootURL;
 function getRootURL() {
     if (_rootURL === undefined) {
         _rootURL = Linking.createURL('/');
+        if (isExpoGo) {
+            _rootURL = (0, extractPathFromURL_1.parsePathFromExpoGoLink)(_rootURL);
+        }
     }
     return _rootURL;
 }

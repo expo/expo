@@ -10,22 +10,85 @@
 
 - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+- Add ExpoAppDelegate support for macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for macOS AppDelegate subscribers ([#35062](https://github.com/expo/expo/pull/35062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
-
-- Replace inferred rest spread arguments types (and other inferred types) for changes in newer TypeScript versions. ([#34132](https://github.com/expo/expo/pull/34132) by [@kitten](https://github.com/kitten))
-- [Android] Avoid `PromiseAlreadySettledException` on canceling `expo/fetch` requests. ([#34778](https://github.com/expo/expo/pull/34778) by [@yukukotani](https://github.com/yukukotani))
-- Fixed `expo/fetch` `cancelStreaming` issue on Android. ([#34892](https://github.com/expo/expo/pull/34892) by [@kudo](https://github.com/kudo))
-- Fixed `Cannot read property 'matchContents' of undefined` error for DOM Components. ([#34894](https://github.com/expo/expo/pull/34894) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Remove "shortcut" from `rel="icon"` from favicon injection. ([#33696](https://github.com/expo/expo/pull/33696) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
-- Added a debug only warning and style for zero height DOM components. ([#34375](https://github.com/expo/expo/pull/34375) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [apple] Move `AppDelegate` integration from `expo-modules-core` to `expo` package. ([#34985](https://github.com/expo/expo/pull/34985) by [@lukmccall](https://github.com/lukmccall))
+
+## 52.0.37 - 2025-02-20
+
+### 🐛 Bug fixes
+
+- Fixed EAS Update support for DOM Components. ([#35042](https://github.com/expo/expo/pull/35042) by [@kudo](https://github.com/kudo))
+
+## 52.0.36 - 2025-02-19
+
+### 🐛 Bug fixes
+
+- Fixed `expo/fetch` `cancelStreaming` issue on Android. ([#34892](https://github.com/expo/expo/pull/34892) by [@kudo](https://github.com/kudo))
+- Fixed `Cannot read property 'matchContents' of undefined` error for DOM Components. ([#34894](https://github.com/expo/expo/pull/34894) by [@kudo](https://github.com/kudo))
+
+## 52.0.35 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.34 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.33 - 2025-02-12
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.32 - 2025-02-10
+
+### 🐛 Bug fixes
+
+- [Android] Avoid `PromiseAlreadySettledException` on canceling `expo/fetch` requests. ([#34778](https://github.com/expo/expo/pull/34778) by [@yukukotani](https://github.com/yukukotani))
+
+## 52.0.31 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.30 - 2025-02-04
+
+### 💡 Others
+
+- Added a debug only warning and style for zero height DOM components. ([#34375](https://github.com/expo/expo/pull/34375) by [@kudo](https://github.com/kudo))
+
+## 52.0.29 - 2025-02-04
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.28 - 2025-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.27 - 2025-01-20
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.26 - 2025-01-19
+
+### 🐛 Bug fixes
+
+- Replace inferred rest spread arguments types (and other inferred types) for changes in newer TypeScript versions. ([#34132](https://github.com/expo/expo/pull/34132) by [@kitten](https://github.com/kitten))
+
+## 52.0.25 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.24 - 2025-01-08
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.23 - 2024-12-24
 

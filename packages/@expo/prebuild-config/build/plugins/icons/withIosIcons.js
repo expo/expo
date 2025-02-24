@@ -21,9 +21,9 @@ function _imageUtils() {
   };
   return data;
 }
-function fs() {
-  const data = _interopRequireWildcard(require("fs-extra"));
-  fs = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -42,8 +42,7 @@ function _AssetContents() {
   };
   return data;
 }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   getProjectName
 } = _configPlugins().IOSConfig.XcodeUtils;
@@ -85,7 +84,9 @@ async function setIconsAsync(config, projectRoot) {
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await fs().ensureDir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH));
+  await _fs().default.promises.mkdir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
+    recursive: true
+  });
   const imagesJson = [];
   const baseIconPath = typeof icon === 'object' ? icon?.light || icon?.dark || icon?.tinted : icon;
 
@@ -180,7 +181,7 @@ async function generateUniversalIconAsync(projectRoot, {
   }
   // Write image buffer to the file system.
   const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
-  await fs().writeFile(assetPath, source);
+  await _fs().default.promises.writeFile(assetPath, source);
   return {
     filename,
     idiom: 'universal',

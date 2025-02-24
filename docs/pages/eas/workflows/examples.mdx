@@ -129,7 +129,7 @@ jobs:
     name: Publish preview update
     type: update
     params:
-      branch: ${{ github.ref || 'test' }}
+      branch: ${{ github.ref_name || 'test' }}
 ```
 
 ## Deploy to production workflow

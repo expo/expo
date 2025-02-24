@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -56,8 +56,8 @@ describe(getSession, () => {
   });
 
   it('returns stored session data', async () => {
-    await fs.mkdirp(path.dirname(getSettingsFilePath()));
-    await fs.writeJSON(getSettingsFilePath(), { auth: authStub });
+    await fs.promises.mkdir(path.dirname(getSettingsFilePath()), { recursive: true });
+    await fs.promises.writeFile(getSettingsFilePath(), JSON.stringify({ auth: authStub }));
     expect(getSession()).toMatchObject(authStub);
   });
 });
@@ -65,12 +65,13 @@ describe(getSession, () => {
 describe(setSessionAsync, () => {
   it('stores empty session data', async () => {
     await setSessionAsync();
-    expect(await fs.pathExists(getSettingsFilePath())).toBeTruthy();
+    expect(fs.existsSync(getSettingsFilePath())).toBeTruthy();
   });
 
   it('stores actual session data', async () => {
     await setSessionAsync(authStub);
-    expect(await fs.readJSON(getSettingsFilePath())).toMatchObject({ auth: authStub });
+    const contents = await fs.promises.readFile(getSettingsFilePath(), 'utf8');
+    expect(JSON.parse(contents)).toMatchObject({ auth: authStub });
   });
 });
 
