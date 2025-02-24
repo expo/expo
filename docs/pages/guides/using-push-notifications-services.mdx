@@ -43,8 +43,6 @@ For implementation details, see the following guides:
   Icon={NotificationBoxIcon}
 />
 
----
-
 ## OneSignal
 
 [OneSignal](https://onesignal.com/) is a customer engagement platform that provides push notifications, in-app messaging, SMS, and email services for web and mobile apps. OneSignal supports rich media in notifications and engagement analytics. It includes an [Expo config plugin](https://github.com/OneSignal/onesignal-expo-plugin) for direct integration into your Expo project.
@@ -56,8 +54,6 @@ For implementation details, see the following guides:
   Icon={BookOpen02Icon}
 />
 
----
-
 ## Braze
 
 [Braze](https://www.braze.com/) is a customer engagement platform that delivers personalized, cross-channel messaging through push notifications, in-app messaging, email, SMS, and web. Braze supports rich notification content, push notification campaigns, and support for resending notifications after failed deliveries on Android. It provides a [React Native SDK](https://github.com/braze-inc/braze-react-native-sdk) and a [config plugin](https://github.com/braze-inc/braze-expo-plugin/tree/main). Check out the [Expo example app](https://github.com/braze-inc/braze-expo-plugin/tree/main/example) for more details.
@@ -68,8 +64,6 @@ For implementation details, see the following guides:
   href="https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration"
   Icon={BookOpen02Icon}
 />
-
----
 
 ## Customer.io
 
@@ -87,15 +81,11 @@ It offers an [Expo plugin](https://github.com/customerio/customerio-expo-plugin)
   Icon={BookOpen02Icon}
 />
 
----
-
 ## Send notifications directly via FCM and APNs
 
 You may choose to send directly to platform push API's from your backend. In this case, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to retrieve the native push token and configure notifications separately for each platform.
 
 Although the client-side code remains cross-platform with [`expo-notifications`](/versions/latest/sdk/notifications/), you will need to implement server-side logic to interact with the [FCM](https://firebase.google.com/docs/cloud-messaging) and [APNs](https://developer.apple.com/documentation/usernotifications) APIs individually.
-
----
 
 ## React Native Firebase messaging
 
@@ -104,8 +94,6 @@ Although the client-side code remains cross-platform with [`expo-notifications`]
 This approach differs from using FCM solely for Android notifications. Instead, Firebase's cross-platform SDK handles notifications for both platforms through a single service.
 
 > Even though FCM handles notifications for both platforms, iOS notifications still go through APNs. Firebase automatically manages this routing. Learn more in the [React Native Firebase messaging documentation](https://rnfirebase.io/messaging/usage).
-
----
 
 ## Tips and important considerations
 
