@@ -2,7 +2,7 @@
 
 #pragma once
 
-#import "RCTDefaultReactNativeFactoryDelegate.h"
+#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

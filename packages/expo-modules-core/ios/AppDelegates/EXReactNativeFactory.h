@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps;
 
-
 @end
 
 @interface EXReactNativeFactory : RCTReactNativeFactory
