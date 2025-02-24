@@ -98,8 +98,6 @@ jobs:
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-        # env:
-        #   MAESTRO_VERSION: '1.33.1'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -111,14 +109,15 @@ jobs:
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
-      - name: Store images of build failures
+      - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-artifacts
+          name: bare-expo-artifacts-ios
           path: |
-            ~/.maestro/tests
-            ~/Library/Logs/maestro
+            ~/.maestro/tests/**/*
+            ~/Library/Logs/maestro/**/*
+          overwrite: true
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
@@ -168,8 +167,8 @@ jobs:
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
       - name: 🤖 Build Android project
-        run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
-        working-directory: apps/bare-expo/android
+        run: ./scripts/start-android-e2e-test.ts --build
+        working-directory: apps/bare-expo
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
         with:
@@ -202,26 +201,34 @@ jobs:
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
+      - name: 🍺 Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: |
-            mkdir artifacts || true
-            adb logcat -d > artifacts/emulator.log
-            adb logcat -c || true
-            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/beforeTests.png
-            ./scripts/start-android-e2e-test.sh
-            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/afterTests.png
-            adb logcat -d > artifacts/adb.log
+          script: ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
-      - name: 📸 Store images of test failures
+      - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-artifacts
-          path: apps/bare-expo/artifacts
+          name: bare-expo-artifacts-android
+          path: |
+            ~/.maestro/tests/**/*
+            ~/Library/Logs/maestro/**/*
+          overwrite: true
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
