@@ -3,6 +3,9 @@ title: Using push notifications
 description: Learn about push notification services that are compatible with Expo and React Native apps.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
 Expo apps can work with any notification service or any of the notification capabilities offered by the Android and iOS operating systems. Even if a package doesn't yet exist for a feature, native code can be written to access it via the [Expo Modules API](/modules/overview/), and native project configurations can be automated using [config plugins](/config-plugins/introduction/). The following options provide purpose-built Expo integrations, including config plugins where necessary, for implementing push notifications in your app:
@@ -30,12 +33,14 @@ For implementation details, see the following guides:
   title="Expo push notifications overview"
   description="Learn more about Expo push notifications."
   href="/push-notifications/overview"
+  Icon={NotificationBoxIcon}
 />
 
 <BoxLink
   title="Expo Notifications server-side SDK options"
   description="Learn more about sending push notifications using a server."
   href="/push-notifications/sending-notifications/#send-push-notifications-using-a-servers"
+  Icon={NotificationBoxIcon}
 />
 
 ---
@@ -48,6 +53,7 @@ For implementation details, see the following guides:
   title="OneSignal Expo SDK Setup"
   description="Follow this guide for a step-by-step setup on how to integrate OneSignal in your Expo project."
   href="https://documentation.onesignal.com/docs/react-native-expo-sdk-setup"
+  Icon={BookOpen02Icon}
 />
 
 ---
@@ -60,6 +66,7 @@ For implementation details, see the following guides:
   title="Braze Expo Setup"
   description="Follow this guide for a step-by-step setup on how to integrate Braze in your Expo project."
   href="https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration"
+  Icon={BookOpen02Icon}
 />
 
 ---
@@ -77,6 +84,7 @@ It offers an [Expo plugin](https://github.com/customerio/customerio-expo-plugin)
   title="Customer.io Expo Quick Start Guide"
   description="Follow this guide for a step-by-step setup on how to integrate Customer.io in your Expo project."
   href="https://docs.customer.io/sdk/expo/quick-start-guide/"
+  Icon={BookOpen02Icon}
 />
 
 ---
