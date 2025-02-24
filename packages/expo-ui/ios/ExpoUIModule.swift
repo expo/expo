@@ -16,6 +16,6 @@ public class ExpoUIModule: Module {
     View(DateTimePickerView.self)
     View(ProgressView.self)
     View(GaugeView.self)
-//    View(ListView.self)      
+    View(ListView.self)
   }
 }
