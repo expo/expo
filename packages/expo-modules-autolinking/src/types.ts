@@ -1,5 +1,9 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
 
+type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
+type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
+
 export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
 
 /**
@@ -64,6 +68,9 @@ export type SearchResults = {
 export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
+  modules: string[];
+  publication?: AndroidPublication;
+  aarProjects?: AndroidGradleAarProjectDescriptor[];
 }
 
 export interface ModuleAndroidPluginInfo {
@@ -75,24 +82,22 @@ export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDesc
   projectDir: string;
 }
 
-export interface CommonModuleDescriptor {
+export interface CommonNativeModuleDescriptor {
   packageName: string;
-  modules: string[];
   coreFeatures?: string[];
 }
 
-export interface ModuleDescriptorAndroid extends CommonModuleDescriptor {
-  projects: ModuleAndroidProjectInfo[];
+export interface ModuleDescriptorAndroid extends CommonNativeModuleDescriptor {
+  projects?: ModuleAndroidProjectInfo[];
   plugins?: ModuleAndroidPluginInfo[];
-  aarProjects?: ModuleAndroidAarProjectInfo[];
-  publication?: AndroidPublication;
 }
 
 export interface ModuleIosPodspecInfo {
   podName: string;
   podspecDir: string;
 }
-export interface ModuleDescriptorIos extends CommonModuleDescriptor {
+export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
+  modules: string[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
@@ -207,6 +212,30 @@ export type RawModuleConfigApple = {
   debugOnly?: boolean;
 };
 
+export type RawAndroidProjectConfig = {
+  name?: string;
+
+  path?: string;
+
+  publication?: AndroidPublication;
+
+  modules?: string[];
+
+  gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+};
+
+export type RawAndroidConfig = {
+  projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];
+  /**
+   * Gradle plugins.
+   */
+  gradlePlugins?: AndroidGradlePluginDescriptor[];
+
+  /**
+   * Gradle projects containing AAR files.
+   */
+} & RawAndroidProjectConfig;
+
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -230,33 +259,7 @@ export interface RawExpoModuleConfig {
   /**
    * Android-specific config.
    */
-  android?: {
-    /**
-     * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
-     */
-    modules?: string[];
-
-    /**
-     * build.gradle relative path.
-     * To have multiple build.gradle projects, string array type is also supported.
-     */
-    gradlePath?: string | string[];
-
-    /**
-     * Gradle plugins.
-     */
-    gradlePlugins?: AndroidGradlePluginDescriptor[];
-
-    /**
-     * Gradle projects containing AAR files.
-     */
-    gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
-
-    /**
-     * Information about the prebuilt AAR file.
-     */
-    publication?: AndroidPublication;
-  };
+  android?: RawAndroidConfig;
 
   /**
    * List of core features that this module requires.
