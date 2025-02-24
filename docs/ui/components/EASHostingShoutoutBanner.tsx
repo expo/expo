@@ -5,7 +5,6 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useEffect, useState } from 'react';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
-import { HEADLINE } from '~/ui/components/Text';
 
 export function EASHostingShoutoutBanner() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -75,7 +74,7 @@ export function EASHostingShoutoutBanner() {
           <Cloud01Icon className="icon-lg relative z-10 text-palette-white" />
         </div>
         <div className="relative grid grid-cols-1">
-          <HEADLINE className="text-success">EAS Hosting</HEADLINE>
+          <p className="text-base font-medium text-success">EAS Hosting</p>
           <p className="text-sm text-success">
             Try the first end-to-end deployment solution for universal app development.
           </p>
