@@ -44,7 +44,7 @@ extension ExpoSwiftUI {
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
-      if #available(iOS 16.0, macOS 13.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         controller.sizingOptions = [.intrinsicContentSize]
       }
       self.hostingController = controller
