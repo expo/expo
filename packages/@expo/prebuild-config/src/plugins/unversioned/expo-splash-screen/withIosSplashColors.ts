@@ -42,7 +42,7 @@ async function configureColorAssets({
   const colorsetPath = path.resolve(iosNamedProjectRoot, SPLASHSCREEN_COLORSET_PATH);
 
   // ensure old SplashScreen colorSet is removed
-  await fs.promises.rm(colorsetPath, { force: true });
+  await fs.promises.rm(colorsetPath, { force: true, recursive: true });
 
   await writeColorsContentsJsonFileAsync({
     assetPath: colorsetPath,
