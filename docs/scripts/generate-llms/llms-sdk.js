@@ -29,7 +29,8 @@ function cleanContent(content) {
     .replace(
       /Only for:\s*\n+\s*((?:Android[^]*?|iOS|Web)(?:\s*\n+\s*(?:Android[^]*?|iOS|Web))*)/g,
       (_, platforms) => 'Only for: ' + platforms.split(/\s*\n+\s*/).join(', ')
-    );
+    )
+    .replace(/â€ƒ/g, ' ');
 }
 
 async function processContent(content, url) {
