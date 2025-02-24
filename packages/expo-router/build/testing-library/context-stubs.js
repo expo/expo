@@ -1,5 +1,5 @@
 import path from 'path';
-import requireContext from './require-context-ponyfill';
+import requireContext from './require-context-ponyfill.mjs';
 export { requireContext };
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 export function inMemoryContext(context) {

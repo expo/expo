@@ -1,6 +1,6 @@
 import { validatePathConfig as RNValidatePathConfig } from '@react-navigation/native';
 import * as queryString from 'query-string';
-import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
+import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers.mjs';
 export function validatePathConfig({ preserveDynamicRoutes, preserveGroups, shouldEncodeURISegment, ...options }) {
     RNValidatePathConfig(options);
 }

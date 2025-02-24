@@ -10,7 +10,7 @@ import { getRouteInfoFromState } from '../LocationProvider';
 import { getPathDataFromState } from '../fork/getPathFromState';
 // import { ResultState } from '../fork/getStateFromPath';
 import { getLinkingConfig } from '../getLinkingConfig';
-import { getRoutes } from '../getRoutes';
+import { getRoutes } from '../getRoutes.mjs';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { getQualifiedRouteComponent } from '../useScreens';
 import * as SplashScreen from '../views/Splash';

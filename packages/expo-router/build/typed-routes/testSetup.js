@@ -1,6 +1,6 @@
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
-import { getTypedRoutesDeclarationFile } from './generate';
+import { getTypedRoutesDeclarationFile, } from './generate.mjs';
 import { inMemoryContext } from '../testing-library/context-stubs';
 const fixtures = {
     default: {

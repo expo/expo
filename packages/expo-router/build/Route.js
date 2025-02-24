@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext } from 'react';
-import { getContextKey } from './matchers';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { getContextKey } from './matchers.mjs';
+import { sortRoutesWithInitial, sortRoutes } from './sortRoutes.mjs';
 const CurrentRouteContext = createContext(null);
 export const LocalRouteParamsContext = createContext({});
 if (process.env.NODE_ENV !== 'production') {

@@ -11,7 +11,7 @@ import { RouteNode } from '../Route';
 import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
-import { matchDeepDynamicRouteName } from '../matchers';
+import { matchDeepDynamicRouteName } from '../matchers.mjs';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
 
 const INDENT = 20;

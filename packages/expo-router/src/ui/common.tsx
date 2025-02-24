@@ -5,7 +5,7 @@ import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { sortRoutesWithInitial } from '../sortRoutes';
+import { sortRoutesWithInitial } from '../sortRoutes.mjs';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';

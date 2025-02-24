@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import requireContext from './require-context-ponyfill';
+import requireContext from './require-context-ponyfill.mjs';
 import { NativeIntent } from '../types';
 export type ReactComponent = () => React.ReactElement<any, any> | null;
 export type NativeIntentStub = NativeIntent;

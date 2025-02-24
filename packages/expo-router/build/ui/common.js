@@ -1,5 +1,5 @@
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { sortRoutesWithInitial } from '../sortRoutes';
+import { sortRoutesWithInitial } from '../sortRoutes.mjs';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]

@@ -1,7 +1,7 @@
 import path from 'path';
 import { inMemoryContext, requireContext, requireContextWithOverrides, } from './context-stubs';
 import { getNavigationConfig } from '../getLinkingConfig';
-import { getExactRoutes } from '../getRoutes';
+import { getExactRoutes } from '../getRoutes.mjs';
 export function getMockConfig(context, metaOnly = true) {
     return getNavigationConfig(getExactRoutes(getMockContext(context)), metaOnly);
 }

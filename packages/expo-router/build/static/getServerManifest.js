@@ -6,8 +6,8 @@
  */
 import { ctx } from '../../_ctx';
 import { getReactNavigationConfig } from '../getReactNavigationConfig';
-import { getRoutes } from '../getRoutes';
-import { getServerManifest } from '../getServerManifest';
+import { getRoutes } from '../getRoutes.mjs';
+import { getServerManifest } from '../getServerManifest.mjs';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.

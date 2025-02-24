@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { Platform } from 'react-native';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { emitDomDismiss, emitDomDismissAll, emitDomGoBack, emitDomLinkEvent, emitDomSetParams, } from '../link/useDomComponentNavigation';
-import { matchDynamicName } from '../matchers';
+import { matchDynamicName } from '../matchers.mjs';
 import { shouldLinkExternally } from '../utils/url';
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {

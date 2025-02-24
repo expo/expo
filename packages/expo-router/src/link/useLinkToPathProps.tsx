@@ -5,7 +5,7 @@ import { emitDomLinkEvent } from './useDomComponentNavigation';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
-import { stripGroupSegmentsFromPath } from '../matchers';
+import { stripGroupSegmentsFromPath } from '../matchers.mjs';
 import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(

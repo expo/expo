@@ -9,7 +9,7 @@ import type { TriggerMap } from './common';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
-import { stripGroupSegmentsFromPath } from '../matchers';
+import { stripGroupSegmentsFromPath } from '../matchers.mjs';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
 

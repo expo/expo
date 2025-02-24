@@ -1,5 +1,5 @@
 import './install';
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest.mts';
 export declare function getRoutesManifest(distFolder: string): ExpoRoutesManifestV1<RegExp>;
 export declare function createRequestHandler(distFolder: string, { getRoutesManifest: getInternalRoutesManifest, getHtml, getApiRoute, logApiRouteExecutionError, handleApiRouteError, }?: {
     getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;

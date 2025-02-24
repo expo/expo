@@ -1,5 +1,5 @@
 import escape from 'escape-string-regexp';
-import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers.mjs';
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes

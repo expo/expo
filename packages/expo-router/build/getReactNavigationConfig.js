@@ -1,4 +1,4 @@
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDeepDynamicRouteName, matchDynamicName } from './matchers.mjs';
 // `[page]` -> `:page`
 // `page` -> `page`
 function convertDynamicRouteToReactNavigation(segment) {
