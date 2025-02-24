@@ -1,3 +1,3 @@
 export const durations = {
-  hover: '100ms',
+  hover: '150ms',
 };
