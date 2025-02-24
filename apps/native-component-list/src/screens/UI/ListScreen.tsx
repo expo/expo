@@ -15,9 +15,7 @@ export default function ListScreen() {
             style={{ height: 50, width: 50 }}
           />
           <Text style={{ flex: 1 }}>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nemo sequi, minima labore ipsa
-            asperiores alias libero pariatur quisquam ducimus! Delectus possimus consectetur
-            consequuntur odit explicabo nostrum corrupti quibusdam saepe nisi?
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nemo seq
           </Text>
         </ListItem>
       ))}

@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleProp, View, ViewStyle } from 'react-native';
 
 export type ListProps = {
   /**
@@ -26,11 +26,13 @@ export function ListItem(props: {
   return (
     <Wrapper
       style={[
-        {
-          position: 'absolute',
-          left: 0,
-          paddingHorizontal: 20 + 16,
-        },
+        Platform.select({
+          ios: {
+            position: 'absolute',
+            left: 0,
+            paddingHorizontal: 20 + 16,
+          },
+        }),
         props.style,
       ]}
       collapsable={false}
