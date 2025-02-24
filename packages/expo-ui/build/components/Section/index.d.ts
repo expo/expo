@@ -1,7 +1,10 @@
 import { StyleProp, ViewStyle } from 'react-native';
 export type SectionProps = {
     style?: StyleProp<ViewStyle>;
-    title?: string;
+    /**
+    * @note On iOS, section titles are usually capitalized for consistency with platform conventions.
+    */
+    title: string;
     children: any;
 };
 /**
