@@ -4,6 +4,7 @@
 
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
+#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
 #import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric

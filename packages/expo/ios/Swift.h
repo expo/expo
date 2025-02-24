@@ -3,8 +3,6 @@
 // The generated swift header may depend on some Objective-C declarations,
 // adding dependency imports here to prevent declarations not found errors.
 #import <React/RCTHTTPRequestHandler.h>
-#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
-
 
 // When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.
 // Otherwise, it's available only locally with double-quoted imports.
