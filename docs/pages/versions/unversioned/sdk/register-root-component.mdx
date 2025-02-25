@@ -66,13 +66,11 @@ No return value.
 
 ## Common questions
 
-### What if I want to name my main app file something other than App.js?
+### What if I want to name my main app file something other than App.js or app/\_layout.tsx?
 
-You can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`,
-`export default` will not make this component the root for the app if you are using a custom entry file.
+**For projects that do not use [Expo Router](/router/introduction/)**, you can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`, `export default` will not make this component the root for the app if you are using a custom entry file.
 
-For example, let's say you want to make **src/main.jsx** the entry file for your app - maybe you don't like having JavaScript files in the
-project root. First, set this in **package.json**:
+For example, let's say you want to make **src/main.jsx** the entry file for your app &mdash; maybe you don't like having JavaScript files in the project root. First, set this in **package.json**:
 
 ```json package.json
 {
@@ -80,7 +78,7 @@ project root. First, set this in **package.json**:
 }
 ```
 
-Then in **src/main.jsx**, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app.
+Then, in **src/main.jsx**, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app:
 
 ```jsx src/main.jsx
 import { registerRootComponent } from 'expo';
@@ -92,3 +90,5 @@ function App() {
 
 registerRootComponent(App);
 ```
+
+**For projects that use [Expo Router](/router/introduction/)**, you can create a custom entry point by following these steps from [Expo Router's installation guide](/router/installation/#custom-entry-point-to-initialize-and-load). To use the top-level **src** directory in your Expo Router project, see [src directory reference](/router/reference/src-directory/) for more information.
