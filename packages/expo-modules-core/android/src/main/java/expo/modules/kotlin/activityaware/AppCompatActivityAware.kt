@@ -34,16 +34,22 @@ interface AppCompatActivityAware {
  * No matter how many times [Activity] will become available callback would be called only once.
  */
 suspend inline fun <R> AppCompatActivityAware.withActivityAvailable(
-  crossinline onActivityAvailable: (AppCompatActivity) -> R
+    crossinline onActivityAvailable: (AppCompatActivity) -> R
 ): R = suspendCancellableCoroutine { continuation ->
-  val listener = object : OnActivityAvailableListener {
-    override fun onActivityAvailable(activity: AppCompatActivity) {
-      removeOnActivityAvailableListener(this)
-      continuation.resumeWith(runCatching { onActivityAvailable(activity) })
+    var isResumed = false
+    val listener = object : OnActivityAvailableListener {
+        override fun onActivityAvailable(activity: AppCompatActivity) {
+            if (isResumed || !continuation.isActive) return // Safe check
+            isResumed = true
+            removeOnActivityAvailableListener(this)
+            continuation.resumeWith(runCatching { onActivityAvailable(activity) })
+        }
     }
-  }
-  addOnActivityAvailableListener(listener)
-  continuation.invokeOnCancellation {
-    removeOnActivityAvailableListener(listener)
-  }
+    addOnActivityAvailableListener(listener)
+    continuation.invokeOnCancellation {
+        if (!isResumed) {
+            isResumed = true
+            removeOnActivityAvailableListener(listener)
+        }
+    }
 }
