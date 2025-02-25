@@ -13,8 +13,8 @@
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
 
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-													moduleName:(NSString *)moduleName
-													 initProps:(NSDictionary *)initProps;
+                                                    moduleName:(NSString *)moduleName
+                                                     initProps:(NSDictionary *)initProps;
 
 @end
 
