@@ -54,6 +54,9 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
+  @PublishedApi
+  internal var lazyProperties = mutableMapOf<String, LazyPropertyComponentBuilder>()
+
   private val eventObservers = mutableListOf<EventObservingDefinition>()
 
   fun buildObject(): ObjectDefinitionData {
@@ -77,7 +80,8 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
       syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
       asyncFunctions,
       eventsDefinition,
-      properties.mapValues { (_, value) -> value.build() }
+      properties.mapValues { (_, value) -> value.build() },
+      lazyProperties.mapValues { (_, value) -> value.build() }
     )
   }
 
@@ -550,6 +554,25 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
       properties[name] = it
     }
   }
+
+  /**
+   * Creates the lazy property with given name. The component is basically no-op if you don't call `.get()` on it.
+   */
+  open fun LazyProperty(name: String): LazyPropertyComponentBuilder {
+    return LazyPropertyComponentBuilder(name).also {
+      lazyProperties[name] = it
+    }
+  }
+
+  /**
+   * Creates the read-only property whose getter doesn't take the caller as an argument.
+   */
+  inline fun <reified T> LazyProperty(name: String, crossinline body: () -> T): LazyPropertyComponentBuilder {
+    return LazyPropertyComponentBuilder(name).also {
+      it.get(body)
+      lazyProperties[name] = it
+    }
+  }
 }
 
 inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
@@ -575,6 +598,12 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
     .properties
     .forEach { (_, prop) ->
       prop.attachToJSObject(appContext, decorator)
+    }
+
+  objectData
+    .lazyProperties
+    .forEach { (_, prop) ->
+      prop.attachToJSObject(decorator)
     }
 
   return JavaScriptModuleObject(runtimeContext.jniDeallocator, moduleName).apply {
