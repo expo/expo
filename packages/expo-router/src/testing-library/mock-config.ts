@@ -7,7 +7,7 @@ import {
   requireContextWithOverrides,
 } from './context-stubs';
 import { getNavigationConfig } from '../getLinkingConfig';
-import { getExactRoutes } from '../getRoutes';
+import { getExactRoutes } from '../getRoutes.mjs';
 
 export type MockContextConfig =
   | string // Pathname to a directory

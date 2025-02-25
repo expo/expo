@@ -3,13 +3,9 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "module": "commonjs",
+    "target": "esnext",
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ]
+    "types": ["jest", "jest-require", "node"]
   },
   "include": [
     "./src",

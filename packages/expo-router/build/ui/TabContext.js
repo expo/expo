@@ -1,24 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TabsStateContext = exports.TabsNavigatorContext = exports.TabsDescriptorsContext = exports.TabTriggerMapContext = exports.TabContext = void 0;
-const react_1 = require("react");
-exports.TabContext = (0, react_1.createContext)({});
+import { createContext } from 'react';
+export const TabContext = createContext({});
 /**
  * @hidden
  */
-exports.TabTriggerMapContext = (0, react_1.createContext)({});
+export const TabTriggerMapContext = createContext({});
 /**
  * @hidden
  */
-exports.TabsDescriptorsContext = (0, react_1.createContext)({});
+export const TabsDescriptorsContext = createContext({});
 /**
  * @hidden
  */
-exports.TabsNavigatorContext = (0, react_1.createContext)(null);
+export const TabsNavigatorContext = createContext(null);
 /**
  * @hidden
  */
-exports.TabsStateContext = (0, react_1.createContext)({
+export const TabsStateContext = createContext({
     type: 'tab',
     preloadedRouteKeys: [],
     history: [],

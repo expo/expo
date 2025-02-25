@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -6,14 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.unstable_headers = exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = exports.REQUEST_HEADERS = void 0;
-const async_hooks_1 = require("async_hooks");
-exports.REQUEST_HEADERS = '__expo_requestHeaders';
-function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
+import { AsyncLocalStorage } from 'async_hooks';
+export const REQUEST_HEADERS = '__expo_requestHeaders';
+export function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
-exports.defineEntries = defineEntries;
 // TODO(EvanBacon): This can leak between platforms and runs.
 // We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
 function getGlobalCacheForPlatform() {
@@ -27,7 +23,7 @@ function getGlobalCacheForPlatform() {
     if (globalThis.__EXPO_RSC_CACHE__.has(platform)) {
         return globalThis.__EXPO_RSC_CACHE__.get(platform);
     }
-    const serverCache = new async_hooks_1.AsyncLocalStorage();
+    const serverCache = new AsyncLocalStorage();
     globalThis.__EXPO_RSC_CACHE__.set(platform, serverCache);
     return serverCache;
 }
@@ -36,7 +32,7 @@ let currentRenderStore;
 /**
  * This is an internal function and not for public use.
  */
-const runWithRenderStore = (renderStore, fn) => {
+export const runWithRenderStore = (renderStore, fn) => {
     const renderStorage = getGlobalCacheForPlatform();
     if (renderStorage) {
         return renderStorage.run(renderStore, fn);
@@ -50,8 +46,7 @@ const runWithRenderStore = (renderStore, fn) => {
         currentRenderStore = previousRenderStore;
     }
 };
-exports.runWithRenderStore = runWithRenderStore;
-async function rerender(input, params) {
+export async function rerender(input, params) {
     const renderStorage = getGlobalCacheForPlatform();
     const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
@@ -59,8 +54,7 @@ async function rerender(input, params) {
     }
     renderStore.rerender(input, params);
 }
-exports.rerender = rerender;
-function getContext() {
+export function getContext() {
     const renderStorage = getGlobalCacheForPlatform();
     const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
@@ -68,13 +62,11 @@ function getContext() {
     }
     return renderStore.context;
 }
-exports.getContext = getContext;
 /** Get the request headers used to make the server component or action request. */
-async function unstable_headers() {
-    const headers = (getContext()[exports.REQUEST_HEADERS] || {});
+export async function unstable_headers() {
+    const headers = (getContext()[REQUEST_HEADERS] || {});
     return new ReadonlyHeaders(headers);
 }
-exports.unstable_headers = unstable_headers;
 class ReadonlyHeaders extends Headers {
     set() {
         throw new Error('Server component Headers are read-only');

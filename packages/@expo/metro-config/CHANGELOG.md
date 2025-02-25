@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- Distribute as ESM.
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
 ## 0.19.11 - 2025-02-19

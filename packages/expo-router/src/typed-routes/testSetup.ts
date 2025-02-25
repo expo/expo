@@ -1,7 +1,10 @@
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 
-import { getTypedRoutesDeclarationFile, GetTypedRoutesDeclarationFileOptions } from './generate';
+import {
+  getTypedRoutesDeclarationFile,
+  GetTypedRoutesDeclarationFileOptions,
+} from './generate.mjs';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 const fixtures: Record<
