@@ -1331,7 +1331,7 @@ it('records locations of dependencies', () => {
   `);
 });
 
-test('integration: records locations of inlined dependencies (Metro ESM)', () => {
+it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';
@@ -1383,7 +1383,7 @@ test('integration: records locations of inlined dependencies (Metro ESM)', () =>
   expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
 });
 
-test('integration: records locations of inlined dependencies (Babel ESM)', () => {
+it('integration: records locations of inlined dependencies (Babel ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';
