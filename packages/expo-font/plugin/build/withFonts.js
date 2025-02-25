@@ -12,9 +12,14 @@ const withFonts = (config, props) => {
     if (iosFonts.length > 0) {
         config = (0, withFontsIos_1.withFontsIos)(config, iosFonts);
     }
-    const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
-    if (androidFonts.length > 0) {
-        config = (0, withFontsAndroid_1.withFontsAndroid)(config, androidFonts);
+    if (Array.isArray(props.android)) {
+        config = (0, withFontsAndroid_1.withXmlFontsAndroid)(config, props.android);
+    }
+    else {
+        const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
+        if (androidFonts.length > 0) {
+            config = (0, withFontsAndroid_1.withFontsAndroid)(config, androidFonts);
+        }
     }
     return config;
 };
