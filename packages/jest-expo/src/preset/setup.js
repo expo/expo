@@ -293,5 +293,8 @@ try {
 // Installs web implementations of global things that are normally installed through JSI.
 require('expo-modules-core/src/web/index.web');
 
+jest.doMock('expo/src/winter/FormData', () => ({
+  installFormDataPatch: jest.fn(),
+}));
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');
