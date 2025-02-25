@@ -27,7 +27,10 @@ build:
   name: Hello World!
   steps:
     - run: echo "Hello, world!"
+    - eas/build
 ```
+
+You need to call either the all-in-one `eas/build` function or the [built-in functions](custom-builds/schema/#built-in-eas-functions) in order to trigger the build.
 
 </Step>
 
