@@ -27,10 +27,10 @@
     "expo-router": "^4.0.0",
     "expo-speech": "~13.0.0",
     "expo-sqlite": "~15.0.0",
-    "react": "18.3.1",
-    "react-native": "0.77.0",
-    "react-native-safe-area-context": "5.1.0",
-    "react-native-screens": "~4.5.0",
+    "react": "19.0.0",
+    "react-native": "0.78.0",
+    "react-native-safe-area-context": "5.2.0",
+    "react-native-screens": "4.9.0",
     "react-native-webview": "13.13.0"
   },
   "devDependencies": {

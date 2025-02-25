@@ -105,7 +105,7 @@ function GenericPicker(props: React.PropsWithChildren<PickerProps>) {
 
 function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
   const [value, setValue] = React.useState<any>('java');
-  const pickerRef = React.useRef<any>();
+  const pickerRef = React.useRef<any>(null);
 
   return (
     <>

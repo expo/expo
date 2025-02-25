@@ -44,7 +44,10 @@ jobs:
     timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
+      ORG_GRADLE_PROJECT_org.gradle.daemon: false
+      ORG_GRADLE_PROJECT_org.gradle.parallel: true
+      ORG_GRADLE_PROJECT_org.gradle.workers.max: 2
     strategy:
       matrix:
         api-level: [34]
