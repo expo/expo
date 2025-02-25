@@ -1,3 +1,5 @@
+#pragma once
+
 #import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
 
 typedef NSURL * _Nullable (^EXDevLauncherBundleURLGetter)(void);

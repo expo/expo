@@ -30,7 +30,6 @@ describe('<SettingsScreen />', () => {
     expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
     const activeCheckmarks = await findAllByRole('button');
-    // TODO vonovak the below is replacement for { checked: true } which stopped working with React 19
     const trulyActive = activeCheckmarks.filter(
       (checkmark) => checkmark.props.accessibilityState?.checked === true
     );
@@ -52,7 +51,6 @@ describe('<SettingsScreen />', () => {
     expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
     const activeCheckmarks = await findAllByRole('button');
-    // TODO vonovak the below is replacement for { checked: true } which stopped working with React 19
     const trulyActive = activeCheckmarks.filter(
       (checkmark) => checkmark.props.accessibilityState?.checked === true
     );
