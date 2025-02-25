@@ -3,6 +3,21 @@
 #import <EXDevMenu/EXDevClientReactNativeFactory.h>
 #import <EXDevMenu/DevClientRootViewFactory.h>
 
+@interface RCTReactNativeFactory ()
+
+- (NSURL *)bundleURL;
+- (BOOL)fabricEnabled;
+- (BOOL)turboModuleEnabled;
+- (BOOL)bridgelessEnabled;
+
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+													moduleName:(NSString *)moduleName
+													 initProps:(NSDictionary *)initProps;
+
+@end
+
 @implementation EXDevClientReactNativeFactory
 
 - (RCTRootViewFactory *)internalCreateRCTRootViewFactory
