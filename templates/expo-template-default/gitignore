@@ -9,6 +9,10 @@ dist/
 web-build/
 expo-env.d.ts
 
+# prebuild generates the native directories, so we don't want to version them
+android/
+ios/
+
 # Native
 *.orig.*
 *.jks
