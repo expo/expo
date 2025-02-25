@@ -18,8 +18,8 @@ class CoreModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   override fun definition() = ModuleDefinition {
-    Property("expoModulesCoreVersion") {
-      return@Property BuildConfig.EXPO_MODULES_CORE_VERSION.let { version ->
+    LazyProperty("expoModulesCoreVersion") {
+      return@LazyProperty BuildConfig.EXPO_MODULES_CORE_VERSION.let { version ->
         version.split("-")[0].split(".").map { it.toInt() }.let { (major, minor, patch) ->
           mapOf(
             "version" to version,
@@ -31,12 +31,12 @@ class CoreModule : Module() {
       }
     }
 
-    Property("cacheDir") {
-      return@Property Uri.fromFile(context.cacheDir).toString() + "/"
+    LazyProperty("cacheDir") {
+      return@LazyProperty Uri.fromFile(context.cacheDir).toString() + "/"
     }
 
-    Property("documentsDir") {
-      return@Property Uri.fromFile(context.filesDir).toString() + "/"
+    LazyProperty("documentsDir") {
+      return@LazyProperty Uri.fromFile(context.filesDir).toString() + "/"
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.
