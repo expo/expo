@@ -25,19 +25,11 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegat
   )
 
   /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
-  private var automaticallyLoadReactNativeWindow = true
-
-  // Default initializer
-  public override init() {
-    super.init()
-    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
-  }
+  public var automaticallyLoadReactNativeWindow = true
 
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-    guard let reactNativeFactory = self.reactNativeFactory else {
-      fatalError("loadReactNativeWindow: Missing reactNativeFactory in ExpoAppInstance")
-    }
-    let rootView = reactNativeFactory.rootViewFactory.view(
+    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
+    let rootView = reactNativeFactory?.rootViewFactory.view(
       withModuleName: self.moduleName as String,
       initialProperties: self.initialProps,
       launchOptions: launchOptions

@@ -33,6 +33,7 @@
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
 		402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */; };
+		40482BA92D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */; };
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40CB1D752CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D722CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m */; };
 		40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */; };
@@ -249,6 +250,8 @@
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkAccessManager.swift; sourceTree = "<group>"; };
+		40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoGoReactNativeFactory.mm; sourceTree = "<group>"; };
+		40482BAA2D6CB91700ACAFBB /* ExpoGoReactNativeFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoGoReactNativeFactory.h; sourceTree = "<group>"; };
 		408933582CAAF7870095810E /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
 		408933592CAAF7A20095810E /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40CB1D6B2CD2A0C200CB3717 /* EXSplashScreenModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenModule.h; sourceTree = "<group>"; };
@@ -600,8 +603,12 @@
 		40F842852C9CB39F00E1AC82 /* AppInstance */ = {
 			isa = PBXGroup;
 			children = (
+				83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */,
+				83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */,
 				408933582CAAF7870095810E /* ExpoAppInstance.h */,
 				408933592CAAF7A20095810E /* ExpoAppInstance.mm */,
+				40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */,
+				40482BAA2D6CB91700ACAFBB /* ExpoGoReactNativeFactory.h */,
 			);
 			path = AppInstance;
 			sourceTree = "<group>";
@@ -804,8 +811,6 @@
 				F1F7433D24ABECD500EA5023 /* AppDelegate.swift */,
 				B56C65C5204768F2002B2424 /* EXHomeAppManager.h */,
 				B56C65C4204768F2002B2424 /* EXHomeAppManager.m */,
-				83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */,
-				83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */,
 				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
 				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C9204769B6002B2424 /* Menu */,
@@ -1863,6 +1868,7 @@
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
+				40482BA92D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
 				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
 				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,

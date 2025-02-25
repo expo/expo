@@ -10,10 +10,9 @@ class AppDelegate: ExpoAppDelegate {
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 		self.moduleName = "main"
 		self.initialProps = [:]
-//    ExpoGoReactNativeFeatureFlags.setup()
 
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
-//    self.shouldCallReactNativeSetup = false
+    self.automaticallyLoadReactNativeWindow = false
 
     FirebaseApp.configure()
 
@@ -27,7 +26,7 @@ class AppDelegate: ExpoAppDelegate {
 
 	public override func bundleURL() -> URL? {
 #if DEBUG
-		return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "TODO")
+		return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
 #else
 		return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
