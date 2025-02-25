@@ -36,13 +36,6 @@ export declare class NativeDatabase {
  */
 export interface SQLiteOpenOptions {
   /**
-   * Whether to enable the CR-SQLite extension.
-   * @default false
-   * @deprecated CR-SQLite is no longer actively maintained. Its support is deprecated in SDK 52, and the option will be removed in SDK 53.
-   */
-  enableCRSQLite?: boolean;
-
-  /**
    * Whether to call the [`sqlite3_update_hook()`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
    * @default false
    */
