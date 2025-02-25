@@ -10,6 +10,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Expo Router enables you to write secure server code for all platforms, right in your **app** directory.
 
@@ -20,6 +21,11 @@ export function GET(request: Request) {
 ```
 
 Server features require a custom server, which can be deployed to EAS or most [other hosting providers](#deployment).
+
+<VideoBoxLink
+  videoId="2_UzR1wdimI"
+  title="Watch: Expo Router API Routes Handle Requests & Stream Data"
+/>
 
 ## What are API Routes
 
@@ -283,7 +289,7 @@ Notes about automatic server deployment for native apps:
 - Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
 - You can manually deploy the server and set the `origin` URL before building the app if you'd like.
 - Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
-- Automatic deployment does not support `app.config.js` files yet.
+- Automatic deployment does not support [dynamic app config](/workflow/configuration/#dynamic-configuration) (**app.config.js** and **app.config.ts**) files yet.
 - Logs from the deployment will be written to `.expo/logs/deploy.log`.
 - Deployment will not run in `EXPO_OFFLINE` mode.
 
@@ -549,7 +555,7 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
   "outputDirectory": "dist/client",
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node@3.0.11",
+      "runtime": "@vercel/node@5.1.8",
       "includeFiles": "dist/server/**"
     }
   },

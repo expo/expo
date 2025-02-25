@@ -10,8 +10,8 @@
 
 ### 🐛 Bug fixes
 
-- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
 - [Android] Fixed `task ':expo-dev-menu:generateDebugLintModel' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency`. ([#34688](https://github.com/expo/expo/pull/34688) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Add `ReactAppDependencyProvider` as a dependency when running React Native 0.77. ([#35092](https://github.com/expo/expo/pull/35092) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -20,6 +20,21 @@
 - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Removed remote debugging dead code. ([#34977](https://github.com/expo/expo/pull/34977) by [@kudo](https://github.com/kudo))
+
+## 6.0.19 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.16 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.15 - 2024-12-30
+
+### 🐛 Bug fixes
+
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
 
 ## 6.0.14 - 2024-12-10
 

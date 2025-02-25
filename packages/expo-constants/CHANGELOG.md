@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -12,6 +14,18 @@
 
 - [android][ios] Updated Gradle build and Podspec files to ensure app.json/app.config.js values are correctly updated during each native build. ([#34228](https://github.com/expo/expo/pull/34228) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 17.0.7 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.6 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.3 — 2024-11-14
 

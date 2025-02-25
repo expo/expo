@@ -5,13 +5,14 @@ import SwiftUI
 /**
  A type-erased protocol that hosting views must conform to.
  */
-internal protocol AnyExpoSwiftUIHostingView {
+public protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
+  func getProps() -> ExpoSwiftUI.ViewProps
 }
 
 extension ExpoSwiftUI {
-  typealias AnyHostingView = AnyExpoSwiftUIHostingView
+  public typealias AnyHostingView = AnyExpoSwiftUIHostingView
 
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
@@ -25,7 +26,7 @@ extension ExpoSwiftUI {
     private let contentView: any ExpoSwiftUI.View
 
     /**
-     Additiional utilities for controlling shadow node behavior.
+     Additional utilities for controlling shadow node behavior.
      */
     private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
@@ -41,7 +42,12 @@ extension ExpoSwiftUI {
       self.contentView = ContentView()
       let rootView = AnyView(contentView.environmentObject(props).environmentObject(shadowNodeProxy))
       self.props = props
-      self.hostingController = UIHostingController(rootView: rootView)
+      let controller = UIHostingController(rootView: rootView)
+
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+        controller.sizingOptions = [.intrinsicContentSize]
+      }
+      self.hostingController = controller
 
       super.init(appContext: appContext)
 
@@ -89,6 +95,13 @@ extension ExpoSwiftUI {
     }
 
     /**
+     Returns the view's props
+     */
+    public func getProps() -> ExpoSwiftUI.ViewProps {
+      return props
+    }
+
+    /**
      Returns a bool value whether the view supports prop with the given name.
      */
     public override func supportsProp(withName name: String) -> Bool {
@@ -98,7 +111,6 @@ extension ExpoSwiftUI {
       return true
     }
 
-#if os(iOS) || os(tvOS)
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
@@ -131,7 +143,8 @@ extension ExpoSwiftUI {
      Setups layout constraints of the hosting controller view to match the layout set by React.
      */
     private func setupHostingViewConstraints() {
-      guard let view = hostingController.view else {
+      // NSView is not optional in NSViewController in macOS
+      guard let view = hostingController.view as UIView? else {
         return
       }
       view.translatesAutoresizingMaskIntoConstraints = false
@@ -152,12 +165,26 @@ extension ExpoSwiftUI {
       if window != nil, let parentController = reactViewController() {
         parentController.addChild(hostingController)
         addSubview(hostingController.view)
+        #if os(iOS) || os(tvOS)
         hostingController.didMove(toParent: parentController)
+        #endif
         setupHostingViewConstraints()
       } else {
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
       }
+    }
+
+#if os(macOS)
+    public override func reactViewController() -> NSViewController? {
+      var currentView: NSView? = self
+      while let view = currentView {
+        if let viewController = view.nextResponder as? NSViewController {
+          return viewController
+        }
+        currentView = view.superview
+      }
+      return self.window?.contentViewController
     }
 #endif
   }

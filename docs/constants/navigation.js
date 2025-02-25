@@ -144,6 +144,7 @@ export const home = [
     makePage('deploy/submit-to-app-stores.mdx'),
     makePage('deploy/app-stores-metadata.mdx'),
     makePage('deploy/send-over-the-air-updates.mdx'),
+    makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
@@ -346,6 +347,7 @@ export const general = [
         makePage('guides/using-logrocket.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/using-bugsnag.mdx'),
+        makePage('guides/using-vexo.mdx'),
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
@@ -398,7 +400,7 @@ export const eas = [
     makePage('build/building-from-github.mdx'),
     makePage('build/orbit.mdx'),
     makeGroup(
-      'App Signing',
+      'App signing',
       [
         makePage('app-signing/app-credentials.mdx'),
         makePage('app-signing/managed-credentials.mdx'),
@@ -472,6 +474,7 @@ export const eas = [
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
       makePage('eas-update/develop-faster.mdx'),
+      makePage('eas-update/override.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/github-actions.mdx'),
     ]),

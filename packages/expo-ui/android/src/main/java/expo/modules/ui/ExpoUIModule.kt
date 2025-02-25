@@ -26,6 +26,10 @@ class ExpoUIModule : Module() {
       Events("onValueChanged")
     }
 
+    View(DateTimePickerView::class) {
+      Events("onDateSelected")
+    }
+
     View(ContextMenu::class) {
       Events(
         "onContextMenuButtonPressed",
@@ -34,5 +38,7 @@ class ExpoUIModule : Module() {
         "onExpandedChanged"
       )
     }
+
+    View(ProgressView::class)
   }
 }

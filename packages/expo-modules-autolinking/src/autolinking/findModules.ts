@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
 
@@ -35,7 +35,9 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
     const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
 
     for (const packageConfigPath of packageConfigPaths) {
-      const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
+      const packagePath = await fs.promises.realpath(
+        path.join(searchPath, path.dirname(packageConfigPath))
+      );
       const expoModuleConfig = requireAndResolveExpoModuleConfig(
         path.join(packagePath, path.basename(packageConfigPath))
       );
