@@ -25,7 +25,9 @@ if [[ "$RN_MACOS_VERSION" != "null" ]]; then
     echo " ✅ React Native macOS installed"
 else
     RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
-    echo " ⚠️  Cannot find React Native macOS for this project, attempting to install version $RN_MINOR_VERSION..."
-    yarn add react-native-macos@$RN_MINOR_VERSION
+    echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
+    if ! yarn add "react-native-macos@$RN_MINOR_VERSION" --non-interactive --silent; then
+        echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
+        yarn add react-native-macos@latest
+    fi
 fi
-
