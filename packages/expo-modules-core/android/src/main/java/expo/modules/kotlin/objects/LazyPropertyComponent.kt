@@ -1,6 +1,5 @@
 package expo.modules.kotlin.objects
 
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.JNINoArgsFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.JSTypeConverter
