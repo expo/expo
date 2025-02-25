@@ -27,7 +27,7 @@ A splash screen, also known as a launch screen, is the first screen a user sees 
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen) has a built-in [config plugin](/config-plugins/introduction) that lets you configure properties such as the splash icon and background color.
 
-> **Warning** Do not use Expo Go or a development build to test your splash screen. **Expo Go** renders your app icon while the splash screen is visible, which can interfere with testing. **Development builds** include `expo-dev-client`, which has its own splash screen and may cause conflicts. Instead, use a [preview build](/build/eas-json/#preview-builds) or a [production build](/build/eas-json/#production-builds).
+> **warning** **Do not use Expo Go or a development build to test your splash screen**. Expo Go renders your app icon while the splash screen is visible, which can interfere with testing. Development builds include `expo-dev-client`, which has its own splash screen and may cause conflicts. **Instead, use a [preview build](/build/eas-json/#preview-builds) or a [production build](/build/eas-json/#production-builds)**.
 
 <Step label="1">
 
@@ -134,7 +134,7 @@ To test your new splash screen, build your app for [internal distribution](/tuto
 
 <Collapsible summary="Not using prebuild?">
 
-If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **iOS** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **ios** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 </Collapsible>
 

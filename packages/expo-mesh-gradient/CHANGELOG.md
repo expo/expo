@@ -17,6 +17,10 @@
 
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
+## 0.2.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0 - 2024-11-29
 
 ### 🎉 New features

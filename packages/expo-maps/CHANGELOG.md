@@ -8,8 +8,6 @@
 
 ### 🎉 New features
 
-- [iOS] Implement setCameraPosition ([#34886](https://github.com/expo/expo/pull/34886) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -17,6 +15,20 @@
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+
+## 0.7.3 - 2025-02-14
+
+### 🎉 New features
+
+- [iOS] Implement setCameraPosition ([#34886](https://github.com/expo/expo/pull/34886) by [@jakex7](https://github.com/jakex7))
+
+## 0.7.2 - 2025-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.1 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
 
 ## 0.6.1 — 2024-10-29
 
