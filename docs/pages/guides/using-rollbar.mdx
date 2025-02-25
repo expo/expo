@@ -1,0 +1,31 @@
+---
+title: Using Rollbar
+description: A guide on installing and configuring Rollbar for end-to-end error reporting and analytics.
+hideTOC: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+[Rollbar](https://www.rollbar.com) is a real-time error monitoring solution for frontend, backend and mobile apps. Rollbar supports the full stack with open-source SDKs for [platforms](https://www.rollbar.com/platforms), including [React Native](https://docs.rollbar.com/docs/react-native).
+
+With Rollbar, developers and engineering organizations can:
+
+- **Discover:** Rollbar gives you a real-time feed of all errors — including unhandled exceptions — so you’ll never miss a bug. Easily monitor all related microservices in one view and use intelligent filters to see issues by project, environment or framework.
+- **Prioritize:** Our platform shows you critical metadata, in one simple view, so you can decide what errors you need to prioritize. See what errors are affecting which customers, how often they’re occurring (and when), what browsers and IPs they’re affecting, and more.
+- **Resolve:** Being able to reproduce an error is a crucial step to resolution. You need to know what triggered it before you can fix what caused it. Rollbar lets you see the state your application was in when an error occurred with local variables and arguments. Easily view their values directly from the stack trace so you can reproduce the error, and fix it.
+- **Automate:** Automation is only as good as the underlying signals it’s based on. Unlike many in the industry who use hardcoded grouping algorithms, Rollbar uses machine learning to accurately identify unique bugs in real-time. This eliminates noise caused by missed or false alarms and provides the foundation for AI-assisted workflows to proactively deal with bugs.
+
+## Integration
+
+See the integration guide below for instructions on adding Rollbar to your Expo apps to report JavaScript errors. It also includes instructions for uploading source maps for updates published with [EAS Update](/eas-update/introduction/).
+
+If you're new to Rollbar, you can [create an account](https://rollbar.com/signup/).
+
+<BoxLink
+  title="Expo Rollbar integration"
+  description="See the official guide on how to integrate Rollbar with an (React) Expo app."
+  href="https://docs.rollbar.com/docs/react-native"
+  Icon={BookOpen02Icon}
+/>
