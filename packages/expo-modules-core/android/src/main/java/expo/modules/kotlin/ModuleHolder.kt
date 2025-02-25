@@ -114,6 +114,12 @@ class ModuleHolder<T : Module>(val module: T) {
         .forEach { (_, prop) ->
           prop.attachToJSObject(appContext, moduleDecorator)
         }
+
+      definition
+        .lazyProperties
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(moduleDecorator)
+        }
     }
   }
 
