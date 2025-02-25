@@ -8,8 +8,8 @@ class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-		self.moduleName = "main"
-		self.initialProps = [:]
+    self.moduleName = "main"
+    self.initialProps = [:]
 
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
     self.automaticallyLoadReactNativeWindow = false
@@ -24,13 +24,13 @@ class AppDelegate: ExpoAppDelegate {
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-	public override func bundleURL() -> URL? {
+  override func bundleURL() -> URL? {
 #if DEBUG
-		return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
 #else
-		return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
-	}
+  }
 
   override func applicationWillEnterForeground(_ application: UIApplication) {
     setUpUserInterfaceForApplication(application, withLaunchOptions: nil)
@@ -42,7 +42,7 @@ class AppDelegate: ExpoAppDelegate {
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
 
     let window = UIWindow(frame: UIScreen.main.bounds)
-	self.window = window
+    self.window = window
     window.backgroundColor = UIColor.white
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
     window.rootViewController = rootViewController
