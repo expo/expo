@@ -1,12 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = void 0;
+exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
     }
     return value != null ? [value] : [];
 }
+class ExpoAndroidProjectConfig {
+    name;
+    path;
+    modules;
+    publication;
+    gradleAarProjects;
+    isDefault;
+    constructor(name, path, modules, publication, gradleAarProjects, 
+    /**
+     * Whether this project is the root one.
+     */
+    isDefault = false) {
+        this.name = name;
+        this.path = path;
+        this.modules = modules;
+        this.publication = publication;
+        this.gradleAarProjects = gradleAarProjects;
+        this.isDefault = isDefault;
+    }
+}
+exports.ExpoAndroidProjectConfig = ExpoAndroidProjectConfig;
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -72,17 +93,17 @@ class ExpoModuleConfig {
         return this.getAppleConfig()?.debugOnly ?? false;
     }
     /**
-     * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+     * Returns information about Android projects defined by the module author.
      */
-    androidModules() {
-        const androidConfig = this.rawConfig.android;
-        return androidConfig?.modules ?? [];
-    }
-    /**
-     * Returns build.gradle file paths defined by the module author.
-     */
-    androidGradlePaths() {
-        return arrayize(this.rawConfig.android?.gradlePath ?? []);
+    androidProjects(defaultProjectName) {
+        const androidProjects = [];
+        // Adding the "root" Android project - it might not be valide.
+        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, !this.rawConfig.android?.path // it's default project because path is not defined
+        ));
+        this.rawConfig.android?.projects?.forEach((project) => {
+            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules, project.publication, project.gradleAarProjects));
+        });
+        return androidProjects;
     }
     /**
      * Returns gradle plugins descriptors defined by the module author.

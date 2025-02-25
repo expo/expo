@@ -53,9 +53,10 @@ class SettingsManager(
 
     settings.gradle.beforeProject { project ->
       // Adds precompiled artifacts
-      config.allAarProjects
-        .filter { it.name == project.name }
-        .forEach(project::applyAarProject)
+      val projectConfig = config.getConfigForProject(project)
+      projectConfig?.aarProjects?.forEach(
+        project::applyAarProject
+      )
     }
 
     // Defines the required features for the core module
