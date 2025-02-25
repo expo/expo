@@ -311,7 +311,7 @@ export async function instantiateMetroAsync(
     let hmrJSBundle: typeof import('@expo/metro-config/build/serializer/fork/hmrJSBundle').default;
 
     try {
-      hmrJSBundle = require('@expo/metro-config/build/serializer/fork/hmrJSBundle');
+      hmrJSBundle = require('@expo/metro-config/build/serializer/fork/hmrJSBundle').default;
     } catch {
       // Add fallback for monorepo tests up until the fork is merged.
       Log.warn('Failed to load HMR serializer from @expo/metro-config, using fallback version.');
