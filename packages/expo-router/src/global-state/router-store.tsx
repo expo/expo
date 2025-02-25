@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import equal from 'fast-deep-equal';
-import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
+import { useSyncExternalStore, useMemo, ComponentType, Fragment, useState } from 'react';
 import { Platform } from 'react-native';
 
 import {
@@ -75,7 +75,7 @@ export class RouterStore {
   navigate = navigate.bind(this);
   reload = reload.bind(this);
 
-  initialize(
+  async initialize(
     context: RequireContext,
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>,
     linkingConfigOptions: LinkingConfigOptions = {}
@@ -108,7 +108,9 @@ export class RouterStore {
 
     if (this.routeNode) {
       // We have routes, so get the linking config and the root component
-      this.linking = getLinkingConfig(this, this.routeNode, context, linkingConfigOptions);
+      this.linking = await Promise.resolve(
+        getLinkingConfig(this, this.routeNode, context, linkingConfigOptions)
+      );
       this.rootComponent = getQualifiedRouteComponent(this.routeNode);
 
       // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
@@ -276,9 +278,24 @@ export function useStoreRouteInfo() {
   );
 }
 
-export function useInitializeExpoRouter(context: RequireContext, options: LinkingConfigOptions) {
+export function useInitializeExpoRouter(
+  context: RequireContext,
+  options: LinkingConfigOptions
+): [boolean, RouterStore] {
   const navigationRef = useNavigationContainerRef();
-  useMemo(() => store.initialize(context, navigationRef, options), [context]);
+  const [initialized, setInitialized] = useState(false);
+
+  useMemo(() => {
+    async function initialize() {
+      await store.initialize(context, navigationRef, options);
+      setInitialized(true);
+    }
+    initialize();
+  }, [context]);
+
   useExpoRouter();
-  return store;
+
+  // Although the store is instantiated in the global scope, it might not
+  // be initialized yet. For further handling, we pass down that information.
+  return [initialized, store];
 }
