@@ -116,9 +116,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
-    if reactNativeTargetVersion >= 77
-      test_spec.dependency 'ReactAppDependencyProvider'
-    end
+    test_spec.dependency 'ReactAppDependencyProvider'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
   end

@@ -1,4 +1,4 @@
-#import "EXReactNativeFactoryDelegate.h"
+#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>

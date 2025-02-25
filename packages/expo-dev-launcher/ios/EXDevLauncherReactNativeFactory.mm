@@ -1,4 +1,4 @@
-#import "EXDevLauncherReactNativeFactory.h"
+#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
 
 @implementation EXDevLauncherReactNativeFactory

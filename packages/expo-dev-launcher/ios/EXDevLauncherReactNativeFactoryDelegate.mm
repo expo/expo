@@ -1,5 +1,5 @@
 #import <EXDevLauncher/EXDevLauncherReactNativeFactoryDelegate.h>
-#import "EXDevLauncherReactNativeFactory.h"
+#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
 
 
 @implementation EXDevLauncherReactNativeFactoryDelegate
