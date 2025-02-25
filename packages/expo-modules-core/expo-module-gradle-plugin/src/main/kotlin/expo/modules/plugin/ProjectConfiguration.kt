@@ -4,7 +4,7 @@ package expo.modules.plugin
 
 import com.android.build.gradle.LibraryExtension
 import expo.modules.plugin.android.PublicationInfo
-import expo.modules.plugin.android.applyLinerOptions
+import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
 import expo.modules.plugin.android.applySDKVersions
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
@@ -50,7 +50,7 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
       targetSdk = rootProject.extra.safeGet("targetSdkVersion")
         ?: logger.warnIfNotDefined("targetSdkVersion", 34)
     )
-    applyLinerOptions()
+    applyLinterOptions()
   }
 }
 
