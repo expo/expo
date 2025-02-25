@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -16,6 +18,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./PickerScreen'));
+    },
+  },
+  {
+    name: 'Date Time Picker component',
+    route: 'ui/date-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DateTimePickerScreen'));
     },
   },
   {
@@ -50,7 +60,33 @@ export const UIScreens = [
       return optionalRequire(() => require('./ContextMenuScreen'));
     },
   },
+  {
+    name: 'Color Picker component',
+    route: 'ui/color-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
+  {
+    name: 'Progress component',
+    route: 'ui/progress',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ProgressScreen'));
+    },
+  },
 ];
+if (Platform.OS === 'ios') {
+  UIScreens.push({
+    name: 'Gauge component',
+    route: 'ui/gauge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GaugeScreen'));
+    },
+  });
+}
 
 export default function UIScreen() {
   const apis: ListElement[] = UIScreens.map((screen) => {

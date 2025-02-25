@@ -1,5 +1,5 @@
 import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import getVCSClientAsync from './vcs';
@@ -28,7 +28,7 @@ export async function resolveWorkflowAsync(
   const vcsRootPath = path.normalize(await vcsClient.getRootPathAsync());
   for (const marker of platformWorkflowMarkers) {
     if (
-      (await fs.pathExists(marker)) &&
+      fs.existsSync(marker) &&
       !(await vcsClient.isFileIgnoredAsync(path.relative(vcsRootPath, marker)))
     ) {
       return 'generic';

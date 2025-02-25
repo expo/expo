@@ -37,7 +37,7 @@ data class SliderProps(
   val min: MutableState<Float> = mutableFloatStateOf(0.0f),
   val max: MutableState<Float> = mutableFloatStateOf(1.0f),
   val steps: MutableState<Int> = mutableIntStateOf(0),
-  val colors: MutableState<SliderColors> = mutableStateOf(SliderColors())
+  val elementColors: MutableState<SliderColors> = mutableStateOf(SliderColors())
 ) : ComposeProps
 
 class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<SliderProps>(context, appContext) {
@@ -50,7 +50,7 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
       val (min) = props.min
       val (max) = props.max
       val (steps) = props.steps
-      val (colors) = props.colors
+      val (colors) = props.elementColors
       DynamicTheme {
         Slider(
           value = value.coerceAtLeast(min).coerceAtMost(max),

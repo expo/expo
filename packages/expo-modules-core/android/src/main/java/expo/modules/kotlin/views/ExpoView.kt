@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
 import com.facebook.react.uimanager.BackgroundStyleApplicator
+import com.facebook.react.uimanager.StateWrapper
 import expo.modules.kotlin.AppContext
 
 /**
@@ -14,6 +15,10 @@ abstract class ExpoView(
   context: Context,
   val appContext: AppContext
 ) : LinearLayout(context) {
+
+  var stateWrapper: StateWrapper? = null
+
+  val shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy(this)
 
   /**
    * If set to `true`, the view utilizes the Android layout system rather than React Native's.

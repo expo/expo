@@ -1,24 +1,8 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-apply plugin: 'com.android.library'
-
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-  useExpoPublishing()
-}
-
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  useLegacyExpoModulesCorePlugin()
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
 }
 
 String toPlatformIndependentPath(File path) {

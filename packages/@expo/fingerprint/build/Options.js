@@ -48,33 +48,6 @@ exports.DEFAULT_IGNORE_PATHS = [
     'app.json',
     // Ignore nested node_modules
     '**/node_modules/**/node_modules/**',
-    // Ignore default javascript files when calling `getConfig()`
-    '**/node_modules/@babel/**/*',
-    '**/node_modules/@expo/**/*',
-    '**/node_modules/@jridgewell/**/*',
-    '**/node_modules/expo/config.js',
-    '**/node_modules/expo/config-plugins.js',
-    `**/node_modules/{${[
-        'chalk',
-        'debug',
-        'escape-string-regexp',
-        'getenv',
-        'graceful-fs',
-        'has-flag',
-        'imurmurhash',
-        'js-tokens',
-        'json5',
-        'ms',
-        'picocolors',
-        'lines-and-columns',
-        'require-from-string',
-        'resolve-from',
-        'signal-exit',
-        'sucrase',
-        'supports-color',
-        'ts-interface-checker',
-        'write-file-atomic',
-    ].join(',')}}/**/*`,
 ];
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
@@ -89,7 +62,7 @@ async function normalizeOptionsAsync(projectRoot, options) {
         // Options from config
         ...config,
         // Explicit options
-        ...options,
+        ...Object.fromEntries(Object.entries(options ?? {}).filter(([_, v]) => v != null)),
         // These options are computed by both default and explicit options, so we put them last.
         enableReactImportsPatcher: options?.enableReactImportsPatcher ??
             config?.enableReactImportsPatcher ??

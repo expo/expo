@@ -1,4 +1,5 @@
 import { Children, isValidElement, ReactElement, ReactNode } from 'react';
+import { NativeSyntheticEvent } from 'react-native';
 
 import { ContextMenuElementBase, EventHandlers, Submenu, SubmenuProps } from './index';
 import { Button, ButtonProps, NativeButtonProps, transformButtonProps } from '../Button';
@@ -90,8 +91,12 @@ function createSwitchElement(
   props: SwitchProps,
   handlers: EventHandlers
 ): MenuElement {
-  if (props.onCheckedChanged) {
-    handlers[uuid] = { onCheckedChanged: props.onCheckedChanged };
+  if (props.onValueChange) {
+    handlers[uuid] = {
+      onValueChange: ({ nativeEvent: { value } }: NativeSyntheticEvent<{ value: boolean }>) => {
+        props.onValueChange?.(value);
+      },
+    };
   }
 
   return {

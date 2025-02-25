@@ -16,17 +16,12 @@ export declare class NativeDatabase {
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+    syncLibSQL(): void;
 }
 /**
  * Options for opening a database.
  */
 export interface SQLiteOpenOptions {
-    /**
-     * Whether to enable the CR-SQLite extension.
-     * @default false
-     * @deprecated CR-SQLite is no longer actively maintained. Its support is deprecated in SDK 52, and the option will be removed in SDK 53.
-     */
-    enableCRSQLite?: boolean;
     /**
      * Whether to call the [`sqlite3_update_hook()`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
      * @default false
@@ -56,19 +51,12 @@ export interface SQLiteOpenOptions {
          * @default false
          */
         remoteOnly?: boolean;
-        /**
-         * The interval to sync the local database with the remote database.
-         * Only works when `remoteOnly` is `false`.
-         * @default 0 and disable automatic sync.
-         */
-        syncInterval?: number;
     };
 }
 type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
     libSQLUrl?: string;
     libSQLAuthToken?: string;
     libSQLRemoteOnly?: boolean;
-    libSQLSyncInterval?: number;
 };
 /**
  * Flattens the SQLiteOpenOptions that are passed to the native module.

@@ -95,7 +95,7 @@ export var ResultCode;
      */
     ResultCode[ResultCode["Success"] = -1] = "Success";
     /**
-     * Means that the activity was canceled, e.g. by tapping on the back button.
+     * Means that the activity was canceled, for example, by tapping on the back button.
      */
     ResultCode[ResultCode["Canceled"] = 0] = "Canceled";
     /**
@@ -107,9 +107,9 @@ export var ResultCode;
 /**
  * Starts the specified activity. The method will return a promise which resolves when the user
  * returns to the app.
- * @param activityAction The action to be performed, e.g. `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
+ * @param activityAction The action to be performed, for example, `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
  * There are a few pre-defined constants you can use for this parameter.
- * You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
+ * You can find them at [`expo-intent-launcher/src/IntentLauncher.ts`](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
  * @param params An object of intent parameters.
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
@@ -124,7 +124,7 @@ export async function startActivityAsync(activityAction, params = {}) {
 }
 /**
  * Opens an application by its package name.
- * @param packageName e.g., `com.google.android.gm` for Gmail.
+ * @param packageName For example: `com.google.android.gm` for Gmail.
  */
 export function openApplication(packageName) {
     if (!ExpoIntentLauncher.openApplication) {
@@ -134,10 +134,9 @@ export function openApplication(packageName) {
 }
 /**
  * Returns the icon of the specified application as a base64-encoded PNG image string.
- * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
- * component's `source` prop.
+ * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image`'s [`Image.source`](./image/#source) prop.
  *
- * @param packageName The package name of the target application, e.g. `com.google.android.gm` for Gmail.
+ * @param packageName The package name of the target application. For example, `com.google.android.gm` for Gmail.
  * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.
  */
 export async function getApplicationIconAsync(packageName) {

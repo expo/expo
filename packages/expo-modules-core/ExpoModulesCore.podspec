@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms       = {
     :ios => '15.1',
-    :osx => '10.15',
+    :osx => '11.0',
     :tvos => '15.1'
   }
   s.swift_version  = '5.4'
@@ -84,6 +84,7 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_MODULES_CORE_VERSION=' + package['version'],
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
@@ -104,10 +105,6 @@ Pod::Spec.new do |s|
   s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
-
-  if reactNativeTargetVersion >= 77
-    s.dependency 'ReactAppDependencyProvider'
-  end
 
   install_modules_dependencies(s)
 

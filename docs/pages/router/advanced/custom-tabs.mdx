@@ -92,7 +92,7 @@ The `TabSlot` component renders the current route. `TabSlot` can be nested insid
     </TabTrigger>
   </TabList>
   {/* Customize how `<TabSlot />` is rendered. */}
-  /* @info TabSlot be nested inside custom components */
+  /* @info <CODE>TabSlot</CODE> can be nested inside custom components. */
   <View>
     <View>
       <TabSlot />
@@ -108,7 +108,7 @@ Tabs can be switched via a `Link` or using the imperative APIs. However, these A
 
 ### Resetting navigation
 
-The `reset` prop from `TabTrigger` can be used to control when a tab resets its navigation state. The options are `always`, `onLongPress` and `never`. This is particularly useful for a stack navigator nested inside a tab. For example, `<Trigger name="home" reset="always" />` will return the user to the index route inside a tab's nested stack navigator.
+The `reset` prop from `TabTrigger` can be used to control when a tab resets its navigation state. The options are `always`, `onLongPress` and `never`. This is particularly useful for a stack navigator nested inside a tab. For example, `<TabTrigger name="home" reset="always" />` will return the user to the index route inside a tab's nested stack navigator.
 
 ## TabTrigger
 
@@ -131,7 +131,7 @@ If you need to change the structure of a component, you can override its underly
 ```tsx Custom TabList
 <Tabs>
   <TabSlot />
-  /* @info Change the appearance of the <TabList /> */
+  /* @info Change the appearance of the <CODE>TabList</CODE>. */
   <TabList asChild>
     {/* Render a custom TabList */}
     <CustomTabList>
@@ -148,7 +148,7 @@ If you need to change the structure of a component, you can override its underly
 <Tabs>
   <TabSlot />
   <TabList asChild>
-    /* @info Change the appearance of the <TabTrigger /> */
+    /* @info Change the appearance of the <CODE>TabTrigger</CODE>. */
     <TabTrigger name="home" href="/" asChild>
       {/* Render a custom button */}
       <CustomButton>
@@ -169,7 +169,8 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
   <TabSlot />
   {/* A custom tab bar */}
   <View>
-    /* @info A custom tab bar. TabTrigger's outside of TabList do not need the `href` prop */
+    /* @info A custom tab bar. <CODE>TabTrigger</CODE>'s outside of TabList do not need the{' '}
+    <CODE>href</CODE> prop. */
     <View>
       <TabTrigger name="home">
         <Text>Home</Text>
@@ -180,7 +181,7 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
     </View>
     /* @end */
   </View>
-  /* @info TabList needs to be rendered, but not necessary displayed */
+  /* @info <CODE>TabList</CODE> needs to be rendered, but not necessary displayed. */
   <TabList style={{ display: 'none' }}>
     /* @end */
     <TabTrigger name="home" href="/">
@@ -236,7 +237,11 @@ export const TabButton = forwardRef(
 
 ### Hooks
 
-All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+
+Using hooks is considered advanced usage of this library. For most use-cases, using the components with `asChild` should give you enough control over the render tree.
+
+If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router-ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
 
 ### Customizing how tab screens are rendered
 

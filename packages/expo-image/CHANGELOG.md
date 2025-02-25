@@ -17,6 +17,22 @@
 - Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
+## 2.0.6 - 2025-02-19
+
+### 🐛 Bug fixes
+
+- [Android] Fixes a regression in `loadAsync` from [#34767](https://github.com/expo/expo/pull/34767). ([#34965](https://github.com/expo/expo/pull/34965) by [@alanjhughes](https://github.com/alanjhughes)) ([#34767](https://github.com/expo/expo/pull/34767), [#34965](https://github.com/expo/expo/pull/34965) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.5 - 2025-02-10
+
+### 🐛 Bug fixes
+
+- [Android] Add headers to `loadAsync` requests. ([#34767](https://github.com/expo/expo/pull/34767) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.3 - 2024-11-29
 
 ### 🐛 Bug fixes

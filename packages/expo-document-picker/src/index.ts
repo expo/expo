@@ -17,6 +17,7 @@ export async function getDocumentAsync({
   type = '*/*',
   copyToCacheDirectory = true,
   multiple = false,
+  base64 = true,
 }: DocumentPickerOptions = {}): Promise<DocumentPickerResult> {
   if (typeof type === 'string') {
     type = [type] as string[];
@@ -25,6 +26,7 @@ export async function getDocumentAsync({
     type,
     copyToCacheDirectory,
     multiple,
+    base64,
   });
 }
 

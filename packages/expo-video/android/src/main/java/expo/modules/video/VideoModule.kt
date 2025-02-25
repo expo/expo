@@ -18,6 +18,7 @@ import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -37,7 +38,19 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+      VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+    }
+
+    Function("getCurrentVideoCacheSize") {
+      VideoManager.cache.getCurrentCacheSize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size: Long ->
+      VideoManager.cache.setMaxCacheSize(size)
+    }
+
+    AsyncFunction("clearVideoCacheAsync") {
+      VideoManager.cache.clear()
     }
 
     View(VideoView::class) {
@@ -158,6 +171,16 @@ class VideoModule : Module() {
           runBlocking(appContext.mainQueue.coroutineContext) {
             ref.currentLiveTimestamp
           }
+        }
+
+      Property("availableVideoTracks")
+        .get { ref: VideoPlayer ->
+          ref.availableVideoTracks
+        }
+
+      Property("videoTrack")
+        .get { ref: VideoPlayer ->
+          ref.currentVideoTrack
         }
 
       Property("availableSubtitleTracks")
@@ -325,11 +348,11 @@ class VideoModule : Module() {
         }
       }
 
-      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration>, options: VideoThumbnailOptions? ->
         return@Coroutine ref.toMetadataRetriever().safeUse {
           val bitmaps = times.map { time ->
             appContext.backgroundCoroutineScope.async {
-              generateThumbnailAtTime(time)
+              generateThumbnailAtTime(time, options)
             }
           }
 

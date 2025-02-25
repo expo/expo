@@ -20,9 +20,9 @@ function _imageUtils() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -113,9 +113,11 @@ const DRAWABLES_CONFIGS = {
     dimensionsMultiplier: 4
   }
 };
-const withAndroidSplashImages = (config, props) => {
+const withAndroidSplashImages = (config, splash) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, props, config.modRequest.projectRoot, props?.imageWidth ?? 200);
+    if (splash) {
+      await setSplashImageDrawablesAsync(config, splash, config.modRequest.projectRoot, splash?.imageWidth ?? 200);
+    }
     return config;
   }]);
 };
@@ -142,9 +144,10 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
     await Promise.all(Object.values(modes).map(async ({
       path: filePath
     }) => {
-      if (await _fsExtra().default.pathExists(_path().default.resolve(androidMainPath, filePath))) {
-        await _fsExtra().default.remove(_path().default.resolve(androidMainPath, filePath));
-      }
+      await _fs().default.promises.rm(_path().default.resolve(androidMainPath, filePath), {
+        force: true,
+        recursive: true
+      });
     }));
   }));
 }
@@ -191,8 +194,10 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
       const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
       const folder = _path().default.dirname(outputPath);
       // Ensure directory exists.
-      await _fsExtra().default.ensureDir(folder);
-      await _fsExtra().default.writeFile(outputPath, composedImage);
+      await _fs().default.promises.mkdir(folder, {
+        recursive: true
+      });
+      await _fs().default.promises.writeFile(outputPath, composedImage);
     }
     return null;
   }));
@@ -204,12 +209,16 @@ async function writeSplashScreenDrawablesAsync(drawablePath, projectRoot, drawab
   const lightDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
   const darkDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
   const lightFolder = _path().default.dirname(lightDrawablePath);
-  await _fsExtra().default.ensureDir(lightFolder);
-  await _fsExtra().default.copyFile(_path().default.join(projectRoot, drawable.icon), lightDrawablePath);
+  await _fs().default.promises.mkdir(lightFolder, {
+    recursive: true
+  });
+  await _fs().default.promises.copyFile(_path().default.join(projectRoot, drawable.icon), lightDrawablePath);
   if (drawable.darkIcon) {
     const darkFolder = _path().default.dirname(darkDrawablePath);
-    await _fsExtra().default.ensureDir(darkFolder);
-    await _fsExtra().default.copyFile(_path().default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+    await _fs().default.promises.mkdir(darkFolder, {
+      recursive: true
+    });
+    await _fs().default.promises.copyFile(_path().default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
   }
 }
 //# sourceMappingURL=withAndroidSplashImages.js.map

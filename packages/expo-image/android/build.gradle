@@ -1,29 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-kapt'
-
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-}
-
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  useLegacyExpoModulesCorePlugin()
-}
-
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
+plugins {
+  id 'com.android.library'
+  id 'kotlin-kapt'
+  id 'expo-module-gradle-plugin'
 }
 
 android {
@@ -39,7 +17,7 @@ android {
   sourceSets {
     main {
       java {
-        if (safeExtGet("excludeAppGlideModule", false)) {
+        if (expoModule.safeExtGet("excludeAppGlideModule", false)) {
           exclude("**/ExpoImageAppGlideModule.kt")
         }
       }
@@ -60,7 +38,7 @@ dependencies {
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
-  api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", '4.9.2')}"
+  api "com.squareup.okhttp3:okhttp:${expoModule.safeExtGet("okHttpVersion", '4.9.2')}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "jp.wasabeef:glide-transformations:4.3.0"

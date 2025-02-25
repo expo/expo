@@ -7,9 +7,6 @@ import expo.modules.kotlin.records.Record
 
 internal data class OpenDatabaseOptions(
   @Field
-  val enableCRSQLite: Boolean = false,
-
-  @Field
   val enableChangeListener: Boolean = false,
 
   @Field
@@ -25,8 +22,5 @@ internal data class OpenDatabaseOptions(
   val libSQLAuthToken: String? = null,
 
   @Field
-  val libSQLRemoteOnly: Boolean = false,
-
-  @Field
-  val libSQLSyncInterval: Int = 0
+  val libSQLRemoteOnly: Boolean = false
 ) : Record

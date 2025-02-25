@@ -11,16 +11,35 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
+  let onMarkerClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 
-struct AppleMapsViewWrapper: ExpoSwiftUI.View {
+protocol AppleMapsViewProtocol: View {
+  func setCameraPosition(config: CameraPosition?)
+}
+
+struct AppleMapsViewWrapper: ExpoSwiftUI.View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
+  var appleMapsView: (any AppleMapsViewProtocol)?
+
+  init() {
+    if #available(iOS 18.0, *) {
+      appleMapsView = AppleMapsView()
+    } else {
+      appleMapsView = nil
+    }
+  }
+
+  func setCameraPosition(config: CameraPosition?) {
+    appleMapsView?.setCameraPosition(config: config)
+  }
 
   var body: some View {
     if #available(iOS 18.0, *) {
-      AppleMapsView()
-        .environmentObject(props)
+      if let appleMapsView = appleMapsView as? AppleMapsView {
+        appleMapsView.environmentObject(props)
+      }
     } else {
       EmptyView()
     }
@@ -28,10 +47,15 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View {
 }
 
 @available(iOS 18.0, *)
-struct AppleMapsView: View {
+struct AppleMapsView: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @State private var mapCameraPosition: MapCameraPosition = .automatic
-  @State var selection: MapSelection<MKMapItem>?
+  @ObservedObject var state = AppleMapsViewState()
+
+  func setCameraPosition(config: CameraPosition?) {
+    withAnimation {
+      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+    }
+  }
 
   var body: some View {
     let properties = props.properties
@@ -39,7 +63,7 @@ struct AppleMapsView: View {
 
     // swiftlint:disable:next closure_body_length
     MapReader { reader in
-      Map(position: $mapCameraPosition, selection: $selection) {
+      Map(position: $state.mapCameraPosition, selection: $state.selection) {
         ForEach(props.markers) { marker in
           Marker(
             marker.title,
@@ -70,6 +94,7 @@ struct AppleMapsView: View {
             }
           }
         }
+        UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
@@ -94,7 +119,20 @@ struct AppleMapsView: View {
         }
       }
       .onChange(of: props.cameraPosition) { _, newValue in
-        mapCameraPosition = convertToMapCamera(position: newValue)
+        state.mapCameraPosition = convertToMapCamera(position: newValue)
+      }
+      .onChange(of: state.selection) { _, newValue in
+        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
+          props.onMarkerClick([
+            "title": marker.title,
+            "tintColor": marker.tintColor,
+            "systemImage": marker.systemImage,
+            "coordinates": [
+              "latitude": marker.coordinates.latitude,
+              "longitude": marker.coordinates.longitude
+            ]
+          ])
+        }
       }
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
@@ -116,7 +154,7 @@ struct AppleMapsView: View {
         showsTraffic: properties.isTrafficEnabled
       ))
       .onAppear {
-        mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+        state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
     }
   }

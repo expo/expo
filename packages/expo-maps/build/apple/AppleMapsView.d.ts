@@ -1,4 +1,7 @@
 import * as React from 'react';
-import type { MapProps } from './AppleMaps.types';
-export declare function MapView({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }: MapProps): React.JSX.Element | null;
+import type { AppleMapsViewProps, AppleMapsViewType } from './AppleMaps.types';
+/**
+ * @platform ios
+ */
+export declare const AppleMapsView: React.ForwardRefExoticComponent<Omit<AppleMapsViewProps, "ref"> & React.RefAttributes<AppleMapsViewType>>;
 //# sourceMappingURL=AppleMapsView.d.ts.map

@@ -35,7 +35,10 @@ async function runAsync(programName, args = []) {
     const loadedModules = Object.keys(module_1.default._cache)
         .filter((modulePath) => !loadedModulesBefore.has(modulePath))
         .map((modulePath) => path_1.default.relative(projectRoot, modulePath));
-    const ignoredPaths = await loadIgnoredPathsAsync(ignoredFile);
+    const ignoredPaths = [
+        ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
+        ...(await loadIgnoredPathsAsync(ignoredFile)),
+    ];
     const filteredLoadedModules = loadedModules.filter((modulePath) => !(0, Path_1.isIgnoredPath)(modulePath, ignoredPaths));
     const result = JSON.stringify({ config, loadedModules: filteredLoadedModules });
     if (node_process_1.default.send) {
@@ -96,4 +99,43 @@ function setNodeEnv(mode) {
     // @ts-expect-error: Add support for external React libraries being loaded in the same process.
     globalThis.__DEV__ = node_process_1.default.env.NODE_ENV !== 'production';
 }
+// Ignore default javascript files when calling `getConfig()`
+const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
+    '**/node_modules/@babel/**/*',
+    '**/node_modules/@expo/**/*',
+    '**/node_modules/@jridgewell/**/*',
+    '**/node_modules/expo/config.js',
+    '**/node_modules/expo/config-plugins.js',
+    `**/node_modules/{${[
+        'ajv',
+        'ajv-formats',
+        'ajv-keywords',
+        'ansi-styles',
+        'chalk',
+        'debug',
+        'dotenv',
+        'dotenv-expand',
+        'escape-string-regexp',
+        'getenv',
+        'graceful-fs',
+        'fast-deep-equal',
+        'fast-uri',
+        'has-flag',
+        'imurmurhash',
+        'js-tokens',
+        'json5',
+        'json-schema-traverse',
+        'ms',
+        'picocolors',
+        'lines-and-columns',
+        'require-from-string',
+        'resolve-from',
+        'schema-utils',
+        'signal-exit',
+        'sucrase',
+        'supports-color',
+        'ts-interface-checker',
+        'write-file-atomic',
+    ].join(',')}}/**/*`,
+];
 //# sourceMappingURL=ExpoConfigLoader.js.map

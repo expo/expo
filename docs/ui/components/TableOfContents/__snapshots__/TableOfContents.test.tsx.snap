@@ -3,11 +3,11 @@
 exports[`TableOfContents correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="w-[280px] px-6 pb-10 pt-14"
-    data-sidebar="true"
+    class="w-[280px] px-6 pb-10 pt-[52px]"
+    data-toc="true"
   >
     <p
-      class="text-default text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-10 -mt-14 mb-2 flex min-h-[32px] w-[248px] select-none items-center gap-2 bg-default pb-2 pt-4"
+      class="text-default text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-[100] -ml-6 -mt-[52px] flex min-h-[32px] w-[272px] select-none items-center gap-2 bg-gradient-to-b from-default from-80% to-transparent py-3 pl-6"
       data-text="true"
     >
       <svg

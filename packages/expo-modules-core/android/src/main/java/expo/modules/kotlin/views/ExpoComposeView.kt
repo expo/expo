@@ -1,6 +1,7 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
@@ -33,6 +34,13 @@ abstract class ExpoComposeView<T : ComposeProps>(
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       addView(it)
+      it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) {
+          it.disposeComposition()
+        }
+
+        override fun onViewDetachedFromWindow(v: View) = Unit
+      })
     }
   }
 
