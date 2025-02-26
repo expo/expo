@@ -581,7 +581,7 @@ public final class SQLiteModule: Module {
   }
 
   // MARK: - statements managements
-  private func maybeFinalizeAllStatements(_ database: NativeDatabase) -> Int {
+  private func maybeFinalizeAllStatements(_ database: NativeDatabase) throws {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
