@@ -135,15 +135,13 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 #if RCT_NEW_ARCH_ENABLED
       // Checks if this is a view function unregistered in the view registry. The check can be performed from the main thread only.
       if retryCount < maxRetryCount,
-      let viewTag = arguments.first as? Int,
-      let uiManager = appContext.reactBridge?.uiManager,
-      self.dynamicArgumentTypes.first is DynamicViewType,
-      Thread.isMainThread, // swiftlint:disable:next legacy_objc_type
-      uiManager.view(forReactTag: NSNumber(value: viewTag)) == nil {
+        let viewTag = arguments.first as? Int,
+        let uiManager = appContext.reactBridge?.uiManager,
+        self.dynamicArgumentTypes.first is DynamicViewType,
+        Thread.isMainThread, // swiftlint:disable:next legacy_objc_type
+        uiManager.view(forReactTag: NSNumber(value: viewTag)) == nil {
         // Schedule the block on the original queue through UI manager if view is missing in the registry.
-        DispatchQueue.main.async {
-          self.dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue, retryCount: retryCount + 1, block)
-        }
+        self.dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue, retryCount: retryCount + 1, block)
         return
       }
 #endif
