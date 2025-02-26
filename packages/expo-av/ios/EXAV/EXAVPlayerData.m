@@ -164,7 +164,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     AVKeyValueStatus status = [avAsset statusOfValueForKey:@"isPlayable" error:&error];
 
     if (status == AVKeyValueStatusLoaded && !avAsset.isPlayable) {
-      NSString *errorMessage = @"Load encountered an error: [AVAsset isPlayable:] returned false. The asset does not contains a playable content or is not supported by the device.";
+      NSString *errorMessage = @"Load encountered an error: [AVAsset isPlayable:] returned false. The asset does not contain a playable content or is not supported by the device.";
       [self _finishLoadWithError:errorMessage];
       return;
     } 
