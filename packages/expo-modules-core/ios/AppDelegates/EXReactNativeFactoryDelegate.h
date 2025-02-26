@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 NS_SWIFT_NAME(ExpoReactNativeFactoryDelegate)
 @interface EXReactNativeFactoryDelegate : RCTDefaultReactNativeFactoryDelegate
 
-@property (nonatomic, strong, nullable) RCTReactNativeFactory *reactNativeFactory;
-
 /**
  Recreates a root view bound with customized bundleURL, moduleName, initialProps, and launchOptions.
  If any of these parameters is null, the method will use the original one from `RCTAppDelegate` or `RCTRootViewFactory`.

@@ -14,7 +14,7 @@
 
 - (instancetype) init {
   if (self = [super init]) {
-    self.dependencyProvider = [[RCTAppDependencyProvider alloc] init];
+    self.dependencyProvider = [RCTAppDependencyProvider new];
   }
   return self;
 }

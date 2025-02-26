@@ -2,9 +2,11 @@
 
 #import <EXDevMenu/EXDevClientReactNativeFactory.h>
 #import <EXDevMenu/DevClientRootViewFactory.h>
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
 
 @interface RCTReactNativeFactory ()
 
+- (Class)getModuleClassFromName:(const char *)name;
 - (NSURL *)bundleURL;
 - (BOOL)fabricEnabled;
 - (BOOL)turboModuleEnabled;
@@ -49,6 +51,14 @@
     return moduleProvider();
   }
   return @[];
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  // Overrides DevLoadingView ("Connect to Metro to develop JavaScript") as no-op for dev menu
+  if (strcmp(name, "DevLoadingView") == 0) {
+    return [DevClientNoOpLoadingView class];
+  }
+  return [super getModuleClassFromName:name];
 }
 
 - (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName

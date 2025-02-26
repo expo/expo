@@ -12,7 +12,9 @@ import ExpoModulesCore
  TODO vonovak check macOS support once RN macOS 78 goes out
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegate, UISceneDelegate {
+open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryProvider, UIApplicationDelegate, UISceneDelegate {
+  public var reactNativeFactory: RCTReactNativeFactory?
+
   /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
 

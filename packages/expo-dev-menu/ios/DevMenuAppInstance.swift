@@ -8,6 +8,7 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
+  var reactNativeFactory: EXDevClientReactNativeFactory?
 
   init(manager: DevMenuManager) {
     self.manager = manager

@@ -15,9 +15,9 @@
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherReactNativeFactoryDelegate.h>
-
+#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -57,7 +57,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
-@property (nonatomic, strong) EXDevLauncherReactNativeFactoryDelegate *appDelegate;
+@property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
@@ -85,14 +85,8 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
-    __weak __typeof(self) weakSelf = self;
-    self.appDelegate = [[EXDevLauncherReactNativeFactoryDelegate alloc] initWithBundleURLGetter:^NSURL * {
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf != nil) {
-        return [strongSelf getSourceURL];
-      }
-      return nil;
-    }];
+    self.dependencyProvider = [RCTAppDependencyProvider new];
+    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
 }
@@ -356,7 +350,7 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [_appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
+  rootView = [_reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
                                                                initialProperties:nil
                                                                    launchOptions:_launchOptions];
 
@@ -411,7 +405,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_appDelegate.reactNativeFactory.rootViewFactory.reactHost == nil) {
+  if (_reactNativeFactory.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 
@@ -520,7 +514,6 @@
     [_updatesInterface reset];
   }
 
-  NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc]
                                                  initWithURL:expoUrl
                                                  installationID:installationID
@@ -589,7 +582,6 @@
   self.manifest = manifest;
   self.manifestURL = appUrl;
   _possibleManifestURL = nil;
-  __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
