@@ -1,7 +1,4 @@
-import * as babylon from '@babel/parser';
-
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
-import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
 
 jest.mock('../exportHermes', () => {
   return {
