@@ -39,9 +39,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [sqlite] [ios] Replaced cached statement manager with sqlite3 solution [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
-- [sqlite] [android] Replaced cached statement manager with sqlite3 solution [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
-
+- Replaced the cached statement manager with `sqlite3_next_stmt` and prevented uncaught statements from leaking. [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
 - Fixed `expo-sqlite/kv-store` async API not being well handled when using AsyncStorage compatible api ([#33847](https://github.com/expo/expo/pull/33847) by [@rtorrente](https://github.com/rtorrente))
 - Fixed `database is locked` error from parallel `kv-store` operations. ([#33834](https://github.com/expo/expo/pull/33834) by [@kudo](https://github.com/kudo))
