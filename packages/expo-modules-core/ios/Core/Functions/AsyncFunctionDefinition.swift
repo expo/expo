@@ -91,7 +91,7 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
     let queue = queue ?? defaultQueue
 
-    queue.async { [body, name] in
+    dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue) { [body, name] in
       let returnedValue: ReturnType?
 
       do {
@@ -112,6 +112,43 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
       if !self.takesPromise {
         promise.resolve(returnedValue)
       }
+    }
+  }
+
+  /**
+   * Checks if the `AsyncFunction` is a method of a `View`, if it is and the `View` has not yet been registered in the view registry it
+   * re-dispatches the block until the view registers. The block can be re-dispatched up to three times before the cast is considered failed.
+   * This is a sub-optimal solution, but the only one until we get access to the runtime scheduler. In the vast majority of cases the block
+   * will be dispatched without any retries,
+   */
+  private func dispatchOnQueueUntilViewRegisters(
+    appContext: AppContext,
+    arguments: [Any],
+    queue: DispatchQueue,
+    retryCount: Int = 0,
+    _ block: @escaping () -> Void
+  ) {
+    // Empirically a single retry is enough, use three just to be safe
+    let maxRetryCount = 3
+
+    queue.async {
+#if RCT_NEW_ARCH_ENABLED
+      // Checks if this is a view function unregistered in the view registry. The check can be performed from the main thread only.
+      if retryCount < maxRetryCount,
+      let viewTag = arguments.first as? Int,
+      let uiManager = appContext.reactBridge?.uiManager,
+      self.dynamicArgumentTypes.first is DynamicViewType,
+      Thread.isMainThread, // swiftlint:disable:next legacy_objc_type
+      uiManager.view(forReactTag: NSNumber(value: viewTag)) == nil {
+        // Schedule the block on the original queue through UI manager if view is missing in the registry.
+        DispatchQueue.main.async {
+          self.dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue, retryCount: retryCount + 1, block)
+        }
+        return
+      }
+#endif
+      // Schedule the block as normal.
+      block()
     }
   }
 
