@@ -4,7 +4,6 @@
 
 #include <unordered_map>
 
-#include "../MethodMetadata.h"
 #include "../JNIFunctionBody.h"
 #include "../types/ExpectedType.h"
 #include "JSDecorator.h"

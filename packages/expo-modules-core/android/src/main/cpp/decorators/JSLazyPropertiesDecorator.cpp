@@ -32,7 +32,7 @@ void JSLazyPropertiesDecorator::decorate(
       runtime,
       getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
       0,
-      [getter, prevValue = std::shared_ptr<jsi::Value>()](
+      [getterFunc = std::move(getter), prevValue = std::shared_ptr<jsi::Value>()](
         jsi::Runtime &rt,
         const jsi::Value &thisValue,
         const jsi::Value *args,
@@ -40,7 +40,8 @@ void JSLazyPropertiesDecorator::decorate(
       ) mutable -> jsi::Value {
         if (prevValue == nullptr) {
           JNIEnv *env = jni::Environment::current();
-          auto result = JNINoArgsFunctionBody::invoke(getter.get());
+          auto result = JNINoArgsFunctionBody::invoke(getterFunc.get());
+          getterFunc = nullptr;
           prevValue = std::make_shared<jsi::Value>(convert(env, rt, result));
         }
         return {rt, *prevValue};
