@@ -469,7 +469,7 @@ class SQLiteModule : Module() {
   // region statements managements
 
   @Synchronized
-  private fun maybeFinalizeAllStatements(database: NativeDatabase){
+  private fun maybeFinalizeAllStatements(database: NativeDatabase) {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
