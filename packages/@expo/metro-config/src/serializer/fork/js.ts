@@ -71,9 +71,11 @@ export function getModuleParams(
         modulePath = dependency.data.name;
       } else {
         throw new Error(
-          `Module "${module.path}" has a dependency with missing absolutePath: ${
-            (JSON.stringify(dependency), null, 2)
-          }`
+          `Module "${module.path}" has a dependency with missing absolutePath: ${JSON.stringify(
+            dependency,
+            null,
+            2
+          )}`
         );
       }
     }

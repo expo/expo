@@ -293,6 +293,15 @@ function processResolveWorkerCall(path, state) {
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
     }
+    else {
+        // Inject the async require dependency into the dependency map so it's available in the graph during serialization and splitting.
+        registerDependency(state, {
+            name: nullthrows(state.asyncRequireModulePathStringLiteral).value,
+            asyncType: null,
+            optional: false,
+            exportNames: ['*'],
+        }, path);
+    }
 }
 function getExportNamesFromPath(path) {
     if (path.node.source) {
