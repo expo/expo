@@ -32,16 +32,13 @@ void JSLazyPropertiesDecorator::decorate(
       runtime,
       getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
       0,
-      [getter, prevValue=std::shared_ptr<jsi::Value>()](
+      [getter, prevValue = std::shared_ptr<jsi::Value>()](
         jsi::Runtime &rt,
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
       ) mutable -> jsi::Value {
         if (prevValue == nullptr) {
-          if (getter == nullptr) {
-            return nullptr;
-          }
           JNIEnv *env = jni::Environment::current();
           auto result = JNINoArgsFunctionBody::invoke(getter.get());
           prevValue = std::make_shared<jsi::Value>(convert(env, rt, result));
@@ -57,6 +54,7 @@ void JSLazyPropertiesDecorator::decorate(
       
     common::defineProperty(runtime, &jsObject, name.c_str(), std::move(descriptor));
   }
+  this->lazyProperties.clear();
 }
 
 } // namespace expo

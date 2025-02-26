@@ -13,19 +13,15 @@ class LazyPropertyComponent(
   /**
    * Synchronous function that is called when the property is being accessed for the first time.
    */
-  val getter: (() -> Any?)? = null
+  val getter: () -> Any?
 ) {
   /**
    * Attaches property to the provided js object.
    */
   fun attachToJSObject(jsObject: JSDecoratorsBridgingObject) {
-    val jniGetter = if (getter != null) {
-      JNINoArgsFunctionBody {
-        val result = getter.invoke()
-        return@JNINoArgsFunctionBody JSTypeConverter.convertToJSValue(result)
-      }
-    } else {
-      null
+    val jniGetter = JNINoArgsFunctionBody {
+      val result = getter.invoke()
+      return@JNINoArgsFunctionBody JSTypeConverter.convertToJSValue(result)
     }
 
     jsObject.registerLazyProperty(name, jniGetter)
