@@ -23,9 +23,7 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
 exports.generatePackageListAsync = generatePackageListAsync;
 function isAndroidProject(projectRoot) {
     return (fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle')) ||
-        fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle.kts')) ||
-        fs_1.default.existsSync(path_1.default.join(projectRoot, 'settings.gradle')) ||
-        fs_1.default.existsSync(path_1.default.join(projectRoot, 'settings.gradle.kts')));
+        fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle.kts')));
 }
 exports.isAndroidProject = isAndroidProject;
 async function resolveModuleAsync(packageName, revision) {

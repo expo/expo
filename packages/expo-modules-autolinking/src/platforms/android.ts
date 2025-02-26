@@ -26,9 +26,7 @@ export async function generatePackageListAsync(
 export function isAndroidProject(projectRoot: string): boolean {
   return (
     fs.existsSync(path.join(projectRoot, 'build.gradle')) ||
-    fs.existsSync(path.join(projectRoot, 'build.gradle.kts')) ||
-    fs.existsSync(path.join(projectRoot, 'settings.gradle')) ||
-    fs.existsSync(path.join(projectRoot, 'settings.gradle.kts'))
+    fs.existsSync(path.join(projectRoot, 'build.gradle.kts'))
   );
 }
 

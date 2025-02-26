@@ -176,11 +176,30 @@ export type RawModuleConfigApple = {
      */
     debugOnly?: boolean;
 };
+/**
+ * Represents a raw config specific to Android platforms.
+ */
 export type RawAndroidProjectConfig = {
+    /**
+     * The name of the project. It will be used as the Gradle project name.
+     */
     name?: string;
+    /**
+     * The path to the project directory. Should contain the `build.gradle{.kts}` file.
+     * It's relative to the module root directory.
+     */
     path?: string;
+    /**
+     * Information about the available publication of an Android AAR file
+     */
     publication?: AndroidPublication;
+    /**
+     * Names of the modules to be linked in the project.
+     */
     modules?: string[];
+    /**
+     * Prebuilded AAR projects.
+     */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
 };
 export type RawAndroidConfig = {
