@@ -552,7 +552,7 @@ PODS:
   - EXTaskManager (12.0.5):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.27.1):
+  - EXUpdates (0.27.2):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -579,7 +579,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.27.1):
+  - EXUpdates/Tests (0.27.2):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3268,8 +3268,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: 3549f9ab20c3630235351b4a6691eafcaaf5c377
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 68ffef26f551980423751c44c870759842b3340f
   EXApplication: 27a524f5c3e671c6218220fba04752629466a1a9
   EXAV: 57ea461614a714b8b8fcc72c6fbc298b8f1ec78b
@@ -3341,12 +3341,12 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 6890a769e6c9d83da938dceb9a03e764afc3ec9c
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: 73e120d12a8fefc7ca6b0a6630d59c74374b77d9
-  EXUpdates: caf58e19d12669fa67b750aacdfec4e3040acc91
+  EXUpdates: c675eac6334f59dc08aad0ad1453bbd906e61552
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 2bc03a5cf64e29c611bbc5d7eb9d9f7431f37ee6
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
