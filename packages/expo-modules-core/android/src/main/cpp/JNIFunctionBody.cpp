@@ -19,9 +19,8 @@ JNINoArgsFunctionBody::invoke(
   // if we receive an object of a different class than the one used to obtain the method id.
   // The only cacheable method id can be obtain from the base class.
   static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNINoArgsFunctionBody")
-    ->getMethod<jni::local_ref<jni::JObject>(jobjectArray)>(
-      "invoke",
-      "()Ljava/lang/Object;"
+    ->getMethod<jni::local_ref<jni::JObject>()>(
+      "invoke"
     );
 
   auto result = jni::Environment::current()->CallObjectMethod(self, method.getId());

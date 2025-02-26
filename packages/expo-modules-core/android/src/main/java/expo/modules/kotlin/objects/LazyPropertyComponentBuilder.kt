@@ -3,7 +3,7 @@ package expo.modules.kotlin.objects
 open class LazyPropertyComponentBuilder(
   val name: String
 ) {
-  lateinit var getter: () -> Any?
+  var getter: (() -> Any?)? = null
 
   /**
    * Modifier that sets property getter that has no arguments (the caller is not used).
@@ -13,6 +13,6 @@ open class LazyPropertyComponentBuilder(
   }
 
   fun build(): LazyPropertyComponent {
-    return LazyPropertyComponent(name, getter)
+    return LazyPropertyComponent(name, requireNotNull(getter) { "The property '$name' doesn't have getter." })
   }
 }
