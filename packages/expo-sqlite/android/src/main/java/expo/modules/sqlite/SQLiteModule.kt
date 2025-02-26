@@ -389,7 +389,7 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
-    maybeFinilizeAllStatements(database)
+    maybeFinalizeAllStatements(database)
     val ret = database.ref.sqlite3_close()
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -469,7 +469,7 @@ class SQLiteModule : Module() {
   // region statements managements
 
   @Synchronized
-  private fun maybeFinilizeAllStatements(database: NativeDatabase){
+  private fun maybeFinalizeAllStatements(database: NativeDatabase){
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
