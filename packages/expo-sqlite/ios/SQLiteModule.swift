@@ -585,6 +585,9 @@ public final class SQLiteModule: Module {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
+    guard var stmt = exsqlite3_next_stmt(database.pointer, nil) else {
+      return
+    }
     var result = SQLITE_OK
     while let currentStmt = stmt {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
