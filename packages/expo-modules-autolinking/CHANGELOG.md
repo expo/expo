@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Refactored how declaring multiple Android projects works.
+- Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
