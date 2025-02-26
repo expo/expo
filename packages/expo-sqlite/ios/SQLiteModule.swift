@@ -583,19 +583,19 @@ public final class SQLiteModule: Module {
   // MARK: - statements managements
   private func maybeFinalizeAllStatements(_ database: NativeDatabase) -> Int {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
-        return
+      return
     }
     var result = SQLITE_OK
     while let currentStmt = stmt {
-        let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
-        let ret = exsqlite3_finalize(currentStmt)
-        if ret != SQLITE_OK {
-            result = ret
-        }
-        stmt = nextStmt
+      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
+      let ret = exsqlite3_finalize(currentStmt)
+      if ret != SQLITE_OK {
+        result = ret
+      }
+      stmt = nextStmt
     }
     if result != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 }
