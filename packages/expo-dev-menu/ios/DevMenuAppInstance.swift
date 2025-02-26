@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ReactAppDependencyProvider
 
 @objc
 class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
@@ -13,6 +14,7 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   init(manager: DevMenuManager) {
     self.manager = manager
     super.init()
+    self.dependencyProvider = RCTAppDependencyProvider()
     self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
   }
 

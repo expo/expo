@@ -1,6 +1,7 @@
 import Dispatch
 import Foundation
 import ExpoModulesCore
+import ReactAppDependencyProvider
 
 /**
  Note: you cannot subclass Swift from Objective-C, use EXAppDelegateWrapper with Obj-C app delegates
@@ -30,6 +31,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   public var automaticallyLoadReactNativeWindow = true
 
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    self.dependencyProvider = RCTAppDependencyProvider()
     self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
     let rootView = reactNativeFactory?.rootViewFactory.view(
       withModuleName: self.moduleName as String,

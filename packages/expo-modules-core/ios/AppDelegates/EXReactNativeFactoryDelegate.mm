@@ -12,13 +12,6 @@
 
 @implementation EXReactNativeFactoryDelegate
 
-- (instancetype) init {
-  if (self = [super init]) {
-    self.dependencyProvider = [RCTAppDependencyProvider new];
-  }
-  return self;
-}
-
 #pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name

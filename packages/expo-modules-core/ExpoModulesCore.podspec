@@ -115,8 +115,6 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    # TODO move to Expo https://github.com/expo/expo/pull/35050#discussion_r1965361474
-    test_spec.dependency 'ReactAppDependencyProvider'
 
     test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
   end

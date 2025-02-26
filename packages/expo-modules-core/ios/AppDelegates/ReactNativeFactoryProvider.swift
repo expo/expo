@@ -1,5 +1,4 @@
-// TODO vonovak
-// this is defined in EMC and currently used in Expo and in expo-dev-launcher
+import React_RCTAppDelegate
 
 public protocol ReactNativeFactoryProvider: AnyObject {
   var reactNativeFactory: RCTReactNativeFactory? { get }

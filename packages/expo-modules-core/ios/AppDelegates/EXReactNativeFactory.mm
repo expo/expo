@@ -1,4 +1,4 @@
-#import "EXReactNativeFactory.h"
+#import <ExpoModulesCore/EXReactNativeFactory.h>
 
 @interface EXReactNativeFactory ()
 
