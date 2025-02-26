@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `disabled` button prop. ([#35115](https://github.com/expo/expo/pull/35115) by [@andrew-levy](https://github.com/andrew-levy))
 - Add Radio option to Picker Component for Android. ([#34629](https://github.com/expo/expo/pull/34629)) by [@benjaminkomen](https://github.com/benjaminkomen)
 - Add color support for `ContextMenu` components. ([#34787](https://github.com/expo/expo/pull/34787) by [@behenate](https://github.com/behenate))
 - Adds `DateTimePicker` component. ([#34883](https://github.com/expo/expo/pull/34883) by [@alanjhughes](https://github.com/alanjhughes))
