@@ -1,5 +1,5 @@
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -12,23 +12,40 @@ import {
 } from '../android';
 
 jest.mock('fast-glob');
-jest.mock('fs-extra');
+jest.mock('fs');
+
+const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe(resolveModuleAsync, () => {
-  afterEach(() => {
-    jest.resetAllMocks();
+  it('should not resolve module without `android` folder ', async () => {
+    const name = 'react-native-third-party';
+    const pkgDir = path.join('node_modules', name);
+
+    const result = await resolveModuleAsync(name, {
+      path: pkgDir,
+      version: '0.0.1',
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+      }),
+    });
+    expect(result).toEqual(null);
   });
 
   it('should resolve android/build.gradle', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, ['android/build.gradle'], pkgDir);
-
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
       version: '0.0.1',
-      config: new ExpoModuleConfig({ platforms: ['android'] }),
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+        android: { path: 'android' },
+      }),
     });
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -36,9 +53,9 @@ describe(resolveModuleAsync, () => {
         {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
+          modules: [],
         },
       ],
-      modules: [],
     });
   });
 
@@ -51,7 +68,11 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
       version: '0.0.1',
-      config: new ExpoModuleConfig({ platforms: ['android'], coreFeatures: ['jetpackcompose'] }),
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+        android: { path: 'android' },
+        coreFeatures: ['jetpackcompose'],
+      }),
     });
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -59,9 +80,9 @@ describe(resolveModuleAsync, () => {
         {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
+          modules: [],
         },
       ],
-      modules: [],
       coreFeatures: ['jetpackcompose'],
     });
   });
@@ -75,7 +96,7 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
       version: '0.0.1',
-      config: new ExpoModuleConfig({ platforms: ['android'] }),
+      config: new ExpoModuleConfig({ platforms: ['android'], android: { path: 'android' } }),
     });
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -83,9 +104,9 @@ describe(resolveModuleAsync, () => {
         {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
+          modules: [],
         },
       ],
-      modules: [],
     });
   });
 
@@ -102,7 +123,22 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
       version: '0.0.1',
-      config: new ExpoModuleConfig({ platforms: ['android'] }),
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+        android: {
+          path: 'android',
+          projects: [
+            {
+              name: 'react-native-third-party$subproject',
+              path: 'subproject',
+            },
+            {
+              name: 'react-native-third-party$kotlinSubProject',
+              path: 'kotlinSubProject',
+            },
+          ],
+        },
+      }),
     });
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -110,17 +146,19 @@ describe(resolveModuleAsync, () => {
         {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
+          modules: [],
         },
         {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
+          modules: [],
         },
         {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
+          modules: [],
         },
       ],
-      modules: [],
     });
   });
 });
@@ -159,13 +197,6 @@ describe(convertPackageWithGradleToProjectName, () => {
 });
 
 describe(resolveExtraBuildDependenciesAsync, () => {
-  let mockFsReadFile;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-  });
-
   it('should resolve extra build dependencies from gradle.properties', async () => {
     mockFsReadFile.mockResolvedValueOnce(`
 # gradle.properties

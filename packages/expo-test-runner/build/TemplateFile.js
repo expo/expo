@@ -1,30 +1,10 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TemplateFilesFactory = exports.UserFile = exports.TemplateFile = void 0;
-const fs = __importStar(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = require("path");
 const Paths_1 = require("./Paths");
 const Platform_1 = require("./Platform");
@@ -38,9 +18,16 @@ class TemplateFile {
         this.shouldBeEvaluated = shouldBeEvaluated;
     }
     async copy(projectPath, outputPath) {
-        return fs.copy((0, path_1.join)(Paths_1.SelfPath, 'templates', this.template, outputPath), (0, path_1.join)(projectPath, outputPath), {
-            recursive: true,
-        });
+        const src = (0, path_1.join)(Paths_1.SelfPath, 'templates', this.template, outputPath);
+        const dest = (0, path_1.join)(projectPath, outputPath);
+        const stat = await fs_1.default.promises.stat(src);
+        if (!stat.isFile()) {
+            // NOTE(@kitten): Explicit error was added when switching from fs-extra.copy, which defaults to recursive copying
+            // However, this should only be used on single files, so an explicit error was added
+            throw new TypeError(`Expected outputPath (${outputPath}) to be path to a single file`);
+        }
+        await fs_1.default.promises.mkdir((0, path_1.dirname)(dest), { recursive: true });
+        return fs_1.default.promises.copyFile(src, dest);
     }
     async evaluate(projectPath, filePath, evaluator) {
         if (this.shouldBeEvaluated) {
@@ -60,7 +47,7 @@ class UserFile {
         this.shouldBeEvaluated = shouldBeEvaluated;
     }
     copy(projectPath, outputPath) {
-        return fs.copy(this.userFilePath, (0, path_1.join)(projectPath, outputPath), {
+        return fs_1.default.promises.cp(this.userFilePath, (0, path_1.join)(projectPath, outputPath), {
             recursive: true,
         });
     }

@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createExampleApp = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const getenv_1 = __importDefault(require("getenv"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -25,7 +25,7 @@ async function createExampleApp(data, targetDir, packageManager) {
     const appTmpPath = path_1.default.join(targetDir, exampleProjectSlug);
     // Path to the target example dir
     const appTargetPath = path_1.default.join(targetDir, 'example');
-    if (!(await fs_extra_1.default.pathExists(appTargetPath))) {
+    if (!fs_1.default.existsSync(appTargetPath)) {
         // The template doesn't include the example app, so just skip this phase
         return;
     }
@@ -49,12 +49,12 @@ async function createExampleApp(data, targetDir, packageManager) {
         // that should replace these created by `expo init`.
         await moveFiles(appTargetPath, appTmpPath);
         // Cleanup the "example" dir
-        await fs_extra_1.default.rmdir(appTargetPath);
+        await fs_1.default.promises.rm(appTargetPath, { recursive: true, force: true });
         // Clean up the ".git" from example app
         // note, this directory has contents, rmdir will throw
-        await fs_extra_1.default.remove(path_1.default.join(appTmpPath, '.git'));
+        await fs_1.default.promises.rm(path_1.default.join(appTmpPath, '.git'), { recursive: true, force: true });
         // Move the temporary example app to "example" dir
-        await fs_extra_1.default.rename(appTmpPath, appTargetPath);
+        await fs_1.default.promises.rename(appTmpPath, appTargetPath);
         await addMissingAppConfigFields(appTargetPath, data);
         step.succeed('Configured the example app');
     });
@@ -80,13 +80,28 @@ function createCommand(packageManager, exampleProjectSlug, template) {
     return command.concat([exampleProjectSlug, '--template', template, '--yes']);
 }
 /**
- * Copies files from one directory to another.
+ * Moves files from one directory to another.
  */
 async function moveFiles(fromPath, toPath) {
-    for (const file of await fs_extra_1.default.readdir(fromPath)) {
-        await fs_extra_1.default.move(path_1.default.join(fromPath, file), path_1.default.join(toPath, file), {
-            overwrite: true,
-        });
+    // Make sure that the target directory exists
+    await fs_1.default.promises.mkdir(toPath, { recursive: true });
+    for (const file of await fs_1.default.promises.readdir(fromPath)) {
+        // First, remove target, so there are no conflicts (explicit overwrite)
+        await fs_1.default.promises.rm(path_1.default.join(toPath, file), { force: true, recursive: true });
+        try {
+            // Then, rename the file to move it to the destination
+            await fs_1.default.promises.rename(path_1.default.join(fromPath, file), path_1.default.join(toPath, file));
+        }
+        catch (error) {
+            if (error.code === 'EXDEV') {
+                // If the file is on a different device/disk, copy it instead and delete the original
+                await fs_1.default.promises.cp(fromPath, toPath, { errorOnExist: true, recursive: true });
+                await fs_1.default.promises.rm(fromPath, { recursive: true, force: true });
+            }
+            else {
+                throw error;
+            }
+        }
     }
 }
 /**
@@ -94,7 +109,8 @@ async function moveFiles(fromPath, toPath) {
  */
 async function addMissingAppConfigFields(appPath, data) {
     const appConfigPath = path_1.default.join(appPath, 'app.json');
-    const appConfig = await fs_extra_1.default.readJson(appConfigPath);
+    const appConfigContent = await fs_1.default.promises.readFile(appConfigPath, 'utf8');
+    const appConfig = JSON.parse(appConfigContent);
     const appId = `${data.project.package}.example`;
     // Android package name needs to be added to app.json
     if (!appConfig.expo.android) {
@@ -106,9 +122,7 @@ async function addMissingAppConfigFields(appPath, data) {
         appConfig.expo.ios = {};
     }
     appConfig.expo.ios.bundleIdentifier = appId;
-    await fs_extra_1.default.writeJson(appConfigPath, appConfig, {
-        spaces: 2,
-    });
+    await fs_1.default.promises.writeFile(appConfigPath, JSON.stringify(appConfig, null, 2), 'utf8');
 }
 /**
  * Applies necessary changes to **package.json** of the example app.
@@ -116,7 +130,8 @@ async function addMissingAppConfigFields(appPath, data) {
  */
 async function modifyPackageJson(appPath) {
     const packageJsonPath = path_1.default.join(appPath, 'package.json');
-    const packageJson = await fs_extra_1.default.readJson(packageJsonPath);
+    const packageJsonContent = await fs_1.default.promises.readFile(packageJsonPath, 'utf8');
+    const packageJson = JSON.parse(packageJsonContent);
     if (!packageJson.expo) {
         packageJson.expo = {};
     }
@@ -129,9 +144,7 @@ async function modifyPackageJson(appPath) {
     for (const dependencyToRemove of DEPENDENCIES_TO_REMOVE) {
         delete packageJson.dependencies[dependencyToRemove];
     }
-    await fs_extra_1.default.writeJson(packageJsonPath, packageJson, {
-        spaces: 2,
-    });
+    await fs_1.default.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
 }
 /**
  * Runs `npx expo prebuild` in the example app.

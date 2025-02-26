@@ -6,21 +6,22 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Fork of https://github.com/facebook/metro/blob/b8e9e64f1de97a67234e223f5ee21524b160e8a5/packages/metro-runtime/src/modules/asyncRequire.js#L1
- * Adds web worker support.
+ * Adds worker support.
  */
+
 type MetroRequire = {
   (id: number): unknown;
   importAll: <T>(id: number) => T;
 };
+
+declare let window: any;
+declare let Worker: any;
 
 declare const require: MetroRequire;
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
 declare let __METRO_GLOBAL_PREFIX__: string;
-
-declare let window: any;
-declare let Worker: any;
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
   const loadBundle: (bundlePath: unknown) => Promise<void> = (global as any)[

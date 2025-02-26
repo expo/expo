@@ -86,8 +86,6 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
   // Transform the inverse dependency paths to ids.
   const inverseDependenciesById = Object.create(null);
   Object.keys(inverseDependencies).forEach((path: string) => {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[invalid-computed-prop]
     inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map(
       options.createModuleId
     );
@@ -96,7 +94,7 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
 }
 
 /**
- * Instead of adding the whole inverseDependncies object into each changed
+ * Instead of adding the whole inverseDependencies object into each changed
  * module (which can be really huge if the dependency graph is big), we only
  * add the needed inverseDependencies for each changed module (we do this by
  * traversing upwards the dependency graph).
