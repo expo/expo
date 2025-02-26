@@ -210,6 +210,29 @@ jobs:
         run: pwd # prints: /home/expo/workingdir/build/my-app
 ```
 
+## `defaults`
+
+Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.run.working_directory`
+
+Default working directory to run the scripts in. Relative paths like "./assets" or "assets" are resolved from the app's base directory. Absolute paths like "/apps/mobile" are resolved from the repository root.
+
+### `defaults.tools`
+
+Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
+
+| Tool      | Description             |
+| --------- | ----------------------- |
+| node      | Version of Node.js.     |
+| yarn      | Version of Yarn.        |
+| pnpm      | Version of pnpm.        |
+| bun       | Version of Bun.         |
+| ndk       | Version of Android NDK. |
+| bundler   | Version of Bundler.     |
+| fastlane  | Version of fastlane.    |
+| cocoapods | Version of CocoaPods.   |
+
 ## Control flow
 
 You can control when jobs run and what jobs must complete successfully before a job runs using the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
