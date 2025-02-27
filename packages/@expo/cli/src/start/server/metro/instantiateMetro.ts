@@ -1,7 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
-import hmrJSBundle from '@expo/metro-config/build/serializer/fork/hmrJSBundle';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
