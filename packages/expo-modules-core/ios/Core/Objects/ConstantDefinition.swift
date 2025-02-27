@@ -64,7 +64,7 @@ public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDef
    */
   internal func buildGetter(appContext: AppContext) throws -> JavaScriptObject {
     var prevValue: JavaScriptValue?
-    return try appContext.runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, weak self, name] this, arguments in
+    return try appContext.runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, weak self, name] _, _ in
       guard let prevValue else {
         guard let appContext else {
           throw Exceptions.AppContextLost()
@@ -76,10 +76,11 @@ public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDef
           throw NativeConstantWithoutGetterException(name)
         }
         let result = try getter()
-        prevValue = try appContext.converter.toJS(result, ~ReturnType.self)
-        return prevValue!;
+        let newValue = try appContext.converter.toJS(result, ~ReturnType.self)
+        prevValue = newValue
+        return newValue
       }
-      return prevValue;
+      return prevValue
     }
   }
 

@@ -41,7 +41,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
     self.legacyConstants = definitions
       .compactMap { $0 as? ConstantsDefinition }
-    
+
     self.constants = definitions
       .compactMap { $0 as? AnyConstantDefinition }
       .reduce(into: [String: AnyConstantDefinition]()) { dict, constant in
@@ -91,7 +91,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     for (key, value) in getLegacyConstants() {
       object.setProperty(key, value: value)
     }
-    
+
     for constant in constants.values {
       let descriptor = try constant.buildDescriptor(appContext: appContext)
       object.defineProperty(constant.name, descriptor: descriptor)
