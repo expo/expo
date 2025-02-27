@@ -7,6 +7,7 @@ import { Tabs } from '../layouts/Tabs';
 import { screen, act, renderRouter } from '../testing-library';
 
 const mockRedirects = jest.fn(() => [] as RedirectConfig[]);
+const mockOpenURL = jest.fn((url: string) => undefined);
 
 jest.mock('expo-constants', () => {
   const original = jest.requireActual('expo-constants');
@@ -20,6 +21,15 @@ jest.mock('expo-constants', () => {
           },
         },
       },
+    },
+  };
+});
+
+jest.mock('expo-linking', () => {
+  return {
+    ...jest.requireActual('expo-linking'),
+    get openURL() {
+      return (url: string) => mockOpenURL(url);
     },
   };
 });
@@ -210,4 +220,23 @@ it('does not render redirects in tabs', async () => {
   });
 
   expect(() => screen.getByLabelText('foo')).toThrow();
+});
+
+it('redirect to external URL', async () => {
+  mockRedirects.mockReturnValue([
+    {
+      source: '/foo',
+      destination: '//example.com',
+    },
+  ]);
+
+  renderRouter({
+    _layout: () => <Tabs />,
+    index: () => null,
+    bar: () => <Text testID="bar" />,
+  });
+
+  act(() => router.push('/foo'));
+
+  expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
 });

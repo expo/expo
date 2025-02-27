@@ -27,32 +27,37 @@ describe('server api redirects', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             {
-              source: '/redirect/methods+api',
-              destination: '/methods+api',
+              source: '/redirect/methods',
+              destination: '/methods',
             },
             {
-              source: '/redirect/dynamic/[slug]/index+api',
-              destination: '/dynamic/[slug]/index+api',
+              source: '/redirect/dynamic/[slug]',
+              destination: '/dynamic/[slug]',
             },
             {
-              source: '/redirect/dynamic/[other]/[slug]+api',
-              destination: '/dynamic/[slug]/[other]+api',
+              source: '/redirect/dynamic/[other]/[slug]',
+              destination: '/dynamic/[slug]/[other]',
             },
             {
-              source: '/redirect/dynamic/[slug]/to/[catchAll]+api',
-              destination: '/dynamic/[...catchAll]/index+api',
+              source: '/redirect/dynamic/[slug]/to/[catchAll]',
+              destination: '/dynamic/[...catchAll]',
             },
             {
-              source: '/redirect/dynamic/[slug]/[query]/[params]+api',
-              destination: '/dynamic/[slug]/index+api',
+              source: '/redirect/dynamic/[slug]/[query]/[params]',
+              destination: '/dynamic/[slug]',
             },
             {
-              source: '/redirect/catch-all/[...catchAll]+api',
-              destination: '/dynamic/[...catchAll]/index+api',
+              source: '/redirect/catch-all/[...catchAll]',
+              destination: '/dynamic/[...catchAll]',
             },
             {
-              source: '/redirect/catch-all-to-slug/[...slug]+api',
-              destination: '/dynamic/[slug]/index+api',
+              source: '/redirect/catch-all-to-slug/[...slug]',
+              destination: '/dynamic/[slug]',
+            },
+            {
+              source: '/redirect/only-post/[slug]',
+              destination: '/dynamic/[slug]',
+              methods: ['POST'],
             },
           ] as RedirectConfig[]),
         },
@@ -149,6 +154,19 @@ describe('server api redirects', () => {
 
     it(`will match based upon variable names [...catchAll] -> [...slug]`, async () => {
       const response = await server.fetchAsync('/redirect/catch-all-to-slug/this/is/the/catch-all');
+
+      expect(response.status).toEqual(200);
+      expect(response.redirected).toEqual(true);
+      expect(new URL(response.url).pathname).toEqual('/dynamic/this');
+      expect(new URL(response.url).search).toEqual('');
+    });
+
+    it(`will redirect only if the methods patch`, async () => {
+      let response = await server.fetchAsync('/redirect/only-post/this');
+
+      expect(response.status).toEqual(404);
+
+      response = await server.fetchAsync('/redirect/only-post/this', { method: 'POST' });
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);

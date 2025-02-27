@@ -46,7 +46,7 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
                         initialUrl = store.applyRedirects(initialUrl);
-                        if (typeof nativeLinking?.redirectSystemPath === 'function') {
+                        if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }

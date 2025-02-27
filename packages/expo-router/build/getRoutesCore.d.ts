@@ -22,10 +22,13 @@ export type RedirectConfig = {
     source: string;
     destination: string;
     permanent?: boolean;
+    methods?: string[];
+    external?: boolean;
 };
 export type RewriteConfig = {
     source: string;
     destination: string;
+    methods?: string[];
 };
 /**
  * Given a Metro context module, return an array of nested routes.

@@ -30,6 +30,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
+const Linking = __importStar(require("expo-linking"));
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -44,6 +45,7 @@ const getRoutes_1 = require("../getRoutes");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const useScreens_1 = require("../useScreens");
+const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -95,7 +97,11 @@ class RouterStore {
             .filter(Boolean)
             .flat()
             .map((route) => {
-            return [(0, getStateFromPath_forks_1.routePatternToRegex)((0, getReactNavigationConfig_1.parseRouteSegments)(route.source)), route];
+            return [
+                (0, getStateFromPath_forks_1.routePatternToRegex)((0, getReactNavigationConfig_1.parseRouteSegments)(route.source)),
+                route,
+                (0, url_1.shouldLinkExternally)(route.destination),
+            ];
         });
         this.routeNode = (0, getRoutes_1.getRoutes)(context, {
             ...expo_constants_1.default.expoConfig?.extra?.router,
@@ -239,6 +245,15 @@ class RouterStore {
         const redirect = this.redirects?.find(([regex]) => regex.test(nextUrl));
         if (!redirect) {
             return url;
+        }
+        // If the redirect is external, open the URL
+        if (redirect[2]) {
+            let href = redirect[1].destination;
+            if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
+                href = `https:${href}`;
+            }
+            Linking.openURL(href);
+            return;
         }
         return this.applyRedirects((0, getRoutesRedirects_1.convertRedirect)(url, redirect[1]));
     }

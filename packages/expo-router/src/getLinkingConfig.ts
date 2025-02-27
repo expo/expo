@@ -77,7 +77,7 @@ export function getLinkingConfig(
 
           if (typeof initialUrl === 'string') {
             initialUrl = store.applyRedirects(initialUrl);
-            if (typeof nativeLinking?.redirectSystemPath === 'function') {
+            if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {

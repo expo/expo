@@ -25,10 +25,16 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     generated?: boolean;
     /** Indicates that this is a redirect that should use 301 instead of 307 */
     permanent?: boolean;
+    /** If a redirect, which methods are allowed. Undefined represents all methods */
+    methods?: string[];
 };
 export type ExpoRouterServerManifestV1<TRegex = string> = {
     /**
-     * List of routes that match first. Returns 301 and redirects to another path.
+     * Rewrites. These occur first
+     */
+    rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
+    /**
+     * List of routes that match second. Returns 301 and redirects to another path.
      */
     redirects: ExpoRouterServerManifestV1Route<TRegex>[];
     /**

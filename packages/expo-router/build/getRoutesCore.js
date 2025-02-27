@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getRoutes = void 0;
 const matchers_1 = require("./matchers");
+const url_1 = require("./utils/url");
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -57,36 +58,53 @@ function getDirectoryTree(contextModule, options) {
             for (const redirect of options.redirects) {
                 // Remove the leading `./` or `/`
                 const source = redirect.source.replace(/^\.?\//, '');
-                const targetDestination = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(redirect.destination.replace(/^\.?\/?/, '')));
+                const isExternalRedirect = (0, url_1.shouldLinkExternally)(redirect.destination);
+                const targetDestination = isExternalRedirect
+                    ? redirect.destination
+                    : (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(redirect.destination.replace(/^\.?\/?/, ''))));
                 const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
                 if (ignoreList.some((regex) => regex.test(normalizedSource))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
                 validRedirectDestinations ??= contextKeys.map((key) => {
-                    return [(0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(key)), key];
+                    return [
+                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        key,
+                    ];
                 });
-                const destination = validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+                const destination = isExternalRedirect
+                    ? targetDestination
+                    : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
                 if (!destination) {
                     throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
                 }
-                const fakeContextKey = `./${source}.tsx`;
+                const fakeContextKey = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(`./${source}`));
                 contextKeys.push(fakeContextKey);
-                redirects[fakeContextKey] = { source, destination, permanent: Boolean(redirect.permanent) };
+                redirects[fakeContextKey] = {
+                    source,
+                    destination,
+                    permanent: Boolean(redirect.permanent),
+                    external: isExternalRedirect,
+                    methods: redirect.methods,
+                };
             }
         }
         if (options.rewrites) {
             for (const rewrite of options.rewrites) {
                 // Remove the leading `./` or `/`
                 const source = rewrite.source.replace(/^\.?\//, '');
-                const targetDestination = rewrite.destination.replace(/^\.?\//, '');
+                const targetDestination = (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(rewrite.destination)));
                 const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
                 if (ignoreList.some((regex) => regex.test(normalizedSource))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
                 validRedirectDestinations ??= contextKeys.map((key) => {
-                    return [(0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key)), key];
+                    return [
+                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        key,
+                    ];
                 });
                 const destination = validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
                 if (!destination) {
@@ -95,7 +113,7 @@ function getDirectoryTree(contextModule, options) {
                 // Add a fake context key
                 const fakeContextKey = `./${source}.tsx`;
                 contextKeys.push(fakeContextKey);
-                rewrites[fakeContextKey] = { source, destination };
+                rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
             }
         }
     }
@@ -149,27 +167,29 @@ function getDirectoryTree(contextModule, options) {
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
         if (meta.isRedirect) {
-            node.type = meta.isApi ? 'api-redirect' : 'redirect';
             node.destinationContextKey = redirects[filePath].destination;
             node.permanent = redirects[filePath].permanent;
+            node.methods = redirects[filePath].methods;
             node.generated = true;
-            if (node.type === 'redirect') {
+            if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'redirect',
                     route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
                 }, node);
             }
+            node.type = 'redirect';
         }
         if (meta.isRewrite) {
-            node.type = meta.isApi ? 'api-rewrite' : 'rewrite';
-            node.destinationContextKey = redirects[filePath].destination;
+            node.destinationContextKey = rewrites[filePath].destination;
+            node.methods = rewrites[filePath].methods;
             node.generated = true;
-            if (node.type === 'rewrite') {
+            if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'rewrite',
                     route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
                 }, node);
             }
+            node.type = 'rewrite';
         }
         if (process.env.NODE_ENV === 'development') {
             // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
@@ -346,13 +366,13 @@ pathToRemove = '') {
 }
 function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
-    const key = originalKey.replace(/^\.\//, '');
+    const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
+    let route = key;
     const parts = key.split('/');
-    let route = (0, matchers_1.removeSupportedExtensions)(key);
     const filename = parts[parts.length - 1];
     const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
-    const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
+    const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
         throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
     }
@@ -397,8 +417,8 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         specificity,
         isLayout,
         isApi,
-        isRedirect: originalKey in redirects,
-        isRewrite: originalKey in rewrites,
+        isRedirect: key in redirects,
+        isRewrite: key in rewrites,
     };
 }
 function getIgnoreList(options) {

@@ -81,6 +81,7 @@
           "uniqueItems": true,
           "items": {
             "type": "object",
+            "required": ["source", "destination"],
             "properties": {
               "source": {
                 "description": "The previous file path that this route should redirect from",
@@ -94,6 +95,15 @@
                 "description": "Whether the redirect is temporary or permanent. Defaults to `false`.",
                 "type": "boolean",
                 "default": false
+              },
+              "methods": {
+                "description": "HTTP methods that should be redirected. Omit to redirect all methods.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+                }
               }
             }
           }

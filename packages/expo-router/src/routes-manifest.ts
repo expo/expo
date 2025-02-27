@@ -12,6 +12,7 @@ export type RouteInfo<TRegex = string> = {
   namedRegex: TRegex;
   routeKeys: Record<string, string>;
   permanent?: boolean;
+  methods?: string[];
 };
 
 export type ExpoRoutesManifestV1<TRegex = string> = {
@@ -19,6 +20,7 @@ export type ExpoRoutesManifestV1<TRegex = string> = {
   htmlRoutes: RouteInfo<TRegex>[];
   notFoundRoutes: RouteInfo<TRegex>[];
   redirects: RouteInfo<TRegex>[];
+  rewrites: RouteInfo<TRegex>[];
 };
 
 function createMockContextModule(map: string[] = []) {

@@ -142,7 +142,9 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 };
 
-export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
+export function linkTo(this: RouterStore, originalHref: string, options: LinkToOptions = {}) {
+  let href: string | undefined = originalHref;
+
   if (emitDomLinkEvent(href, options)) {
     return;
   }
@@ -178,6 +180,11 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
 
   href = resolveHrefStringWithSegments(href, this.routeInfo, options);
   href = this.applyRedirects(href);
+
+  // If the href is undefined, it means that the redirect has already been handled the navigation
+  if (!href) {
+    return;
+  }
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 

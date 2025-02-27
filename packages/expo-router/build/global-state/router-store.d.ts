@@ -23,7 +23,7 @@ export declare class RouterStore {
     routeInfo?: UrlObject;
     splashScreenAnimationFrame?: number;
     config: any;
-    redirects?: (readonly [RegExp, RedirectConfig])[];
+    redirects?: (readonly [RegExp, RedirectConfig, boolean])[];
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
@@ -77,7 +77,7 @@ export declare class RouterStore {
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
         }> & any) | undefined;
     }) | undefined;
-    applyRedirects<T extends string | null | undefined>(url: T): T;
+    applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

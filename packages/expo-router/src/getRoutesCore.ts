@@ -8,8 +8,10 @@ import {
   removeFileSystemDots,
   removeFileSystemExtensions,
   removeSupportedExtensions,
+  stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
+import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
   ignore?: RegExp[];
@@ -45,11 +47,14 @@ export type RedirectConfig = {
   source: string;
   destination: string;
   permanent?: boolean;
+  methods?: string[];
+  external?: boolean;
 };
 
 export type RewriteConfig = {
   source: string;
   destination: string;
+  methods?: string[];
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -119,8 +124,57 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       for (const redirect of options.redirects) {
         // Remove the leading `./` or `/`
         const source = redirect.source.replace(/^\.?\//, '');
-        const targetDestination = removeFileSystemDots(
-          removeFileSystemExtensions(redirect.destination.replace(/^\.?\/?/, ''))
+
+        const isExternalRedirect = shouldLinkExternally(redirect.destination);
+
+        const targetDestination = isExternalRedirect
+          ? redirect.destination
+          : stripInvisibleSegmentsFromPath(
+              removeFileSystemDots(
+                removeFileSystemExtensions(redirect.destination.replace(/^\.?\/?/, ''))
+              )
+            );
+
+        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
+
+        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+          continue;
+        }
+
+        // Loop over this once and cache the valid destinations
+        validRedirectDestinations ??= contextKeys.map((key) => {
+          return [
+            stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
+            key,
+          ];
+        });
+
+        const destination = isExternalRedirect
+          ? targetDestination
+          : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+
+        if (!destination) {
+          throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+        }
+
+        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(`./${source}`));
+        contextKeys.push(fakeContextKey);
+        redirects[fakeContextKey] = {
+          source,
+          destination,
+          permanent: Boolean(redirect.permanent),
+          external: isExternalRedirect,
+          methods: redirect.methods,
+        };
+      }
+    }
+
+    if (options.rewrites) {
+      for (const rewrite of options.rewrites) {
+        // Remove the leading `./` or `/`
+        const source = rewrite.source.replace(/^\.?\//, '');
+        const targetDestination = stripInvisibleSegmentsFromPath(
+          removeFileSystemDots(removeSupportedExtensions(rewrite.destination))
         );
 
         const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
@@ -131,38 +185,10 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
         // Loop over this once and cache the valid destinations
         validRedirectDestinations ??= contextKeys.map((key) => {
-          return [removeFileSystemDots(removeFileSystemExtensions(key)), key];
-        });
-
-        const destination = validRedirectDestinations.find(
-          (key) => key[0] === targetDestination
-        )?.[1];
-
-        if (!destination) {
-          throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
-        }
-
-        const fakeContextKey = `./${source}.tsx`;
-        contextKeys.push(fakeContextKey);
-        redirects[fakeContextKey] = { source, destination, permanent: Boolean(redirect.permanent) };
-      }
-    }
-
-    if (options.rewrites) {
-      for (const rewrite of options.rewrites) {
-        // Remove the leading `./` or `/`
-        const source = rewrite.source.replace(/^\.?\//, '');
-        const targetDestination = rewrite.destination.replace(/^\.?\//, '');
-
-        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
-
-        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
-          continue;
-        }
-
-        // Loop over this once and cache the valid destinations
-        validRedirectDestinations ??= contextKeys.map((key) => {
-          return [removeFileSystemDots(removeSupportedExtensions(key)), key];
+          return [
+            stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
+            key,
+          ];
         });
 
         const destination = validRedirectDestinations.find(
@@ -176,7 +202,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         // Add a fake context key
         const fakeContextKey = `./${source}.tsx`;
         contextKeys.push(fakeContextKey);
-        rewrites[fakeContextKey] = { source, destination };
+        rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
       }
     }
   }
@@ -246,11 +272,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     };
 
     if (meta.isRedirect) {
-      node.type = meta.isApi ? 'api-redirect' : 'redirect';
       node.destinationContextKey = redirects[filePath].destination;
       node.permanent = redirects[filePath].permanent;
+      node.methods = redirects[filePath].methods;
       node.generated = true;
-      if (node.type === 'redirect') {
+      if (node.type === 'route') {
         node = options.getSystemRoute(
           {
             type: 'redirect',
@@ -259,13 +285,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           node
         );
       }
+      node.type = 'redirect';
     }
 
     if (meta.isRewrite) {
-      node.type = meta.isApi ? 'api-rewrite' : 'rewrite';
-      node.destinationContextKey = redirects[filePath].destination;
+      node.destinationContextKey = rewrites[filePath].destination;
+      node.methods = rewrites[filePath].methods;
       node.generated = true;
-      if (node.type === 'rewrite') {
+      if (node.type === 'route') {
         node = options.getSystemRoute(
           {
             type: 'rewrite',
@@ -274,6 +301,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           node
         );
       }
+      node.type = 'rewrite';
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -491,15 +519,16 @@ function getFileMeta(
   rewrites: Record<string, RedirectConfig>
 ) {
   // Remove the leading `./`
-  const key = originalKey.replace(/^\.\//, '');
+  const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
+  let route = key;
 
   const parts = key.split('/');
-  let route = removeSupportedExtensions(key);
   const filename = parts[parts.length - 1];
   const [filenameWithoutExtensions, platformExtension] =
     removeSupportedExtensions(filename).split('.');
+
   const isLayout = filenameWithoutExtensions === '_layout';
-  const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
+  const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
     throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
@@ -551,8 +580,8 @@ function getFileMeta(
     specificity,
     isLayout,
     isApi,
-    isRedirect: originalKey in redirects,
-    isRewrite: originalKey in rewrites,
+    isRedirect: key in redirects,
+    isRewrite: key in rewrites,
   };
 }
 

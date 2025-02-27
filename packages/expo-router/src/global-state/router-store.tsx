@@ -5,6 +5,7 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
 import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
@@ -37,6 +38,7 @@ import { convertRedirect } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
 
 type ResultState = any;
@@ -60,7 +62,7 @@ export class RouterStore {
 
   // The expo-router config plugin
   config: any;
-  redirects?: (readonly [RegExp, RedirectConfig])[];
+  redirects?: (readonly [RegExp, RedirectConfig, boolean])[];
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;
@@ -102,7 +104,11 @@ export class RouterStore {
       .filter(Boolean)
       .flat()
       .map((route) => {
-        return [routePatternToRegex(parseRouteSegments(route.source)), route] as const;
+        return [
+          routePatternToRegex(parseRouteSegments(route.source)),
+          route,
+          shouldLinkExternally(route.destination),
+        ] as const;
       });
 
     this.routeNode = getRoutes(context, {
@@ -260,7 +266,7 @@ export class RouterStore {
     return this.linking?.getStateFromPath?.(href, this.linking.config);
   }
 
-  applyRedirects<T extends string | null | undefined>(url: T): T {
+  applyRedirects<T extends string | null | undefined>(url: T): T | undefined {
     if (typeof url !== 'string') {
       return url;
     }
@@ -270,6 +276,17 @@ export class RouterStore {
 
     if (!redirect) {
       return url;
+    }
+
+    // If the redirect is external, open the URL
+    if (redirect[2]) {
+      let href = redirect[1].destination as T & string;
+      if (href.startsWith('//') && Platform.OS !== 'web') {
+        href = `https:${href}` as T & string;
+      }
+
+      Linking.openURL(href);
+      return;
     }
 
     return this.applyRedirects<T>(convertRedirect(url, redirect[1]) as T);
