@@ -233,6 +233,28 @@ Specific versions of tools that should be used for jobs defined in this workflow
 | fastlane  | Version of fastlane.    |
 | cocoapods | Version of CocoaPods.   |
 
+Example of workflow using `defaults.tools`:
+
+```yml
+defaults:
+  tools:
+    node: 20
+    yarn: 2.0.1
+    fastlane: latest
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  # Update will be built using Node 20 etc.
+  update:
+    name: Update
+    type: update
+    params:
+      branch: ${{ github.ref_name || 'test'}}
+```
+
 ## Control flow
 
 You can control when jobs run and what jobs must complete successfully before a job runs using the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
