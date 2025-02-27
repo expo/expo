@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { processColor } from 'react-native';
+import { ColorValue, processColor } from 'react-native';
 
 const isWebColor = (color: string): boolean =>
   color === 'currentcolor' ||
@@ -13,15 +13,15 @@ const isWebColor = (color: string): boolean =>
   color === 'inherit' ||
   color.indexOf('var(') === 0;
 
-export function normalizeColor(color?: number | string, opacity: number = 1): void | string {
+export function normalizeColor(color?: ColorValue, opacity: number = 1): void | string {
   if (color == null) return;
 
   if (typeof color === 'string' && isWebColor(color)) {
     return color;
   }
 
-  const colorInt = processColor(color) as number | undefined;
-  if (colorInt != null) {
+  const colorInt = processColor(color);
+  if (typeof colorInt === 'number') {
     const r = (colorInt >> 16) & 255;
     const g = (colorInt >> 8) & 255;
     const b = colorInt & 255;

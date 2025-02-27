@@ -125,24 +125,15 @@
 
 @end
 
-@interface DevClientAppDelegate (DevMenuRCTAppDelegate)
+@interface DevClientReactNativeFactoryDelegate (DevMenuRCTAppDelegate)
 
 @end
 
-@implementation DevMenuRCTAppDelegate
+@implementation DevMenuReactNativeFactoryDelegate
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
-}
-
-- (Class)getModuleClassFromName:(const char *)name
-{
-  // Overrides DevLoadingView as no-op when loading dev-menu bundle
-  if (strcmp(name, "DevLoadingView") == 0) {
-    return [DevClientNoOpLoadingView class];
-  }
-  return [super getModuleClassFromName:name];
 }
 
 @end
