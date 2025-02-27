@@ -62,32 +62,7 @@ module.exports = {
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
         redirects: process.env.E2E_ROUTER_REDIRECTS
           ? JSON.parse(process.env.E2E_ROUTER_REDIRECTS)
-          : [
-              {
-                source: '/redirect/methods+api',
-                destination: '/methods+api',
-              },
-              {
-                source: '/redirect/dynamic/[slug]/index+api',
-                destination: '/[slug]/index+api',
-              },
-              {
-                source: '/redirect/dynamic/[other]/[slug]+api',
-                destination: '/[slug]/[other]+api',
-              },
-              {
-                source: '/redirect/dynamic/[slug]/[query]/[params]+api',
-                destination: '/[slug]/index+api',
-              },
-              {
-                source: '/redirect/dynamic/[slug]/to/[catchAll]+api',
-                destination: '/[...catchAll]/index+api',
-              },
-              {
-                source: '/redirect/catch-all/[...catchAll]+api',
-                destination: '/[...catchAll]/index+api',
-              },
-            ],
+          : undefined,
       },
     ],
   ],
