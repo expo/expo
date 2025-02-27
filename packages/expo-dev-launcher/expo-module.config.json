@@ -9,6 +9,7 @@
     "debugOnly": true
   },
   "android": {
+    "modules": ["expo.modules.devlauncher.modules.DevLauncherInternalModule"],
     "gradlePlugins": [
       {
         "id": "expo-dev-launcher-gradle-plugin",

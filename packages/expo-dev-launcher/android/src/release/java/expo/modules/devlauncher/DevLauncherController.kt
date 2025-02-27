@@ -124,5 +124,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
     @JvmStatic
     fun wasInitialized(): Boolean = false
+
+    @JvmStatic
+    fun getMetadataValue(context: Context, key: String, defaultValue: String = ""): String {
+      throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+    }
   }
 }
