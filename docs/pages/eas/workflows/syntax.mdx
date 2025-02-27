@@ -216,7 +216,7 @@ Parameters to use as defaults for all jobs defined in the workflow configuration
 
 ### `defaults.run.working_directory`
 
-Default working directory to run the scripts in. Relative paths like "./assets" or "assets" are resolved from the app's base directory. Absolute paths like "/apps/mobile" are resolved from the repository root.
+Default working directory to run the scripts in. Relative paths like "./assets" or "assets" are resolved from the app's base directory.
 
 ### `defaults.tools`
 
@@ -236,7 +236,7 @@ Specific versions of tools that should be used for jobs defined in this workflow
 Example of workflow using `defaults.tools`:
 
 ```yaml .eas/workflows/publish-update.yml
-name: Publish update
+name: Set up custom versions
 defaults:
   tools:
     node: latest
@@ -248,12 +248,12 @@ on:
     branches: ['*']
 
 jobs:
-  # Update will be built using Node 20 etc.
-  update:
-    name: Update
-    type: update
-    params:
-      branch: ${{ github.ref_name || 'test'}}
+  setup:
+    steps:
+      - name: Check Node version
+        run: node --version # should print a concrete version, like 23.9.0
+      - name: Check Yarn version
+        run: yarn --version # should print a concrete version, like 2.4.3
 ```
 
 ## Control flow
