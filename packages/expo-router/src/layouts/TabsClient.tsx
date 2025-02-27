@@ -6,8 +6,8 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
+import { Pressable } from 'expo-router/react-native';
 import React from 'react';
-import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
@@ -41,7 +41,11 @@ export const Tabs = withLayoutContext<
               return null;
             }
             const children =
-              Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
+              process.env.EXPO_OS === 'web' ? (
+                props.children
+              ) : (
+                <Pressable>{props.children}</Pressable>
+              );
             // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
             //       While Link expects a TextStyle. We need to reconcile these types.
             return (
@@ -49,7 +53,7 @@ export const Tabs = withLayoutContext<
                 {...(props as any)}
                 style={[{ display: 'flex' }, props.style as any]}
                 href={href}
-                asChild={Platform.OS !== 'web'}
+                asChild={process.env.EXPO_OS !== 'web'}
                 children={children}
               />
             );

@@ -7,7 +7,6 @@ import {
 import Constants from 'expo-constants';
 import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
-import { Platform } from 'react-native';
 
 import {
   canGoBack,
@@ -92,7 +91,7 @@ export class RouterStore {
     this.routeNode = getRoutes(context, {
       ...Constants.expoConfig?.extra?.router,
       ignoreEntryPoints: true,
-      platform: Platform.OS,
+      platform: process.env.EXPO_OS,
     });
 
     // We always needs routeInfo, even if there are no routes. This can happen if:

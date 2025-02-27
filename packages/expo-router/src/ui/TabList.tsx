@@ -1,5 +1,5 @@
+import { View, StyleSheet, type ViewProps } from 'expo-router/react-native';
 import { ReactElement, ComponentProps } from 'react';
-import { View, StyleSheet, ViewProps } from 'react-native';
 
 import { ViewSlot } from './common';
 

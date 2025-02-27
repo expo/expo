@@ -3,7 +3,15 @@
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Platform,
+  StatusBar,
+} from 'expo-router/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';
@@ -34,7 +42,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
       borderBottomColor: '#323232',
     },
     header: () => {
-      const WrapperElement = Platform.OS === 'android' ? SafeAreaView : View;
+      const WrapperElement = process.env.EXPO_OS === 'android' ? SafeAreaView : View;
       return (
         <WrapperElement style={styles.header}>
           <View style={styles.headerContent}>
@@ -129,7 +137,7 @@ function FileItem({
           accessibilityLabel={route.contextKey}
           href={href}
           onPress={() => {
-            if (Platform.OS !== 'web' && router.canGoBack()) {
+            if (process.env.EXPO_OS !== 'web' && router.canGoBack()) {
               // Ensure the modal pops
               router.back();
             }

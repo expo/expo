@@ -1,5 +1,5 @@
+import { StyleSheet } from 'expo-router/react-native';
 import { ComponentProps, ReactElement, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
 import { TabContext, TabsDescriptor } from './TabContext';
@@ -52,7 +52,7 @@ export type TabsSlotRenderOptions = {
  * ```
  */
 export function useTabSlot({
-  detachInactiveScreens = ['android', 'ios', 'web'].includes(Platform.OS),
+  detachInactiveScreens = ['android', 'ios', 'web'].includes(process.env.EXPO_OS!),
   style,
   renderFn = defaultTabsSlotRender,
 }: TabSlotProps = {}) {

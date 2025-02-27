@@ -1,7 +1,7 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 import { useMemo, MouseEvent } from 'react';
-import { TextProps, GestureResponderEvent, Platform } from 'react-native';
+import { TextProps, GestureResponderEvent, Platform } from 'expo-router/react-native';
 
 import { Href } from '../types';
 
@@ -214,7 +214,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
 
 // Mutate the style prop to add the className on web.
 export function useInteropClassName(props: { style?: TextProps['style']; className?: string }) {
-  if (Platform.OS !== 'web') {
+  if (process.env.EXPO_OS !== 'web') {
     return props.style;
   }
 

@@ -1,6 +1,5 @@
 import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
-import { Platform } from 'react-native';
 
 import {
   parsePathAndParamsFromExpoGoLink,
@@ -24,10 +23,10 @@ export function getInitialURL(): ReturnType<
   if (typeof window === 'undefined') {
     return '';
   }
-  if (Platform.OS === 'web' && window.location?.href) {
+  if (process.env.EXPO_OS === 'web' && window.location?.href) {
     return window.location.href;
   }
-  if (Platform.OS === 'ios') {
+  if (process.env.EXPO_OS === 'ios') {
     // Use the new Expo API for iOS. This has better support for App Clips and handoff.
     const url = Linking.getLinkingURL();
     return (

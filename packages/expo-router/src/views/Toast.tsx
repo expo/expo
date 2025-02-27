@@ -2,7 +2,15 @@
 
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React, { type PropsWithChildren } from 'react';
-import { ActivityIndicator, Animated, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'expo-router/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const CODE_FONT = Platform.select({

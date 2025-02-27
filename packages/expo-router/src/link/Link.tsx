@@ -1,8 +1,8 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
+import { Text, type GestureResponderEvent, Platform } from 'expo-router/react-native';
 import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
-import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';

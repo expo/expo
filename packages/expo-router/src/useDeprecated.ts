@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-router/react-native';
 
 // Node environment may render in multiple processes causing the warning to log mutiple times
 // Hence we skip the warning in these environments.

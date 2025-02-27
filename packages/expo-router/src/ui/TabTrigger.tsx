@@ -1,7 +1,7 @@
 import { Slot } from '@radix-ui/react-slot';
 import { TabNavigationState } from '@react-navigation/native';
+import { View, StyleSheet, Pressable, type PressableProps } from 'expo-router/react-native';
 import { ReactNode, useContext, ReactElement, ComponentProps, useCallback } from 'react';
-import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
 import { TabTriggerMapContext } from './TabContext';
 import { ExpoTabsResetValue } from './TabRouter';

@@ -7,6 +7,7 @@ import {
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
+import { StyleSheet, ViewProps, View } from 'expo-router/react-native';
 import {
   Children,
   ComponentProps,
@@ -18,7 +19,6 @@ import {
   useMemo,
   PropsWithChildren,
 } from 'react';
-import { StyleSheet, ViewProps, View } from 'react-native';
 
 import {
   ExpoTabsScreenOptions,

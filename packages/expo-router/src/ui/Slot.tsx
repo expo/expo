@@ -1,6 +1,6 @@
 import { Slot as RUISlot } from '@radix-ui/react-slot';
+import { StyleSheet } from 'expo-router/react-native';
 import { forwardRef, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
 
 /**
  * RadixUI has special logic to handle the merging of `style` and `className` props.

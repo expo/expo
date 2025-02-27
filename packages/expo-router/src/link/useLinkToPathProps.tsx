@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react';
-import { GestureResponderEvent, Platform } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 
 import { emitDomLinkEvent } from './useDomComponentNavigation';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
@@ -65,7 +65,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
 export function shouldHandleMouseEvent(
   event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
 ) {
-  if (Platform.OS !== 'web') {
+  if (process.env.EXPO_OS !== 'web') {
     return !event?.defaultPrevented;
   }
 

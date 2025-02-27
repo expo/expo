@@ -1,4 +1,4 @@
-import { NavigationProp, NavigationState, useNavigation } from '@react-navigation/native';
+import { type NavigationProp, type NavigationState, useNavigation } from '@react-navigation/native';
 import { useCallback, useState, useEffect, useRef } from 'react';
 
 import { useExpoRouter } from '../global-state/router-store';

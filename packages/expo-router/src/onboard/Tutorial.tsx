@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
+import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'expo-router/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createEntryFileAsync } from './createEntryFile';
@@ -10,7 +10,7 @@ const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
 
 export function Tutorial() {
   React.useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (process.env.EXPO_OS === 'web') {
       // Reset the route on web so the initial route isn't a 404 after
       // the user has created the entry file.
       // This is useful for cases where you are testing the tutorial.
@@ -36,7 +36,7 @@ export function Tutorial() {
           Welcome to Expo
         </Text>
         <Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
-          Start by creating a file{Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
+          Start by creating a file{process.env.EXPO_OS !== 'web' ? '\n' : ' '}in the{' '}
           <Text style={{ fontWeight: '600' }}>{getRootDir()}</Text> directory.
         </Text>
         <Text>

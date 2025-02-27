@@ -3,7 +3,7 @@
  */
 import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import * as React from 'react';
-import { BackHandler } from 'react-native';
+import { BackHandler } from 'expo-router/react-native';
 
 export function useBackButton(ref: React.RefObject<NavigationContainerRef<ParamListBase>>) {
   React.useEffect(() => {

@@ -1,6 +1,7 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  Pressable as NativePressable,
+import { Pressable as NativePressable } from 'expo-router/react-native';
+
+import type {
   StyleProp,
   ViewStyle,
   PressableStateCallbackType as NativePressableStateCallbackType,

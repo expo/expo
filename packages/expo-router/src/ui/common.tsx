@@ -1,5 +1,5 @@
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-import { ViewProps, View, SafeAreaView } from 'react-native';
+import { ViewProps, View, SafeAreaView } from 'expo-router/react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';

@@ -34,7 +34,7 @@ import type {
   MouseEvent,
   ForwardedRef,
 } from 'react';
-import { Text } from 'react-native';
+import { Text } from 'expo-router/react-native';
 
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';

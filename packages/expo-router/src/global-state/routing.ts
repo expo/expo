@@ -2,7 +2,6 @@ import { StackActions, type NavigationState, PartialRoute } from '@react-navigat
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { nanoid } from 'nanoid/non-secure';
-import { Platform } from 'react-native';
 
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
@@ -141,7 +140,7 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
   }
 
   if (shouldLinkExternally(href)) {
-    if (href.startsWith('//') && Platform.OS !== 'web') {
+    if (href.startsWith('//') && process.env.EXPO_OS !== 'web') {
       href = `https:${href}`;
     }
 

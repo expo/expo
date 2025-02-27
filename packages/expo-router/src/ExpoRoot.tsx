@@ -1,8 +1,8 @@
 'use client';
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
+import { StatusBar, useColorScheme } from 'expo-router/react-native';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
@@ -31,7 +31,7 @@ export type NativeIntent = {
 const isTestEnv = process.env.NODE_ENV === 'test';
 
 const INITIAL_METRICS =
-  Platform.OS === 'web' || isTestEnv
+  process.env.EXPO_OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -69,7 +69,7 @@ function AutoStatusBar() {
 }
 
 const initialUrl =
-  Platform.OS === 'web' && typeof window !== 'undefined'
+  process.env.EXPO_OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
 
