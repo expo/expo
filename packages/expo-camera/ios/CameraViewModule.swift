@@ -61,24 +61,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           return
         }
 
-        if #available(iOS 11.0, *) {
-          self.performBarcodeDetection(on: cgImage, promise: promise)
-        } else {
-          guard
-            let detector = CIDetector(
-              ofType: CIDetectorTypeQRCode,
-              context: nil,
-              options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
-            )
-          else {
-            promise.reject(InitScannerFailed())
-            return
-          }
-
-          let ciImage = CIImage(cgImage: cgImage)
-          let features = detector.features(in: ciImage)
-          promise.resolve(BarcodeUtils.getResultFrom(features))
-        }
+        self.performBarcodeDetection(on: cgImage, promise: promise)
       }
     }
 
@@ -418,7 +401,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
   }
 
-  @available(iOS 11.0, *)
   private func performBarcodeDetection(on cgImage: CGImage, promise: Promise) {
     let imageWidth = CGFloat(cgImage.width)
     let imageHeight = CGFloat(cgImage.height)
@@ -448,7 +430,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
   }
 
-  @available(iOS 11.0, *)
   private func processBarcodeObservations(
     _ observations: [VNBarcodeObservation], imageWidth: CGFloat, imageHeight: CGFloat
   ) -> [[String: Any]] {
