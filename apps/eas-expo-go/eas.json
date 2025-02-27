@@ -26,7 +26,7 @@
         },
         "image": "macos-sonoma-14.6-xcode-16.0",
         "cocoapods": "1.16.2",
-        "resourceClass": "large",
+        "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
