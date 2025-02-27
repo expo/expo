@@ -13,7 +13,6 @@
 
 #include "JSFunctionsDecorator.h"
 #include "JSPropertiesDecorator.h"
-#include "JSLazyPropertiesDecorator.h"
 #include "JSConstantsDecorator.h"
 #include "JSObjectDecorator.h"
 #include "JSClassesDecorator.h"
@@ -42,7 +41,7 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
-  void registerLazyProperty(
+  void registerConstant(
     jni::alias_ref<jstring> name,
     jni::alias_ref<JNINoArgsFunctionBody::javaobject> getter
   );
@@ -92,7 +91,6 @@ private:
   std::unique_ptr<JSFunctionsDecorator> functionDecorator;
   std::unique_ptr<JSConstantsDecorator> constantsDecorator;
   std::unique_ptr<JSPropertiesDecorator> propertiesDecorator;
-  std::unique_ptr<JSLazyPropertiesDecorator> lazyPropertiesDecorator;
   std::unique_ptr<JSObjectDecorator> objectDecorator;
   std::unique_ptr<JSClassesDecorator> classDecorator;
 };

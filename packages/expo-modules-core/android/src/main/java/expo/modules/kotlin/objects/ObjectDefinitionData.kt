@@ -6,12 +6,12 @@ import expo.modules.kotlin.functions.BaseAsyncFunctionComponent
 import expo.modules.kotlin.functions.SyncFunctionComponent
 
 class ObjectDefinitionData(
-  val constantsProvider: () -> Map<String, Any?>,
+  val legacyConstantsProvider: () -> Map<String, Any?>,
   val syncFunctions: Map<String, SyncFunctionComponent>,
   val asyncFunctions: Map<String, BaseAsyncFunctionComponent>,
   val eventsDefinition: EventsDefinition?,
   val properties: Map<String, PropertyComponent>,
-  val lazyProperties: Map<String, LazyPropertyComponent>
+  val constants: Map<String, ConstantComponent>
 ) {
   val functions
     get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())

@@ -22,8 +22,8 @@ void JSDecoratorsBridgingObject::registerNatives() {
                                     JSDecoratorsBridgingObject::registerAsyncFunction),
                    makeNativeMethod("registerProperty",
                                     JSDecoratorsBridgingObject::registerProperty),
-                   makeNativeMethod("registerLazyProperty",
-                                    JSDecoratorsBridgingObject::registerLazyProperty),
+                   makeNativeMethod("registerConstant",
+                                    JSDecoratorsBridgingObject::registerConstant),
                    makeNativeMethod("registerObject",
                                     JSDecoratorsBridgingObject::registerObject),
                    makeNativeMethod("registerClass",
@@ -83,18 +83,15 @@ void JSDecoratorsBridgingObject::registerProperty(
   );
 }
 
-void JSDecoratorsBridgingObject::registerLazyProperty(
+void JSDecoratorsBridgingObject::registerConstant(
   jni::alias_ref<jstring> name,
   jni::alias_ref<JNINoArgsFunctionBody::javaobject> getter
 ) {
-  if (!lazyPropertiesDecorator) {
-    lazyPropertiesDecorator = std::make_unique<JSLazyPropertiesDecorator>();
+  if (!constantsDecorator) {
+    constantsDecorator = std::make_unique<JSConstantsDecorator>();
   }
 
-  lazyPropertiesDecorator->registerLazyProperty(
-    name,
-    getter
-  );
+  constantsDecorator->registerConstant(name, getter);
 }
 
 void JSDecoratorsBridgingObject::registerConstants(jni::alias_ref<react::NativeMap::javaobject> constants) {
@@ -149,10 +146,6 @@ std::vector<std::unique_ptr<JSDecorator>> JSDecoratorsBridgingObject::bridge() {
 
   if (propertiesDecorator) {
     decorators.push_back(std::move(propertiesDecorator));
-  }
-
-  if (lazyPropertiesDecorator) {
-    decorators.push_back(std::move(lazyPropertiesDecorator));
   }
 
   if (constantsDecorator) {

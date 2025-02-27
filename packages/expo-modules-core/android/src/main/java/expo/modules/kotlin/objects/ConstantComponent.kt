@@ -4,19 +4,19 @@ import expo.modules.kotlin.jni.JNINoArgsFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.JSTypeConverter
 
-class LazyPropertyComponent(
+class ConstantComponent(
   /**
-   * Name of the property.
+   * Name of the constant.
    */
   val name: String,
 
   /**
-   * Synchronous function that is called when the property is being accessed for the first time.
+   * Synchronous function that is called when the constant is being accessed for the first time.
    */
   val getter: () -> Any?
 ) {
   /**
-   * Attaches property to the provided js object.
+   * Attaches constant to the provided js object.
    */
   fun attachToJSObject(jsObject: JSDecoratorsBridgingObject) {
     val jniGetter = JNINoArgsFunctionBody {
@@ -24,6 +24,6 @@ class LazyPropertyComponent(
       return@JNINoArgsFunctionBody JSTypeConverter.convertToJSValue(result)
     }
 
-    jsObject.registerLazyProperty(name, jniGetter)
+    jsObject.registerConstant(name, jniGetter)
   }
 }

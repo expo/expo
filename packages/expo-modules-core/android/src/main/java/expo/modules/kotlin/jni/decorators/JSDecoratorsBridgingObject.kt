@@ -55,7 +55,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     setter: JNIFunctionBody?
   )
 
-  external fun registerLazyProperty(
+  external fun registerConstant(
     name: String,
     getter: JNINoArgsFunctionBody?
   )
