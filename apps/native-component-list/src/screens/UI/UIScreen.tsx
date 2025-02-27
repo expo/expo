@@ -5,6 +5,14 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
+    name: 'Binding component',
+    route: 'ui/binding',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BindingScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},

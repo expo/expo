@@ -70,6 +70,7 @@ const TextInputNativeView: React.ComponentType<NativeTextInputProps> = requireNa
 function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
   return {
     ...props,
+    value: props.value.__expo_shared_object_id__,
     onValueChanged: (e) => {
       props.onChangeText?.(e.nativeEvent.value);
     },

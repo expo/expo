@@ -1,11 +1,18 @@
 import SwiftUI
 import ExpoModulesCore
+import Combine
+
+
+
+
+
 
 class TextInputProps: ExpoSwiftUI.ViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
   @Field var numberOfLines: Int?
+  @Field var value: ValueBinding = ValueBinding("")
   @Field var keyboardType: String = "default"
   @Field var autocorrection: Bool = true
   var onValueChanged = EventDispatcher()
@@ -42,19 +49,20 @@ func getKeyboardType(_ keyboardType: String?) -> UIKeyboardType {
   }
 }
 
+
 struct TextInputView: ExpoSwiftUI.View {
   @EnvironmentObject var props: TextInputProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var value: String = ""
+//  @State var held: [AnyCancellable] = []
+  
+  
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
       if #available(iOS 16.0, *) {
-        TextField(props.placeholder, text: $value, axis: props.multiline ? .vertical : .horizontal)
+        TextField(props.placeholder, text: props.value.value, axis: props.multiline ? .vertical : .horizontal)
           .lineLimit(props.multiline ? props.numberOfLines : 1)
-          .onAppear { value = props.defaultValue }
-          .onChange(of: value) { newValue in
-            props.onValueChanged(["value": newValue])
-          }
+
           .keyboardType(getKeyboardType(props.keyboardType))
           .autocorrectionDisabled(!props.autocorrection)
       } else {
@@ -64,3 +72,4 @@ struct TextInputView: ExpoSwiftUI.View {
     }
   }
 }
+
