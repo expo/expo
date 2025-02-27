@@ -15,6 +15,9 @@ import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class FetchUpdateProcedure(
@@ -26,14 +29,15 @@ class FetchUpdateProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val launchedUpdate: UpdateEntity?,
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-fetch-update"
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 
-    AsyncTask.execute {
+    procedureScope.launch {
       val database = databaseHolder.database
       RemoteLoader(
         context,

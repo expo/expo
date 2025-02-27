@@ -1,85 +1,83 @@
 package expo.modules.updates.procedures
 
-import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.logging.IUpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * A serial task queue, where each task is an asynchronous task. Guarantees that all queued tasks
  * are run sequentially.
  */
 class StateMachineSerialExecutorQueue(
-  private val updatesLogger: UpdatesLogger,
-  private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext
+  private val updatesLogger: IUpdatesLogger,
+  private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext,
+  private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) {
-  private data class MethodInvocationHolder(
-    val updatesLogger: UpdatesLogger,
+  private data class ProcedureHolder(
     val procedure: StateMachineProcedure,
-    val onMethodInvocationComplete: MethodInvocationHolder.() -> Unit
-  ) {
-    fun execute(procedureContext: StateMachineProcedure.StateMachineProcedureContext) {
-      val loggerTimer = updatesLogger.startTimer(procedure.loggerTimerLabel)
-      procedure.run(object : StateMachineProcedure.ProcedureContext {
-        private var isCompleted = false
+    val onComplete: () -> Unit
+  )
 
-        override fun onComplete() {
-          isCompleted = true
-          loggerTimer.stop()
-          onMethodInvocationComplete(this@MethodInvocationHolder)
-        }
+  private val procedureChannel = Channel<ProcedureHolder>(Channel.UNLIMITED)
+  private val mutex = Mutex()
 
-        override fun processStateEvent(event: UpdatesStateEvent) {
-          if (isCompleted) {
-            throw Exception("Cannot set state after procedure completion")
-          }
-          procedureContext.processStateEvent(event)
-        }
-
-        @Deprecated("Avoid needing to access current state to know how to transition to next state")
-        override fun getCurrentState(): UpdatesStateValue {
-          if (isCompleted) {
-            throw Exception("Cannot get state after procedure completion")
-          }
-          return procedureContext.getCurrentState()
-        }
-
-        override fun resetStateAfterRestart() {
-          if (isCompleted) {
-            throw Exception("Cannot reset state after procedure completion")
-          }
-          procedureContext.resetStateAfterRestart()
-        }
-      })
+  init {
+    scope.launch {
+      for (holder in procedureChannel) {
+        executeProcedure(holder)
+      }
     }
   }
 
-  private val internalQueue = ArrayDeque<MethodInvocationHolder>()
+  private suspend fun executeProcedure(holder: ProcedureHolder) {
+    val loggerTimer = updatesLogger.startTimer(holder.procedure.loggerTimerLabel)
+    holder.procedure.run(object : StateMachineProcedure.ProcedureContext {
+      private var isCompleted = false
 
-  private var currentMethodInvocation: MethodInvocationHolder? = null
+      override fun onComplete() {
+        isCompleted = true
+        loggerTimer.stop()
+        holder.onComplete()
+      }
+
+      override fun processStateEvent(event: UpdatesStateEvent) {
+        if (isCompleted) {
+          throw Exception("Cannot set state after procedure completion")
+        }
+        stateMachineProcedureContext.processStateEvent(event)
+      }
+
+      @Deprecated("Avoid needing to access current state to know how to transition to next state")
+      override fun getCurrentState(): UpdatesStateValue {
+        if (isCompleted) {
+          throw Exception("Cannot get state after procedure completion")
+        }
+        return stateMachineProcedureContext.getCurrentState()
+      }
+
+      override fun resetStateAfterRestart() {
+        if (isCompleted) {
+          throw Exception("Cannot reset state after procedure completion")
+        }
+        stateMachineProcedureContext.resetStateAfterRestart()
+      }
+    })
+  }
 
   /**
    * Queue a procedure for execution.
    */
   fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
-    internalQueue.add(
-      MethodInvocationHolder(updatesLogger, stateMachineProcedure) {
-        assert(currentMethodInvocation == this)
-        currentMethodInvocation = null
-        maybeProcessQueue()
+    scope.launch {
+      mutex.withLock {
+        procedureChannel.send(ProcedureHolder(stateMachineProcedure) {})
       }
-    )
-
-    maybeProcessQueue()
-  }
-
-  @Synchronized
-  private fun maybeProcessQueue() {
-    if (currentMethodInvocation != null) {
-      return
     }
-
-    val nextMethodInvocation = internalQueue.removeFirstOrNull() ?: return
-    currentMethodInvocation = nextMethodInvocation
-    nextMethodInvocation.execute(stateMachineProcedureContext) // need to make sure this is asynchronous
   }
 }
