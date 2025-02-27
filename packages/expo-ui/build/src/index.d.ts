@@ -4,6 +4,8 @@ export type { Button, ButtonProps } from '../components/Button';
 export type { ContextMenu, ContextMenuProps, Submenu, SubmenuProps, ActivationMethod, } from '../components/ContextMenu';
 export type { Section, SectionProps } from '../components/Section';
 export type { Slider, SliderProps } from '../components/Slider';
+export type { Label, LabelProps } from '../components/Label';
+export type { List, DataList, ListProps, DataListProps, NativeListProps } from '../components/List';
 /**
  * @hidden
  */
