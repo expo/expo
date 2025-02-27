@@ -3,7 +3,8 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 
 export type LabelProps = {
   title?: string;
-  systemImage: string;
+  systemImage?: string;
+  color?: string;
   style?: StyleProp<ViewStyle>;
 };
 
