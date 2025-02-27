@@ -29,7 +29,7 @@ export default function TextInputScreen() {
           numberOfLines={5}
           keyboardType="phone-pad"
           autocorrection={false}
-          initialValue="324342324"
+          defaultValue="324342324"
           onChangeText={setValue}
         />
       </Section>
