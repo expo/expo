@@ -1,7 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.util.Log
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
@@ -43,7 +42,6 @@ class CheckForUpdateProcedure(
         launchedUpdate,
         embeddedUpdate
       )
-      Log.d("CheckForUpdateProcedure", "extraHeaders: $extraHeaders")
       databaseHolder.releaseDatabase()
       fileDownloader.downloadRemoteUpdate(
         extraHeaders,
