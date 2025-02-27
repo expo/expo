@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `preview` to `<Link />`
+- Add `preview` to `<Link />` ([#35075](https://github.com/expo/expo/pull/35075) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
