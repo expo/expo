@@ -42,15 +42,27 @@ func getKeyboardType(_ keyboardType: String?) -> UIKeyboardType {
   }
 }
 
+func allowMultiLine() -> Bool {
+  #if os(tvOS)
+  return false
+  #else
+  return true
+  #endif
+}
+
 struct TextInputView: ExpoSwiftUI.View {
   @EnvironmentObject var props: TextInputProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var value: String = ""
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
-      if #available(iOS 16.0, *) {
-        TextField(props.placeholder, text: $value, axis: props.multiline ? .vertical : .horizontal)
-          .lineLimit(props.multiline ? props.numberOfLines : 1)
+      if #available(iOS 16.0, tvOS 16.0, *) {
+        TextField(
+          props.placeholder,
+          text: $value,
+          axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+        )
+          .lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
           .onAppear { value = props.defaultValue }
           .onChange(of: value) { newValue in
             props.onValueChanged(["value": newValue])
