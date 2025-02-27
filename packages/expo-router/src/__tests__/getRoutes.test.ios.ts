@@ -1013,7 +1013,7 @@ describe('group expansion', () => {
   });
 });
 
-describe.only('redirects', () => {
+describe('redirects', () => {
   it('can add redirects', () => {
     expect(
       getRoutes(
@@ -1055,7 +1055,7 @@ describe.only('redirects', () => {
     });
   });
 
-  it.only('can add dynamic redirects', () => {
+  it('can add dynamic redirects', () => {
     expect(
       getRoutes(
         inMemoryContext({

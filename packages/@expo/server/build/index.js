@@ -39,6 +39,12 @@ function getProcessedManifest(path) {
                 namedRegex: new RegExp(value.namedRegex),
             };
         }),
+        rewrites: routesManifest.rewrites?.map((value) => {
+            return {
+                ...value,
+                namedRegex: new RegExp(value.namedRegex),
+            };
+        }),
     };
     return parsed;
 }
@@ -114,29 +120,33 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         const url = new URL(request.url, 'http://expo.dev');
         const sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
+        if (routesManifest.rewrites) {
+            for (const route of routesManifest.rewrites) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                const url = getRedirectRewriteLocation(request, route);
+                if (url) {
+                    request = { ...request, url: new URL(url, new URL(request.url).origin).toString() };
+                }
+            }
+        }
         if (routesManifest.redirects) {
             for (const route of routesManifest.redirects) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
-                const Location = getRedirectLocation(request, route);
-                if (!Location) {
-                    debug('Redirect to 404 page');
-                    return new Response('Not found', {
-                        status: 404,
+                const Location = getRedirectRewriteLocation(request, route);
+                if (Location) {
+                    debug('Redirecting', Location);
+                    // Get the params
+                    return new Response(null, {
+                        status: route.permanent ? 301 : 307,
                         headers: {
-                            'Content-Type': 'text/plain',
+                            Location,
                         },
                     });
                 }
-                debug('Redirecting', Location);
-                // Get the params
-                return new Response(null, {
-                    status: route.permanent ? 301 : 307,
-                    headers: {
-                        Location,
-                    },
-                });
             }
         }
         if (request.method === 'GET' || request.method === 'HEAD') {
@@ -263,7 +273,13 @@ function updateRequestWithConfig(request, config) {
     }
     return params;
 }
-function getRedirectLocation(request, route) {
+function getRedirectRewriteLocation(request, route) {
+    console.log(route);
+    if (route.methods) {
+        if (!route.methods.includes(request.method)) {
+            return;
+        }
+    }
     const params = updateRequestWithConfig(request, route);
     const urlSearchParams = new URL(request.url).searchParams;
     let location = route.page
@@ -274,7 +290,7 @@ function getRedirectLocation(request, route) {
             const value = params[match];
             delete params[match];
             // If we are redirecting from a catch-all route, we need to remove the extra segments
-            return value.split('/')[0];
+            return value?.split('/')[0];
         }
         match = matchDeepDynamicRouteName(segment);
         if (match) {

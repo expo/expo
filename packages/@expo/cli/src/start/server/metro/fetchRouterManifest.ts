@@ -21,6 +21,7 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
   htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   redirects: ExpoRouterServerManifestV1Route<TRegex>[];
+  rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
@@ -82,6 +83,12 @@ export function inflateManifest(
       };
     }),
     redirects: json.redirects?.map((value: any) => {
+      return {
+        ...value,
+        namedRegex: new RegExp(value.namedRegex),
+      };
+    }),
+    rewrites: json.rewrites?.map((value: any) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),

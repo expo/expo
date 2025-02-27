@@ -20,7 +20,7 @@ export type LoadedRoute = {
 
 export type RouteNode = {
   /** The type of RouteNode */
-  type: 'route' | 'api' | 'layout' | 'redirect' | 'api-redirect' | 'rewrite' | 'api-rewrite';
+  type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
@@ -43,6 +43,8 @@ export type RouteNode = {
   internal?: boolean;
   /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
   entryPoints?: string[];
+  /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
+  methods?: string[];
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
