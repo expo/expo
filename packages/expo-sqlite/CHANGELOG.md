@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
