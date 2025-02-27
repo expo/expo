@@ -22,4 +22,6 @@ extension AsyncFunctionDefinition: AnyObjectDefinitionElement {}
 
 extension PropertyDefinition: AnyObjectDefinitionElement {}
 
+extension ConstantDefinition: AnyObjectDefinitionElement {}
+
 extension ConstantsDefinition: AnyObjectDefinitionElement {}
