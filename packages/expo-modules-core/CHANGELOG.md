@@ -17,6 +17,7 @@
 - Add SwiftUI views support for macOS ([#35078](https://github.com/expo/expo/pull/35078) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add common constants to the CoreModule ([#35057](https://github.com/expo/expo/pull/35057) by [@jakex7](https://github.com/jakex7))
 - [Android] Add Constant API ([#35157](https://github.com/expo/expo/pull/35157) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add Constant API ([#35199](https://github.com/expo/expo/pull/35199) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
