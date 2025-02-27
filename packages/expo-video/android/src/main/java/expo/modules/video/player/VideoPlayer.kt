@@ -2,7 +2,6 @@ package expo.modules.video.player
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.view.SurfaceView
 import androidx.media3.common.C
 import android.webkit.URLUtil
 import androidx.annotation.OptIn
