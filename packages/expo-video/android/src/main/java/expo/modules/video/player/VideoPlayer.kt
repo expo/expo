@@ -51,6 +51,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private var currentPlayerView = WeakReference<PlayerView?>(null)
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val trackSelector = DefaultTrackSelector(context)
@@ -300,10 +301,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     close()
   }
 
-  fun changePlayerView(playerView: PlayerView) {
-    player.clearVideoSurface()
-    player.setVideoSurfaceView(playerView.videoSurfaceView as SurfaceView?)
-    playerView.player = player
+  fun changePlayerView(playerView: PlayerView?) {
+    PlayerView.switchTargetView(player, currentPlayerView.get(), playerView)
+    currentPlayerView = WeakReference(playerView)
   }
 
   fun prepare() {
