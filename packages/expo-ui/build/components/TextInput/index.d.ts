@@ -10,9 +10,9 @@ export type TextInputProps = {
      */
     style?: StyleProp<ViewStyle>;
     /**
-     * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, set the key prop if you need to change the text value.
+     * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
      */
-    initialValue?: string;
+    defaultValue?: string;
     /**
      * A callback triggered when user types in text into the TextInput.
      */
