@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isTabSlot = exports.defaultTabsSlotRender = exports.TabSlot = exports.useTabSlot = void 0;
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const TabContext_1 = require("./TabContext");
 const Navigator_1 = require("../views/Navigator");
@@ -18,7 +18,7 @@ const Navigator_1 = require("../views/Navigator");
  * }
  * ```
  */
-function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes(react_native_1.Platform.OS), style, renderFn = defaultTabsSlotRender, } = {}) {
+function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes(process.env.EXPO_OS), style, renderFn = defaultTabsSlotRender, } = {}) {
     const { state, descriptors } = (0, Navigator_1.useNavigatorContext)();
     const focusedRouteKey = state.routes[state.index].key;
     const [loaded, setLoaded] = (0, react_1.useState)({ [focusedRouteKey]: true });

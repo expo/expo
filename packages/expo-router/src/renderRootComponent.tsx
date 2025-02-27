@@ -1,6 +1,6 @@
 import { registerRootComponent } from 'expo';
-import * as React from 'react';
 import { View } from 'expo-router/react-native';
+import * as React from 'react';
 
 import * as SplashScreen from './utils/splash';
 

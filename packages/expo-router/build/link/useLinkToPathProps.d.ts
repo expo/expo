@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react';
-import { GestureResponderEvent } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import { LinkToOptions } from '../global-state/routing';
 type UseLinkToPathPropsOptions = LinkToOptions & {
     href: string;

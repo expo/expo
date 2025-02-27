@@ -1,5 +1,5 @@
+import { TextProps, GestureResponderEvent } from 'expo-router/react-native';
 import { MouseEvent } from 'react';
-import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
 /**
  * @platform web

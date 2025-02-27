@@ -3,8 +3,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorBoundary = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
 const Link_1 = require("../link/Link");

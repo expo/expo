@@ -6,8 +6,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
 // This is the only way to access the navigator.
@@ -29,10 +29,10 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                         if (href == null) {
                             return null;
                         }
-                        const children = react_native_1.Platform.OS === 'web' ? props.children : <react_native_1.Pressable>{props.children}</react_native_1.Pressable>;
+                        const children = process.env.EXPO_OS === 'web' ? (props.children) : (<react_native_1.Pressable>{props.children}</react_native_1.Pressable>);
                         // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
                         //       While Link expects a TextStyle. We need to reconcile these types.
-                        return (<Link_1.Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={react_native_1.Platform.OS !== 'web'} children={children}/>);
+                        return (<Link_1.Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={process.env.EXPO_OS !== 'web'} children={children}/>);
                     },
                 },
             };

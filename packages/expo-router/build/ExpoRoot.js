@@ -25,8 +25,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
@@ -35,7 +35,7 @@ const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
+const INITIAL_METRICS = process.env.EXPO_OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -67,7 +67,7 @@ exports.ExpoRoot = ExpoRoot;
 function AutoStatusBar() {
     return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
 }
-const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
+const initialUrl = process.env.EXPO_OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
 function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {

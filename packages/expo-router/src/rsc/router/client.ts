@@ -11,6 +11,7 @@
 'use client';
 
 import { Slot as ReactSlot } from '@radix-ui/react-slot';
+import { Text } from 'expo-router/react-native';
 import {
   startTransition,
   useCallback,
@@ -34,7 +35,6 @@ import type {
   MouseEvent,
   ForwardedRef,
 } from 'react';
-import { Text } from 'expo-router/react-native';
 
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';

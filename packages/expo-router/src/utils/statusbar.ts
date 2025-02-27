@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-
 import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 
 const hasViewControllerBasedStatusBarAppearance =

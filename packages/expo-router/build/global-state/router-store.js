@@ -32,7 +32,6 @@ const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
@@ -87,7 +86,7 @@ class RouterStore {
         this.routeNode = (0, getRoutes_1.getRoutes)(context, {
             ...expo_constants_1.default.expoConfig?.extra?.router,
             ignoreEntryPoints: true,
-            platform: react_native_1.Platform.OS,
+            platform: process.env.EXPO_OS,
         });
         // We always needs routeInfo, even if there are no routes. This can happen if:
         //  - there are no routes (we are showing the onboarding screen)

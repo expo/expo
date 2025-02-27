@@ -6,8 +6,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sitemap = exports.getNavOptions = void 0;
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
 const router_store_1 = require("../global-state/router-store");
@@ -34,7 +34,7 @@ function getNavOptions() {
             borderBottomColor: '#323232',
         },
         header: () => {
-            const WrapperElement = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
+            const WrapperElement = process.env.EXPO_OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
             return (<WrapperElement style={styles.header}>
           <react_native_1.View style={styles.headerContent}>
             <react_native_1.View style={styles.headerIcon}>
@@ -95,7 +95,7 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
     const info = isInitial ? 'Initial' : route.generated ? 'Virtual' : '';
     return (<>
       {!route.internal && (<Link_1.Link accessibilityLabel={route.contextKey} href={href} onPress={() => {
-                if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
+                if (process.env.EXPO_OS !== 'web' && imperative_api_1.router.canGoBack()) {
                     // Ensure the modal pops
                     imperative_api_1.router.back();
                 }

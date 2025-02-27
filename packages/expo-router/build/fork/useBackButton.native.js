@@ -24,8 +24,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useBackButton = void 0;
+const react_native_1 = require("expo-router/react-native");
 const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
 function useBackButton(ref) {
     React.useEffect(() => {
         const subscription = react_native_1.BackHandler.addEventListener('hardwareBackPress', () => {

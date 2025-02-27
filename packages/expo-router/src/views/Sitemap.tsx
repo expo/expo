@@ -2,7 +2,6 @@
 'use client';
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React from 'react';
 import {
   Image,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
   Platform,
   StatusBar,
 } from 'expo-router/react-native';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';

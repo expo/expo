@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isTabList = exports.TabList = void 0;
-const react_native_1 = require("react-native");
+const react_native_1 = require("expo-router/react-native");
 const common_1 = require("./common");
 /**
  * Wrapper component for `TabTriggers`. `TabTriggers` within the `TabList` define the tabs.

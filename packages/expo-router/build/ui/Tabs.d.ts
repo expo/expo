@@ -1,6 +1,6 @@
 import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions } from '@react-navigation/native';
+import { ViewProps } from 'expo-router/react-native';
 import { ReactNode, PropsWithChildren } from 'react';
-import { ViewProps } from 'react-native';
 import { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
 import { ScreenTrigger } from './common';
 export * from './TabContext';
@@ -66,9 +66,6 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         }> | ((state: Readonly<Readonly<{
             key: string;
             index: number;
-            /**
-             * Options to provide to the Tab Router.
-             */
             routeNames: string[];
             history?: unknown[] | undefined;
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
@@ -80,7 +77,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigate<RouteName_1 extends string>(options: {
             name: string;
             params: object | undefined;
@@ -157,7 +154,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName_6 extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName_6 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigate<RouteName_7 extends string>(options: {
             name: string;
             params: object | undefined;
@@ -204,7 +201,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName_11 extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName_11 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigate<RouteName_12 extends string>(options: {
             name: string;
             params: object | undefined;

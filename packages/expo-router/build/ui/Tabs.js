@@ -16,8 +16,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useTabsWithTriggers = exports.useTabsWithChildren = exports.Tabs = void 0;
 const native_1 = require("@react-navigation/native");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const TabContext_1 = require("./TabContext");
 const TabList_1 = require("./TabList");
 const TabRouter_1 = require("./TabRouter");

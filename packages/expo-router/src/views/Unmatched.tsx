@@ -2,8 +2,8 @@
 'use client';
 
 import { createURL } from 'expo-linking';
-import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'expo-router/react-native';
+import React from 'react';
 
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';

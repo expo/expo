@@ -25,8 +25,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRootComponent = void 0;
 const expo_1 = require("expo");
+const react_native_1 = require("expo-router/react-native");
 const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
 const SplashScreen = __importStar(require("./utils/splash"));
 function isBaseObject(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {

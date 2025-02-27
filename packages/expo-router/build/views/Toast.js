@@ -6,8 +6,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Toast = exports.ToastWrapper = exports.CODE_FONT = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 exports.CODE_FONT = react_native_1.Platform.select({
     default: 'Courier',

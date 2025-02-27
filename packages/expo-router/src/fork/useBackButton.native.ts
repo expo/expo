@@ -2,8 +2,8 @@
  * This file is unchanged, except for removing eslint comments
  */
 import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
-import * as React from 'react';
 import { BackHandler } from 'expo-router/react-native';
+import * as React from 'react';
 
 export function useBackButton(ref: React.RefObject<NavigationContainerRef<ParamListBase>>) {
   React.useEffect(() => {

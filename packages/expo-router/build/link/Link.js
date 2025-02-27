@@ -7,8 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = exports.Redirect = void 0;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");

@@ -12,8 +12,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
 const href_1 = require("../../link/href");

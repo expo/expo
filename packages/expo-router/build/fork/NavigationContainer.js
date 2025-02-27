@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
 const native_1 = require("@react-navigation/native");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 const useBackButton_1 = require("./useBackButton");
 const useDocumentTitle_1 = require("./useDocumentTitle");

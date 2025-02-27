@@ -1,5 +1,5 @@
-import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'expo-router/react-native';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createEntryFileAsync } from './createEntryFile';

@@ -17,8 +17,8 @@ import {
   getStateFromPath,
   validatePathConfig,
 } from '@react-navigation/native';
-import React from 'react';
 import { I18nManager } from 'expo-router/react-native';
+import React from 'react';
 import useLatestCallback from 'use-latest-callback';
 
 import { useBackButton } from './useBackButton';

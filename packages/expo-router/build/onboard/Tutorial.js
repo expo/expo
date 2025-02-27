@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tutorial = void 0;
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const createEntryFile_1 = require("./createEntryFile");
 const exports_1 = require("../exports");
@@ -13,7 +13,7 @@ const Pressable_1 = require("../views/Pressable");
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
 function Tutorial() {
     react_1.default.useEffect(() => {
-        if (react_native_1.Platform.OS === 'web') {
+        if (process.env.EXPO_OS === 'web') {
             // Reset the route on web so the initial route isn't a 404 after
             // the user has created the entry file.
             // This is useful for cases where you are testing the tutorial.
@@ -37,7 +37,7 @@ function Tutorial() {
           Welcome to Expo
         </react_native_1.Text>
         <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
-          Start by creating a file{react_native_1.Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
+          Start by creating a file{process.env.EXPO_OS !== 'web' ? '\n' : ' '}in the{' '}
           <react_native_1.Text style={{ fontWeight: '600' }}>{getRootDir()}</react_native_1.Text> directory.
         </react_native_1.Text>
         <react_native_1.Text>

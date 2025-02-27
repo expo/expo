@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Slot = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 /**
  * RadixUI has special logic to handle the merging of `style` and `className` props.
  * On the web styles are not allowed so Radix does not handle this scenario.

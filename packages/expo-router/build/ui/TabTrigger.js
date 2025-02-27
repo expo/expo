@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useTabTrigger = exports.isTabTrigger = exports.TabTrigger = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const TabContext_1 = require("./TabContext");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const imperative_api_1 = require("../imperative-api");

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useDeprecated = exports.useWarnOnce = void 0;
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 // Node environment may render in multiple processes causing the warning to log mutiple times
 // Hence we skip the warning in these environments.
 const canWarn = react_native_1.Platform.select({

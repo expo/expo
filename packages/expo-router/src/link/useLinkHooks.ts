@@ -1,7 +1,7 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent, Platform } from 'expo-router/react-native';
+import { useMemo, MouseEvent } from 'react';
 
 import { Href } from '../types';
 

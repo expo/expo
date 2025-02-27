@@ -7,8 +7,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unmatched = void 0;
 const expo_linking_1 = require("expo-linking");
+const react_native_1 = require("expo-router/react-native");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");

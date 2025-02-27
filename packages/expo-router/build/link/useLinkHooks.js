@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useHrefAttrs = exports.useInteropClassName = void 0;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
+const react_native_1 = require("expo-router/react-native");
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 // Mutate the style prop to add the className on web.
 function useInteropClassName(props) {
-    if (react_native_1.Platform.OS !== 'web') {
+    if (process.env.EXPO_OS !== 'web') {
         return props.style;
     }
     // eslint-disable-next-line react-hooks/rules-of-hooks
