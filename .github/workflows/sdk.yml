@@ -53,11 +53,8 @@ jobs:
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [
-            "${{ github.event_name }}" == "schedule" || 
-            "${{ github.event.inputs.checkAll }}" == "check-all" ] ||
-            [git diff --name-only ${{ github.base_ref || github.event.before || 'main' }} | grep -q '^packages/(expo-module-scripts|jest-expo)/']
-          ]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] || 
+             git diff --name-only ${{ github.base_ref || github.event.before || 'main' }} | grep -qE '^packages/(expo-module-scripts|jest-expo)/'; then
             # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all
           else
