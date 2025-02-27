@@ -14,7 +14,7 @@ import {
   emitDomLinkEvent,
   emitDomSetParams,
 } from '../link/useDomComponentNavigation';
-import { matchDynamicName } from '../matchers';
+import { matchDynamicName } from '../matchers.mjs';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 

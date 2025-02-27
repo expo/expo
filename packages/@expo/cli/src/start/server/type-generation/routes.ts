@@ -7,6 +7,7 @@ import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
+import { tryRequireThenImport } from '../../../utils/esm';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
 export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
@@ -42,11 +43,13 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
    *
    * TODO (@marklawlor): Remove this check in SDK 53, only support Expo Router v4 and above.
    */
-  const typedRoutesModule = resolveFrom.silent(
+
+  const expoRouter = resolveFrom.silent(
     options.projectRoot,
-    'expo-router/build/typed-routes'
+    'expo-router/build/typed-routes/index.mjs'
   );
-  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+
+  return expoRouter ? typedRoutes(expoRouter, options) : legacyTypedRoutes(options);
 }
 
 async function typedRoutes(
@@ -60,8 +63,7 @@ async function typedRoutes(
    */
   process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
 
-  const typedRoutesModule = require(typedRoutesModulePath);
-
+  const typedRoutesModule = await tryRequireThenImport<any>(typedRoutesModulePath);
   /*
    * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
    */

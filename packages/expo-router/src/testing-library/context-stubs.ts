@@ -1,6 +1,6 @@
 import path from 'path';
 
-import requireContext from './require-context-ponyfill';
+import requireContext from './require-context-ponyfill.mjs';
 import { NativeIntent } from '../types';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;

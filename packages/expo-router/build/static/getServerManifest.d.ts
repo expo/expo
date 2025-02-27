@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Options } from '../getRoutes';
-import { ExpoRouterServerManifestV1 } from '../getServerManifest';
+import { Options } from '../getRoutes.mjs';
+import { ExpoRouterServerManifestV1 } from '../getServerManifest.mjs';
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
  * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which

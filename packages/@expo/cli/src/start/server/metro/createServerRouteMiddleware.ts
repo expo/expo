@@ -32,7 +32,7 @@ export function createRouteHandlerMiddleware(
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
     config: ProjectConfig;
-  } & import('expo-router/build/routes-manifest').Options
+  } & import('expo-router/build/routes-manifest.mjs').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
     throw new CommandError(

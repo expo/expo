@@ -30,7 +30,7 @@ import { RouteNode } from '../Route';
 import { getPathDataFromState, getPathFromState } from '../fork/getPathFromState';
 // import { ResultState } from '../fork/getStateFromPath';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
-import { getRoutes } from '../getRoutes';
+import { getRoutes } from '../getRoutes.mjs';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';

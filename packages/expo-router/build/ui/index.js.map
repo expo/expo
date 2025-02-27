@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/ui/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,yCAAuB","sourcesContent":["export * from './Tabs';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/ui/index.ts"],"names":[],"mappings":"AAAA,cAAc,QAAQ,CAAC","sourcesContent":["export * from './Tabs';\n"]}

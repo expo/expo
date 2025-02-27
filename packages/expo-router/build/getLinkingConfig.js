@@ -1,15 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingConfig = exports.getNavigationConfig = void 0;
-const native_1 = require("@react-navigation/native");
-const expo_modules_core_1 = require("expo-modules-core");
-const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
-const linking_1 = require("./link/linking");
-function getNavigationConfig(routes, metaOnly = true) {
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
+import { getActionFromState } from '@react-navigation/native';
+import { Platform } from 'expo-modules-core';
+import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { addEventListener, getInitialURL, getPathFromState, getStateFromPath, } from './link/linking';
+export function getNavigationConfig(routes, metaOnly = true) {
+    return getReactNavigationConfig(routes, metaOnly);
 }
-exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
+export function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -31,11 +27,11 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
             // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
             // Therefor we memoize the result.
             if (!hasCachedInitialUrl) {
-                if (expo_modules_core_1.Platform.OS === 'web') {
-                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
+                if (Platform.OS === 'web') {
+                    initialUrl = serverUrl ?? getInitialURL();
                 }
                 else {
-                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
+                    initialUrl = serverUrl ?? getInitialURL();
                     if (typeof initialUrl === 'string') {
                         if (typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
@@ -54,10 +50,10 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking),
-        getStateFromPath: linking_1.getStateFromPath.bind(store),
+        subscribe: addEventListener(nativeLinking),
+        getStateFromPath: getStateFromPath.bind(store),
         getPathFromState(state, options) {
-            return ((0, linking_1.getPathFromState)(state, {
+            return (getPathFromState(state, {
                 screens: {},
                 ...this.config,
                 ...options,
@@ -65,8 +61,7 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
         },
         // Add all functions to ensure the types never need to fallback.
         // This is a convenience for usage in the package.
-        getActionFromState: native_1.getActionFromState,
+        getActionFromState,
     };
 }
-exports.getLinkingConfig = getLinkingConfig;
 //# sourceMappingURL=getLinkingConfig.js.map

@@ -7,8 +7,8 @@
 
 import { ctx } from '../../_ctx';
 import { getReactNavigationConfig } from '../getReactNavigationConfig';
-import { getRoutes, Options } from '../getRoutes';
-import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
+import { getRoutes, Options } from '../getRoutes.mjs';
+import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest.mjs';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 /**

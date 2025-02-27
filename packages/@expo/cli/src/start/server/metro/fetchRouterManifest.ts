@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 import resolveFrom from 'resolve-from';
+import path from 'path';
 
 import { getRoutePaths } from './router';
+import { tryRequireThenImport } from '../../../utils/esm';
 
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   file: string;
@@ -22,9 +24,14 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
-function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/build/routes-manifest'))
-    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
+async function getExpoRouteManifestBuilderAsync(projectRoot: string) {
+  const pkgPath = path.join(
+    resolveFrom(projectRoot, 'expo-router/package.json'),
+    '../build/routes-manifest.mjs'
+  );
+  return (
+    await tryRequireThenImport<typeof import('expo-router/build/routes-manifest.mjs')>(pkgPath)
+  ).createRoutesManifest;
 }
 
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
@@ -35,7 +42,7 @@ export async function fetchManifest<TRegex = string>(
     appDir: string;
   } & import('expo-router/build/routes-manifest').Options
 ): Promise<ExpoRouterServerManifestV1<TRegex> | null> {
-  const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
+  const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot);
   const paths = getRoutePaths(options.appDir);
   // Get the serialized manifest
   const jsonManifest = getManifest(paths, options);
