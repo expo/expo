@@ -745,6 +745,23 @@ describe(`require.context`, () => {
   });
 });
 
+it('collects dependency with worker definition', () => {
+  // const a = new Worker(new URL(require.resolveWorker("../path/to/module"), window.location.href));
+  const ast = astFromCode(`
+    const a = require.unstable_importWorker("../path/to/module");
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([
+    { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+    { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+  ]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      const a = require(_dependencyMap[1], "asyncRequire").unstable_importWorker(_dependencyMap[0], _dependencyMap.paths);
+    `)
+  );
+});
+
 it('collects unique dependency identifiers and transforms the AST', () => {
   const ast = astFromCode(`
     const a = require('b/lib/a');

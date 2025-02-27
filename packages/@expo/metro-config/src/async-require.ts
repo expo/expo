@@ -6,12 +6,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Fork of https://github.com/facebook/metro/blob/b8e9e64f1de97a67234e223f5ee21524b160e8a5/packages/metro-runtime/src/modules/asyncRequire.js#L1
+ * Adds worker support.
  */
 
 type MetroRequire = {
   (id: number): unknown;
   importAll: <T>(id: number) => T;
 };
+
+declare let window: any;
+declare let Worker: any;
 
 declare const require: MetroRequire;
 
@@ -75,6 +79,22 @@ asyncRequire.prefetch = function (
     () => {},
     () => {}
   );
+};
+
+asyncRequire.unstable_importWorker = function unstable_importWorker(
+  moduleID: number,
+  paths: DependencyMapPaths
+) {
+  if (!paths) throw new Error('Bundle splitting is required for web worker imports');
+  const id = paths[moduleID];
+  if (!id) throw new Error('Worker import is missing from split bundle paths: ' + id);
+
+  // eslint-disable-next-line valid-typeof
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return new Worker(new URL(id, window.location.href));
 };
 
 module.exports = asyncRequire;

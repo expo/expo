@@ -29,7 +29,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -212,6 +212,21 @@ function collectDependencies<TAst extends t.File>(
           !path.scope.getBinding('require')
         ) {
           processResolveWeakCall(path, state);
+          visited.add(path.node);
+          return;
+        }
+
+        // Match `require.unstable_importWorker`
+        if (
+          callee.type === 'MemberExpression' &&
+          callee.object.type === 'Identifier' &&
+          callee.object.name === 'require' &&
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'unstable_importWorker' &&
+          !callee.computed &&
+          !path.scope.getBinding('require')
+        ) {
+          processResolveWorkerCall(path, state);
           visited.add(path.node);
           return;
         }
@@ -416,6 +431,47 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
       makeResolveWeakTemplate({
         MODULE_ID: createModuleIDExpression(dependency, state),
       })
+    );
+  }
+}
+
+function processResolveWorkerCall(path: NodePath<CallExpression>, state: State): void {
+  const name = getModuleNameFromCallArgs(path);
+
+  if (name == null) {
+    throw new InvalidRequireCallError(path);
+  }
+
+  const dependency = registerDependency(
+    state,
+    {
+      name,
+      asyncType: 'worker',
+      optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
+    },
+    path
+  );
+
+  if (state.collectOnly !== true) {
+    path.replaceWith(
+      makeImportWorkerTemplate({
+        ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+        DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+        MODULE_ID: createModuleIDExpression(dependency, state),
+      })
+    );
+  } else {
+    // Inject the async require dependency into the dependency map so it's available in the graph during serialization and splitting.
+    registerDependency(
+      state,
+      {
+        name: nullthrows(state.asyncRequireModulePathStringLiteral).value,
+        asyncType: null,
+        optional: false,
+        exportNames: ['*'],
+      },
+      path
     );
   }
 }
@@ -674,6 +730,10 @@ const makeAsyncImportMaybeSyncTemplate = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 
+const makeImportWorkerTemplate = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importWorker(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
@@ -778,6 +838,7 @@ function getKeyForDependency(qualifier: ImportQualifier): string {
       contextParams.mode,
     ].join('\0');
   }
+
   return key;
 }
 
