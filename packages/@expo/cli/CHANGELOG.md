@@ -458,6 +458,7 @@ _This version does not introduce any user-facing changes._
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 - Fixed the `CorsMiddleware` is a not registered since react-native 0.75. ([#30752](https://github.com/expo/expo/pull/30752) by [@kudo](https://github.com/kudo))
+- Fixes local iOS debugging in cases where `UsbmuxdClient` returns binary plist. ([#30881](https://github.com/expo/expo/pull/30881) by [@mattvr](https://github.com/mattvr))
 - Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 - Detect network issues and enable offline mode with Undici errors. ([#31517](https://github.com/expo/expo/pull/31517) by [@byCedric](https://github.com/byCedric))
 - Resolve dom components entry relative to workspace root instead of project root. ([#31433](https://github.com/expo/expo/pull/31433) by [@byCedric](https://github.com/byCedric))
