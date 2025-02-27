@@ -66,11 +66,9 @@ class StateMachineSerialExecutorQueueTest {
     private val onRun: suspend (ProcedureContext) -> Unit
   ) : StateMachineProcedure() {
     override val loggerTimerLabel = "timer-test"
-    var executionTime: Long = 0
 
     override suspend fun run(procedureContext: ProcedureContext) {
       println("TestStateMachineProcedure run: $this")
-      executionTime = testScheduler.currentTime
       onRun(procedureContext)
     }
   }
