@@ -25,8 +25,8 @@
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-sonoma-14.6-xcode-16.0",
-        "cocoapods": "1.15.2",
-        "resourceClass": "medium",
+        "cocoapods": "1.16.2",
+        "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
