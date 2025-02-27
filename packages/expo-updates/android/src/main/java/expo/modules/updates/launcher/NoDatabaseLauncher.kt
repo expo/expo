@@ -1,7 +1,6 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
-import android.os.AsyncTask
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.logging.UpdatesLogger
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +20,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
   private val context: Context,
   private val logger: UpdatesLogger,
   fatalException: Exception? = null,
-  launcherScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+  launcherScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : Launcher {
   override val bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME
   override val launchedUpdate = null

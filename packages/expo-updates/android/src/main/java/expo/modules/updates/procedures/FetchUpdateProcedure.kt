@@ -1,7 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.os.AsyncTask
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder

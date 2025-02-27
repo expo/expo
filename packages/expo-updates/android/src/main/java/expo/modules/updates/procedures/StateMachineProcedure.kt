@@ -2,7 +2,6 @@ package expo.modules.updates.procedures
 
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
-import kotlinx.coroutines.CoroutineScope
 
 /**
  * Base class for all procedures that transition or reset state on the UpdatesStateMachine.
