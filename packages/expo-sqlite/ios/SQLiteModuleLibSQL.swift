@@ -266,9 +266,6 @@ public final class SQLiteModule: Module {
 
   private func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
-    if database.openOptions.enableCRSQLite {
-      throw UnsupportedOperationException("enableCRSQLite is not supported in libSQL mode")
-    }
     if database.openOptions.enableChangeListener {
       throw UnsupportedOperationException("enableChangeListener is not supported in libSQL mode")
     }

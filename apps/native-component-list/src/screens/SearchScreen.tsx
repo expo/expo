@@ -7,12 +7,12 @@ import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ComponentListScreen from './ComponentListScreen';
-import { ScreenItems as ApiScreenItems } from './ExpoApisScreen';
-import { ScreenItems as ComponentScreenItems } from './ExpoComponentsScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import SearchBar from '../components/SearchBar';
+import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
+import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
 
-const fuse = new Fuse(ApiScreenItems.concat(ComponentScreenItems), { keys: ['name'] });
+const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
 const APPBAR_HEIGHT = Platform.OS === 'ios' ? 50 : 56;
 const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;

@@ -22,6 +22,8 @@ void JSDecoratorsBridgingObject::registerNatives() {
                                     JSDecoratorsBridgingObject::registerAsyncFunction),
                    makeNativeMethod("registerProperty",
                                     JSDecoratorsBridgingObject::registerProperty),
+                   makeNativeMethod("registerConstant",
+                                    JSDecoratorsBridgingObject::registerConstant),
                    makeNativeMethod("registerObject",
                                     JSDecoratorsBridgingObject::registerObject),
                    makeNativeMethod("registerClass",
@@ -79,6 +81,17 @@ void JSDecoratorsBridgingObject::registerProperty(
     setterExpectedArgsTypes,
     setter
   );
+}
+
+void JSDecoratorsBridgingObject::registerConstant(
+  jni::alias_ref<jstring> name,
+  jni::alias_ref<JNINoArgsFunctionBody::javaobject> getter
+) {
+  if (!constantsDecorator) {
+    constantsDecorator = std::make_unique<JSConstantsDecorator>();
+  }
+
+  constantsDecorator->registerConstant(name, getter);
 }
 
 void JSDecoratorsBridgingObject::registerConstants(jni::alias_ref<react::NativeMap::javaobject> constants) {

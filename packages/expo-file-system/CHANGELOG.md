@@ -12,14 +12,35 @@
 
 ### 🐛 Bug fixes
 
-- Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
-- [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
 - Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 18.0.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.10 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.9 - 2025-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.8 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
+- [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.7 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 18.0.6 - 2024-12-16
 

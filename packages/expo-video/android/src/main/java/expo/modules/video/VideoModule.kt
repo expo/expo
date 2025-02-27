@@ -38,7 +38,19 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+      VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+    }
+
+    Function("getCurrentVideoCacheSize") {
+      VideoManager.cache.getCurrentCacheSize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size: Long ->
+      VideoManager.cache.setMaxCacheSize(size)
+    }
+
+    AsyncFunction("clearVideoCacheAsync") {
+      VideoManager.cache.clear()
     }
 
     View(VideoView::class) {

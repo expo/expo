@@ -18,7 +18,7 @@ import {
 import Colors from '../../../constants/Colors';
 
 interface Props {
-  header?: JSX.Element;
+  header?: React.ReactElement;
   extraButtons?: (
     | {
         iconName: string;
@@ -29,7 +29,7 @@ interface Props {
       }
     | (() => React.ReactNode)
   )[];
-  extraIndicator?: JSX.Element;
+  extraIndicator?: React.ReactElement;
   style?: StyleProp<ViewStyle>;
 
   // Functions

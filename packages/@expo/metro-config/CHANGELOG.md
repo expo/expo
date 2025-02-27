@@ -7,13 +7,30 @@
 ### 🎉 New features
 
 - Add support for `postcss.config.mjs`. ([#34840](https://github.com/expo/expo/pull/34840) by [@EvanBacon](https://github.com/EvanBacon))
+- Fork `asyncRequireModulePath` to support adding custom require types (Workers) in the future. ([#35110](https://github.com/expo/expo/pull/35110) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `require.resolveWeak` with tree shaking. ([#34988](https://github.com/expo/expo/pull/34988) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Prevent bumping specificity of hot-reloaded CSS style tags. ([#35123](https://github.com/expo/expo/pull/35123) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+
+## 0.19.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.10 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.9 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 0.19.8 - 2024-12-16
 

@@ -4,18 +4,11 @@
 
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
+#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
 #import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
-
-// TODO(vonovak,20250122) - Remove the if when 76 is not supported, or rather remove the EXAppDelegateWrapper because it's deprecated
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
-#endif
-
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
-@end
 
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
@@ -24,11 +17,25 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
-    _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
-    _expoAppDelegate.shouldCallReactNativeSetup = NO;
+    _expoAppDelegate = [EXExpoAppDelegate new];
   }
   return self;
+}
+
+- (void)setModuleName:(NSString * _Nullable)moduleName {
+  _expoAppDelegate.moduleName = [moduleName copy];
+}
+
+- (NSString*) moduleName {
+  return _expoAppDelegate.moduleName;
+}
+
+- (void)setInitialProps:(NSDictionary * _Nullable)initialProps {
+  _expoAppDelegate.initialProps = initialProps;
+}
+
+- (NSDictionary*) initialProps {
+  return _expoAppDelegate.initialProps;
 }
 
 // This needs to be implemented, otherwise forwarding won't be called.
@@ -45,17 +52,14 @@
   return _expoAppDelegate;
 }
 
-#pragma mark - RCTAppDelegate
+#pragma mark - UIApplicationDelegate
 
 // Make sure to override all necessary methods from `RCTAppDelegate` here, explicitly forwarding everything to `_expoAppDelegate`.
 // `forwardingTargetForSelector` works only for methods that are not specified in this and `RCTAppDelegate` classes.
 
+#if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-	self.dependencyProvider = [RCTAppDependencyProvider new];
-#endif
-  [super application:application didFinishLaunchingWithOptions:launchOptions];
   return [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -63,15 +67,25 @@
 {
   return [_expoAppDelegate applicationDidBecomeActive:application];
 }
+#else
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+  self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
+  [super applicationDidFinishLaunching:notification];
+  return [_expoAppDelegate applicationDidFinishLaunching:notification];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+  return [_expoAppDelegate applicationDidBecomeActive:notification];
+}
+#endif
 
 - (UIViewController *)createRootViewController
 {
   return [_expoAppDelegate createRootViewController];
-}
-
-- (RCTRootViewFactory *)createRCTRootViewFactory
-{
-  return [_expoAppDelegate createRCTRootViewFactory];
 }
 
 - (void)customizeRootView:(UIView *)rootView
@@ -102,6 +116,16 @@
                    isFatal:(BOOL)isFatal
 {
 }
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  return [_expoAppDelegate getModuleInstanceFromClass:moduleClass];
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  return [_expoAppDelegate getModuleClassFromName:name];
+}
+
 
 #pragma mark - Helpers
 

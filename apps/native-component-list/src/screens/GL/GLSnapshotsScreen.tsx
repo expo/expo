@@ -75,7 +75,9 @@ export default class GLSnapshotsScreen extends React.PureComponent<object, State
         <GL.GLView
           style={styles.flex}
           onContextCreate={this.onContextCreate}
-          ref={(ref) => (this.glView = ref!)}
+          ref={(ref) => {
+            this.glView = ref!;
+          }}
         />
 
         {snapshot && (
