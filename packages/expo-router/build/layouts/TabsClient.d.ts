@@ -5,14 +5,14 @@ import { Href } from '../types';
 type TabsProps = BottomTabNavigationOptions & {
     href?: Href | null;
 };
-export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
         tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
@@ -44,8 +44,8 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+        children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;
@@ -65,14 +65,14 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     }>> | undefined) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
         tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
@@ -104,8 +104,8 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+        children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;

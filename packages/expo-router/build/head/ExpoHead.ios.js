@@ -49,15 +49,30 @@ function serializedMetaChildren(meta) {
             return {
                 type: 'title',
                 props: {
-                    children: typeof child.props.children === 'string' ? child.props.children : undefined,
+                    children: child.props &&
+                        typeof child.props === 'object' &&
+                        'children' in child.props &&
+                        typeof child.props.children === 'string'
+                        ? child.props.children
+                        : undefined,
                 },
             };
         }
         return {
             type: 'meta',
             props: {
-                property: typeof child.props.property === 'string' ? child.props.property : undefined,
-                content: typeof child.props.content === 'string' ? child.props.content : undefined,
+                property: child.props &&
+                    typeof child.props === 'object' &&
+                    'property' in child.props &&
+                    typeof child.props.property === 'string'
+                    ? child.props.property
+                    : undefined,
+                content: child.props &&
+                    typeof child.props === 'object' &&
+                    'content' in child.props &&
+                    typeof child.props.content === 'string'
+                    ? child.props.content
+                    : undefined,
             },
         };
     });

@@ -1,14 +1,14 @@
 /// <reference types="react" />
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<NativeStackNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: import("react").ReactNode;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         transitionStart: import("@react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("@react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
         transitionEnd: import("@react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("@react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
@@ -40,8 +40,8 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+        children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;
@@ -61,14 +61,14 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
     }>> | undefined) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<NativeStackNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: import("react").ReactNode;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         transitionStart: import("@react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("@react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
         transitionEnd: import("@react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("@react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
@@ -100,8 +100,8 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+        children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;

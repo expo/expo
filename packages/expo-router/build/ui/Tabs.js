@@ -53,7 +53,13 @@ function Tabs(props) {
     const Comp = asChild ? common_1.SafeAreaViewSlot : react_native_1.View;
     const { NavigationContent } = useTabsWithChildren({
         // asChild adds an extra layer, so we need to process the child's children
-        children: asChild && (0, react_1.isValidElement)(children) ? children.props.children : children,
+        children: asChild &&
+            (0, react_1.isValidElement)(children) &&
+            children.props &&
+            typeof children.props === 'object' &&
+            'children' in children.props
+            ? children.props.children
+            : children,
         ...options,
     });
     return (<Comp style={styles.tabsRoot} {...rest}>
@@ -142,7 +148,11 @@ function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = 
         if ((0, TabList_1.isTabList)(child) && typeof child.props.children !== 'function') {
             let children = child.props.children;
             // <TabList asChild /> adds an extra layer. We need to parse the child's children
-            if (child.props.asChild && (0, react_1.isValidElement)(children)) {
+            if (child.props.asChild &&
+                (0, react_1.isValidElement)(children) &&
+                children.props &&
+                typeof children.props === 'object' &&
+                'children' in children.props) {
                 children = children.props.children;
             }
             return parseTriggersFromChildren(children, screenTriggers, isInTabList || (0, TabList_1.isTabList)(child));
