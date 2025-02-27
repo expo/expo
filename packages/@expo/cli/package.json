@@ -71,7 +71,6 @@
     "connect": "^3.7.0",
     "debug": "^4.3.4",
     "env-editor": "^0.4.1",
-    "fast-glob": "^3.3.2",
     "freeport-async": "^2.0.0",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",

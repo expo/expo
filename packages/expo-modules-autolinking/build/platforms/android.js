@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchGradlePropertyFirst = exports.convertPackageWithGradleToProjectName = exports.convertPackageToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.isAndroidProject = exports.generatePackageListAsync = void 0;
-const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_1 = __importDefault(require("fs"));
+const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -149,7 +149,7 @@ async function findAndroidPackagesAsync(modules) {
         }
     }
     await Promise.all(flattenedSourceDirList.map(async (sourceDir) => {
-        const files = await (0, fast_glob_1.default)('**/*Package.{java,kt}', {
+        const files = await (0, glob_1.glob)('**/*Package.{java,kt}', {
             cwd: sourceDir,
         });
         for (const file of files) {

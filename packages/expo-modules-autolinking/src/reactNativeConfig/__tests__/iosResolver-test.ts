@@ -1,10 +1,10 @@
-import glob from 'fast-glob';
+import { glob } from 'glob';
 import { vol } from 'memfs';
 
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 
-jest.mock('fast-glob');
 jest.mock('fs/promises');
+jest.mock('glob');
 
 describe(resolveDependencyConfigImplIosAsync, () => {
   const mockGlob = glob as jest.MockedFunction<typeof glob>;
