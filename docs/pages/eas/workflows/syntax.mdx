@@ -235,12 +235,13 @@ Specific versions of tools that should be used for jobs defined in this workflow
 
 Example of workflow using `defaults.tools`:
 
-```yml
+```yaml .eas/workflows/publish-update.yml
+name: Publish update
 defaults:
   tools:
-    node: 20
-    yarn: 2.0.1
-    fastlane: latest
+    node: latest
+    yarn: '2'
+    fastlane: 2.224.0
 
 on:
   push:
