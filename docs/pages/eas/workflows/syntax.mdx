@@ -216,6 +216,52 @@ jobs:
         run: pwd # prints: /home/expo/workingdir/build/my-app
 ```
 
+## `defaults`
+
+Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.run.working_directory`
+
+Default working directory to run the scripts in. Relative paths like "./assets" or "assets" are resolved from the app's base directory.
+
+### `defaults.tools`
+
+Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
+
+| Tool        | Description                                                                |
+| ----------- | -------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                    |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                    |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                    |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script. |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                     |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.               |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.              |
+
+Example of workflow using `defaults.tools`:
+
+```yaml .eas/workflows/publish-update.yml
+name: Set up custom versions
+defaults:
+  tools:
+    node: latest
+    yarn: '2'
+    fastlane: 2.224.0
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  setup:
+    steps:
+      - name: Check Node version
+        run: node --version # should print a concrete version, like 23.9.0
+      - name: Check Yarn version
+        run: yarn --version # should print a concrete version, like 2.4.3
+```
+
 ## Control flow
 
 You can control when a job runs with the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
