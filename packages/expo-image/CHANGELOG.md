@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - type-compatibility with react-native 0.77 ([#34027](https://github.com/expo/expo/pull/34027) by [@vonovak](https://github.com/vonovak))

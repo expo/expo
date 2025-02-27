@@ -2,11 +2,12 @@
 
 #pragma once
 
-#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
+#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTAppDelegate (Recreate)
+NS_SWIFT_NAME(ExpoReactNativeFactoryDelegate)
+@interface EXReactNativeFactoryDelegate : RCTDefaultReactNativeFactoryDelegate
 
 /**
  Recreates a root view bound with customized bundleURL, moduleName, initialProps, and launchOptions.
@@ -24,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                              initialProps:(nullable NSDictionary *)initialProps
                             launchOptions:(nullable NSDictionary *)launchOptions;
 #endif
+
 @end
 
 NS_ASSUME_NONNULL_END
