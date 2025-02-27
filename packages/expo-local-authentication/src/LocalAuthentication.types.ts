@@ -5,7 +5,7 @@ export type LocalAuthenticationResult =
   | {
       success: false;
       /**
-       * One of the following values: `not_enrolled` `user_cancel` `app_cancel` `not_available` `lockout` `no_space` `timeout` `unable_to_process` `unknown` `system_cancel` `user_fallback` `invalid_context` `passcode_not_set` `authentication_failed`
+       * One of the following values: `not_enrolled`, `user_cancel`, `app_cancel`, `not_available`, `lockout`, `no_space`, `timeout`, `unable_to_process`, `unknown`, `system_cancel`, `user_fallback`, `invalid_context`, `passcode_not_set`, `authentication_failed`.
        */
       error: string;
       warning?: string;
