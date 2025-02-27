@@ -3,6 +3,8 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 
 export type ListProps = {
   listStyle?: ListStyle;
+  moveEnabled?: boolean;
+  deleteEnabled?: boolean;
   data: Array<any>
   style?: StyleProp<ViewStyle>;
   renderItem: ({ item }: { item: any, index: number }) => React.ReactNode;
@@ -22,7 +24,7 @@ type ListStyle =
   | "insetGrouped"
   | "grouped"
   | "sidebar"
-  | "palin";
+  | "plain";
 
 const ListNativeView: React.ComponentType<
   NativeListProps
