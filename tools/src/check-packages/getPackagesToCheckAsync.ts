@@ -17,19 +17,6 @@ async function safeGetMergeBaseAsync(ref: string): Promise<string | null> {
   }
 }
 
-const packagesToCheck: Package[] = [];
-
-/**
- * Adds packages to the list of packages to check. Ignores duplicates.
- */
-function addPackages(packagesToAdd: Package[]) {
-  for (const pkg of packagesToAdd) {
-    if (!packagesToCheck.includes(pkg)) {
-      packagesToCheck.push(pkg);
-    }
-  }
-}
-
 /**
  * Resolves which packages should go through checks based on given options.
  */
@@ -45,16 +32,18 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
     return allPackages;
   }
 
+  const packagesToCheck: Set<Package> = new Set();
+
   if (core) {
-    addPackages(
-      allPackages.filter(
-        (pkg) => pkg.packageName === 'expo' || pkg.packageName === 'expo-modules-core'
-      )
-    );
+    allPackages
+      .filter((pkg) => pkg.packageName === 'expo' || pkg.packageName === 'expo-modules-core')
+      .forEach((pkg) => packagesToCheck.add(pkg));
   }
 
   if (packageNames.length > 0) {
-    addPackages(allPackages.filter((pkg) => packageNames.includes(pkg.packageName)));
+    allPackages
+      .filter((pkg) => packageNames.includes(pkg.packageName))
+      .forEach((pkg) => packagesToCheck.add(pkg));
     return packagesToCheck;
   }
 
@@ -70,11 +59,11 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
   logger.info(`😺 Using incremental checks since ${formatCommitHash(mergeBase)} commit\n`);
   const changedFiles = await Git.logFilesAsync({ fromCommit: mergeBase });
 
-  addPackages(
-    allPackages.filter((pkg) => {
+  allPackages
+    .filter((pkg) => {
       const pkgPath = pkg.path.replace(/([^\/])$/, '$1/');
       return changedFiles.some(({ path }) => path.startsWith(pkgPath));
     })
-  );
+    .forEach((pkg) => packagesToCheck.add(pkg));
   return packagesToCheck;
 }
