@@ -1,6 +1,7 @@
 import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 
 import {
+  CameraType,
   ImagePickerAsset,
   ImagePickerResult,
   MediaType,
@@ -36,6 +37,7 @@ export default {
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
     base64 = false,
+    cameraType,
   }): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
@@ -44,7 +46,7 @@ export default {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
-      capture: true,
+      capture: cameraType ?? true,
       base64,
     });
   },
@@ -100,7 +102,16 @@ function openFileBrowserAsync({
     input.setAttribute('multiple', 'multiple');
   }
   if (capture) {
-    input.setAttribute('capture', 'camera');
+    switch (capture) {
+      case true:
+        input.setAttribute('capture', 'camera');
+        break
+      case CameraType.front:
+        input.setAttribute('capture', 'environment');
+        break
+      case CameraType.back:
+        input.setAttribute('capture', 'user');
+    }
   }
   document.body.appendChild(input);
 

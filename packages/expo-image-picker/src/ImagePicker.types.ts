@@ -545,7 +545,7 @@ export type OpenFileBrowserOptions = {
    */
   mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
   // @docsMissing
-  capture?: boolean;
+  capture?: boolean | CameraType;
   /**
    * Whether or not to allow selecting multiple media files at once.
    * @platform web
