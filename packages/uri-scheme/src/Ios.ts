@@ -137,3 +137,23 @@ function formatConfig(plistObject: any): string {
 function writeConfig(path: string, plistObject: any) {
   fs.writeFileSync(path, formatConfig(plistObject));
 }
+
+/**
+ * xcrun expects special characters in only the search parameters to be escaped.
+ * When this doesn't happen, it also quietly fails by opening the wrong screen.
+ *
+ * @example
+ * - `myapp://(tabs)/explore` -> `myapp://(tabs)/explore`
+ * - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://(tabs)/explore?test=a%257Cb%257Cc`
+ */
+export function escapeUri(uri: string) {
+  if (!uri.includes('?')) return uri;
+
+  const [uriWithoutParams, uriParams] = uri.split('?', 2);
+  const escapedUriParams = new URLSearchParams(uriParams);
+  for (const [key, value] of escapedUriParams.entries()) {
+    escapedUriParams.set(key, encodeURIComponent(value));
+  }
+
+  return `${uriWithoutParams}?${escapedUriParams.toString()}`;
+}

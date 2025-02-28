@@ -82,7 +82,7 @@ buildCommand('open', ['com.app://oauth', 'http://expo.dev'])
         ...args,
         androidPackage: args['package'],
         uri,
-        escapeUriParams: !args.raw,
+        escapeUri: !args.raw,
       });
       await shouldUpdate();
     } catch (error) {
