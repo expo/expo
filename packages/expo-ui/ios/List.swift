@@ -11,11 +11,9 @@ class ListProps: ExpoSwiftUI.ViewProps {
   @Field var selectEnabled: Bool = false
   @Field var scrollEnabled: Bool = false
   @Field var editModeEnabled: Bool = false
-  
   var onDeleteItem = EventDispatcher()
   var onMoveItem = EventDispatcher()
   var onSelectionChange = EventDispatcher()
-  
 }
 
 struct ListView: ExpoSwiftUI.View {
@@ -23,7 +21,6 @@ struct ListView: ExpoSwiftUI.View {
   @State private var selection: Set<Int> = []
   @State var editModeEnabled: EditMode = .inactive
   @State var search: String = ""
-  
   var body: some View {
     let list = List(selection: props.selectEnabled ? $selection : nil) {
       UnwrappedChildren { child, isHostingView in
@@ -38,9 +35,7 @@ struct ListView: ExpoSwiftUI.View {
       .onMove(perform: handleMove)
       .deleteDisabled(!props.deleteEnabled)
       .moveDisabled(!props.moveEnabled)
-      
     }
-    
       .modifier(ListStyleModifer(style: props.listStyle))
       .onAppear {
         editModeEnabled = props.editModeEnabled ? .active : .inactive
@@ -64,9 +59,6 @@ struct ListView: ExpoSwiftUI.View {
     }
     
   }
-  
-  
-  
   func handleDelete(at offsets: IndexSet) {
     for offset in offsets {
       props.onDeleteItem([
@@ -90,7 +82,6 @@ struct ListView: ExpoSwiftUI.View {
     ]
     props.onSelectionChange(jsonDict)
   }
-  
 }
 
 struct ListStyleModifer: ViewModifier {
@@ -117,7 +108,7 @@ struct ListStyleModifer: ViewModifier {
 
 struct ScrollDisabledModifier: ViewModifier {
   let scrollEnabled: Bool
-  
+
   func body(content: Content) -> some View {
     if #available(iOS 18.0, *) {
       content.scrollDisabled(!scrollEnabled)

@@ -42,7 +42,6 @@ public extension ExpoSwiftUIView {
       // Return empty ForEach to match return type's requirements
       return ForEach(0..<1) { _ in AnyView(EmptyView()) }
     }
-    
     let childrenArray = Array(children)
     return ForEach(0..<childrenArray.count, id: \.self) { index in
       let child = childrenArray[index]
@@ -70,12 +69,10 @@ public extension ExpoSwiftUIView {
       )
     }
   }
-  
   static func getDynamicType() -> AnyDynamicType {
       return DynamicSwiftUIViewType(innerType: Self.self)
     }
   }
-
   extension ExpoSwiftUI {
     public typealias View = ExpoSwiftUIView
 
