@@ -2,10 +2,6 @@
 
 import SwiftUI
 import Combine
-// Copyright 2024-present 650 Industries. All rights reserved.
-
-import SwiftUI
-import Combine
 
 /**
  A protocol for SwiftUI views that need to access props.
