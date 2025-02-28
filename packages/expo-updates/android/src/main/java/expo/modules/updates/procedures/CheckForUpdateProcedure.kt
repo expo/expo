@@ -1,7 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.os.AsyncTask
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
@@ -15,6 +14,9 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CheckForUpdateProcedure(
   private val context: Context,
@@ -24,14 +26,15 @@ class CheckForUpdateProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val launchedUpdate: UpdateEntity?,
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-check-for-update"
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
 
-    AsyncTask.execute {
+    procedureScope.launch {
       val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
       val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
         databaseHolder.database,
