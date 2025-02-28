@@ -539,7 +539,9 @@ export type ImagePickerOptions = {
   legacy?: boolean;
 };
 
-// @needsAudit
+/**
+ * @hidden
+ */
 export type OpenFileBrowserOptions = {
   /**
    * Choose what type of media to pick.
