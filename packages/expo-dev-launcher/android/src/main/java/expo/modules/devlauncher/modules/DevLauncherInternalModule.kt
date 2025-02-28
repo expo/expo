@@ -100,23 +100,18 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
     }
 
     AsyncFunction<List<Bundle?>>("getRecentlyOpenedApps") {
-      val apps: MutableList<Bundle> = ArrayList()
+      val apps = controller.getRecentlyOpenedApps().map {
+          Bundle().apply {
+           putDouble("timestamp", it.timestamp.toDouble())
+           putString("name", it.name)
+           putString("url", it.url)
+           putBoolean("isEASUpdate", it.isEASUpdate == true)
 
-      for (recentlyOpenedApp in controller.getRecentlyOpenedApps()) {
-        val app = Bundle()
-
-        app.putDouble("timestamp", recentlyOpenedApp.timestamp.toDouble())
-        app.putString("name", recentlyOpenedApp.name)
-        app.putString("url", recentlyOpenedApp.url)
-        app.putBoolean("isEASUpdate", recentlyOpenedApp.isEASUpdate == true)
-
-        if (recentlyOpenedApp.isEASUpdate == true) {
-          app.putString("updateMessage", recentlyOpenedApp.updateMessage)
-          app.putString("branchName", recentlyOpenedApp.branchName)
-        }
-
-
-        apps.add(app)
+            if (it.isEASUpdate == true) {
+             putString("updateMessage", recentlyOpenedApp.updateMessage)
+             putString("branchName", recentlyOpenedApp.branchName)
+            }
+         }
       }
       return@AsyncFunction apps
     }
