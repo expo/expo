@@ -17,7 +17,7 @@ export type ContentUnavailableProps = {
    * Description of why the content is not available.
    */
 
-  description: React.ReactNode;
+  description: string;
 
   /**
    * Additional styling.
