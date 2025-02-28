@@ -1,0 +1,128 @@
+---
+title: How file-based routing works
+description: Learn the meaning behind the folders and files that make up your app's routes in Expo Router.
+sidebar_title: File-based Routing
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+In Expo Router, each screen or page in your app is its own file. Let's learn how files and folders are named and arranged in order to define your app's navigation tree.
+
+## The very basics
+
+Let's cover a few essential concepts about Expo Router before diving into the details of what each file and folder means:
+
+### All screens / pages are files inside of /app
+
+All navigation routes in your app are defined by the files and folders inside the **app** directory. Every file inside the **app** folder has a default export that defines a distinct page in your app (except for the special **\_layout** files, which we'll get to in a moment).
+
+### Folders define groups of pages
+
+Folders define groups of related screens together as stacks, tabs, or in other arrangements.
+
+### All pages have a URL
+
+All pages have a URL path that matches the file's location in the **app** directory, which can be used to navigate to that page in the address bar on the web, or as an app-specific deep link in a navtive mobile app. This is what is meant by Expo Router supporting "universal deep-linking". All pages in your app can be navigated to with a URL, regardless of the platform.
+
+### React Navigation is under the hood
+
+While this all may sound quite a bit different from React Navigation, actually, Expo Router is built on top of React Navigation. You can think of Expo Router as an Expo CLI optimization that is translating your file structure into React Navigation components that you previously defined in your own code.
+
+This also means that you can often refer to React Navigation documentation for how to style or configure navigation, as the default stack and tab navigators use the exact same options.
+
+### Example
+
+Consider this project file structure:
+
+<FileTree files={[['app/home.tsx'], ['app/profile/friends.tsx'], ['components/TextField.tsx']]} />
+
+- **app/home.tsx** is a page with the route `/home`, so you can navigate to it with a URL like `yourapp.com/home` in the browser, or `myapp://home` in a native app.
+- **app/profile/friends.tsx** is a page with the route `/profile/friends`.
+- **components/TextField.tsx** is not a page, since it's not in the **app** directory.
+
+## Expo Router notation
+
+Look inside the app folder in a typical Expo Router project, and you'll see a lot more than just some simple file and folder names. What do the parenthesises and brackets mean? Let's learn what the significance of file-based routing notation and how it allows you to define complex navigation patterns:
+
+### Simple names / no notation
+
+_Examples: **home.tsx**, **feed/favorites.tsx**_
+
+Regular folder and file names without any notation signify _static routes_. Their URL matches exactly as they appear in your file tree. So, a file named **feed/favorites.tsx** will have a URL of `/feed/favorites`.
+
+### Square brackets
+
+_Examples: **[userName].tsx**, **products/[productId]/details.tsx**_
+
+If you see square brackets in a folder or file name, you are looking at a _dynamic route_. The name of the route includes a parameter that can be used when rendering the page. The parameter could be either in a folder name or a file name. For example, a file named **[userName].tsx** will match `/evanbacon`, `/expo`, or another username. Then you can access that parameter with the `useLocalSearchParams` hook inside the page, using that to load the data for that specific user.
+
+### Parentheses
+
+_Examples: **(tabs)/settings.tsx**_
+
+A folder with its name surrounded in parenthesis indicates a _route group_. These folders are useful for grouping routes together without affecting the URL. For example, a file named **(tabs)/settings.tsx** will have `/settings` for its URL, even though it is not directly in the **app** directory.
+
+Route groups could be useful for simple organization purposes, but often becomes more important for defining complex relationships between routes.
+
+### index.tsx files
+
+_Examples: **profile/index.tsx**, **(tabs)/index.tsx**_
+
+Just like on the web, an **index.tsx** file indicates the default route for a folder. For example, a file named **profile/index.tsx** will match `/profile`. A file named **(tabs)/index.tsx** will match `/`, effectively becoming the default route for your entire app.
+
+### \_layout.tsx files
+
+_Examples: **(tabs)/\_layout.tsx**, **feed/\_layout.tsx**_
+
+**\_layout.tsx** files are special files that are not pages themselves, but define how groups of routes inside a folder relate to each other. If a folder of routes are arranged as a stack or tabs, the layout route is where you would define that relationship by using a stack navigator or tab navigator component.
+
+Layout routes are rendered prior to the actual page routes inside their folder. This means that the **\_layout.tsx** directly inside the app folder is rendered before anything else in the app, and is where you would put initialization code that may have previously gone inside an **App.js** file.
+
+### Plus sign
+
+_Examples: **+not-found.tsx**, **+native-intent.tsx**_
+
+Routes starting with a “+” have special significance to Expo Router. One example is `+not-found`, which is a catches any requests that don't match a route in your app. You’ll learn more about these as you need them.
+
+### Route notation in context
+
+Considering this project file structure, let's identify the different types of routes represented:
+
+<FileTree
+  files={[
+    ['app/(tabs)/\_layout.tsx'],
+    ['app/(tabs)/index.tsx'],
+    ['app/(tabs)/feed.tsx'],
+    ['app/(tabs)/\profile.tsx'],
+    ['app/_layout.tsx'],
+    ['app/users/[userId].tsx'],
+    ['app/users/+not-found.tsx'],
+    ['app/about.tsx'],
+  ]}
+/>
+
+- **app/about.tsx** is a static route that matches `/about`.
+- **app/users/[userId].tsx** is a dynamic route that matches `/users/123`, `/users/456`, and so on.
+- **app/(tabs)** is a route group. It will not factor into the URL, so `/feed` will match **app/(tabs)/feed.tsx**.
+- **app/(tabs)\index.tsx** is the default route for the **(tabs)** folder, so it will be the initially-focusd tab, and will match the `/` URL.
+- **app/(tabs)\_layout.tsx** is a layout file defining how the three pages inside **app/(tabs)** relate to each other. If we use a tab navigator component inside of this file, then those screens will be arranged as tabs.
+- **app/\_layout.tsx** is the root layout file, and is rendered before any other route in the app.
+- **+not-found.tsx** is a special route that will be displayed if the user navigates to a route that doesn't exist in your app.
+
+## Expo Router and the rest of your project
+
+With the **app** folder defining all of your app's routes and no **App.js** file, you may be wondering where to put other parts of your app, and in what order is everything rendered in your app. Let's clear that up.
+
+### Create other top-level folders for non-routes
+
+In Expo Router, the **app** folder is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level folders.
+
+Alternatively, you can create a top-level **src** folder and put your routes inside the **src/app** folder, with non-route components going in folders like **src/components**, **src/utils**, etc. This is the only other folder structure that Expo Router will recognize.
+
+### Root \_layout.tsx replaces App.jsx
+
+Every project should have a **\_layout.tsx** file directly inside the **app** folder. This file is rendered before any other route in your app, and is where you would put initialization code that may have previously gone inside an **App.js** file, such as loading fonts or interacting with the splash screen.
+
+### First index.tsx is the initial route
+
+With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. This could be an **app/index.tsx** file, or, if you want to show an initial tab in a tab navigator, it could be an **app/(tabs)/index.tsx** file. If you nest **index.tsx** deeper than the top level folder, the key is to use route groups rather than static folder names, as a route group inside of **app** would still match the `/` URL.

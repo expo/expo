@@ -238,6 +238,11 @@ export const general = [
     makePage('router/introduction.mdx'),
     makePage('router/installation.mdx'),
     makePage('router/create-pages.mdx'),
+    makeGroup('Router 101', [
+      makePage('router/basics/app-folder.mdx'),
+      makePage('router/basics/layout-and-nav.mdx'),
+      makePage('router/basics/real-life-nav.mdx'),
+    ]),
     makePage('router/navigating-pages.mdx'),
     makePage('router/layouts.mdx'),
     makePage('router/error-handling.mdx'),
