@@ -84,6 +84,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ProgressScreen'));
     },
   },
+  {
+  name: 'ContentUnavailableView component',
+    route: 'ui/content-unavailable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentUnavailableScreen'));
+    }, 
+  },
 ];
 if (Platform.OS === 'ios') {
   UIScreens.push({
