@@ -7,7 +7,6 @@ class DisclosureGroupProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
   @Field var isExpanded: Bool = true
   var onStateChange = EventDispatcher()
-  
 }
 
 struct DisclosureGroupView: ExpoSwiftUI.View {
@@ -22,11 +21,11 @@ struct DisclosureGroupView: ExpoSwiftUI.View {
           }
       }
     }
-      .onAppear(){
+      .onAppear {
         isExpanded = props.isExpanded
       }
       .onChange(of: isExpanded) { newValue in
-        let payload = ["isExpanded":  newValue]
+        let payload = ["isExpanded": newValue]
         props.onStateChange(payload)
       }
       .onChange(of: props.isExpanded) { newValue in
