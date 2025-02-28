@@ -80,12 +80,12 @@ export type DataListProps<T> = Omit<NativeListProps, 'children'> & {
  * @param {DataListProps<T>} props - The properties for the list component.
  * @returns {JSX.Element} The rendered list of items.
  */
-export declare function DataList<T>(props: DataListProps<T>): import("react").JSX.Element;
+export declare function DataList<T>(props: DataListProps<T>): import("react").JSX.Element | null;
 /**
  * A list component that renders its children.
  * @param {NativeListProps} props - The properties for the list component.
  * @returns {JSX.Element} The rendered list with its children.
  */
-export declare function List(props: NativeListProps): import("react").JSX.Element;
+export declare function List(props: NativeListProps): import("react").JSX.Element | null;
 export {};
 //# sourceMappingURL=index.d.ts.map

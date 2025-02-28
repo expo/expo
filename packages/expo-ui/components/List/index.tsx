@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, View, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../src';
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
@@ -82,7 +82,8 @@ export type DataListProps<T> = Omit<NativeListProps, 'children'> & {
   renderItem: ({ item, index }: { item: T; index: number }) => React.ReactNode;
 };
 
-const ListNativeView = requireNativeView<NativeListProps>('ExpoUI', 'ListView');
+const ListNativeView: React.ComponentType<NativeListProps> | null =
+  Platform.OS === 'ios' ? requireNativeView<NativeListProps>('ExpoUI', 'ListView') : null;
 
 /**
  * A generic list component that renders items from the given data using a provided render function.
@@ -92,6 +93,9 @@ const ListNativeView = requireNativeView<NativeListProps>('ExpoUI', 'ListView');
 export function DataList<T>(props: DataListProps<T>) {
   const { data, renderItem, ...nativeProps } = props;
 
+  if (!ListNativeView) {
+    return null;
+  }
   return (
     <ListNativeView {...nativeProps} style={[props.style, { flex: 1 }]}>
       {data.map((item, index) => (
@@ -109,6 +113,9 @@ export function DataList<T>(props: DataListProps<T>) {
 export function List(props: NativeListProps) {
   const { children, ...nativeProps } = props;
 
+  if (!ListNativeView) {
+    return null;
+  }
   return (
     <ListNativeView {...nativeProps} style={[props.style, { flex: 1 }]}>
       {children}
