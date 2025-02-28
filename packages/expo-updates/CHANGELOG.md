@@ -4,21 +4,18 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Remove a few long-deprecated typescript types. ([#34215](https://github.com/expo/expo/pull/34215) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
-- Add `Updates.setUpdateURLAndRequestHeadersOverride()` to allow overriding update URL configuration from the JS API. ([#34422](https://github.com/expo/expo/pull/34422), [#34423](https://github.com/expo/expo/pull/34423), [#34425](https://github.com/expo/expo/pull/34425), [#34426](https://github.com/expo/expo/pull/34426), [#34454](https://github.com/expo/expo/pull/34454), [#34455](https://github.com/expo/expo/pull/34455), [#34428](https://github.com/expo/expo/pull/34428), [#34404](https://github.com/expo/expo/pull/34404) by [@kudo](https://github.com/kudo), [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
-- Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
 - [android] Use more robust mechanism for determining empty multipart bodies. ([#33977](https://github.com/expo/expo/pull/33977) by [@wschurman](https://github.com/wschurman))
 - fix E2E tests in Detox debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
-- Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
-- Removed Apache Commons IO dependency and fixed crash issue on Android 7. ([#34638](https://github.com/expo/expo/pull/34638) by [@kudo](https://github.com/kudo))
-- [Android] Fix `bytesToHex` `ArrayIndexOutOfBoundsException` during conversion. ([#34855](https://github.com/expo/expo/pull/34855) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix runtime version validation warning ([#35188](https://github.com/expo/expo/pull/35188) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -27,9 +24,62 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Fixed build error on iOS Expo Go. ([#34485](https://github.com/expo/expo/pull/34485) by [@kudo](https://github.com/kudo))
 - Fixed Android unit test errors in BuilDataTest. ([#34510](https://github.com/expo/expo/pull/34510) by [@kudo](https://github.com/kudo))
-- Fixed incorrect error log on Android. ([#34785](https://github.com/expo/expo/pull/34785) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
 - Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+
+## 0.27.1 - 2025-02-21
+
+### 🎉 New features
+
+- Add `Updates.setUpdateURLAndRequestHeadersOverride()` to allow overriding update URL configuration from the JS API. ([#34422](https://github.com/expo/expo/pull/34422), [#34423](https://github.com/expo/expo/pull/34423), [#34425](https://github.com/expo/expo/pull/34425), [#34426](https://github.com/expo/expo/pull/34426), [#34454](https://github.com/expo/expo/pull/34454), [#34455](https://github.com/expo/expo/pull/34455), [#34428](https://github.com/expo/expo/pull/34428), [#34404](https://github.com/expo/expo/pull/34404) by [@kudo](https://github.com/kudo), [@wschurman](https://github.com/wschurman))
+
+## 0.26.19 - 2025-02-19
+
+### 💡 Others
+
+- Fixed incorrect error log on Android. ([#34785](https://github.com/expo/expo/pull/34785) by [@kudo](https://github.com/kudo))
+
+## 0.26.18 - 2025-02-12
+
+### 🐛 Bug fixes
+
+- [Android] Fix `bytesToHex` `ArrayIndexOutOfBoundsException` during conversion. ([#34855](https://github.com/expo/expo/pull/34855) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.26.17 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.16 - 2025-02-04
+
+### 🐛 Bug fixes
+
+- Removed Apache Commons IO dependency and fixed crash issue on Android 7. ([#34638](https://github.com/expo/expo/pull/34638) by [@kudo](https://github.com/kudo))
+
+## 0.26.15 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.26.14 - 2025-01-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.13 - 2025-01-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.12 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.11 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.26.10 - 2024-12-05
 

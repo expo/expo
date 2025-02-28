@@ -16,9 +16,12 @@ struct DateTimePickerView: ExpoSwiftUI.View {
   @State private var date = Date()
 
   var body: some View {
+    #if os(tvOS)
+    return Text("DateTimePicker is not supported on tvOS")
+    #else
     let displayedComponents = props.displayedComponents.toDatePickerComponent()
 
-    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy) {
+    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
       DatePicker(props.title, selection: $date, displayedComponents: displayedComponents)
         .onAppear {
           date = props.initialDate ?? Date()
@@ -30,9 +33,11 @@ struct DateTimePickerView: ExpoSwiftUI.View {
         .tint(props.color)
         .foregroundStyle(props.color ?? .accentColor)
     }
+    #endif
   }
 }
 
+#if !os(tvOS)
 private extension View {
   @ViewBuilder
   func applyDatePickerStyle(for style: PickerStyle) -> some View {
@@ -48,6 +53,7 @@ private extension View {
     }
   }
 }
+#endif
 
 enum PickerStyle: String, Enumerable {
   case wheel
@@ -60,7 +66,7 @@ enum DisplayedComponents: String, Enumerable {
   case date
   case hourAndMinute
   case dateAndTime
-
+  #if !os(tvOS)
   func toDatePickerComponent() -> DatePicker.Components {
     switch self {
     case .date:
@@ -71,4 +77,5 @@ enum DisplayedComponents: String, Enumerable {
       return [.date, .hourAndMinute]
     }
   }
+  #endif
 }

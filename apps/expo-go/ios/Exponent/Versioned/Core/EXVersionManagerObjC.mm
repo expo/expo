@@ -33,7 +33,6 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import <react/config/ReactNativeConfig.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 

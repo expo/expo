@@ -1,5 +1,5 @@
 import findUp from 'find-up';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { AutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';

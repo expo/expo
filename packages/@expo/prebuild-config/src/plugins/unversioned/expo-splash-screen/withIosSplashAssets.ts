@@ -1,8 +1,7 @@
 import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
 import { generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
-import fs from 'fs-extra';
-// @ts-ignore
+import fs from 'fs';
 import path from 'path';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
@@ -71,7 +70,7 @@ async function configureImageAssets({
 }) {
   const imageSetPath = path.resolve(iosNamedProjectRoot, IMAGESET_PATH);
   // ensure old SplashScreen imageSet is removed
-  await fs.remove(imageSetPath);
+  await fs.promises.rm(imageSetPath, { force: true, recursive: true });
 
   if (!image) {
     return;
@@ -133,7 +132,7 @@ async function copyImageFiles({
         } as any);
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-        await fs.writeFile(
+        await fs.promises.writeFile(
           path.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`),
           source
         );

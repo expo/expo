@@ -1,8 +1,6 @@
-import glob from 'fast-glob';
 import fs from 'fs/promises';
+import { glob, GlobOptions } from 'glob';
 import path from 'path';
-
-type GlobOptions = Parameters<typeof glob>[1];
 
 /**
  * A matching function that takes a file path and its contents and returns a string if it matches, or null otherwise.
@@ -24,8 +22,8 @@ export async function globMatchFunctorAllAsync(
   matchFunctor: MatchFunctor,
   options?: GlobOptions
 ): Promise<string[]> {
-  const globStream = glob.stream(globPattern, options);
-  const cwd = options?.cwd ?? process.cwd();
+  const globStream = glob.stream(globPattern, { ...options, withFileTypes: false });
+  const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
   const results: string[] = [];
   for await (const file of globStream) {
     let filePath = file.toString();
@@ -49,8 +47,8 @@ export async function globMatchFunctorFirstAsync(
   matchFunctor: MatchFunctor,
   options?: GlobOptions
 ): Promise<string | null> {
-  const globStream = glob.stream(globPattern, options);
-  const cwd = options?.cwd ?? process.cwd();
+  const globStream = glob.stream(globPattern, { ...options, withFileTypes: false });
+  const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
   for await (const file of globStream) {
     let filePath = file.toString();
     if (!path.isAbsolute(filePath)) {

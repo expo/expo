@@ -11,12 +11,16 @@ const ScrollPage = ({ children }: PropsWithChildren) => (
   <ScrollView style={[styles.page, styles.scrollPage]}>{children}</ScrollView>
 );
 
-type SectionProps = PropsWithChildren<{ title: string; row?: boolean }>;
+type SectionProps = PropsWithChildren<{
+  title: string;
+  row?: boolean;
+  gap?: number;
+}>;
 
-const Section = ({ title, children, row }: SectionProps) => (
+const Section = ({ title, children, row, gap }: SectionProps) => (
   <View style={styles.section}>
     <H4 style={styles.sectionHeader}>{title}</H4>
-    <View style={{ flexDirection: row ? 'row' : 'column' }}>{children}</View>
+    <View style={{ flexDirection: row ? 'row' : 'column', gap }}>{children}</View>
   </View>
 );
 

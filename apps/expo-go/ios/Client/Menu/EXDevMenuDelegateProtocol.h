@@ -17,7 +17,7 @@
 /**
  * Returns the app delegate of the currently shown app. It is a context of what the dev menu displays.
  */
-- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(nonnull EXDevMenuManager *)manager;
+- (nullable RCTReactNativeFactory *)appDelegateForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 @optional
 

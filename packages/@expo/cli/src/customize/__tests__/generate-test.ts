@@ -54,8 +54,7 @@ describe(queryAndGenerateAsync, () => {
     });
     expect(copyAsync).toBeCalledWith(
       expect.stringMatching(/@expo\/cli\/static\/template\/babel\.config\.js/),
-      '/babel.config.js',
-      { overwrite: true, recursive: true }
+      '/babel.config.js'
     );
     expect(installAsync).toBeCalledWith(['babel-preset-expo'], {}, ['--dev', 'foobar']);
   });
@@ -103,8 +102,7 @@ describe(selectAndGenerateAsync, () => {
 
     expect(copyAsync).toBeCalledWith(
       expect.stringMatching(/@expo\/webpack-config\/template\/webpack\.config\.js/),
-      '/webpack.config.js',
-      { overwrite: true, recursive: true }
+      '/webpack.config.js'
     );
     expect(installAsync).not.toBeCalled();
   });
@@ -127,8 +125,7 @@ describe(selectAndGenerateAsync, () => {
     // This isn't high priority since the file never changes and we should drop Webpack.
     expect(copyAsync).toBeCalledWith(
       expect.stringMatching(/@expo\/cli\/static\/template\/webpack\.config\.js/),
-      '/webpack.config.js',
-      { overwrite: true, recursive: true }
+      '/webpack.config.js'
     );
     expect(installAsync).toBeCalledWith(['@expo/webpack-config'], {}, ['--dev']);
   });

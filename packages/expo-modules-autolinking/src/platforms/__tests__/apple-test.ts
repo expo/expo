@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
+import { glob } from 'glob';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -11,8 +11,14 @@ import {
   resolveModuleAsync,
 } from '../apple';
 
-jest.mock('fast-glob');
-jest.mock('fs-extra');
+jest.mock('glob');
+jest.mock('fs');
+
+const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -208,13 +214,6 @@ describe(resolveModuleAsync, () => {
 });
 
 describe(resolveExtraBuildDependenciesAsync, () => {
-  let mockFsReadFile;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-  });
-
   it('should resolve extra build dependencies from Podfile.properties.json', async () => {
     mockFsReadFile.mockResolvedValueOnce(`{
 "apple.extraPods": "[{\\"name\\":\\"test\\"}]"
