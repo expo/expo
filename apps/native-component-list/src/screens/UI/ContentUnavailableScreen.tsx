@@ -1,16 +1,14 @@
-
-
-
-
-import { ContentUnavailableView } from '@expo/ui/components/ContentUnavailable';
 import * as React from 'react';
-
+import { ContentUnavailableView } from '@expo/ui/components/ContentUnavailable';
 
 export default function ContentUnavailableScreen() {
   return (
-
-    <ContentUnavailableView style={{flex: 1}} title='No results' systemImage='magnifyingglass' description="Maybe you made a typo" />
-
+    <ContentUnavailableView
+      style={{ flex: 1 }}
+      title='No results'
+      systemImage='magnifyingglass'
+      description="Maybe you made a typo"
+    />
   );
 }
 
