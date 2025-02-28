@@ -7,6 +7,7 @@ import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -22,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -87,6 +89,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
+
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -96,6 +99,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -104,6 +108,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -134,6 +139,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.FetchUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
               }
+
               is IUpdatesController.FetchUpdateResult.Failure -> {
                 promise.resolve(
                   Bundle().apply {
@@ -142,6 +148,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -150,6 +157,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.Success -> {
                 promise.resolve(
                   Bundle().apply {
@@ -199,10 +207,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       )
     }
 
-    AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
-      moduleScope.launch {
-        promise.resolve(readLogEntries(context, maxAge))
-      }
+    AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
+      return@Coroutine readLogEntries(context, maxAge)
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
@@ -237,30 +243,30 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal fun readLogEntries(context: Context, maxAge: Long): List<Bundle> {
-      val reader = UpdatesLogReader(context)
-      val date = Date()
-      val epoch = Date(date.time - maxAge)
-      return reader.getLogEntries(epoch)
-        .mapNotNull { UpdatesLogEntry.create(it) }
-        .map { entry ->
-          Bundle().apply {
-            putLong("timestamp", entry.timestamp)
-            putString("message", entry.message)
-            putString("code", entry.code)
-            putString("level", entry.level)
-            if (entry.updateId != null) {
-              putString("updateId", entry.updateId)
-            }
-            if (entry.assetId != null) {
-              putString("assetId", entry.assetId)
-            }
-            if (entry.stacktrace != null) {
-              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+    internal suspend fun readLogEntries(context: Context, maxAge: Long) = withContext(Dispatchers.IO) {
+        val reader = UpdatesLogReader(context)
+        val date = Date()
+        val epoch = Date(date.time - maxAge)
+        reader.getLogEntries(epoch)
+          .mapNotNull { UpdatesLogEntry.create(it) }
+          .map { entry ->
+            Bundle().apply {
+              putLong("timestamp", entry.timestamp)
+              putString("message", entry.message)
+              putString("code", entry.code)
+              putString("level", entry.level)
+              if (entry.updateId != null) {
+                putString("updateId", entry.updateId)
+              }
+              if (entry.assetId != null) {
+                putString("assetId", entry.assetId)
+              }
+              if (entry.stacktrace != null) {
+                putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+              }
             }
           }
-        }
-    }
+      }
 
     internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(context)
