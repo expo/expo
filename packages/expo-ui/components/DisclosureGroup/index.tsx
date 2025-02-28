@@ -1,7 +1,6 @@
 import { requireNativeView } from 'expo';
 import { Children } from 'react';
-import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
-
+import { Platform, StyleProp, View, ViewStyle } from 'react-native';
 
 export type DisclosureGroupProps = {
   /**
@@ -30,8 +29,6 @@ export type DisclosureGroupProps = {
   children: React.ReactNode;
 };
 
-
-
 /**
  * Displays a native DisclosureGroup
  *
@@ -39,15 +36,16 @@ export type DisclosureGroupProps = {
  *  Working on: Android reimplemtation with jetpack compose
  */
 
-const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> = requireNativeView(
-  'ExpoUI',
-  'DisclosureGroupView'
-);
+const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> | null =
+  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'DisclosureGroupView') : null;
 
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const children = Children.toArray(props.children);
+  if (!DisclosureGroupNativeView) {
+    return null;
+  }
   return (
-    <DisclosureGroupNativeView {...props}   style={{ flex: 1 }}>
+    <DisclosureGroupNativeView {...props} style={{ flex: 1 }}>
       <View>{children}</View>
     </DisclosureGroupNativeView>
   );

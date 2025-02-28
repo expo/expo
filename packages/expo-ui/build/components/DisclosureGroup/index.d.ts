@@ -21,5 +21,5 @@ export type DisclosureGroupProps = {
      */
     children: React.ReactNode;
 };
-export declare function DisclosureGroup(props: DisclosureGroupProps): import("react").JSX.Element;
+export declare function DisclosureGroup(props: DisclosureGroupProps): import("react").JSX.Element | null;
 //# sourceMappingURL=index.d.ts.map
