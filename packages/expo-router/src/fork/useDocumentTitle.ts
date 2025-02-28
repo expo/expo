@@ -14,7 +14,7 @@ import * as React from 'react';
  * Set the document title for the active screen
  */
 export function useDocumentTitle(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
+  ref: React.RefObject<NavigationContainerRef<ParamListBase> | null>,
   {
     enabled = true,
     formatter = (options, route) => options?.title ?? route?.name,

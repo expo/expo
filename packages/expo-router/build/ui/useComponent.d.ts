@@ -1,4 +1,4 @@
-/// <reference types="react" />
+import { JSX } from 'react';
 /**
  * Copied from @react-navigation/core
  */

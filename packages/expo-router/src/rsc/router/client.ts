@@ -104,7 +104,7 @@ const RouterContext = createContext<{
 const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
   const refetch = useRefetch();
 
-  const initialRouteRef = useRef<RouteProps>();
+  const initialRouteRef = useRef<RouteProps>(null);
   if (!initialRouteRef.current) {
     initialRouteRef.current = parseRoute(new URL(getHref()));
   }
