@@ -1,10 +1,6 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { requireNativeView } from 'expo';
 
-/**
- * Displays a native Swift UI ContentUnavailable view.
- * @platform ios
- */
 export type ContentUnavailableProps = {
   /**
    * A short title that describes why the content is not available.
@@ -14,6 +10,7 @@ export type ContentUnavailableProps = {
   /**
    * SF Symbol indicating why the content is not available.
    */
+
   systemImage?: string;
 
   /**
@@ -21,14 +18,21 @@ export type ContentUnavailableProps = {
    */
 
   description: React.ReactNode;
+
   /**
    * Additional styling.
    */
+
   style?: StyleProp<ViewStyle>;
 };
 
 const ContentUnavailableNativeView: React.ComponentType<ContentUnavailableProps> =
   requireNativeView('ExpoUI', 'ExpoContentUnavailableView');
+
+/**
+ * Displays a native Swift UI ContentUnavailable view.
+ * @platform ios
+ */
 
 export function ContentUnavailableView(props: ContentUnavailableProps) {
   return <ContentUnavailableNativeView {...props} />;
