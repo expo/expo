@@ -70,7 +70,7 @@ public extension ExpoSwiftUIView {
     }
   }
   static func getDynamicType() -> AnyDynamicType {
-      return DynamicSwiftUIViewType(innerType: Self.self)
+    return DynamicSwiftUIViewType(innerType: Self.self)
     }
   }
   extension ExpoSwiftUI {

@@ -51,13 +51,11 @@ struct ListView: ExpoSwiftUI.View {
       }
       .modifier(ScrollDisabledModifier(scrollEnabled: props.selectEnabled))
       .environment(\.editMode, $editModeEnabled)
-    
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)
     } else {
       list
     }
-    
   }
   func handleDelete(at offsets: IndexSet) {
     for offset in offsets {
@@ -71,7 +69,7 @@ struct ListView: ExpoSwiftUI.View {
     for source in sources {
       props.onMoveItem([
         "from": source,
-        "to": destination,
+        "to": destination
       ])
     }
   }
