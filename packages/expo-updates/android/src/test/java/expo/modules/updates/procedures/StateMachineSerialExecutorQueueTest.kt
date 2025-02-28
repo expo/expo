@@ -90,7 +90,7 @@ class StateMachineSerialExecutorQueueTest {
     val procedure2 = TestStateMachineProcedure {
       val currentTime = testScheduler.currentTime
       procedureChannel.send(currentTime)
-      delay(100)
+      delay(300)
       it.onComplete()
     }
     val procedure3 = TestStateMachineProcedure {
@@ -111,6 +111,6 @@ class StateMachineSerialExecutorQueueTest {
     val executionTime3 = procedureChannel.receive()
 
     assertTrue { executionTime2 >= executionTime1 + 100 }
-    assertTrue { executionTime3 >= executionTime2 + 100 }
+    assertTrue { executionTime3 >= executionTime2 + 300 }
   }
 }

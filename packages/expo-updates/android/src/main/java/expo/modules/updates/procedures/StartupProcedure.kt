@@ -25,8 +25,6 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 class StartupProcedure(
@@ -37,7 +35,6 @@ class StartupProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
-  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
   private val callback: StartupProcedureCallback
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-startup"

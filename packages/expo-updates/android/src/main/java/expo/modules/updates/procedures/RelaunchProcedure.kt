@@ -18,9 +18,6 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -36,7 +33,6 @@ class RelaunchProcedure(
   private val getCurrentLauncher: () -> Launcher,
   private val setCurrentLauncher: (launcher: Launcher) -> Unit,
   private val shouldRunReaper: Boolean,
-  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
   private val callback: Launcher.LauncherCallback
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-relaunch"
@@ -94,16 +90,14 @@ class RelaunchProcedure(
   }
 
   private fun runReaper() {
-    procedureScope.launch {
-      Reaper.reapUnusedUpdates(
-        updatesConfiguration,
-        databaseHolder.database,
-        updatesDirectory,
-        getCurrentLauncher().launchedUpdate,
-        selectionPolicy
-      )
-      databaseHolder.releaseDatabase()
-    }
+    Reaper.reapUnusedUpdates(
+      updatesConfiguration,
+      databaseHolder.database,
+      updatesDirectory,
+      getCurrentLauncher().launchedUpdate,
+      selectionPolicy
+    )
+    databaseHolder.releaseDatabase()
   }
 
   /**

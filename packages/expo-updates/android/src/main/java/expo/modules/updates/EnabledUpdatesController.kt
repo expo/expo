@@ -83,7 +83,6 @@ class EnabledUpdatesController(
     fileDownloader,
     selectionPolicy,
     logger,
-    controllerScope,
     object : StartupProcedure.StartupProcedureCallback {
       override fun onFinished() {
         onStartupProcedureFinished()
@@ -166,7 +165,6 @@ class EnabledUpdatesController(
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
-      controllerScope,
       callback
     )
     stateMachine.queueExecution(procedure)
