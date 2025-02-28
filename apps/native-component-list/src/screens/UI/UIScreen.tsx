@@ -69,6 +69,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TextInput component',
+    route: 'ui/textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
+    },
+  },
+  {
     name: 'Progress component',
     route: 'ui/progress',
     options: {},

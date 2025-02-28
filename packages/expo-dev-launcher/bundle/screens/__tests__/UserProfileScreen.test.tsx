@@ -3,7 +3,7 @@ import * as React from 'react';
 import { getUserProfileAsync, UserAccount, UserData } from '../../functions/getUserProfileAsync';
 import { startAuthSessionAsync } from '../../functions/startAuthSessionAsync';
 import { setSessionAsync } from '../../native-modules/DevLauncherAuth';
-import { render, act, fireEvent } from '../../test-utils';
+import { render, fireEvent } from '../../test-utils';
 import { UserProfileScreen } from '../UserProfileScreen';
 
 jest.mock('../../functions/startAuthSessionAsync');
@@ -65,13 +65,11 @@ describe('<UserProfileScreen />', () => {
     const loginButton = getByLabelText(/log in/i);
     expect(() => getByText(fakeAccounts[0].ownerUserActor!.username)).toThrow();
 
-    await act(async () => {
-      fireEvent.press(loginButton);
-      expect(startAuthSessionAsync).toHaveBeenCalledTimes(1);
-      expect(startAuthSessionAsync).toHaveBeenCalledWith('login');
-      expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
-      expect(setSessionAsync).toHaveBeenCalledTimes(0);
-    });
+    fireEvent.press(loginButton);
+    expect(startAuthSessionAsync).toHaveBeenCalledTimes(1);
+    expect(startAuthSessionAsync).toHaveBeenCalledWith('login');
+    expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
+    expect(setSessionAsync).toHaveBeenCalledTimes(0);
 
     await findByText(fakeAccounts[0].ownerUserActor!.username);
 
@@ -88,21 +86,19 @@ describe('<UserProfileScreen />', () => {
 
     const signupButton = await findByLabelText(/sign up/i);
 
-    await act(async () => {
-      expect(queryByText(fakeAccounts[0].ownerUserActor!.username)).toBe(null);
+    expect(queryByText(fakeAccounts[0].ownerUserActor!.username)).toBe(null);
 
-      fireEvent.press(signupButton);
+    fireEvent.press(signupButton);
 
-      expect(startAuthSessionAsync).toHaveBeenCalledTimes(1);
-      expect(startAuthSessionAsync).toHaveBeenCalledWith('signup');
-      expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
-      expect(setSessionAsync).toHaveBeenCalledTimes(0);
+    expect(startAuthSessionAsync).toHaveBeenCalledTimes(1);
+    expect(startAuthSessionAsync).toHaveBeenCalledWith('signup');
+    expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
+    expect(setSessionAsync).toHaveBeenCalledTimes(0);
 
-      await findByText(fakeAccounts[0].ownerUserActor!.username);
-      expect(setSessionAsync).toHaveBeenCalledTimes(1);
-      expect(setSessionAsync).toHaveBeenCalledWith(fakeSessionSecret);
-      expect(getUserProfileAsync).toHaveBeenCalledTimes(1);
-    });
+    await findByText(fakeAccounts[0].ownerUserActor!.username);
+    expect(setSessionAsync).toHaveBeenCalledTimes(1);
+    expect(setSessionAsync).toHaveBeenCalledWith(fakeSessionSecret);
+    expect(getUserProfileAsync).toHaveBeenCalledTimes(1);
   });
 
   test('back button navigates to previous screen', async () => {
@@ -110,10 +106,8 @@ describe('<UserProfileScreen />', () => {
 
     expect(mockNavigation.goBack).not.toHaveBeenCalled();
 
-    await act(async () => {
-      fireEvent.press(await findByLabelText(/go back/i));
-      expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
-    });
+    fireEvent.press(await findByLabelText(/go back/i));
+    expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
   });
 
   test('displays multiple accounts', async () => {
@@ -123,15 +117,13 @@ describe('<UserProfileScreen />', () => {
       expect(queryByText(account.ownerUserActor!.username)).toBe(null);
     });
 
-    await act(async () => {
-      const loginButton = await findByLabelText(/log in/i);
-      fireEvent.press(loginButton);
+    const loginButton = await findByLabelText(/log in/i);
+    fireEvent.press(loginButton);
 
-      await findByText(fakeAccounts[0].ownerUserActor!.username);
+    await findByText(fakeAccounts[0].ownerUserActor!.username);
 
-      fakeAccounts.forEach(async (account) => {
-        await findByText(account.ownerUserActor!.username);
-      });
+    fakeAccounts.forEach(async (account) => {
+      await findByText(account.ownerUserActor!.username);
     });
   });
 
@@ -140,16 +132,12 @@ describe('<UserProfileScreen />', () => {
 
     const loginButton = await findByLabelText(/log in/i);
 
-    await act(async () => {
-      fireEvent.press(loginButton);
-    });
+    fireEvent.press(loginButton);
 
     await findByTestId(`active-account-checkmark-${fakeAccounts[0].id}`);
     expect(queryByTestId(`active-account-checkmark-${fakeAccounts[1].id}`)).toBe(null);
 
-    await act(async () => {
-      fireEvent.press(await findByText(fakeAccounts[1].ownerUserActor!.username));
-    });
+    fireEvent.press(await findByText(fakeAccounts[1].ownerUserActor!.username));
 
     await findByTestId(`active-account-checkmark-${fakeAccounts[1].id}`);
     expect(queryByTestId(`active-account-checkmark-${fakeAccounts[0].id}`)).toBe(null);
@@ -160,23 +148,17 @@ describe('<UserProfileScreen />', () => {
 
     const loginButton = await findByLabelText(/log in/i);
 
-    await act(async () => {
-      fireEvent.press(loginButton);
-    });
+    fireEvent.press(loginButton);
 
     const logoutButton = await findByText(/log out/i);
 
-    await act(async () => {
-      mockSetSessionAsync.mockClear();
-      fireEvent.press(logoutButton);
-    });
+    mockSetSessionAsync.mockClear();
+    fireEvent.press(logoutButton);
 
     await findByText(/are you sure you want to log out/i);
     const button = await findByLabelText(/log out/i);
 
-    await act(async () => {
-      fireEvent.press(button);
-    });
+    fireEvent.press(button);
 
     expect(setSessionAsync).toHaveBeenCalledTimes(1);
     expect(setSessionAsync).toHaveBeenLastCalledWith(null);

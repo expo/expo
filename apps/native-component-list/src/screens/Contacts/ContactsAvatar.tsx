@@ -10,7 +10,7 @@ type Props = {
   style: StyleProp<ViewStyle>;
 };
 export default function Avatar({ image, name = '', style, onPress }: Props) {
-  const getImage = (): JSX.Element => {
+  const getImage = (): React.ReactElement => {
     if (typeof image === 'string') {
       return <Image style={styles.image} source={{ uri: image }} />;
     } else if (typeof image === 'function') {

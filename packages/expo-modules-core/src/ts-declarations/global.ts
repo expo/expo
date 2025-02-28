@@ -31,6 +31,34 @@ export interface ExpoGlobal {
    */
   NativeModule: typeof NativeModule;
 
+  // Properties
+
+  /**
+   * The version of the `expo-modules-core` package.
+   * @platform android
+   * @platform ios
+   */
+  expoModulesCoreVersion?: {
+    version: string;
+    major: number;
+    minor: number;
+    patch: number;
+  };
+
+  /**
+   * The path to the cache directory
+   * @platform android
+   * @platform ios
+   */
+  cacheDir?: string;
+
+  /**
+   * The path to the documents directory
+   * @platform android
+   * @platform ios
+   */
+  documentsDir?: string;
+
   // Utils
 
   /**

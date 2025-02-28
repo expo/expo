@@ -237,9 +237,7 @@ describe(createFastResolver, () => {
           from: reactNativePath,
           packageExports: true,
         })
-      ).toMatch(
-        /node_modules\/react-native\/node_modules\/promise\/setimmediate\/es6-extensions.js$/
-      );
+      ).toMatch(/node_modules\/promise\/setimmediate\/es6-extensions.js$/);
     });
 
     describe('resolves assets near self', () => {

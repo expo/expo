@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
@@ -15,6 +17,7 @@
 
 - [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - [Android] Added `publication` configuration. ([#35068](https://github.com/expo/expo/pull/35068) by [@lukmccall](https://github.com/lukmccall))
 - Removed legacy `modulesClassNames` field. ([#35095](https://github.com/expo/expo/pull/35095) by [@lukmccall](https://github.com/lukmccall))
 

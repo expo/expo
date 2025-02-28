@@ -52,18 +52,22 @@ function processChildElement(
   const uuid = expo.uuidv4();
 
   if (child.type === Button) {
+    // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createButtonElement(uuid, child.props, eventHandlersMap);
   }
 
   if (child.type === Switch) {
+    // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createSwitchElement(uuid, child.props, eventHandlersMap);
   }
 
   if (child.type === Picker) {
+    // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createPickerElement(uuid, child.props, eventHandlersMap);
   }
 
   if (isSubmenuComponent(child)) {
+    // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createSubmenuElement(uuid, child.props, eventHandlersMap);
   }
 

@@ -7,10 +7,14 @@ import expo.modules.core.logging.Logger
 import expo.modules.core.logging.LoggerTimer
 import java.util.Date
 
+interface IUpdatesLogger {
+  fun startTimer(label: String): LoggerTimer
+}
+
 /**
  * Class that implements logging for expo-updates with its own logcat tag
  */
-class UpdatesLogger(context: Context) {
+class UpdatesLogger(context: Context) : IUpdatesLogger {
 
   fun trace(
     message: String,
@@ -112,7 +116,7 @@ class UpdatesLogger(context: Context) {
     logger.fatal(logEntryWithCauseExceptionString(message, exception, code, LogType.Fatal, null, updateId, assetId))
   }
 
-  fun startTimer(label: String): LoggerTimer {
+  override fun startTimer(label: String): LoggerTimer {
     return logger.startTimer { duration ->
       logEntryString(label, UpdatesErrorCode.None, LogType.Timer, duration, null, null)
     }

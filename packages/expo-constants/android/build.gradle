@@ -8,6 +8,11 @@ apply from: "../scripts/get-app-config-android.gradle"
 group = 'host.exp.exponent'
 version = '17.0.3'
 
+expoModule {
+  // We can't prebuild the module because we need to apply `get-app-config-android.gradle` script.
+  canBePublished false
+}
+
 android {
   namespace "expo.modules.constants"
   defaultConfig {
