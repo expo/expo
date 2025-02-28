@@ -18,7 +18,7 @@ import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens: ScreenConfig[] = [
+const ScreensList: ScreenConfig[] = [
   {
     getComponent() {
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
@@ -435,6 +435,11 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'MeshGradient',
   },
+];
+
+export const Screens: ScreenConfig[] = [
+  ...ScreensList,
+
   ...CameraScreens,
   ...ImageScreens,
   ...VideoScreens,
@@ -442,7 +447,7 @@ export const Screens: ScreenConfig[] = [
   ...MapsScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = Screens.map(({ name, route }) => ({
+export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
   name,
   route: '/components/' + (route ?? name.toLowerCase()),
   isAvailable: true,

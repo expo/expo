@@ -14,7 +14,7 @@ import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens: ScreenConfig[] = [
+export const ScreensList: ScreenConfig[] = [
   {
     getComponent() {
       return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
@@ -425,11 +425,11 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'ViewShot',
   },
-  ...ModulesCoreScreens,
-  ...AudioScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = Screens.map(({ name, route }) => ({
+export const Screens: ScreenConfig[] = [...ScreensList, ...ModulesCoreScreens, ...AudioScreens];
+
+export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
   name,
   route: '/apis/' + (route ?? name.toLowerCase()),
   isAvailable: true,
