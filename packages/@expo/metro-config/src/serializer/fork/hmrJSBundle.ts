@@ -50,6 +50,7 @@ function generateModules(
             path.basename(module.path, path.extname(module.path)) + '.' + extension
           )
         );
+
         delete moduleUrl.query.excludeSource;
         return url.format(moduleUrl);
       };
@@ -104,7 +105,7 @@ function getInverseDependencies(
   graph: ReadOnlyGraph<any>,
   inverseDependencies: { [key: string]: string[] } = {}
 ): { [key: string]: string[] } {
-  // Dependency alredy traversed.
+  // Dependency already traversed.
   if (path in inverseDependencies) {
     return inverseDependencies;
   }

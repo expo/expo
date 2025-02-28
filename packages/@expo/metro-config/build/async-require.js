@@ -55,6 +55,9 @@ asyncRequire.unstable_importWorker = function unstable_importWorker(moduleID, pa
     if (typeof window === 'undefined') {
         return null;
     }
+    if (typeof Worker === 'undefined') {
+        throw new Error('Web Workers are not supported in this environment');
+    }
     return new Worker(new URL(id, window.location.href));
 };
 module.exports = asyncRequire;

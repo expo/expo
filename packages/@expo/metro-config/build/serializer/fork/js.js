@@ -60,6 +60,7 @@ function getModuleParams(module, options) {
                         // Include all modules and run the module when of type worker.
                         searchParams.set('modulesOnly', 'false');
                         searchParams.set('runModule', 'true');
+                        searchParams.delete('shallow');
                     }
                     else {
                         searchParams.set('modulesOnly', 'true');
