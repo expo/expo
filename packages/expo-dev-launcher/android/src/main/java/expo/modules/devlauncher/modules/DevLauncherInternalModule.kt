@@ -108,8 +108,8 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
            putBoolean("isEASUpdate", it.isEASUpdate == true)
 
             if (it.isEASUpdate == true) {
-             putString("updateMessage", recentlyOpenedApp.updateMessage)
-             putString("branchName", recentlyOpenedApp.branchName)
+             putString("updateMessage", it.updateMessage)
+             putString("branchName", it.branchName)
             }
          }
       }
@@ -123,6 +123,7 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
     AsyncFunction("getPendingDeepLink") { promise: Promise ->
       intentRegistry.intent?.data?.let {
         promise.resolve(it.toString())
+        return@AsyncFunction
       }
 
       promise.resolve(intentRegistry.intent?.action)
@@ -152,15 +153,13 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
         ""
       }
 
-      map.apply {
+      return@AsyncFunction Bundle().apply {
         putString("appVersion", packageInfo.versionName)
         putString("appId", appId)
         putString("appName", appName)
         putString("appIcon", appIcon)
         putString("runtimeVersion", runtimeVersion)
       }
-
-      return@AsyncFunction map
     }
 
     AsyncFunction("copyToClipboard") { content: String ->
