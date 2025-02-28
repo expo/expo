@@ -359,7 +359,7 @@ class FunctionSpec: ExpoSpec {
             "expo.modules.TestModule.withSharedObject().then((result) => { globalThis.result = result; })"
           )
 
-        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(500))
+        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
         let object = try runtime.eval("object = globalThis.result")
         
         expect(object.kind) == .object
@@ -376,7 +376,7 @@ class FunctionSpec: ExpoSpec {
             "expo.modules.TestModule.withSharedObjectPromise().then((result) => { globalThis.result = result; })"
           )
 
-        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(500))
+        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
         let object = try runtime.eval("object = globalThis.result")
         
         expect(object.kind) == .object

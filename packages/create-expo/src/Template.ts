@@ -2,8 +2,8 @@ import type { ExpoConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
-import { glob } from 'fast-glob';
 import fs from 'fs';
+import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
@@ -192,7 +192,7 @@ function escapeXMLCharacters(original: string): string {
  * `getTemplateFilesToRenameAsync()`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
- * [fast-glob](https://github.com/mrmlnc/fast-glob). Comments are supported with
+ * [glob](https://github.com/isaacs/node-glob). Comments are supported with
  * the `#` symbol, both in the plain-text file and string array formats.
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
@@ -250,11 +250,11 @@ export async function getTemplateFilesToRenameAsync({
     cwd,
     // `true` is consistent with .gitignore. Allows `*.xml` to match .xml files
     // in all subdirs.
-    baseNameMatch: true,
+    matchBase: true,
     dot: true,
     // Prevent climbing out of the template directory in case a template
     // includes a symlink to an external directory.
-    followSymbolicLinks: false,
+    follow: false,
   });
 }
 

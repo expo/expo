@@ -1,5 +1,9 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
 
+type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
+type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
+
 export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
 
 /**
@@ -64,6 +68,9 @@ export type SearchResults = {
 export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
+  modules: string[];
+  publication?: AndroidPublication;
+  aarProjects?: AndroidGradleAarProjectDescriptor[];
 }
 
 export interface ModuleAndroidPluginInfo {
@@ -75,23 +82,22 @@ export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDesc
   projectDir: string;
 }
 
-export interface CommonModuleDescriptor {
+export interface CommonNativeModuleDescriptor {
   packageName: string;
-  modules: string[];
   coreFeatures?: string[];
 }
 
-export interface ModuleDescriptorAndroid extends CommonModuleDescriptor {
-  projects: ModuleAndroidProjectInfo[];
+export interface ModuleDescriptorAndroid extends CommonNativeModuleDescriptor {
+  projects?: ModuleAndroidProjectInfo[];
   plugins?: ModuleAndroidPluginInfo[];
-  aarProjects?: ModuleAndroidAarProjectInfo[];
 }
 
 export interface ModuleIosPodspecInfo {
   podName: string;
   podspecDir: string;
 }
-export interface ModuleDescriptorIos extends CommonModuleDescriptor {
+export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
+  modules: string[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
@@ -147,6 +153,28 @@ export interface AndroidGradleAarProjectDescriptor {
 }
 
 /**
+ * Information about the available publication of an Android AAR file.
+ */
+export interface AndroidPublication {
+  /**
+   * The Maven artifact ID.
+   */
+  id: string;
+  /**
+   * The Maven group ID.
+   */
+  group: string;
+  /**
+   * The Maven version.
+   */
+  version: string;
+  /**
+   * The Maven repository.
+   */
+  repository: string;
+}
+
+/**
  * Represents a raw config specific to Apple platforms.
  */
 export type RawModuleConfigApple = {
@@ -154,12 +182,6 @@ export type RawModuleConfigApple = {
    * Names of Swift native modules classes to put to the generated modules provider file.
    */
   modules?: string[];
-
-  /**
-   * Names of Swift native modules classes to put to the generated modules provider file.
-   * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
-   */
-  modulesClassNames?: string[];
 
   /**
    * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
@@ -191,6 +213,49 @@ export type RawModuleConfigApple = {
 };
 
 /**
+ * Represents a raw config specific to Android platforms.
+ */
+export type RawAndroidProjectConfig = {
+  /**
+   * The name of the project. It will be used as the Gradle project name.
+   */
+  name?: string;
+
+  /**
+   * The path to the project directory. Should contain the `build.gradle{.kts}` file.
+   * It's relative to the module root directory.
+   */
+  path?: string;
+
+  /**
+   * Information about the available publication of an Android AAR file
+   */
+  publication?: AndroidPublication;
+
+  /**
+   * Names of the modules to be linked in the project.
+   */
+  modules?: string[];
+
+  /**
+   * Prebuilded AAR projects.
+   */
+  gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+};
+
+export type RawAndroidConfig = {
+  projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];
+  /**
+   * Gradle plugins.
+   */
+  gradlePlugins?: AndroidGradlePluginDescriptor[];
+
+  /**
+   * Gradle projects containing AAR files.
+   */
+} & RawAndroidProjectConfig;
+
+/**
  * Represents a raw config from `expo-module.json`.
  */
 export interface RawExpoModuleConfig {
@@ -206,7 +271,6 @@ export interface RawExpoModuleConfig {
 
   /**
    * The legacy config previously used for iOS platform. For backwards compatibility it's used as the fallback for `apple`.
-   * Also due to backwards compatibility, it includes the deprecated `modulesClassNames` field.
    * @deprecated As the module can now support more than iOS platform, use the generic `apple` config instead.
    */
   ios?: RawModuleConfigApple;
@@ -214,34 +278,7 @@ export interface RawExpoModuleConfig {
   /**
    * Android-specific config.
    */
-  android?: {
-    /**
-     * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
-     */
-    modules?: string[];
-
-    /**
-     * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
-     * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
-     */
-    modulesClassNames?: string[];
-
-    /**
-     * build.gradle relative path.
-     * To have multiple build.gradle projects, string array type is also supported.
-     */
-    gradlePath?: string | string[];
-
-    /**
-     * Gradle plugins.
-     */
-    gradlePlugins?: AndroidGradlePluginDescriptor[];
-
-    /**
-     * Gradle projects containing AAR files.
-     */
-    gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
-  };
+  android?: RawAndroidConfig;
 
   /**
    * List of core features that this module requires.

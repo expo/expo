@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -67,14 +69,40 @@ export const UIScreens = [
     },
   },
   {
-    name: 'ContentUnavailableView component',
+    name: 'TextInput component',
+    route: 'ui/textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
+    },
+  },
+  {
+    name: 'Progress component',
+    route: 'ui/progress',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ProgressScreen'));
+    },
+  },
+  {
+  name: 'ContentUnavailableView component',
     route: 'ui/content-unavailable',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ContentUnavailableScreen'));
-    },
+    }, 
   },
 ];
+if (Platform.OS === 'ios') {
+  UIScreens.push({
+    name: 'Gauge component',
+    route: 'ui/gauge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GaugeScreen'));
+    },
+  });
+}
 
 export default function UIScreen() {
   const apis: ListElement[] = UIScreens.map((screen) => {

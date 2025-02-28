@@ -72,6 +72,10 @@ export type ButtonProps = {
      * Button color.
      */
     color?: string;
+    /**
+     * Disabled state of the button.
+     */
+    disabled?: boolean;
 };
 export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
     buttonRole?: ButtonRole;

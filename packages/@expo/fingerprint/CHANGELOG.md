@@ -6,6 +6,33 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
+- Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
+- Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))
+
+## 0.11.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.10 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.9 - 2025-02-10
+
+### 💡 Others
+
+- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.ExpoConfigExtraSection`. ([#34697](https://github.com/expo/expo/pull/34697) by [@kudo](https://github.com/kudo))
+
+## 0.11.8 - 2025-01-31
+
+### 🎉 New features
+
 - Add `SourceSkips.GitIgnore` to allow `.gitignore` changes to be excluded from the fingerpint ([#34220](https://github.com/expo/expo/pull/34220) by [@ball-hayden](https://github.com/ball-hayden))
 
 ### 🐛 Bug fixes
@@ -17,12 +44,11 @@
 
 ### 💡 Others
 
-- docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
-- Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
 - Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
-- Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))
-- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
-- Added `SourceSkips.ExpoConfigExtraSection`. ([#34697](https://github.com/expo/expo/pull/34697) by [@kudo](https://github.com/kudo))
+
+## 0.11.7 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 0.11.6 - 2024-12-24
 

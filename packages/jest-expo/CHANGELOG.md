@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 52.0.5 - 2025-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.4 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.3 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.2 — 2024-11-15
 

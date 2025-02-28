@@ -117,6 +117,7 @@ Pod::Spec.new do |s|
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
+    main.dependency 'ReactAppDependencyProvider'
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
@@ -133,6 +134,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
+    test_spec.dependency 'ReactAppDependencyProvider'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
@@ -144,6 +146,7 @@ Pod::Spec.new do |s|
     test_spec.requires_app_host = true
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
+    test_spec.dependency 'ReactAppDependencyProvider'
     test_spec.dependency 'React'
     test_spec.platforms = {
       :ios => '15.1'

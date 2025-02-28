@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createContentsJsonItem = createContentsJsonItem;
 exports.writeContentsJsonAsync = writeContentsJsonAsync;
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -33,8 +33,10 @@ function createContentsJsonItem(item) {
 async function writeContentsJsonAsync(directory, {
   images
 }) {
-  await _fsExtra().default.ensureDir(directory);
-  await _fsExtra().default.writeFile((0, _path().join)(directory, 'Contents.json'), JSON.stringify({
+  await _fs().default.promises.mkdir(directory, {
+    recursive: true
+  });
+  await _fs().default.promises.writeFile((0, _path().join)(directory, 'Contents.json'), JSON.stringify({
     images,
     info: {
       version: 1,

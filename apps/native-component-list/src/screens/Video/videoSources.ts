@@ -46,8 +46,9 @@ export const nullSource: VideoSource = {
   },
 };
 
-const forBiggerBlazesSource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+const forBiggerBlazesSource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+};
 
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {

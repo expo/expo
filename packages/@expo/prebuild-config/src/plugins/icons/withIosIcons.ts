@@ -1,7 +1,7 @@
 import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
-import * as fs from 'fs-extra';
+import fs from 'fs';
 import { join } from 'path';
 
 import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
@@ -60,7 +60,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await fs.ensureDir(join(iosNamedProjectRoot, IMAGESET_PATH));
+  await fs.promises.mkdir(join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
 
   const imagesJson: ContentsJson['images'] = [];
 
@@ -176,7 +176,7 @@ export async function generateUniversalIconAsync(
   }
   // Write image buffer to the file system.
   const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-  await fs.writeFile(assetPath, source);
+  await fs.promises.writeFile(assetPath, source);
 
   return {
     filename,

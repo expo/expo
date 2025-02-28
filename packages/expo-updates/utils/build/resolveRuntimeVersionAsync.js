@@ -15,6 +15,9 @@ async function resolveRuntimeVersionAsync(projectRoot, platform, fingerprintOpti
     if (!runtimeVersion || typeof runtimeVersion === 'string') {
         return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null, workflow };
     }
+    if (typeof runtimeVersion !== 'object' || Array.isArray(runtimeVersion)) {
+        throw new Error(`Invalid runtime version: ${JSON.stringify(runtimeVersion)}. Expected a string or an object with a "policy" key. https://docs.expo.dev/eas-update/runtime-versions`);
+    }
     const policy = runtimeVersion.policy;
     if (policy === 'fingerprint') {
         const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, fingerprintOptions);

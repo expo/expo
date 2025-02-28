@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
@@ -15,6 +16,10 @@
 ### 💡 Others
 
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 0.2.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 0.2.0 - 2024-11-29
 
