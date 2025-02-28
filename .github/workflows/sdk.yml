@@ -60,7 +60,7 @@ jobs:
           else
             # On push event check packages changed since previous remote head.
             # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
-            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }}
+            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }} --core
           fi
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
