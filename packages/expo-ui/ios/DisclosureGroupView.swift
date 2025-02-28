@@ -13,13 +13,8 @@ struct DisclosureGroupView: ExpoSwiftUI.View {
   @EnvironmentObject var props: DisclosureGroupProps
   @State private var isExpanded: Bool = false
   var body: some View {
-    let disclosuregroup = DisclosureGroup(props.title ?? "", isExpanded: $isExpanded) {
-      UnwrappedChildren { child, isHostingView in
-        child
-          .if(!isHostingView) {
-            $0.offset(x: UIDevice.current.userInterfaceIdiom == .pad ? IPAD_OFFSET : IPHONE_OFFSET)
-          }
-      }
+    DisclosureGroup(props.title ?? "", isExpanded: $isExpanded) {
+      Children()
     }
       .onAppear {
         isExpanded = props.isExpanded
@@ -31,10 +26,5 @@ struct DisclosureGroupView: ExpoSwiftUI.View {
       .onChange(of: props.isExpanded) { newValue in
         isExpanded = newValue
       }
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      disclosuregroup.scrollDisabled(true)
-    } else {
-      disclosuregroup
-    }
   }
 }
