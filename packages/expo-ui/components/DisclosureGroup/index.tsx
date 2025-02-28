@@ -31,9 +31,6 @@ export type DisclosureGroupProps = {
 
 /**
  * Displays a native DisclosureGroup
- *
- * @remarks
- *  Working on: Android reimplemtation with jetpack compose
  */
 
 const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> | null =
