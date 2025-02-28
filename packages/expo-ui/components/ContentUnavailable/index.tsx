@@ -27,7 +27,7 @@ export type ContentUnavailableProps = {
 };
 
 const ContentUnavailableNativeView: React.ComponentType<ContentUnavailableProps> | null = 
-  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'ExpoContentUnavailableView') : null;
+  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'ContentUnavailableView') : null;
 
 /**
  * Displays a native Swift UI ContentUnavailable view.

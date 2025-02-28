@@ -13,6 +13,6 @@ public class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
-    View(ExpoContentUnavailableView.self)
+    View(ExpoUI.ContentUnavailableView.self)
   }
 }

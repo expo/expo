@@ -9,12 +9,12 @@ class ContentUnavailableProps: ExpoSwiftUI.ViewProps {
   @Field var description: String?
 }
 
-struct ExpoContentUnavailableView: ExpoSwiftUI.View {
+struct ContentUnavailableView: ExpoSwiftUI.View {
   @EnvironmentObject var props: ContentUnavailableProps
 
   var body: some View {
     if #available(iOS 17.0, *) {
-      ContentUnavailableView(props.title ?? "", systemImage: props.systemImage ?? "questionmark.square", description: Text(props.description ?? ""))
+      SwiftUI.ContentUnavailableView(props.title ?? "", systemImage: props.systemImage ?? "questionmark.square", description: Text(props.description ?? ""))
     } else {
       VStack(spacing: 10) {
         Image(systemName: props.systemImage ?? "questionmark.square")
