@@ -2,11 +2,12 @@ package expo.modules.updates
 
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -18,6 +19,11 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -36,6 +42,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val moduleScope = CoroutineScope(Dispatchers.IO)
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
@@ -81,6 +89,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
+
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -90,6 +99,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -98,6 +108,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -128,6 +139,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.FetchUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
               }
+
               is IUpdatesController.FetchUpdateResult.Failure -> {
                 promise.resolve(
                   Bundle().apply {
@@ -136,6 +148,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -144,6 +157,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.Success -> {
                 promise.resolve(
                   Bundle().apply {
@@ -193,14 +207,12 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       )
     }
 
-    AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
-      AsyncTask.execute {
-        promise.resolve(readLogEntries(context, maxAge))
-      }
+    AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
+      return@Coroutine readLogEntries(context, maxAge)
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
-      AsyncTask.execute {
+      moduleScope.launch {
         clearLogEntries(context) { error ->
           if (error != null) {
             promise.reject(
@@ -218,35 +230,43 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
+
+    OnDestroy {
+      try {
+        moduleScope.cancel()
+      } catch (_: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
   }
 
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal fun readLogEntries(context: Context, maxAge: Long): List<Bundle> {
-      val reader = UpdatesLogReader(context)
-      val date = Date()
-      val epoch = Date(date.time - maxAge)
-      return reader.getLogEntries(epoch)
-        .mapNotNull { UpdatesLogEntry.create(it) }
-        .map { entry ->
-          Bundle().apply {
-            putLong("timestamp", entry.timestamp)
-            putString("message", entry.message)
-            putString("code", entry.code)
-            putString("level", entry.level)
-            if (entry.updateId != null) {
-              putString("updateId", entry.updateId)
-            }
-            if (entry.assetId != null) {
-              putString("assetId", entry.assetId)
-            }
-            if (entry.stacktrace != null) {
-              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+    internal suspend fun readLogEntries(context: Context, maxAge: Long) = withContext(Dispatchers.IO) {
+        val reader = UpdatesLogReader(context)
+        val date = Date()
+        val epoch = Date(date.time - maxAge)
+        reader.getLogEntries(epoch)
+          .mapNotNull { UpdatesLogEntry.create(it) }
+          .map { entry ->
+            Bundle().apply {
+              putLong("timestamp", entry.timestamp)
+              putString("message", entry.message)
+              putString("code", entry.code)
+              putString("level", entry.level)
+              if (entry.updateId != null) {
+                putString("updateId", entry.updateId)
+              }
+              if (entry.assetId != null) {
+                putString("assetId", entry.assetId)
+              }
+              if (entry.stacktrace != null) {
+                putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+              }
             }
           }
-        }
-    }
+      }
 
     internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(context)
