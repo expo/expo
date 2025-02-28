@@ -6,7 +6,7 @@ import Foundation
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
-    Property("expoModulesCoreVersion") {
+    Constant("expoModulesCoreVersion") {
       let version = CoreModuleHelper.getVersion()
       let components = version.split(separator: "-")[0].split(separator: ".").compactMap { Int($0) }
 
@@ -18,11 +18,11 @@ internal final class CoreModule: Module {
       ]
     }
 
-    Property("cacheDir") {
+    Constant("cacheDir") {
       FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
     }
 
-    Property("documentsDir") {
+    Constant("documentsDir") {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
     }
 
