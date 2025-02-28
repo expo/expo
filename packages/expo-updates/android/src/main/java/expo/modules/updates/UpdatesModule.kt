@@ -2,8 +2,8 @@ package expo.modules.updates
 
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
@@ -18,6 +18,10 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -36,6 +40,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val moduleScope = CoroutineScope(Dispatchers.IO)
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
@@ -194,13 +200,13 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     }
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
-      AsyncTask.execute {
+      moduleScope.launch {
         promise.resolve(readLogEntries(context, maxAge))
       }
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
-      AsyncTask.execute {
+      moduleScope.launch {
         clearLogEntries(context) { error ->
           if (error != null) {
             promise.reject(
@@ -217,6 +223,14 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
     Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
+    }
+
+    OnDestroy {
+      try {
+        moduleScope.cancel()
+      } catch (_: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
     }
   }
 
