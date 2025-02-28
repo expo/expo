@@ -1,0 +1,158 @@
+---
+title: Navigation layouts in Expo Router
+description: Learn how to construct different relationships between pages by using folders and layout files.
+sidebar_title: Layout
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Each folder within the **app** directory (including **app** itself) can define a layout in the form of a **\_layout.tsx** file inside the folder. This file defines how all the pages within that folder are arranged. This is where you would define a stack navigator, tab navigator, drawer navigator, or any other layout that you want to use for the pages in that folder. The layout file exports a default component that is rendered prior to whatever page you are navigating to within that folder.
+
+Let's look at a few common layout scenarios.
+
+## Root layout
+
+Virtually every app will have a **\_layout.tsx** file directly inside the **app** directory. This is the root layout, and represents the entry point for your navigation. In addition to describing the top-level navigator for your app, this file is where you would put initialization code that may have previously gone inside an **App.js** file, such as loading fonts, interacting with the splash screen, or adding context providers.
+
+Here's an example root layout:
+
+```tsx app/_layout.tsx
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+SplashScreen.preventAutoHideAsync();
+
+export default function RootLayout() {
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <Stack />;
+}
+```
+
+This example keeps the splash screen showing initially, and then renders a stack navigator once the fonts are loaded, which will cause your app to proceed to the initial route.
+
+## Stacks
+
+You can implement a stack navigator in your root layout, as shown above, or in any other layout file inside of a folder. Let's suppose you have a file structure with a stack inside of a folder:
+
+<FileTree
+  files={[
+    ['app/products/\_layout.tsx'],
+    ['app/products/index.tsx'],
+    ['app/products/[productId].tsx'],
+    ['app/products/accessories/index.tsx'],
+  ]}
+/>
+
+If you want everything inside of the **products** folder to be arranged in a stack relationship, inside the **\_layout.tsx** file, return a `Stack` component:
+
+```tsx _layout.tsx
+import { Stack } from 'expo-router';
+
+export default function StackLayout() {
+  return <Stack />;
+}
+```
+
+When you navigate to `/products`, it will first go to the default route, which is **products/index.tsx**. If you navigate to `/products/123`, then that page will be pushed onto the stack. By default, the stack will render a back button in the header that will pop the current page off the stack, returning the user to the previous page. Even when a page isn't visible, if it is still pushed onto the stack, it is still being rendered.
+
+The `Stack` component implements React Navigation's native stack, and can use the same screen options. However, you do not have to define the pages specifically inside the navigator. The files inside the folder will be automatically treated as eligable routes in the stack. However, if you want to define screen options, you can add a `Stack.Screen` component inside the `Stack` component. The `name` prop should match the route name, but you do not need to supply a `component` prop; Expo Router will map this automatically:
+
+```tsx _layout.tsx
+import { Stack } from 'expo-router';
+
+export default function StackLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="[productId]" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+```
+
+While it is possible nest navigators, be sure to only do so when it is truly needed. In our example, if you wanted to then push **products/accessories/index.tsx** onto the stack, it's not necessary to have an additional **\_layout.tsx** in the **accessories** folder with a `Stack` navigator. That would define another stack inside the first one. It is fine to add folders that only affect the URL, but otherwise use the same navigator as the parent folder.
+
+## Tabs
+
+Much like a stack, you can implement a tab navigator in your layout file, and all the routes directly inside that folder will be treated as tabs. Consider this file structure:
+
+<FileTree
+  files={[
+    ['app/(tabs)/\_layout.tsx'],
+    ['app/(tabs)/index.tsx'],
+    ['app/(tabs)/feed.tsx'],
+    ['app/(tabs)/profile.tsx'],
+  ]}
+/>
+
+In the **\_layout.tsx** file, return a `Tab` component:
+
+```tsx _layout.tsx
+import { Tab } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color }) => <MaterialIconse size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <!-- Add more tabs here -->
+    </Tabs>
+  );
+}
+```
+
+This will cause the **index.tsx**, **feed.tsx**, and **profile.tsx** files to appear together in the same bottom tabs navigator. This `Tabs` component uses React Navigation's native bottom tabs and supports the same options.
+
+In the case of Tabs, you wll likely want to define the tabs in the navigator, as this will influence the order that tabs appear, the title, and the icon inside the the tab. The index route will be the default selected tab.
+
+## Slot
+
+In some cases, you may want a layout without a navigator. This is helpful for adding a header or footer around the current route, or for displayig a modal over any route inside a folder. In this case, you can use the `Slot` component, which serves as a placeholder for the current child route.
+
+Consider this file structure:
+
+<FileTree
+  files={[
+    ['app/social/\_layout.tsx'],
+    ['app/social/index.tsx'],
+    ['app/social/feed.tsx'],
+    ['app/social/profile.tsx'],
+  ]}
+/>
+
+Suppose you want to wrap any route inside the **social** folder with a header and footer, but you want navigating between the pages to simply replace the current page, rather than pushing a new page onto a stack, like what would happen with a `Stack` navigator. In the **\_layout.tsx** file, return a `Slot` component surrounded by your header and footer:
+
+```tsx app/social/_layout.tsx
+import { Slot } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <>
+      <Header />
+      <Slot />
+      <Footer />
+    </>
+  );
+}
+```

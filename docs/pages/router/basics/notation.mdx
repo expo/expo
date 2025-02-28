@@ -1,0 +1,78 @@
+---
+title: Expo Router notation
+description: Learn how to use special filenames and notation to expressively define your app's navigation tree within your project's file structure.
+sidebar_title: Router notation
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+## Expo Router notation
+
+Look inside the app folder in a typical Expo Router project, and you'll see a lot more than just some simple file and folder names. What do the parenthesises and brackets mean? Let's learn what the significance of file-based routing notation and how it allows you to define complex navigation patterns.
+
+### Simple names / no notation
+
+<FileTree files={[['app/home.tsx'], ['app/feed/favorites.tsx']]} />
+
+Regular folder and file names without any notation signify _static routes_. Their URL matches exactly as they appear in your file tree. So, a file named **feed/favorites.tsx** will have a URL of `/feed/favorites`.
+
+### Square brackets
+
+<FileTree files={[['app/[userName].tsx'], ['app/products/[productId]/index.tsx']]} />
+
+If you see square brackets in a folder or file name, you are looking at a _dynamic route_. The name of the route includes a parameter that can be used when rendering the page. The parameter could be either in a folder name or a file name. For example, a file named **[userName].tsx** will match `/evanbacon`, `/expo`, or another username. Then you can access that parameter with the `useLocalSearchParams` hook inside the page, using that to load the data for that specific user.
+
+### Parentheses
+
+<FileTree files={[['app/(tabs)/index.tsx'], ['app/(tabs)/settings.tsx']]} />
+
+_Examples: **(tabs)/settings.tsx**_
+
+A folder with its name surrounded in parenthesis indicates a _route group_. These folders are useful for grouping routes together without affecting the URL. For example, a file named **(tabs)/settings.tsx** will have `/settings` for its URL, even though it is not directly in the **app** directory.
+
+Route groups could be useful for simple organization purposes, but often becomes more important for defining complex relationships between routes.
+
+### index.tsx files
+
+<FileTree files={[['app/(tabs)/index.tsx'], ['app/profile/index.tsx']]} />
+
+Just like on the web, an **index.tsx** file indicates the default route for a folder. For example, a file named **profile/index.tsx** will match `/profile`. A file named **(tabs)/index.tsx** will match `/`, effectively becoming the default route for your entire app.
+
+### \_layout.tsx files
+
+<FileTree files={[['app/\_layout.tsx'], ['app/(tabs)/\_layout.tsx'], ['app/feed/\_layout.tsx']]} />
+
+**\_layout.tsx** files are special files that are not pages themselves, but define how groups of routes inside a folder relate to each other. If a folder of routes are arranged as a stack or tabs, the layout route is where you would define that relationship by using a stack navigator or tab navigator component.
+
+Layout routes are rendered prior to the actual page routes inside their folder. This means that the **\_layout.tsx** directly inside the app folder is rendered before anything else in the app, and is where you would put initialization code that may have previously gone inside an **App.js** file.
+
+### Plus sign
+
+<FileTree files={[['app/+not-found.tsx'], ['app/+native-intent.tsx']]} />
+
+Routes starting with a “+” have special significance to Expo Router. One example is `+not-found`, which is a catches any requests that don't match a route in your app. You’ll learn more about these as you need them.
+
+## Route notation applied
+
+Considering this example project file structure, let's identify the different types of routes represented:
+
+<FileTree
+  files={[
+    ['app/(tabs)/\_layout.tsx'],
+    ['app/(tabs)/index.tsx'],
+    ['app/(tabs)/feed.tsx'],
+    ['app/(tabs)/\profile.tsx'],
+    ['app/_layout.tsx'],
+    ['app/users/[userId].tsx'],
+    ['app/users/+not-found.tsx'],
+    ['app/about.tsx'],
+  ]}
+/>
+
+- **app/about.tsx** is a static route that matches `/about`.
+- **app/users/[userId].tsx** is a dynamic route that matches `/users/123`, `/users/456`, and so on.
+- **app/(tabs)** is a route group. It will not factor into the URL, so `/feed` will match **app/(tabs)/feed.tsx**.
+- **app/(tabs)\index.tsx** is the default route for the **(tabs)** folder, so it will be the initially-focusd tab, and will match the `/` URL.
+- **app/(tabs)\_layout.tsx** is a layout file defining how the three pages inside **app/(tabs)** relate to each other. If we use a tab navigator component inside of this file, then those screens will be arranged as tabs.
+- **app/\_layout.tsx** is the root layout file, and is rendered before any other route in the app.
+- **+not-found.tsx** is a special route that will be displayed if the user navigates to a route that doesn't exist in your app.

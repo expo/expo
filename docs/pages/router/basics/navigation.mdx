@@ -1,0 +1,53 @@
+---
+title: Navigating bewteen pages
+description: Learn the different ways to link to and navigate to pages in Expo Router.
+sidebar_title: Navigation
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Once you have a few pages in your app and their layouts setup, it's time to start navigating between them. Navigation in Expo Router works a lot like React Navigation, but with all pages having a URL by default, we can create links and use these URL's to move about our app using familiar web patterns.
+
+## Native navigation basics with `useRouter`
+
+Like in React Navigation, you can call a function from an `onPress` handler to navigate to another page. In Expo Router, you can use the `useRouter` hook to access navigation functions:
+
+```tsx
+import { useRouter } from 'expo-router';
+
+export default function Home() {
+  const router = useRouter();
+
+  return <Button onPress={() => router.navigate('/about')}>Go to About</Button>;
+}
+```
+
+Expo Router apps default to stack navigation, where navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack. Usually, you would want to use the `router.navigate` function. This will either push a new page onto the stack or unwinding to an existing route on the stack. However, you can also call `router.push` to explicitly push a new page onto the stack, `router.back` to go back to the previous page, or `router.replace` to replace the current page on the stack.
+
+With Expo Router, you refer to pages by their URL, or their position relative to the **app** folder. Check out the following file structure and how you would navigate to each page:
+
+<FileTree
+  files={[
+    ['app/index.tsx', '`router.navigate("/")`'],
+    ['app/about.tsx', '`router.navigate("/about")`'],
+    ['app/profile/index.tsx', '`router.navigate("/profile")`'],
+    ['app/profile/friends.tsx', '`router.navigate("/profile/friends")`'],
+  ]}
+/>
+
+## Links and Buttons
+
+## Redirects
+
+## Relative routes
+
+useLocalSearchParams
+
+## Dynamic routes
+
+## Deep links
+
+### Initial routes
+
+withAnchor
