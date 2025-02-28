@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { requireNativeView } from 'expo';
 
 export type ContentUnavailableProps = {
@@ -26,8 +26,8 @@ export type ContentUnavailableProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const ContentUnavailableNativeView: React.ComponentType<ContentUnavailableProps> =
-  requireNativeView('ExpoUI', 'ExpoContentUnavailableView');
+const ContentUnavailableNativeView: React.ComponentType<ContentUnavailableProps> | null = 
+  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'ExpoContentUnavailableView') : null;
 
 /**
  * Displays a native Swift UI ContentUnavailable view.
@@ -35,5 +35,8 @@ const ContentUnavailableNativeView: React.ComponentType<ContentUnavailableProps>
  */
 
 export function ContentUnavailableView(props: ContentUnavailableProps) {
+  if (!ContentUnavailableNativeView) {
+    return null;
+  }
   return <ContentUnavailableNativeView {...props} />;
 }
