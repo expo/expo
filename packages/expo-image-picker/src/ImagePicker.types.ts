@@ -541,7 +541,7 @@ export type ImagePickerOptions = {
 
 /**
  * @hidden
- * @deprecated No longer used.
+ * @deprecated Only used internally.
  */
 export type OpenFileBrowserOptions = {
   /**
