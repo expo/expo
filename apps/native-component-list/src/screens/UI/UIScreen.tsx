@@ -5,6 +5,14 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
+    name: 'Binding component',
+    route: 'ui/binding',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BindingScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -66,6 +74,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
+  {
+    name: 'TextInput component',
+    route: 'ui/textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
     },
   },
   {

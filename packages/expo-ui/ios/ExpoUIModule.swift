@@ -14,7 +14,24 @@ public class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
-    View(ProgressView.self)
-    View(GaugeView.self)
+
+    View(TextInputView.self)
+//    View(ProgressView.self)
+//    View(GaugeView.self)
+    
+    Class("StringValueBinding", ValueBinding<String>.self) {
+      Constructor { (value: String) in
+        return ValueBinding(value)
+      }
+      
+      Function("get") { (binding: ValueBinding<String>) in
+        return binding.value.wrappedValue
+      }
+      Function("set") { (binding: ValueBinding<String>, value: String) in
+        DispatchQueue.main.async() {
+          binding.value.wrappedValue = value
+        }
+      }
+    }
   }
 }

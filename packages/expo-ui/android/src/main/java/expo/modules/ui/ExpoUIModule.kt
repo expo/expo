@@ -40,5 +40,21 @@ class ExpoUIModule : Module() {
     }
 
     View(ProgressView::class)
+
+    View(TextInputView::class)
+
+    Class("StringValueBinding", ValueBinding::class) {
+      Constructor { value: String ->
+        ValueBinding(value)
+      }
+      Function("get") { binding: ValueBinding<String> ->
+        binding.value.value
+      }
+      Function("set") { binding: ValueBinding<String>, value: String ->
+        appContext.activityProvider?.currentActivity?.runOnUiThread {
+          binding.value.value = value
+        }
+      }
+    }
   }
 }
