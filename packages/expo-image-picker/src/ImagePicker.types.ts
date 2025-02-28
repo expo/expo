@@ -539,7 +539,10 @@ export type ImagePickerOptions = {
   legacy?: boolean;
 };
 
-// @hidden
+/**
+ * @hidden
+ * @deprecated No longer used.
+ */
 export type OpenFileBrowserOptions = {
   /**
    * Choose what type of media to pick.
