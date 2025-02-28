@@ -195,16 +195,14 @@ async function writeConfigAsync(path: string, result: any) {
  *   - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://\(tabs\)/explore?test=a%257Cb%257Cc`
  */
 export function escapeUri(uri: string) {
-  // Split the URI into protocol, path, and params - each have different escaping rules
   const [protocol, uriWithoutProtocol] = uri.split('://', 2);
   const [uriPath, uriParams] = uriWithoutProtocol.split('?', 2);
 
-  // Escape non-escaped URI path special characters
+  // Escape special characters in the URI path using a single backslash
   // See: https://datatracker.ietf.org/doc/html/rfc1738#section-2.2
   const escapedUriPath = uriPath.replace(/(^|[^\\])([$\-_.+!*'(),])/g, '$1\\$2');
 
   if (uriParams?.length) {
-    // Escape every individual search paramter's value
     const escapedUriParams = new URLSearchParams(uriParams);
     for (const [key, value] of escapedUriParams.entries()) {
       escapedUriParams.set(key, encodeURIComponent(value));
