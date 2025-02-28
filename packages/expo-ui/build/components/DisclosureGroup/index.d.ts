@@ -1,4 +1,4 @@
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 export type DisclosureGroupProps = {
     /**
      * Title of the DisclosureGroup.
@@ -16,11 +16,6 @@ export type DisclosureGroupProps = {
      * Additional styling.
      */
     style?: StyleProp<ViewStyle>;
-    /**
-     * Styling for the title of the group
-     * @platform web + android
-     */
-    webTitleStyle?: TextStyle;
     /**
      * Content of the DisclosureGroup as children.
      */

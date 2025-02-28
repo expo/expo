@@ -47,7 +47,7 @@ const DisclosureGroupNativeView: React.ComponentType<DisclosureGroupProps> = req
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const children = Children.toArray(props.children);
   return (
-    <DisclosureGroupNativeView {...props} style={{ flex: 1 }}>
+    <DisclosureGroupNativeView {...props}   style={{ flex: 1 }}>
       <View>{children}</View>
     </DisclosureGroupNativeView>
   );
