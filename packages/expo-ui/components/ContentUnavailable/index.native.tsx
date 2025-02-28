@@ -1,14 +1,10 @@
-import { requireNativeView } from 'expo';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { requireNativeView } from 'expo';
 
 /**
- * Displays a native Swift UI ContentUnavailable view
- *
- * @remarks
- *  Working on: Android reimplemtation with jetpack compose
- *
+ * Displays a native Swift UI ContentUnavailable view.
+ * @platform ios
  */
-
 export type ContentUnavailableProps = {
   /**
    * A short title that describes why the content is not available.
