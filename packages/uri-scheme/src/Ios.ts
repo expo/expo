@@ -139,8 +139,8 @@ function writeConfig(path: string, plistObject: any) {
 }
 
 /**
- * xcrun expects special characters in only the search parameters to be escaped.
- * When this doesn't happen, it also quietly fails by opening the wrong screen.
+ * `xcrun` expects special characters in the search parameters to be escaped.
+ * When you don't escape these special characters, the wrong screen might be opened without warnings.
  *
  * @example
  * - `myapp://(tabs)/explore` -> `myapp://(tabs)/explore`
