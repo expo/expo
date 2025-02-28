@@ -18,6 +18,9 @@ fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Directi
     content = content,
     modifier = Modifier.fillMaxSize(),
     measurePolicy = { measurables, constraints ->
+      if(measurables.isEmpty()) {
+        return@Layout layout(0, 0) {}
+      }
       val measurable = measurables.first()
       val minIntrinsicWidth = measurable.maxIntrinsicWidth(constraints.minHeight)
       val minIntrinsicHeight = measurable.minIntrinsicHeight(minIntrinsicWidth)

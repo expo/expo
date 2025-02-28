@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.children
 
 /**
  * A base class that should be used by compose views.
@@ -17,6 +18,8 @@ abstract class ExpoComposeView<T : ComposeProps>(
 ) : ExpoView(context, appContext) {
   open val props: T? = null
 
+  private var content: @Composable () -> Unit = {}
+
   override val shouldUseAndroidLayout = true
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -26,6 +29,11 @@ abstract class ExpoComposeView<T : ComposeProps>(
       return
     }
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+  }
+
+  @Composable
+  fun UnwrappedChildren() {
+    layout.children.filter { it is ExpoComposeView<*> }.map { (it as ExpoComposeView<*>).content }.forEach { it() }
   }
 
   @OptIn(InternalComposeUiApi::class)
@@ -47,6 +55,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun setContent(
     content: @Composable () -> Unit
   ) {
+    this.content = content
     layout.setContent { content() }
   }
 }
