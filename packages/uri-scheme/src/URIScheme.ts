@@ -57,6 +57,21 @@ function ensureUriString(uri: any): string {
 }
 
 /**
+ * Escape the URI search parameters when using special characters.
+ * This may be required by adb or xcrun in order to open the URI properly.
+ */
+function escapeUriSearchParams(uri: string): string {
+  if (!uri.includes('?')) return uri;
+
+  const [uriWithoutParams, uriParams] = uri.split('?', 2);
+  const params = new URLSearchParams(uriParams);
+  for (const [key, value] of params.entries()) {
+    params.set(key, encodeURIComponent(value));
+  }
+  return `${uriWithoutParams}?${params.toString()}`;
+}
+
+/**
  * Normalize a URI scheme prefix according to [RFC 2396](http://www.ietf.org/rfc/rfc2396.txt).
  *
  * @param uri URI scheme prefix to validate
@@ -154,9 +169,13 @@ export async function removeAsync(options: Options): Promise<string[]> {
 }
 
 export async function openAsync(
-  options: Pick<Options, 'uri' | 'ios' | 'android' | 'projectRoot'> & { androidPackage?: string }
+  options: Pick<Options, 'uri' | 'ios' | 'android' | 'projectRoot'> & {
+    androidPackage?: string;
+    escapeUriParams?: boolean;
+  }
 ): Promise<void> {
   options.uri = ensureUriString(options.uri);
+  options.uri = options.escapeUriParams ? escapeUriSearchParams(options.uri) : options.uri;
 
   if (options.ios) {
     logPlatformMessage('iOS', `Opening URI "${options.uri}" in simulator`);
