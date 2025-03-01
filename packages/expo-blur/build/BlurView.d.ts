@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlurViewProps } from './BlurView.types';
 export default class BlurView extends React.Component<BlurViewProps> {
-    blurViewRef?: React.RefObject<React.ComponentType<any>> | undefined;
+    blurViewRef?: React.RefObject<React.ComponentType<any> | null> | undefined;
     /**
      * @hidden
      * When Animated.createAnimatedComponent(BlurView) is used Reanimated will detect and call this
