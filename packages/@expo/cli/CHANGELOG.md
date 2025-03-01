@@ -22,6 +22,7 @@
 
 ### 💡 Others
 
+- Add tests for `Worker` and `require.unstable_resolveWorker()`.
 - Replace cacache in fetch cache with lighter implementation. ([#34983](https://github.com/expo/expo/pull/34983) by [@EvanBacon](https://github.com/EvanBacon))
 - Move getAccountUsername from `@expo/config` to CLI for internal usage ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
 - Add e2e tests for browser history and hash param ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))

@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for `Worker` and `require.unstable_resolveWorker()`.
 - Fork `asyncRequireModulePath` to support adding custom require types (Workers) in the future. ([#35110](https://github.com/expo/expo/pull/35110) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `require.resolveWeak` with tree shaking. ([#34988](https://github.com/expo/expo/pull/34988) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
