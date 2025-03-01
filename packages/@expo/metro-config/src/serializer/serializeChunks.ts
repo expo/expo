@@ -164,11 +164,6 @@ export async function graphToSerialAssetsAsync(
     serializeChunkOptions
   );
 
-  // for (const workerDependency of workerDependencies.values()) {
-  //   const moreAssets = await getAssetsForEntry(workerDependency.path);
-  //   jsAssets.push(...moreAssets);
-  // }
-
   // TODO: Can this be anything besides true?
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
@@ -684,7 +679,7 @@ function gatherChunks(
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
         const isEntry = dependency.data.data.asyncType === 'worker';
-        // if (!isEntry) {
+
         gatherChunks(
           runtimePremodules,
           chunks,
@@ -695,21 +690,6 @@ function gatherChunks(
           true,
           isEntry
         );
-        // } else {
-        //   // Worker chunks are split but they act as entry points meaning they have the original pre-modules and they shouldn't diff shared modules with any other chunk.
-        //   gatherChunks(
-        //     runtimePremodules,
-        //     chunks,
-        //     {
-        //       test: pathToRegex(dependency.absolutePath),
-        //     },
-        //     runtimePremodules,
-        //     graph,
-        //     options,
-        //     true,
-        //     isEntry
-        //   );
-        // }
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
         if (module) {
