@@ -1,7 +1,7 @@
 package expo.modules.kotlin.views
 
 import android.content.res.Resources
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -16,7 +16,7 @@ enum class Direction {
 fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Direction> = EnumSet.allOf(Direction::class.java), content: @Composable () -> Unit) {
   Layout(
     content = content,
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.wrapContentSize(),
     measurePolicy = { measurables, constraints ->
       val measurable = measurables.first()
       val minIntrinsicWidth = measurable.maxIntrinsicWidth(constraints.minHeight)

@@ -1,17 +1,27 @@
 import { Button } from '@expo/ui/components/Button';
 import * as React from 'react';
-import { Platform, ScrollView, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
+import { Slider } from '@expo/ui/components/Slider';
+import { Switch } from '@expo/ui/components/Switch';
+import { Picker } from '@expo/ui/components/Picker';
 
 export default function UIScreen() {
+  const [on, setOn] = React.useState(false);
+  const [value, setValue] = React.useState(0);
   return (
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Section title="Default">
-          <Button style={styles.button}>Test</Button>
+          <Button style={styles.button}>
+            <Text>hello world</Text>
+            <Text>hello world</Text>
+            <Switch label="Audio" value={on} onValueChange={setOn} />
+            <Slider label="Audio" value={value} onValueChange={setValue} />
+          </Button>
         </Section>
-        <Section title="System Styles">
+        {/* <Section title="System Styles">
           <Button style={styles.button} variant="default">
             Default
           </Button>
@@ -118,7 +128,7 @@ export default function UIScreen() {
           <Button style={styles.button} color="#f00f0f">
             Red
           </Button>
-        </Section>
+        </Section> */}
       </ScrollView>
     </Page>
   );
@@ -128,6 +138,7 @@ const styles = StyleSheet.create({
   button: {
     width: 150,
     margin: 5,
+    height: 400,
     overflow: 'visible',
   },
   stretch: {
