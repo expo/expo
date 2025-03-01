@@ -32,7 +32,7 @@ jobs:
         run: |
           brew install watchman || true
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: 💎 Setup Ruby
@@ -125,7 +125,7 @@ jobs:
         with:
           submodules: true
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: 🔨 Use JDK 17
