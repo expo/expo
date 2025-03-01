@@ -1,3 +1,6 @@
+import * as path from 'node:path';
+import * as url from 'node:url';
+
 export async function tryRequireThenImport<TModule>(moduleId: string): Promise<TModule> {
   try {
     return require(moduleId);
@@ -11,7 +14,10 @@ export async function tryRequireThenImport<TModule>(moduleId: string): Promise<T
     }
 
     if (requireError?.code === 'ERR_REQUIRE_ESM' && importESM) {
-      return (await importESM(moduleId)).default;
+      const moduleIdOrUrl = path.isAbsolute(moduleId) ? url.pathToFileURL(moduleId).href : moduleId;
+
+      const m = await importESM(moduleIdOrUrl);
+      return m.default ?? m;
     }
 
     throw requireError;

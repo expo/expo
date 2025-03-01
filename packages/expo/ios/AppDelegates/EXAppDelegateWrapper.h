@@ -8,14 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTAppDelegate ()
 
-- (RCTRootViewFactory *)createRCTRootViewFactory;
-
 @end
 
-__deprecated_msg("EXAppDelegateWrapper is deprecated as of SDK 52. Migrate your AppDelegate to Swift and use ExpoAppDelegate instead.")
-@interface EXAppDelegateWrapper : RCTAppDelegate
+__deprecated_msg("EXAppDelegateWrapper is deprecated. Migrate your AppDelegate to Swift and use ExpoAppDelegate instead.")
+@interface EXAppDelegateWrapper : NSObject <UIApplicationDelegate, UISceneDelegate, RCTReactNativeFactoryDelegate>
 
 @property (nonatomic, strong, readonly) EXReactDelegateWrapper *reactDelegate;
+
+@property (nonatomic, strong, nullable) NSString *moduleName;
+@property (nonatomic, strong, nullable) NSDictionary *initialProps;
 
 /**
  Currently (RN 0.76) `customizeRootView` signature in `RCTAppDelegate` is broken as it uses `RCTRootView` type,

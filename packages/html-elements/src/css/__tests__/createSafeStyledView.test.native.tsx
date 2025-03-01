@@ -1,5 +1,5 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import View from '../../primitives/View';
 import { createSafeStyledView } from '../createSafeStyledView';
@@ -18,8 +18,8 @@ afterAll(() => {
   console.warn = originalConsoleWarn;
 });
 
-it(`strips invalid style properties`, () => {
-  const tree = renderer.create(
+it('strips invalid style properties', () => {
+  const { toJSON } = render(
     <Safe
       style={{
         transitionDuration: '200ms',
@@ -27,29 +27,28 @@ it(`strips invalid style properties`, () => {
       }}
     />
   );
-  //   expect(tree.root.children[0]).toHaveStyle({ position: 'absolute' });
-  expect(tree).toMatchSnapshot();
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`replaces invalid position with "relative"`, () => {
-  const tree = renderer.create(
+it('replaces invalid position with "relative"', () => {
+  const { toJSON } = render(
     <Safe
       style={{
         position: 'fixed',
       }}
     />
   );
-  expect(tree).toMatchSnapshot();
+  expect(toJSON()).toMatchSnapshot();
   expect(console.warn).toBeCalledWith(`Unsupported position: 'fixed'`);
 });
 
-it(`mocks out visibility: hidden by lowering the opacity`, () => {
-  const tree = renderer.create(
+it('mocks out visibility: hidden by lowering the opacity', () => {
+  const { toJSON } = render(
     <Safe
       style={{
         visibility: 'hidden',
       }}
     />
   );
-  expect(tree).toMatchSnapshot();
+  expect(toJSON()).toMatchSnapshot();
 });

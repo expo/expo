@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { resolvePostcssConfig, pluginFactory } from '../postcss';
+import { resolvePostcssConfig, getPostcssConfigHash, pluginFactory } from '../postcss';
 
 describe(pluginFactory, () => {
   function doFactory(input: any) {
@@ -43,11 +43,29 @@ describe(resolvePostcssConfig, () => {
       '/'
     );
 
-    expect(resolvePostcssConfig('/')).toEqual({ plugins: { autoprefixer: {} } });
+    expect(await resolvePostcssConfig('/')).toEqual({ plugins: { autoprefixer: {} } });
   });
+
   it('resolves no config', async () => {
     vol.fromJSON({}, '/');
 
-    expect(resolvePostcssConfig('/')).toEqual(null);
+    expect(await resolvePostcssConfig('/')).toEqual(null);
+  });
+});
+
+describe(getPostcssConfigHash, () => {
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  it('resolves mjs config', async () => {
+    vol.fromJSON(
+      {
+        'postcss.config.mjs': `export default {};`,
+      },
+      '/'
+    );
+
+    expect(await getPostcssConfigHash('/')).toEqual('1fd6ca7084e3f233a8c79cd1144ef59f');
   });
 });

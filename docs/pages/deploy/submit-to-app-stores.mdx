@@ -10,6 +10,7 @@ import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStore
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Submit** is a hosted service that allows uploading and submitting app binaries to the app stores using EAS CLI. This guide describes how to submit your app to the Google Play Store and Apple App Store using EAS Submit.
@@ -24,10 +25,29 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ### Prerequisites
 
-- A paid developer account is required — You can create a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
-- Create a [Google Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download its JSON private key.
-- Create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
-- Native app binary signed for Google Play Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
+<Step label="1">
+
+A paid developer account is required — You can create a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
+
+</Step>
+
+<Step label="2">
+
+Create a [Google Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download its JSON private key.
+
+</Step>
+
+<Step label="3">
+
+Create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
+
+</Step>
+
+<Step label="4">
+
+Native app binary signed for Google Play Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
+
+</Step>
 
 > Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory because [app config](/workflow/configuration) is defined inside that directory.
 
@@ -56,16 +76,27 @@ The command will lead you through the process of submitting the app. It will per
 
 ## Apple App Store
 
+Build and submit production apps directly to the Apple App Store with a single command:
+
+<Terminal cmd={['$ eas build -p ios --submit']} />
+
 ### Prerequisites
 
-- A paid developer account is required to submit an app &mdash; you can create an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
-- Native app binary signed for Apple App Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
+<Step label="1">
+
+Enroll in the [**Apple Developer Program**](https://developer.apple.com/programs/enroll/). This process can take about 24 hours and requires an annual fee of **$99 USD**.
+
+</Step>
+
+<Step label="2">
+
+Have a native app binary signed for Apple App Store distribution. See [Build your project for app stores](/deploy/build-project/) for more information.
+
+</Step>
 
 ### Submit binary to Apple App Store
 
-> If you have not generated an App Store Connect API Key yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts. You can also upload your own [API Key](https://expo.fyi/creating-asc-api-key) or pass in an [Apple app-specific password](https://expo.fyi/apple-app-specific-password).
-
-To submit the binary to the App Store, run the following command from inside your project's directory:
+To submit the iOS app to the App Store, run the following command from inside your project's directory:
 
 <Terminal cmd={['$ eas submit -p ios']} />
 
@@ -79,6 +110,7 @@ The command will lead you through the process of submitting the app. It will per
   - If you are submitting your app for the first time, it will be automatically created.
     Unless `expo.name` in your app configuration is found or `appName` is provided in **eas.json**, you will be prompted for the app name.
     You can also specify your app's language and SKU using `language` and `sku` keys in **eas.json**. If you have never submitted any app before, you may also have to specify your company name with `companyName`.
+  - Create an internal TestFlight group with all account admins added. This enables instant access to the latest builds.
 
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 

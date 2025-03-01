@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Remove a few long-deprecated typescript types. ([#34215](https://github.com/expo/expo/pull/34215) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
@@ -14,6 +15,7 @@
 
 - [android] Use more robust mechanism for determining empty multipart bodies. ([#33977](https://github.com/expo/expo/pull/33977) by [@wschurman](https://github.com/wschurman))
 - fix E2E tests in Detox debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
+- Fix runtime version validation warning ([#35188](https://github.com/expo/expo/pull/35188) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -25,6 +27,7 @@
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
 - Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 
 ## 0.27.1 - 2025-02-21
 
