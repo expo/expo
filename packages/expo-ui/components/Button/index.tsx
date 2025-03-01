@@ -132,7 +132,8 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
   const { role, children, onPress, systemImage, ...restProps } = props;
   return {
     ...restProps,
-    text: children ?? '',
+    children,
+    text: 'hi',
     buttonRole: role,
     systemImage: systemImage?.[Platform.OS as 'ios' | 'android'],
     onButtonPressed: onPress,
