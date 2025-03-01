@@ -57,6 +57,12 @@ This can be a great way to ensure that the user has the latest version of the ap
 
 There is no first-class support for critical/mandatory updates in the `expo-updates` package. However, you can implement your own logic to check for critical updates and apply them manually. The [expo/UpdatesAPIDemo repository](https://github.com/expo/UpdatesAPIDemo) contains an example of one way to approach this. You can combine that approach with the strategies above for checking for updates.
 
+## Controlling which update to load from the client side
+
+The typical way to use EAS Update is to have a single update URL and a set of request headers (such as update channel name) embedded in a build of your app. To control which update is loaded you make changes on the server through the `eas update` command or the EAS dashboard. For example, you publish a new update to a channel that your build is pointing to, then the build fetches that update on the next launch. Updates published to a channel different from the one your build is pointing to will not be downloaded with this approach.
+
+You can override the update URL and request headers at runtime using the `Updates.setUpdateURLAndRequestHeadersOverride()` method. This can be useful if you want to load a specific update or change the update channel while the app is running. [Learn more](/eas-update/override/).
+
 ## Monitoring adoption of updates
 
 The details page for an update (for example: `https://expo.dev/accounts/[account]/projects/[project]/updates/[id]`) shows metrics for the number of users who have run the update, in addition to the number of failed installs (users who download and attempted to run the update, but it crashed).
