@@ -213,7 +213,6 @@ export const PODCASTS = [
 export const LIVE_STREAMS = [
   {
     title: 'How to build mobile apps without writing a line of code with Bolt and Expo',
-    // thumbnail: 'widgets.jpg',
     event: 'Expo Live Stream',
     videoId: 'dT7hlszpO04',
   },
