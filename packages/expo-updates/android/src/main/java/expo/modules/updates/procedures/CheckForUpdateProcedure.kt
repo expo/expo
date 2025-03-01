@@ -54,35 +54,35 @@ class CheckForUpdateProcedure(
           if (updateDirective != null) {
             when (updateDirective) {
               is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
+                procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                 callback(
                   IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                     LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                   )
                 )
-                procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                 procedureContext.onComplete()
                 return
               }
 
               is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                 if (!updatesConfiguration.hasEmbeddedUpdate) {
+                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   callback(
                     IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                       LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
                     )
                   )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   procedureContext.onComplete()
                   return
                 }
 
                 if (embeddedUpdate == null) {
+                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   callback(
                     IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                       LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
                     )
                   )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   procedureContext.onComplete()
                   return
                 }
@@ -94,18 +94,18 @@ class CheckForUpdateProcedure(
                     updateResponse.responseHeaderData?.manifestFilters
                   )
                 ) {
+                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   callback(
                     IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                       LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
                     )
                   )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   procedureContext.onComplete()
                   return
                 }
 
-                callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
                 procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
+                callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
                 procedureContext.onComplete()
                 return
               }
@@ -113,12 +113,12 @@ class CheckForUpdateProcedure(
           }
 
           if (update == null) {
+            procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
             callback(
               IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                 LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
               )
             )
-            procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
             procedureContext.onComplete()
             return
           }
@@ -126,8 +126,8 @@ class CheckForUpdateProcedure(
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
-            callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
             procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
+            callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
             procedureContext.onComplete()
             return
           }
@@ -159,8 +159,8 @@ class CheckForUpdateProcedure(
             }
           }
           if (shouldLaunch) {
-            callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
             procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
+            callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
             procedureContext.onComplete()
             return
           } else {
@@ -168,8 +168,8 @@ class CheckForUpdateProcedure(
               true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
               else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
             }
-            callback(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(reason))
             procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+            callback(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(reason))
             procedureContext.onComplete()
             return
           }

@@ -46,10 +46,10 @@ class FetchUpdateProcedure(
         object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()
-            callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
             procedureContext.processStateEvent(
               UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
             )
+            callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
             procedureContext.onComplete()
           }
 
@@ -98,17 +98,17 @@ class FetchUpdateProcedure(
               databaseHolder.releaseDatabase()
 
               if (didRollBackToEmbedded) {
-                callback(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
                 procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
+                callback(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
                 procedureContext.onComplete()
               } else {
                 if (availableUpdate == null) {
-                  callback(IUpdatesController.FetchUpdateResult.Failure())
                   procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
+                  callback(IUpdatesController.FetchUpdateResult.Failure())
                   procedureContext.onComplete()
                 } else {
-                  callback(IUpdatesController.FetchUpdateResult.Success(availableUpdate))
                   procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(availableUpdate.manifest))
+                  callback(IUpdatesController.FetchUpdateResult.Success(availableUpdate))
                   procedureContext.onComplete()
                 }
               }
