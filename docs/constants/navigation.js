@@ -481,7 +481,7 @@ export const eas = [
     ]),
     makeGroup('Deployment', [
       makePage('eas-update/deployment.mdx'),
-      makePage('eas-update/downloading-updates.mdx'),
+      makePage('eas-update/download-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
