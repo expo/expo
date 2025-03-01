@@ -3,6 +3,7 @@ package expo.modules.updates.procedures
 import expo.modules.updates.logging.IUpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -21,7 +22,7 @@ class StateMachineSerialExecutorQueue(
 ) {
   private data class ProcedureHolder(
     val procedure: StateMachineProcedure,
-    val onComplete: () -> Unit
+    val onComplete: CompletableDeferred<Unit>
   )
 
   private val procedureChannel = Channel<ProcedureHolder>(Channel.UNLIMITED)
@@ -43,7 +44,7 @@ class StateMachineSerialExecutorQueue(
       override fun onComplete() {
         isCompleted = true
         loggerTimer.stop()
-        holder.onComplete()
+        holder.onComplete.complete(Unit)
       }
 
       override fun processStateEvent(event: UpdatesStateEvent) {
@@ -68,6 +69,7 @@ class StateMachineSerialExecutorQueue(
         stateMachineProcedureContext.resetStateAfterRestart()
       }
     })
+    holder.onComplete.await()
   }
 
   /**
@@ -76,7 +78,8 @@ class StateMachineSerialExecutorQueue(
   fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
     scope.launch {
       mutex.withLock {
-        procedureChannel.send(ProcedureHolder(stateMachineProcedure) {})
+        val completableDeferred = CompletableDeferred<Unit>()
+        procedureChannel.send(ProcedureHolder(stateMachineProcedure, completableDeferred))
       }
     }
   }
