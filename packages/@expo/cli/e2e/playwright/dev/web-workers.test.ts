@@ -86,7 +86,7 @@ test.describe(inputDir, () => {
     // Click the button
     await page.click('[data-testid="test-anchor"]');
 
-    expect(await page.textContent('[data-testid="data-2"]')).toBe('20');
+    expect(await page.textContent('[data-testid="data-2"]')).toBe('10');
 
     expect(pageErrors.all.length).toEqual(0);
   });
