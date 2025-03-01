@@ -10,7 +10,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 In this section, we'll cover the different strategies for downloading and launching updates. The goal is to ensure that the end user adopts the latest version of the app as soon as possible after it is published, without sacrificing the user experience by introducing slow loading screens or other issues. The strategies are not mutually exclusive, and you can mix and match them as needed for the requirements of your app.
 
-## Default behavior: load updates asynchronously on startup
+## Updates are loaded asynchronously on startup by default
 
 The default behavior is check for an update when the app is cold booted (launched from a killed state) and download the update if it's available. This process does not block loading the app, so when using this strategy the end user will only load the update when they cold boot the app after an update has been published, and then at some point kill and restart the app (for example, if they close it from the recent apps list on the OS or if they turn the device off and on).
 
@@ -55,9 +55,10 @@ This can be a great way to ensure that the user has the latest version of the ap
 
 ## Critical/mandatory updates
 
+There is no first-class support for critical/mandatory updates in the `expo-updates` package. However, you can implement your own logic to check for critical updates and apply them manually. The [expo/UpdatesAPIDemo repository](https://github.com/expo/UpdatesAPIDemo) contains an example of one way to approach this. You can combine that approach with the strategies above for checking for updates.
 
+## Monitoring adoption of updates
 
-{/* block slightly on launch potentially with loading screen */}
+The details page for an update (for example: `https://expo.dev/accounts/[account]/projects/[project]/updates/[id]`) shows metrics for the number of users who have run the update, in addition to the number of failed installs (users who download and attempted to run the update, but it crashed).
 
-
-critical/mandatory updates
+The deployments page (for example: `https://expo.dev/accounts/[account]/projects/[project]/deployments/production/[runtime-version]`) includes a table and chart that shows the number of users who have run each update related to a particular update channel and runtime version combination, over a given time period.
