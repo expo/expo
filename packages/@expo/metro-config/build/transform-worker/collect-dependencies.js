@@ -129,12 +129,12 @@ function collectDependencies(ast, options) {
                 visited.add(path.node);
                 return;
             }
-            // Match `require.unstable_defineWorker`
+            // Match `require.unstable_resolveWorker`
             if (callee.type === 'MemberExpression' &&
                 callee.object.type === 'Identifier' &&
                 callee.object.name === 'require' &&
                 callee.property.type === 'Identifier' &&
-                callee.property.name === 'unstable_defineWorker' &&
+                callee.property.name === 'unstable_resolveWorker' &&
                 !callee.computed &&
                 !path.scope.getBinding('require')) {
                 processResolveWorkerCall(path, state);
@@ -309,7 +309,7 @@ function processResolveWorkerCallWithName(name, path, state) {
         exportNames: ['*'],
     }, path);
     if (state.collectOnly !== true) {
-        path.replaceWith(makeImportWorkerTemplate({
+        path.replaceWith(makeResolveTemplate({
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
             MODULE_ID: createModuleIDExpression(dependency, state),
@@ -517,8 +517,8 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-const makeImportWorkerTemplate = template_1.default.expression(`
-  require(ASYNC_REQUIRE_MODULE_PATH).unstable_defineWorker(MODULE_ID, DEPENDENCY_MAP.paths)
+const makeResolveTemplate = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)

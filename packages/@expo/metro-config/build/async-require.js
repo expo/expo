@@ -45,7 +45,7 @@ asyncRequire.prefetch = function (moduleID, paths, moduleName // unused
 ) {
     maybeLoadBundle(moduleID, paths)?.then(() => { }, () => { });
 };
-asyncRequire.unstable_defineWorker = function unstable_defineWorker(moduleID, paths) {
+asyncRequire.unstable_resolve = function unstable_resolve(moduleID, paths) {
     if (!paths) {
         throw new Error('Bundle splitting is required for Web Worker imports');
     }

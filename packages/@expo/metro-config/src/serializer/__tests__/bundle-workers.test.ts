@@ -23,7 +23,7 @@ it(`supports worker bundle`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync(
     {
       'index.js': `
-          const workerId = require.unstable_defineWorker('./math');
+          const workerId = require.unstable_resolveWorker('./math');
           console.log('keep', worker);
         `,
       'math.js': `
@@ -74,7 +74,7 @@ it(`supports worker bundle with nested async chunk`, async () => {
           console.log('keep', promise);
         `,
       'b.js': `
-          const promise = require.unstable_defineWorker('./c');
+          const promise = require.unstable_resolveWorker('./c');
         `,
       'c.js': `
           export const multiply = (a, b) => a * b;
@@ -134,7 +134,7 @@ it(`supports worker bundle with shared deps`, async () => {
     {
       'index.js': `
         import foo from './c';
-        const worker = require.unstable_defineWorker('./b');
+        const worker = require.unstable_resolveWorker('./b');
         console.log('keep', worker, foo);
         `,
       'b.js': `

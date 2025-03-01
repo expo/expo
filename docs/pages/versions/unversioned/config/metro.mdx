@@ -553,7 +553,7 @@ const path = '/worker.js';
 const anotherWorker = new Worker(new URL(path, window.location.href));
 ```
 
-Using a variable in the `Worker` constructor is not supported for bundling. If you wish to inspect the internal URL, you can use the internal syntax `require.unstable_defineWorker('./path/to/worker.js')` to get the URL fragment.
+Using a variable in the `Worker` constructor is not supported for bundling. If you wish to inspect the internal URL, you can use the internal syntax `require.unstable_resolveWorker('./path/to/worker.js')` to get the URL fragment.
 
 ## Bare workflow setup
 

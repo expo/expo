@@ -748,7 +748,7 @@ describe(`require.context`, () => {
 describe(`Worker`, () => {
   it('collects dependency with explicit worker boundary', () => {
     const ast = astFromCode(`
-    const a = require.unstable_defineWorker("../path/to/module");
+    const a = require.unstable_resolveWorker("../path/to/module");
   `);
     const { dependencies } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([
@@ -757,7 +757,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = require(_dependencyMap[1], "asyncRequire").unstable_defineWorker(_dependencyMap[0], _dependencyMap.paths);
+      const a = require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);
     `)
     );
   });
@@ -773,7 +773,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = new Worker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_defineWorker(_dependencyMap[0], _dependencyMap.paths), window.location.href));
+      const a = new Worker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), window.location.href));
     `)
     );
   });
@@ -789,7 +789,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_defineWorker(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
+      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
     `)
     );
   });

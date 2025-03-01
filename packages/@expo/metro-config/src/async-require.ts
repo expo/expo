@@ -78,7 +78,7 @@ asyncRequire.prefetch = function (
   );
 };
 
-asyncRequire.unstable_defineWorker = function unstable_defineWorker(
+asyncRequire.unstable_resolve = function unstable_resolve(
   moduleID: number,
   paths: DependencyMapPaths
 ) {
