@@ -474,13 +474,14 @@ export const eas = [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
-      makePage('eas-update/develop-faster.mdx'),
+      makePage('eas-update/preview.mdx'),
       makePage('eas-update/override.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/github-actions.mdx'),
     ]),
     makeGroup('Deployment', [
       makePage('eas-update/deployment.mdx'),
+      makePage('eas-update/downloading-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/optimize-assets.mdx'),

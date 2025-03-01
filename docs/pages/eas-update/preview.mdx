@@ -1,0 +1,116 @@
+---
+title: Preview updates
+sidebar_title: Preview updates
+description: Learn how to preview updates in both preview and development builds.
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+
+// TODO: actually move this to "develop-faster" which we should rename to "preview" and move this current page back to dev-builds or whatever, then create new page about preview builds
+
+Before deploying an update to production, it's often prudent to test it in a production-like environment. As a developer, an easy way to accomplish this is to load your update in a development build, and this works great for loading previews from pull requests or directly from the EAS dashboard. Non-technical users will typically not want to interact with a development build, and they will want to test changes from a preview build on an [App store testing track](/review/overview/#app-store-testing-tracks) or [internal distribution](/review/overview/#internal-distribution-with-eas-build). This guide will show you how to preview updates in both preview and development builds.
+
+## Preview builds
+
+> **Note:** this feature is currently experimental and requires using a `next` version of `expo-updates`.
+
+
+## Development builds
+
+[`expo-dev-client`](/develop/development-builds/introduction/) library allows launching different versions of a project by creating a development build. Any update can be previewed in a development build with a compatible runtime version.
+
+This guide walks through the steps required to load and preview a published update inside a development build using the **Extensions** tab or constructing a specific Update URL.
+
+### Prerequisites
+
+- [Create a development build and install it](/develop/development-builds/create-a-build/) on your device or Android Emulator or iOS Simulator.
+- Make sure your development build has the [`expo-updates` library installed](/eas-update/getting-started/#configure-your-project).
+
+### What is an Extensions tab
+
+<ContentSpotlight
+  alt="Extensions tab in a development build."
+  src="/static/images/eas-update/extensions-01.png"
+  className="max-w-[320px]"
+/>
+
+When using the `expo-updates` library inside a development build, the **Extensions** tab provides the ability to load and preview a published update automatically.
+
+### Preview an update using the Extensions tab
+
+<Step label="1">
+
+Make non-native changes locally in your project and then [publish them using `eas update`](/eas-update/getting-started/#publish-an-update). The update will be published on a branch.
+
+</Step>
+
+<Step label="2">
+
+After publishing the update, open your development build, go to **Extensions**, and tap **Login** to log in to your Expo account within the development build. This step is required for the **Extensions** tab to load any published updates associated with the project under your Expo account.
+
+</Step>
+
+<Step label="3">
+
+After logging in, an EAS Update section will appear inside the **Extensions** tab with one or more of the latest published updates. Tap **Open** next to the update you want to preview.
+
+</Step>
+
+In the **Extensions** tab, you can view the list of all published updates for a branch. Tap the branch name in the **Extensions** tab.
+
+<ContentSpotlight
+  alt="Extensions tab in a development build."
+  src="/static/images/eas-update/extensions-02.png"
+  className="max-w-[480px]"
+/>
+
+## Preview an update using the Expo dashboard
+
+You can also preview an update using the Expo dashboard by following the steps below:
+
+- Click the published updated link in the CLI after running the command to publish an update. This will open the update's details on the **Updates** page in the Expo dashboard.
+- Click **Preview**. This will open the **Preview** dialog.
+- To preview the update, you can either scan the QR code with your device's camera or select a platform to [launch the update under **Open with Orbit**](/review/with-orbit/).
+
+## Construct an update URL
+
+As an alternative to the methods described in the previous sections, you can construct a specific URL to open your EAS Update in the development build. The URL will look like the following:
+
+```bash
+[slug]://expo-development-client/?url=[https://u.expo.dev/project-id]/group/[group-id]
+
+# Example
+my-app://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2/group/47839bf2-9e01-467b-9378-4a978604ab11
+```
+
+Let's break this URL to understand what each part does:
+
+| Part of URL                                               | Description                                                                                                                |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `slug`                                                    | The project's [slug](/versions/latest/config/app/#slug) found in the app config.                                           |
+| `://expo-development-client/`                             | Necessary for the deep link to work with the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library.                |
+| `?url=`                                                   | Defines a `url` query parameter.                                                                                           |
+| `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2` | This is the updates URL, which is inside the project's app config under [`updates.url`](/versions/latest/config/app/#url). |
+| `/group/47839bf2-9e01-467b-9378-4a978604ab11`             | The group ID of the update.                                                                                                |
+
+Once you've constructed the URL, copy and paste it directly into the development build's launcher screen under **Enter URL Manually**.
+
+Alternatively, you can [create a QR code for the URL](/more/qr-codes/) and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
+
+## Example
+
+<BoxLink
+  title="See a working example"
+  description={
+    <>
+      See a working example of using <CODE>expo-dev-client</CODE> with EAS Update.
+    </>
+  }
+  Icon={GithubIcon}
+  href="https://github.com/jonsamp/test-expo-dev-client-eas-update"
+/>

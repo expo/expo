@@ -1,0 +1,63 @@
+---
+title: Downloading updates
+sidebar_title: Downloading updates
+description: Learn strategies for downloading and launching updates
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+> **note**: All of the following information on this page applies only to release builds and debug builds [with `EX_UPDATES_NATIVE_DEBUG` enabled](https://docs.expo.dev/eas-update/debug/#runtime-issues).
+
+In this section, we'll cover the different strategies for downloading and launching updates. The goal is to ensure that the end user adopts the latest version of the app as soon as possible after it is published, without sacrificing the user experience by introducing slow loading screens or other issues. The strategies are not mutually exclusive, and you can mix and match them as needed for the requirements of your app.
+
+## Default behavior: load updates asynchronously on startup
+
+The default behavior is check for an update when the app is cold booted (launched from a killed state) and download the update if it's available. This process does not block loading the app, so when using this strategy the end user will only load the update when they cold boot the app after an update has been published, and then at some point kill and restart the app (for example, if they close it from the recent apps list on the OS or if they turn the device off and on).
+
+This behavior is safe because it doesn't interfere with app startup to wait for a network request to complete (which would be a bad user experience in common real-world cases where a user finds themself with a slow connection and they are stuck on a loading screen for several seconds). The downside is that it takes much longer for users to adopt the latest version of the app. If the ideal is for an update to be adopted immediately by all users as soon as it is published, then this strategy falls very short of that.
+
+<Collapsible summary="What if I want to always block app startup until the latest update is downloaded?">
+
+We recommend against this strategy because the resulting user experince is extremely poor. Typically when a user is stuck waiting on a splash screen when booting an app, they will close the app and try again (and so downloading the update won't complete), or give up and use another app. When the users' device is connected to a slow network, even when there is no update they may have to wait several seconds or more to load the app. If ensuring that your users always have the latest version of your app is critical, you may want to explore one of the other strategies explained here.
+
+</Collapsible>
+
+<Collapsible summary="How can I disable the default behavior?">
+
+You can disable the default behavior by setting the [`checkAutomatically`](/versions/latest/sdk/updates/#updatescheckautomaticallyvalue) option to `NEVER` in the `updates` configuration. This will prevent the app from checking for updates and downloading them automatically.
+
+</Collapsible>
+
+## Checking for updates while the app is running
+
+You can use `Updates.checkForUpdateAsync()` to check for updates while the app is running. This will return a promise that resolves to a [`UpdateCheckResult` object](/versions/latest/sdk/updates/#updatecheckresult), with `isAvailable` set to `true` if an update is available, and information about the update in the [`manifest`](https://docs.expo.dev/versions/latest/sdk/manifests/#expoupdatesmanifest) property.
+
+If an update is available, you can use the `Updates.downloadAsync()` method to download the update. This will return a promise that resolves when the download is complete. Finally, you can use the `Updates.reloadAsync()` method to reload the app with the new version. The `useUpdates()` hook can also be used to monitor the state of the `expo-updates` package from a React component.
+
+<Collapsible summary="What are common patterns for checking for updates while the app is running?">
+
+- You can check for updates at various points in your app's lifecycle, such as [when it is foregrounded](https://reactnative.dev/docs/appstate) or at some interval. When an update is found, you may want to show a dialog to the user to prompt the user to update.
+- You can check for updates at launch and display your own custom loading screen, if it is very important for your use case to ensure that users always get the latest verison at launch.
+
+</Collapsible>
+
+## Checking for updates while the app is backgrounded
+
+You can use [expo-background-task](https://docs.expo.dev/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. This is useful for apps that are used in a way that the app is in the background for extended periods of time, such as weather apps or other information apps that are not actively used but are running in the background.
+
+To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.downloadAsync()` methods as you would in the foreground, but execute them inside of a background task.
+
+<Collapsible summary="Should I also apply the update with Updates.reloadAsync() when the app is backgrounded?">
+
+This can be a great way to ensure that the user has the latest version of the app when they open it again. However, it is important to note that, unless you persist the state that the app was in at the time it was backgrounded and restore that state, the user will experience a cold boot when they open the app again. One way to mitigate this is to only do a reload in the background if the app has been inactive for a certain period of time, after which a user is unlikely to expect the app to restore its previous state.
+
+</Collapsible>
+
+## Critical/mandatory updates
+
+
+
+{/* block slightly on launch potentially with loading screen */}
+
+
+critical/mandatory updates
