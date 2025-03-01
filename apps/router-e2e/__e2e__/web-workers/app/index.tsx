@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-const worker = require.unstable_importWorker('../worker-one');
+const worker = new Worker(new URL('../worker-one', window.location.href));
 
 export default function Page() {
   const [data, setData] = useState([]);

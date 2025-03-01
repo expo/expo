@@ -14,9 +14,6 @@ type MetroRequire = {
   importAll: <T>(id: number) => T;
 };
 
-declare let window: any;
-declare let Worker: any;
-
 declare const require: MetroRequire;
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
@@ -81,23 +78,18 @@ asyncRequire.prefetch = function (
   );
 };
 
-asyncRequire.unstable_importWorker = function unstable_importWorker(
+asyncRequire.unstable_defineWorker = function unstable_defineWorker(
   moduleID: number,
   paths: DependencyMapPaths
 ) {
-  if (!paths) throw new Error('Bundle splitting is required for web worker imports');
+  if (!paths) {
+    throw new Error('Bundle splitting is required for Web Worker imports');
+  }
   const id = paths[moduleID];
-  if (!id) throw new Error('Worker import is missing from split bundle paths: ' + id);
-
-  // eslint-disable-next-line valid-typeof
-  if (typeof window === 'undefined') {
-    return null;
+  if (!id) {
+    throw new Error('Worker import is missing from split bundle paths: ' + id);
   }
-  if (typeof Worker === 'undefined') {
-    throw new Error('Web Workers are not supported in this environment');
-  }
-
-  return new Worker(new URL(id, window.location.href));
+  return id;
 };
 
 module.exports = asyncRequire;

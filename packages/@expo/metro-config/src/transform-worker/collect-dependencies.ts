@@ -162,6 +162,33 @@ function collectDependencies<TAst extends t.File>(
   traverse(
     ast,
     {
+      // Match new Worker() patterns
+      NewExpression(path, state: State): void {
+        if (
+          path.node.callee.type === 'Identifier' &&
+          (path.node.callee.name === 'Worker' || path.node.callee.name === 'SharedWorker')
+        ) {
+          const [firstArg] = path.node.arguments;
+
+          // Match: new Worker(new URL("../path/to/module", import.meta.url))
+          if (
+            firstArg &&
+            firstArg.type === 'NewExpression' &&
+            firstArg.callee.type === 'Identifier' &&
+            firstArg.callee.name === 'URL' &&
+            firstArg.arguments.length > 0 &&
+            firstArg.arguments[0].type === 'StringLiteral'
+          ) {
+            const moduleName = firstArg.arguments[0].value;
+
+            // Get the NodePath of the first argument of `new Worker(new URL())`
+            const urlArgPath = (path.get('arguments')[0].get('arguments') as NodePath[])[0];
+
+            processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+          }
+        }
+      },
+
       CallExpression(path, state: State): void {
         if (visited.has(path.node)) {
           return;
@@ -216,13 +243,13 @@ function collectDependencies<TAst extends t.File>(
           return;
         }
 
-        // Match `require.unstable_importWorker`
+        // Match `require.unstable_defineWorker`
         if (
           callee.type === 'MemberExpression' &&
           callee.object.type === 'Identifier' &&
           callee.object.name === 'require' &&
           callee.property.type === 'Identifier' &&
-          callee.property.name === 'unstable_importWorker' &&
+          callee.property.name === 'unstable_defineWorker' &&
           !callee.computed &&
           !path.scope.getBinding('require')
         ) {
@@ -435,13 +462,15 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   }
 }
 
-function processResolveWorkerCall(path: NodePath<CallExpression>, state: State): void {
+function processResolveWorkerCall(path: NodePath<any>, state: State): void {
   const name = getModuleNameFromCallArgs(path);
-
   if (name == null) {
     throw new InvalidRequireCallError(path);
   }
+  return processResolveWorkerCallWithName(name, path, state);
+}
 
+function processResolveWorkerCallWithName(name: string, path: NodePath<any>, state: State): void {
   const dependency = registerDependency(
     state,
     {
@@ -731,7 +760,7 @@ const makeAsyncImportMaybeSyncTemplate = template.expression(`
 `);
 
 const makeImportWorkerTemplate = template.expression(`
-  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importWorker(MODULE_ID, DEPENDENCY_MAP.paths)
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_defineWorker(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`
