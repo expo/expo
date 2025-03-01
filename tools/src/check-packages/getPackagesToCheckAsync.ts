@@ -56,7 +56,9 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
     );
     return allPackages;
   }
-  logger.info(`😺 Using incremental checks since ${formatCommitHash(mergeBase)} commit\n`);
+  logger.info(
+    `😺 Using incremental checks since ${formatCommitHash(mergeBase)} commit. Use -a to check all packages.\n`
+  );
   const changedFiles = await Git.logFilesAsync({ fromCommit: mergeBase });
 
   allPackages
