@@ -4,6 +4,7 @@ exports[`renders Caption 1`] = `
 <caption
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 >
   Caption
 </caption>
@@ -13,6 +14,7 @@ exports[`renders TBody 1`] = `
 <tbody
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 />
 `;
 
@@ -20,6 +22,7 @@ exports[`renders TD 1`] = `
 <td
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 >
   Column
 </td>
@@ -29,6 +32,7 @@ exports[`renders TFoot 1`] = `
 <tfoot
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 />
 `;
 
@@ -36,6 +40,7 @@ exports[`renders TH 1`] = `
 <th
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 >
   Header
 </th>
@@ -45,6 +50,7 @@ exports[`renders THead 1`] = `
 <thead
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 />
 `;
 
@@ -52,6 +58,7 @@ exports[`renders TR 1`] = `
 <tr
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 />
 `;
 
@@ -59,5 +66,6 @@ exports[`renders Table 1`] = `
 <table
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 />
 `;
