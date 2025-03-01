@@ -48,7 +48,7 @@
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^12.5.2",
+    "@testing-library/react-native": "^13.1.0",
     "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
