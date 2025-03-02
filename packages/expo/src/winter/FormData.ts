@@ -70,7 +70,12 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    value = { type: value.type, name: blobFilename || 'blob', blob: value };
+    // @ts-expect-error: `Blob.data.__collector` is react-native's proprietary property.
+    if (value.data?.__collector == null) {
+      // For react-native's BlobManager created Blob objects,
+      // we need to keep it as-is without breaking its functionality.
+      value = { type: value.type, name: blobFilename || 'blob', blob: value };
+    }
   } else if (typeof value !== 'object') {
     value = String(value);
   }
