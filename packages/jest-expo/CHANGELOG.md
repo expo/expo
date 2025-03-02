@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed jest error from `FormData`. ([#35162](https://github.com/expo/expo/pull/35162) by [@WoLewicki](https://github.com/WoLewicki))
+
 ### 💡 Others
 
 ## 52.0.4 - 2025-02-14
