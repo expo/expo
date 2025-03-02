@@ -137,7 +137,7 @@ async function schedulePushNotification() {
       data: { data: 'goes here', test: { test1: 'more data' } },
     },
     trigger: {
-      type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+      ...(Platform.OS === 'android' ? { type: SchedulableTriggerInputTypes.TIME_INTERVAL,} : {}),
       seconds: 2,
     },
   });
