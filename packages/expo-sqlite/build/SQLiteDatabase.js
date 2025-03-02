@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions } from './NativeDatabase';
 import { SQLiteStatement, } from './SQLiteStatement';
@@ -105,6 +106,9 @@ export class SQLiteDatabase {
      * ```
      */
     async withExclusiveTransactionAsync(task) {
+        if (Platform.OS === 'web') {
+            throw new Error('withExclusiveTransactionAsync is not supported on web');
+        }
         const transaction = await Transaction.createAsync(this);
         let error;
         try {
