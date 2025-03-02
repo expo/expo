@@ -524,7 +524,8 @@ function loadModuleImplementation(
 }
 
 function unknownModuleError(id: ModuleID, moduleIdHint?: string): Error {
-  let message = 'Requiring unknown module "' + (id ?? moduleIdHint) + '".';
+  let message =
+    'Requiring unknown module "' + (id ?? moduleIdHint ?? `[unknown optional import]`) + '".';
   if (__DEV__) {
     message +=
       ' If you are sure the module exists, try restarting Metro. ' +
