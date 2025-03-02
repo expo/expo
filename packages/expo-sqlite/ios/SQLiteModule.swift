@@ -585,7 +585,8 @@ public final class SQLiteModule: Module {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
-    guard var stmt = exsqlite3_next_stmt(database.pointer, nil) else {
+    var stmt: OpaquePointer? = exsqlite3_next_stmt(database.pointer, nil)
+    if stmt == nil {
       return
     }
     var result = SQLITE_OK
