@@ -5,11 +5,10 @@ import { ConfigAPI, template, types } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getPossibleProjectRoot, getIsProd, getIsReactServer } from './common';
+import { getPossibleProjectRoot, getIsReactServer } from './common';
 
 export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
   const isReactServer = api.caller(getIsReactServer);
-  const isProd = api.caller(getIsProd);
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 
   return {
@@ -158,7 +157,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the server action reference in the metadata.
-          state.file.metadata.reactServerReference = outputKey;
+          state.file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
         } else if (isUseClient) {
           if (!isReactServer) {
             // Do nothing for "use client" on the client.
@@ -210,7 +209,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the client reference in the metadata.
-          state.file.metadata.reactClientReference = outputKey;
+          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
         }
       },
     },

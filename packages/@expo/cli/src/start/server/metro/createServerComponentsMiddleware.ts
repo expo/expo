@@ -199,8 +199,11 @@ export function createServerComponentsMiddleware(
         contents: wrapBundle(contents.src),
       });
 
+      // Match babel plugin.
+      const publicModuleId = './' + path.relative(projectRoot, entryPoint);
+
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [String(relativeName), outputName];
+      manifest[publicModuleId] = [String(relativeName), outputName];
     }
 
     async function processEntryPoints(entryPoints: string[], recursions = 0) {
@@ -634,7 +637,14 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  return url.fileURLToPath(fileURL);
+  try {
+    return url.fileURLToPath(fileURL);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw Error(`Invalid URL: ${fileURL}`, { cause: error });
+    }
+    throw error;
+  }
 };
 
 const encodeInput = (input: string) => {

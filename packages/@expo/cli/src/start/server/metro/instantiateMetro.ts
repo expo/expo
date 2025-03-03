@@ -138,9 +138,7 @@ export async function loadMetroConfigAsync(
   }
 
   if (serverActionsEnabled) {
-    Log.warn(
-      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
-    );
+    Log.warn(`Experimental React Server Functions are enabled.`);
     if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
         `- React Server Component routes are NOT enabled. Routes will render in client mode.`

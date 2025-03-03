@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = void 0;
 /**
@@ -6,10 +9,10 @@ exports.reactClientReferencesPlugin = void 0;
  */
 const core_1 = require("@babel/core");
 const node_path_1 = require("node:path");
+const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
     const isReactServer = api.caller(common_1.getIsReactServer);
-    const isProd = api.caller(common_1.getIsProd);
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
         name: 'expo-client-references',
@@ -129,7 +132,7 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the server action reference in the metadata.
-                    state.file.metadata.reactServerReference = outputKey;
+                    state.file.metadata.reactServerReference = node_url_1.default.pathToFileURL(filePath).href;
                 }
                 else if (isUseClient) {
                     if (!isReactServer) {
@@ -170,7 +173,7 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the client reference in the metadata.
-                    state.file.metadata.reactClientReference = outputKey;
+                    state.file.metadata.reactClientReference = node_url_1.default.pathToFileURL(filePath).href;
                 }
             },
         },
