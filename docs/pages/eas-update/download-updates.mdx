@@ -82,7 +82,9 @@ export const setupBackgroundUpdates = async () => {
 
 <Collapsible summary="Should I also apply the update with Updates.reloadAsync() when the app is backgrounded?">
 
-This can be a great way to ensure that the user has the latest version of the app when they open it again. However, it is important to note that, unless you persist the state that the app was in at the time it was backgrounded and restore that state, the user will experience a cold boot when they open the app again. One way to mitigate this is to only do a reload in the background if the app has been inactive for a certain period of time, after which a user is unlikely to expect the app to restore its previous state.
+**Support for calling `Updates.reloadAsync()` while the app is backgrounded is experimental**. This is a new feature and it is not widely used, be sure to monitor for crashes when you first enable it. Downloading an update in the background is safe.
+
+Reloading an update while the app is backgrounded can be a great way to ensure that the user has the latest version of the app when they open it again. However, it is important to note that, unless you persist the state that the app was in at the time it was backgrounded and restore that state, the user will experience a cold boot when they open the app again. One way to mitigate this is to only do a reload in the background if the app has been inactive for a certain period of time, after which a user is unlikely to expect the app to restore its previous state.
 
 </Collapsible>
 
