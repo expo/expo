@@ -1,5 +1,5 @@
 /**
- Creates the read-only constant with given name. The definition is basically no-op if you don't call `.get(_:)` on it.
+ Creates the read-only constant with the given name. The definition is no-op if you don't call `.get(_:)` on it.
  */
 public func Constant<Value: AnyArgument>(_ name: String) -> ConstantDefinition<Value> {
   return ConstantDefinition(name: name)

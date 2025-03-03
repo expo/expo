@@ -26,7 +26,7 @@ public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDef
   var getter: ClosureType?
 
   /**
-   Initializes an unowned ConstantDefinition without getter function.
+   Initializes an unowned ConstantDefinition without a getter function.
    */
   init(name: String) {
     self.name = name
