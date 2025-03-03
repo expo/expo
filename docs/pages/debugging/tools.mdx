@@ -81,9 +81,9 @@ This overlay has capabilities to:
 
 > **info** **Starting from React Native 0.76**, React Native DevTools has replaced Chrome DevTools.
 
-**React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests), and [Memory](#insepcting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components), and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
+**React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing the [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests), and [Memory](#insepcting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components) and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
 
-You can use the React Native DevTools on any app using Hermes. **To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started**. Once you have opened the React native DevTools, it will appear as below:
+You can use the React Native DevTools on any app using [Hermes](/guides/using-hermes/). **To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started**. Once you have opened the React Native DevTools, it will appear as below:
 
 <ContentSpotlight
   alt="The React Native DevTools showing one of the files under the Sources tab."
@@ -92,7 +92,7 @@ You can use the React Native DevTools on any app using Hermes. **To open it, sta
 
 ### Pausing on breakpoints
 
-You can pause your app on specific parts of your code. To do this, set the breakpoint under the Sources tab by clicking the line number, or add the `debugger` statement in your code.
+You can pause your app on specific parts of your code. To do this, set the breakpoint under the Sources tab by clicking the line number or add the `debugger` statement in your code.
 
 Once your app is executing code that has a breakpoint, it will entirely pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console](#interacting-with-the-console) tab as part of your app.
 
@@ -115,7 +115,7 @@ If your app throws unexpected errors, it can be hard to find the source of the e
 
 ### Interacting with the console
 
-The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it were part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Sources](#pausing-on-breakpoints) tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
+The **Console** tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it were part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Sources](#pausing-on-breakpoints) tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
 
 <ContentSpotlight
   alt="Use the console with breakpoints to inspect variables and invoke code through your app."
@@ -136,7 +136,7 @@ The **Network** tab gives you insights into the network requests made by your ap
 
 ### Inspecting memory
 
-The **Memory** tab allows you to inspect the memory usage of your app. You can take a heap snapshot and view the memory usage of your app's JavaScript code over time.
+The **Memory** tab allows you to inspect the memory usage and take a heap snapshot of your app's JavaScript code.
 
 <ContentSpotlight
   alt="Inspect memory usage of your app's JavaScript code."
@@ -146,7 +146,7 @@ The **Memory** tab allows you to inspect the memory usage of your app. You can t
 
 ### Inspecting components
 
-The **Components** tab allows you to inspect the React components in your app. You can view the props, state, and instance properties of each component by hovering that component in React Native DevTools. This is a great way to debug your app's UI and understand how your components are structured.
+The **Components** tab allows you to inspect the React components in your app. You can view the props, and styles of each component by hovering that component in React Native DevTools. This is a great way to debug your app's UI and understand how your components are structured.
 
 <ContentSpotlight
   alt="Inspect  a component in React Native DevTools."
