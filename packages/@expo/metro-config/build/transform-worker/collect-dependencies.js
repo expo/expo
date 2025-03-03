@@ -67,6 +67,25 @@ function collectDependencies(ast, options) {
         collectOnly: options.collectOnly,
     };
     (0, traverse_1.default)(ast, {
+        // Match new Worker() patterns
+        NewExpression(path, state) {
+            if (path.node.callee.type === 'Identifier' &&
+                (path.node.callee.name === 'Worker' || path.node.callee.name === 'SharedWorker')) {
+                const [firstArg] = path.node.arguments;
+                // Match: new Worker(new URL("../path/to/module", import.meta.url))
+                if (firstArg &&
+                    firstArg.type === 'NewExpression' &&
+                    firstArg.callee.type === 'Identifier' &&
+                    firstArg.callee.name === 'URL' &&
+                    firstArg.arguments.length > 0 &&
+                    firstArg.arguments[0].type === 'StringLiteral') {
+                    const moduleName = firstArg.arguments[0].value;
+                    // Get the NodePath of the first argument of `new Worker(new URL())`
+                    const urlArgPath = path.get('arguments')[0].get('arguments')[0];
+                    processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+                }
+            }
+        },
         CallExpression(path, state) {
             if (visited.has(path.node)) {
                 return;
@@ -107,6 +126,18 @@ function collectDependencies(ast, options) {
                 !callee.computed &&
                 !path.scope.getBinding('require')) {
                 processResolveWeakCall(path, state);
+                visited.add(path.node);
+                return;
+            }
+            // Match `require.unstable_resolveWorker`
+            if (callee.type === 'MemberExpression' &&
+                callee.object.type === 'Identifier' &&
+                callee.object.name === 'require' &&
+                callee.property.type === 'Identifier' &&
+                callee.property.name === 'unstable_resolveWorker' &&
+                !callee.computed &&
+                !path.scope.getBinding('require')) {
+                processResolveWorkerCall(path, state);
                 visited.add(path.node);
                 return;
             }
@@ -261,6 +292,37 @@ function processResolveWeakCall(path, state) {
         path.replaceWith(makeResolveWeakTemplate({
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
+    }
+}
+function processResolveWorkerCall(path, state) {
+    const name = getModuleNameFromCallArgs(path);
+    if (name == null) {
+        throw new InvalidRequireCallError(path);
+    }
+    return processResolveWorkerCallWithName(name, path, state);
+}
+function processResolveWorkerCallWithName(name, path, state) {
+    const dependency = registerDependency(state, {
+        name,
+        asyncType: 'worker',
+        optional: isOptionalDependency(name, path, state),
+        exportNames: ['*'],
+    }, path);
+    if (state.collectOnly !== true) {
+        path.replaceWith(makeResolveTemplate({
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+            MODULE_ID: createModuleIDExpression(dependency, state),
+        }));
+    }
+    else {
+        // Inject the async require dependency into the dependency map so it's available in the graph during serialization and splitting.
+        registerDependency(state, {
+            name: nullthrows(state.asyncRequireModulePathStringLiteral).value,
+            asyncType: null,
+            optional: false,
+            exportNames: ['*'],
+        }, path);
     }
 }
 function getExportNamesFromPath(path) {
@@ -454,6 +516,9 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 `);
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+const makeResolveTemplate = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)

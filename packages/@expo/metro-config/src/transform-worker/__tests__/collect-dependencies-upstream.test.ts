@@ -745,6 +745,86 @@ describe(`require.context`, () => {
   });
 });
 
+describe(`Worker`, () => {
+  it('collects dependency with explicit worker boundary', () => {
+    const ast = astFromCode(`
+    const a = require.unstable_resolveWorker("../path/to/module");
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);
+    `)
+    );
+  });
+
+  it('collects dependency with worker constructor', () => {
+    const ast = astFromCode(`
+    const a = new Worker(new URL("../path/to/module", window.location.href));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = new Worker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), window.location.href));
+    `)
+    );
+  });
+
+  it('collects dependency with SharedWorker constructor', () => {
+    const ast = astFromCode(`
+    const a = new SharedWorker(new URL("../path/to/module", import.meta.url));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
+    `)
+    );
+  });
+
+  it('does not register dependency with worker constructor if a variable is used', () => {
+    const ast = astFromCode(`
+    const id = "./path/to/module";
+    const a = new Worker(new URL(id, window.location.href));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const id = "./path/to/module";
+      const a = new Worker(new URL(id, window.location.href));
+    `)
+    );
+  });
+
+  it('does not register dependency with worker constructor if a variable is used with a URL constructor', () => {
+    const ast = astFromCode(`
+    const id = new URL("./path/to/module", window.location.href);
+    const a = new Worker(id);
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const id = new URL("./path/to/module", window.location.href); 
+      const a = new Worker(id);
+    `)
+    );
+  });
+});
+
 it('collects unique dependency identifiers and transforms the AST', () => {
   const ast = astFromCode(`
     const a = require('b/lib/a');

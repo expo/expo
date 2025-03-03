@@ -71,7 +71,7 @@ function prepareModule(module, graph, options) {
  * traversing upwards the dependency graph).
  */
 function getInverseDependencies(path, graph, inverseDependencies = {}) {
-    // Dependency alredy traversed.
+    // Dependency already traversed.
     if (path in inverseDependencies) {
         return inverseDependencies;
     }

@@ -6,5 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Fork of https://github.com/facebook/metro/blob/b8e9e64f1de97a67234e223f5ee21524b160e8a5/packages/metro-runtime/src/modules/asyncRequire.js#L1
+ * Adds worker support.
  */
 export {};
