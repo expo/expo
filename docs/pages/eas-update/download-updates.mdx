@@ -1,18 +1,17 @@
 ---
 title: Downloading updates
-sidebar_title: Downloading updates
-description: Learn strategies for downloading and launching updates
+description: Learn strategies for downloading and launching updates.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-> **info** All of the following information on this page applies only to release builds and debug builds [with `EX_UPDATES_NATIVE_DEBUG` enabled](https://docs.expo.dev/eas-update/debug/#runtime-issues).
+> **info** All of the following information on this page applies only to release builds and debug builds [with `EX_UPDATES_NATIVE_DEBUG` enabled](/eas-update/debug/#runtime-issues).
 
 In this section, we'll cover the different strategies for downloading and launching updates. The goal is to ensure that the end user adopts the latest version of the app as soon as possible after it is published, without sacrificing the user experience by introducing slow loading screens or other issues. The strategies are not mutually exclusive, and you can mix and match them as needed for the requirements of your app.
 
 ## Updates are loaded asynchronously on startup by default
 
-The default behavior is check for an update when the app is cold booted (launched from a killed state) and download the update if it's available. This process does not block loading the app, so when using this strategy the end user will only load the update when they cold boot the app after an update has been published, and then at some point kill and restart the app (for example, if they close it from the recent apps list on the OS or if they turn the device off and on).
+The default behavior is to check for an update when the app is cold booted (launched from a killed state) and download the update if it's available. This process does not block loading the app, so when using this strategy the end user will only load the update when they cold boot the app after an update has been published, and then at some point kill and restart the app (for example, if they close it from the recent apps list on the OS or if they turn the device off and on).
 
 This behavior is safe because it doesn't interfere with app startup to wait for a network request to complete (which would be a bad user experience in common real-world cases where a user finds themself with a slow connection and they are stuck on a loading screen for several seconds). The downside is that it takes much longer for users to adopt the latest version of the app. If the ideal is for an update to be adopted immediately by all users as soon as it is published, then this strategy falls very short of that.
 
