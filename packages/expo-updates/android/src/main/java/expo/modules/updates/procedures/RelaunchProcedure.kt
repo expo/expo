@@ -2,7 +2,6 @@ package expo.modules.updates.procedures
 
 import android.app.Activity
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import com.facebook.react.ReactApplication
@@ -38,7 +37,7 @@ class RelaunchProcedure(
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-relaunch"
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     val reactApplication = context as? ReactApplication ?: run inner@{
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
       return
@@ -91,16 +90,14 @@ class RelaunchProcedure(
   }
 
   private fun runReaper() {
-    AsyncTask.execute {
-      Reaper.reapUnusedUpdates(
-        updatesConfiguration,
-        databaseHolder.database,
-        updatesDirectory,
-        getCurrentLauncher().launchedUpdate,
-        selectionPolicy
-      )
-      databaseHolder.releaseDatabase()
-    }
+    Reaper.reapUnusedUpdates(
+      updatesConfiguration,
+      databaseHolder.database,
+      updatesDirectory,
+      getCurrentLauncher().launchedUpdate,
+      selectionPolicy
+    )
+    databaseHolder.releaseDatabase()
   }
 
   /**

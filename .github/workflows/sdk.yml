@@ -35,6 +35,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            module-scripts:
+              - 'packages/expo-module-scripts/**'
+              - 'packages/jest-expo/**'
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
@@ -54,7 +61,7 @@ jobs:
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] || 
-             git diff --name-only ${{ github.base_ref || github.event.before || 'main' }} | grep -qE '^packages/(expo-module-scripts|jest-expo)/'; then
+            ${{ steps.filter.outputs.module-scripts }} == "true"; then
             # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all
           else

@@ -14,7 +14,6 @@ public final class SQLiteModule: Module {
 
   private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var cachedStatements = [NativeDatabase: [NativeStatement]]()
   private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
@@ -280,7 +279,6 @@ public final class SQLiteModule: Module {
     if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    maybeAddCachedStatement(database: database, statement: statement)
   }
 
   // swiftlint:disable line_length
@@ -359,7 +357,6 @@ public final class SQLiteModule: Module {
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    maybeRemoveCachedStatement(database: database, statement: statement)
     if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
@@ -378,9 +375,7 @@ public final class SQLiteModule: Module {
 
   private func closeDatabase(_ db: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(db)
-    for removedStatement in maybeRemoveAllCachedStatements(database: db) {
-      exsqlite3_finalize(removedStatement.pointer)
-    }
+    try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
@@ -585,42 +580,26 @@ public final class SQLiteModule: Module {
     }
   }
 
-  // MARK: - cachedStatements managements
-
-  private func maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+  // MARK: - statements managements
+  private func maybeFinalizeAllStatements(_ database: NativeDatabase) throws {
+    guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
-    Self.lockQueue.sync {
-      if cachedStatements[database] != nil {
-        cachedStatements[database]?.append(statement)
-      } else {
-        cachedStatements[database] = [statement]
-      }
-    }
-  }
-
-  private func maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+    var stmt: OpaquePointer? = exsqlite3_next_stmt(database.pointer, nil)
+    if stmt == nil {
       return
     }
-    Self.lockQueue.sync {
-      if let index = cachedStatements[database]?.firstIndex(of: statement) {
-        cachedStatements[database]?.remove(at: index)
+    var result = SQLITE_OK
+    while let currentStmt = stmt {
+      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
+      let ret = exsqlite3_finalize(currentStmt)
+      if ret != SQLITE_OK {
+        result = ret
       }
+      stmt = nextStmt
     }
-  }
-
-  private func maybeRemoveAllCachedStatements(database: NativeDatabase) -> [NativeStatement] {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
-      return []
-    }
-    return Self.lockQueue.sync {
-      if let statements = cachedStatements[database] {
-        cachedStatements.removeValue(forKey: database)
-        return statements
-      }
-      return []
+    if result != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 }
