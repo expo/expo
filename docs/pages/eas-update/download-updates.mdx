@@ -42,11 +42,11 @@ If an update is available, you can use the `Updates.downloadAsync()` method to d
 
 ## Checking for updates while the app is backgrounded
 
-You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. This is useful for apps that are used in a way when the app is in the background for extended periods of time, such as weather apps or other information apps that are not actively used but are running in the background.
+You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.downloadAsync()` methods as you would in the foreground, but execute them inside of a background task. This is a great way to ensure that the user always has the latest version of the app, even if they have not opened the app in a while.
 
-To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.downloadAsync()` methods as you would in the foreground, but execute them inside of a background task.
+It's worth considering whether you want to reload the app after an update is downloaded in the background, or wait for the user to close and reopen it. If you choose to only download it in the background and not apply it, this should still be useful to ensure that the next boot will immediately have the latest version, and it will lead to a faster adoption rate for updates compared to the default behavior.
 
-<Collapsible summary="Example: Check for updates in the background">
+<Collapsible summary="An example of how to check for updates in the background">
 
 To ensure the background task is registered when the application starts, import and invoke the `setupBackgroundUpdates` function within the top-level component.
 
