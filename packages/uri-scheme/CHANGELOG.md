@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Escape special characters in `npx uri-scheme open <url>`. ([#35229](https://github.com/expo/expo/pull/35229) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 1.3.3 - 2025-02-14
