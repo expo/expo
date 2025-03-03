@@ -36,7 +36,7 @@ abstract class StateMachineProcedure {
     fun onComplete()
   }
 
-  abstract fun run(procedureContext: ProcedureContext)
+  abstract suspend fun run(procedureContext: ProcedureContext)
 
   abstract val loggerTimerLabel: String
 }

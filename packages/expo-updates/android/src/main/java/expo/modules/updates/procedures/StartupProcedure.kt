@@ -208,7 +208,7 @@ class StartupProcedure(
     }
   )
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
     initializeDatabaseHandler()

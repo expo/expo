@@ -2,7 +2,6 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -27,6 +26,9 @@ import expo.modules.updates.procedures.StartupProcedure
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.time.DurationUnit
@@ -51,6 +53,7 @@ class EnabledUpdatesController(
   )
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context).purgeLogEntries {
@@ -219,7 +222,7 @@ class EnabledUpdatesController(
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    AsyncTask.execute {
+    controllerScope.launch {
       try {
         val result = ManifestMetadata.getExtraParams(
           databaseHolder.database,
@@ -245,7 +248,7 @@ class EnabledUpdatesController(
   }
 
   override fun setExtraParam(key: String, value: String?, callback: IUpdatesController.ModuleCallback<Unit>) {
-    AsyncTask.execute {
+    controllerScope.launch {
       try {
         ManifestMetadata.setExtraParam(
           databaseHolder.database,
