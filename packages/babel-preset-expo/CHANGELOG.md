@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Remove absolute paths from server components output.
 - Add all missing dependencies for package resolution with NPM. ([#34628](https://github.com/expo/expo/pull/34628) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
