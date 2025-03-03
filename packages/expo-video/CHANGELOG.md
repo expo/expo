@@ -17,6 +17,7 @@
 - Fix safe area insets not updating for native controls on iOS. ([#32864](https://github.com/expo/expo/pull/32864) by [@behenate](https://github.com/behenate))
 - [iOS] Fix the Now Playing notification disappearing after the video is paused. ([#35273](https://github.com/expo/expo/pull/35273) by [@behenate](https://github.com/behenate))
 - [iOS] Fix a race condition in setting the targets for the Now Playing controls causing the controls to sometimes not work. ([#35274](https://github.com/expo/expo/pull/35274) by [@behenate](https://github.com/behenate))
+- [iOS] Fix disabling the Now Playing controls for multiple players at the same time causing the notification to break. ([#35275](https://github.com/expo/expo/pull/35275) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

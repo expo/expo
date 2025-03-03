@@ -23,6 +23,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private var skipForwardTarget: Any?
   private var skipBackwardTarget: Any?
   private var playbackPositionTarget: Any?
+  private var updateNowPlayingTask: Task<(), Never>?
 
   init() {
     let commandCenter = MPRemoteCommandCenter.shared()
@@ -61,6 +62,8 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     if player == mostRecentInteractionPlayer {
       return
     }
+    // Cancel existing update task, since the mostRecentInteractionPlayer will change
+    updateNowPlayingTask?.cancel()
 
     if let timeObserver {
       mostRecentInteractionPlayer?.removeTimeObserver(timeObserver)
@@ -99,7 +102,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     // Metadata explicitly specified by the user
     let userMetadata = videoPlayerItem?.videoSource.metadata
 
-    Task {
+    updateNowPlayingTask = Task {
       // Metadata fetched with the video
       let assetMetadata = try? await loadMetadata(for: currentItem)
 
