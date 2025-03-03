@@ -70,10 +70,14 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    // @ts-expect-error: `Blob.data.__collector` is react-native's proprietary property.
-    if (value.data?.__collector == null) {
-      // For react-native's BlobManager created Blob objects,
-      // we need to keep it as-is without breaking its functionality.
+    // @ts-expect-error: `Blob.data.blobId` is react-native's proprietary property.
+    if (value.data?.blobId != null) {
+      // For react-native created Blob objects,
+      // we need to keep its original form as-is without breaking functionality.
+      // However, we need to pass `name` for our file name handling.
+      // @ts-expect-error: Mutating the Blob object to add the `name` property.
+      value.name = blobFilename || 'blob';
+    } else {
       value = { type: value.type, name: blobFilename || 'blob', blob: value };
     }
   } else if (typeof value !== 'object') {
