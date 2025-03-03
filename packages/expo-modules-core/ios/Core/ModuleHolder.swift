@@ -48,8 +48,8 @@ public final class ModuleHolder {
   /**
    Merges all `constants` definitions into one dictionary.
    */
-  func getConstants() -> [String: Any?] {
-    return definition.getConstants()
+  func getLegacyConstants() -> [String: Any?] {
+    return definition.getLegacyConstants()
   }
 
   // MARK: Calling functions
