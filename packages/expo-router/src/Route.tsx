@@ -2,8 +2,8 @@
 
 import { createContext, useContext, type ComponentType, type PropsWithChildren } from 'react';
 
-import { getContextKey } from './matchers';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { getContextKey } from './matchers.mjs';
+import { sortRoutesWithInitial, sortRoutes } from './sortRoutes.mjs';
 import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };

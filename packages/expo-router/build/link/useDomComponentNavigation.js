@@ -1,11 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useDomComponentNavigation = exports.emitDomLinkEvent = exports.emitDomDismissAll = exports.emitDomGoBack = exports.emitDomDismiss = exports.emitDomSetParams = void 0;
-const global_1 = require("expo/dom/global");
-const react_1 = __importDefault(require("react"));
+import { addGlobalDomEventListener } from 'expo/dom/global';
+import React from 'react';
 const ROUTER_LINK_TYPE = '$$router_link';
 const ROUTER_DISMISS_ALL_TYPE = '$$router_dismissAll';
 const ROUTER_DISMISS_TYPE = '$$router_dismiss';
@@ -19,32 +13,27 @@ function emitDomEvent(type, data = {}) {
     }
     return false;
 }
-function emitDomSetParams(params = {}) {
+export function emitDomSetParams(params = {}) {
     return emitDomEvent(ROUTER_SET_PARAMS_TYPE, { params });
 }
-exports.emitDomSetParams = emitDomSetParams;
-function emitDomDismiss(count) {
+export function emitDomDismiss(count) {
     return emitDomEvent(ROUTER_DISMISS_TYPE, { count });
 }
-exports.emitDomDismiss = emitDomDismiss;
-function emitDomGoBack() {
+export function emitDomGoBack() {
     return emitDomEvent(ROUTER_BACK_TYPE);
 }
-exports.emitDomGoBack = emitDomGoBack;
-function emitDomDismissAll() {
+export function emitDomDismissAll() {
     return emitDomEvent(ROUTER_DISMISS_ALL_TYPE);
 }
-exports.emitDomDismissAll = emitDomDismissAll;
-function emitDomLinkEvent(href, options) {
+export function emitDomLinkEvent(href, options) {
     return emitDomEvent(ROUTER_LINK_TYPE, { href, options });
 }
-exports.emitDomLinkEvent = emitDomLinkEvent;
-function useDomComponentNavigation(store) {
-    react_1.default.useEffect(() => {
+export function useDomComponentNavigation(store) {
+    React.useEffect(() => {
         if (process.env.EXPO_OS === 'web') {
             return () => { };
         }
-        return (0, global_1.addGlobalDomEventListener)(({ type, data }) => {
+        return addGlobalDomEventListener(({ type, data }) => {
             switch (type) {
                 case ROUTER_LINK_TYPE:
                     store.linkTo(data.href, data.options);
@@ -65,5 +54,4 @@ function useDomComponentNavigation(store) {
         });
     }, [store]);
 }
-exports.useDomComponentNavigation = useDomComponentNavigation;
 //# sourceMappingURL=useDomComponentNavigation.js.map

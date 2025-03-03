@@ -1,5 +1,5 @@
 import type { RouteNode } from './Route';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDeepDynamicRouteName, matchDynamicName } from './matchers.mjs';
 
 export type Screen =
   | string
