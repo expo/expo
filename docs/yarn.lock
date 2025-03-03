@@ -3430,9 +3430,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vvago/vale@npm:^3.9.2":
-  version: 3.9.3
-  resolution: "@vvago/vale@npm:3.9.3"
+"@vvago/vale@npm:^3.9.6":
+  version: 3.9.6
+  resolution: "@vvago/vale@npm:3.9.6"
   dependencies:
     axios: "npm:^1.4.0"
     rimraf: "npm:^5.0.0"
@@ -3440,7 +3440,7 @@ __metadata:
     unzipper: "npm:^0.10.14"
   bin:
     vale: bin/vale
-  checksum: 10c0/0d05173f93e7a23065ce5bb7381b2fccb4c71eb18a82b76233eff7c06df7e31a95f3393e8e42073c3eaf7798a6a7e67d9e8f760dc61cb6ad61c2f8634fc06a22
+  checksum: 10c0/2483f9b472c20e87c376f8b3b6c17b313cbaf223519bcc5120d96b54b3d5e91c1a44786f1dba637bfdce9a6e36604fdcc7c0e1a8baeeeb5ce4930cc62a2a9160
   languageName: node
   linkType: hard
 
@@ -5982,7 +5982,7 @@ __metadata:
     "@types/prismjs": "npm:^1.26.5"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
-    "@vvago/vale": "npm:^3.9.2"
+    "@vvago/vale": "npm:^3.9.6"
     acorn: "npm:^8.14.0"
     autoprefixer: "npm:^10.4.20"
     axios: "npm:^1.7.9"
