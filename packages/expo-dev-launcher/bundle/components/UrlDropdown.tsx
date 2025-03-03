@@ -44,7 +44,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
     },
   };
 
-  const ref = React.useRef<NativeTextInput>();
+  const ref = React.useRef<NativeTextInput>(null);
   const [open, setOpen] = React.useState(false);
   const [isValidUrl, setIsValidUrl] = React.useState(validateUrl(inputValue));
 
