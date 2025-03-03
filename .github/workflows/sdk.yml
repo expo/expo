@@ -57,15 +57,11 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧐 Check all packages
-        if: steps.filter.outputs.module-scripts == 'true'
-        run: |
-          echo "Checking all packages"
-          bin/expotools check-packages --all
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] || 
+            ${{ steps.filter.outputs.module-scripts }} == "true"; then
             # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all
           else
