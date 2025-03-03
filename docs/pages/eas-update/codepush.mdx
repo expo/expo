@@ -60,6 +60,69 @@ After successfully submitting your app, users will be able to download and use t
 
 </Step>
 
+## Common questions
+
+<Collapsible summary="How do I release mandatory/critical updates with EAS Update?">
+
+CodePush CLI has a `--mandatory` flag that allows you to release mandatory updates. You can build this functionality with EAS Update but there is no specific flag for it.
+
+[Learn more about mandatory/critical updates](/eas-update/download-updates/#criticalmandatory-updates).
+
+</Collapsible>
+
+<Collapsible summary="How do I include a message in an update?">
+
+CodePush CLI has a `--description` flag that allows you to include a message in an update. You can build this functionality with EAS Update using the `extra` field in your app config.
+
+Refer the `--message` flag in this example: [expo/UpdatesAPIDemo](https://github.com/expo/UpdatesAPIDemo)
+
+</Collapsible>
+
+<Collapsible summary="How do I switch the 'deployment' that is being used at runtime, similar to the sync() function in CodePush?">
+
+This is possible using `Updates.setUpdateURLAndRequestHeadersOverride()`. Learn more in the [Override update configuration at runtime](/eas-update/override/) guide.
+
+</Collapsible>
+
+<Collapsible summary="How do I handle different environments (such as staging and production) with EAS Update?">
+
+With EAS Update, you can use channels and branches to manage different environments and rollouts. [Learn more](/eas-update/eas-cli/).
+
+</Collapsible>
+
+<Collapsible summary="How do I roll back updates with EAS Update?">
+
+You can roll back updates using `eas update:rollback`. Learn more in the [Rollback to a previous update](/eas-update/rollbacks/) guide.
+
+</Collapsible>
+
+<Collapsible summary="How do I gradually roll out updates with EAS Update?">
+
+EAS Update supports various strategies for gradually rolling out updates, so you can pick which approach best fits your needs. [Learn more](/eas-update/rollouts/).
+
+</Collapsible>
+
+<Collapsible summary="How can I have direct control over when an update is downloaded and applied?">
+
+Learn more about different strategies for downloading and applying updates in the [Downloading updates](/eas-update/download-updates/) guide, such as checking for updates while the app is running or even when backgrounded with `Updates.checkForUpdateAsync()`.
+
+</Collapsible>
+
+<Collapsible summary="Does EAS Update support end-to-end code signing?">
+
+Yes, EAS Update supports end-to-end code signing. It is available for EAS Production and Enterprise plan subscribers. Learn more in the [Code signing](/eas-update/code-signing/) guide.
+
+</Collapsible>
+
+<Collapsible summary="What else should I know about?">
+
+- Expo Orbit: The macOS, Windows, and Linux desktop launcher app. You can [launch updates](/review/with-orbit/) directly from the website with it in one click, among other features.
+- You can monitor the adoption of updates from the EAS website. [Learn more](/eas-update/download-updates/#monitoring-adoption-of-updates). You can also roll out and roll back updates from the website.
+- You can use EAS Update to achieve a web-like preview workflow. [Learn more](/eas-update/preview).
+- Each update and build created with EAS is associated with a [fingerprint](/versions/latest/sdk/fingerprint/). You can diff these fingerprints through the website UI or with `eas fingerprint:compare` to see what changed in the native runtime of your app between your builds and updates, to understand build/update compatibility, and guide your decision about when to bump the [`runtimeVersion`](/eas-update/runtime-versions/).
+
+</Collapsible>
+
 ## Conceptual differences between CodePush and EAS Update
 
 CodePush and EAS Update are both services that allow you to send hotfixes to the JavaScript code of your app, but they take slightly different approaches, and so you may need to adapt your release process when moving to EAS Update.
