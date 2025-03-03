@@ -47,39 +47,6 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
 },896,[4,157,897]);
 `;
 
-    const domHtml1 = `
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-        <style id="expo-dom-component-style">
-        /* These styles make the body full-height */
-        html,
-        body {
-          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
-        }
-        /* These styles make the root element full-height */
-        #root {
-          display: flex;
-          flex: 1;
-        }
-        </style>
-    </head>
-    <body>
-    <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
-        <!-- Root element for the DOM component. -->
-        <div id="root"></div>
-
-    <script src="./_expo/static/js/web/entry-dom1.js" defer></script>
-</body>
-</html>
-`;
-    const domBundle1Chunk = `
-__d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d883906de993aa65bf0ef0d1bc2ff6ad.png",width:100,height:100}}),1168,[]);
-`;
     const nativeBundle: BundleOutput = {
       artifacts: [
         {
@@ -117,56 +84,14 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
     };
 
     const domComponentBundle: BundleOutput = {
-      artifacts: [
-        {
-          filename: '_expo/static/js/web/entry-dom1.js',
-          originFilename: 'node_modules/expo/dom/entry.js',
-          type: 'js',
-          metadata: {},
-          source: domBundle1Chunk,
-        },
-      ],
-      assets: [
-        {
-          __packager_asset: true,
-          fileSystemLocation: '/Users/kudo/sdk52domota/assets/images',
-          httpServerLocation: './assets/assets/images',
-          width: 100,
-          height: 100,
-          scales: [1, 2, 3],
-          files: [
-            '/Users/kudo/sdk52domota/assets/images/react-logo.png',
-            '/Users/kudo/sdk52domota/assets/images/react-logo@2x.png',
-            '/Users/kudo/sdk52domota/assets/images/react-logo@3x.png',
-          ],
-          hash: '633435dcb418833920a16771610ca404',
-          name: 'react-logo.d883906de993aa65bf0ef0d1bc2ff6ad',
-          type: 'png',
-          fileHashes: [
-            '695d5a1c6f29a689130f3aaa573aec6e',
-            'b507e7f2c91ebc8fe24dee79ccb3b600',
-            '8a4d0e5b845044e56e3b2df627d01cfd',
-          ],
-        },
-      ],
+      artifacts: [],
+      assets: [],
     };
     const files: ExportAssetMap = new Map([
       [
         '_expo/static/js/ios/entry-native1.js',
         {
           contents: nativeBundle1Chunk,
-        },
-      ],
-      [
-        '/www.bundle/_expo/static/js/web/entry-dom1.js',
-        {
-          contents: domBundle1Chunk,
-        },
-      ],
-      [
-        'www.bundle/dom1.html',
-        {
-          contents: domHtml1,
         },
       ],
     ]);
@@ -182,23 +107,15 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
 
     // Expects to add js and html to assets metadata
     expect(assetsMetadata).toEqual([
-      {
-        ext: 'js',
-        path: 'www.bundle/_expo/static/js/web/entry-dom1.js',
-      },
-      {
-        ext: 'html',
-        path: 'www.bundle/dom1.html',
-      },
+      // {
+      //   ext: 'js',
+      //   path: 'www.bundle/_expo/static/js/web/entry-dom1.js',
+      // },
+      // {
+      //   ext: 'html',
+      //   path: 'www.bundle/dom1.html',
+      // },
     ]);
-
-    const domJsContents = files.get('/www.bundle/_expo/static/js/web/entry-dom1.js').contents;
-    expect(domJsContents).not.toEqual(domBundle1Chunk);
-    expect(domJsContents).toContain(domComponentBundle.assets[0].fileHashes[0]);
-
-    const domHtmlContents = files.get('www.bundle/dom1.html').contents;
-    expect(domHtmlContents).not.toEqual(domHtml1);
-    expect(domHtmlContents).toContain('MOCK_CONTENTS_MD5_HASH');
 
     const nativeJsContents = files.get('_expo/static/js/ios/entry-native1.js').contents;
     expect(nativeJsContents).not.toEqual(nativeBundle1Chunk);

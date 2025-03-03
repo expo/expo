@@ -215,6 +215,7 @@ export async function exportAppAsync(
                   includeSourceMaps: sourceMaps,
                   exp,
                   files,
+                  useMd5Filename: true,
                 });
 
               // Merge the assets from the DOM component into the output assets.

@@ -28,6 +28,7 @@ export async function exportDomComponentAsync({
   includeSourceMaps,
   exp,
   files,
+  useMd5Filename = false,
 }: {
   filePath: string;
   projectRoot: string;
@@ -37,6 +38,7 @@ export async function exportDomComponentAsync({
   includeSourceMaps: boolean;
   exp: ExpoConfig;
   files: ExportAssetMap;
+  useMd5Filename?: boolean;
 }): Promise<{
   bundle: BundleOutput;
   htmlOutputName: string;
@@ -64,9 +66,17 @@ export async function exportDomComponentAsync({
     bytecode: false,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: './',
+    useMd5Filename,
     // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
     minify: true,
   });
+
+  if (useMd5Filename) {
+    for (const artifact of bundle.artifacts) {
+      const md5 = crypto.createHash('md5').update(artifact.source).digest('hex');
+      artifact.filename = `${md5}.${artifact.type}`;
+    }
+  }
 
   const html = await serializeHtmlWithAssets({
     isExporting: true,
@@ -117,39 +127,11 @@ export function updateDomComponentAssetsForMD5Naming({
 }): PlatformMetadata['assets'] {
   const assetsMetadata: PlatformMetadata['assets'] = [];
 
+  // [1] Add all artifacts to the metadata
   for (const artifact of domComponentBundle.artifacts) {
-    if (artifact.type !== 'js') {
-      continue;
-    }
-    const artifactAssetName = `/${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`;
-    let source = artifact.source;
-
-    // [0] Updates asset paths in the DOM component JS bundle (which is a web bundle)
-    for (const asset of domComponentBundle.assets) {
-      const prefix = asset.httpServerLocation.startsWith('./')
-        ? asset.httpServerLocation.slice(2)
-        : asset.httpServerLocation;
-      const uri = `${prefix}/${asset.name}.${asset.type}`;
-      const regexp = new RegExp(`(uri:")(${uri})(")`, 'g');
-      const index = asset.scales.findIndex((s) => s === 1) ?? 0; // DOM components (web) uses 1x assets
-      const md5 = asset.fileHashes[index];
-      source = source.replace(regexp, `$1${md5}.${asset.type}$3`);
-
-      const domJsAssetEntity = files.get(artifactAssetName);
-      assert(domJsAssetEntity);
-      domJsAssetEntity.contents = source;
-    }
-
-    // [1] Updates JS artifacts in HTML
-    const md5 = crypto.createHash('md5').update(source).digest('hex');
-    const htmlAssetEntity = files.get(htmlOutputName);
-    assert(htmlAssetEntity);
-    const regexp = new RegExp(`(<script src=")(.*${artifact.filename})(" defer></script>)`, 'g');
-    htmlAssetEntity.contents = htmlAssetEntity.contents.toString().replace(regexp, `$1${md5}.js$3`);
-
     assetsMetadata.push({
-      path: artifactAssetName.slice(1),
-      ext: 'js',
+      path: `${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`,
+      ext: artifact.type,
     });
   }
 
