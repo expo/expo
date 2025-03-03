@@ -1,17 +1,16 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = void 0;
 /**
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
-const node_url_1 = __importDefault(require("node:url"));
+const node_path_1 = require("node:path");
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
     const isReactServer = api.caller(common_1.getIsReactServer);
+    const isProd = api.caller(common_1.getIsProd);
+    const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
         name: 'expo-client-references',
         visitor: {
@@ -32,7 +31,11 @@ function reactClientReferencesPlugin(api) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
-                const outputKey = node_url_1.default.pathToFileURL(filePath).href;
+                const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+                const outputKey = './' + (0, node_path_1.relative)(projectRoot, filePath);
+                // const outputKey = isProd
+                //   ? './' + getRelativePath(projectRoot, filePath)
+                //   : url.pathToFileURL(filePath).href;
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports

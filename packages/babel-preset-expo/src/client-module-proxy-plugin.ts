@@ -2,12 +2,15 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template, types } from '@babel/core';
+import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getIsReactServer } from './common';
+import { getPossibleProjectRoot, getIsProd, getIsReactServer } from './common';
 
 export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
   const isReactServer = api.caller(getIsReactServer);
+  const isProd = api.caller(getIsProd);
+  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-client-references',
@@ -41,7 +44,12 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
 
-        const outputKey = url.pathToFileURL(filePath).href;
+        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+
+        const outputKey = './' + getRelativePath(projectRoot, filePath);
+        // const outputKey = isProd
+        //   ? './' + getRelativePath(projectRoot, filePath)
+        //   : url.pathToFileURL(filePath).href;
 
         function iterateExports(callback: (exportName: string) => void, type: string) {
           const exportNames = new Set<string>();

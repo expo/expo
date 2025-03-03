@@ -351,9 +351,15 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
+      const filePath = path.join(
+        projectRoot,
+        file.startsWith('file://') ? fileURLToFilePath(file) : file
+      );
+
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
+
+        const relativeFilePath = toPosixPath(path.relative(serverRoot, filePath));
 
         assert(
           context.ssrManifest.has(relativeFilePath),
@@ -363,7 +369,9 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
+          id: String(
+            createModuleId(filePath, { platform: context.platform, environment: 'client' })
+          ),
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -398,8 +406,6 @@ export function createServerComponentsMiddleware(
       searchParams.set('xRSC', '1');
 
       clientReferenceUrl.search = searchParams.toString();
-
-      const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
       const relativeFilePath = path.relative(serverRoot, filePath);
 
@@ -532,9 +538,15 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
-            hot: true,
-          });
+          console.log('loadServerModuleRsc:', serverRoot, options.mainModuleName);
+          return ssrLoadModule(
+            path.join(serverRoot, options.mainModuleName),
+
+            options,
+            {
+              hot: true,
+            }
+          );
         },
       }
     );

@@ -21,7 +21,7 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import url, { pathToFileURL } from 'node:url';
+import url from 'node:url';
 
 import { getPossibleProjectRoot } from './common';
 
@@ -263,7 +263,7 @@ export function reactServerActionsPlugin(
 
       getActionModuleId = once(() => {
         // Create relative file path hash.
-        return pathToFileURL(getRelativePath(projectRoot, file.opts.filename!)).href;
+        return './' + getRelativePath(projectRoot, file.opts.filename!);
       });
 
       const defineBoundArgsWrapperHelper = once(() => {
