@@ -241,7 +241,10 @@ export async function resolvePostcssConfig(
     const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
     if (fs.existsSync(configPath)) {
       debug('load file:', configPath);
-      return await tryRequireThenImport(configPath);
+      const config = await tryRequireThenImport<
+        PostCSSInputConfig | Record<'default', PostCSSInputConfig>
+      >(configPath);
+      return 'default' in config ? config.default : config;
     }
   }
 

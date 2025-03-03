@@ -16,6 +16,7 @@
 ### 🐛 Bug fixes
 
 - Prevent bumping specificity of hot-reloaded CSS style tags. ([#35123](https://github.com/expo/expo/pull/35123) by [@kitten](https://github.com/kitten))
+- Unwrap PostCSS when imported ESM through require on Node 22/23.
 
 ### 💡 Others
 
