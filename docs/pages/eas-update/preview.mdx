@@ -46,7 +46,7 @@ Alternatively, you can build a mechanism into your preview build that allows use
 
 ## Previewing updates in production builds
 
-Before deploying an update to all end-users, some teams will want to first roll it out in production to a small set of internal users. One way this can be accomplished is by [overriding the update channel](https://docs.expo.dev/eas-update/override/) at runtime for a known subset of users. **Be sure to note the [security considerations](/eas-update/override/#security-considerations) before proceeding down this path.** Additionally, it is not recommended to use this approach for non-internal users, because it makes it possible to get the app into a state where it must be uninstalled and reinstalled.
+Before deploying an update to all end-users, some teams will want to first roll it out in production to a small set of internal users. One way this can be accomplished is by [overriding the update channel](/eas-update/override/) at runtime for a known subset of users. **Be sure to note the [security considerations](/eas-update/override/#security-considerations) before proceeding down this path.** Additionally, it is not recommended to use this approach for non-internal users because it makes it possible to get the app into a state where it must be uninstalled and reinstalled.
 
 Another approach is to use a deployment pattern like the ["Persistent Staging Flow"](/eas-update/deployment-patterns/#persistent-staging-flow), which involves always having a version of your production app that points to a staging channel.
 
