@@ -7,6 +7,8 @@ import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -17,16 +19,14 @@ import java.util.*
 class UpdatesLoggingTest {
 
   @Before
-  fun setup() {
-    val asyncTestUtil = AsyncTestUtil()
+  fun setup() = runTest {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, instrumentationContext)
 
-    asyncTestUtil.asyncMethodRunning = true
-    persistentLog.clearEntries {
-      asyncTestUtil.asyncMethodRunning = false
+    val job = launch {
+      persistentLog.clearEntries {}
     }
-    asyncTestUtil.waitForAsyncMethodToFinish("clearEntries timed out", 1000)
+    job.join()
   }
 
   @Test
@@ -148,7 +148,7 @@ class UpdatesLoggingTest {
   }
 
   @Test
-  fun testNativeMethods() {
+  fun testNativeMethods() = runTest {
     val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
