@@ -39,10 +39,7 @@ jobs:
         run: yarn install --ignore-scripts --frozen-lockfile
         working-directory: tools
       - name: 📦 Publish canaries
-        run: |
-          ./bin/expotools publish-packages --canary --dry
-          echo $?
-          echo status
+        run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
         env:
           FORCE_COLOR: '2'
       - name: 🔔 Notify on Slack
