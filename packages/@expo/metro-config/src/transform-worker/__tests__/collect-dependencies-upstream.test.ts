@@ -962,6 +962,70 @@ describe('import() prefetching', () => {
     );
   });
 
+  it('keepRequireNames: false is ignored in optional dependencies', () => {
+    const ast = astFromCode(`
+      try {
+        require("some/async/module");
+      } catch {}
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        try { 
+          require(_dependencyMap[0], "some/async/module"); 
+        } catch {}
+      `)
+    );
+  });
+
+  it('keepRequireNames: false is ignored in optional dependencies with dynamic import', () => {
+    const ast = astFromCode(`
+      async function foo() {
+        try {
+          await import("some/async/module");
+        } catch {}
+      }
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        async function foo() { 
+          try { 
+            await require(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths, "some/async/module"); 
+          } catch {} 
+        }
+      `)
+    );
+  });
+
+  it('keepRequireNames: false is ignored in optional dependencies with require.unstable_importMaybeSync', () => {
+    const ast = astFromCode(`
+      try {
+        require.unstable_importMaybeSync("some/async/module");
+      } catch {}
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+       try { 
+        require(_dependencyMap[1]).unstable_importMaybeSync(_dependencyMap[0], _dependencyMap.paths, "some/async/module");
+       } catch {}
+      `)
+    );
+  });
+
   it('distinguishes between import and prefetch dependncies on the same module', () => {
     const ast = astFromCode(`
       __prefetchImport("some/async/module");

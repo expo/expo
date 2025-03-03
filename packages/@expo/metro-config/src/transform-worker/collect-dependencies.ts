@@ -690,20 +690,19 @@ const DefaultDependencyTransformer: DependencyTransformer = {
   ): void {
     const moduleIDExpression = createModuleIDExpression(dependency, state);
     path.node.arguments = [moduleIDExpression];
-    if (state.keepRequireNames) {
+    if (state.keepRequireNames || dependency.isOptional) {
       path.node.arguments.push(t.stringLiteral(dependency.name));
     }
   },
 
   transformImportCall(path: NodePath<any>, dependency: InternalDependency, state: State): void {
-    const makeNode = state.keepRequireNames
-      ? makeAsyncRequireTemplateWithName
-      : makeAsyncRequireTemplate;
+    const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+    const makeNode = keepRequireNames ? makeAsyncRequireTemplateWithName : makeAsyncRequireTemplate;
     const opts = {
       ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       MODULE_ID: createModuleIDExpression(dependency, state),
       DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-      ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+      ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
     };
     path.replaceWith(makeNode(opts));
   },
@@ -713,27 +712,31 @@ const DefaultDependencyTransformer: DependencyTransformer = {
     dependency: InternalDependency,
     state: State
   ): void {
-    const makeNode = state.keepRequireNames
+    const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+
+    const makeNode = keepRequireNames
       ? makeAsyncImportMaybeSyncTemplateWithName
       : makeAsyncImportMaybeSyncTemplate;
     const opts = {
       ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       MODULE_ID: createModuleIDExpression(dependency, state),
       DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-      ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+      ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
     };
     path.replaceWith(makeNode(opts));
   },
 
   transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void {
-    const makeNode = state.keepRequireNames
+    const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+
+    const makeNode = keepRequireNames
       ? makeAsyncPrefetchTemplateWithName
       : makeAsyncPrefetchTemplate;
     const opts = {
       ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       MODULE_ID: createModuleIDExpression(dependency, state),
       DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-      ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+      ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
     };
     path.replaceWith(makeNode(opts));
   },
