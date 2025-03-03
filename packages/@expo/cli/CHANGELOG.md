@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure `UsbmuxClient` can load binary plist pair record data from Apple devices. ([#35262](https://github.com/expo/expo/pull/35262) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.22.18 — 2025-02-20
