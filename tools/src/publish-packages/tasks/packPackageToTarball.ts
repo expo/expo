@@ -32,6 +32,9 @@ export const packPackageToTarball = new Task<TaskArgs>(
         } catch (error) {
           step.fail();
           logger.error(error.stderr);
+          if (process.env.CI) {
+            throw error;
+          }
           return Task.STOP;
         }
       },
