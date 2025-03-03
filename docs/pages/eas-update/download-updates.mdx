@@ -47,6 +47,40 @@ You can use [expo-background-task](https://docs.expo.dev/versions/latest/sdk/bac
 
 To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.downloadAsync()` methods as you would in the foreground, but execute them inside of a background task.
 
+<Collapsible summary="Example: Check for updates in the background">
+
+To ensure the background task is registered when the application starts, import and invoke the `setupBackgroundUpdates` function within the top-level component.
+
+```ts
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundTask from 'expo-background-task';
+import * as Updates from 'expo-updates';
+
+export const setupBackgroundUpdates = async () => {
+  const BACKGROUND_TASK_NAME = 'task-run-expo-update';
+
+  // Define the background task - this must be done each time the app starts
+  TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
+    const update = await Updates.checkForUpdateAsync();
+    if (update.isAvailable) {
+      await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
+    }
+    return Promise.resolve();
+  });
+
+  // Register the task if it was not previously registered
+  const isRegistered = TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
+  if (!isRegistered) {
+    await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
+      minimumInterval: 60 * 24, // 24 hours
+    });
+  }
+};
+```
+
+</Collapsible>
+
 <Collapsible summary="Should I also apply the update with Updates.reloadAsync() when the app is backgrounded?">
 
 This can be a great way to ensure that the user has the latest version of the app when they open it again. However, it is important to note that, unless you persist the state that the app was in at the time it was backgrounded and restore that state, the user will experience a cold boot when they open the app again. One way to mitigate this is to only do a reload in the background if the app has been inactive for a certain period of time, after which a user is unlikely to expect the app to restore its previous state.
