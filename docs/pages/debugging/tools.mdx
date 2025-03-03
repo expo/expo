@@ -46,7 +46,7 @@ The Developer menu provides the following options:
 - **Go Home**: To leave your app and navigate back to the dev client's or Expo Go app's Home screen.
 - **Toggle performance monitor**: To view the performance information about your app.
 - **Toggle element inspector**: To enable or disable the element inspector overlay.
-- **Open JS debugger**: To open Chrome DevTools which provides access to Console, Source, and Network tabs for apps using Hermes. For more information, see the [Debugging with Chrome DevTools](#debugging-with-chrome-devtools) section.
+- **Open JS debugger**: To open React Native DevTools which provides access to Console, Sources, Network, Memory, Components, and Profiler, tabs for apps using Hermes. For more information, see the [Debugging with React Native DevTools](#debugging-with-react-native-devtools) section.
 - **Fast Refresh**: To toggle automatic refreshing of the JS bundle whenever you make changes to files in your project using a text editor.
 
 Now, let's explore some of these options in details.
@@ -77,15 +77,17 @@ This overlay has capabilities to:
 - Network: Show network details
 - Touchables: Highlight touchable elements
 
-## Debugging with Chrome DevTools
+## Debugging with React Native DevTools
 
-As with websites, you can use Chrome DevTools to gain insights into the JavaScript code of your app. With this tool, you can access the [Console](#interacting-with-the-console), [Source](#pausing-on-breakpoints), and [Network](#inspecting-network-requests) tab when using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
+> **info** **Starting from React Native 0.76**, React Native DevTools has replaced Chrome DevTools.
 
-You can use the Chrome DevTools on any app using Hermes. To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started. Once you have opened the Chrome DevTools, it will appear as below:
+**React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests), and [Memory](#insepcting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components), and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
+
+You can use the React Native DevTools on any app using Hermes. **To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started**. Once you have opened the React native DevTools, it will appear as below:
 
 <ContentSpotlight
-  alt="The Chrome DevTools, showing one of the files under the source tab."
-  src="/static/images/debugging/inspector-source-tab.png"
+  alt="The React Native DevTools showing one of the files under the Sources tab."
+  src="/static/images/debugging/inspector-sources-tab.png"
 />
 
 ### Pausing on breakpoints
@@ -95,90 +97,87 @@ You can pause your app on specific parts of your code. To do this, set the break
 Once your app is executing code that has a breakpoint, it will entirely pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console](#interacting-with-the-console) tab as part of your app.
 
 <ContentSpotlight
-  alt="The Chrome DevTools, showing one of the files under the source tab."
+  alt="The React Native DevTools showing one of the files under the Sources tab."
   src="/static/images/debugging/inspector-breakpoint.png"
 />
 
-> **warning** Breakpoints set through the Chrome DevTools depend heavily on source maps. Unfortunately, these source maps are not always 100% accurate. In some cases, you might have to use a `debugger` statement instead of a breakpoint.
-
 ### Pausing on exceptions
 
-If your app throws unexpected errors, it can be hard to find the source of the error. You can use Chrome DevTools to pause your app and inspect the stack trace and variables the moment it throws an error.
+If your app throws unexpected errors, it can be hard to find the source of the error. You can use React Native DevTools to pause your app and inspect the stack trace and variables the moment it throws an error.
 
 <ContentSpotlight
-  alt="Enable Pause on exceptions in the right panel of the sources tab"
+  alt="Enable Pause on exceptions in the right panel of the Sources tab."
   src="/static/images/debugging/inspector-pause-exception.png"
-  className="max-w-[320px]"
+  className="max-w-[360px]"
 />
 
 > **info** Some errors might be caught by other components in your app, such as Expo Router. In these cases, you can turn on **Pause on caught exceptions**. It will enable you to inspect any thrown error, even when handled properly.
 
 ### Interacting with the console
 
-The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it were part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Source](#pausing-on-breakpoints) tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
+The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it were part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Sources](#pausing-on-breakpoints) tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
 
 <ContentSpotlight
-  alt="Use the console with breakpoints to inspect variables and invoke code through your app"
+  alt="Use the console with breakpoints to inspect variables and invoke code through your app."
   src="/static/images/debugging/inspector-breakpoint-console.png"
 />
 
 ### Inspecting network requests
 
-The **Network tab** gives you insights into the network requests made by your app. You can inspect each request and response by clicking on them. This includes `fetch` requests, external loaded media, and in some cases, even requests made by native modules.
+The **Network** tab gives you insights into the network requests made by your app. You can inspect each request and response by clicking on them. This includes `fetch` requests, external loaded media, and in some cases, even requests made by native modules.
 
 <ContentSpotlight
-  alt="Gain insights in the network requests from your app"
+  alt="Gain insights in the network requests from your app."
   src="/static/images/debugging/inspector-network-post.png"
+  className="max-w-[720px]"
 />
 
 > **info** See the [Inspecting network traffic](#inspecting-network-traffic) for alternative ways to inspect network requests.
 
-## Profiling JavaScript performance
+### Inspecting memory
+
+The **Memory** tab allows you to inspect the memory usage of your app. You can take a heap snapshot and view the memory usage of your app's JavaScript code over time.
+
+<ContentSpotlight
+  alt="Inspect memory usage of your app's JavaScript code."
+  src="/static/images/debugging/inspector-memory.png"
+  className="max-w-[720px]"
+/>
+
+### Inspecting components
+
+The **Components** tab allows you to inspect the React components in your app. You can view the props, state, and instance properties of each component by hovering that component in React Native DevTools. This is a great way to debug your app's UI and understand how your components are structured.
+
+<ContentSpotlight
+  alt="Inspect  a component in React Native DevTools."
+  src="/static/images/debugging/inspector-components.png"
+  className="max-w-[720px]"
+/>
+
+### Profiling JavaScript performance
 
 > **warning** Profiles are not yet symbolicated with sourcemaps, and [can only be used in debug builds](https://github.com/facebook/hermes/issues/760). These limitations will be addressed in upcoming releases.
 
-You can enable the **JavaScript Profiler tab** within Chrome DevTools to record and analyze the performance of your app JavaScript. The **Performance tab** is not currently supported. To profile the native runtime, use the tools included in Android Studio or Xcode.
-
-### Enable the JavaScript Profiler within Chrome DevTools
-
-- Press <kbd>⌘ cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (Mac) or <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (Windows, Linux) to open the command palette.
-- Type **javascript** and select **Show JavaScript Profiler**.
-
-<Collapsible summary="Screenshot of the Chrome DevTools command palette">
+The **Profiler** tab allows you to record and analyze the performance of your app's JavaScript. You can start recording, interact with your app, and stop recording to analyze the profile.
 
 <ContentSpotlight
-  alt="Chrome DevTools showing the command palette."
-  src="/static/images/debugging/profiling-enable.png"
+  alt="React DevTools Profiler tab open to show insights on app's JavaScript performance."
+  src="/static/images/debugging/inspector-profiler.png"
+  className="max-w-[720px]"
 />
 
-</Collapsible>
-
-### Record and read profiles from the JavaScript Profiler tab
-
-- Press **Start**.
-- Interact with your app.
-- Press **Stop** to finish recording.
-- Analyze the profile.
-
-<Collapsible summary="Screenshot of the Chrome DevTools with the JavaScript Profiler tab open">
-
-<ContentSpotlight
-  alt="JavaScript Profiler tab opened in the Chrome DevTools."
-  src="/static/images/debugging/profiling-start.png"
-/>
-
-</Collapsible>
+> **info** To profile the native runtime, use the tools included in Android Studio or Xcode.
 
 ## Debugging with VS Code
 
-> **warning** VS Code debugger integration is experimental. For the most stable debugging experience, [use the Chrome DevTools built into Expo CLI](#debugging-with-chrome-devtools).
+> **warning** VS Code debugger integration is experimental. For the most stable debugging experience, [use the React Native DevTools](#debugging-with-react-native-devtools).
 
-VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the Chrome DevTools &mdash; the inspector protocol.
+VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the React Native DevTools &mdash; the inspector protocol.
 
 You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-expo#readme) VS Code extension. This debugger allows you to set breakpoints, inspect variables, and execute code through the debug console.
 
 <ContentSpotlight
-  alt="Debug your code while you write it"
+  alt="Debug your code while you write it."
   src="/static/images/debugging/vscode-expo.png"
 />
 
@@ -207,13 +206,13 @@ Pressing the <kbd>shift</kbd> + <kbd>m</kbd> shortcut will also show installed [
 
 > **warning** The React Native Debugger requires Remote JS debugging, which has been deprecated since [React Native 0.73](https://reactnative.dev/docs/other-debugging-methods#remote-javascript-debugging-deprecated).
 
-The React Native Debugger is a standalone app that wraps the React DevTools, Redux DevTools, and the Chrome DevTools. Unfortunately, it requires the [deprecated Remote JS debugging workflow](https://github.com/jhen0409/react-native-debugger/discussions/774) and is incompatible with Hermes.
+The React Native Debugger is a standalone app that wraps the React DevTools, Redux DevTools, and the React Native DevTools. Unfortunately, it requires the [deprecated Remote JS debugging workflow](https://github.com/jhen0409/react-native-debugger/discussions/774) and is incompatible with Hermes.
 
 If you are using Expo **SDK 50** or **above**, you can use the [Expo dev tools plugins](/debugging/devtools-plugins) equivalents to the React Native Debugger:
 
 - [React DevTools](#debugging-with-react-devtools)
 - [Redux DevTools](/debugging/devtools-plugins/#redux)
-- [Chrome DevTools](#debugging-with-chrome-devtools)
+- [React Native DevTools](#debugging-with-react-native-devtools)
 
 If you are using Expo SDK 49 or below, you can use the React Native Debugger. This section provides quick get started instructions. For in-depth information, check its [documentation](https://github.com/jhen0409/react-native-debugger#documentation).
 
