@@ -6,9 +6,7 @@ function useChildren(inputChildren) {
         React.Children.forEach(inputChildren, (child) => {
             if (child == null || typeof child === 'boolean') {
             }
-            else if (typeof child === 'string' ||
-                typeof child === 'number' ||
-                typeof child === 'bigint') {
+            else if (typeof child === 'string' || typeof child === 'number') {
                 // Wrap text in a Text component.
                 let message = `Invalid raw text as a child of View: "${child}"${child === '' ? ` [empty string]` : ''}.`;
                 message += ' Wrap the text contents with a Text element or remove it.';
