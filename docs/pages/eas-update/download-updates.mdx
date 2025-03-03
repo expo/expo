@@ -17,7 +17,7 @@ This behavior is safe because it doesn't interfere with app startup to wait for 
 
 <Collapsible summary="What if I want to always block app startup until the latest update is downloaded?">
 
-We recommend against this strategy because the resulting user experince is extremely poor. Typically when a user is stuck waiting on a splash screen when booting an app, they will close the app and try again (and so downloading the update won't complete), or give up and use another app. When the users' device is connected to a slow network, even when there is no update they may have to wait several seconds or more to load the app. If ensuring that your users always have the latest version of your app is critical, you may want to explore one of the other strategies explained here.
+We recommend against this strategy because the resulting user experience is extremely poor. Typically when a user is stuck waiting on a splash screen when booting an app, they will close the app and try again (and so downloading the update won't complete), or give up and use another app. When the users' device is connected to a slow network, even when there is no update, they may have to wait several seconds or more to load the app. If ensuring that your users always have the latest version of your app is critical, you may want to explore one of the other strategies explained here.
 
 </Collapsible>
 
@@ -29,9 +29,9 @@ You can disable the default behavior by setting the [`checkAutomatically`](/vers
 
 ## Checking for updates while the app is running
 
-You can use `Updates.checkForUpdateAsync()` to check for updates while the app is running. This will return a promise that resolves to a [`UpdateCheckResult` object](/versions/latest/sdk/updates/#updatecheckresult), with `isAvailable` set to `true` if an update is available, and information about the update in the [`manifest`](https://docs.expo.dev/versions/latest/sdk/manifests/#expoupdatesmanifest) property.
+You can use `Updates.checkForUpdateAsync()` to check for updates while the app is running. This will return a promise that resolves to a [`UpdateCheckResult` object](/versions/latest/sdk/updates/#updatecheckresult), with `isAvailable` set to `true` if an update is available, and information about the update in the [`manifest`](/versions/latest/sdk/manifests/#expoupdatesmanifest) property.
 
-If an update is available, you can use the `Updates.downloadAsync()` method to download the update. This will return a promise that resolves when the download is complete. Finally, you can use the `Updates.reloadAsync()` method to reload the app with the new version. The `useUpdates()` hook can also be used to monitor the state of the `expo-updates` package from a React component.
+If an update is available, you can use the `Updates.downloadAsync()` method to download the update. This will return a promise that resolves when the download is complete. Finally, you can use the `Updates.reloadAsync()` method to reload the app with the new version. The `useUpdates()` hook can also be used to monitor the state of the `expo-updates` library from a React component.
 
 <Collapsible summary="What are common patterns for checking for updates while the app is running?">
 
@@ -42,7 +42,7 @@ If an update is available, you can use the `Updates.downloadAsync()` method to d
 
 ## Checking for updates while the app is backgrounded
 
-You can use [expo-background-task](https://docs.expo.dev/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. This is useful for apps that are used in a way that the app is in the background for extended periods of time, such as weather apps or other information apps that are not actively used but are running in the background.
+You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. This is useful for apps that are used in a way when the app is in the background for extended periods of time, such as weather apps or other information apps that are not actively used but are running in the background.
 
 To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.downloadAsync()` methods as you would in the foreground, but execute them inside of a background task.
 
