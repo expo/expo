@@ -8,4 +8,13 @@ describe(escapeUri, () => {
       'myapp://(app)/home?test=a%257Cb%257Cc'
     );
   });
+
+  it('does not escape already escaped input', () => {
+    expect(escapeUri('my-custom-app://(app)/home?test=%25401')).toBe(
+      'my-custom-app://(app)/home?test=%25401'
+    );
+    expect(escapeUri('myapp://(app)/home?test=a%257Cb%257Cc')).toBe(
+      'myapp://(app)/home?test=a%257Cb%257Cc'
+    );
+  });
 });

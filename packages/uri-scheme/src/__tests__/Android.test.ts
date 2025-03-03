@@ -20,4 +20,11 @@ describe(escapeUri, () => {
       'myapp://\\(spec\\)/\\(cial\\)/characters?pipes=a%257Cb%257Cc&at=%25401'
     );
   });
+
+  it('does not escape already escaped input', () => {
+    expect('my-custom-app://\\(escaped\\)/already').toBe('my-custom-app://\\(escaped\\)/already');
+    expect(
+      escapeUri('myapp://\\(spec\\)/\\(cial\\)/characters?pipes=a%257Cb%257Cc&at=%25401')
+    ).toBe('myapp://\\(spec\\)/\\(cial\\)/characters?pipes=a%257Cb%257Cc&at=%25401');
+  });
 });

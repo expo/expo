@@ -152,7 +152,7 @@ export function escapeUri(uri: string) {
   const [uriWithoutParams, uriParams] = uri.split('?', 2);
   const escapedUriParams = new URLSearchParams(uriParams);
   for (const [key, value] of escapedUriParams.entries()) {
-    escapedUriParams.set(key, encodeURIComponent(value));
+    escapedUriParams.set(key, encodeURIComponent(decodeURIComponent(value)));
   }
 
   return `${uriWithoutParams}?${escapedUriParams.toString()}`;
