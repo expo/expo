@@ -33,7 +33,7 @@ export const packPackageToTarball = new Task<TaskArgs>(
           step.fail();
           logger.error(error.stderr);
           if (process.env.CI) {
-            throw error;
+            throw new Error('Failed to pack packages to tarballs');
           }
           return Task.STOP;
         }
