@@ -52,7 +52,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 'lts/*'
       - name: 👀 Check out repository
         uses: actions/checkout@v4
         with:

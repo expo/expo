@@ -8,6 +8,12 @@ runExportSideEffects();
 const projectRoot = getRouterE2ERoot();
 
 it(`asserts the server env isn't correct`, async () => {
+  const [major] = process.versions.node.split('.').map(Number);
+  if (major >= 23) {
+    expect(true).toBe(true);
+    // `--no-experimental-fetch` is a legacy flag fetch it not experimental in Node.js 23+
+    return;
+  }
   await expect(
     executeExpoAsync(projectRoot, ['start', '--port', '3002'], {
       verbose: false,

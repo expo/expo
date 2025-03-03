@@ -59,6 +59,12 @@ it('creates a full basic project by default', async () => {
 });
 
 it('throws when fetch is disabled', async () => {
+  const [major] = process.versions.node.split('.').map(Number);
+  if (major >= 23) {
+    expect(true).toBe(true);
+    // `--no-experimental-fetch` is a legacy flag fetch it not experimental in Node.js 23+
+    return;
+  }
   const projectName = 'throws-when-fetch-disabled';
   let result: Awaited<ReturnType<typeof execute>>;
 
