@@ -186,8 +186,8 @@ export class AudioPlayerWeb
   replace(source: AudioSource): void {
     this.loaded = false;
     this.emit(PLAYBACK_STATUS_UPDATE, {
-        ...getStatusFromMedia(this.media, this.id),
-        isLoaded: this.loaded,
+      ...getStatusFromMedia(this.media, this.id),
+      isLoaded: this.loaded,
     });
     this.src = source;
     this.media = this._createMediaElement();
