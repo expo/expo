@@ -53,7 +53,6 @@
     "@expo/package-manager": "^1.5.0",
     "@expo/plist": "^0.2.0",
     "@expo/prebuild-config": "^8.0.17",
-    "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",
     "@expo/xcpretty": "^4.3.0",

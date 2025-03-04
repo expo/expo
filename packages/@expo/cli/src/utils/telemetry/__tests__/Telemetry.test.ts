@@ -1,4 +1,5 @@
 import { Telemetry } from '../Telemetry';
+import { commandEvent } from '../events';
 
 it('starts with default detached client', () => {
   const telemetry = new Telemetry({ anonymousId: 'xxx' });
@@ -12,7 +13,7 @@ it('waits until telemetry is initialized', () => {
   const client = mockTelemetryClient(telemetry);
 
   // Record a simple event
-  telemetry.record({ event: 'Start Project' });
+  telemetry.record(commandEvent('start'));
 
   // Ensure the record was not recorded (yet)
   expect(client.record).not.toHaveBeenCalled();
@@ -33,7 +34,7 @@ it('preprocesses all records', () => {
   const client = mockTelemetryClient(telemetry);
 
   // Record a simple event
-  telemetry.record({ event: 'Start Project' });
+  telemetry.record(commandEvent('start'));
 
   // Ensure the record was preprocessed
   expect(client.record).toHaveBeenCalledWith([
@@ -74,7 +75,7 @@ it('switches strategy to detached before exiting', async () => {
   const client = mockTelemetryClient(telemetry);
 
   // Fake pending records
-  client.abort.mockReturnValue([{ event: 'Start Project' }]);
+  client.abort.mockReturnValue([commandEvent('start')]);
 
   // Ensure we are using the mocked test client
   expect(telemetry['client']).toBe(client);

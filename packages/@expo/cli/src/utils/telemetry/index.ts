@@ -1,4 +1,4 @@
-import process from 'node:process';
+import * as process from 'node:process';
 
 import type { Telemetry } from './Telemetry';
 import { commandEvent } from './events';

@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import { createTempFilePath } from '../../createTempPath';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
