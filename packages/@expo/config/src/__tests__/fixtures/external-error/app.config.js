@@ -1,4 +1,4 @@
-// import an external file that using invalid import/export syntax
+// import an external file that using invalid import/export
 import './other';
 
 module.exports = {};
