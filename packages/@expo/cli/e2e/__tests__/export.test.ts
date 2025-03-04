@@ -299,6 +299,11 @@ describe('DOM Components', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+
+    // TODO(kudo,20250304): Remove this once we publish `@expo/metro-config` with DOM components fixes.
+    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
+    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
+    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -353,15 +358,15 @@ describe('DOM Components', () => {
             },
             {
               ext: 'js',
-              // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-              // which is unstable across different machines. We fixed it in upstack pr.
-              path: expect.pathMatching(/^www\.bundle\/_expo\/static\/js\/web\/entry-.*\.js$/),
+              path: expect.pathMatching('www.bundle/9d68fed0bc0ccf1d7fa0017680bf475f.js'),
             },
             {
-              // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-              // which is unstable across different machines. We fixed it in upstack pr.
+              ext: 'css',
+              path: expect.pathMatching('www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css'),
+            },
+            {
               ext: 'html',
-              path: expect.pathMatching(/^www\.bundle\/.*\.html$/),
+              path: expect.pathMatching('www.bundle/8cd7894acaed726be21f3e985bdfc887.html'),
             },
           ],
           bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc$/),
@@ -478,42 +483,51 @@ describe('DOM Components', () => {
 
       'metadata.json',
 
-      // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-      // which is unstable across different machines. We fixed it in upstack pr.
-      expect.stringMatching(/^www\.bundle\/.*\.html$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/css\/global.*\.css$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/js\/web\/entry.*\.js$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/js\/web\/entry.*\.js\.map$/),
+      'www.bundle/5fc2b4814e800cfc11659d9f75e0a7e9.map',
+      'www.bundle/8cd7894acaed726be21f3e985bdfc887.html',
+      'www.bundle/9d68fed0bc0ccf1d7fa0017680bf475f.js',
+      'www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css',
     ]);
 
-    // Test MD5 naming
+    // Test MD5 naming from native bundle to DOM component HTML entry
     const nativeBundlePath = globSync('**/*.{hbc,js}', {
       cwd: path.join(outputDir, '_expo/static/js/ios'),
       absolute: true,
     })[0];
-    // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-    // which is unstable across different machines. We fixed it in upstack pr.
-    const htmlBundleFile = globSync('**/*.html', {
-      cwd: path.join(outputDir, 'www.bundle'),
-      absolute: true,
-    })[0];
-    const htmlBundleContent = await fs.readFile(htmlBundleFile, 'utf8');
-    const md5HtmlBundle = crypto.createHash('md5').update(htmlBundleContent).digest('hex');
+    const domEntry = await fs.readFile(
+      path.join(outputDir, '/www.bundle/8cd7894acaed726be21f3e985bdfc887.html'),
+      'utf8'
+    );
+    const md5HtmlBundle = crypto.createHash('md5').update(domEntry).digest('hex');
     const nativeBundle = await fs.readFile(nativeBundlePath);
     expect(nativeBundle.indexOf(Buffer.from(`${md5HtmlBundle}.html`))).toBeGreaterThan(-1);
 
-    const domJsBundleFile = globSync('**/*.js', {
-      cwd: path.join(outputDir, 'www.bundle'),
-      absolute: true,
-    })[0];
-    const domJsBundleContent = await fs.readFile(domJsBundleFile, 'utf8');
+    // <script src> should link to MD5 named JS bundle
+    const domJsBundleContent = await fs.readFile(
+      path.join(outputDir, 'www.bundle/9d68fed0bc0ccf1d7fa0017680bf475f.js'),
+      'utf8'
+    );
     const md5DomJsBundle = crypto.createHash('md5').update(domJsBundleContent).digest('hex');
     expect(
-      htmlBundleContent.indexOf(`<script src="${md5DomJsBundle}.js" defer></script>`)
+      domEntry.indexOf(`<script src="./${md5DomJsBundle}.js" defer></script>`)
+    ).toBeGreaterThan(-1);
+
+    // <link href> should link to MD5 named CSS bundle
+    const domCssContent = await fs.readFile(
+      path.join(outputDir, 'www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css'),
+      'utf8'
+    );
+    const md5DomCss = crypto.createHash('md5').update(domCssContent).digest('hex');
+    expect(
+      domEntry.indexOf(`<link rel="preload" href="./${md5DomCss}.css" as="style">`)
     ).toBeGreaterThan(-1);
 
     // Assets
     const iconAssetModule = `__d((function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
     expect(domJsBundleContent.indexOf(iconAssetModule)).toBeGreaterThan(-1);
+
+    // DOM component JS bundle should link to MD5 named assets
+    const ttfModule = `__d((function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"}),`;
+    expect(domJsBundleContent.indexOf(ttfModule)).toBeGreaterThan(-1);
   });
 });
