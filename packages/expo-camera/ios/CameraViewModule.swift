@@ -12,6 +12,17 @@ struct ScannerContext {
   var delegate: Any?
 }
 
+struct BarcodeResult {
+  let type: String
+  let data: String
+  let raw: String?
+  let isGS1DataCarrier: Bool?
+  let isColorInverted: Bool?
+  let supplementalPayloadString: String?
+  let supplementalPayloadData: String?
+  let supplementalCompositeType: String?
+}
+
 public final class CameraViewModule: Module, ScannerResultHandler {
   private var scannerContext: ScannerContext?
 
@@ -432,29 +443,36 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
   private func processBarcodeObservations(
     _ observations: [VNBarcodeObservation], imageWidth: CGFloat, imageHeight: CGFloat
-  ) -> [[String: Any]] {
-    return observations.map { observation -> [String: Any] in
-      var result = [String: Any]()
-      result["type"] = observation.symbology.rawValue
-      result["data"] = observation.payloadStringValue ?? ""
-
+  ) -> [BarcodeResult] {
+    return observations.map { observation in
+      var rawString: String?
+      var isGS1: Bool?
+      var isColor: Bool?
+      var suppPayloadString: String?
+      var suppPayloadData: String?
+      var suppCompositeType: String?
       if #available(iOS 17.0, *) {
         if let payloadData = observation.payloadData {
-          result["raw"] = payloadData.base64EncodedString()
+          rawString = payloadData.base64EncodedString()
         }
-        result["isGS1DataCarrier"] = observation.isGS1DataCarrier
-        result["isColorInverted"] = observation.isColorInverted
-
-        if let supplementalPayloadString = observation.supplementalPayloadString {
-          result["supplementalPayloadString"] = supplementalPayloadString
-        }
+        isGS1 = observation.isGS1DataCarrier
+        isColor = observation.isColorInverted
+        suppPayloadString = observation.supplementalPayloadString
         if let supplementalPayloadData = observation.supplementalPayloadData {
-          result["supplementalPayloadData"] = supplementalPayloadData.base64EncodedString()
+          suppPayloadData = supplementalPayloadData.base64EncodedString()
         }
-        result["supplementalCompositeType"] = observation.supplementalCompositeType.rawValue
+        suppCompositeType = observation.supplementalCompositeType.rawValue
       }
-
-      return result
+      return BarcodeResult(
+        type: observation.symbology.rawValue,
+        data: observation.payloadStringValue ?? "",
+        raw: rawString,
+        isGS1DataCarrier: isGS1,
+        isColorInverted: isColor,
+        supplementalPayloadString: suppPayloadString,
+        supplementalPayloadData: suppPayloadData,
+        supplementalCompositeType: suppCompositeType
+      )
     }
   }
 }
