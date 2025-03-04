@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
@@ -234,8 +233,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     OnDestroy {
       try {
         moduleScope.cancel()
-      } catch (_: IllegalStateException) {
-        Log.e(TAG, "The scope does not have a job in it")
+      } catch (e: IllegalStateException) {
+        logger.error("The scope does not have a job in it", e)
       }
     }
   }
