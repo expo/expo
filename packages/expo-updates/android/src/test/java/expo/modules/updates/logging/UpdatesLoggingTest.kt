@@ -23,8 +23,8 @@ class UpdatesLoggingTest {
 
   @Before
   fun setup() = runTest {
-    val baseDirectory = temporaryFolder.newFolder()
-    val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, baseDirectory)
+    val filesDirectory = temporaryFolder.newFolder()
+    val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory)
 
     val job = launch {
       persistentLog.clearEntries {}

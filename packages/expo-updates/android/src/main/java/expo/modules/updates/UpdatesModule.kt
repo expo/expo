@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -207,12 +208,12 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     }
 
     AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
-      return@Coroutine readLogEntries(context, maxAge)
+      return@Coroutine readLogEntries(context.filesDir, maxAge)
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
       moduleScope.launch {
-        clearLogEntries(context) { error ->
+        clearLogEntries(context.filesDir) { error ->
           if (error != null) {
             promise.reject(
               "ERR_UPDATES_READ_LOGS",
@@ -242,8 +243,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal suspend fun readLogEntries(context: Context, maxAge: Long) = withContext(Dispatchers.IO) {
-      val reader = UpdatesLogReader(context)
+    internal suspend fun readLogEntries(filesDirectory: File, maxAge: Long) = withContext(Dispatchers.IO) {
+      val reader = UpdatesLogReader(filesDirectory)
       val date = Date()
       val epoch = Date(date.time - maxAge)
       reader.getLogEntries(epoch)
