@@ -312,7 +312,7 @@ public final class VideoModule: Module {
         guard let times, !times.isEmpty else {
           return []
         }
-        guard let asset = player.ref.currentItem?.asset else {
+        guard let asset = await player.ref.currentItem?.asset else {
           // TODO: We should throw here as nothing is playing
           return []
         }

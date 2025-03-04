@@ -445,12 +445,14 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       exporter?.outputFileType = AVFileType.mov
       exporter?.shouldOptimizeForNetworkUse = true
 
+      let exporterStatus = exporter?.status
+      let isNetworkAsset = info?[PHImageResultIsInCloudKey] ?? false
       exporter?.exportAsynchronously {
-        switch exporter?.status {
+        switch exporterStatus {
         case .completed:
           result["localUri"] = videoFileOutputURL?.absoluteString
           if !options.shouldDownloadFromNetwork {
-            result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] ?? false
+            result["isNetworkAsset"] = isNetworkAsset
           }
 
           promise.resolve(result)
