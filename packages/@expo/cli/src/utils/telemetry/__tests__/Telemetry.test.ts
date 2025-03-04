@@ -40,7 +40,7 @@ it('preprocesses all records', () => {
   expect(client.record).toHaveBeenCalledWith([
     expect.objectContaining({
       type: 'track',
-      event: 'Start Project',
+      event: 'action',
       sentAt: expect.any(Date),
       messageId: expect.any(String),
       anonymousId: 'xxx',
