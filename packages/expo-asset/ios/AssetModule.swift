@@ -1,13 +1,13 @@
 import ExpoModulesCore
 import CryptoKit
 
-internal class UnableToDownloadAssetException: GenericException<URL> {
+internal final class UnableToDownloadAssetException: GenericException<URL> {
   override var reason: String {
     "Unable to download asset from url: '\(param.absoluteString)'"
   }
 }
 
-internal class UnableToSaveAssetToDirectoryException: GenericException<URL> {
+internal final class UnableToSaveAssetToDirectoryException: GenericException<URL> {
   override var reason: String {
     "Unable to save asset to directory: '\(param.absoluteString)'"
   }

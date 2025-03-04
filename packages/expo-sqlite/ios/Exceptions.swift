@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-internal class DatabaseException: Exception {
+internal final class DatabaseException: Exception {
   override var code: String {
     "E_SQLITE_OPEN_DATABASE"
   }
@@ -10,7 +10,7 @@ internal class DatabaseException: Exception {
   }
 }
 
-internal class DatabaseInvalidPathException: GenericException<String> {
+internal final class DatabaseInvalidPathException: GenericException<String> {
   override var code: String {
     "E_SQLITE_INVALID_PATH"
   }
@@ -20,7 +20,7 @@ internal class DatabaseInvalidPathException: GenericException<String> {
   }
 }
 
-internal class DeleteDatabaseException: GenericException<String> {
+internal final class DeleteDatabaseException: GenericException<String> {
   override var code: String {
     "E_SQLITE_DELETE_DATABASE"
   }
@@ -30,7 +30,7 @@ internal class DeleteDatabaseException: GenericException<String> {
   }
 }
 
-internal class DatabaseNotFoundException: GenericException<String> {
+internal final class DatabaseNotFoundException: GenericException<String> {
   override var code: String {
     "E_SQLITE_DELETE_DATABASE"
   }
@@ -40,7 +40,7 @@ internal class DatabaseNotFoundException: GenericException<String> {
   }
 }
 
-internal class DeleteDatabaseFileException: GenericException<String> {
+internal final class DeleteDatabaseFileException: GenericException<String> {
   override var code: String {
     "E_SQLITE_DELETE_DATABASE"
   }
@@ -50,7 +50,7 @@ internal class DeleteDatabaseFileException: GenericException<String> {
   }
 }
 
-internal class InvalidSqlException: Exception {
+internal final class InvalidSqlException: Exception {
   override var reason: String {
     "sql argument must be a string"
   }
@@ -62,19 +62,19 @@ internal final class InvalidArgumentsException: GenericException<String> {
   }
 }
 
-internal class InvalidBindParameterException: Exception {
+internal final class InvalidBindParameterException: Exception {
   override var reason: String {
     "Invalid bind parameter"
   }
 }
 
-internal class AccessClosedResourceException: Exception {
+internal final class AccessClosedResourceException: Exception {
   override var reason: String {
     "Access to closed resource"
   }
 }
 
-internal class SQLiteErrorException: GenericException<String> {
+internal final class SQLiteErrorException: GenericException<String> {
   override var code: String {
     "ERR_INTERNAL_SQLITE_ERROR"
   }
@@ -84,7 +84,7 @@ internal class SQLiteErrorException: GenericException<String> {
   }
 }
 
-internal class InvalidConvertibleException: GenericException<String> {
+internal final class InvalidConvertibleException: GenericException<String> {
 }
 
 internal final class UnsupportedOperationException: GenericException<String?> {
