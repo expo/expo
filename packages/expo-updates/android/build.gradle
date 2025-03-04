@@ -138,6 +138,7 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:$mockk_version"
   androidTestImplementation "androidx.room:room-testing:$room_version"
+  androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
