@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
