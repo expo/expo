@@ -1,11 +1,11 @@
 package expo.modules.core.logging
 
-import android.content.Context
+import java.io.File
 
 object LogHandlers {
   fun createOSLogHandler(category: String): LogHandler = OSLogHandler(category)
-  fun createPersistentFileLogHandler(context: Context, category: String): LogHandler = PersistentFileLogHandler(
+  fun createPersistentFileLogHandler(filesDirectory: File, category: String): LogHandler = PersistentFileLogHandler(
     category,
-    context
+    filesDirectory
   )
 }

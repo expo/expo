@@ -16,7 +16,7 @@ it('returns non-detached client when `env.EXPO_NO_TELEMETRY_DETACH` is true', ()
   setEnv('EXPO_NO_TELEMETRY_DETACH', 'true');
   jest.isolateModules(() => {
     const { getTelemetry } = require('../') as typeof import('../');
-    expect(getTelemetry()?.strategy).toBe('debug');
+    expect(getTelemetry()?.strategy).toBe('instant');
   });
 });
 

@@ -17,7 +17,9 @@
 ### 🐛 Bug fixes
 
 - Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove empty files during bundle splitting. ([#35277](https://github.com/expo/expo/pull/35277) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bumping specificity of hot-reloaded CSS style tags. ([#35123](https://github.com/expo/expo/pull/35123) by [@kitten](https://github.com/kitten))
+- Unwrap PostCSS when imported ESM through require on Node 22/23. ([#35268](https://github.com/expo/expo/pull/35268) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
