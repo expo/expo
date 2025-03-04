@@ -1,4 +1,5 @@
 import AuthenticationServices
+import ExpoModulesCore
 
 func credentialStateToInt(_ credentialState: ASAuthorizationAppleIDProvider.CredentialState) -> Int {
   switch credentialState {
@@ -10,6 +11,9 @@ func credentialStateToInt(_ credentialState: ASAuthorizationAppleIDProvider.Cred
     return 2
   case .transferred:
     return 3
+  @unknown default:
+    log.error("Unhandled `ASAuthorizationAppleIDProvider.CredentialState` value: \(credentialState), returning `notFound` as fallback. Add the missing case as soon as possible.")
+    return 2
   }
 }
 
@@ -20,6 +24,9 @@ func realUserStatusToInt(_ status: ASUserDetectionStatus?) -> Int {
   case .likelyReal:
     return 2
   case .unsupported, .none:
+    return 3
+  @unknown default:
+    log.error("Unhandled `ASUserDetectionStatus` value: \(String(describing: status)), returning `unsupported` as fallback. Add the missing case as soon as possible.")
     return 3
   }
 }

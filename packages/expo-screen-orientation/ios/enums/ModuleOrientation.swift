@@ -19,6 +19,9 @@ enum ModuleOrientation: Int, Enumerable {
       return .landscapeRight
     case .unknown:
       return .unknown
+    @unknown default:
+      log.error("Unhandled `UIInterfaceOrientation` value: \(interfaceOrientation), returning `unknown` as fallback. Add the missing case as soon as possible.")
+      return .unknown
     }
   }
 
