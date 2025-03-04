@@ -1,8 +1,9 @@
 import { vol } from 'memfs';
 import { spawn } from 'node:child_process';
 
+import { commandEvent } from '../../events';
 import type { TelemetryRecordInternal } from '../../types';
-import { RudderDetachedClient } from '../RudderDetachedClient';
+import { FetchDetachedClient } from '../FetchDetachedClient';
 
 jest.mock('fs');
 jest.mock('node:fs', () => require('memfs').fs);
@@ -11,13 +12,13 @@ jest.mock('node:child_process', () => ({ spawn: jest.fn(() => ({ unref: jest.fn(
 afterEach(() => vol.reset());
 
 it('returns all events when aborting', () => {
-  const client = new RudderDetachedClient();
+  const client = new FetchDetachedClient();
 
   // Record dummy events
   client.record([
-    createRecord({ event: 'Start Project' }),
-    createRecord({ event: 'Serve Manifest' }),
-    createRecord({ event: 'Open Url on Device' }),
+    createRecord(commandEvent('install')),
+    createRecord(commandEvent('config')),
+    createRecord(commandEvent('start')),
   ]);
 
   // Abort and ensure the events are returned
@@ -26,13 +27,13 @@ it('returns all events when aborting', () => {
 });
 
 it('stores all recorded events to json file', async () => {
-  const client = new RudderDetachedClient();
+  const client = new FetchDetachedClient();
 
   // Record dummy events
   client.record([
-    createRecord({ event: 'Start Project' }),
-    createRecord({ event: 'Serve Manifest' }),
-    createRecord({ event: 'Open Url on Device' }),
+    createRecord(commandEvent('install')),
+    createRecord(commandEvent('config')),
+    createRecord(commandEvent('start')),
   ]);
 
   // Flush events and store them
@@ -42,9 +43,21 @@ it('stores all recorded events to json file', async () => {
   const file = vol.readFileSync('/tmp/expo-telemetry.json', 'utf8');
   expect(JSON.parse(file.toString())).toMatchObject({
     records: [
-      { event: 'Start Project', originalTimestamp: expect.any(String) },
-      { event: 'Serve Manifest', originalTimestamp: expect.any(String) },
-      { event: 'Open Url on Device', originalTimestamp: expect.any(String) },
+      {
+        event: 'action',
+        properties: { action: 'expo install' },
+        originalTimestamp: expect.any(String),
+      },
+      {
+        event: 'action',
+        properties: { action: 'expo config' },
+        originalTimestamp: expect.any(String),
+      },
+      {
+        event: 'action',
+        properties: { action: 'expo start' },
+        originalTimestamp: expect.any(String),
+      },
     ],
   });
 });
@@ -57,8 +70,8 @@ it('flushes in detached process', async () => {
   vol.fromJSON({});
 
   // Create a client, record an event, and flush it
-  const client = new RudderDetachedClient();
-  await client.record([createRecord({ event: 'Start Project' })]);
+  const client = new FetchDetachedClient();
+  await client.record([createRecord(commandEvent('start'))]);
   await client.flush();
 
   // Ensure the child process was spawned with the correct arguments
@@ -83,8 +96,8 @@ it("doesn't throw when the spawn fails with an exception", async () => {
   vol.fromJSON({});
 
   // Create a client, record an event, and flush it
-  const client = new RudderDetachedClient();
-  await client.record([createRecord({ event: 'Start Project' })]);
+  const client = new FetchDetachedClient();
+  await client.record([createRecord(commandEvent('start'))]);
 
   await expect(client.flush()).resolves.not.toThrow();
   expect(spawn).toThrow();
@@ -92,7 +105,7 @@ it("doesn't throw when the spawn fails with an exception", async () => {
 
 it('skips flushing when no events are recorded', async () => {
   // Create a client, and flush it without recording any events
-  const client = new RudderDetachedClient();
+  const client = new FetchDetachedClient();
   await client.flush();
 
   // Ensure the child process was not spawned
@@ -103,7 +116,7 @@ it('skips flushing when no events are recorded', async () => {
 function createRecord(partial: Partial<TelemetryRecordInternal>): TelemetryRecordInternal {
   return {
     type: 'track',
-    event: 'Start Project',
+    event: 'action',
     messageId: '1',
     anonymousId: 'xxx',
     context: {
