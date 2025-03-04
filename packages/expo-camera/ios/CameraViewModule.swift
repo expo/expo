@@ -407,7 +407,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
     let request = VNDetectBarcodesRequest { request, error in
-      if let error = error {
+      if let error {
         promise.reject(error)
         return
       }
