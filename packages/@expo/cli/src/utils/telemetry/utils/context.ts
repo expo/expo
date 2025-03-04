@@ -1,5 +1,5 @@
 import * as ciInfo from 'ci-info';
-import * as os from 'os';
+import os from 'os';
 
 import { groupBy } from '../../array';
 
