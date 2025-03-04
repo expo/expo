@@ -5,7 +5,6 @@ import { isBefore } from 'date-fns/isBefore';
 import { useEffect, useState } from 'react';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
-import { CALLOUT, HEADLINE } from '~/ui/components/Text';
 
 import { AppJSIcon } from './AppJSIcon';
 
