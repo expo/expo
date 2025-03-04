@@ -33,6 +33,8 @@ export type ExpoMetroOptions = {
   isExporting: boolean;
   /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
   domRoot?: string;
+  /** Exporting MD5 filename based on file contents, for EAS Update.  */
+  useMd5Filename?: boolean;
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
@@ -165,6 +167,7 @@ export function getMetroDirectBundleOptions(
     clientBoundaries,
     runModule,
     modulesOnly,
+    useMd5Filename,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -203,6 +206,7 @@ export function getMetroDirectBundleOptions(
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
+    useMd5Filename: useMd5Filename || undefined,
   };
 
   // Iterate and delete undefined values
