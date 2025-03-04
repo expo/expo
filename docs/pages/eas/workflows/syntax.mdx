@@ -78,13 +78,14 @@ on:
     branches:
       - main
       - feature/**
-      - !feature/test-**
-      # other branch names and globs
+      - !feature/test-** # other branch names and globs
+
+
     tags:
       - v1
       - v2*
-      - !preview**
-      # other tag names and globs
+      - !v2-preview** # other tag names and globs
+
 ```
 
 ### `on.pull_request`
