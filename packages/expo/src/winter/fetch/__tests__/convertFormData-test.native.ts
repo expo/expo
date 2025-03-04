@@ -1,13 +1,13 @@
 import RNFormData from 'react-native/Libraries/Network/FormData';
 import { TextDecoder, TextEncoder } from 'util';
 
-import { installFormDataPatch } from '../../FormData';
 import { createBoundary, convertFormDataAsync, joinUint8Arrays } from '../convertFormData';
 
 // @ts-ignore - TextDecoder and TextEncoder are not defined in native jest environments.
 globalThis.TextDecoder ??= TextDecoder;
 globalThis.TextEncoder ??= TextEncoder;
 
+const { installFormDataPatch } = jest.requireActual('../../FormData');
 const ExpoFormData = installFormDataPatch(RNFormData);
 
 describe(convertFormDataAsync, () => {
