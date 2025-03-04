@@ -1,15 +1,19 @@
 package expo.modules.core.logging
 
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class PersistentFileLogTest {
+  @get:Rule
+  val temporaryFolder = TemporaryFolder()
+
   @Test
   fun testPersistentLog() {
     val asyncTestUtil = AsyncTestUtil()
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val persistentLog = PersistentFileLog("dev.expo.modules.core.logging.test", instrumentationContext)
+    val filesDirectory = temporaryFolder.newFolder()
+    val persistentLog = PersistentFileLog("dev.expo.modules.core.logging.test", filesDirectory)
 
     var err: Error? = null
     asyncTestUtil.asyncMethodRunning = true
