@@ -40,11 +40,13 @@ export function AppJSBanner() {
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
           <AppJSIcon className="icon-lg relative z-10 text-palette-white" />
         </div>
-        <div className="relative grid grid-cols-1 gap-0.5">
-          <HEADLINE className="text-[#494CFC] dark:text-[#a0b9ff]">App.js Conf 2025</HEADLINE>
-          <CALLOUT className="text-[#494CFC] dark:text-[#a0b9ff]">
+        <div className="relative grid grid-cols-1">
+          <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
+            App.js Conf 2025
+          </p>
+          <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
             Join us on the biggest React Native & Expo-focused conference.
-          </CALLOUT>
+          </p>
         </div>
       </div>
       <div className="z-10 flex items-center gap-3">
