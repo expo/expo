@@ -1,7 +1,5 @@
 package expo.modules.updates.logging
 
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
@@ -11,17 +9,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.util.*
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class UpdatesLoggingTest {
+  @get:Rule
+  val temporaryFolder = TemporaryFolder()
 
   @Before
   fun setup() = runTest {
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, instrumentationContext)
+    val filesDirectory = temporaryFolder.newFolder()
+    val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory)
 
     val job = launch {
       persistentLog.clearEntries {}
@@ -65,15 +68,15 @@ class UpdatesLoggingTest {
 
   @Test
   fun testOneLogAppears() {
+    val filesDirectory = temporaryFolder.newFolder()
     val asyncTestUtil = AsyncTestUtil()
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val logger = UpdatesLogger(instrumentationContext)
+    val logger = UpdatesLogger(filesDirectory)
     val now = Date()
     val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null, null)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
-    val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
+    val logs = UpdatesLogReader(filesDirectory).getLogEntries(sinceThen)
     Assert.assertTrue(logs.isNotEmpty())
     val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
     Assert.assertEquals(expectedLogEntry.timestamp / 1000, actualLogEntry.timestamp / 1000)
@@ -84,9 +87,9 @@ class UpdatesLoggingTest {
 
   @Test
   fun testTimer() {
+    val filesDirectory = temporaryFolder.newFolder()
     val asyncTestUtil = AsyncTestUtil()
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val logger = UpdatesLogger(instrumentationContext)
+    val logger = UpdatesLogger(filesDirectory)
     val now = Date()
 
     val timer = logger.startTimer("testlabel")
@@ -95,7 +98,7 @@ class UpdatesLoggingTest {
 
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
-    val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
+    val logs = UpdatesLogReader(filesDirectory).getLogEntries(sinceThen)
     Assert.assertTrue(logs.isNotEmpty())
 
     val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
@@ -104,11 +107,11 @@ class UpdatesLoggingTest {
   }
 
   @Test
-  fun testLogReaderTimeLimit() {
+  fun testLogReaderTimeLimit() = runTest {
+    val filesDirectory = temporaryFolder.newFolder()
     val asyncTestUtil = AsyncTestUtil()
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val logger = UpdatesLogger(instrumentationContext)
-    val reader = UpdatesLogReader(instrumentationContext)
+    val logger = UpdatesLogger(filesDirectory)
+    val reader = UpdatesLogReader(filesDirectory)
 
     val firstTime = Date()
     logger.info("Message 1", UpdatesErrorCode.None)
@@ -127,7 +130,9 @@ class UpdatesLoggingTest {
     val secondLogs = reader.getLogEntries(secondTime)
     Assert.assertEquals(1, secondLogs.size)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondLogs[0])?.message)
-    Assert.assertEquals(MAX_FRAMES_IN_STACKTRACE, UpdatesLogEntry.create(secondLogs[0])?.stacktrace?.size)
+
+    val stacktraceSize = UpdatesLogEntry.create(secondLogs[0])?.stacktrace?.size
+    Assert.assertTrue(stacktraceSize == MAX_FRAMES_IN_STACKTRACE)
 
     val thirdLogs = reader.getLogEntries(thirdTime)
     Assert.assertEquals(0, thirdLogs.size)
@@ -150,11 +155,11 @@ class UpdatesLoggingTest {
   @Test
   fun testNativeMethods() = runTest {
     val asyncTestUtil = AsyncTestUtil()
-    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
-    val logger = UpdatesLogger(instrumentationContext)
+    val filesDirectory = temporaryFolder.newFolder()
+    val logger = UpdatesLogger(filesDirectory)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     val entries = UpdatesModule.readLogEntries(
-      instrumentationContext,
+      filesDirectory,
       1000L
     )
     Assert.assertNotNull(entries)
@@ -164,7 +169,7 @@ class UpdatesLoggingTest {
 
     var rejected = false
     asyncTestUtil.asyncMethodRunning = true
-    UpdatesModule.clearLogEntries(instrumentationContext) { error ->
+    UpdatesModule.clearLogEntries(filesDirectory) { error ->
       if (error != null) {
         rejected = true
         asyncTestUtil.asyncMethodRunning = false
@@ -175,7 +180,7 @@ class UpdatesLoggingTest {
     Assert.assertFalse(rejected)
 
     val entries2 = UpdatesModule.readLogEntries(
-      instrumentationContext,
+      filesDirectory,
       1000L
     )
     asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)

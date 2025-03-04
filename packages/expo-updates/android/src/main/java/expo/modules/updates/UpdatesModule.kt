@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -37,7 +38,7 @@ enum class UpdatesJSEvent(val eventName: String) : Enumerable {
  */
 class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   private val logger: UpdatesLogger
-    get() = UpdatesLogger(context)
+    get() = UpdatesLogger(context.filesDir)
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -50,7 +51,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Events<UpdatesJSEvent>()
 
     Constants {
-      UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
+      UpdatesLogger(context.filesDir).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
@@ -207,12 +208,12 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     }
 
     AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
-      return@Coroutine readLogEntries(context, maxAge)
+      return@Coroutine readLogEntries(context.filesDir, maxAge)
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
       moduleScope.launch {
-        clearLogEntries(context) { error ->
+        clearLogEntries(context.filesDir) { error ->
           if (error != null) {
             promise.reject(
               "ERR_UPDATES_READ_LOGS",
@@ -242,8 +243,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal suspend fun readLogEntries(context: Context, maxAge: Long) = withContext(Dispatchers.IO) {
-      val reader = UpdatesLogReader(context)
+    internal suspend fun readLogEntries(filesDirectory: File, maxAge: Long) = withContext(Dispatchers.IO) {
+      val reader = UpdatesLogReader(filesDirectory)
       val date = Date()
       val epoch = Date(date.time - maxAge)
       reader.getLogEntries(epoch)
@@ -267,8 +268,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
         }
     }
 
-    internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
-      val reader = UpdatesLogReader(context)
+    internal suspend fun clearLogEntries(filesDirectory: File, completionHandler: (_: Exception?) -> Unit) {
+      val reader = UpdatesLogReader(filesDirectory)
       reader.purgeLogEntries(
         olderThan = Date(),
         completionHandler

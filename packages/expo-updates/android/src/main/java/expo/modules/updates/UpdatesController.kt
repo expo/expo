@@ -46,7 +46,7 @@ object UpdatesController {
       return
     }
 
-    val logger = UpdatesLogger(context)
+    val logger = UpdatesLogger(context.filesDir)
 
     val updatesDirectory = try {
       UpdatesUtils.getOrCreateUpdatesDirectory(context)
@@ -157,7 +157,7 @@ object UpdatesController {
     if (updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.VALID) {
       overrideConfiguration = UpdatesConfiguration(context, configuration)
     } else {
-      val logger = UpdatesLogger(context)
+      val logger = UpdatesLogger(context.filesDir)
       logger.warn("Failed to overrideConfiguration: invalid configuration: ${updatesConfigurationValidationResult.name}")
     }
   }
