@@ -16,7 +16,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove absolute paths from server components output.
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bumping specificity of hot-reloaded CSS style tags. ([#35123](https://github.com/expo/expo/pull/35123) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
