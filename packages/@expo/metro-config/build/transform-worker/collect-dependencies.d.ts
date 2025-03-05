@@ -103,6 +103,28 @@ export declare function getExportNamesFromPath(path: NodePath<any>): string[];
 export declare class InvalidRequireCallError extends Error {
     constructor({ node }: NodePath<any>, message?: string);
 }
+/**
+ * Given an import qualifier, return a key used to register the dependency.
+ * Attributes can be appended to distinguish various combinations that would
+ * otherwise be considered the same dependency edge.
+ *
+ * For example, the following dependencies would collapse into a single edge
+ * if they simply utilized the `name` property:
+ *
+ * ```
+ * require('./foo');
+ * import foo from './foo'
+ * await import('./foo')
+ * require.context('./foo');
+ * require.context('./foo', true, /something/);
+ * require.context('./foo', false, /something/);
+ * require.context('./foo', false, /something/, 'lazy');
+ * ```
+ *
+ * This method should be utilized by `registerDependency`.
+ */
+export declare function getKeyForDependency(qualifier: Pick<ImportQualifier, 'asyncType' | 'contextParams' | 'isESMImport' | 'name'>): string;
+export declare function hashKey(key: string): string;
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;

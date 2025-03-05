@@ -950,7 +950,9 @@ function createModuleNameLiteral(dependency: InternalDependency) {
  *
  * This method should be utilized by `registerDependency`.
  */
-function getKeyForDependency(qualifier: ImportQualifier): string {
+export function getKeyForDependency(
+  qualifier: Pick<ImportQualifier, 'asyncType' | 'contextParams' | 'isESMImport' | 'name'>
+): string {
   const { asyncType, contextParams, isESMImport, name } = qualifier;
 
   let key = [name, isESMImport ? 'import' : 'require'].join('\0');
@@ -976,6 +978,10 @@ function getKeyForDependency(qualifier: ImportQualifier): string {
   return key;
 }
 
+export function hashKey(key: string): string {
+  return crypto.createHash('sha1').update(key).digest('base64');
+}
+
 class DependencyRegistry {
   private _dependencies: Map<string, InternalDependency> = new Map();
 
@@ -990,7 +996,7 @@ class DependencyRegistry {
         isESMImport: qualifier.isESMImport,
         locs: [],
         index: this._dependencies.size,
-        key: crypto.createHash('sha1').update(key).digest('base64'),
+        key: hashKey(key),
         exportNames: qualifier.exportNames,
       };
 
