@@ -569,6 +569,12 @@ declare module 'metro/src/DeltaBundler/Serializers/helpers/getTransitiveDependen
   export default getTransitiveDependencies;
 }
 
+// NOTE(cedric): this is a workaround for a jest-resolve bug to import this file with explicit extension
+// See: https://github.com/lukeed/resolve.exports/issues/40
+declare module 'metro/src/DeltaBundler/Serializers/helpers/js.js' {
+  export * from 'metro/src/DeltaBundler/Serializers/helpers/js';
+}
+
 // See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro/src/DeltaBundler/Serializers/helpers/js.js
 declare module 'metro/src/DeltaBundler/Serializers/helpers/js' {
   import type { MixedOutput, Module } from 'metro/src/DeltaBundler/types.flow';

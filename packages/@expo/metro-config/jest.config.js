@@ -6,5 +6,4 @@ module.exports = {
   rootDir: __dirname,
   roots: ['../cli/__mocks__', 'src'],
   setupFiles: ['<rootDir>/../cli/jest.setup.ts'],
-  resolver: '<rootDir>/jest.resolver.js',
 };

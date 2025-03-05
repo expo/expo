@@ -14,7 +14,6 @@ module.exports = {
       roots,
       setupFiles: ['<rootDir>/jest.setup.ts'],
       clearMocks: true,
-      resolver: '<rootDir>/jest.resolver.js',
     },
   ],
 };
