@@ -117,13 +117,11 @@ Pod::Spec.new do |s|
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
-    main.dependency 'ReactAppDependencyProvider'
+    main.dependency "ReactCodegen"
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
-    if reactNativeTargetVersion >= 74
-      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
-    end
+    ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
     ss.compiler_flags = compiler_flags
     ss.dependency 'React-Core'
   end
@@ -134,7 +132,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
-    test_spec.dependency 'ReactAppDependencyProvider'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
