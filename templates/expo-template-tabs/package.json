@@ -33,6 +33,9 @@
     "react-native-screens": "~4.9.1",
     "react-native-web": "~0.19.13"
   },
+  "overrides": {
+    "react": "19.0.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
