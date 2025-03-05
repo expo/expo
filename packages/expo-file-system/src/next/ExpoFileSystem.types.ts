@@ -169,6 +169,7 @@ export declare class File {
    * ```
    */
   static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+  static uploadFileAsync(file: File, url: string, options?: Record<string, any>): Promise<string>;
 
   /**
    * A size of the file in bytes. Null if the file does not exist or it cannot be read.

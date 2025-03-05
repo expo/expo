@@ -54,3 +54,15 @@ internal class DestinationAlreadyExistsException: Exception {
     "Destination already exists"
   }
 }
+
+internal final class FileUploadFailedException: Exception {
+  override var reason: String {
+    "File upload failed"
+  }
+}
+
+internal final class UnableToEncodeFileException: Exception {
+  override var reason: String {
+    "Unable to encode file"
+  }
+}

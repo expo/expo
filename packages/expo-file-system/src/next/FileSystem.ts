@@ -120,6 +120,10 @@ export class File extends ExpoFileSystem.FileSystemFile {
   writableStream() {
     return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
   }
+
+  uploadAsync(url: string, options: Record<string, any> = {}) {
+    return ExpoFileSystem.uploadFileAsync(this, url, options);
+  }
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.

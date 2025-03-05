@@ -53,6 +53,28 @@ public final class FileSystemNextModule: Module {
       }
       downloadTask.resume()
     }
+    
+    AsyncFunction("uploadFileAsync") { (file: FileSystemFile, to: URL, options: UploadOptionsNext, promise: Promise) in
+      try file.validatePermission(.read)
+      
+      var urlRequest = URLRequest(url: to)
+      urlRequest.httpMethod = options.method.rawValue
+
+      let boundary = UUID().uuidString
+      urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+      let body = try createMultipartData(file: file, boundary: boundary, options: options)
+      urlRequest.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+
+      let uploadTask = URLSession.shared.uploadTask(with: urlRequest, from: body) { (data, response, error) in
+        if error != nil {
+          promise.reject(FileUploadFailedException())
+        } else {
+          promise.resolve()
+        }
+      }
+      
+      uploadTask.resume()
+    }
 
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in

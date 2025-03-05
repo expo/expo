@@ -143,6 +143,12 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FileSystemNextScreen'));
+    },
+    name: 'FileSystemNext',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FileSystemScreen'));
     },
     name: 'FileSystem',

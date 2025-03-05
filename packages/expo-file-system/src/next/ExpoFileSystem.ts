@@ -8,6 +8,7 @@ declare class ExpoFileSystemNextModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
   FileSystemFile: typeof File;
   downloadFileAsync(url: string, destination: File | Directory): Promise<string>;
+  uploadFileAsync(file: File, to: string, options?: Record<string, any>): Promise<string>;
 }
 
 export default isRunningInExpoGo()
