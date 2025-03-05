@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Reset `loaded` state to `false` when `.replace()` is called ([#35284](https://github.com/expo/expo/pull/35284) by [@enlyth](https://github.com/enlyth))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
