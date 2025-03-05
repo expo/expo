@@ -29,6 +29,10 @@ There are two ways you can add a custom font into your project:
 
 Expo SDK officially supports OTF and TTF font formats across Android, iOS and web platforms. If your font is in another font format, you have to set up advanced configuration to support that format in your project.
 
+### Variable Fonts
+
+Variable Fonts, including variable font implementations in OTF and TTF, do not have support across all platforms. If you want full platform support, you need to extract which specific axis configuration you want to use from your variable font and then save them as separate font files.
+
 ### How to choose between OTF and TTF
 
 If the font you're using have both OTF and TTF versions, prefer OTF. The **.otf** files are smaller than **.ttf** files. Sometimes, OTF also renders slightly better in certain contexts.
