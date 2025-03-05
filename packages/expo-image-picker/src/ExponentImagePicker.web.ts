@@ -105,10 +105,10 @@ function openFileBrowserAsync({
     switch (capture) {
       case true:
         input.setAttribute('capture', 'camera');
-        break
+        break;
       case CameraType.front:
         input.setAttribute('capture', 'environment');
-        break
+        break;
       case CameraType.back:
         input.setAttribute('capture', 'user');
     }
