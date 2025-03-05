@@ -1,5 +1,4 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
-
+import { DevToolsPluginEventEmitter, type EventSubscription } from './DevToolsPluginEventEmitter';
 import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
@@ -17,7 +16,8 @@ interface MessageFramePackerMessageKey {
  * All the code should be both compatible with browsers and React Native.
  */
 export abstract class DevToolsPluginClient {
-  protected eventEmitter: EventEmitter = new EventEmitter();
+  /** @deprecated Use public methods on `DevToolsPluginClient` instead */
+  protected eventEmitter = new DevToolsPluginEventEmitter();
 
   private static defaultWSStore: WebSocketBackingStore = new WebSocketBackingStore();
   private readonly wsStore: WebSocketBackingStore = DevToolsPluginClient.defaultWSStore;
