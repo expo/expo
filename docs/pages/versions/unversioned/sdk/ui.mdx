@@ -27,27 +27,20 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Android">
-
-<Tab label="iOS">
-
-<ContentSpotlight
-  alt="Button component on iOS."
-  src="/static/images/expo-ui/button/ios.png"
-  className="max-w-[480px]"
-/>
-
-</Tab>
-
 <ContentSpotlight
   alt="Button component on Android."
   src="/static/images/expo-ui/button/android.png"
   className="max-w-[480px]"
 />
-
 </Tab>
-
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Button component on iOS."
+  src="/static/images/expo-ui/button/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
 <Tab label="Code">
-
 ```tsx
 import { Button } from '@expo/ui/components/Button';
 
@@ -57,38 +50,29 @@ import { Button } from '@expo/ui/components/Button';
     setEditingProfile(true);
   }}>
   Edit profile
-</Button>;
+</Button>
 ```
-
 </Tab>
-
 </Tabs>
 
 ### Picker (segmented variant)
 
 <Tabs>
 <Tab label="Android">
-
-<Tab label="iOS">
-
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/segmentedPicker/ios.png"
-  className="max-w-[480px]"
-/>
-
-</Tab>
-
 <ContentSpotlight
   alt="Picker component on Android."
   src="/static/images/expo-ui/segmentedPicker/android.png"
   className="max-w-[480px]"
 />
-
 </Tab>
-
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Picker component on iOS."
+  src="/static/images/expo-ui/segmentedPicker/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
 <Tab label="Code">
-
 ```tsx
 import { Picker } from '@expo/ui/components/Picker';
 
@@ -98,30 +82,23 @@ import { Picker } from '@expo/ui/components/Picker';
   onOptionSelected={({ nativeEvent: { index } }) => {
     setSelectedIndex(index);
   }}
-/>;
+/>
 ```
-
 </Tab>
-
 </Tabs>
 
 ### Picker (wheel variant) (iOS only)
 
 <Tabs>
 <Tab label="iOS">
-
 <ContentSpotlight
   alt="Picker component on iOS."
   src="/static/images/expo-ui/menuPicker/ios.png"
   className="max-w-[480px]"
 />
-
 </Tab>
-
 {/* TODO: Add screenshot on Android once we support the label prop */}
-
 <Tab label="Code">
-
 ```tsx
 import { Picker } from '@expo/ui/components/Picker';
 
@@ -135,28 +112,22 @@ import { Picker } from '@expo/ui/components/Picker';
   style={{
     height: 100,
   }}
-/>;
+/>
 ```
-
 </Tab>
-
 </Tabs>
 
 ### Switch
 
 <Tabs>
 <Tab label="iOS">
-
 <ContentSpotlight
   alt="Switch component on iOS."
   src="/static/images/expo-ui/switch/ios.png"
   className="max-w-[480px]"
 />
-
 </Tab>
-
 <Tab label="Code">
-
 ```tsx
 import { Switch } from '@expo/ui/components/Switch';
 
@@ -166,28 +137,22 @@ import { Switch } from '@expo/ui/components/Switch';
     setChecked(checked);
   }}
   label="Play music"
-/>;
+/>
 ```
-
 </Tab>
-
 </Tabs>
 
 ### Switch (checkbox variant)
 
 <Tabs>
 <Tab label="iOS">
-
 <ContentSpotlight
   alt="Picker component on iOS."
   src="/static/images/expo-ui/checkbox/ios.png"
   className="max-w-[480px]"
 />
-
 </Tab>
-
 <Tab label="Code">
-
 ```tsx
 import { Switch } from '@expo/ui/components/Switch';
 
@@ -198,11 +163,9 @@ import { Switch } from '@expo/ui/components/Switch';
   }}
   label="Play music"
   variant="checkbox"
-/>;
+/>
 ```
-
 </Tab>
-
 </Tabs>
 
 <APISection packageName="expo-ui" apiName="Expo UI" />
