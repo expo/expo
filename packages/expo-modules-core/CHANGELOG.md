@@ -29,6 +29,7 @@
 - Fix UnimplementedExpoView on macOS. ([#35014](https://github.com/expo/expo/pull/35014) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix tvOS breakage. ([#35146](https://github.com/expo/expo/pull/35146) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix calls to `AsyncFunction` not working in the initial render of a `View`. ([#35176](https://github.com/expo/expo/pull/35176) by [@behenate](https://github.com/behenate))
+- [Android] Fixed `ConcurrentModificationException` being thrown by `JNIDeallocator.deallocate` during the app reload.
 
 ### 💡 Others
 
