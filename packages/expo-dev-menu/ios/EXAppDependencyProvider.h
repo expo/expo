@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXDevLauncherAppDependencyProvider : NSObject <RCTDependencyProvider>
+@interface EXAppDependencyProvider : NSObject <RCTDependencyProvider>
 
 @end
 

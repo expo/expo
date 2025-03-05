@@ -13,7 +13,7 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   init(manager: DevMenuManager) {
     self.manager = manager
     super.init()
-    self.dependencyProvider = EXDevMenuAppDependencyProvider()
+    self.dependencyProvider = EXAppDependencyProvider()
     self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
   }
 
