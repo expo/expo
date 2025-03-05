@@ -700,6 +700,44 @@ it(`export var with trailing exports`, async () => {
   expect(artifacts[0].source).not.toMatch('track ');
 });
 
+it(`export var with trailing exports (const and function)`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+      import { add, } from './lib';
+      console.log('keep', add(1, 2));
+    `,
+    'lib.js': `
+      export const track = true, add = function () {
+      }, other = true;
+    `,
+  });
+  expect(artifacts[0].source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', _$$_REQUIRE(_dependencyMap[0]).add(1, 2));
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const add = function () {};
+      exports.add = add;
+    },"/app/lib.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/lib.js' }),
+  ]);
+  expect(artifacts[0].source).toMatch('.add(');
+  expect(artifacts[0].source).toMatch('exports.add = ');
+  expect(artifacts[0].source).not.toMatch('other');
+  expect(artifacts[0].source).not.toMatch('track');
+});
+
 it(`double barrel`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
