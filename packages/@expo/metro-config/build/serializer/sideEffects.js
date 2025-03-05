@@ -11,7 +11,7 @@ exports.isVirtualModule = exports._createSideEffectMatcher = exports.hasSideEffe
  * LICENSE file in the root directory of this source tree.
  */
 const fs_1 = __importDefault(require("fs"));
-const minimatch_1 = __importDefault(require("minimatch"));
+const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 const debug = require('debug')('expo:side-effects');
@@ -77,7 +77,7 @@ function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
             const relativeName = path_1.default.relative(dirRoot, fp);
             return packageJson.sideEffects.some((sideEffect) => {
                 if (typeof sideEffect === 'string') {
-                    return (0, minimatch_1.default)(relativeName, sideEffect.replace(/^\.\//, ''), {
+                    return (0, minimatch_1.minimatch)(relativeName, sideEffect.replace(/^\.\//, ''), {
                         matchBase: true,
                     });
                 }
