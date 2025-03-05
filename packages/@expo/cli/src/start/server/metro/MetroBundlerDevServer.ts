@@ -813,7 +813,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
           Object.fromEntries(
             Array.from(ssrManifest.entries()).map(([key, value]) => [
-              path.join(serverRoot, key),
+              // Must match babel plugin.
+              './' + path.relative(this.projectRoot, path.join(serverRoot, key)),
               [key, value],
             ])
           )

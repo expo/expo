@@ -154,9 +154,7 @@ export function withExtendedResolver(
   }
 ) {
   if (isReactServerComponentsEnabled) {
-    Log.warn(
-      `Experimental React Server Components is enabled. Production exports are not supported yet.`
-    );
+    Log.warn(`Experimental React Server Components is enabled.`);
   }
   if (isFastResolverEnabled) {
     Log.warn(`Experimental module resolution is enabled.`);

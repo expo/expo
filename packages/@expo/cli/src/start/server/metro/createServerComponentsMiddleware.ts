@@ -199,8 +199,11 @@ export function createServerComponentsMiddleware(
         contents: wrapBundle(contents.src),
       });
 
+      // Match babel plugin.
+      const publicModuleId = './' + path.relative(projectRoot, entryPoint);
+
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [String(relativeName), outputName];
+      manifest[publicModuleId] = [String(relativeName), outputName];
     }
 
     async function processEntryPoints(entryPoints: string[], recursions = 0) {
@@ -351,9 +354,15 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
+      const filePath = path.join(
+        projectRoot,
+        file.startsWith('file://') ? fileURLToFilePath(file) : file
+      );
+
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
+
+        const relativeFilePath = toPosixPath(path.relative(serverRoot, filePath));
 
         assert(
           context.ssrManifest.has(relativeFilePath),
@@ -363,7 +372,9 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
+          id: String(
+            createModuleId(filePath, { platform: context.platform, environment: 'client' })
+          ),
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -398,8 +409,6 @@ export function createServerComponentsMiddleware(
       searchParams.set('xRSC', '1');
 
       clientReferenceUrl.search = searchParams.toString();
-
-      const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
       const relativeFilePath = path.relative(serverRoot, filePath);
 
@@ -532,9 +541,15 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
-            hot: true,
-          });
+          console.log('loadServerModuleRsc:', serverRoot, options.mainModuleName);
+          return ssrLoadModule(
+            path.join(serverRoot, options.mainModuleName),
+
+            options,
+            {
+              hot: true,
+            }
+          );
         },
       }
     );
@@ -622,7 +637,14 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  return url.fileURLToPath(fileURL);
+  try {
+    return url.fileURLToPath(fileURL);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw Error(`Invalid URL: ${fileURL}`, { cause: error });
+    }
+    throw error;
+  }
 };
 
 const encodeInput = (input: string) => {
