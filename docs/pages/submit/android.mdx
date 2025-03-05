@@ -21,7 +21,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
-    Install EAS CLI login with your Expo account:
+    Install EAS CLI and login with your Expo account:
     
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
@@ -92,7 +92,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
-    Install EAS CLI login with your Expo account:
+    Install EAS CLI and login with your Expo account:
     
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
@@ -164,7 +164,7 @@ Once you have completed all the prerequisites, you can set up a CI/CD pipeline t
        type: submit
        params:
          platform: android
-         build_id: ${{ jobs.needs.build_android.outputs.id }}
+         build_id: ${{ needs.build_android.outputs.build_id }}
      # @end #
    ```
 
