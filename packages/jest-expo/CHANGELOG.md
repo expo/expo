@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
+
 ### 💡 Others
 
 ## 52.0.6 - 2025-03-11
