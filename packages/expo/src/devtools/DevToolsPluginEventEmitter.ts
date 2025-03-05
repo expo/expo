@@ -96,11 +96,12 @@ export class DevToolsPluginEventEmitter {
     const subsForType = this._listeners[eventType];
     if (subsForType) {
       for (const subscription of subsForType) {
+        const prevCurrentListener = this._currentListener;
         try {
           this._currentListener = subscription;
           subscription.listener.apply(subscription.context, ...data);
         } finally {
-          this._currentListener = undefined;
+          this._currentListener = prevCurrentListener;
         }
       }
     }
