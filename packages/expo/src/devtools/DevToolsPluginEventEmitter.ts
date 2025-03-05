@@ -4,6 +4,14 @@ export interface EventSubscription {
   remove(): void;
 }
 
+// TODO(@kitten): Remove this event emitter
+// This is a temporary implementation that should be deleted and removed
+// when `DevToolsPluginClient.eventEmitter` is removed. This property has been exposed
+// although `DevToolsPluginClient` is "its own event emitter", which can be implemented
+// with internal, simpler logic.
+// The `DevToolsPluginEventEmitter` aims to replicate the fbemitter logic 1:1, which
+// usually isn't desirable or necessary, but is done here to prevent a breaking change
+// on the mentioned abstract, protected property.
 export class DevToolsPluginEventEmitter {
   private _currentListener: EventSubscription | undefined;
   private _listeners: Record<string, undefined | Set<EventSubscription>>;
