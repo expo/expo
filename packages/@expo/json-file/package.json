@@ -31,13 +31,11 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "json5": "^2.2.3",
-    "write-file-atomic": "^2.3.0"
+    "json5": "^2.2.3"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.1",
     "@types/json5": "^2.2.0",
-    "@types/write-file-atomic": "^2.1.1",
     "expo-module-scripts": "^4.0.0",
     "memfs": "^3.2.0"
   },
