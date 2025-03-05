@@ -76,6 +76,10 @@ function sortDependencies(dependencies, accordingTo) {
                 return accordingTo.get(inverseKey);
             }
         }
+        // If the dependency was optional, then we can skip throwing the error.
+        if (dep.data.isOptional) {
+            return null;
+        }
         debug('failed to finding matching dependency', node_util_1.default.inspect(dep, { colors: true, depth: 6 }), node_util_1.default.inspect(accordingTo, { colors: true, depth: 6 }));
         throw new Error(`Dependency ${dep.data.key} (${dep.name}) not found in the original module during optimization pass. Available keys: ${Array.from(accordingTo.entries())
             .map(([key, dep]) => `${key} (${dep.data.name})`)
@@ -84,6 +88,13 @@ function sortDependencies(dependencies, accordingTo) {
     // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
     dependencies.forEach((dep) => {
         const original = findDependency(dep);
+        // In the case of missing optional dependencies, the absolutePath will not be defined.
+        if (!original) {
+            nextDependencies.set(dep.data.key, {
+                // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
+                data: dep,
+            });
+        }
         nextDependencies.set(dep.data.key, {
             ...original,
             // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
