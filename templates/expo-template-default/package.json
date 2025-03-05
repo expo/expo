@@ -5,12 +5,14 @@
   "version": "52.0.43",
   "scripts": {
     "start": "expo start",
+    "prebuild": "expo prebuild --clean",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "fix-dep-versions": "expo install --check"
   },
   "jest": {
     "preset": "jest-expo"
