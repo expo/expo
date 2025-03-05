@@ -39,6 +39,7 @@ When ending an update-based rollout, you have two options:
 ### Working with rollouts
 
 - Only one update can be rolled out on a branch at one time.
+- When a rollout is in progress, it must be ended using one of the options above before a new update (with the same runtime version) can be published. This prevents accidentally clobbering the rollout.
 - To see the state of the rollout, use the `eas update:list` or `eas update:view` commands.
 
 ## Branch-based rollouts
