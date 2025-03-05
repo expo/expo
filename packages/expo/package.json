@@ -82,7 +82,6 @@
     "expo-keep-awake": "~14.0.1",
     "expo-modules-autolinking": "2.0.2",
     "expo-modules-core": "2.0.6",
-    "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
