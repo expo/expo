@@ -254,7 +254,7 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
-    return nullthrows<TFile>(
+    return nullthrows<{ ast: TFile; metadata?: any }>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
         ast: true,

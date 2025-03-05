@@ -11,10 +11,7 @@ import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import {
-  importLocationsPlugin,
-  locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
+import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import * as t from '@babel/types';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
@@ -87,6 +84,11 @@ export function sortDependencies(
       }
     }
 
+    // If the dependency was optional, then we can skip throwing the error.
+    if (dep.data.isOptional) {
+      return null;
+    }
+
     debug(
       'failed to finding matching dependency',
       util.inspect(dep, { colors: true, depth: 6 }),
@@ -105,6 +107,14 @@ export function sortDependencies(
   // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
   dependencies.forEach((dep) => {
     const original = findDependency(dep);
+
+    // In the case of missing optional dependencies, the absolutePath will not be defined.
+    if (!original) {
+      nextDependencies.set(dep.data.key, {
+        // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
+        data: dep,
+      });
+    }
 
     nextDependencies.set(dep.data.key, {
       ...original,
