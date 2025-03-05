@@ -12,6 +12,13 @@ This guide explains how to transition a React Native project that uses CodePush 
 To learn more about the differences between CodePush and EAS Update, see [Conceptual differences between CodePush and EAS Update](#conceptual-differences-between-codepush-and-eas-update) and the [What to do without CodePush post on the Expo Blog](https://expo.dev/blog/what-to-do-without-codepush).
 
 <Step label="1">
+## Ensure your app is using the latest Expo SDK version
+
+To migrate from CodePush to EAS Update, we recommend that you use the latest Expo SDK version. Instructions are not available for older Expo SDK and React Native version. While you may be able to migrate successfully by adapting the instructions as needed for the older Expo SDK and React Native version that your app uses, additional hands-on support for integrating with older versions can only be provided for enterprise customers ([contact us](https://expo.dev/contact)).
+
+</Step>
+
+<Step label="2">
 ## Uninstall CodePush
 
 To avoid conflicts and unexpected behavior, it's recommended to uninstall CodePush if you're using EAS Update. This is because your app could periodically fetch updates from both services, leading to issues, especially if you're using different configurations for each service.
@@ -24,7 +31,7 @@ You'll also need to remove CodePush references from JS and native code. See this
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 ## Add an `expo` key to your `app.json`
 
 Ensure that your project has an **app.json** file with an `expo` object. If you don't have anything specific to configure in your **app.json** file yet, you can create a minimal file with an empty `expo` object like this:
@@ -39,14 +46,14 @@ Ensure that your project has an **app.json** file with an `expo` object. If you 
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 ## Follow the "Getting Started" guide
 
 The instructions in the [EAS Update Getting Started guide](/eas-update/getting-started/) will guide you through setting up EAS Update in your project.
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 ## Resubmit your app
 
 Since you have changed the update provider from CodePush to EAS Update, you will need to rebuild your app and submit the new build to the respective app stores (Google Play Store and Apple App Store) to ensure the update mechanism works as expected for your end-users.
