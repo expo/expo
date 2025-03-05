@@ -18,6 +18,7 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
 - Removed deprecated CR-SQLite integration. ([#35097](https://github.com/expo/expo/pull/35097) by [@kudo](https://github.com/kudo))
+- Remove prebuilt worker on Web. ([#35311](https://github.com/expo/expo/pull/35311) by [@kudo](https://github.com/kudo))
 
 ## 15.1.2 - 2025-02-05
 
