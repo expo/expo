@@ -213,7 +213,7 @@ export function applyImportSupport<TFile extends t.File>(
     importDefault: string;
     importAll: string;
   }
-): TFile {
+): { ast: TFile; metadata?: any } {
   // Perform the import-export transform (in case it's still needed), then
   // fold requires and perform constant folding (if in dev).
   const plugins: PluginItem[] = [];
@@ -228,6 +228,8 @@ export function applyImportSupport<TFile extends t.File>(
   // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
     plugins.push(
+      // TODO: Only enable this during reconciling.
+      importLocationsPlugin,
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
@@ -252,7 +254,7 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
-    ast = nullthrows<TFile>(
+    return nullthrows<TFile>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
         ast: true,
@@ -273,10 +275,10 @@ export function applyImportSupport<TFile extends t.File>(
         // > either because one of the plugins is doing something funky or Babel messes up some caches.
         // > Make sure to test the above mentioned case before flipping the flag back to false.
         cloneInputAst: false,
-      })?.ast
+      })
     );
   }
-  return ast;
+  return { ast };
 }
 
 function performConstantFolding(
@@ -360,7 +362,12 @@ async function transformJS(
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!optimize) {
-    ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+    ast = applyImportSupport(ast, {
+      filename: file.filename,
+      options,
+      importDefault,
+      importAll,
+    }).ast;
   }
 
   if (!options.dev) {
@@ -382,6 +389,8 @@ async function transformJS(
   } else {
     try {
       const importDeclarationLocs = file.unstable_importDeclarationLocs ?? null;
+
+      // These values must be serializable to JSON as they're stored in the transform cache when tree shaking is enabled.
       collectDependenciesOptions = {
         asyncRequireModulePath: config.asyncRequireModulePath,
         dependencyTransformer:
@@ -398,10 +407,7 @@ async function transformJS(
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
-        unstable_isESMImportAtSource:
-          importDeclarationLocs != null
-            ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
-            : null,
+        unstable_isESMImportAtSource: null,
         // If tree shaking is enabled, then preserve the original require calls.
         // This ensures require.context calls are not broken.
         collectOnly: optimize === true,
@@ -412,6 +418,10 @@ async function transformJS(
         // This setting shouldn't be shared with the tree shaking transformer.
         dependencyTransformer:
           unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
+        unstable_isESMImportAtSource:
+          importDeclarationLocs != null
+            ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
+            : null,
       }));
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
@@ -790,6 +800,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformSyncRequire: (path) => {},
   transformImportMaybeSyncCall: () => {},
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
+    // TODO: Prevent extraneous includes of the async require for normal imports.
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
     let topParent = path;
     while (topParent.parentPath) {

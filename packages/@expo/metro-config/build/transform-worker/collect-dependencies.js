@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidRequireCallError = exports.getExportNamesFromPath = void 0;
+exports.hashKey = exports.getKeyForDependency = exports.InvalidRequireCallError = exports.getExportNamesFromPath = void 0;
 /**
  * Copyright 2024-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -687,6 +687,11 @@ function getKeyForDependency(qualifier) {
     }
     return key;
 }
+exports.getKeyForDependency = getKeyForDependency;
+function hashKey(key) {
+    return crypto.createHash('sha1').update(key).digest('base64');
+}
+exports.hashKey = hashKey;
 class DependencyRegistry {
     _dependencies = new Map();
     registerDependency(qualifier) {
@@ -699,7 +704,7 @@ class DependencyRegistry {
                 isESMImport: qualifier.isESMImport,
                 locs: [],
                 index: this._dependencies.size,
-                key: crypto.createHash('sha1').update(key).digest('base64'),
+                key: hashKey(key),
                 exportNames: qualifier.exportNames,
             };
             if (qualifier.optional) {

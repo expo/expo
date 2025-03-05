@@ -24,7 +24,10 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'>;
     importDefault: string;
     importAll: string;
-}): TFile;
+}): {
+    ast: TFile;
+    metadata?: any;
+};
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
 export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t.File>, options: CollectDependenciesOptions): Readonly<{

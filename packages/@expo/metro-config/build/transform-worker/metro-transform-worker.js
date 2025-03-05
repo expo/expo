@@ -151,6 +151,8 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
         plugins.push(
+        // TODO: Only enable this during reconciling.
+        importLocationsPlugin_1.importLocationsPlugin, 
         // Ensure the iife "globals" don't have conflicting variables in the module.
         renameTopLevelModuleVariables, 
         //
@@ -171,7 +173,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
     // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
     if (plugins.length) {
-        ast = nullthrows(
+        return nullthrows(
         // @ts-expect-error
         (0, core_1.transformFromAstSync)(ast, '', {
             ast: true,
@@ -191,9 +193,9 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
             // > either because one of the plugins is doing something funky or Babel messes up some caches.
             // > Make sure to test the above mentioned case before flipping the flag back to false.
             cloneInputAst: false,
-        })?.ast);
+        }));
     }
-    return ast;
+    return { ast };
 }
 exports.applyImportSupport = applyImportSupport;
 function performConstantFolding(ast, { filename }) {
@@ -256,7 +258,12 @@ async function transformJS(file, { config, options }) {
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
-        ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+        ast = applyImportSupport(ast, {
+            filename: file.filename,
+            options,
+            importDefault,
+            importAll,
+        }).ast;
     }
     if (!options.dev) {
         ast = performConstantFolding(ast, { filename: file.filename });
@@ -276,6 +283,7 @@ async function transformJS(file, { config, options }) {
     else {
         try {
             const importDeclarationLocs = file.unstable_importDeclarationLocs ?? null;
+            // These values must be serializable to JSON as they're stored in the transform cache when tree shaking is enabled.
             collectDependenciesOptions = {
                 asyncRequireModulePath: config.asyncRequireModulePath,
                 dependencyTransformer: config.unstable_disableModuleWrapping === true
@@ -291,9 +299,7 @@ async function transformJS(file, { config, options }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
-                unstable_isESMImportAtSource: importDeclarationLocs != null
-                    ? (loc) => importDeclarationLocs.has((0, importLocationsPlugin_1.locToKey)(loc))
-                    : null,
+                unstable_isESMImportAtSource: null,
                 // If tree shaking is enabled, then preserve the original require calls.
                 // This ensures require.context calls are not broken.
                 collectOnly: optimize === true,
@@ -302,6 +308,9 @@ async function transformJS(file, { config, options }) {
                 ...collectDependenciesOptions,
                 // This setting shouldn't be shared with the tree shaking transformer.
                 dependencyTransformer: unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
+                unstable_isESMImportAtSource: importDeclarationLocs != null
+                    ? (loc) => importDeclarationLocs.has((0, importLocationsPlugin_1.locToKey)(loc))
+                    : null,
             }));
             // Ensure we use the same name for the second pass of the dependency collection in the serializer.
             collectDependenciesOptions = {
@@ -588,6 +597,7 @@ const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
     transformImportMaybeSyncCall: () => { },
     transformImportCall: (path, dependency, state) => {
+        // TODO: Prevent extraneous includes of the async require for normal imports.
         // HACK: Ensure the async import code is included in the bundle when an import() call is found.
         let topParent = path;
         while (topParent.parentPath) {
