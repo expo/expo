@@ -1,4 +1,4 @@
-import { Minimatch, MinimatchOptions } from 'minimatch';
+import { Minimatch, type MinimatchOptions } from 'minimatch';
 /**
  * Indicate the given `filePath` should be excluded by the `ignorePaths`.
  */
