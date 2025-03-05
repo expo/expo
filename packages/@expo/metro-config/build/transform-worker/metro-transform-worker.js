@@ -44,6 +44,7 @@ const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
+const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
 const metro_cache_1 = require("metro-cache");
 const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
 const metro_source_map_1 = require("metro-source-map");
@@ -274,6 +275,7 @@ async function transformJS(file, { config, options }) {
     }
     else {
         try {
+            const importDeclarationLocs = file.unstable_importDeclarationLocs ?? null;
             collectDependenciesOptions = {
                 asyncRequireModulePath: config.asyncRequireModulePath,
                 dependencyTransformer: config.unstable_disableModuleWrapping === true
@@ -289,6 +291,9 @@ async function transformJS(file, { config, options }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
+                unstable_isESMImportAtSource: importDeclarationLocs != null
+                    ? (loc) => importDeclarationLocs.has((0, importLocationsPlugin_1.locToKey)(loc))
+                    : null,
                 // If tree shaking is enabled, then preserve the original require calls.
                 // This ensures require.context calls are not broken.
                 collectOnly: optimize === true,
@@ -437,9 +442,12 @@ async function transformJSWithBabel(file, context) {
         }
     }
     // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
-    const transformResult = await transformer.transform(
-    // functionMapBabelPlugin populates metadata.metro.functionMap
-    getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));
+    const transformResult = await transformer.transform(getBabelTransformArgs(file, context, [
+        // functionMapBabelPlugin populates metadata.metro.functionMap
+        metro_source_map_1.functionMapBabelPlugin,
+        // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
+        importLocationsPlugin_1.importLocationsPlugin,
+    ]));
     const jsFile = {
         ...file,
         ast: transformResult.ast,
@@ -447,6 +455,7 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        unstable_importDeclarationLocs: transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,

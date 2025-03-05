@@ -13,6 +13,7 @@
 - Add support for `require.resolveWeak` with tree shaking. ([#34988](https://github.com/expo/expo/pull/34988) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for new unstable `isESMImport` resolution. ([#35306](https://github.com/expo/expo/pull/35306) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

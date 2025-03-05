@@ -34,6 +34,7 @@ export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t
         data: Readonly<{
             key: string;
             asyncType: import("./collect-dependencies").AsyncDependencyType | null;
+            isESMImport: boolean;
             isOptional?: boolean | undefined;
             locs: readonly t.SourceLocation[];
             contextParams?: Readonly<{
