@@ -20,7 +20,7 @@ struct BarcodeResult {
   let isColorInverted: Bool?
   let supplementalPayloadString: String?
   let supplementalPayloadData: String?
-  let supplementalCompositeType: String?
+  let supplementalCompositeType: Int?
 }
 
 public final class CameraViewModule: Module, ScannerResultHandler {
@@ -450,7 +450,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       var isColor: Bool?
       var suppPayloadString: String?
       var suppPayloadData: String?
-      var suppCompositeType: String?
+      var suppCompositeType: Int?
       if #available(iOS 17.0, *) {
         if let payloadData = observation.payloadData {
           rawString = payloadData.base64EncodedString()
