@@ -510,17 +510,22 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     // Remove the entire node if the export has been completely removed.
                     const declaration = path.node.declaration;
                     if (types.isVariableDeclaration(declaration)) {
-                        declaration.declarations.forEach((decl) => {
+                        declaration.declarations = declaration.declarations.filter((decl) => {
                             if (decl.id.type === 'Identifier') {
                                 if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
                                     // TODO: Update source maps
-                                    markUnused(path);
                                     debug(`mark remove (type: var, depth: ${depth}):`, decl.id.name, 'from:', value.path);
                                     // Account for variables, and classes which may contain references to other exports.
                                     shouldRecurseUnusedExports = true;
+                                    return false; // Remove this declaration
                                 }
                             }
+                            return true; // Keep this declaration
                         });
+                        // If all declarations were removed, remove the entire path
+                        if (declaration.declarations.length === 0) {
+                            markUnused(path);
+                        }
                     }
                     else if (declaration && 'id' in declaration && types.isIdentifier(declaration.id)) {
                         // function, class, etc.

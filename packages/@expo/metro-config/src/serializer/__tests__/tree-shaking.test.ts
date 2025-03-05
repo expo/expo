@@ -635,6 +635,71 @@ describe('cjs', () => {
   });
 });
 
+// Based on code in @amplitude/analytics-browser.
+it(`export var with trailing exports`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+      import { add, } from './lib';
+      console.log('keep', add(1, 2));
+    `,
+    'lib.js': `
+      import client from './b';
+      export var add = client.add, track = client.track;
+    `,
+    'b.js': `
+      var createInstance = function () {
+        return {
+          add() {},
+          track() {},
+        };
+      };
+      export default createInstance();
+      `,
+  });
+  expect(artifacts[0].source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', _$$_REQUIRE(_dependencyMap[0]).add(1, 2));
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.add = _$$_IMPORT_DEFAULT(_dependencyMap[0]).add;
+    },"/app/lib.js",["/app/b.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      var createInstance = function () {
+        return {
+          add() {},
+          track() {}
+        };
+      };
+      var _default = createInstance();
+      exports.default = _default;
+    },"/app/b.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/lib.js' }),
+  ]);
+  expectImports(graph, '/app/lib.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
+  expect(artifacts[0].source).toMatch('.add(');
+  expect(artifacts[0].source).toMatch('exports.add = ');
+  expect(artifacts[0].source).toMatch('createInstance');
+  expect(artifacts[0].source).not.toMatch('track ');
+});
+
 it(`double barrel`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
