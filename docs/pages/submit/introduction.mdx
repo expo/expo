@@ -12,13 +12,15 @@ import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 
-**EAS Submit** is a hosted service for uploading and submitting your app binaries to the app stores. Since it's a hosted service, you can submit your app to both stores as long as you can run EAS CLI on your machine. This means you can easily submit your Android and iOS apps from your macOS, Windows, or Linux workstation or from CI.
+**EAS Submit** is a hosted service for submitting your app binaries to the Apple App Store and the Google Play Store.
+
+It makes submitting your apps simple and easy by creating and handling submission credentials and running the submission process. You can trigger a submission from a CLI command, after a build is finished, or from a CI/CD service. It's the faster way to take Android and iOS builds and submit them to the app stores.
 
 ### Get started
 
 <BoxLink
   title="Submit to the Apple App Store"
-  description="Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system."
+  description="Learn how to submit an iOS/iPadOS app to the Apple App Store."
   href="/submit/ios"
   Icon={AppleAppStoreIcon}
 />
@@ -30,11 +32,7 @@ import { CODE } from '~/ui/components/Text';
 />
 <BoxLink
   title="Configuration with eas.json"
-  description={
-    <>
-      See how to configure your submissions with <CODE>eas.json</CODE>.
-    </>
-  }
+  description="See how to configure your submissions with eas.json."
   href="/submit/eas-json"
   Icon={Settings01Icon}
 />
