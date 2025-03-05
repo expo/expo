@@ -36,15 +36,15 @@ exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = exports.sort
 const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
+const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
+const node_util_1 = __importDefault(require("node:util"));
 const jsOutput_1 = require("./jsOutput");
 const sideEffects_1 = require("./sideEffects");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
 const count_lines_1 = require("../transform-worker/count-lines");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const node_util_1 = __importDefault(require("node:util"));
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
 // Some imports may change order during the transform, so we need to resort them.
@@ -154,6 +154,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         })
             .map((dep) => dep.data.name);
         const file = (0, metro_transform_worker_1.applyImportSupport)(ast, {
+            collectLocations: true,
             filename: value.path,
             importAll,
             importDefault,

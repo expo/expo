@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
+import * as t from '@babel/types';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
+import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import * as t from '@babel/types';
+import util from 'node:util';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
@@ -29,8 +30,6 @@ import {
   InvalidRequireCallError,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
-
-import util from 'node:util';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -196,6 +195,7 @@ export async function reconcileTransformSerializerPlugin(
         .map((dep) => dep.data.name);
 
     const file = applyImportSupport(ast, {
+      collectLocations: true,
       filename: value.path,
       importAll,
       importDefault,
@@ -221,7 +221,6 @@ export async function reconcileTransformSerializerPlugin(
     let dependencies: readonly Dependency[];
 
     const importDeclarationLocs = file.metadata?.metro?.unstable_importDeclarationLocs ?? null;
-
     // This pass converts the modules to use the generated import names.
     try {
       // Rewrite the deps to use Metro runtime, collect the new dep positions.

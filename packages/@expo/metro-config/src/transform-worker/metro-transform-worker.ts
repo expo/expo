@@ -203,6 +203,7 @@ export function applyImportSupport<TFile extends t.File>(
     options,
     importDefault,
     importAll,
+    collectLocations,
   }: {
     filename: string;
 
@@ -212,6 +213,7 @@ export function applyImportSupport<TFile extends t.File>(
     >;
     importDefault: string;
     importAll: string;
+    collectLocations?: boolean;
   }
 ): { ast: TFile; metadata?: any } {
   // Perform the import-export transform (in case it's still needed), then
@@ -224,12 +226,17 @@ export function applyImportSupport<TFile extends t.File>(
     importAll,
   };
 
+  if (collectLocations) {
+    plugins.push(
+      // TODO: Only enable this during reconciling.
+      importLocationsPlugin
+    );
+  }
+
   // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
   // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
     plugins.push(
-      // TODO: Only enable this during reconciling.
-      importLocationsPlugin,
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //

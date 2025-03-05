@@ -137,7 +137,7 @@ function applyUseStrictDirective(ast) {
         directives.push(t.directive(t.directiveLiteral('use strict')));
     }
 }
-function applyImportSupport(ast, { filename, options, importDefault, importAll, }) {
+function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
     const plugins = [];
@@ -147,12 +147,15 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         importDefault,
         importAll,
     };
+    if (collectLocations) {
+        plugins.push(
+        // TODO: Only enable this during reconciling.
+        importLocationsPlugin_1.importLocationsPlugin);
+    }
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
         plugins.push(
-        // TODO: Only enable this during reconciling.
-        importLocationsPlugin_1.importLocationsPlugin, 
         // Ensure the iife "globals" don't have conflicting variables in the module.
         renameTopLevelModuleVariables, 
         //

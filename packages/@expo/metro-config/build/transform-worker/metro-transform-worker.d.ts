@@ -19,11 +19,12 @@ export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPat
     code: string;
     map: MetroSourceMapSegmentTuple[];
 }>;
-export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, }: {
+export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, }: {
     filename: string;
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'>;
     importDefault: string;
     importAll: string;
+    collectLocations?: boolean;
 }): {
     ast: TFile;
     metadata?: any;
