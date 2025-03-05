@@ -1,4 +1,4 @@
-import { Minimatch, MinimatchOptions } from 'minimatch';
+import { Minimatch, type MinimatchOptions } from 'minimatch';
 import process from 'node:process';
 import path from 'path';
 
