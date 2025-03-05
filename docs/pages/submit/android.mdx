@@ -142,6 +142,8 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
 
 Once you have completed all the prerequisites, you can set up a CI/CD pipeline to submit your app to the Google Play Store. You can use [EAS Workflows](/eas-workflows/get-started/) to build and submit your app automatically.
 
+### Use EAS Workflows CI/CD
+
 1. Create a workflow file named **.eas/workflows/submit-android.yml** at the root of your project.
 2. Inside **submit-android.yml**, you can use the following workflow to kick off a job that submits an iOS app:
 
@@ -169,6 +171,8 @@ Once you have completed all the prerequisites, you can set up a CI/CD pipeline t
    ```
 
    The workflow above will build the Android app and then submit it to the Google Play Store.
+
+### Use other CI/CD services
 
 You can use other CI/CD services to submit your app with EAS Submit, like GitHub Actions, GitLab CI, and more by running the following command:
 
