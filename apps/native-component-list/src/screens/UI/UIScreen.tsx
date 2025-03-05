@@ -69,6 +69,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'DisclosureGroup component',
+    route: 'ui/disclosure-group',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DisclosureGroupScreen'));
+    },
+  },
+  {
     name: 'TextInput component',
     route: 'ui/textInput',
     options: {},
