@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import slugify from 'slugify';
 import { PassThrough, Readable, Stream } from 'stream';
-import tar from 'tar';
+import { extract as tarExtract, TarOptions } from 'tar';
 import { promisify } from 'util';
 
 import { createEntryResolver } from './createFileTransform';
@@ -125,7 +125,7 @@ export type ExtractProps = {
   /** The checksum algorithm to use when verifying the tarball. */
   checksumAlgorithm?: string;
   /** An optional filter to selectively extract specific paths */
-  filter?: tar.ExtractOptions['filter'];
+  filter?: TarOptions['filter'];
 };
 
 async function createUrlStreamAsync(url: string) {
@@ -164,7 +164,7 @@ export async function extractNpmTarballAsync(
   await pipeline(
     stream,
     transformStream,
-    tar.extract(
+    tarExtract(
       {
         cwd,
         filter,
