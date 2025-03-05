@@ -35,7 +35,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
     "expo-module-scripts": "~4.0.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^9.0.0"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",

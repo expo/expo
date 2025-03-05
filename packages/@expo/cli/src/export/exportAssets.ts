@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config';
 import fs from 'fs';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import path from 'path';
 
 import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
