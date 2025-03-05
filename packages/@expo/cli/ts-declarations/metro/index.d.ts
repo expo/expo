@@ -736,7 +736,9 @@ declare module 'metro/src/DeltaBundler/types.flow' {
     readonly data: any;
     readonly type: string;
   };
-  export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak';
+  // NOTE(cedric): this is a manual change for worker support through `require.unstable_resolveWorker()`
+  export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak' | 'worker';
+  // export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak';
   export type TransformResultDependency = Readonly<{
     /**
      * The literal name provided to a require or import call. For example 'foo' in
