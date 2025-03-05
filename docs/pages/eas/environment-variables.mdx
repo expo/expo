@@ -220,3 +220,5 @@ See the [EAS CLI command reference](https://github.com/expo/eas-cli/blob/main/pa
 Environment variable value size is limited to 32 KiB for environment variables with secret visibility and 4 KiB for other visibility types.
 
 You can create up to 100 account-wide environment variables for each Expo account and 100 project-specific environment variables for each app
+
+If you are building the app locally, the eas CLI ignore what you have in .gitignore. For that reason you need to have a .easignore file without igorning your .env files to load them. For further information you can [read](https://docs.expo.dev/eas/environment-variables/). 
