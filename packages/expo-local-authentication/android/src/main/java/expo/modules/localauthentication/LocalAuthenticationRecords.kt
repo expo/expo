@@ -22,6 +22,12 @@ internal class AuthOptions : Record {
   val promptMessage: String = ""
 
   @Field
+  val promptSubtitle: String = ""
+
+  @Field
+  val promptDescription: String = ""
+
+  @Field
   val cancelLabel: String = ""
 
   @Field

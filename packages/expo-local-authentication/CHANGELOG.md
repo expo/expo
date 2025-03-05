@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync` for better customization of the authentication prompt. 
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
