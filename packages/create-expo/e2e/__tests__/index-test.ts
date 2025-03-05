@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
 
 import {
   createTestPath,
@@ -58,28 +59,32 @@ it('creates a full basic project by default', async () => {
   expect(packageJson.name).toBe('defaults-to-basic');
 });
 
-it('throws when fetch is disabled', async () => {
-  const [major] = process.versions.node.split('.').map(Number);
-  if (major >= 23) {
-    expect(true).toBe(true);
-    // `--no-experimental-fetch` is a legacy flag fetch it not experimental in Node.js 23+
-    return;
-  }
-  const projectName = 'throws-when-fetch-disabled';
-  let result: Awaited<ReturnType<typeof execute>>;
+// TODO: drop this test when the oldest supported Node version is >=23
+(semver.major(process.versions.node) >= 23 ? it.skip : it)(
+  'throws when fetch is disabled',
+  async () => {
+    const [major] = process.versions.node.split('.').map(Number);
+    if (major >= 23) {
+      expect(true).toBe(true);
+      // `--no-experimental-fetch` is a legacy flag fetch it not experimental in Node.js 23+
+      return;
+    }
+    const projectName = 'throws-when-fetch-disabled';
+    let result: Awaited<ReturnType<typeof execute>>;
 
-  try {
-    result = await execute([projectName, '--example', 'with-router'], {
-      env: { NODE_OPTIONS: '--no-experimental-fetch' },
+    try {
+      result = await execute([projectName, '--example', 'with-router'], {
+        env: { NODE_OPTIONS: '--no-experimental-fetch' },
+      });
+    } catch (error: any) {
+      result = error;
+    }
+
+    expect(result).toMatchObject({
+      stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
     });
-  } catch (error: any) {
-    result = error;
   }
-
-  expect(result).toMatchObject({
-    stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
-  });
-});
+);
 
 it('uses pnpm', async () => {
   const projectName = 'uses-pnpm';
