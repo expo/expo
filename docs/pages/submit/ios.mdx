@@ -16,12 +16,7 @@ This guide outlines how to submit your app to the Apple App Store from your comp
   <Requirement number={1} title="Sign up for an Apple Developer account">
     An Apple Developer account is required to submit your app to the Apple App Store. You can sign up for an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
   </Requirement>
-  <Requirement number={2} title="Install EAS CLI and authenticate with your Expo account">
-    Install EAS CLI login with your Expo account:
-    
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
-  </Requirement>
-  <Requirement number={3} title="Include a bundle identifier in app.json">
+  <Requirement number={2} title="Include a bundle identifier in app.json">
     Include your app's bundle identifier in **app.json**:
 
     ```json app.json
@@ -30,6 +25,11 @@ This guide outlines how to submit your app to the Apple App Store from your comp
     }
     ```
 
+  </Requirement>
+  <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
+    Install EAS CLI login with your Expo account:
+    
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
   <Requirement number={4} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
@@ -237,7 +237,7 @@ If you ever need to submit your build without going through EAS Submit, for exam
 
 Start by creating an app profile in App Store Connect, if you haven't already:
 
-1. Go to [App Store Connect][asc] and sign in. Make sure you have accepted any legal notices or terms at the top of the page.
+1. Go to [App Store Connect](https://appstoreconnect.apple.com) and sign in. Make sure you have accepted any legal notices or terms at the top of the page.
 2. Click the blue plus button by the Apps header, then click **New App**.
 3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle identifier, for example, "com.company.my-app").
 4. Click **Create**. If this succeeds, then you have created your application record.
@@ -251,9 +251,9 @@ Finally, you need to upload the IPA to the Apple App Store.
 3. Add the build either by dragging the IPA file directly into the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
 4. Submit it by clicking the **Deliver** button.
 
-This process can take a few minutes, then another 10-15 minutes of processing on Apple's servers. Afterward, you can check the status of your binary in [App Store Connect][asc]:
+This process can take a few minutes, then another 10-15 minutes of processing on Apple's servers. Afterward, you can check the status of your binary in App Store Connect:
 
-1. Visit [App Store Connect][asc], select **My Apps**, and click on the app entry you created earlier.
+1. Visit [App Store Connect](https://appstoreconnect.apple.com), select **My Apps**, and click on the app entry you created earlier.
 2. Scroll down to the **Build** section and select your newly uploaded binary.
 
 </Collapsible>
