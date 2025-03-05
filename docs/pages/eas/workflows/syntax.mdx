@@ -431,7 +431,9 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment`, it uses the same environment used to create the build referenced in `build_id`.
+
+> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
 
 ```yaml
 jobs:
