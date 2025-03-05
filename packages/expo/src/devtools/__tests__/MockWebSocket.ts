@@ -1,4 +1,4 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { DevToolsPluginEventEmitter, EventSubscription } from '../DevToolsPluginEventEmitter';
 
 export default class MockWebSocket {
   static readonly CONNECTING = 0;
@@ -8,16 +8,16 @@ export default class MockWebSocket {
 
   public readyState = MockWebSocket.CONNECTING;
 
-  private readonly emitter = new EventEmitter();
+  private readonly emitter = new DevToolsPluginEventEmitter();
   private subscriptions: EventSubscription[] = [];
   private broadcastSubscriptions: EventSubscription[] = [];
 
   // We use the broadcastEmitter to simulate event passing on a WebSocket server.
   // The map is {address -> EventEmitter}
-  private static broadcastEmitter: Record<string, EventEmitter> = {};
+  private static broadcastEmitter: Record<string, DevToolsPluginEventEmitter> = {};
 
   constructor(private readonly address: string) {
-    MockWebSocket.broadcastEmitter[address] ??= new EventEmitter();
+    MockWebSocket.broadcastEmitter[address] ??= new DevToolsPluginEventEmitter();
     setTimeout(() => {
       this.readyState = MockWebSocket.OPEN;
       this.emitter.emit('open');

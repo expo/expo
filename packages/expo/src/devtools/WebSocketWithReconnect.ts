@@ -1,5 +1,4 @@
-import { EventEmitter, type EventSubscription } from 'fbemitter';
-
+import { DevToolsPluginEventEmitter, type EventSubscription } from './DevToolsPluginEventEmitter';
 import type { DevToolsPluginClientOptions } from './devtools.types';
 
 export interface Options {
@@ -52,7 +51,7 @@ export class WebSocketWithReconnect implements WebSocket {
   private sendQueue: (string | ArrayBufferView | Blob | ArrayBufferLike)[] = [];
   private lastCloseEvent: { code?: number; reason?: string; message?: string } | null = null;
 
-  private readonly emitter = new EventEmitter();
+  private readonly emitter = new DevToolsPluginEventEmitter();
   private readonly eventSubscriptions: EventSubscription[] = [];
   private readonly wsBinaryType?: Options['binaryType'];
 

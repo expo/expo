@@ -7,7 +7,7 @@ import type { DevToolsPluginClientOptions } from './devtools.types';
 export { getDevToolsPluginClientAsync, DevToolsPluginClient };
 export type { DevToolsPluginClientOptions };
 // Export the EventSubscription type if people need to use explicit type from `addMessageListener`
-export type { EventSubscription } from 'fbemitter';
+export type { EventSubscription } from './DevToolsPluginEventEmitter';
 export { setEnableLogging } from './logger';
 
 /**
