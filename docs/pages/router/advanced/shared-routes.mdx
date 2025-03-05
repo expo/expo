@@ -21,7 +21,7 @@ In the example below, **app/\_layout.tsx** is the tab bar and each route has its
   ]}
 />
 
-> When reloading the page, the first alphabetical match is rendered.
+> When reloading the page, the group that specifies the route as its `initialRouteName` is rendered. If no `initialRouteName` is provided, the first alphabetical match is rendered.
 
 Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
 
