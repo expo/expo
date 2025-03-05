@@ -99,7 +99,7 @@ export class DevToolsPluginEventEmitter {
         const prevCurrentListener = this._currentListener;
         try {
           this._currentListener = subscription;
-          subscription.listener.apply(subscription.context, ...data);
+          subscription.listener(...data);
         } finally {
           this._currentListener = prevCurrentListener;
         }
