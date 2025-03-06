@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- use custom iOS dependencyProvider ([#35321](https://github.com/expo/expo/pull/35321) by [@vonovak](https://github.com/vonovak))
 - [6/n] upgrade to react-native 0.77 - improve 0.76 compatibility ([#34078](https://github.com/expo/expo/pull/34078) by [@vonovak](https://github.com/vonovak))
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
 - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))

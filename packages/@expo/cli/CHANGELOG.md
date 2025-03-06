@@ -44,6 +44,9 @@
 - Move Expo Atlas out of experimental phase by renaming environment variable to `EXPO_ATLAS`. ([#35260](https://github.com/expo/expo/pull/35260) by [@byCedric](https://github.com/byCedric))
 - Phase out `@expo/rudder-sdk-node` usage in telemetry. ([#35271](https://github.com/expo/expo/pull/35271) by [@byCedric](https://github.com/byCedric))
 - Fully remove `@expo/rudder-sdk-node` usage in telemetry. ([#35299](https://github.com/expo/expo/pull/35299) by [@byCedric](https://github.com/byCedric))
+- Bump Metro typescript declarations to `0.81.3`. ([#35306](https://github.com/expo/expo/pull/35306) by [@byCedric](https://github.com/byCedric))
+- Upgrade to `minimatch@9` ([#35313](https://github.com/expo/expo/pull/35313) by [@kitten](https://github.com/kitten))
+- Upgrade to `tar@7` ([#35314](https://github.com/expo/expo/pull/35314) by [@kitten](https://github.com/kitten))
 
 ## 0.22.18 - 2025-02-20
 

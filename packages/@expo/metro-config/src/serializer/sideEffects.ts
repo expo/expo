@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import path from 'path';
 
 import { findUpPackageJsonPath } from './findUpPackageJsonPath';

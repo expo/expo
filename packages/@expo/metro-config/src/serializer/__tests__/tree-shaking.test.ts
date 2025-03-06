@@ -635,6 +635,109 @@ describe('cjs', () => {
   });
 });
 
+// Based on code in @amplitude/analytics-browser.
+it(`export var with trailing exports`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+      import { add, } from './lib';
+      console.log('keep', add(1, 2));
+    `,
+    'lib.js': `
+      import client from './b';
+      export var add = client.add, track = client.track;
+    `,
+    'b.js': `
+      var createInstance = function () {
+        return {
+          add() {},
+          track() {},
+        };
+      };
+      export default createInstance();
+      `,
+  });
+  expect(artifacts[0].source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', _$$_REQUIRE(_dependencyMap[0]).add(1, 2));
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.add = _$$_IMPORT_DEFAULT(_dependencyMap[0]).add;
+    },"/app/lib.js",["/app/b.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      var createInstance = function () {
+        return {
+          add() {},
+          track() {}
+        };
+      };
+      var _default = createInstance();
+      exports.default = _default;
+    },"/app/b.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/lib.js' }),
+  ]);
+  expectImports(graph, '/app/lib.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
+  expect(artifacts[0].source).toMatch('.add(');
+  expect(artifacts[0].source).toMatch('exports.add = ');
+  expect(artifacts[0].source).toMatch('createInstance');
+  expect(artifacts[0].source).not.toMatch('track ');
+});
+
+it(`export var with trailing exports (const and function)`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+      import { add, } from './lib';
+      console.log('keep', add(1, 2));
+    `,
+    'lib.js': `
+      export const track = true, add = function () {
+      }, other = true;
+    `,
+  });
+  expect(artifacts[0].source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', _$$_REQUIRE(_dependencyMap[0]).add(1, 2));
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const add = function () {};
+      exports.add = add;
+    },"/app/lib.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/lib.js' }),
+  ]);
+  expect(artifacts[0].source).toMatch('.add(');
+  expect(artifacts[0].source).toMatch('exports.add = ');
+  expect(artifacts[0].source).not.toMatch('other');
+  expect(artifacts[0].source).not.toMatch('track');
+});
+
 it(`double barrel`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
@@ -1191,6 +1294,93 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).not.toMatch('x2');
   // The last export that couldn't be reached should still be there.
   expect(artifact.source).toMatch('x1');
+});
+
+it(`preserves remapped imports when an import with the same name is removed`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import Platform from "./lib";
+        import {Platform as OtherPlatform} from "./x0";
+        console.log(OtherPlatform.KIOSK);
+        `,
+
+    'lib.js': `
+        export default {
+          OS: 'web',
+        }
+        `,
+    'x0.ts': `
+        export enum Platform {
+          KIOSK = 'kiosk',
+        }
+        `,
+  });
+
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).Platform.KIOSK);
+    },"/app/index.js",["/app/x0.ts"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      let Platform = /*#__PURE__*/function (Platform) {
+        Platform["KIOSK"] = "kiosk";
+        return Platform;
+      }({});
+      exports.Platform = Platform;
+    },"/app/x0.ts",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+  expect(artifact.source).toMatch('_$$_REQUIRE(_dependencyMap[0]).Platform');
+});
+
+it(`recursively expands export all statements (shallow)`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+        import { z1, DDD } from './x0';
+        console.log(z1, DDD);
+        `,
+      'x0.js': `
+        export * from './x1';
+        `,
+      'x1.js': `
+        export const z1 = 0;
+        `,
+    }
+    // { minify: true }
+  );
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+    },"/app/x0.js",["/app/x1.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const z1 = 0;
+      exports.z1 = z1;
+    },"/app/x1.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
 });
 
 it(`recursively expands export all statements`, async () => {

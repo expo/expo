@@ -8,7 +8,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<DrawerNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, DrawerNavigationState<ParamListBase>, DrawerNavigationOptions, DrawerNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: import("react").ReactNode;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         drawerItemPress: import("@react-navigation/native").EventListenerCallback<DrawerNavigationEventMap & import("@react-navigation/native").EventMapCore<DrawerNavigationState<ParamListBase>>, "drawerItemPress", true>;
         transitionStart: import("@react-navigation/native").EventListenerCallback<DrawerNavigationEventMap & import("@react-navigation/native").EventMapCore<DrawerNavigationState<ParamListBase>>, "transitionStart", unknown>;
@@ -44,8 +44,8 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/drawer").DrawerNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+        children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;
@@ -72,7 +72,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<DrawerNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, DrawerNavigationState<ParamListBase>, DrawerNavigationOptions, DrawerNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: import("react").ReactNode;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         drawerItemPress: import("@react-navigation/native").EventListenerCallback<DrawerNavigationEventMap & import("@react-navigation/native").EventMapCore<DrawerNavigationState<ParamListBase>>, "drawerItemPress", true>;
         transitionStart: import("@react-navigation/native").EventListenerCallback<DrawerNavigationEventMap & import("@react-navigation/native").EventMapCore<DrawerNavigationState<ParamListBase>>, "transitionStart", unknown>;
@@ -108,8 +108,8 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/drawer").DrawerNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
-    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>) | undefined;
+        children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
+    }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;
