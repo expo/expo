@@ -76,14 +76,6 @@ export const UIScreens = [
       return optionalRequire(() => require('./ProgressScreen'));
     },
   },
-  {
-    name: 'List component',
-    route: 'ui/list',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./ListScreen'));
-    },
-  },
 ];
 if (Platform.OS === 'ios') {
   UIScreens.push({
@@ -92,6 +84,14 @@ if (Platform.OS === 'ios') {
     options: {},
     getComponent() {
       return optionalRequire(() => require('./GaugeScreen'));
+    },
+  });
+  UIScreens.push({
+    name: 'List component',
+    route: 'ui/list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ListScreen'));
     },
   });
 }

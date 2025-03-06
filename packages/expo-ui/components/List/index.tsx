@@ -14,7 +14,11 @@ export type ListItemProps = {
   onPress?: () => void;
 };
 
-const ListView: React.ComponentType<ListProps> = requireNativeView('ExpoUI', 'ListView');
+let ListView: React.ComponentType<ListProps> | null;
+
+if (Platform.OS === 'ios') {
+  ListView = requireNativeView('ExpoUI', 'ListView');
+}
 
 export function ListItem(props: {
   children?: React.ReactNode;
@@ -43,5 +47,8 @@ export function ListItem(props: {
 }
 
 export function List(props: ListProps) {
+  if (!ListView) {
+    return null;
+  }
   return <ListView {...props} />;
 }
