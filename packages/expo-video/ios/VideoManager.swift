@@ -105,7 +105,7 @@ class VideoManager {
       audioSessionCategoryOptions.remove(.duckOthers)
     }
 
-    if audioSession.categoryOptions != audioSessionCategoryOptions {
+    if audioSession.categoryOptions != audioSessionCategoryOptions || audioSession.category != .playback || audioSession.mode != .moviePlayback {
       do {
         try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
       } catch {
@@ -121,9 +121,6 @@ class VideoManager {
         log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
-
-    // The now playing notification requires correct audio session category, notify the manager of about the change.
-    NowPlayingManager.shared.refreshNowPlaying()
   }
 
   private func findAudioMixingMode() -> AudioMixingMode? {
@@ -132,6 +129,9 @@ class VideoManager {
     })
     var audioMixingMode: AudioMixingMode = .mixWithOthers
 
+    if playingPlayers.isEmpty {
+      return nil
+    }
     for videoPlayer in playingPlayers where (audioMixingMode.priority()) < videoPlayer.audioMixingMode.priority() {
       audioMixingMode = videoPlayer.audioMixingMode
     }
