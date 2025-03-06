@@ -28,14 +28,14 @@ import { useState, useEffect } from 'react';
 export default function ProtectedPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-useEffect(() => {
-  // Simulate checking authentication status
-  setTimeout(() => setIsAuthenticated(true), 2000);
-}, []);
+  useEffect(() => {
+    // Simulate checking authentication status
+    setTimeout(() => setIsAuthenticated(true), 2000);
+  }, []);
 
-if (!isAuthenticated) {
-  return <Redirect href="/login" />;
-}
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
 
   return <Text>Welcome to the protected page!</Text>;
 }
