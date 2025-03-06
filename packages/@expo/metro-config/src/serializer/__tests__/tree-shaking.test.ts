@@ -1296,6 +1296,38 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).toMatch('x1');
 });
 
+it(`preserves remapped imports when an import with the same name is removed`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import Platform from "./lib";
+        import {Platform as OtherPlatform} from "./x0";
+
+        console.log("Platform:", "web", OtherPlatform.KIOSK);
+        `,
+
+    'lib.js': `
+        export default {
+          OS: 'web',
+        }
+        `,
+    'x0.ts': `
+        export enum Platform {
+          KIOSK = 'kiosk',
+        }
+        `,
+  });
+
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log("Platform:", "web", OtherPlatform.KIOSK);
+    },"/app/index.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+  expect(artifact.source).toMatch('_$$_REQUIRE(_dependencyMap[0]).Platform');
+});
+
 it(`recursively expands export all statements (shallow)`, async () => {
   const [, [artifact]] = await serializeShakingAsync(
     {
