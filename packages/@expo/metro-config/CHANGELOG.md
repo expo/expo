@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix tree shaking multiple exports in the same variable declaration. ([#35330](https://github.com/expo/expo/pull/35330) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.19.11 — 2025-02-19
