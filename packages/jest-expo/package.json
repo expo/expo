@@ -50,7 +50,7 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
+    "react-server-dom-webpack": "^19.0.0",
     "react-test-renderer": "19.0.0",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"

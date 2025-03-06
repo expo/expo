@@ -179,8 +179,6 @@ export function GET() {
 You can respond to server errors by using the `Response` object.
 
 ```ts app/blog/[post].ts
-import { Request, Response } from 'expo-router/server';
-
 export async function GET(request: Request, { post }: Record<string, string>) {
   if (!post) {
     return new Response('No post found', {
