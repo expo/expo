@@ -759,7 +759,6 @@ describe(withExtendedResolver, () => {
             'source-map-support',
             'source-map-support/register.js',
             'react',
-            'react-native-helmet-async',
             '@radix-ui/accordion',
             '@babel/runtime/helpers/interopRequireDefault',
             'react-dom/server',
