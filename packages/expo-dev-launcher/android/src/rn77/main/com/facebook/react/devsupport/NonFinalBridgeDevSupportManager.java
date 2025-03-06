@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
@@ -57,33 +58,34 @@ import java.util.Map;
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  */
+@LegacyArchitecture
 public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
 
   public NonFinalBridgeDevSupportManager(
-      Context applicationContext,
-      ReactInstanceDevHelper reactInstanceManagerHelper,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler,
-      @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      int minNumShakes,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager,
-      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
+    Context applicationContext,
+    ReactInstanceDevHelper reactInstanceManagerHelper,
+    @Nullable String packagerPathForJSBundleName,
+    boolean enableOnCreate,
+    @Nullable RedBoxHandler redBoxHandler,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
+    int minNumShakes,
+    @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+    @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+    @Nullable DevLoadingViewManager devLoadingViewManager,
+    @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     super(
-        applicationContext,
-        reactInstanceManagerHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        redBoxHandler,
-        devBundleDownloadListener,
-        minNumShakes,
-        customPackagerCommandHandlers,
-        surfaceDelegateFactory,
-        devLoadingViewManager,
-        pausedInDebuggerOverlayManager);
+      applicationContext,
+      reactInstanceManagerHelper,
+      packagerPathForJSBundleName,
+      enableOnCreate,
+      redBoxHandler,
+      devBundleDownloadListener,
+      minNumShakes,
+      customPackagerCommandHandlers,
+      surfaceDelegateFactory,
+      devLoadingViewManager,
+      pausedInDebuggerOverlayManager);
   }
 
   @Override
@@ -93,24 +95,24 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
 
   @Override
   public void loadSplitBundleFromServer(
-      final String bundlePath, final DevSplitBundleCallback callback) {
+    final String bundlePath, final DevSplitBundleCallback callback) {
     fetchSplitBundleAndCreateBundleLoader(
-        bundlePath,
-        new CallbackWithBundleLoader() {
-          @Override
-          public void onSuccess(JSBundleLoader bundleLoader) {
-            bundleLoader.loadScript(getCurrentReactContext().getCatalystInstance());
-            getCurrentReactContext()
-                .getJSModule(HMRClient.class)
-                .registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
-            callback.onSuccess();
-          }
+      bundlePath,
+      new CallbackWithBundleLoader() {
+        @Override
+        public void onSuccess(JSBundleLoader bundleLoader) {
+          bundleLoader.loadScript(getCurrentReactContext().getCatalystInstance());
+          getCurrentReactContext()
+            .getJSModule(HMRClient.class)
+            .registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
+          callback.onSuccess();
+        }
 
-          @Override
-          public void onError(String url, Throwable cause) {
-            callback.onError(url, cause);
-          }
-        });
+        @Override
+        public void onError(String url, Throwable cause) {
+          callback.onError(url, cause);
+        }
+      });
   }
 
   @Override
@@ -119,20 +121,20 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
     UiThreadUtil.assertOnUiThread();
 
     ReactMarker.logMarker(
-        ReactMarkerConstants.RELOAD,
-        getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
+      ReactMarkerConstants.RELOAD,
+      getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
 
     // dismiss redbox if exists
     hideRedboxDialog();
 
     PrinterHolder.getPrinter()
-        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
+      .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
     String bundleURL =
-        getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+      getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
     reloadJSFromServer(
-        bundleURL,
-        () ->
-            UiThreadUtil.runOnUiThread(
-                () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
+      bundleURL,
+      () ->
+        UiThreadUtil.runOnUiThread(
+          () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
   }
 }
