@@ -15,6 +15,7 @@
     "link",
     "assets",
     "build",
+    "vendor",
     "!src",
     "_ctx-html.js",
     "_ctx-shared.js",
