@@ -1031,22 +1031,22 @@ describe('redirects', () => {
       children: [
         {
           children: [],
-          contextKey: './(app)/index.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
-          route: '(app)/index',
-          type: 'route',
-        },
-        {
-          children: [],
-          contextKey: '/old',
+          contextKey: 'old',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
           generated: true,
           type: 'redirect',
-          route: '/old',
+          route: 'old',
           permanent: false,
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
         },
       ],
       contextKey: 'expo-router/build/views/Navigator.js',
@@ -1096,7 +1096,7 @@ describe('redirects', () => {
         },
         {
           children: [],
-          contextKey: '/old/[slug]',
+          contextKey: 'old/[slug]',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -1107,7 +1107,7 @@ describe('redirects', () => {
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
           generated: true,
           permanent: false,
-          route: '/old/[slug]',
+          route: 'old/[slug]',
           type: 'redirect',
         },
       ],

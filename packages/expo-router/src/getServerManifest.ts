@@ -126,23 +126,28 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   const redirects = uniqueBy(
     flat.filter(([, , route]) => route.type === 'redirect'),
     ([path]) => path
-  ).map((redirect) => {
-    redirect[1] =
-      flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
-      '/';
+  )
+    .map((redirect) => {
+      redirect[1] =
+        flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
+        '/';
 
-    return redirect;
-  });
+      return redirect;
+    })
+    .reverse();
 
   const rewrites = uniqueBy(
     flat.filter(([, , route]) => route.type === 'rewrite'),
     ([path]) => path
-  ).map((rewrite) => {
-    rewrite[1] =
-      flat.find(([, , route]) => route.contextKey === rewrite[2].destinationContextKey)?.[0] ?? '/';
+  )
+    .map((rewrite) => {
+      rewrite[1] =
+        flat.find(([, , route]) => route.contextKey === rewrite[2].destinationContextKey)?.[0] ??
+        '/';
 
-    return rewrite;
-  });
+      return rewrite;
+    })
+    .reverse();
 
   const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
   const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));

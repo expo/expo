@@ -36,6 +36,7 @@ exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 async function getManifest(options = {}) {
     const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
         preserveApiRoutes: true,
+        preserveRedirectAndRewrites: true,
         platform: 'web',
         ...options,
     });

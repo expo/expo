@@ -154,10 +154,20 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
 
         if (!destination) {
-          throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+          /*
+           * Only throw the error when we are preserving the api routes
+           * When doing a static export, API routes will not exist so the redirect destination may not exist.
+           * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+           * `expo export` swallows this error.
+           */
+          if (options.preserveApiRoutes) {
+            throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+          }
+
+          continue;
         }
 
-        const fakeContextKey = `/${removeFileSystemDots(removeSupportedExtensions(source))}`;
+        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(source));
         contextKeys.push(fakeContextKey);
         redirects[fakeContextKey] = {
           source,
@@ -196,7 +206,17 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         )?.[1];
 
         if (!destination) {
-          throw new Error(`Redirect destination "${rewrite.destination}" does not exist.`);
+          /*
+           * Only throw the error when we are preserving the api routes
+           * When doing a static export, API routes will not exist so the redirect destination may not exist.
+           * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+           * `expo export` swallows this error.
+           */
+          if (options.preserveApiRoutes) {
+            throw new Error(`Redirect destination "${rewrite.destination}" does not exist.`);
+          }
+
+          continue;
         }
 
         // Add a fake context key

@@ -274,7 +274,6 @@ function updateRequestWithConfig(request, config) {
     return params;
 }
 function getRedirectRewriteLocation(request, route) {
-    console.log(route);
     if (route.methods) {
         if (!route.methods.includes(request.method)) {
             return;

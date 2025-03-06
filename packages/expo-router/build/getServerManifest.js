@@ -44,17 +44,22 @@ function getServerManifest(route) {
     const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' ||
         (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ([path]) => path);
-    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect'), ([path]) => path).map((redirect) => {
+    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect'), ([path]) => path)
+        .map((redirect) => {
         redirect[1] =
             flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
                 '/';
         return redirect;
-    });
-    const rewrites = uniqueBy(flat.filter(([, , route]) => route.type === 'rewrite'), ([path]) => path).map((rewrite) => {
+    })
+        .reverse();
+    const rewrites = uniqueBy(flat.filter(([, , route]) => route.type === 'rewrite'), ([path]) => path)
+        .map((rewrite) => {
         rewrite[1] =
-            flat.find(([, , route]) => route.contextKey === rewrite[2].destinationContextKey)?.[0] ?? '/';
+            flat.find(([, , route]) => route.contextKey === rewrite[2].destinationContextKey)?.[0] ??
+                '/';
         return rewrite;
-    });
+    })
+        .reverse();
     const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
     return {

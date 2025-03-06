@@ -26,10 +26,7 @@ describe('exports static', () => {
           E2E_ROUTER_ASYNC: '',
           EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
-            {
-              source: '/styled-redirect',
-              destination: '/styled',
-            },
+            { source: '/styled-redirect', destination: '/styled' },
           ] as RedirectConfig[]),
         },
       }
