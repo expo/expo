@@ -28,6 +28,7 @@
 - Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+- Drop `fbemitter` in favor of custom emitter. ([#35317](https://github.com/expo/expo/pull/35317) by [@kitten](https://github.com/kitten))
 
 ## 0.27.1 - 2025-02-21
 
