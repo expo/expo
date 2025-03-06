@@ -15,7 +15,7 @@
 
 ### 🐛 Bug fixes
 
-- Silence missing favicon file error.
+- Silence missing favicon file error. ([#35357](https://github.com/expo/expo/pull/35357) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix importing `@radix-ui/colors` in CSS files. ([#35213](https://github.com/expo/expo/pull/35213) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure HMR updates use the same serializer pass as initial bundles. ([#35110](https://github.com/expo/expo/pull/35110) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix async bundling. ([#34986](https://github.com/expo/expo/pull/34986) by [@EvanBacon](https://github.com/EvanBacon))
