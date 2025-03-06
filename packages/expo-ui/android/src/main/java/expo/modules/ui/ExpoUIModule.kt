@@ -40,6 +40,5 @@ class ExpoUIModule : Module() {
     }
 
     View(ProgressView::class)
-    View(ListView::class)
   }
 }
