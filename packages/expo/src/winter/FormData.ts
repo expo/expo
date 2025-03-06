@@ -76,7 +76,7 @@ function normalizeArgs(
       // we need to keep its original form as-is without breaking functionality.
       // However, we need to pass `name` for our file name handling.
       // @ts-expect-error: Mutating the Blob object to add the `name` property.
-      value.name = blobFilename || 'blob';
+      value.name = blobFilename ?? 'blob';
     } else {
       value = { type: value.type, name: blobFilename || 'blob', blob: value };
     }
