@@ -163,7 +163,7 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     for (UNNotificationResponse *response in _pendingNotificationResponses) {
       [delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:^{
-        // completion handler doesn't need to do anything
+        [self->_pendingNotificationResponses removeObject:response];
       }];
     }
   }
