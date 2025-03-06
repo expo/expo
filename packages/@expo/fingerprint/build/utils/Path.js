@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toPosixPath = exports.normalizeFilePath = exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
-const minimatch_1 = __importDefault(require("minimatch"));
+const minimatch_1 = require("minimatch");
 const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 /**
@@ -19,7 +19,7 @@ exports.isIgnoredPath = isIgnoredPath;
  * Prebuild match objects for `isIgnoredPathWithMatchObjects` calls.
  */
 function buildPathMatchObjects(paths, minimatchOptions = { dot: true }) {
-    return paths.map((filePath) => new minimatch_1.default.Minimatch(filePath, minimatchOptions));
+    return paths.map((filePath) => new minimatch_1.Minimatch(filePath, minimatchOptions));
 }
 exports.buildPathMatchObjects = buildPathMatchObjects;
 /**
@@ -55,7 +55,7 @@ function buildDirMatchObjects(ignorePathMatchObjects, minimatchOptions = { dot: 
             }
         }
     }
-    return dirIgnorePatterns.map((pattern) => new minimatch_1.default.Minimatch(pattern, minimatchOptions));
+    return dirIgnorePatterns.map((pattern) => new minimatch_1.Minimatch(pattern, minimatchOptions));
 }
 exports.buildDirMatchObjects = buildDirMatchObjects;
 /**
