@@ -227,6 +227,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   override fun onRenderedFirstFrame(player: VideoPlayer) {
+    this.playerView.videoSurfaceView?.alpha = 1f
     onFirstFrameRender(Unit)
   }
 
