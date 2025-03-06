@@ -505,6 +505,7 @@ export const eas = [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
+      makePage('eas-update/existing-native-app.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
