@@ -7,7 +7,7 @@ class ListViewProps: ExpoSwiftUI.ViewProps {}
 
 struct ListView: ExpoSwiftUI.View {
   @EnvironmentObject var props: ListViewProps
-  
+
   var body: some View {
     List {
       UnwrappedChildren { child, _ in
