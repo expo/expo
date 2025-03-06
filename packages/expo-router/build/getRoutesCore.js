@@ -275,7 +275,7 @@ function getFileMeta(key, options) {
     let route = (0, matchers_1.removeSupportedExtensions)(key);
     const filename = parts[parts.length - 1];
     const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
-    const isLayout = filenameWithoutExtensions === '_layout';
+    const isLayout = filenameWithoutExtensions === '_layout' || filenameWithoutExtensions.startsWith('_layout_');
     const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
         throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
@@ -432,7 +432,7 @@ function getLayoutNode(node, options) {
     }
     return {
         ...node,
-        route: node.route.replace(/\/?_layout$/, ''),
+        route: node.route.replace(/\/?_layout(_.*)?$/, ''),
         children: [],
         initialRouteName: anchor,
     };
