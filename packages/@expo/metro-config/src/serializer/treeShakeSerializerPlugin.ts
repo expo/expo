@@ -732,10 +732,10 @@ export async function treeShakeSerializer(
     // Traverse imports and remove unused imports.
 
     // Keep track of all the imported identifiers
-    const importedIdentifiers = new Set();
+    const importedIdentifiers = new Set<string>();
 
     // Keep track of all used identifiers
-    const usedIdentifiers = new Set();
+    const usedIdentifiers = new Set<string>();
 
     const importDecs: NodePath<types.ImportDeclaration>[] = [];
 
@@ -764,9 +764,6 @@ export async function treeShakeSerializer(
       },
       Identifier(path) {
         // Make sure this identifier isn't coming from an import specifier
-        if (path.findParent((path) => path.isImportSpecifier())) {
-          return;
-        }
         if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
           usedIdentifiers.add(path.node.name);
         }
@@ -779,7 +776,6 @@ export async function treeShakeSerializer(
         // TODO: This doesn't account for `import {} from './foo'`
         // @ts-expect-error: custom property
         path.opts.originalSpecifiers ??= path.node.specifiers.length;
-
         importDecs.push(path);
       },
     });
@@ -797,13 +793,15 @@ export async function treeShakeSerializer(
     // Remove the unused imports from the AST
     importDecs.forEach((path) => {
       const originalSize = path.node.specifiers.length;
+
       // @ts-expect-error: custom property
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
       path.node.specifiers = path.node.specifiers.filter((specifier) => {
-        if (specifier.type === 'ImportDefaultSpecifier') {
-          return !unusedImports.includes(specifier.local.name);
-        } else if (specifier.type === 'ImportNamespaceSpecifier') {
+        if (
+          specifier.type === 'ImportDefaultSpecifier' ||
+          specifier.type === 'ImportNamespaceSpecifier'
+        ) {
           return !unusedImports.includes(specifier.local.name);
         } else if (types.isIdentifier(specifier.imported)) {
           return !unusedImports.includes(specifier.imported.name);

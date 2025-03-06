@@ -1301,8 +1301,7 @@ it(`preserves remapped imports when an import with the same name is removed`, as
     'index.js': `
         import Platform from "./lib";
         import {Platform as OtherPlatform} from "./x0";
-
-        console.log("Platform:", "web", OtherPlatform.KIOSK);
+        console.log(OtherPlatform.KIOSK);
         `,
 
     'lib.js': `
@@ -1321,8 +1320,20 @@ it(`preserves remapped imports when an import with the same name is removed`, as
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log("Platform:", "web", OtherPlatform.KIOSK);
-    },"/app/index.js",[]);
+      console.log(_$$_REQUIRE(_dependencyMap[0]).Platform.KIOSK);
+    },"/app/index.js",["/app/x0.ts"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      let Platform = /*#__PURE__*/function (Platform) {
+        Platform["KIOSK"] = "kiosk";
+        return Platform;
+      }({});
+      exports.Platform = Platform;
+    },"/app/x0.ts",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);
   expect(artifact.source).toMatch('_$$_REQUIRE(_dependencyMap[0]).Platform');
