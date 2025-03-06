@@ -25,7 +25,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   private var currentFocusRequest: AudioFocusRequest? = null
   private var currentMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
   private val anyPlayerRequiresFocus: Boolean
-    get() = players.any {
+    get() = players.toList().any {
       playerRequiresFocus(it)
     }
 
