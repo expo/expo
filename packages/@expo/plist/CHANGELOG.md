@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade `xmlbuilder` to `15.1.1` to dedupe dependencies.
+
 ## 0.2.2 - 2025-02-14
 
 _This version does not introduce any user-facing changes._
