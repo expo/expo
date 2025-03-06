@@ -56,7 +56,7 @@ describe('server api redirects', () => {
             },
             {
               source: '/redirect/only-post/[slug]',
-              destination: '/dynamic/[slug]',
+              destination: '/methods',
               methods: ['POST'],
             },
           ] as RedirectConfig[]),
@@ -161,17 +161,17 @@ describe('server api redirects', () => {
       expect(new URL(response.url).search).toEqual('');
     });
 
-    it(`will redirect only if the methods patch`, async () => {
-      let response = await server.fetchAsync('/redirect/only-post/this');
+    it(`will redirect only if the method is post`, async () => {
+      let response = await server.fetchAsync('/redirect/only-post/hello-world');
 
       expect(response.status).toEqual(404);
 
-      response = await server.fetchAsync('/redirect/only-post/this', { method: 'POST' });
+      response = await server.fetchAsync('/redirect/only-post/hello-world', { method: 'POST' });
 
       expect(response.status).toEqual(200);
       expect(response.redirected).toEqual(true);
-      expect(new URL(response.url).pathname).toEqual('/dynamic/this');
-      expect(new URL(response.url).search).toEqual('');
+      expect(new URL(response.url).pathname).toEqual('/methods');
+      expect(new URL(response.url).search).toEqual('?slug=hello-world');
     });
   });
 });
