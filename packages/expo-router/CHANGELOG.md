@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow `_layout` to have a custom identifying suffix
+
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
