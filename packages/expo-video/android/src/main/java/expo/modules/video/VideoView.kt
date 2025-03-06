@@ -34,6 +34,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onPictureInPictureStop by EventDispatcher<Unit>()
   val onFullscreenEnter by EventDispatcher<Unit>()
   val onFullscreenExit by EventDispatcher<Unit>()
+  val onFirstFrameRender by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
 
@@ -69,8 +70,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       videoPlayer?.removeListener(this)
       newPlayer?.addListener(this)
-      newPlayer?.changePlayerView(playerView)
       field = newPlayer
+      attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
@@ -223,6 +224,11 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
+  }
+
+  override fun onRenderedFirstFrame(player: VideoPlayer) {
+    this.playerView.videoSurfaceView?.alpha = 1f
+    onFirstFrameRender(Unit)
   }
 
   override fun requestLayout() {

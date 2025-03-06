@@ -113,4 +113,12 @@ export interface VideoViewProps extends ViewProps {
    * A callback to call after the video player exits fullscreen mode.
    */
   onFullscreenExit?: () => void;
+
+  /**
+   * A callback to call after the mounted `VideoPlayer` has rendered the first frame into the `VideoView`.
+   * This event can be used to hide any cover images used to hide the initial loading of the player.
+   *
+   * > **Note:** This event may also be called during playback when the current video track changes (for example when the player switches video quality).
+   */
+  onFirstFrameRender?: () => void;
 }
