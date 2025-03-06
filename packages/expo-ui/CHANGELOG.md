@@ -11,6 +11,7 @@
 - Adds `DateTimePicker` component. ([#34883](https://github.com/expo/expo/pull/34883) by [@alanjhughes](https://github.com/alanjhughes))
 - Add CircularProgress and LinearProgress component. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
 - Add Gauge component ([#35032](https://github.com/expo/expo/pull/35032) by [@jakex7](https://github.com/jakex7))
+- Add List component ([#35354](https://github.com/expo/expo/pull/35354) by [@equimper](https://github.com/EQuimper))
 
 ### 🐛 Bug fixes
 
