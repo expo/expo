@@ -19,7 +19,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     json(): Promise<any>;
     toString(): string;
     toJSON(): object;
-    clone(): FetchResponse;
+    clone(): Response;
     private finalize;
 }
 export {};

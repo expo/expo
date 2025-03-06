@@ -4,7 +4,6 @@ import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeResponse } from './NativeRequest';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
-
 export type AbortSubscriptionCleanupFunction = () => void;
 
 /**
@@ -91,6 +90,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     return new Blob([buffer]);
   }
 
+  // @ts-expect-error
   async formData(): Promise<FormData> {
     // Reference implementation:
     // https://chromium.googlesource.com/chromium/src/+/ed9f0b5933cf5ffb413be1ca844de5be140514bf/third_party/blink/renderer/core/fetch/body.cc#120
@@ -121,7 +121,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     };
   }
 
-  clone(): FetchResponse {
+  clone(): Response {
     throw new Error('Not implemented');
   }
 
