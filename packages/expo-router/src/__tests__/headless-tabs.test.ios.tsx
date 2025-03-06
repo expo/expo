@@ -311,7 +311,7 @@ describe('warnings/errors', () => {
     );
   });
 
-  it('should fail when there are no valid tabs', () => {
+  it('should warn when there are no valid tabs', () => {
     expect(() => {
       renderRouter({
         _layout: () => {
@@ -329,7 +329,7 @@ describe('warnings/errors', () => {
       "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
     );
 
-    expect(error).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
     expect(warn).toHaveBeenCalledWith(
       "Tab trigger 'apple' has the href '/apple' which points to a +not-found route."
     );

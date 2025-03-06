@@ -105,7 +105,7 @@ jobs:
     name: Update
     type: update
     params:
-      branch: ${{ github.ref || 'test'}}
+      branch: ${{ github.ref_name || 'test'}}
 ```
 
 Once you have this workflow file, you can kick it off by pushing a commit to any branch, or by running the following command:

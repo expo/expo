@@ -1,11 +1,10 @@
-import glob from 'fast-glob';
+import { glob } from 'glob';
 import { vol } from 'memfs';
-import { Readable } from 'stream';
 
 import { globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from '../fileUtils';
 
-jest.mock('fast-glob');
 jest.mock('fs/promises');
+jest.mock('glob');
 
 describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
   const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
@@ -21,7 +20,8 @@ describe('globMatchFunctorAllAsync and globMatchFunctorFirstAsync', () => {
       '/app/5.tsx': 'console.log("5");',
     });
 
-    mockGlobStream.mockReturnValue(Readable.from(['1.js', '2.js', '3.js', '4.ts']));
+    // NOTE: Cast because the utility uses the result as an async iterable
+    mockGlobStream.mockReturnValue(['1.js', '2.js', '3.js', '4.ts'] as any);
   });
 
   afterAll(() => {

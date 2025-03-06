@@ -186,9 +186,12 @@ class Env {
     return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
   }
 
-  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
-  get EXPO_UNSTABLE_ATLAS() {
-    return boolish('EXPO_UNSTABLE_ATLAS', false);
+  /**
+   * Enable Atlas to gather bundle information during development or export.
+   * Note, because this used to be an experimental feature, both `EXPO_ATLAS` and `EXPO_UNSTABLE_ATLAS` are supported.
+   */
+  get EXPO_ATLAS() {
+    return boolish('EXPO_ATLAS', boolish('EXPO_UNSTABLE_ATLAS', false));
   }
 
   /** Unstable: Enable tree shaking for Metro. */

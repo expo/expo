@@ -745,6 +745,86 @@ describe(`require.context`, () => {
   });
 });
 
+describe(`Worker`, () => {
+  it('collects dependency with explicit worker boundary', () => {
+    const ast = astFromCode(`
+    const a = require.unstable_resolveWorker("../path/to/module");
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);
+    `)
+    );
+  });
+
+  it('collects dependency with worker constructor', () => {
+    const ast = astFromCode(`
+    const a = new Worker(new URL("../path/to/module", window.location.href));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = new Worker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), window.location.href));
+    `)
+    );
+  });
+
+  it('collects dependency with SharedWorker constructor', () => {
+    const ast = astFromCode(`
+    const a = new SharedWorker(new URL("../path/to/module", import.meta.url));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
+    `)
+    );
+  });
+
+  it('does not register dependency with worker constructor if a variable is used', () => {
+    const ast = astFromCode(`
+    const id = "./path/to/module";
+    const a = new Worker(new URL(id, window.location.href));
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const id = "./path/to/module";
+      const a = new Worker(new URL(id, window.location.href));
+    `)
+    );
+  });
+
+  it('does not register dependency with worker constructor if a variable is used with a URL constructor', () => {
+    const ast = astFromCode(`
+    const id = new URL("./path/to/module", window.location.href);
+    const a = new Worker(id);
+  `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+      const id = new URL("./path/to/module", window.location.href); 
+      const a = new Worker(id);
+    `)
+    );
+  });
+});
+
 it('collects unique dependency identifiers and transforms the AST', () => {
   const ast = astFromCode(`
     const a = require('b/lib/a');
@@ -958,6 +1038,70 @@ describe('import() prefetching', () => {
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
         require(${dependencyMapName}[1]).prefetch(${dependencyMapName}[0], _dependencyMap.paths);
+      `)
+    );
+  });
+
+  it('keepRequireNames: false is ignored in optional dependencies', () => {
+    const ast = astFromCode(`
+      try {
+        require("some/async/module");
+      } catch {}
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        try { 
+          require(_dependencyMap[0], "some/async/module"); 
+        } catch {}
+      `)
+    );
+  });
+
+  it('keepRequireNames: false is ignored in optional dependencies with dynamic import', () => {
+    const ast = astFromCode(`
+      async function foo() {
+        try {
+          await import("some/async/module");
+        } catch {}
+      }
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        async function foo() { 
+          try { 
+            await require(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths, "some/async/module"); 
+          } catch {} 
+        }
+      `)
+    );
+  });
+
+  it('keepRequireNames: false is ignored in optional dependencies with require.unstable_importMaybeSync', () => {
+    const ast = astFromCode(`
+      try {
+        require.unstable_importMaybeSync("some/async/module");
+      } catch {}
+    `);
+    collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+      allowOptionalDependencies: true,
+    });
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+       try { 
+        require(_dependencyMap[1]).unstable_importMaybeSync(_dependencyMap[0], _dependencyMap.paths, "some/async/module");
+       } catch {}
       `)
     );
   });
@@ -1331,7 +1475,7 @@ it('records locations of dependencies', () => {
   `);
 });
 
-test('integration: records locations of inlined dependencies (Metro ESM)', () => {
+it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';
@@ -1383,7 +1527,7 @@ test('integration: records locations of inlined dependencies (Metro ESM)', () =>
   expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
 });
 
-test('integration: records locations of inlined dependencies (Babel ESM)', () => {
+it('integration: records locations of inlined dependencies (Babel ESM)', () => {
   const code = dedent`
     import a from 'a';
     import {b as b1} from 'b';
@@ -1494,6 +1638,48 @@ describe('optional dependencies', () => {
     const { dependencies } = collectDependencies(ast, opts);
     validateDependencies(dependencies, 4);
   });
+
+  describe('isESMImport', () => {
+    it('distinguishes require calls, static imports and async imports', () => {
+      const ast = astFromCode(`
+        import anImport from '.';
+        const aRequire = require('.');
+        const asyncImport = await import('.');
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      expect(dependencies).toEqual([
+        {
+          // Static import
+          name: '.',
+          data: objectContaining({
+            asyncType: null,
+            isESMImport: true,
+          }),
+        },
+        {
+          // require call
+          name: '.',
+          data: objectContaining({
+            asyncType: null,
+            isESMImport: false,
+          }),
+        },
+        {
+          // await import call
+          name: '.',
+          data: objectContaining({
+            asyncType: 'async',
+            isESMImport: true,
+          }),
+        },
+        objectContaining({
+          // asyncRequire helper
+          name: 'asyncRequire',
+        }),
+      ]);
+    });
+  });
+
   it('can handle single-line statement', () => {
     const ast = astFromCode("try { const a = require('optional-a') } catch (e) {}");
     const { dependencies } = collectDependencies(ast, opts);

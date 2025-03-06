@@ -14,6 +14,20 @@ function arrayize<T>(value: T[] | T | undefined): T[] {
   return value != null ? [value] : [];
 }
 
+export class ExpoAndroidProjectConfig {
+  constructor(
+    public name: string,
+    public path: string,
+    public modules?: string[],
+    public publication?: AndroidPublication,
+    public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
+    /**
+     * Whether this project is the root one.
+     */
+    public isDefault: boolean = false
+  ) {}
+}
+
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -47,9 +61,7 @@ export class ExpoModuleConfig {
    */
   appleModules() {
     const appleConfig = this.getAppleConfig();
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+    return appleConfig?.modules ?? [];
   }
 
   /**
@@ -88,20 +100,36 @@ export class ExpoModuleConfig {
   }
 
   /**
-   * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+   * Returns information about Android projects defined by the module author.
    */
-  androidModules() {
-    const androidConfig = this.rawConfig.android;
+  androidProjects(defaultProjectName: string): ExpoAndroidProjectConfig[] {
+    const androidProjects: ExpoAndroidProjectConfig[] = [];
 
-    // `modulesClassNames` is a legacy name for the same config.
-    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
-  }
+    // Adding the "root" Android project - it might not be valide.
+    androidProjects.push(
+      new ExpoAndroidProjectConfig(
+        this.rawConfig.android?.name ?? defaultProjectName,
+        this.rawConfig.android?.path ?? 'android',
+        this.rawConfig.android?.modules,
+        this.rawConfig.android?.publication,
+        this.rawConfig.android?.gradleAarProjects,
+        !this.rawConfig.android?.path // it's default project because path is not defined
+      )
+    );
 
-  /**
-   * Returns build.gradle file paths defined by the module author.
-   */
-  androidGradlePaths(): string[] {
-    return arrayize(this.rawConfig.android?.gradlePath ?? []);
+    this.rawConfig.android?.projects?.forEach((project) => {
+      androidProjects.push(
+        new ExpoAndroidProjectConfig(
+          project.name,
+          project.path,
+          project.modules,
+          project.publication,
+          project.gradleAarProjects
+        )
+      );
+    });
+
+    return androidProjects;
   }
 
   /**

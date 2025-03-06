@@ -6,7 +6,7 @@ description: Common CI/CD workflows that are useful for your project.
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
 The following workflows are examples of how you can use EAS Workflows to automate your development and release processes. They can help you and your team develop, review each other's PRs, and release changes to your users.
@@ -15,9 +15,9 @@ The following workflows are examples of how you can use EAS Workflows to automat
 
 [Development builds](/develop/development-builds/introduction/) are specialized builds of your project that include Expo's developer tools. These types of builds include all native dependencies inside your project, enabling you to run a production-like build of your project on a simulator, emulator, or a physical device.
 
-<Collapsible summary="Prerequisites">
-
-To get started, you'll need to configure your project and devices to build and run development builds. Learn how to set up your environment for development builds with the following guides:
+<Prerequisites summary="Prerequisites" numberOfRequirements={2}>
+  <Requirement number={1} title="Set up your environment">
+    To get started, you'll need to configure your project and devices to build and run development builds. Learn how to set up your environment for development builds with the following guides:
 
 <BoxLink
   title="Android device setup"
@@ -27,7 +27,7 @@ To get started, you'll need to configure your project and devices to build and r
 />
 
 <BoxLink
-  title="Android emulator setup"
+  title="Android Emulator setup"
   description="Get your project ready for development builds."
   href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=simulated"
   Icon={BookOpen02Icon}
@@ -41,13 +41,15 @@ To get started, you'll need to configure your project and devices to build and r
 />
 
 <BoxLink
-  title="iOS simulator setup"
+  title="iOS Simulator setup"
   description="Get your project ready for development builds."
   href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=simulated"
   Icon={BookOpen02Icon}
 />
 
-After you've configured your project and devices, add the following build profiles to your **eas.json** file.
+  </Requirement>
+  <Requirement number={2} title="Create build profiles">
+  After you've configured your project and devices, add the following build profiles to your **eas.json** file.
 
 ```json eas.json
 {
@@ -67,7 +69,8 @@ After you've configured your project and devices, add the following build profil
 }
 ```
 
-</Collapsible>
+  </Requirement>
+</Prerequisites>
 
 The following workflow creates a build for each platform and for both physical devices, Android emulators, and iOS simulators. They all will run in parallel.
 
@@ -105,15 +108,17 @@ Once you've made changes to your project, you can share a preview of your change
 
 You can access preview updates in the development build UI and through scannable QR codes on the Expo dashboard. When publishing a preview on every commit, your team can review changes without pulling the latest changes and running them locally.
 
-<Collapsible summary="Prerequisites">
+<Prerequisites summary="Prerequisites" numberOfRequirements={2}>
+  <Requirement number={1} title="Set up EAS Update">
+    Your project needs to have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
 
-Your project needs to have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
+    <Terminal cmd={['$ eas update:configure']} />
 
-<Terminal cmd={['$ eas update:configure']} />
-
-After that, you'll need to create new [development builds](/develop/development-builds/create-a-build/).
-
-</Collapsible>
+  </Requirement>
+  <Requirement number={2} title="Create new development builds">
+    After you've configured your project, create new [development builds](/develop/development-builds/create-a-build/) for each platform.
+  </Requirement>
+</Prerequisites>
 
 The following workflow publishes a preview update for every commit on every branch.
 
@@ -129,47 +134,51 @@ jobs:
     name: Publish preview update
     type: update
     params:
-      branch: ${{ github.ref || 'test' }}
+      branch: ${{ github.ref_name || 'test' }}
 ```
 
 ## Deploy to production workflow
 
 When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
 
-<Collapsible summary="Prerequisites">
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Set up EAS Build">
+    To get started, you'll need to set up EAS Build, EAS Submit, and EAS Update.
 
-To get started, you'll need to set up EAS Build, EAS Submit, and EAS Update.
+    To set up EAS Build, follow this guide:
 
-To set up EAS Build, follow this guide:
+    <BoxLink
+      title="EAS Build prerequisites"
+      description="Get your project ready for EAS Build."
+      href="/build/setup/"
+      Icon={BookOpen02Icon}
+    />
 
-<BoxLink
-  title="EAS Build prerequisites"
-  description="Get your project ready for EAS Build."
-  href="/build/setup/"
-  Icon={BookOpen02Icon}
-/>
+  </Requirement>
 
-To set up EAS Submit, follow these guides for each app store:
+  <Requirement number={2} title="Set up EAS Submit">
+    To set up EAS Submit, follow these guides for each app store:
 
-<BoxLink
-  title="Google Play Store prerequisites"
-  description="Get your project ready for Google Play Store submissions."
-  href="/submit/android/"
-  Icon={BookOpen02Icon}
-/>
+    <BoxLink
+      title="Google Play Store prerequisites"
+      description="Get your project ready for Google Play Store submissions."
+      href="/submit/android/"
+      Icon={BookOpen02Icon}
+    />
+    <BoxLink
+      title="Apple App Store prerequisites"
+      description="Get your project ready for Apple App Store submissions."
+      href="/submit/ios/"
+      Icon={BookOpen02Icon}
+    />
 
-<BoxLink
-  title="Apple App Store prerequisites"
-  description="Get your project ready for Apple App Store submissions."
-  href="/submit/ios/"
-  Icon={BookOpen02Icon}
-/>
-
-And finally, you'll need to set up EAS Update, which you can do with:
+  </Requirement>
+  <Requirement number={3} title="Set up EAS Update">
+  And finally, you'll need to set up EAS Update, which you can do with:
 
 <Terminal cmd={['$ eas update:configure']} />
-
-</Collapsible>
+  </Requirement>
+</Prerequisites>
 
 The following workflow runs on each push to the `main` branch and performs the following:
 

@@ -1,39 +1,45 @@
 import 'react-native';
-
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import { Table, THead, TBody, TFoot, TR, TH, TD, Caption } from '../Table';
 
-it(`renders Table`, () => {
-  const tree = renderer.create(<Table />);
-  expect(tree).toMatchSnapshot();
+it('renders Table', () => {
+  const { toJSON } = render(<Table />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders THead`, () => {
-  const tree = renderer.create(<THead />);
-  expect(tree).toMatchSnapshot();
+
+it('renders THead', () => {
+  const { toJSON } = render(<THead />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders TBody`, () => {
-  const tree = renderer.create(<TBody />);
-  expect(tree).toMatchSnapshot();
+
+it('renders TBody', () => {
+  const { toJSON } = render(<TBody />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders TFoot`, () => {
-  const tree = renderer.create(<TFoot />);
-  expect(tree).toMatchSnapshot();
+
+it('renders TFoot', () => {
+  const { toJSON } = render(<TFoot />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders TH`, () => {
-  const tree = renderer.create(<TH>Header</TH>);
-  expect(tree).toMatchSnapshot();
+
+it('renders TH', () => {
+  const { toJSON } = render(<TH>Header</TH>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders TR`, () => {
-  const tree = renderer.create(<TR />);
-  expect(tree).toMatchSnapshot();
+
+it('renders TR', () => {
+  const { toJSON } = render(<TR />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders TD`, () => {
-  const tree = renderer.create(<TD>Column</TD>);
-  expect(tree).toMatchSnapshot();
+
+it('renders TD', () => {
+  const { toJSON } = render(<TD>Column</TD>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Caption`, () => {
-  const tree = renderer.create(<Caption>Caption</Caption>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Caption', () => {
+  const { toJSON } = render(<Caption>Caption</Caption>);
+  expect(toJSON()).toMatchSnapshot();
 });

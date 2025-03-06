@@ -15,7 +15,7 @@ function potentiallyWarnAboutEdgeToEdge() {
   if (shouldWarnAboutEdgeToEdge) {
     shouldWarnAboutEdgeToEdge = false; // warn once
     console.warn(
-      'Using expo-status-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: (https://github.com/zoontek/react-native-edge-to-edge#systembars)'
+      'Using expo-status-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: https://expo.fyi/edge-to-edge-system-bars'
     );
   }
 }

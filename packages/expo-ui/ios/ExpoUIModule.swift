@@ -14,6 +14,7 @@ public class ExpoUIModule: Module {
     View(ExpoUI.ContextMenu.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
+    View(TextInputView.self)
     View(ProgressView.self)
     View(GaugeView.self)
     View(ListView.self)

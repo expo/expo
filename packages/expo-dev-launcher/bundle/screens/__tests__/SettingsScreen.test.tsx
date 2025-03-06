@@ -29,8 +29,11 @@ describe('<SettingsScreen />', () => {
     const showsAtLaunchButton = await findByLabelText(/toggle showing menu/i);
     expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
-    const activeCheckmarks = await findAllByRole('button', { checked: true });
-    expect(activeCheckmarks.length).toEqual(2);
+    const activeCheckmarks = await findAllByRole('button');
+    const trulyActive = activeCheckmarks.filter(
+      (checkmark) => checkmark.props.accessibilityState?.checked === true
+    );
+    expect(trulyActive.length).toEqual(2);
   });
 
   test('shows the correct settings on mount 2', async () => {
@@ -47,8 +50,11 @@ describe('<SettingsScreen />', () => {
     const showsAtLaunchButton = await findByLabelText(/toggle showing menu/i);
     expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
-    const activeCheckmarks = await findAllByRole('button', { checked: true });
-    expect(activeCheckmarks.length).toEqual(1);
+    const activeCheckmarks = await findAllByRole('button');
+    const trulyActive = activeCheckmarks.filter(
+      (checkmark) => checkmark.props.accessibilityState?.checked === true
+    );
+    expect(trulyActive.length).toEqual(1);
   });
 
   test('toggling shake device', async () => {

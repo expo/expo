@@ -65,7 +65,7 @@ class StartupProcedure(
 
   var emergencyLaunchException: Exception? = null
     private set
-  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags)
+  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags.enableBridgelessArchitecture)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
@@ -208,7 +208,7 @@ class StartupProcedure(
     }
   )
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
     initializeDatabaseHandler()

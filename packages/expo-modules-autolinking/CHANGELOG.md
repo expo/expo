@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
@@ -11,14 +13,32 @@
 
 ### 🐛 Bug fixes
 
-- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
-- Resolve `reactNativePath` to its realpath to prevent incorrect relative paths from being generated for isolated dependencies. ([#34203](https://github.com/expo/expo/pull/34203) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
 
 - [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - [Android] Added `publication` configuration. ([#35068](https://github.com/expo/expo/pull/35068) by [@lukmccall](https://github.com/lukmccall))
+- Removed legacy `modulesClassNames` field. ([#35095](https://github.com/expo/expo/pull/35095) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.8 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.7 - 2025-01-20
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.6 - 2025-01-19
+
+### 🐛 Bug fixes
+
+- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
+- Resolve `reactNativePath` to its realpath to prevent incorrect relative paths from being generated for isolated dependencies. ([#34203](https://github.com/expo/expo/pull/34203) by [@kitten](https://github.com/kitten))
+
+## 2.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 2.0.4 - 2024-12-10
 

@@ -6,10 +6,45 @@
 
 ### 🎉 New features
 
-- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
+- Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
+- Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
+- Removed deprecated CR-SQLite integration. ([#35097](https://github.com/expo/expo/pull/35097) by [@kudo](https://github.com/kudo))
+- Remove prebuilt worker on Web. ([#35311](https://github.com/expo/expo/pull/35311) by [@kudo](https://github.com/kudo))
+
+## 15.1.2 - 2025-02-05
+
+### 💡 Others
+
+- Added offline-writes support for libSQL. ([#34673](https://github.com/expo/expo/pull/34673) by [@kudo](https://github.com/kudo))
+
+## 15.1.0 - 2025-01-27
+
+### 🎉 New features
+
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
+
+## 15.0.6 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.5 - 2024-12-30
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.4 - 2024-12-26
+
+### 🐛 Bug fixes
+
+- Replaced the cached statement manager with `sqlite3_next_stmt` and prevented uncaught statements from leaking. [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
 - Fixed `expo-sqlite/kv-store` async API not being well handled when using AsyncStorage compatible api ([#33847](https://github.com/expo/expo/pull/33847) by [@rtorrente](https://github.com/rtorrente))
 - Fixed `database is locked` error from parallel `kv-store` operations. ([#33834](https://github.com/expo/expo/pull/33834) by [@kudo](https://github.com/kudo))
@@ -19,10 +54,6 @@
 
 - Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
 - Enforce input validations in `kv-store` operations. ([#33874](https://github.com/expo/expo/pull/33874) by [@rtorrente](https://github.com/rtorrente))
-- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
-- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
-- Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
-- Added offline-writes support for libSQL. ([#34673](https://github.com/expo/expo/pull/34673) by [@kudo](https://github.com/kudo))
 
 ## 15.0.3 — 2024-11-12
 
