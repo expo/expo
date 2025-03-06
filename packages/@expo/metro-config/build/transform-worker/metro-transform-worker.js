@@ -44,6 +44,7 @@ const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
+const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
 const metro_cache_1 = require("metro-cache");
 const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
 const metro_source_map_1 = require("metro-source-map");
@@ -136,7 +137,7 @@ function applyUseStrictDirective(ast) {
         directives.push(t.directive(t.directiveLiteral('use strict')));
     }
 }
-function applyImportSupport(ast, { filename, options, importDefault, importAll, }) {
+function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
     const plugins = [];
@@ -146,6 +147,11 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         importDefault,
         importAll,
     };
+    if (collectLocations) {
+        plugins.push(
+        // TODO: Only enable this during reconciling.
+        importLocationsPlugin_1.importLocationsPlugin);
+    }
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
@@ -170,7 +176,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
     // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
     if (plugins.length) {
-        ast = nullthrows(
+        return nullthrows(
         // @ts-expect-error
         (0, core_1.transformFromAstSync)(ast, '', {
             ast: true,
@@ -190,9 +196,9 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
             // > either because one of the plugins is doing something funky or Babel messes up some caches.
             // > Make sure to test the above mentioned case before flipping the flag back to false.
             cloneInputAst: false,
-        })?.ast);
+        }));
     }
-    return ast;
+    return { ast };
 }
 exports.applyImportSupport = applyImportSupport;
 function performConstantFolding(ast, { filename }) {
@@ -255,7 +261,12 @@ async function transformJS(file, { config, options }) {
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
-        ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+        ast = applyImportSupport(ast, {
+            filename: file.filename,
+            options,
+            importDefault,
+            importAll,
+        }).ast;
     }
     if (!options.dev) {
         ast = performConstantFolding(ast, { filename: file.filename });
@@ -274,6 +285,8 @@ async function transformJS(file, { config, options }) {
     }
     else {
         try {
+            const importDeclarationLocs = file.unstable_importDeclarationLocs ?? null;
+            // These values must be serializable to JSON as they're stored in the transform cache when tree shaking is enabled.
             collectDependenciesOptions = {
                 asyncRequireModulePath: config.asyncRequireModulePath,
                 dependencyTransformer: config.unstable_disableModuleWrapping === true
@@ -289,6 +302,7 @@ async function transformJS(file, { config, options }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
+                unstable_isESMImportAtSource: null,
                 // If tree shaking is enabled, then preserve the original require calls.
                 // This ensures require.context calls are not broken.
                 collectOnly: optimize === true,
@@ -297,6 +311,9 @@ async function transformJS(file, { config, options }) {
                 ...collectDependenciesOptions,
                 // This setting shouldn't be shared with the tree shaking transformer.
                 dependencyTransformer: unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
+                unstable_isESMImportAtSource: importDeclarationLocs != null
+                    ? (loc) => importDeclarationLocs.has((0, importLocationsPlugin_1.locToKey)(loc))
+                    : null,
             }));
             // Ensure we use the same name for the second pass of the dependency collection in the serializer.
             collectDependenciesOptions = {
@@ -437,9 +454,12 @@ async function transformJSWithBabel(file, context) {
         }
     }
     // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
-    const transformResult = await transformer.transform(
-    // functionMapBabelPlugin populates metadata.metro.functionMap
-    getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));
+    const transformResult = await transformer.transform(getBabelTransformArgs(file, context, [
+        // functionMapBabelPlugin populates metadata.metro.functionMap
+        metro_source_map_1.functionMapBabelPlugin,
+        // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
+        importLocationsPlugin_1.importLocationsPlugin,
+    ]));
     const jsFile = {
         ...file,
         ast: transformResult.ast,
@@ -447,6 +467,7 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        unstable_importDeclarationLocs: transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
@@ -579,6 +600,7 @@ const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
     transformImportMaybeSyncCall: () => { },
     transformImportCall: (path, dependency, state) => {
+        // TODO: Prevent extraneous includes of the async require for normal imports.
         // HACK: Ensure the async import code is included in the bundle when an import() call is found.
         let topParent = path;
         while (topParent.parentPath) {

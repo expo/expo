@@ -257,7 +257,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             // ```
                             // export { a, b, c } from 'a';
                             // ```
-                            // NOTE: It's import we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
+                            // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
                             path.replaceWithMultiple([
                                 // @ts-expect-error: missing type
                                 types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))), types.stringLiteral(path.node.source.value)),

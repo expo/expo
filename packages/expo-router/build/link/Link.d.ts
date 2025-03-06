@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, JSX } from 'react';
 import { Href } from '../types';
 import { LinkProps, WebAnchorProps } from './useLinkHooks';
 export interface LinkComponent {
