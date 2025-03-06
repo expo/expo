@@ -93,7 +93,7 @@ class RouterStore {
         this.storeSubscribers.clear();
         this.config = expo_constants_1.default.expoConfig?.extra?.router;
         // On the client, there is no difference between redirects and rewrites
-        this.redirects = [this.config?.redirects, this.config.rewrites]
+        this.redirects = [this.config?.redirects, this.config?.rewrites]
             .filter(Boolean)
             .flat()
             .map((route) => {
