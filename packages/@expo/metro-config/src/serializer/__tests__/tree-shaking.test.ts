@@ -1193,6 +1193,50 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).toMatch('x1');
 });
 
+it(`recursively expands export all statements (shallow)`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+        import { z1, DDD } from './x0';
+        console.log(z1, DDD);
+        `,
+      'x0.js': `
+        export * from './x1';
+        `,
+      'x1.js': `
+        export const z1 = 0;
+        `,
+    }
+    // { minify: true }
+  );
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+    },"/app/x0.js",["/app/x1.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const z1 = 0;
+      exports.z1 = z1;
+    },"/app/x1.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
 it(`recursively expands export all statements`, async () => {
   const [, [artifact]] = await serializeShakingAsync(
     {
