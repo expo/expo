@@ -1012,3 +1012,59 @@ describe('group expansion', () => {
     });
   });
 });
+
+describe('named layouts', () => {
+  it(`supports named layouts`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './_layout_root': () => null,
+          './(app)/index': () => null,
+          './(app)/_layout_app': () => null,
+        }),
+        { internal_stripLoadRoute: true, sitemap: false }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: 'expo-router/build/views/Unmatched.js',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          entryPoints: ['./_layout_root.js', 'expo-router/build/views/Unmatched.js'],
+          generated: true,
+          internal: true,
+          route: '+not-found',
+          type: 'route',
+        },
+        {
+          children: [
+            {
+              children: [],
+              contextKey: './(app)/index.js',
+              dynamic: null,
+              entryPoints: ['./_layout_root.js', './(app)/_layout_app.js', './(app)/index.js'],
+              route: 'index',
+              type: 'route',
+            },
+          ],
+          contextKey: './(app)/_layout_app.js',
+          dynamic: null,
+          initialRouteName: undefined,
+          route: '(app)',
+          type: 'layout',
+        },
+      ],
+      contextKey: './_layout_root.js',
+      dynamic: null,
+      initialRouteName: undefined,
+      route: '',
+      type: 'layout',
+    });
+  });
+});

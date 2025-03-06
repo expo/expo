@@ -370,7 +370,8 @@ function getFileMeta(key: string, options: Options) {
   const filename = parts[parts.length - 1];
   const [filenameWithoutExtensions, platformExtension] =
     removeSupportedExtensions(filename).split('.');
-  const isLayout = filenameWithoutExtensions === '_layout';
+  const isLayout =
+    filenameWithoutExtensions === '_layout' || filenameWithoutExtensions.startsWith('_layout_');
   const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -547,7 +548,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
 
   return {
     ...node,
-    route: node.route.replace(/\/?_layout$/, ''),
+    route: node.route.replace(/\/?_layout(_.*)?$/, ''),
     children: [], // Each layout should have its own children
     initialRouteName: anchor,
   };
