@@ -12,9 +12,9 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 ## Production profile
 
-Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission.
+Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission. If no values exist in the `production` profile, EAS CLI will prompt you to provide the values interactively.
 
-An example **eas.json** with `production` is shown below:
+The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [EAS Workflows](/eas/workflows/):
 
 ```json eas.json
 {
@@ -28,14 +28,16 @@ An example **eas.json** with `production` is shown below:
         "track": "internal"
       },
       "ios": {
-        "appleId": "john@turtle.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "AB12XYZ34S"
+        "appleId": "your-apple-id@gmail.com",
+        "ascAppId": "your-app-id",
+        "appleTeamId": "your-apple-team-id"
       }
     }
   }
 }
 ```
+
+Learn more about the values you can set with the [Android specific options](/eas/json/#android-specific-options) and the [iOS specific options](/eas/json/#ios-specific-options). You can also learn how to submit to the [Apple App Store](/submit/ios) and the [Google Play Store](/submit/android).
 
 ## Multiple profiles
 
