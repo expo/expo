@@ -1,4 +1,4 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { DevToolsPluginEventEmitter, type EventSubscription } from './DevToolsPluginEventEmitter';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 /**
@@ -8,7 +8,8 @@ import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.typ
 export declare abstract class DevToolsPluginClient {
     readonly connectionInfo: ConnectionInfo;
     private readonly options?;
-    protected eventEmitter: EventEmitter;
+    /** @deprecated Use public methods on `DevToolsPluginClient` instead */
+    protected eventEmitter: DevToolsPluginEventEmitter;
     private static defaultWSStore;
     private readonly wsStore;
     protected isClosed: boolean;
