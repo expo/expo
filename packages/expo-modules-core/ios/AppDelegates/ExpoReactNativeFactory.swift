@@ -31,6 +31,8 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
       return createRootView(bridge, moduleName, initProps)
     }
 
+    configuration.jsRuntimeConfiguratorDelegate = delegate
+
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
       guard let createBridge = weakDelegate.createBridge else {
         fatalError("ExpoReactNativeFactory: createBridge is nil.")
@@ -39,7 +41,10 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
     }
 
     configuration.customizeRootView = { rootView in
-      weakDelegate.customize(rootView as? RCTRootView)
+      guard let view = rootView as? RCTRootView else {
+        return
+      }
+      weakDelegate.customize(view)
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.

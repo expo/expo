@@ -1,4 +1,5 @@
-import Constants, { AppOwnership } from 'expo-constants';
+import { isRunningInExpoGo } from 'expo';
+import Constants from 'expo-constants';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { ExpoUpdatesModule } from 'expo-updates';
@@ -6,8 +7,6 @@ import type { ExpoUpdatesModule } from 'expo-updates';
 import { getManifestBaseUrl } from './AssetUris';
 
 const ExpoUpdates = requireOptionalNativeModule<ExpoUpdatesModule>('ExpoUpdates');
-
-const isRunningInExpoGo = Constants.appOwnership === AppOwnership.Expo;
 
 // expo-updates (and Expo Go expo-updates override) manages assets from updates and exposes
 // the ExpoUpdates.localAssets constant containing information about the assets.
@@ -21,7 +20,7 @@ const shouldUseUpdatesAssetResolution =
 
 // Expo Go always uses the updates module for asset resolution (local assets) since it
 // overrides the expo-updates module.
-export const IS_ENV_WITH_LOCAL_ASSETS = isRunningInExpoGo || shouldUseUpdatesAssetResolution;
+export const IS_ENV_WITH_LOCAL_ASSETS = isRunningInExpoGo() || shouldUseUpdatesAssetResolution;
 
 // Get the localAssets property from the ExpoUpdates native module so that we do
 // not need to include expo-updates as a dependency of expo-asset
