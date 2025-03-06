@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- added throwing an exception if registerTask is run on an iOS Simulator or a device without background modes enabled
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.1.2 - 2025-02-14
