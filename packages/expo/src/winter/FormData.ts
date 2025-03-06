@@ -78,7 +78,7 @@ function normalizeArgs(
       // @ts-expect-error: Mutating the Blob object to add the `name` property.
       value.name = blobFilename ?? 'blob';
     } else {
-      value = { type: value.type, name: blobFilename || 'blob', blob: value };
+      value = { type: value.type, name: blobFilename ?? 'blob', blob: value };
     }
   } else if (typeof value !== 'object') {
     value = String(value);
