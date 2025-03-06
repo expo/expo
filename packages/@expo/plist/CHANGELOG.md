@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Upgrade to `xmlbuilder@^15.1.1` and `@xmldom/xmldom@^0.8.8` to dedupe dependencies.
+- Upgrade to `xmlbuilder@^15.1.1` and `@xmldom/xmldom@^0.8.8` to dedupe dependencies. ([#35342](https://github.com/expo/expo/pull/35342) by [@byCedric](https://github.com/byCedric))
 
 ## 0.2.2 - 2025-02-14
 
