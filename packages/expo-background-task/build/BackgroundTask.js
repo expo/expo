@@ -52,13 +52,9 @@ export async function registerTaskAsync(taskName, options = {}) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
     }
     if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
-        const message = Platform.OS === 'ios'
+        throw new Error(Platform.OS === 'ios'
             ? 'iOS: expo-background-tasks are only available on a device.'
-            : 'Background tasks are not available in the current environment.';
-        // Call console.error to display the error even if the call is async without any handlers
-        console.error(message);
-        // before throwing the error
-        throw new Error(message);
+            : 'Background tasks are not available in the current environment.');
     }
     console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
     await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
