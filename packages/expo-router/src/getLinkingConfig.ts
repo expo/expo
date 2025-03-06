@@ -3,10 +3,8 @@ import { Platform } from 'expo-modules-core';
 
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
-import { cleanPath, routePatternToRegex } from './fork/getStateFromPath-forks';
-import { getReactNavigationConfig, parseRouteSegments } from './getReactNavigationConfig';
+import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { type RedirectConfig } from './getRoutesCore';
-import { convertRedirect } from './getRoutesRedirects';
 import { RouterStore } from './global-state/router-store';
 import {
   addEventListener,
