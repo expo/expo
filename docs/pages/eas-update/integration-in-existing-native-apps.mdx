@@ -1,12 +1,9 @@
 ---
 title: Using EAS Update in an existing native app
-sidebar_title: Integration in existing native apps
+sidebar_title: Integrate in existing native apps
 description: Learn how to integrate EAS Update into your existing native Android and iOS app to enable over-the-air updates.
 ---
 
-import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
@@ -60,13 +57,6 @@ The next step is to integrate `expo-updates` into your Android and iOS projects 
 A complete working example is available at [this GitHub repository](https://github.com/expo/CustomRNView) .
 
 </Collapsible>
-
-<BoxLink
-  title="CustomRNView"
-  description="A complete working example of integrating EAS Update into an existing native app."
-  Icon={GithubIcon}
-  href="https://github.com/expo/CustomRNView"
-/>
 
 ### Integrating expo-updates with your React Native bundling
 
@@ -226,8 +216,8 @@ class AppDelegate: EXAppDelegateWrapper {
   }
 
   /**
-   Application launch initializes the custom view controller: all React Native
-   and updates initialization is handled there
+   * Application launch initializes the custom view controller; all React Native
+   * and updates initialization is handled there
    */
   override func application(
     _ application: UIApplication,
@@ -239,7 +229,6 @@ class AppDelegate: EXAppDelegateWrapper {
     return true
   }
 }
-
 ```
 
 #### Implementing a custom view controller
@@ -312,7 +301,6 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
     ])
   }
 }
-
 ```
 
 ## Common questions
