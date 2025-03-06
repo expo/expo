@@ -238,7 +238,7 @@ class AppDelegate: EXAppDelegateWrapper {
    1. Set the app delegate's updates controller instance, so that its `bundleURL()` method above works correctly for updates.
    2. Set the `AppController` delegate to the view controller instance
    3. Start the `AppController`
-3. Finally, the view controller must implement the one method in the `AppControllerDelegate` protocol, `appController(_ appController: AppControllerInterface, didStartWithSuccess success: bool)`. This method will be called once the updates system is fully initialized, and the latest update (or the embedded bundle) is ready to be rendered.
+3. Finally, the view controller must implement the one method in the `AppControllerDelegate` protocol, `appController(_ appController: AppControllerInterface, didStartWithSuccess success: Bool)`. This method will be called once the updates system is fully initialized, and the latest update (or the embedded bundle) is ready to be rendered.
    1. Create the React Native root view using the root view factory created by the app delegate. The app name passed in must match the app name that you registered in your JS entry point above.
    2. Add this root view to the view controller.
 
