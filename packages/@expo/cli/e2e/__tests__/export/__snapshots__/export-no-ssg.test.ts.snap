@@ -82,5 +82,7 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
   ],
   "htmlRoutes": [],
   "notFoundRoutes": [],
+  "redirects": [],
+  "rewrites": [],
 }
 `;
