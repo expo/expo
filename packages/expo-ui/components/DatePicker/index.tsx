@@ -1,9 +1,8 @@
 import { requireNativeView } from 'expo';
 import { Platform } from 'expo-modules-core';
-import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
 
 type AndroidVariant = 'picker' | 'input';
 

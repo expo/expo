@@ -45,6 +45,7 @@
 
 ### 💡 Others
 
+- Add docs ([#34808](https://github.com/expo/expo/pull/34808) by [@aleqsio](https://github.com/aleqsio))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Rename the events for the `Switch` component. ([#34577](https://github.com/expo/expo/pull/34577) by [@behenate](https://github.com/behenate))
 
