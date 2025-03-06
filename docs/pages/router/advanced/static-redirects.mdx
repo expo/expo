@@ -1,13 +1,13 @@
 ---
 title: Redirects and rewrites
-description: Learn how to create redirects for routes that may no longer exist
+description: Learn how to create redirects for routes that may no longer exist.
 ---
 
-> **warning** Static redirects were added Expo Router `4.x.x`.
+> **warning** Static redirects are available from Expo Router `4.x.x`.
 
 ## Redirect component
 
-To use <Redirect />, simply import it from expo-router and specify the href prop with the desired destination route.
+To use `<Redirect />` component, import it from the `expo-router` and specify the `href` prop with the desired destination route.
 
 ```tsx
 import { Redirect } from 'expo-router';
@@ -17,11 +17,11 @@ export default function Index() {
 }
 ```
 
-In this example, when the user visits this page, they will be automatically redirected to /home.
+In this example, when the app user visits this page, they will be automatically redirected to `/home` route.
+
+You can use `<Redirect />` within a component that checks for conditions before navigating.
 
 ```tsx
-You can use <Redirect /> within a component that checks for conditions before navigating.
-
 import { Redirect } from 'expo-router';
 import { useState, useEffect } from 'react';
 
@@ -41,11 +41,11 @@ if (!isAuthenticated) {
 }
 ```
 
-In this case, if the user is not authenticated, they will be redirected to the /login page.
+In this case, if the user is not authenticated, they will be redirected to the `/login` page.
 
 ## Static redirects
 
-Static redirects allow you to specify a redirect configuration in your **app.json**. This allows you to specify redirects for routes that may no longer exist in your **app** directory. When you navigate to a screen, Expo Router simulates a `GET` request to a local server which responds with the screens contents. This ensures that Expo Router behaves consistently on native, web and when fetching React Server Components. As such, this configuration is based upon **server requests** and is based upon the request URL, not the screen name.
+Static redirects allow you to specify a redirect configuration in your **app.json** using the `expo-router` config plugin. This allows you to specify redirects for routes that may no longer exist in your **app** directory. When you navigate to a screen, Expo Router simulates a `GET` request to a local server, which responds with the screen's content. This ensures that Expo Router behaves consistently on native, web, and when fetching React Server Components. As such, this configuration is based upon **server requests** and is based upon the request URL, not the screen name.
 
 ```json app.json
 {
@@ -63,20 +63,18 @@ Static redirects allow you to specify a redirect configuration in your **app.jso
 
 Each redirect configuration should have the following properties:
 
-- **source** is the incoming request path pattern.
-- **destination** is the path you want to route to.
+- **source**: The incoming request path pattern.
+- **destination**: The path you want to route to.
 
-And can have these optional properties:
+Redirect configuration can have the following optional property:
 
-- **permanent** true or false - if true will use the 308 status code which instructs clients/search engines to cache the redirect forever, if false will use the 307 status code which is temporary and is not cached.
+- **permanent**: Accepts `true` or `false`. If `true`, will use the 308 status code, which instructs clients/search engines to cache the redirect forever. If `false`, will use the 307 status code, which is temporary and is not cached.
 
-Unlike routes within the **app** directory, you do not need to add the `/index` suffix for a directory route or `+api` to for API routes.
-
-You cannot create redirects for `_layout` files.
+Unlike routes within the **app** directory, you do not need to add the `/index` suffix for a directory route or `+api` to for API routes. You cannot create redirects for **\_layout** files.
 
 ### Dynamic routes
 
-The `source` and `destination` routes can use the [dynamic route syntax](https://docs.expo.dev/develop/dynamic-routes/) create redirects for dynamic routes
+The `source` and `destination` routes can use the [dynamic route syntax](/develop/dynamic-routes/) to create redirects for dynamic routes. You can define them in **app.json** using the `expo-router` config plugin.
 
 ```json app.json
 {
@@ -92,7 +90,7 @@ The `source` and `destination` routes can use the [dynamic route syntax](https:/
 }
 ```
 
-When performing the redirection the variable names will be matched if able. Any unmatched variables will be provided on query params.
+The variable names will be matched when performing the redirection, if available. Any unmatched variables will be passed as query params.
 
 ```json app.json
 {
@@ -112,7 +110,7 @@ Using the configuration above, `/redirect/apple/carrot/beef` will redirect to `/
 
 ### HTTP methods
 
-To redirect only certain HTTP methods, provide the methods as a string array. Remember that screens are considered a `GET` request
+To redirect only certain HTTP methods, provide the methods as a string inside an array. Remember that screens are considered a `GET` request.
 
 ```json app.json
 {
@@ -131,7 +129,7 @@ To redirect only certain HTTP methods, provide the methods as a string array. Re
 
 ## Rewrites
 
-Rewrites are only possible by the static configuration. Rewrites are different from redirects as they act as a URL proxy and hide the destination URL. While redirects will return back a HTTP status code and reroute the request, a rewrite will simply render the new destination without changing the URL.
+Rewrites are only possible through static configuration. They are different from redirects as they act as a URL proxy and hide the destination URL. While redirects will return back an HTTP status code and reroute the request, a rewrite will render the new destination without changing the URL.
 
 ```json app.json
 {
