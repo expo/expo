@@ -157,7 +157,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
         }
 
-        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(`./${source}`));
+        const fakeContextKey = `/${removeFileSystemDots(removeSupportedExtensions(source))}`;
         contextKeys.push(fakeContextKey);
         redirects[fakeContextKey] = {
           source,
@@ -274,7 +274,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     if (meta.isRedirect) {
       node.destinationContextKey = redirects[filePath].destination;
       node.permanent = redirects[filePath].permanent;
-      node.methods = redirects[filePath].methods;
       node.generated = true;
       if (node.type === 'route') {
         node = options.getSystemRoute(
@@ -285,12 +284,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           node
         );
       }
+      if (redirects[filePath].methods) {
+        node.methods = redirects[filePath].methods;
+      }
       node.type = 'redirect';
     }
 
     if (meta.isRewrite) {
       node.destinationContextKey = rewrites[filePath].destination;
-      node.methods = rewrites[filePath].methods;
       node.generated = true;
       if (node.type === 'route') {
         node = options.getSystemRoute(
@@ -300,6 +301,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           },
           node
         );
+      }
+      if (redirects[filePath].methods) {
+        node.methods = redirects[filePath].methods;
       }
       node.type = 'rewrite';
     }
@@ -522,7 +526,7 @@ function getFileMeta(
   const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
   let route = key;
 
-  const parts = key.split('/');
+  const parts = removeFileSystemDots(originalKey).split('/');
   const filename = parts[parts.length - 1];
   const [filenameWithoutExtensions, platformExtension] =
     removeSupportedExtensions(filename).split('.');
@@ -531,14 +535,14 @@ function getFileMeta(
   const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
-    throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
+    throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
   }
 
   // Nested routes cannot start with the '+' character, except for the '+not-found' route
   if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
     const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
     throw new Error(
-      `Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
+      `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
     );
   }
   let specificity = 0;
@@ -568,7 +572,7 @@ function getFileMeta(
 
     if (isApi && specificity !== 0) {
       throw new Error(
-        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`
+        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`
       );
     }
 

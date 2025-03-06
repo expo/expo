@@ -38,7 +38,9 @@ function getServerManifest(route) {
         return [[key, '/' + absoluteRoute, route]];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
-    const flat = getFlatNodes(route).sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a));
+    const flat = getFlatNodes(route)
+        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
+        .reverse();
     const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' ||
         (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ([path]) => path);

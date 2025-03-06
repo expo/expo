@@ -105,7 +105,9 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   }
 
   // Remove duplicates from the runtime manifest which expands array syntax.
-  const flat = getFlatNodes(route).sort(([, , a], [, , b]) => sortRoutes(b, a));
+  const flat = getFlatNodes(route)
+    .sort(([, , a], [, , b]) => sortRoutes(b, a))
+    .reverse();
 
   const apiRoutes = uniqueBy(
     flat.filter(([, , route]) => route.type === 'api'),

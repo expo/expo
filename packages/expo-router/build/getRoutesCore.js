@@ -79,7 +79,7 @@ function getDirectoryTree(contextModule, options) {
                 if (!destination) {
                     throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
                 }
-                const fakeContextKey = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(`./${source}`));
+                const fakeContextKey = `/${(0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source))}`;
                 contextKeys.push(fakeContextKey);
                 redirects[fakeContextKey] = {
                     source,
@@ -169,7 +169,6 @@ function getDirectoryTree(contextModule, options) {
         if (meta.isRedirect) {
             node.destinationContextKey = redirects[filePath].destination;
             node.permanent = redirects[filePath].permanent;
-            node.methods = redirects[filePath].methods;
             node.generated = true;
             if (node.type === 'route') {
                 node = options.getSystemRoute({
@@ -177,17 +176,22 @@ function getDirectoryTree(contextModule, options) {
                     route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
                 }, node);
             }
+            if (redirects[filePath].methods) {
+                node.methods = redirects[filePath].methods;
+            }
             node.type = 'redirect';
         }
         if (meta.isRewrite) {
             node.destinationContextKey = rewrites[filePath].destination;
-            node.methods = rewrites[filePath].methods;
             node.generated = true;
             if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'rewrite',
                     route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
                 }, node);
+            }
+            if (redirects[filePath].methods) {
+                node.methods = redirects[filePath].methods;
             }
             node.type = 'rewrite';
         }
@@ -368,18 +372,18 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
     const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
     let route = key;
-    const parts = key.split('/');
+    const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
     const filename = parts[parts.length - 1];
     const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
-        throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
+        throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
     }
     // Nested routes cannot start with the '+' character, except for the '+not-found' route
     if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
-        throw new Error(`Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
+        throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
     let specificity = 0;
     const hasPlatformExtension = validPlatforms.has(platformExtension);
@@ -408,7 +412,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
             specificity = -1;
         }
         if (isApi && specificity !== 0) {
-            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`);
+            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`);
         }
         route = route.replace(new RegExp(`.${platformExtension}$`), '');
     }
