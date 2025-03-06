@@ -31,23 +31,11 @@ def reactNativeAndroidDir = new File(
   "../android"
 )
 
-def jscAndroidDir = new File(
-  providers.exec {
-    workingDir(rootDir)
-    commandLine("node", "--print", "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })")
-  }.standardOutput.asText.get().trim(),
-  "../dist"
-)
-
 allprojects {
     repositories {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url(reactNativeAndroidDir)
-        }
-        maven {
-            // Android JSC is installed from npm
-            url(jscAndroidDir)
         }
 
         google()
