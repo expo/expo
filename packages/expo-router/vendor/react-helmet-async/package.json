@@ -47,16 +47,5 @@
   },
   "peerDependencies": {
     "react": "^16.6.0 || ^17.0.0 || ^18.0.0"
-  },
-  "scripts": {
-    "clean": "rimraf lib",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint --report-unused-disable-directives .",
-    "lint-fix": "yarn lint --fix",
-    "test": "vitest run",
-    "test-watch": "yarn test --watch",
-    "test-update": "yarn test -u",
-    "compile": "yarn run clean && NODE_ENV=production tsx build.ts && yarn types",
-    "prepare": "yarn compile && husky install",
-    "types": "tsc src/index.tsx --jsx react --declaration --esModuleInterop --allowJs --emitDeclarationOnly --outDir lib"
   }
 }
