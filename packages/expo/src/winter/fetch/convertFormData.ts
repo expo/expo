@@ -30,6 +30,20 @@ export async function convertFormDataAsync(
       results.push(entry.file.bytes());
     } else if ('blob' in entry) {
       results.push(new Uint8Array(await blobToArrayBufferAsync(entry.blob)));
+    } else if (entry._data?.blobId != null) {
+      // When `FormData.getParts()` is called, React Native will use spread operator to copy the object and loose the Blob type info.
+      // We should find the original Blob instance from the `FormData._parts` internal properties.
+      // @ts-expect-error: react-native's proprietary Blob type
+      const blob = formData._parts?.find(
+        ([name, value]) => value.data?.blobId === entry._data.blobId
+      );
+      if (blob == null) {
+        throw new Error('Cannot find the original Blob instance from FormData');
+      }
+      if (!(blob[1] instanceof Blob)) {
+        throw new Error('Unexpected value type for Blob entry in FormData');
+      }
+      results.push(new Uint8Array(await blobToArrayBufferAsync(blob[1])));
     } else {
       throw new Error('Unsupported FormDataPart implementation');
     }
