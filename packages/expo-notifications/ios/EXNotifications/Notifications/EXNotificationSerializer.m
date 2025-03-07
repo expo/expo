@@ -58,6 +58,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
   serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
   serializedContent[@"interruptionLevel"] = [EXNotificationSerializer serializedInterruptionLevel:content.interruptionLevel];
+  serializedContent[@"isHeadlessRemoteNotification"] = @([EXNotificationSerializer isHeadlessRemoteNotification:content]);
 
   return serializedContent;
 }
@@ -107,6 +108,17 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     [serializedAttachments addObject:[self serializedNotificationAttachment:attachment]];
   }
   return serializedAttachments;
+}
+
++ (BOOL)isHeadlessRemoteNotification:(UNNotificationContent *)content {
+  NSDictionary *aps = content.userInfo[@"aps"];
+  if (aps && [aps isKindOfClass:[NSDictionary class]]) {
+    NSNumber *contentAvailable = aps[@"content-available"];
+    if (contentAvailable && [contentAvailable isKindOfClass:[NSNumber class]]) {
+      return [contentAvailable intValue] == 1;
+    }
+  }
+  return NO;
 }
 
 + (NSDictionary *)serializedNotificationAttachment:(UNNotificationAttachment *)attachment
