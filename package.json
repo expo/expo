@@ -43,5 +43,6 @@
   },
   "volta": {
     "node": "20.12.2"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }
