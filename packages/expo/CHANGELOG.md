@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `BlobManager` crash when passing `Blob` in our patched `FormData`. ([#35243](https://github.com/expo/expo/pull/35243) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 52.0.37 — 2025-02-20
