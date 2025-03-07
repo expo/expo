@@ -321,6 +321,7 @@ redirects[eas-workflows/triggers]=eas/workflows/syntax/#on
 redirects[eas-workflows/jobs]=eas/workflows/syntax/#jobs
 redirects[eas-workflows/control-flow]=eas/workflows/syntax/#control-flow
 redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
+redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites
