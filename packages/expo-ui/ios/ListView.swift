@@ -10,9 +10,7 @@ struct ListView: ExpoSwiftUI.View {
 
   var body: some View {
     List {
-      UnwrappedChildren { child, _ in
-        child
-      }
+      UnwrappedChildren()
     }
   }
 }
