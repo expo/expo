@@ -24,6 +24,7 @@
 
 - Drop section polyfill for Android ([#35305](https://github.com/expo/expo/pull/35305) by [@aleqsio](https://github.com/aleqsio))
 - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+- Dismiss context menu when a menu item is tapped on Android ([#35365](https://github.com/expo/expo/pull/35365) by [@fobos531](https://github.com/fobos531))
 
 ## 0.0.2 — 2025-02-11
 
