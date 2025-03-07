@@ -138,7 +138,7 @@ export function Submenu(props: SubmenuProps) {
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
  * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
  */
-export function Items() {
+export function Items(props: { children: React.ReactNode }) {
   return <></>;
 }
 Items.tag = 'Items';
