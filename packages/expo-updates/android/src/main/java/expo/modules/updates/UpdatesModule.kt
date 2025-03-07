@@ -243,31 +243,30 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal suspend fun readLogEntries(context: Context, maxAge: Long) =
-      withContext(Dispatchers.IO) {
-        val reader = UpdatesLogReader(context)
-        val date = Date()
-        val epoch = Date(date.time - maxAge)
-        reader.getLogEntries(epoch)
-          .mapNotNull { UpdatesLogEntry.create(it) }
-          .map { entry ->
-            Bundle().apply {
-              putLong("timestamp", entry.timestamp)
-              putString("message", entry.message)
-              putString("code", entry.code)
-              putString("level", entry.level)
-              if (entry.updateId != null) {
-                putString("updateId", entry.updateId)
-              }
-              if (entry.assetId != null) {
-                putString("assetId", entry.assetId)
-              }
-              if (entry.stacktrace != null) {
-                putStringArray("stacktrace", entry.stacktrace.toTypedArray())
-              }
+    internal suspend fun readLogEntries(filesDirectory: File, maxAge: Long) = withContext(Dispatchers.IO) {
+      val reader = UpdatesLogReader(filesDirectory)
+      val date = Date()
+      val epoch = Date(date.time - maxAge)
+      reader.getLogEntries(epoch)
+        .mapNotNull { UpdatesLogEntry.create(it) }
+        .map { entry ->
+          Bundle().apply {
+            putLong("timestamp", entry.timestamp)
+            putString("message", entry.message)
+            putString("code", entry.code)
+            putString("level", entry.level)
+            if (entry.updateId != null) {
+              putString("updateId", entry.updateId)
+            }
+            if (entry.assetId != null) {
+              putString("assetId", entry.assetId)
+            }
+            if (entry.stacktrace != null) {
+              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
             }
           }
-      }
+        }
+    }
 
     internal suspend fun clearLogEntries(filesDirectory: File, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(filesDirectory)

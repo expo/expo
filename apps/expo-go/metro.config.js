@@ -8,6 +8,8 @@ const baseConfig = getDefaultConfig(__dirname);
 module.exports = {
   ...baseConfig,
 
+  watchFolders: [...(baseConfig.watchFolders || []), path.join(monorepoRoot, 'react-native-lab')],
+
   // NOTE(brentvatne): This can be removed when
   // https://github.com/facebook/metro/issues/290 is fixed.
   server: {
