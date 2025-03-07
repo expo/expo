@@ -17,12 +17,10 @@ import { getStackFormattedLocation } from '../formatProjectFilePath';
 
 declare const process: any;
 
-type Props = {
+export function LogBoxInspectorStackFrame(props: {
   frame: StackFrame & { collapse?: boolean };
   onPress?: (event: GestureResponderEvent) => void;
-};
-
-export function LogBoxInspectorStackFrame(props: Props) {
+}) {
   const { frame, onPress } = props;
   const location = getStackFormattedLocation(process.env.EXPO_PROJECT_ROOT, frame);
   return (
@@ -49,17 +47,14 @@ export function LogBoxInspectorStackFrame(props: Props) {
 const styles = StyleSheet.create({
   frameContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 15,
   },
   frame: {
     flex: 1,
     paddingVertical: 4,
-    paddingHorizontal: 10,
+
     borderRadius: 5,
   },
-  lineLocation: {
-    flexDirection: 'row',
-  },
+
   name: {
     color: LogBoxStyle.getTextColor(1),
     fontSize: 14,
@@ -79,12 +74,5 @@ const styles = StyleSheet.create({
   dim: {
     color: LogBoxStyle.getTextColor(0.4),
     fontWeight: '300',
-  },
-  line: {
-    color: LogBoxStyle.getTextColor(0.8),
-    fontSize: 12,
-    fontWeight: '300',
-    includeFontPadding: false,
-    lineHeight: 16,
   },
 });

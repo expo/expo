@@ -6,22 +6,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { LogBoxInspectorSection } from './LogBoxInspectorSection';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
 import type { Stack } from '../Data/LogBoxSymbolication';
 import { useSelectedLog } from '../Data/LogContext';
-import { LogBoxButton } from '../UI/LogBoxButton';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
-import openFileInEditor from '../modules/openFileInEditor';
-
-type Props = {
-  type: StackType;
-  onRetry: () => void;
-};
+import { openFileInEditor } from '../devServerEndpoints';
 
 export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {
   if (stackFrames.length === 0) {
@@ -42,17 +35,20 @@ export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): stri
 
   const framePlural = `frame${collapsedCount > 1 ? 's' : ''}`;
   if (collapsedCount === stackFrames.length) {
-    return collapsed
-      ? `See${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} collapsed ${framePlural}`
-      : `Collapse${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} ${framePlural}`;
+    return `${collapsed ? 'Show' : 'Hide'}${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} ignore-listed ${framePlural}`;
   } else {
-    return collapsed
-      ? `See ${collapsedCount} more ${framePlural}`
-      : `Collapse ${collapsedCount} ${framePlural}`;
+    // Match the chrome inspector wording
+    return `${collapsed ? 'Show' : 'Hide'} ${collapsedCount} ignored-listed ${framePlural}`;
   }
 }
 
-export function LogBoxInspectorStackFrames({ onRetry, type }: Props) {
+export function LogBoxInspectorStackFrames({
+  onRetry,
+  type,
+}: {
+  type: StackType;
+  onRetry: () => void;
+}) {
   const log = useSelectedLog();
 
   const [collapsed, setCollapsed] = useState(() => {
@@ -73,14 +69,54 @@ export function LogBoxInspectorStackFrames({ onRetry, type }: Props) {
   }
 
   return (
-    <LogBoxInspectorSection
-      heading={type === 'component' ? 'Component Stack' : 'Call Stack'}
-      action={
-        <LogBoxInspectorSourceMapStatus
-          onPress={log.symbolicated[type].status === 'FAILED' ? onRetry : null}
-          status={log.symbolicated[type].status}
-        />
-      }>
+    <View style={styles.section}>
+      {/* Header */}
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          marginBottom: 10,
+
+          justifyContent: 'space-between',
+        }}>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <Text style={styles.headingText}>
+            {type === 'component' ? 'Component Stack' : 'Call Stack'}
+          </Text>
+          <LogBoxInspectorSourceMapStatus
+            onPress={log.symbolicated[type].status === 'FAILED' ? onRetry : null}
+            // status={'PENDING'}
+            status={log.symbolicated[type].status}
+          />
+        </View>
+
+        <Pressable onPress={() => setCollapsed(!collapsed)}>
+          {({ hovered }) => (
+            <View
+              style={[
+                {
+                  padding: 6,
+                  borderRadius: 8,
+                  transition: 'background-color 0.3s',
+                  outlineColor: 'transparent',
+                },
+                hovered && {
+                  backgroundColor: 'rgba(234.6, 234.6, 244.8, 0.1)',
+                },
+              ]}>
+              <Text
+                selectable={false}
+                style={{
+                  color: 'rgba(234.6, 234.6, 244.8, 0.6)',
+                }}>
+                {getCollapseMessage(log.getAvailableStack(type)!, !!collapsed)}
+              </Text>
+            </View>
+          )}
+        </Pressable>
+      </View>
+
+      {/* Body */}
       {log.symbolicated[type].status !== 'COMPLETE' && (
         <View style={stackStyles.hintBox}>
           <Text style={stackStyles.hintText}>
@@ -89,12 +125,10 @@ export function LogBoxInspectorStackFrames({ onRetry, type }: Props) {
           </Text>
         </View>
       )}
-      <StackFrameList list={getStackList()!} status={log.symbolicated[type].status} />
-      <StackFrameFooter
-        onPress={() => setCollapsed(!collapsed)}
-        message={getCollapseMessage(log.getAvailableStack(type)!, !!collapsed)}
-      />
-    </LogBoxInspectorSection>
+      <View style={{ gap: 8 }}>
+        <StackFrameList list={getStackList()!} status={log.symbolicated[type].status} />
+      </View>
+    </View>
   );
 }
 
@@ -121,21 +155,25 @@ function StackFrameList({
   });
 }
 
-function StackFrameFooter({ message, onPress }: { message: string; onPress: () => void }) {
-  return (
-    <View style={stackStyles.collapseContainer}>
-      <LogBoxButton
-        backgroundColor={{
-          default: 'transparent',
-          pressed: LogBoxStyle.getBackgroundColor(1),
-        }}
-        onPress={onPress}
-        style={stackStyles.collapseButton}>
-        <Text style={stackStyles.collapse}>{message}</Text>
-      </LogBoxButton>
-    </View>
-  );
-}
+const styles = StyleSheet.create({
+  section: {
+    marginTop: 5,
+  },
+  heading: {
+    alignItems: 'center',
+    flexDirection: 'row',
+
+    marginBottom: 10,
+  },
+  headingText: {
+    color: LogBoxStyle.getTextColor(1),
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    includeFontPadding: false,
+    lineHeight: 20,
+  },
+});
 
 const stackStyles = StyleSheet.create({
   section: {
@@ -181,21 +219,5 @@ const stackStyles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 5,
     marginBottom: 5,
-  },
-  collapseContainer: {
-    marginLeft: 15,
-    flexDirection: 'row',
-  },
-  collapseButton: {
-    borderRadius: 5,
-  },
-  collapse: {
-    color: LogBoxStyle.getTextColor(0.7),
-    fontSize: 12,
-    fontWeight: '300',
-    lineHeight: 20,
-    marginTop: 0,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
   },
 });

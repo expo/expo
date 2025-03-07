@@ -6,7 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useState } from 'react';
-import { GestureResponderEvent, Insets, Platform, Pressable, View, ViewStyle } from 'react-native';
+import {
+  type GestureResponderEvent,
+  type Insets,
+  Platform,
+  Pressable,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import * as LogBoxStyle from './LogBoxStyle';
 

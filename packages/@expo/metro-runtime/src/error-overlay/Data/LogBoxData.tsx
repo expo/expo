@@ -66,7 +66,7 @@ type State = {
 const observers: Set<{ observer: Observer } & any> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
-let updateTimeout: null | ReturnType<typeof setTimeout> = null;
+let updateTimeout: null | ReturnType<typeof setTimeout> | ReturnType<typeof setTimeout> = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
@@ -257,6 +257,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   }
   _selectedIndex = newIndex;
   handleUpdate();
+  console.log('openLog:', NativeLogBox);
   if (NativeLogBox) {
     setTimeout(() => {
       if (oldIndex < 0 && newIndex >= 0) {
