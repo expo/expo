@@ -121,7 +121,10 @@ export function updateDomComponentAssetsForMD5Naming({
     if (artifact.type !== 'js') {
       continue;
     }
-    const artifactAssetName = `/${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`;
+    let artifactAssetName = `/${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`;
+    if (process.platform === 'win32') {
+      artifactAssetName = artifactAssetName.replace(/\//g, '\\');
+    }
     let source = artifact.source;
 
     // [0] Updates asset paths in the DOM component JS bundle (which is a web bundle)
@@ -134,11 +137,10 @@ export function updateDomComponentAssetsForMD5Naming({
       const index = asset.scales.findIndex((s) => s === 1) ?? 0; // DOM components (web) uses 1x assets
       const md5 = asset.fileHashes[index];
       source = source.replace(regexp, `$1${md5}.${asset.type}$3`);
-
-      const domJsAssetEntity = files.get(artifactAssetName);
-      assert(domJsAssetEntity);
-      domJsAssetEntity.contents = source;
     }
+    const domJsAssetEntity = files.get(artifactAssetName);
+    assert(domJsAssetEntity);
+    domJsAssetEntity.contents = source;
 
     // [1] Updates JS artifacts in HTML
     const md5 = crypto.createHash('md5').update(source).digest('hex');

@@ -10,6 +10,7 @@
 
 - Ensure `UsbmuxClient` can load binary plist pair record data from Apple devices. ([#35262](https://github.com/expo/expo/pull/35262) by [@byCedric](https://github.com/byCedric))
 - Phase out `@expo/rudder-sdk-node` usage in telemetry. ([#35271](https://github.com/expo/expo/pull/35271) by [@byCedric](https://github.com/byCedric))
+- Fixed DOM Components support for updates. ([#35280](https://github.com/expo/expo/pull/35280) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
