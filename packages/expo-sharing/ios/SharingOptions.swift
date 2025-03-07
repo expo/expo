@@ -13,4 +13,3 @@ internal struct SharingOptions: Record {
     @Field var height: Double?
   }
 }
-

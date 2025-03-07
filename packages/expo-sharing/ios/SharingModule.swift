@@ -34,7 +34,6 @@ public final class SharingModule: Module {
       // Apple docs state that `UIActivityViewController` must be presented in a
       // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
       if UIDevice.current.userInterfaceIdiom == .pad {
-
         let rect = options.anchor
         let viewFrame = currentViewcontroller.view.frame
 
