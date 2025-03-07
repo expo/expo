@@ -41,6 +41,8 @@ async function syncConfigurationToNativeAndroidAsync(
     skipSDKVersionRequirement: true,
   });
 
+  const packageVersion = require('../../package.json').version;
+
   // sync AndroidManifest.xml
   const androidManifestPath = await AndroidConfig.Paths.getAndroidManifestAsync(
     options.projectRoot
@@ -56,7 +58,8 @@ async function syncConfigurationToNativeAndroidAsync(
   const updatedAndroidManifest = await AndroidConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
-    androidManifest
+    androidManifest,
+    packageVersion
   );
   await AndroidConfig.Manifest.writeAndroidManifestAsync(
     androidManifestPath,
@@ -92,7 +95,8 @@ async function syncConfigurationToNativeIosAsync(
   const updatedExpoPlist = await IOSConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
-    expoPlist
+    expoPlist,
+    packageVersion
   );
   await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
 }
