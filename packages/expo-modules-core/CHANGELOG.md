@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError` error on Android. ([#35114](https://github.com/expo/expo/pull/35114) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.2.2 — 2025-02-14
