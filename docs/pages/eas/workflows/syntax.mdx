@@ -398,17 +398,13 @@ jobs:
 
 > **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
-You can then use the results of the fingerprint job when looking for existing build:
+This job outputs the following properties:
 
-```yaml
-jobs:
-  get_ios_build:
-    name: Check for existing ios build
-    needs: [fingerprint]
-    type: get-build
-    params:
-      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
-      profile: production
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
 ```
 
 #### `get-build`

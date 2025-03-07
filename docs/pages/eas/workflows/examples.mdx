@@ -188,23 +188,7 @@ on:
 jobs:
   fingerprint:
     name: Fingerprint
-    outputs:
-      android_fingerprint_hash: ${{ steps.fingerprint_step_id.outputs.android_fingerprint_hash }}
-      ios_fingerprint_hash: ${{ steps.fingerprint_step_id.outputs.ios_fingerprint_hash }}
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - name: Install additional tools
-        run: sudo apt-get update -y && sudo apt-get install -y jq
-      - name: Set fingerprint variables
-        id: fingerprint_step_id
-        run: |
-          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android)
-          ANDROID_FINGERPRINT_HASH=$(echo $ANDROID_FINGERPRINT | jq -r '.hash')
-          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios)
-          IOS_FINGERPRINT_HASH=$(echo $IOS_FINGERPRINT | jq -r '.hash')
-          set-output ios_fingerprint_hash $IOS_FINGERPRINT_HASH
-          set-output android_fingerprint_hash $ANDROID_FINGERPRINT_HASH
+    type: fingerprint
   get_android_build:
     name: Check for existing android build
     needs: [fingerprint]
