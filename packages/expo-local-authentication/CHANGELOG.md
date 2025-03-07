@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync` for better customization of the authentication prompt. 
+- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync` for better customization of the authentication prompt. ([#35335](https://github.com/expo/expo/pull/35335) by [@filipejuan](https://github.com/filipejuan))
 
 ### 🐛 Bug fixes
 
