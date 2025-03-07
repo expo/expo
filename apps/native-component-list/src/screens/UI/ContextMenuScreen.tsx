@@ -101,40 +101,38 @@ export default function ContextMenuScreen() {
               </Button>
             </ContextMenu.Trigger>
             <ContextMenu.Items>
-              <>
-                <Button variant="bordered" color="#ff0000">
-                  I'm red!
-                </Button>
-                <Button
-                  variant="bordered"
-                  elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}>
-                  My text is green!
-                </Button>
-                <Switch
-                  value={switchChecked}
-                  label="I'm very colorful!"
-                  variant="checkbox"
-                  elementColors={{
-                    checkedColor: '#ff0000',
-                    disabledCheckedColor: '#00ff00',
-                    uncheckedColor: '#0000ff',
-                    checkmarkColor: '#ffff00',
-                  }}
-                  onValueChange={setSwitchChecked}
-                />
-                <Switch
-                  value={switch2Checked}
-                  variant="switch"
-                  label="Switches can be colorul too!"
-                  onValueChange={setSwitch2Checked}
-                  elementColors={{
-                    checkedThumbColor: '#ff0000',
-                    checkedTrackColor: '#00ff00',
-                    uncheckedThumbColor: '#0000ff',
-                    uncheckedTrackColor: '#ffff00',
-                  }}
-                />
-              </>
+              <Button variant="bordered" color="#ff0000">
+                I'm red!
+              </Button>
+              <Button
+                variant="bordered"
+                elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}>
+                My text is green!
+              </Button>
+              <Switch
+                value={switchChecked}
+                label="I'm very colorful!"
+                variant="checkbox"
+                elementColors={{
+                  checkedColor: '#ff0000',
+                  disabledCheckedColor: '#00ff00',
+                  uncheckedColor: '#0000ff',
+                  checkmarkColor: '#ffff00',
+                }}
+                onValueChange={setSwitchChecked}
+              />
+              <Switch
+                value={switch2Checked}
+                variant="switch"
+                label="Switches can be colorul too!"
+                onValueChange={setSwitch2Checked}
+                elementColors={{
+                  checkedThumbColor: '#ff0000',
+                  checkedTrackColor: '#00ff00',
+                  uncheckedThumbColor: '#0000ff',
+                  uncheckedTrackColor: '#ffff00',
+                }}
+              />
             </ContextMenu.Items>
           </ContextMenu>
         </Section>
