@@ -15,12 +15,10 @@ import type { GestureResponderEvent } from 'react-native';
 import { LogBoxButton } from '../UI/LogBoxButton';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
 
-type Props = {
+export function LogBoxInspectorSourceMapStatus(props: {
   onPress?: ((event: GestureResponderEvent) => void) | null;
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
-};
-
-export function LogBoxInspectorSourceMapStatus(props: Props) {
+}) {
   const [state, setState] = useState<{
     animation: null | Animated.CompositeAnimation;
     rotate: null | Animated.AnimatedInterpolation<string>;
@@ -39,7 +37,10 @@ export function LogBoxInspectorSourceMapStatus(props: Props) {
             easing: Easing.linear,
             toValue: 1,
             useNativeDriver: true,
-          })
+          }),
+          {
+            iterations: -1,
+          }
         );
         setState({
           animation,

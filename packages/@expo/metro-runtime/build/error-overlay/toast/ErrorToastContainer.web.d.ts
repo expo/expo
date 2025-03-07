@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
+import '../ErrorOverlay.css';
 export declare function ErrorToastContainer(): React.JSX.Element | null;
 declare const _default: React.Component<object, {}, any>;
 export default _default;

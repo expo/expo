@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { GestureResponderEvent, Insets, ViewStyle } from 'react-native';
+import { type GestureResponderEvent, type Insets, ViewStyle } from 'react-native';
 type Props = {
     backgroundColor: {
         default: string;

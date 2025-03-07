@@ -7,10 +7,8 @@
  */
 import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
-type Props = {
+export declare function LogBoxInspectorSourceMapStatus(props: {
     onPress?: ((event: GestureResponderEvent) => void) | null;
     status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
-};
-export declare function LogBoxInspectorSourceMapStatus(props: Props): React.JSX.Element | null;
-export {};
+}): React.JSX.Element | null;
 //# sourceMappingURL=LogBoxInspectorSourceMapStatus.d.ts.map

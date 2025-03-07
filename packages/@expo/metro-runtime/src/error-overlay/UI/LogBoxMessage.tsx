@@ -17,8 +17,9 @@ type Props = {
   maxLength?: number;
 };
 
-const cleanContent = (content: string) =>
-  content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
+const cleanContent = (content: string) => content;
+// const cleanContent = (content: string) =>
+//   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 
 export function LogBoxMessage(props: Props): React.ReactElement {
   const { content, substitutions }: Message = props.message;

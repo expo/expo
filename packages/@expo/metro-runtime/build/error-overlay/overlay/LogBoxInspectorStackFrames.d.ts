@@ -8,11 +8,9 @@
 import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
 import type { Stack } from '../Data/LogBoxSymbolication';
-type Props = {
+export declare function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string;
+export declare function LogBoxInspectorStackFrames({ onRetry, type, }: {
     type: StackType;
     onRetry: () => void;
-};
-export declare function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string;
-export declare function LogBoxInspectorStackFrames({ onRetry, type }: Props): React.JSX.Element | null;
-export {};
+}): React.JSX.Element | null;
 //# sourceMappingURL=LogBoxInspectorStackFrames.d.ts.map

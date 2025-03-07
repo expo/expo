@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import type { LogLevel } from '../Data/LogBoxLog';
 import type { Message } from '../Data/parseLogBoxLog';
@@ -23,6 +23,52 @@ type Props = {
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
 
+export function LogBoxInspectorMessageHeader(props: Props) {
+  return (
+    <div
+      style={{
+        padding: '0 1rem',
+        display: 'flex',
+        gap: 8,
+        flexDirection: 'column',
+      }}>
+      <div style={{ display: 'flex' }}>
+        <span
+          data-testid="logbox_title"
+          style={{
+            fontFamily: 'var(--expo-log-font-family)',
+            padding: 8,
+            backgroundColor:
+              props.level === 'warn' ? 'rgba(243, 250, 154, 0.2)' : 'rgba(205, 97, 94, 0.2)',
+            borderRadius: 8,
+            fontWeight: '600',
+            fontSize: 14,
+            color:
+              props.level === 'warn' ? 'rgba(243, 250, 154, 1)' : `var(--expo-log-color-danger)`,
+          }}>
+          {props.title}
+        </span>
+      </div>
+      <Text
+        style={{
+          color: LogBoxStyle.getTextColor(1),
+          fontSize: 16,
+          fontWeight: '500',
+        }}>
+        <LogBoxMessage
+          maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
+          message={props.message}
+          style={{
+            color:
+              props.level === 'warn' ? 'rgba(243, 250, 154, 1)' : `var(--expo-log-color-danger)`,
+          }}
+        />
+        <ShowMoreButton {...props} />
+      </Text>
+    </div>
+  );
+}
+
 function ShowMoreButton({
   message,
   collapsed,
@@ -32,91 +78,15 @@ function ShowMoreButton({
     return null;
   }
   return (
-    <Text style={styles.collapse} onPress={onPress}>
+    <Text
+      style={{
+        color: LogBoxStyle.getTextColor(0.7),
+        fontSize: 14,
+        fontWeight: '300',
+        lineHeight: 12,
+      }}
+      onPress={onPress}>
       ... See More
     </Text>
   );
 }
-
-export function LogBoxInspectorMessageHeader(props: Props) {
-  return (
-    <View style={styles.body}>
-      <View style={styles.heading}>
-        <Text testID="logbox_title" style={[styles.headingText, styles[props.level]]}>
-          {props.title}
-        </Text>
-      </View>
-      <Text style={styles.bodyText}>
-        <LogBoxMessage
-          maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
-          message={props.message}
-          style={styles.messageText}
-        />
-        <ShowMoreButton {...props} />
-      </Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  body: {
-    backgroundColor: LogBoxStyle.getBackgroundColor(1),
-    ...Platform.select({
-      web: {
-        boxShadow: `0 2px 0 2px #00000080`,
-      },
-    }),
-  },
-  bodyText: {
-    color: LogBoxStyle.getTextColor(1),
-    fontSize: 14,
-    includeFontPadding: false,
-    lineHeight: 20,
-    fontWeight: '500',
-    paddingHorizontal: 12,
-    paddingBottom: 10,
-  },
-  heading: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  headingText: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    includeFontPadding: false,
-    lineHeight: 28,
-  },
-  warn: {
-    color: LogBoxStyle.getWarningColor(1),
-  },
-  error: {
-    color: LogBoxStyle.getErrorColor(1),
-  },
-  fatal: {
-    color: LogBoxStyle.getFatalColor(1),
-  },
-  syntax: {
-    color: LogBoxStyle.getFatalColor(1),
-  },
-  static: {
-    color: LogBoxStyle.getFatalColor(1),
-  },
-  messageText: {
-    color: LogBoxStyle.getTextColor(0.6),
-  },
-  collapse: {
-    color: LogBoxStyle.getTextColor(0.7),
-    fontSize: 14,
-    fontWeight: '300',
-    lineHeight: 12,
-  },
-  button: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 3,
-  },
-});
