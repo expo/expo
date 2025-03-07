@@ -13,12 +13,12 @@ import type { StyleProp, TextStyle } from 'react-native';
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS: Record<string, string> = {
   'ansi-black': 'rgb(27, 27, 27)',
-  'ansi-red': 'rgb(187, 86, 83)',
-  'ansi-green': 'rgb(144, 157, 98)',
-  'ansi-yellow': 'rgb(234, 193, 121)',
+  'ansi-red': 'var(--expo-log-syntax-red)',
+  'ansi-green': '#ffca16',
+  'ansi-yellow': 'var(--expo-log-syntax-orange)',
+  'ansi-cyan': '#de51a8',
+  'ansi-magenta': '#6abaff',
   'ansi-blue': 'rgb(125, 169, 199)',
-  'ansi-magenta': 'rgb(176, 101, 151)',
-  'ansi-cyan': 'rgb(140, 220, 216)',
   // Instead of white, use the default color provided to the component
   // 'ansi-white': 'rgb(216, 216, 216)',
   'ansi-bright-black': 'rgb(98, 98, 98)',

@@ -6,11 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useEffect } from 'react';
-import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, StyleSheet, View } from 'react-native';
 
-import { ErrorToastMessage } from './ErrorToastMessage';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog } from '../Data/LogBoxLog';
+import { LogBoxMessage } from '../UI/LogBoxMessage';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
 
 type Props = {
@@ -30,46 +30,49 @@ function useSymbolicatedLog(log: LogBoxLog) {
 }
 
 export function ErrorToast(props: Props) {
-  const { totalLogCount, level, log } = props;
+  const { totalLogCount, log } = props;
 
   useSymbolicatedLog(log);
 
   return (
-    <View style={toastStyles.container}>
-      <Pressable style={{ flex: 1 }} onPress={props.onPressOpen}>
-        {({
-          /** @ts-expect-error: react-native types are broken. */
-          hovered,
-          pressed,
-        }) => (
-          <View
-            style={[
-              toastStyles.press,
-              {
-                // @ts-expect-error: web-only type
-                transitionDuration: '150ms',
-                backgroundColor: pressed
-                  ? '#323232'
-                  : hovered
-                    ? '#111111'
-                    : LogBoxStyle.getBackgroundColor(),
-              },
-            ]}>
-            <Count count={totalLogCount} level={level} />
-            <ErrorToastMessage message={log.message} />
-            <Dismiss onPress={props.onPressDismiss} />
-          </View>
+    <button data-expo-log-toast onClick={props.onPressOpen}>
+      <Count count={totalLogCount} />
+
+      <Text numberOfLines={1} style={styles.text}>
+        {log.message && (
+          <LogBoxMessage plaintext message={log.message} style={styles.substitutionText} />
         )}
-      </Pressable>
-    </View>
+      </Text>
+
+      <Dismiss onPress={props.onPressDismiss} />
+    </button>
   );
 }
 
-function Count({ count, level }: { count: number; level: Props['level'] }) {
+function Count({ count }: { count: number }) {
   return (
-    <View style={[countStyles.inside, countStyles[level]]}>
-      <Text style={countStyles.text}>{count <= 1 ? '!' : count}</Text>
-    </View>
+    <div
+      style={{
+        minWidth: 30,
+        height: 30,
+        borderRadius: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        display: 'flex',
+        background: 'var(--expo-log-color-danger)',
+      }}>
+      <Text
+        style={{
+          color: LogBoxStyle.getTextColor(1),
+          fontSize: 14,
+          lineHeight: 18,
+          textAlign: 'center',
+          fontWeight: '600',
+          textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+        }}>
+        {count <= 1 ? '!' : count}
+      </Text>
+    </div>
   );
 }
 
@@ -92,80 +95,52 @@ function Dismiss({ onPress }: { onPress: () => void }) {
         pressed,
       }) => (
         <View
-          style={[dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }]}>
-          <Image
-            source={require('@expo/metro-runtime/assets/close.png')}
-            style={dismissStyles.image}
-          />
+          style={[
+            {
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              height: 20,
+              width: 20,
+              borderRadius: 25,
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            hovered && { opacity: 0.8 },
+            pressed && { opacity: 0.5 },
+          ]}>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            style={{
+              width: 12,
+              height: 12,
+              color: 'white',
+              // color: 'var(--expo-log-color-danger)',
+            }}>
+            <path
+              id="Icon"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M17 7L7 17M7 7L17 17"
+            />
+          </svg>
         </View>
       )}
     </Pressable>
   );
 }
 
-const countStyles = StyleSheet.create({
-  warn: {
-    backgroundColor: LogBoxStyle.getWarningColor(1),
-  },
-  error: {
-    backgroundColor: LogBoxStyle.getErrorColor(1),
-  },
-  log: {
-    backgroundColor: LogBoxStyle.getLogColor(1),
-  },
-  inside: {
-    marginRight: 8,
-    minWidth: 22,
-    aspectRatio: 1,
-    paddingHorizontal: 4,
-    borderRadius: 11,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+const styles = StyleSheet.create({
   text: {
+    userSelect: 'none',
+    paddingLeft: 8,
     color: LogBoxStyle.getTextColor(1),
-    fontSize: 14,
-    lineHeight: 18,
-    textAlign: 'center',
-    fontWeight: '600',
-    ...Platform.select({
-      web: {
-        textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
-      },
-    }),
-  },
-});
-
-const dismissStyles = StyleSheet.create({
-  press: {
-    backgroundColor: '#323232',
-    height: 20,
-    width: 20,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    height: 8,
-    width: 8,
-  },
-});
-
-const toastStyles = StyleSheet.create({
-  container: {
-    height: 48,
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  press: {
-    borderWidth: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#323232',
-    backgroundColor: LogBoxStyle.getBackgroundColor(),
     flex: 1,
-    paddingHorizontal: 12,
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  substitutionText: {
+    color: LogBoxStyle.getTextColor(0.6),
   },
 });

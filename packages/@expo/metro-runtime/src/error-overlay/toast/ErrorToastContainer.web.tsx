@@ -6,13 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { ErrorToast } from './ErrorToast';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog } from '../Data/LogBoxLog';
 import { useLogs } from '../Data/LogContext';
 import { useRejectionHandler } from '../useRejectionHandler';
+
+import '../ErrorOverlay.css';
 
 export function ErrorToastContainer() {
   useRejectionHandler();
@@ -36,10 +37,15 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
     LogBoxData.setSelectedLog(index);
   }, []);
 
+  // HACK: This is here to develop the UI for the error overlay.
+  // DO NOT SHIP TO PROD!
+  React.useEffect(() => {
+    // Open the UI for the last log
+    LogBoxData.setSelectedLog(0);
+  }, []);
+
   function openLog(log: LogBoxLog) {
     let index = logs.length - 1;
-
-    // Stop at zero because if we don't find any log, we'll open the first log.
     while (index > 0 && logs[index] !== log) {
       index -= 1;
     }
@@ -54,7 +60,14 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
   );
 
   return (
-    <View style={styles.list}>
+    <div
+      style={{
+        bottom: 6,
+        left: 10,
+        right: 10,
+        maxWidth: 320,
+        position: 'fixed',
+      }}>
       {warnings.length > 0 && (
         <ErrorToast
           log={warnings[warnings.length - 1]}
@@ -64,7 +77,6 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
           onPressDismiss={onDismissWarns}
         />
       )}
-
       {errors.length > 0 && (
         <ErrorToast
           log={errors[errors.length - 1]}
@@ -74,19 +86,8 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
           onPressDismiss={onDismissErrors}
         />
       )}
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    bottom: 6,
-    left: 10,
-    right: 10,
-    maxWidth: 320,
-    // @ts-expect-error
-    position: 'fixed',
-  },
-});
 
 export default LogBoxData.withSubscription(ErrorToastContainer);

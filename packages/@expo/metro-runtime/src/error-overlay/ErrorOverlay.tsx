@@ -6,15 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, StackType } from './Data/LogBoxLog';
 import { useLogs, useSelectedLog } from './Data/LogContext';
-import * as LogBoxStyle from './UI/LogBoxStyle';
+import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
-import { LogBoxInspectorFooter as ErrorOverlayFooter } from './overlay/LogBoxInspectorFooter';
-import { LogBoxInspectorHeader as ErrorOverlayHeader } from './overlay/LogBoxInspectorHeader';
 import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
 import { LogBoxInspectorStackFrames } from './overlay/LogBoxInspectorStackFrames';
 
@@ -22,13 +20,14 @@ const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
   error: 'Console Error',
   fatal: 'Uncaught Error',
-  syntax: 'Syntax Error',
+  syntax: 'Build Error',
   static: 'Server Error',
   component: 'Render Error',
 };
 
 export function LogBoxInspectorContainer() {
   const { selectedLogIndex, logs } = useLogs();
+  console.log('selectedLogIndex', selectedLogIndex, logs);
   const log = logs[selectedLogIndex];
   if (log == null) {
     return null;
@@ -97,27 +96,63 @@ export function LogBoxInspector({
     [log]
   );
 
+  const isDismissable = !['static', 'syntax'].includes(log.level);
+
   return (
-    <View style={styles.container}>
-      <ErrorOverlayHeader onSelectIndex={onChangeSelectedIndex} level={log.level} />
-      <ErrorOverlayBody onRetry={_handleRetry} />
-      <ErrorOverlayFooter onDismiss={onDismiss} onMinimize={onMinimize} />
-    </View>
+    <>
+      <div data-expo-log-overlay="true">
+        <div
+          data-expo-log-backdrop="true"
+          onClick={() => {
+            if (isDismissable) {
+              onMinimize();
+            }
+          }}
+        />
+        <div data-expo-log-root="true">
+          <ErrorOverlayHeader
+            isDismissable={isDismissable}
+            onDismiss={onDismiss}
+            onMinimize={onMinimize}
+            onSelectIndex={onChangeSelectedIndex}
+            level={log.level}
+          />
+          <ErrorOverlayBody onRetry={_handleRetry} />
+          {!isDismissable && (
+            <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
-export function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
-  const log = useSelectedLog();
-  return <ErrorOverlayBodyContents log={log} onRetry={onRetry} />;
+function ErrorOverlayFooter({ message }: { message?: string }) {
+  return (
+    <div data-expo-log-footer>
+      <footer
+        style={{
+          padding: '1rem',
+          flex: 1,
+          backgroundColor: 'var(--expo-log-secondary-system-background)',
+          borderTop: `1px solid var(--expo-log-color-border)`,
+        }}>
+        <span
+          style={{
+            color: 'var(--expo-log-secondary-label)',
+            fontSize: '0.875rem',
+            fontFamily: 'var(--expo-log-font-family)',
+          }}>
+          {message}
+        </span>
+      </footer>
+    </div>
+  );
 }
 
-export function ErrorOverlayBodyContents({
-  log,
-  onRetry,
-}: {
-  log: LogBoxLog;
-  onRetry: (type: StackType) => void;
-}) {
+function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
+  const log = useSelectedLog();
+
   const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
@@ -144,10 +179,11 @@ export function ErrorOverlayBodyContents({
   return (
     <>
       {collapsed && header}
-      <ScrollView style={styles.scrollBody}>
+      <ScrollView contentContainerStyle={{ gap: 10, paddingHorizontal: '1rem' }}>
         {!collapsed && header}
 
         <LogBoxInspectorCodeFrame codeFrame={log.codeFrame} />
+
         {needsStack && (
           <LogBoxInspectorStackFrames
             type="stack"
@@ -166,22 +202,5 @@ export function ErrorOverlayBodyContents({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollBody: {
-    backgroundColor: LogBoxStyle.getBackgroundColor(1),
-    flex: 1,
-  },
-  container: {
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: 999,
-    flex: 1,
-    // @ts-expect-error: fixed is not in the RN types but it works on web
-    position: 'fixed',
-  },
-});
 
 export default LogBoxData.withSubscription(LogBoxInspectorContainer);
