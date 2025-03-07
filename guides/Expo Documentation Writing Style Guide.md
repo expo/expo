@@ -179,12 +179,19 @@ We, sometimes, have buttons that lead to an Expo Snack. Use title case for these
 - Correct: Try this example on Snack
 - Incorrect: Try This Example On Snack
 
-### Filenames as bold text
+### File and directory names as bold text
 
-Filenames are used as bold text in the markdown files.
+File and directory names are used as bold text in the markdown files.
 
-- Correct: Your app's configuration is located in **app.json/app.config.js**
-- Incorrect: Your app's configuration is loaded in `app.json/app.config.js`
+Example:
+
+- Correct: Your app's configuration is located in **app.json/app.config.js**.
+- Incorrect: Your app's configuration is loaded in `app.json/app.config.js`.
+
+Example:
+
+- Correct: If you commit your **android** or **ios** directories, it won't work.
+- Incorrect: If you commit your `android` or `ios` directories, it won't work.
 
 ### Capitalization
 
