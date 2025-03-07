@@ -89,7 +89,9 @@ struct LongPressContextMenu<ActivationElement: View, Preview: View>: View {
         preview
       })
     } else {
-      // Fallback on earlier versions
+      activationElement.contextMenu(menuItems: {
+        MenuItems(fromElements: elements, props: props)
+      })
     }
   }
 }
