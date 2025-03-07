@@ -95,7 +95,7 @@ export type NativeMenuProps = ContextMenuProps & {
  */
 export declare function Submenu(props: SubmenuProps): import("react").JSX.Element;
 /**
- * Items visible inside the context menu. The items should be wrapped in a `React.Fragment`.
+ * Items visible inside the context menu. Pass input components as immidiate children of the tag.
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
  * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
  */
