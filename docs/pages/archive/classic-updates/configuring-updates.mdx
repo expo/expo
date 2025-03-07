@@ -22,7 +22,7 @@ In Expo Go, the latest published bundle of your app will always be launched (unl
 
 In standalone apps, it is also possible to turn off automatic updates and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (for example, only over Wi-Fi).
 
-Setting `updates.checkAutomatically` to `"ERROR_RECOVERY_ONLY"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
+Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
 
 You can then use the `expo-updates` module to download new updates and, if appropriate, notify the user to reload their app.
 
@@ -43,7 +43,7 @@ try {
 
 Checking for an update uses a device's bandwidth and battery life like any network call. Additionally, updates served by Expo may be rate limited. A good rule of thumb to check for updates judiciously is to use check when the user launches or foregrounds the app. Avoid polling for updates in a frequent loop.
 
-Note that `checkAutomatically: "ERROR_RECOVERY_ONLY"` will be ignored in Expo Go, although the imperative Updates methods will still function normally.
+Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in Expo Go, although the imperative Updates methods will still function normally.
 
 ## Disabling updates
 
