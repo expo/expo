@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const _ctx_1 = require("expo-router/_ctx");
 const create_pages_1 = require("./create-pages");
 const getRoutesSSR_1 = require("../../getRoutesSSR");
@@ -14,6 +18,7 @@ const UNIMPLEMENTED_PARAMS = new Proxy({}, {
 });
 exports.default = (0, create_pages_1.createPages)(async ({ createPage, createLayout, unstable_setBuildData }) => {
     const routes = (0, getRoutesSSR_1.getRoutes)(_ctx_1.ctx, {
+        ...expo_constants_1.default.expoConfig?.extra?.router,
         platform: process.env.EXPO_OS,
         skipGenerated: true,
         importMode: 'lazy',
