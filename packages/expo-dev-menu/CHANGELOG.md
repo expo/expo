@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- use custom iOS dependencyProvider ([#35359](https://github.com/expo/expo/pull/35359) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 6.0.19 — 2025-02-06
