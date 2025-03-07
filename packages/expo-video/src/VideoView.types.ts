@@ -120,4 +120,13 @@ export interface VideoViewProps extends ViewProps {
    * > **Note:** This event may also be called during playback when the current video track changes (for example when the player switches video quality).
    */
   onFirstFrameRender?: () => void;
+
+  /**
+   * Determines whether the player should use the default ExoPlayer shutter that covers the `VideoView` before the first video frame is rendered.
+   * Setting this property to `false` makes the Android behavior the same as iOS.
+   *
+   * @platform android
+   * @default true
+   */
+  useExoShutter?: boolean;
 }
