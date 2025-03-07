@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { MenuElement } from './utils';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
@@ -36,12 +37,6 @@ export type ActivationMethod = 'singlePress' | 'longPress';
  */
 export type ContextMenuProps = {
     /**
-     * Items visible inside the context menu. The items should be wrapped in a `React.Fragment`.
-     * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
-     * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
-     */
-    Items: React.ReactElement<ContextMenuContentProps>;
-    /**
      * Determines how the context menu will be activated.
      *
      * @platform ios
@@ -77,10 +72,52 @@ export type SubmenuProps = {
     children: React.ReactNode;
 };
 /**
+ * @hidden
+ */
+export type NativeMenuProps = ContextMenuProps & {
+    elements: MenuElement[];
+    onContextMenuButtonPressed: (event: NativeSyntheticEvent<{
+        contextMenuElementID: string;
+    }>) => void;
+    onContextMenuSwitchValueChanged: (event: NativeSyntheticEvent<{
+        contextMenuElementID: string;
+        value: boolean;
+    }>) => void;
+    onContextMenuPickerOptionSelected: (event: NativeSyntheticEvent<{
+        index: number;
+        label: string;
+        contextMenuElementID: string;
+    }>) => void;
+};
+/**
  * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
  * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
  */
 export declare function Submenu(props: SubmenuProps): import("react").JSX.Element;
+/**
+ * Items visible inside the context menu. The items should be wrapped in a `React.Fragment`.
+ * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
+ * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
+ */
+export declare function Items(props: {
+    children: React.ReactNode;
+}): import("react").JSX.Element;
+export declare namespace Items {
+    var tag: string;
+}
+/**
+ * The component visible all the time that triggers the menu when tapped or long-pressed.
+ */
+export declare function Trigger(props: {
+    children: React.ReactNode;
+}): import("react").JSX.Element;
+/**
+ * The component visible above the menu when it is opened.
+ * @platform ios
+ */
+export declare function Preview(props: {
+    children: React.ReactNode;
+}): import("react").JSX.Element;
 /**
  * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
  *
@@ -90,6 +127,11 @@ export declare function Submenu(props: SubmenuProps): import("react").JSX.Elemen
  * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
  * - Android does not support showing a `Picker` element in the context menu.
  */
-export declare function ContextMenu(props: ContextMenuProps): import("react").JSX.Element;
-export {};
+declare function ContextMenu(props: ContextMenuProps): import("react").JSX.Element;
+declare namespace ContextMenu {
+    var Trigger: typeof import(".").Trigger;
+    var Preview: typeof import(".").Preview;
+    var Items: typeof import(".").Items;
+}
+export { ContextMenu };
 //# sourceMappingURL=index.d.ts.map
