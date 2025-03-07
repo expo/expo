@@ -11,8 +11,8 @@
     _sourceURL = sourceURL;
     _manager = manager;
     _onLoad = onLoad;
-    self.reactNativeFactory = [[ExpoGoReactNativeFactory alloc] initWithDelegate:self];
     self.dependencyProvider = [RCTAppDependencyProvider new];
+    self.reactNativeFactory = [[ExpoGoReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
 }
