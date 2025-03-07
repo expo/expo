@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add optional anchor point to expo-sharing for iPad ([#35364](https://github.com/expo/expo/pull/35364) by [@Kilian](https://github.com/Kilian))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
