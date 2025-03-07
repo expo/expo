@@ -1,7 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.os.AsyncTask
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
@@ -30,94 +29,92 @@ class FetchUpdateProcedure(
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-fetch-update"
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 
-    AsyncTask.execute {
-      val database = databaseHolder.database
-      RemoteLoader(
-        context,
-        updatesConfiguration,
-        logger,
-        database,
-        fileDownloader,
-        updatesDirectory,
-        launchedUpdate
-      )
-        .start(
-          object : Loader.LoaderCallback {
-            override fun onFailure(e: Exception) {
-              databaseHolder.releaseDatabase()
-              callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
-              procedureContext.processStateEvent(
-                UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
-              )
-              procedureContext.onComplete()
-            }
+    val database = databaseHolder.database
+    RemoteLoader(
+      context,
+      updatesConfiguration,
+      logger,
+      database,
+      fileDownloader,
+      updatesDirectory,
+      launchedUpdate
+    )
+      .start(
+        object : Loader.LoaderCallback {
+          override fun onFailure(e: Exception) {
+            databaseHolder.releaseDatabase()
+            procedureContext.processStateEvent(
+              UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
+            )
+            callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
+            procedureContext.onComplete()
+          }
 
-            override fun onAssetLoaded(
-              asset: AssetEntity,
-              successfulAssetCount: Int,
-              failedAssetCount: Int,
-              totalAssetCount: Int
-            ) {
-            }
+          override fun onAssetLoaded(
+            asset: AssetEntity,
+            successfulAssetCount: Int,
+            failedAssetCount: Int,
+            totalAssetCount: Int
+          ) {
+          }
 
-            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-              if (updateDirective != null) {
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                  }
-                )
-              }
-
-              val update = updateResponse.manifestUpdateResponsePart?.update
-                ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
               return Loader.OnUpdateResponseLoadedResult(
-                shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
-                  update.updateEntity,
-                  launchedUpdate,
-                  updateResponse.responseHeaderData?.manifestFilters
-                )
+                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                }
               )
             }
 
-            override fun onSuccess(loaderResult: Loader.LoaderResult) {
-              RemoteLoader.processSuccessLoaderResult(
-                context,
-                updatesConfiguration,
-                logger,
-                database,
-                selectionPolicy,
-                updatesDirectory,
-                launchedUpdate,
-                loaderResult
-              ) { availableUpdate, didRollBackToEmbedded ->
-                databaseHolder.releaseDatabase()
+            val update = updateResponse.manifestUpdateResponsePart?.update
+              ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
 
-                if (didRollBackToEmbedded) {
-                  callback(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
-                  procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
+            return Loader.OnUpdateResponseLoadedResult(
+              shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
+                update.updateEntity,
+                launchedUpdate,
+                updateResponse.responseHeaderData?.manifestFilters
+              )
+            )
+          }
+
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
+            RemoteLoader.processSuccessLoaderResult(
+              context,
+              updatesConfiguration,
+              logger,
+              database,
+              selectionPolicy,
+              updatesDirectory,
+              launchedUpdate,
+              loaderResult
+            ) { availableUpdate, didRollBackToEmbedded ->
+              databaseHolder.releaseDatabase()
+
+              if (didRollBackToEmbedded) {
+                procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
+                callback(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
+                procedureContext.onComplete()
+              } else {
+                if (availableUpdate == null) {
+                  procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
+                  callback(IUpdatesController.FetchUpdateResult.Failure())
                   procedureContext.onComplete()
                 } else {
-                  if (availableUpdate == null) {
-                    callback(IUpdatesController.FetchUpdateResult.Failure())
-                    procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
-                    procedureContext.onComplete()
-                  } else {
-                    callback(IUpdatesController.FetchUpdateResult.Success(availableUpdate))
-                    procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(availableUpdate.manifest))
-                    procedureContext.onComplete()
-                  }
+                  procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(availableUpdate.manifest))
+                  callback(IUpdatesController.FetchUpdateResult.Success(availableUpdate))
+                  procedureContext.onComplete()
                 }
               }
             }
           }
-        )
-    }
+        }
+      )
   }
 }

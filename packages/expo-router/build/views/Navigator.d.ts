@@ -44,7 +44,7 @@ export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): Reac
 /**
  * Render the current navigator content.
  */
-declare function NavigatorSlot(): JSX.Element;
+declare function NavigatorSlot(): any;
 /**
  * The default navigator for the app when no root _layout is provided.
  */

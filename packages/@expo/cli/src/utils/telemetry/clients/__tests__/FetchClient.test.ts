@@ -1,5 +1,7 @@
 import { setTimeout } from 'node:timers/promises';
 
+import { fetch } from '../../../../utils/fetch';
+import { commandEvent } from '../../events';
 import type { TelemetryRecordInternal } from '../../types';
 import { FetchClient } from '../FetchClient';
 
@@ -10,9 +12,9 @@ describe(FetchClient, () => {
 
     // Create a batch of records
     const records = [
-      createRecord({ event: 'Start Project' }),
-      createRecord({ event: 'Serve Manifest' }),
-      createRecord({ event: 'Open Url on Device' }),
+      createRecord(commandEvent('install')),
+      createRecord(commandEvent('config')),
+      createRecord(commandEvent('start')),
     ];
 
     // Record dummy events, without awaiting
@@ -29,7 +31,7 @@ describe(FetchClient, () => {
   it('records and send events immediately', async () => {
     const fetch = mockFetch();
     const client = new FetchClient({ fetch });
-    const record = createRecord({ event: 'Start Project' });
+    const record = createRecord(commandEvent('start'));
 
     // Record a single dummy event
     await client.record([record]);
@@ -48,7 +50,7 @@ describe(FetchClient, () => {
     const client = new FetchClient({ fetch });
 
     // Record a single dummy event
-    await client.record([createRecord({ event: 'Start Project' })]);
+    await client.record([createRecord(commandEvent('start'))]);
 
     // Ensure the controller is attached to the request
     expect((jest.mocked(fetch).mock.calls[0][1] as any).signal).toBeDefined();
@@ -73,11 +75,8 @@ describe(FetchClient, () => {
     const client = new FetchClient({ fetch });
 
     // Record dummy events, without awaiting, in two batches
-    client.record([createRecord({ event: 'Start Project' })]);
-    client.record([
-      createRecord({ event: 'Serve Manifest' }),
-      createRecord({ event: 'Open Url on Device' }),
-    ]);
+    client.record([createRecord(commandEvent('start'))]);
+    client.record([createRecord(commandEvent('install')), createRecord(commandEvent('config'))]);
 
     // Wait until all events are flushed
     await client.flush();
@@ -95,7 +94,7 @@ function mockFetch(): typeof fetch {
 function createRecord(partial: Partial<TelemetryRecordInternal>): TelemetryRecordInternal {
   return {
     type: 'track',
-    event: 'Start Project',
+    event: 'action',
     messageId: '1',
     anonymousId: 'xxx',
     context: {

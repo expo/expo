@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findModulesAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
-const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_1 = __importDefault(require("fs"));
+const glob_1 = require("glob");
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
@@ -115,7 +115,7 @@ function addRevisionToResults(results, name, revision) {
  */
 async function findPackagesConfigPathsAsync(searchPath) {
     const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`], {
+    const paths = await (0, glob_1.glob)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`], {
         cwd: searchPath,
     });
     // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)

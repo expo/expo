@@ -49,7 +49,7 @@ class ModuleDefinitionBuilderTest {
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
-    Truth.assertThat(moduleDefinition.objectDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
+    Truth.assertThat(moduleDefinition.objectDefinition.legacyConstantsProvider()).isSameInstanceAs(moduleConstants)
     Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m1")
     Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m2")
   }

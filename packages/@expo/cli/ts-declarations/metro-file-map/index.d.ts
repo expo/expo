@@ -4,22 +4,25 @@ declare module 'metro-file-map' {
   export { default } from 'metro-file-map/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/cache/DiskCacheManager.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/cache/DiskCacheManager.js
 declare module 'metro-file-map/src/cache/DiskCacheManager' {
   import type {
     BuildParameters,
     CacheData,
-    CacheDelta,
     CacheManager,
+    CacheManagerFactoryOptions,
+    CacheManagerWriteOptions,
   } from 'metro-file-map/src/flow-types';
+  type AutoSaveOptions = Readonly<{
+    debounceMs: number;
+  }>;
   type DiskCacheConfig = {
-    buildParameters: BuildParameters;
+    autoSave?: Partial<AutoSaveOptions> | boolean;
     cacheFilePrefix?: null | undefined | string;
     cacheDirectory?: null | undefined | string;
   };
   export class DiskCacheManager implements CacheManager {
-    _cachePath: string;
-    constructor($$PARAM_0$$: DiskCacheConfig);
+    constructor($$PARAM_0$$: CacheManagerFactoryOptions, $$PARAM_1$$: DiskCacheConfig);
     static getCacheFilePath(
       buildParameters: BuildParameters,
       cacheFilePrefix?: null | undefined | string,
@@ -27,11 +30,12 @@ declare module 'metro-file-map/src/cache/DiskCacheManager' {
     ): string;
     getCacheFilePath(): string;
     read(): Promise<null | undefined | CacheData>;
-    write(dataSnapshot: CacheData, $$PARAM_1$$: CacheDelta): Promise<void>;
+    write(getSnapshot: () => CacheData, $$PARAM_1$$: CacheManagerWriteOptions): Promise<void>;
+    end(): void;
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/constants.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/constants.js
 declare module 'metro-file-map/src/constants' {
   const constants: {
     DEPENDENCY_DELIM: '\0';
@@ -52,13 +56,13 @@ declare module 'metro-file-map/src/constants' {
   export default constants;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/crawlers/node/hasNativeFindSupport.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/node/hasNativeFindSupport.js
 declare module 'metro-file-map/src/crawlers/node/hasNativeFindSupport' {
   function hasNativeFindSupport(): Promise<boolean>;
   export default hasNativeFindSupport;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/crawlers/node/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/node/index.js
 declare module 'metro-file-map/src/crawlers/node/index' {
   import type { CanonicalPath, CrawlerOptions, FileData } from 'metro-file-map/src/flow-types';
   const $$EXPORT_DEFAULT_DECLARATION$$: (options: CrawlerOptions) => Promise<{
@@ -68,7 +72,7 @@ declare module 'metro-file-map/src/crawlers/node/index' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/crawlers/watchman/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/watchman/index.js
 declare module 'metro-file-map/src/crawlers/watchman/index' {
   import type {
     CanonicalPath,
@@ -84,7 +88,7 @@ declare module 'metro-file-map/src/crawlers/watchman/index' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/crawlers/watchman/planQuery.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/watchman/planQuery.js
 declare module 'metro-file-map/src/crawlers/watchman/planQuery' {
   import type { WatchmanQuery, WatchmanQuerySince } from 'fb-watchman';
   export function planQuery(
@@ -101,10 +105,9 @@ declare module 'metro-file-map/src/crawlers/watchman/planQuery' {
   };
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/flow-types.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/flow-types.js
 declare module 'metro-file-map/src/flow-types' {
   import type { PerfLogger, PerfLoggerFactory, RootPerfLogger } from 'metro-config';
-  import type { AbortSignal } from 'node-abort-controller';
   export type { PerfLoggerFactory, PerfLogger };
   export type BuildParameters = Readonly<{
     computeDependencies: boolean;
@@ -127,22 +130,46 @@ declare module 'metro-file-map/src/flow-types' {
   export type BuildResult = {
     fileSystem: FileSystem;
     hasteMap: HasteMap;
-    mockMap: MockMap;
+    mockMap?: null | MockMap;
   };
   export type CacheData = Readonly<{
     clocks: WatchmanClocks;
-    mocks: RawMockMap;
     fileSystemData: any;
-  }>;
-  export type CacheDelta = Readonly<{
-    changed: ReadonlyMap<CanonicalPath, FileMetaData>;
-    removed: ReadonlySet<CanonicalPath>;
+    plugins: ReadonlyMap<string, any>;
   }>;
   export interface CacheManager {
+    /**
+     * Called during startup to load initial state, if available. Provided to
+     * a crawler, which will return the delta between the initial state and the
+     * current file system state.
+     */
     read(): Promise<null | undefined | CacheData>;
-    write(dataSnapshot: CacheData, delta: CacheDelta): Promise<void>;
+    /**
+     * Called when metro-file-map `build()` has applied changes returned by the
+     * crawler - i.e. internal state reflects the current file system state.
+     *
+     * getSnapshot may be retained and called at any time before end(), such as
+     * in response to eventSource 'change' events.
+     */
+    write(getSnapshot: () => CacheData, opts: CacheManagerWriteOptions): Promise<void>;
+    /**
+     * The last call that will be made to this CacheManager. Any handles should
+     * be closed by the time this settles.
+     */
+    end(): Promise<void>;
   }
-  export type CacheManagerFactory = (buildParameters: BuildParameters) => CacheManager;
+  export interface CacheManagerEventSource {
+    onChange(listener: () => void): () => void;
+  }
+  export type CacheManagerFactory = (options: CacheManagerFactoryOptions) => CacheManager;
+  export type CacheManagerFactoryOptions = Readonly<{
+    buildParameters: BuildParameters;
+  }>;
+  export type CacheManagerWriteOptions = Readonly<{
+    changedSinceCacheRead: boolean;
+    eventSource: CacheManagerEventSource;
+    onWriteError: ($$PARAM_0$$: Error) => void;
+  }>;
   export type CanonicalPath = string;
   export type ChangeEvent = {
     logger?: null | RootPerfLogger;
@@ -191,9 +218,39 @@ declare module 'metro-file-map/src/flow-types' {
   export type DuplicatesIndex = Map<string, Map<string, DuplicatesSet>>;
   export type EventsQueue = {
     filePath: Path;
-    metadata?: null | undefined | ChangeEventMetadata;
+    metadata: ChangeEventMetadata;
     type: string;
   }[];
+  export type FileMapDelta = Readonly<{
+    removed: Iterable<[CanonicalPath, FileMetaData]>;
+    addedOrModified: Iterable<[CanonicalPath, FileMetaData]>;
+  }>;
+  interface FileSystemState {
+    metadataIterator(
+      opts: Readonly<{
+        includeNodeModules: boolean;
+        includeSymlinks: boolean;
+      }>
+    ): Iterable<{
+      baseName: string;
+      canonicalPath: string;
+      metadata: FileMetaData;
+    }>;
+  }
+  export type FileMapPluginInitOptions<SerializableState> = Readonly<{
+    files: FileSystemState;
+    pluginState?: null | SerializableState;
+  }>;
+  type V8Serializable = {};
+  export interface FileMapPlugin<SerializableState = V8Serializable> {
+    readonly name: string;
+    initialize(initOptions: FileMapPluginInitOptions<SerializableState>): Promise<void>;
+    assertValid(): void;
+    bulkUpdate(delta: FileMapDelta): Promise<void>;
+    getSerializableSnapshot(): SerializableState;
+    onRemovedFile(relativeFilePath: string, fileMetadata: FileMetaData): void;
+    onNewOrModifiedFile(relativeFilePath: string, fileMetadata: FileMetaData): void;
+  }
   export type HType = {
     ID: 0;
     MTIME: 1;
@@ -225,6 +282,7 @@ declare module 'metro-file-map/src/flow-types' {
   export type FileStats = Readonly<{
     fileType?: 'f' | 'l';
     modifiedTime?: null | number;
+    size?: null | number;
   }>;
   export interface FileSystem {
     exists(file: Path): boolean;
@@ -237,6 +295,14 @@ declare module 'metro-file-map/src/flow-types' {
     getModuleName(file: Path): null | undefined | string;
     getSerializableSnapshot(): CacheData['fileSystemData'];
     getSha1(file: Path): null | undefined | string;
+    getOrComputeSha1(file: Path): Promise<
+      | null
+      | undefined
+      | {
+          sha1: string;
+          content?: Buffer;
+        }
+    >;
     /**
      * Given a start path (which need not exist), a subpath and type, and
      * optionally a 'breakOnSegment', performs the following:
@@ -310,6 +376,12 @@ declare module 'metro-file-map/src/flow-types' {
   export interface MockMap {
     getMockModule(name: string): null | undefined | Path;
   }
+  export type HasteConflict = {
+    id: string;
+    platform?: string | null;
+    absolutePaths: string[];
+    type?: 'duplicate' | 'shadowing';
+  };
   export interface HasteMap {
     getModule(
       name: string,
@@ -322,7 +394,7 @@ declare module 'metro-file-map/src/flow-types' {
       platform: null | undefined | string,
       _supportsNativePlatform: null | undefined | boolean
     ): null | undefined | Path;
-    getRawHasteMap(): ReadOnlyRawHasteMap;
+    computeConflicts(): HasteConflict[];
   }
   export type HasteMapData = Map<string, HasteMapItem>;
   export type HasteMapItem = {
@@ -335,16 +407,46 @@ declare module 'metro-file-map/src/flow-types' {
     bulkAddOrModify(addedOrModifiedFiles: FileData): void;
   }
   export type Path = string;
-  export type RawMockMap = Map<string, Path>;
-  export type RawHasteMap = {
-    duplicates: DuplicatesIndex;
-    map: HasteMapData;
-  };
-  export type ReadOnlyRawHasteMap = Readonly<{
-    duplicates: ReadonlyMap<string, ReadonlyMap<string, ReadonlyMap<string, number>>>;
-    map: ReadonlyMap<string, HasteMapItem>;
+  export type ProcessFileFunction = (
+    absolutePath: string,
+    metadata: FileMetaData,
+    request: Readonly<{
+      computeSha1: boolean;
+    }>
+  ) => Promise<null | undefined | Buffer>;
+  export type RawMockMap = Readonly<{
+    duplicates: Map<string, Set<string>>;
+    mocks: Map<string, Path>;
+    version: number;
   }>;
-  export type ReadOnlyRawMockMap = ReadonlyMap<string, Path>;
+  export type ReadOnlyRawMockMap = Readonly<{
+    duplicates: ReadonlyMap<string, ReadonlySet<string>>;
+    mocks: ReadonlyMap<string, Path>;
+    version: number;
+  }>;
+  export interface WatcherBackend {
+    getPauseReason(): null | undefined | string;
+    onError($$PARAM_0$$: (error: Error) => void): () => void;
+    onFileEvent($$PARAM_0$$: (event: WatcherBackendChangeEvent) => void): () => void;
+    startWatching(): Promise<void>;
+    stopWatching(): Promise<void>;
+  }
+  export type ChangeEventClock = [string, string];
+  export type WatcherBackendChangeEvent =
+    | Readonly<{
+        event: 'touch';
+        clock?: ChangeEventClock;
+        relativePath: string;
+        root: string;
+        metadata: ChangeEventMetadata;
+      }>
+    | Readonly<{
+        event: 'delete';
+        clock?: ChangeEventClock;
+        relativePath: string;
+        root: string;
+        metadata?: void;
+      }>;
   export type WatchmanClockSpec =
     | string
     | Readonly<{
@@ -358,27 +460,19 @@ declare module 'metro-file-map/src/flow-types' {
     computeSha1: boolean;
     dependencyExtractor?: null | undefined | string;
     enableHastePackages: boolean;
-    readLink: boolean;
-    rootDir: string;
     filePath: string;
     hasteImplModulePath?: null | undefined | string;
+    maybeReturnContent: boolean;
   }>;
   export type WorkerMetadata = Readonly<{
     dependencies?: null | undefined | readonly string[];
     id?: null | undefined | string;
-    module?: null | undefined | HasteMapItemMetaData;
     sha1?: null | undefined | string;
-    symlinkTarget?: null | undefined | string;
+    content?: null | undefined | Buffer;
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/getMockName.js
-declare module 'metro-file-map/src/getMockName' {
-  const getMockName: (filePath: string) => string;
-  export default getMockName;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/index.js
 declare module 'metro-file-map/src/index' {
   import type {
     BuildParameters,
@@ -387,10 +481,12 @@ declare module 'metro-file-map/src/index' {
     CacheManager,
     CacheManagerFactory,
     CanonicalPath,
+    ChangeEventClock,
     ChangeEventMetadata,
     Console,
     CrawlerOptions,
     FileData,
+    FileMapPlugin,
     FileMetaData,
     FileSystem,
     HasteMapData,
@@ -400,17 +496,12 @@ declare module 'metro-file-map/src/index' {
     Path,
     PerfLogger,
     PerfLoggerFactory,
-    RawMockMap,
-    ReadOnlyRawMockMap,
     WatchmanClocks,
   } from 'metro-file-map/src/flow-types';
-  import MutableHasteMap from 'metro-file-map/src/lib/MutableHasteMap';
+  import { FileProcessor } from 'metro-file-map/src/lib/FileProcessor';
   import { RootPathUtils } from 'metro-file-map/src/lib/RootPathUtils';
-  import TreeFS from 'metro-file-map/src/lib/TreeFS';
   import { Watcher } from 'metro-file-map/src/Watcher';
-  import { worker } from 'metro-file-map/src/worker';
   import EventEmitter from 'events';
-  import { AbortController } from 'node-abort-controller';
   export type {
     BuildParameters,
     BuildResult,
@@ -442,6 +533,7 @@ declare module 'metro-file-map/src/index' {
     cacheManagerFactory?: null | undefined | CacheManagerFactory;
     console?: Console;
     healthCheck: HealthCheckOptions;
+    maxFilesPerWorker?: null | undefined | number;
     maxWorkers: number;
     perfLoggerFactory?: null | undefined | PerfLoggerFactory;
     resetCache?: null | undefined | boolean;
@@ -456,39 +548,28 @@ declare module 'metro-file-map/src/index' {
     timeout: number;
     filePrefix: string;
   }>;
-  type InternalOptions = {
-    enableWorkerThreads: boolean;
-    healthCheck: HealthCheckOptions;
-    perfLoggerFactory?: null | PerfLoggerFactory;
-    resetCache?: null | boolean;
-    maxWorkers: number;
-    throwOnModuleCollision: boolean;
-    useWatchman: boolean;
-    watch: boolean;
-    watchmanDeferStates: readonly string[];
-  } & BuildParameters;
-  type WorkerObj = {
-    worker: typeof worker;
-  };
-  // NOTE(cedric): https://github.com/facebook/metro/blob/a36e992ac74c5497e58b91d99c2bab21c7fa1451/flow-typed/jest-worker.js#L119-L127
-  import { Readable } from 'node:stream';
-  type IJestWorker<TExposed = object> = Readonly<
-    TExposed & {
-      getStderr: () => Readable;
-      getStdout: () => Readable;
-      end: () => Promise<void>;
-    }
+  type InternalOptions = Readonly<
+    {
+      healthCheck: HealthCheckOptions;
+      perfLoggerFactory?: null | PerfLoggerFactory;
+      resetCache?: null | boolean;
+      throwOnModuleCollision: boolean;
+      useWatchman: boolean;
+      watch: boolean;
+      watchmanDeferStates: readonly string[];
+    } & BuildParameters
   >;
-  type WorkerInterface = IJestWorker | WorkerObj;
   export { DiskCacheManager } from 'metro-file-map/src/cache/DiskCacheManager';
-  export { DuplicateHasteCandidatesError } from 'metro-file-map/src/lib/DuplicateHasteCandidatesError';
-  export { default as MutableHasteMap } from 'metro-file-map/src/lib/MutableHasteMap';
+  export { DuplicateHasteCandidatesError } from 'metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError';
+  export { HasteConflictsError } from 'metro-file-map/src/plugins/haste/HasteConflictsError';
+  export { default as HastePlugin } from 'metro-file-map/src/plugins/HastePlugin';
   export type { HasteMap } from 'metro-file-map/src/flow-types';
   export type { HealthCheckResult } from 'metro-file-map/src/Watcher';
   export type {
-    CacheDelta,
     CacheManager,
     CacheManagerFactory,
+    CacheManagerFactoryOptions,
+    CacheManagerWriteOptions,
     ChangeEvent,
     WatcherStatus,
   } from 'metro-file-map/src/flow-types';
@@ -575,11 +656,11 @@ declare module 'metro-file-map/src/index' {
     _canUseWatchmanPromise: Promise<boolean>;
     _changeID: number;
     _changeInterval: null | undefined | NodeJS.Timeout;
+    _fileProcessor: FileProcessor;
     _console: Console;
     _options: InternalOptions;
     _pathUtils: RootPathUtils;
     _watcher: null | undefined | Watcher;
-    _worker: null | undefined | WorkerInterface;
     _cacheManager: CacheManager;
     _crawlerAbortController: AbortController;
     _healthCheckInterval: null | undefined | NodeJS.Timeout;
@@ -587,67 +668,44 @@ declare module 'metro-file-map/src/index' {
     static create(options: InputOptions): FileMap;
     constructor(options: InputOptions);
     build(): Promise<BuildResult>;
-    _constructHasteMap(fileSystem: TreeFS): Promise<MutableHasteMap>;
     read(): Promise<null | undefined | CacheData>;
     _buildFileDelta(previousState: CrawlerOptions['previousState']): Promise<{
       removedFiles: Set<CanonicalPath>;
       changedFiles: FileData;
       clocks?: WatchmanClocks;
     }>;
-    _processFile(
-      hasteMap: MutableHasteMap,
-      mockMap: RawMockMap,
-      filePath: Path,
-      fileMetadata: FileMetaData,
-      workerOptions?: {
-        forceInBand?: null | undefined | boolean;
-        perfLogger?: null | undefined | PerfLogger;
-      }
-    ): null | undefined | Promise<void>;
+    _maybeReadLink(filePath: Path, fileMetadata: FileMetaData): null | undefined | Promise<void>;
     _applyFileDelta(
       fileSystem: MutableFileSystem,
-      hasteMap: MutableHasteMap,
-      mockMap: RawMockMap,
+      plugins: readonly FileMapPlugin[],
       delta: Readonly<{
         changedFiles: FileData;
         removedFiles: ReadonlySet<CanonicalPath>;
         clocks?: WatchmanClocks;
       }>
     ): Promise<void>;
-    _cleanup(): void;
     _takeSnapshotAndPersist(
       fileSystem: FileSystem,
       clocks: WatchmanClocks,
-      hasteMap: MutableHasteMap,
-      mockMap: ReadOnlyRawMockMap,
+      plugins: readonly FileMapPlugin[],
       changed: FileData,
       removed: Set<CanonicalPath>
     ): void;
-    _getWorker(options?: {
-      forceInBand?: null | undefined | boolean;
-      perfLogger?: null | undefined | PerfLogger;
-    }): WorkerInterface;
-    _removeIfExists(
-      fileSystem: MutableFileSystem,
-      hasteMap: MutableHasteMap,
-      mockMap: RawMockMap,
-      relativeFilePath: Path
-    ): void;
     _watch(
       fileSystem: MutableFileSystem,
-      hasteMap: MutableHasteMap,
-      mockMap: RawMockMap
+      clocks: WatchmanClocks,
+      plugins: readonly FileMapPlugin[]
     ): Promise<void>;
     end(): Promise<void>;
-    _ignore(filePath: Path): boolean;
     _shouldUseWatchman(): Promise<boolean>;
     _getNextChangeID(): number;
+    _updateClock(clocks: WatchmanClocks, newClock?: null | undefined | ChangeEventClock): void;
     static H: HType;
   }
   export default FileMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/checkWatchmanCapabilities.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/checkWatchmanCapabilities.js
 declare module 'metro-file-map/src/lib/checkWatchmanCapabilities' {
   function checkWatchmanCapabilities(requiredCapabilities: readonly string[]): Promise<{
     version: string;
@@ -655,21 +713,12 @@ declare module 'metro-file-map/src/lib/checkWatchmanCapabilities' {
   export default checkWatchmanCapabilities;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/dependencyExtractor.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/dependencyExtractor.js
 declare module 'metro-file-map/src/lib/dependencyExtractor' {
   export function extract(code: any): void;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/DuplicateError.js
-declare module 'metro-file-map/src/lib/DuplicateError' {
-  export class DuplicateError extends Error {
-    mockPath1: string;
-    mockPath2: string;
-    constructor(mockPath1: string, mockPath2: string);
-  }
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/DuplicateHasteCandidatesError.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/DuplicateHasteCandidatesError.js
 declare module 'metro-file-map/src/lib/DuplicateHasteCandidatesError' {
   import type { DuplicatesSet } from 'metro-file-map/src/flow-types';
   export class DuplicateHasteCandidatesError extends Error {
@@ -686,100 +735,81 @@ declare module 'metro-file-map/src/lib/DuplicateHasteCandidatesError' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/fast_path.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/fast_path.js
 declare module 'metro-file-map/src/lib/fast_path' {
   export function relative(rootDir: string, filename: string): string;
   export function resolve(rootDir: string, normalPath: string): string;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/getPlatformExtension.js
-declare module 'metro-file-map/src/lib/getPlatformExtension' {
-  function getPlatformExtension(
-    file: string,
-    platforms: ReadonlySet<string>
-  ): null | undefined | string;
-  export default getPlatformExtension;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/MockMap.js
-declare module 'metro-file-map/src/lib/MockMap' {
-  import type { MockMap as IMockMap, Path, RawMockMap } from 'metro-file-map/src/flow-types';
-  class MockMap implements IMockMap {
-    constructor($$PARAM_0$$: { rawMockMap: RawMockMap; rootDir: Path });
-    getMockModule(name: string): null | undefined | Path;
-  }
-  export default MockMap;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/MutableHasteMap.js
-declare module 'metro-file-map/src/lib/MutableHasteMap' {
-  import type {
-    Console,
-    DuplicatesSet,
-    HasteMap,
-    HasteMapItemMetaData,
-    HTypeValue,
-    Path,
-    RawHasteMap,
-    ReadOnlyRawHasteMap,
-  } from 'metro-file-map/src/flow-types';
-  type HasteMapOptions = Readonly<{
-    console?: null | undefined | Console;
-    platforms: ReadonlySet<string>;
-    rootDir: Path;
-    throwOnModuleCollision: boolean;
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/FileProcessor.js
+declare module 'metro-file-map/src/lib/FileProcessor' {
+  import type { FileMetaData, PerfLogger } from 'metro-file-map/src/flow-types';
+  type ProcessFileRequest = Readonly<{
+    /**
+     * Populate metadata[H.SHA1] with the SHA1 of the file's contents.
+     */
+    computeSha1: boolean;
+    /**
+     * Populate metadata[H.DEPENDENCIES] with unresolved dependency specifiers
+     * using the dependencyExtractor provided to the constructor.
+     */
+    computeDependencies: boolean;
+    /**
+     * Only if processing has already required reading the file's contents, return
+     * the contents as a Buffer - null otherwise. Not supported for batches.
+     */
+    maybeReturnContent: boolean;
   }>;
-  class MutableHasteMap implements HasteMap {
-    constructor(options: HasteMapOptions);
-    static fromDeserializedSnapshot(
-      deserializedData: RawHasteMap,
-      options: HasteMapOptions
-    ): MutableHasteMap;
-    getSerializableSnapshot(): RawHasteMap;
-    getModule(
-      name: string,
-      platform?: null | undefined | string,
-      supportsNativePlatform?: null | undefined | boolean,
-      type?: null | undefined | HTypeValue
-    ): null | undefined | Path;
-    getPackage(
-      name: string,
-      platform: null | undefined | string,
-      _supportsNativePlatform?: null | undefined | boolean
-    ): null | undefined | Path;
-    getRawHasteMap(): ReadOnlyRawHasteMap;
-    _getModuleMetadata(
-      name: string,
-      platform: null | undefined | string,
-      supportsNativePlatform: boolean
-    ): HasteMapItemMetaData | null;
-    _assertNoDuplicates(
-      name: string,
-      platform: string,
-      supportsNativePlatform: boolean,
-      relativePathSet: null | undefined | DuplicatesSet
-    ): void;
-    setModule(id: string, module: HasteMapItemMetaData): void;
-    removeModule(moduleName: string, relativeFilePath: string): void;
-    setThrowOnModuleCollision(shouldThrow: boolean): void;
-    _recoverDuplicates(moduleName: string, relativeFilePath: string): void;
+  export class FileProcessor {
+    constructor(
+      opts: Readonly<{
+        dependencyExtractor?: null | string;
+        enableHastePackages: boolean;
+        enableWorkerThreads: boolean;
+        hasteImplModulePath?: null | string;
+        maxFilesPerWorker?: null | undefined | number;
+        maxWorkers: number;
+        perfLogger?: null | PerfLogger;
+      }>
+    );
+    processBatch(
+      files: readonly [string, FileMetaData][],
+      req: ProcessFileRequest
+    ): Promise<{
+      errors: {
+        absolutePath: string;
+        error: Error & {
+          code: string;
+        };
+      }[];
+    }>;
+    processRegularFile(
+      absolutePath: string,
+      fileMetadata: FileMetaData,
+      req: ProcessFileRequest
+    ):
+      | null
+      | undefined
+      | Promise<{
+          content?: null | Buffer;
+        }>;
+    end(): Promise<void>;
   }
-  export default MutableHasteMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/normalizePathSeparatorsToPosix.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/normalizePathSeparatorsToPosix.js
 declare module 'metro-file-map/src/lib/normalizePathSeparatorsToPosix' {
   let normalizePathSeparatorsToPosix: (string: string) => string;
   export default normalizePathSeparatorsToPosix;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/normalizePathSeparatorsToSystem.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/normalizePathSeparatorsToSystem.js
 declare module 'metro-file-map/src/lib/normalizePathSeparatorsToSystem' {
   let normalizePathSeparatorsToSystem: (string: string) => string;
   export default normalizePathSeparatorsToSystem;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/RootPathUtils.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/RootPathUtils.js
 declare module 'metro-file-map/src/lib/RootPathUtils' {
   export class RootPathUtils {
     constructor(rootDir: string);
@@ -800,7 +830,7 @@ declare module 'metro-file-map/src/lib/RootPathUtils' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/rootRelativeCacheKeys.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/rootRelativeCacheKeys.js
 declare module 'metro-file-map/src/lib/rootRelativeCacheKeys' {
   import type { BuildParameters } from 'metro-file-map/src/flow-types';
   function rootRelativeCacheKeys(buildParameters: BuildParameters): {
@@ -810,7 +840,15 @@ declare module 'metro-file-map/src/lib/rootRelativeCacheKeys' {
   export default rootRelativeCacheKeys;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/lib/TreeFS.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/sorting.js
+declare module 'metro-file-map/src/lib/sorting' {
+  export function compareStrings(a: null | string, b: null | string): number;
+  export function chainComparators<T>(
+    ...comparators: ((a: T, b: T) => number)[]
+  ): (a: T, b: T) => number;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/TreeFS.js
 declare module 'metro-file-map/src/lib/TreeFS' {
   import type {
     FileData,
@@ -819,6 +857,7 @@ declare module 'metro-file-map/src/lib/TreeFS' {
     LookupResult,
     MutableFileSystem,
     Path,
+    ProcessFileFunction,
   } from 'metro-file-map/src/flow-types';
   type DirectoryNode = Map<string, MixedNode>;
   type FileNode = FileMetaData;
@@ -829,11 +868,12 @@ declare module 'metro-file-map/src/lib/TreeFS' {
     startOfBasenameIdx: number;
   };
   class TreeFS implements MutableFileSystem {
-    constructor($$PARAM_0$$: { rootDir: Path; files?: FileData });
+    constructor($$PARAM_0$$: { rootDir: Path; files?: FileData; processFile: ProcessFileFunction });
     getSerializableSnapshot(): any;
     static fromDeserializedSnapshot($$PARAM_0$$: {
       rootDir: string;
       fileSystemData: DirectoryNode;
+      processFile: ProcessFileFunction;
     }): TreeFS;
     getModuleName(mixedPath: Path): null | undefined | string;
     getSize(mixedPath: Path): null | undefined | number;
@@ -843,6 +883,14 @@ declare module 'metro-file-map/src/lib/TreeFS' {
       removedFiles: Set<string>;
     };
     getSha1(mixedPath: Path): null | undefined | string;
+    getOrComputeSha1(mixedPath: Path): Promise<
+      | null
+      | undefined
+      | {
+          sha1: string;
+          content?: Buffer;
+        }
+    >;
     exists(mixedPath: Path): boolean;
     lookup(mixedPath: Path): LookupResult;
     getAllFiles(): Path[];
@@ -915,17 +963,22 @@ declare module 'metro-file-map/src/lib/TreeFS' {
           absolutePath: string;
           containerRelativePath: string;
         };
-    metadataIterator(opts: { includeSymlinks: boolean; includeNodeModules: boolean }): Iterable<{
+    metadataIterator(
+      opts: Readonly<{
+        includeSymlinks: boolean;
+        includeNodeModules: boolean;
+      }>
+    ): Iterable<{
       baseName: string;
       canonicalPath: string;
       metadata: FileMetaData;
     }>;
     _metadataIterator(
       rootNode: DirectoryNode,
-      opts: {
+      opts: Readonly<{
         includeSymlinks: boolean;
         includeNodeModules: boolean;
-      },
+      }>,
       prefix: string
     ): Iterable<{
       baseName: string;
@@ -962,18 +1015,170 @@ declare module 'metro-file-map/src/lib/TreeFS' {
   export default TreeFS;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/Watcher.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/computeConflicts.js
+declare module 'metro-file-map/src/plugins/haste/computeConflicts' {
+  import type { HasteMapItem } from 'metro-file-map/src/flow-types';
+  type Conflict = {
+    id: string;
+    platform?: string | null;
+    absolutePaths: string[];
+    type?: 'duplicate' | 'shadowing';
+  };
+  export function computeHasteConflicts(
+    $$PARAM_0$$: Readonly<{
+      duplicates: ReadonlyMap<string, ReadonlyMap<string, ReadonlyMap<string, number>>>;
+      map: ReadonlyMap<string, HasteMapItem>;
+      rootDir: string;
+    }>
+  ): Conflict[];
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError.js
+declare module 'metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError' {
+  import type { DuplicatesSet } from 'metro-file-map/src/flow-types';
+  export class DuplicateHasteCandidatesError extends Error {
+    hasteName: string;
+    platform: string | null;
+    supportsNativePlatform: boolean;
+    duplicatesSet: DuplicatesSet;
+    constructor(
+      name: string,
+      platform: string,
+      supportsNativePlatform: boolean,
+      duplicatesSet: DuplicatesSet
+    );
+  }
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/getPlatformExtension.js
+declare module 'metro-file-map/src/plugins/haste/getPlatformExtension' {
+  function getPlatformExtension(
+    file: string,
+    platforms: ReadonlySet<string>
+  ): null | undefined | string;
+  export default getPlatformExtension;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/HasteConflictsError.js
+declare module 'metro-file-map/src/plugins/haste/HasteConflictsError' {
+  import type { HasteConflict } from 'metro-file-map/src/flow-types';
+  export class HasteConflictsError extends Error {
+    constructor(conflicts: readonly HasteConflict[]);
+    getDetailedMessage(pathsRelativeToRoot: null | undefined | string): string;
+  }
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/HastePlugin.js
+declare module 'metro-file-map/src/plugins/HastePlugin' {
+  import type {
+    Console,
+    DuplicatesSet,
+    FileMapDelta,
+    FileMapPlugin,
+    FileMapPluginInitOptions,
+    FileMetaData,
+    HasteConflict,
+    HasteMap,
+    HasteMapItemMetaData,
+    HTypeValue,
+    Path,
+    PerfLogger,
+  } from 'metro-file-map/src/flow-types';
+  type HasteMapOptions = Readonly<{
+    console?: null | undefined | Console;
+    enableHastePackages: boolean;
+    perfLogger?: null | PerfLogger;
+    platforms: ReadonlySet<string>;
+    rootDir: Path;
+    failValidationOnConflicts: boolean;
+  }>;
+  class HastePlugin implements HasteMap, FileMapPlugin<null> {
+    readonly name: any;
+    constructor(options: HasteMapOptions);
+    initialize($$PARAM_0$$: FileMapPluginInitOptions<null>): Promise<void>;
+    getSerializableSnapshot(): null;
+    getModule(
+      name: string,
+      platform?: null | undefined | string,
+      supportsNativePlatform?: null | undefined | boolean,
+      type?: null | undefined | HTypeValue
+    ): null | undefined | Path;
+    getPackage(
+      name: string,
+      platform: null | undefined | string,
+      _supportsNativePlatform?: null | undefined | boolean
+    ): null | undefined | Path;
+    _getModuleMetadata(
+      name: string,
+      platform: null | undefined | string,
+      supportsNativePlatform: boolean
+    ): HasteMapItemMetaData | null;
+    _assertNoDuplicates(
+      name: string,
+      platform: string,
+      supportsNativePlatform: boolean,
+      relativePathSet: null | undefined | DuplicatesSet
+    ): void;
+    bulkUpdate(delta: FileMapDelta): Promise<void>;
+    onNewOrModifiedFile(relativeFilePath: string, fileMetadata: FileMetaData): void;
+    setModule(id: string, module: HasteMapItemMetaData): void;
+    onRemovedFile(relativeFilePath: string, fileMetadata: FileMetaData): void;
+    assertValid(): void;
+    _recoverDuplicates(moduleName: string, relativeFilePath: string): void;
+    computeConflicts(): HasteConflict[];
+  }
+  export default HastePlugin;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/MockPlugin.js
+declare module 'metro-file-map/src/plugins/MockPlugin' {
+  import type {
+    FileMapDelta,
+    FileMapPlugin,
+    FileMapPluginInitOptions,
+    MockMap as IMockMap,
+    Path,
+    RawMockMap,
+  } from 'metro-file-map/src/flow-types';
+  export const CACHE_VERSION: 2;
+  class MockPlugin implements FileMapPlugin<RawMockMap>, IMockMap {
+    readonly name: any;
+    constructor($$PARAM_0$$: {
+      console: typeof console;
+      mocksPattern: RegExp;
+      rawMockMap?: RawMockMap;
+      rootDir: Path;
+      throwOnModuleCollision: boolean;
+    });
+    initialize($$PARAM_0$$: FileMapPluginInitOptions<RawMockMap>): Promise<void>;
+    getMockModule(name: string): null | undefined | Path;
+    bulkUpdate(delta: FileMapDelta): Promise<void>;
+    onNewOrModifiedFile(relativeFilePath: Path): void;
+    onRemovedFile(relativeFilePath: Path): void;
+    getSerializableSnapshot(): RawMockMap;
+    assertValid(): void;
+  }
+  export default MockPlugin;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/mocks/getMockName.js
+declare module 'metro-file-map/src/plugins/mocks/getMockName' {
+  const getMockName: (filePath: string) => string;
+  export default getMockName;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/Watcher.js
 declare module 'metro-file-map/src/Watcher' {
   import type {
-    ChangeEventMetadata,
     Console,
     CrawlerOptions,
     FileData,
     Path,
     PerfLogger,
+    WatcherBackend,
+    WatcherBackendChangeEvent,
     WatchmanClocks,
   } from 'metro-file-map/src/flow-types';
-  import type { AbortSignal } from 'node-abort-controller';
   import EventEmitter from 'events';
   type CrawlResult = {
     changedFiles: FileData;
@@ -988,8 +1193,8 @@ declare module 'metro-file-map/src/Watcher' {
     extensions: readonly string[];
     forceNodeFilesystemAPI: boolean;
     healthCheckFilePrefix: string;
-    ignore: ($$PARAM_0$$: string) => boolean;
-    ignorePattern: RegExp;
+    ignoreForCrawl: ($$PARAM_0$$: string) => boolean;
+    ignorePatternForWatch: RegExp;
     previousState: CrawlerOptions['previousState'];
     perfLogger?: null | PerfLogger;
     roots: readonly string[];
@@ -998,10 +1203,6 @@ declare module 'metro-file-map/src/Watcher' {
     watch: boolean;
     watchmanDeferStates: readonly string[];
   };
-  interface WatcherBackend {
-    getPauseReason(): null | undefined | string;
-    close(): Promise<void>;
-  }
   export type HealthCheckResult =
     | {
         type: 'error';
@@ -1030,148 +1231,132 @@ declare module 'metro-file-map/src/Watcher' {
     _activeWatcher: null | undefined | string;
     constructor(options: WatcherOptions);
     crawl(): Promise<CrawlResult>;
-    watch(
-      onChange: (
-        type: string,
-        filePath: string,
-        root: string,
-        metadata: ChangeEventMetadata
-      ) => void
-    ): void;
+    watch(onChange: (change: WatcherBackendChangeEvent) => void): void;
     _handleHealthCheckObservation(basename: string): void;
     close(): void;
     checkHealth(timeout: number): Promise<HealthCheckResult>;
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/watchers/common.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/AbstractWatcher.js
+declare module 'metro-file-map/src/watchers/AbstractWatcher' {
+  import type { WatcherBackend, WatcherBackendChangeEvent } from 'metro-file-map/src/flow-types';
+  export type Listeners = Readonly<{
+    onFileEvent: (event: WatcherBackendChangeEvent) => void;
+    onError: (error: Error) => void;
+  }>;
+  export class AbstractWatcher implements WatcherBackend {
+    readonly root: string;
+    readonly ignored: null | undefined | RegExp;
+    readonly globs: readonly string[];
+    readonly dot: boolean;
+    readonly doIgnore: (path: string) => boolean;
+    constructor(
+      dir: string,
+      $$PARAM_1$$: Readonly<{
+        ignored?: null | RegExp;
+        globs: readonly string[];
+        dot: boolean;
+      }>
+    );
+    onFileEvent(listener: (event: WatcherBackendChangeEvent) => void): () => void;
+    onError(listener: (error: Error) => void): () => void;
+    startWatching(): Promise<void>;
+    stopWatching(): void;
+    emitFileEvent(event: Omit<WatcherBackendChangeEvent, 'root'>): void;
+    emitError(error: Error): void;
+    getPauseReason(): null | undefined | string;
+  }
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/common.js
 declare module 'metro-file-map/src/watchers/common' {
   import type { ChangeEventMetadata } from 'metro-file-map/src/flow-types';
   import type { Stats } from 'fs';
   /**
    * Constants
    */
-  export const CHANGE_EVENT: 'change';
   export const DELETE_EVENT: 'delete';
-  export const ADD_EVENT: 'add';
+  export const TOUCH_EVENT: 'touch';
   export const ALL_EVENT: 'all';
   export type WatcherOptions = Readonly<{
-    glob: readonly string[];
+    globs: readonly string[];
     dot: boolean;
-    ignored?: boolean | RegExp;
+    ignored?: null | RegExp;
     watchmanDeferStates: readonly string[];
     watchman?: any;
     watchmanPath?: string;
   }>;
-  interface Watcher {
-    doIgnore: ($$PARAM_0$$: string) => boolean;
-    dot: boolean;
-    globs: readonly string[];
-    ignored?: null | undefined | (boolean | RegExp);
-    watchmanDeferStates: readonly string[];
-    watchmanPath?: null | undefined | string;
-  }
-  /**
-   * Assigns options to the watcher.
-   *
-   * @param {NodeWatcher|PollWatcher|WatchmanWatcher} watcher
-   * @param {?object} opts
-   * @return {boolean}
-   * @public
-   */
-  export const assignOptions: (watcher: Watcher, opts: WatcherOptions) => WatcherOptions;
   /**
    * Checks a file relative path against the globs array.
    */
-  export function isIncluded(
+  export function includedByGlob(
     type: null | undefined | ('f' | 'l' | 'd'),
     globs: readonly string[],
     dot: boolean,
-    doIgnore: ($$PARAM_0$$: string) => boolean,
     relativePath: string
   ): boolean;
   /**
-   * Traverse a directory recursively calling `callback` on every directory.
+   * Whether the given filePath matches the given RegExp, after converting
+   * (on Windows only) system separators to posix separators.
+   *
+   * Conversion to posix is for backwards compatibility with the previous
+   * anymatch matcher, which normlises all inputs[1]. This may not be consistent
+   * with other parts of metro-file-map.
+   *
+   * [1]: https://github.com/micromatch/anymatch/blob/3.1.1/index.js#L50
    */
-  export function recReaddir(
-    dir: string,
-    dirCallback: ($$PARAM_0$$: string, $$PARAM_1$$: Stats) => void,
-    fileCallback: ($$PARAM_0$$: string, $$PARAM_1$$: Stats) => void,
-    symlinkCallback: ($$PARAM_0$$: string, $$PARAM_1$$: Stats) => void,
-    endCallback: () => void,
-    errorCallback: ($$PARAM_0$$: Error) => void,
-    ignored: null | undefined | (boolean | RegExp)
-  ): void;
+  export const posixPathMatchesPattern: (pattern: RegExp, filePath: string) => boolean;
   export function typeFromStat(stat: Stats): null | undefined | ChangeEventMetadata['type'];
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/watchers/FSEventsWatcher.js
-declare module 'metro-file-map/src/watchers/FSEventsWatcher' {
-  import type { ChangeEventMetadata } from 'metro-file-map/src/flow-types';
-  import type { Stats } from 'fs';
-  import EventEmitter from 'events';
-  // import anymatch from "anymatch";
-  // type Matcher = typeof anymatch.Matcher;
-  // NOTE(cedric): incorrectly typed
-  import { Matcher } from 'anymatch';
-  const CHANGE_EVENT: 'change';
-  const DELETE_EVENT: 'delete';
-  const ADD_EVENT: 'add';
-  const ALL_EVENT: 'all';
-  type FsEventsWatcherEvent =
-    | typeof CHANGE_EVENT
-    | typeof DELETE_EVENT
-    | typeof ADD_EVENT
-    | typeof ALL_EVENT;
-  /**
-   * Export `FSEventsWatcher` class.
-   * Watches `dir`.
-   */
-  class FSEventsWatcher extends EventEmitter {
-    readonly root: string;
-    readonly ignored: null | undefined | Matcher;
-    readonly glob: readonly string[];
-    readonly dot: boolean;
-    readonly doIgnore: (path: string) => boolean;
-    readonly fsEventsWatchStopper: () => Promise<void>;
-    readonly watcherInitialReaddirPromise: Promise<void>;
-    _tracked: Set<string>;
-    static isSupported(): boolean;
-    static _normalizeProxy(
-      callback: (normalizedPath: string, stats: Stats) => void
-    ): (filepath: string, stats: Stats) => void;
-    static _recReaddir(
-      dir: string,
-      dirCallback: (normalizedPath: string, stats: Stats) => void,
-      fileCallback: (normalizedPath: string, stats: Stats) => void,
-      symlinkCallback: (normalizedPath: string, stats: Stats) => void,
-      endCallback: () => void,
-      errorCallback: Function,
-      ignored?: Matcher
-    ): void;
-    constructor(
-      dir: string,
-      opts: Readonly<{
-        ignored?: Matcher;
-        glob?: string | readonly string[];
-        dot: boolean;
-      }>
-    );
-    close(callback?: () => void): Promise<void>;
-    _handleEvent(filepath: string): void;
-    _emit(type: FsEventsWatcherEvent, file: string, metadata?: ChangeEventMetadata): void;
-    getPauseReason(): null | undefined | string;
-  }
-  export default FSEventsWatcher;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/watchers/NodeWatcher.js
-declare module 'metro-file-map/src/watchers/NodeWatcher' {
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/FallbackWatcher.js
+declare module 'metro-file-map/src/watchers/FallbackWatcher' {
   const $$EXPORT_DEFAULT_DECLARATION$$: any;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/watchers/RecrawlWarning.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/NativeWatcher.js
+declare module 'metro-file-map/src/watchers/NativeWatcher' {
+  import { AbstractWatcher } from 'metro-file-map/src/watchers/AbstractWatcher';
+  /**
+   * NativeWatcher uses Node's native fs.watch API with recursive: true.
+   *
+   * Supported on macOS (and potentially Windows), because both natively have a
+   * concept of recurisve watching, via FSEvents and ReadDirectoryChangesW
+   * respectively. Notably Linux lacks this capability at the OS level.
+   *
+   * Node.js has at times supported the `recursive` option to fs.watch on Linux
+   * by walking the directory tree and creating a watcher on each directory, but
+   * this fits poorly with the synchronous `watch` API - either it must block for
+   * arbitrarily large IO, or it may drop changes after `watch` returns. See:
+   * https://github.com/nodejs/node/issues/48437
+   *
+   * Therefore, we retain a fallback to our own application-level recursive
+   * FallbackWatcher for Linux, which has async `startWatching`.
+   *
+   * On Windows, this watcher could be used in principle, but needs work around
+   * some Windows-specific edge cases handled in FallbackWatcher, like
+   * deduping file change events, ignoring directory changes, and handling EPERM.
+   */
+  class NativeWatcher extends AbstractWatcher {
+    static isSupported(): boolean;
+    constructor(
+      dir: string,
+      opts: Readonly<{
+        ignored?: null | RegExp;
+        globs: readonly string[];
+        dot: boolean;
+      }>
+    );
+    startWatching(): Promise<void>;
+    stopWatching(): Promise<void>;
+    _handleEvent(relativePath: string): void;
+  }
+  export default NativeWatcher;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/RecrawlWarning.js
 declare module 'metro-file-map/src/watchers/RecrawlWarning' {
   class RecrawlWarning {
     static RECRAWL_WARNINGS: RecrawlWarning[];
@@ -1185,22 +1370,17 @@ declare module 'metro-file-map/src/watchers/RecrawlWarning' {
   export default RecrawlWarning;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/watchers/WatchmanWatcher.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/WatchmanWatcher.js
 declare module 'metro-file-map/src/watchers/WatchmanWatcher' {
-  import type { ChangeEventMetadata } from 'metro-file-map/src/flow-types';
   import type { WatcherOptions } from 'metro-file-map/src/watchers/common';
   import type { Client, WatchmanFileChange, WatchmanSubscriptionEvent } from 'fb-watchman';
-  import EventEmitter from 'events';
+  import { AbstractWatcher } from 'metro-file-map/src/watchers/AbstractWatcher';
   /**
    * Watches `dir`.
    */
-  class WatchmanWatcher extends EventEmitter {
+  class WatchmanWatcher extends AbstractWatcher {
     client: Client;
-    dot: boolean;
-    doIgnore: ($$PARAM_0$$: string) => boolean;
-    globs: readonly string[];
-    root: string;
-    subscriptionName: string;
+    readonly subscriptionName: string;
     watchProjectInfo:
       | null
       | undefined
@@ -1208,29 +1388,27 @@ declare module 'metro-file-map/src/watchers/WatchmanWatcher' {
           relativePath: string;
           root: string;
         }>;
-    watchmanDeferStates: readonly string[];
-    constructor(dir: string, opts: WatcherOptions);
-    _init(): void;
+    readonly watchmanDeferStates: readonly string[];
+    constructor(dir: string, $$PARAM_1$$: WatcherOptions);
+    startWatching(): void;
+    _init(onReady: () => void, onError: (error: Error) => void): void;
     _handleChangeEvent(resp: WatchmanSubscriptionEvent): void;
-    _handleFileChange(changeDescriptor: WatchmanFileChange): void;
-    _emitEvent(
-      eventType: string,
-      filepath: string,
-      root: string,
-      changeMetadata?: ChangeEventMetadata
+    _handleFileChange(
+      changeDescriptor: WatchmanFileChange,
+      rawClock: WatchmanSubscriptionEvent['clock']
     ): void;
-    close(): void;
+    stopWatching(): void;
     getPauseReason(): null | undefined | string;
   }
   export default WatchmanWatcher;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/worker.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/worker.js
 declare module 'metro-file-map/src/worker' {
   export function worker(data: any): void;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-file-map/src/workerExclusionList.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/workerExclusionList.js
 declare module 'metro-file-map/src/workerExclusionList' {
   const extensions: any;
   export default extensions;

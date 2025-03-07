@@ -33,11 +33,14 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
         const customChildren = [];
         const screens = react_1.Children.map(children, (child) => {
             if ((0, react_1.isValidElement)(child) && child && child.type === Screen_1.Screen) {
-                if (!child.props.name) {
+                if (typeof child.props === 'object' &&
+                    child.props &&
+                    'name' in child.props &&
+                    !child.props.name) {
                     throw new Error(`<Screen /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
                 }
                 if (process.env.NODE_ENV !== 'production') {
-                    if (['children', 'component', 'getComponent'].some((key) => key in child.props)) {
+                    if (['children', 'component', 'getComponent'].some((key) => child.props && typeof child.props === 'object' && key in child.props)) {
                         throw new Error(`<Screen /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`children\`, \`component\`, or \`getComponent\` prop when used as a child of a Layout Route`);
                     }
                 }
@@ -50,12 +53,13 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 else {
                     console.warn(`Layout children must be of type Screen, all other children are ignored. To use custom children, create a custom <Layout />. Update Layout Route at: "app${contextKey}/_layout"`);
                 }
+                return null;
             }
-        });
+        })?.filter((screen) => Boolean(screen));
         // Add an assertion for development
         if (process.env.NODE_ENV !== 'production') {
             // Assert if names are not unique
-            const names = screens?.map((screen) => screen.name);
+            const names = screens?.map((screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name);
             if (names && new Set(names).size !== names.length) {
                 throw new Error('Screen names must be unique: ' + names);
             }

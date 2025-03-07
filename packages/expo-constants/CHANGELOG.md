@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix pod install in older CocoaPods versions ([#35181](https://github.com/expo/expo/pull/35181) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing types to package exports ([#35223](https://github.com/expo/expo/pull/35223) by [@timostroehlein](https://github.com/timostroehlein))
+
 ### 💡 Others
 
 - [android][ios] Updated Gradle build and Podspec files to ensure app.json/app.config.js values are correctly updated during each native build. ([#34228](https://github.com/expo/expo/pull/34228) by [@chrfalch](https://github.com/chrfalch))

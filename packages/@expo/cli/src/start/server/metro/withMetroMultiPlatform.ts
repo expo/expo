@@ -490,6 +490,11 @@ export function withExtendedResolver(
       if (moduleName.endsWith('/package.json')) {
         return null;
       }
+      // Skip applying JS externals for CSS files.
+      if (/\.(s?css|sass)$/.test(context.originModulePath)) {
+        return null;
+      }
+
       const environment = context.customResolverOptions?.environment;
 
       const strictResolve = getStrictResolver(context, platform);

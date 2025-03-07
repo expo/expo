@@ -54,7 +54,7 @@ class UpdatesDevLauncherController(
 
   private var launcher: Launcher? = null
 
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration

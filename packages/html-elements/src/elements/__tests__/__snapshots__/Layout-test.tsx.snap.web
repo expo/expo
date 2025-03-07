@@ -4,6 +4,7 @@ exports[`renders Article 1`] = `
 <article
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="article"
 />
 `;
@@ -12,6 +13,7 @@ exports[`renders Aside 1`] = `
 <aside
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="complementary"
 />
 `;
@@ -20,6 +22,7 @@ exports[`renders Footer 1`] = `
 <footer
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="contentinfo"
 />
 `;
@@ -28,6 +31,7 @@ exports[`renders Header 1`] = `
 <header
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="banner"
 />
 `;
@@ -36,6 +40,7 @@ exports[`renders Main 1`] = `
 <main
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="main"
 />
 `;
@@ -44,6 +49,7 @@ exports[`renders Nav 1`] = `
 <nav
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="navigation"
 />
 `;
@@ -52,6 +58,7 @@ exports[`renders Section 1`] = `
 <section
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
   role="region"
 />
 `;

@@ -2,7 +2,7 @@
 
 #import <React/RCTBridge+Private.h>
 
-#import <EXDevMenu/DevClientAppDelegate.h>
+#import <EXDevMenu/DevClientReactNativeFactoryDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface DevMenuRCTAppDelegate : DevClientAppDelegate
+@interface DevMenuReactNativeFactoryDelegate : DevClientReactNativeFactoryDelegate
 
 @end
 

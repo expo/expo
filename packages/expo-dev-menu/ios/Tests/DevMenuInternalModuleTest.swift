@@ -14,7 +14,7 @@ class DevMenuInternalModuleTest: ExpoSpec {
       #else
           let doesDeviceSupportKeyCommands = false
       #endif
-      let constants = module.definition().getConstants()
+      let constants = module.definition().getLegacyConstants()
 
       expect(constants["doesDeviceSupportKeyCommands"] as? Bool).to(equal(doesDeviceSupportKeyCommands))
     }

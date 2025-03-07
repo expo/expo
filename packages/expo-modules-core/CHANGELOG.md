@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
@@ -15,6 +16,9 @@
 - Add ExpoAppDelegate support for macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for macOS AppDelegate subscribers ([#35062](https://github.com/expo/expo/pull/35062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add SwiftUI views support for macOS ([#35078](https://github.com/expo/expo/pull/35078) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add common constants to the CoreModule ([#35057](https://github.com/expo/expo/pull/35057) by [@jakex7](https://github.com/jakex7))
+- [Android] Add Constant API ([#35157](https://github.com/expo/expo/pull/35157) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add Constant API ([#35199](https://github.com/expo/expo/pull/35199) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -23,6 +27,9 @@
 - Fixed converting double to float. ([#34906](https://github.com/expo/expo/pull/34906) by [@janicduplessis](https://github.com/janicduplessis))
 - [iOS] Fixed ViewModuleWrapper initializer on old arch to use the DEFAULT_MODULE_VIEW view from the module as the default view. ([#35007](https://github.com/expo/expo/pull/35007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix UnimplementedExpoView on macOS. ([#35014](https://github.com/expo/expo/pull/35014) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix tvOS breakage. ([#35146](https://github.com/expo/expo/pull/35146) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix calls to `AsyncFunction` not working in the initial render of a `View`. ([#35176](https://github.com/expo/expo/pull/35176) by [@behenate](https://github.com/behenate))
+- [Android] Fixed `ConcurrentModificationException` being thrown by `JNIDeallocator.deallocate` during the app reload. ([#35322](https://github.com/expo/expo/pull/35322) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError` error on Android. ([#35114](https://github.com/expo/expo/pull/35114) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

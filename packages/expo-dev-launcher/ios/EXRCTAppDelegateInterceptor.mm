@@ -6,7 +6,7 @@
 #import <cxxreact/JSExecutor.h>
 #import <React/RCTCxxBridgeDelegate.h>
 
-@interface DevClientAppDelegate () <RCTCxxBridgeDelegate>
+@interface DevClientReactNativeFactoryDelegate () <RCTCxxBridgeDelegate>
 @end
 
 @implementation EXRCTAppDelegateInterceptor

@@ -1,6 +1,6 @@
 package expo.modules.webbrowser
 
-import android.content.Intent
+import androidx.browser.customtabs.CustomTabsIntent
 import io.mockk.CapturingSlot
 import io.mockk.Runs
 import io.mockk.every
@@ -12,7 +12,7 @@ internal fun mockkCustomTabsActivitiesHelper(
   activities: ArrayList<String> = ArrayList(),
   preferredActivity: String? = null,
   defaultActivity: String? = null,
-  startIntentSlot: CapturingSlot<Intent>? = null,
+  startIntentSlot: CapturingSlot<CustomTabsIntent>? = null,
   defaultCanResolveIntent: Boolean = false
 ): CustomTabsActivitiesHelper {
   return mockk<CustomTabsActivitiesHelper>(relaxed = true).also {

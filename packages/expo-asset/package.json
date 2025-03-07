@@ -49,12 +49,10 @@
   },
   "dependencies": {
     "@expo/image-utils": "^0.6.0",
-    "expo-constants": "~17.0.0",
-    "invariant": "^2.2.4",
-    "md5-file": "^3.2.3"
+    "expo-constants": "~17.0.0"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^12.5.2",
+    "@testing-library/react-native": "^13.1.0",
     "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {

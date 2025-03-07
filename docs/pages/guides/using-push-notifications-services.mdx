@@ -1,0 +1,97 @@
+---
+title: Using push notifications
+description: Learn about push notification services that are compatible with Expo and React Native apps.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Expo apps can work with any notification service or any of the notification capabilities offered by the Android and iOS operating systems. Even if a package doesn't yet exist for a feature, native code can be written to access it via the [Expo Modules API](/modules/overview/), and native project configurations can be automated using [config plugins](/config-plugins/introduction/). The following options provide purpose-built Expo integrations, including config plugins where necessary, for implementing push notifications in your app:
+
+> The [`expo-notifications`](/versions/latest/sdk/notifications/) library is designed and tested to work with Expo's push notification service and notifications sent directly from FCM and APNS. Some advanced features may not be compatible with third-party providers, as they often have their own native and React Native SDKs optimized for their services.
+
+## Expo push notifications
+
+[Expo Notifications](/versions/latest/sdk/notifications/) provides a unified API for handling push notifications across Android and iOS. It integrates seamlessly with your Expo account and is free to use.
+
+### Key capabilities
+
+- Fully compatible with the [`expo-notifications`](/versions/latest/sdk/notifications/) library
+- Includes an Expo Dashboard to track notifications and user engagement
+- Supports testing notifications with the [Expo Notifications Tool](https://expo.dev/notifications)
+
+### Considerations and limitations
+
+- iOS notification extensions for adding additional content to notifications, such as images, are not formally included or supported, but you can add them with custom native code and configuration.
+- Volumes are limited to 600 notifications per second per project.
+
+For implementation details, see the following guides:
+
+<BoxLink
+  title="Expo push notifications overview"
+  description="Learn more about Expo push notifications."
+  href="/push-notifications/overview"
+  Icon={NotificationBoxIcon}
+/>
+
+<BoxLink
+  title="Expo Notifications server-side SDK options"
+  description="Learn more about sending push notifications using a server."
+  href="/push-notifications/sending-notifications/#send-push-notifications-using-a-servers"
+  Icon={NotificationBoxIcon}
+/>
+
+## OneSignal
+
+[OneSignal](https://onesignal.com/) is a customer engagement platform that provides push notifications, in-app messaging, SMS, and email services for web and mobile apps. OneSignal supports rich media in notifications and engagement analytics. It includes an [Expo config plugin](https://github.com/OneSignal/onesignal-expo-plugin) for direct integration into your Expo project.
+
+<BoxLink
+  title="OneSignal Expo SDK Setup"
+  description="Follow this guide for a step-by-step setup on how to integrate OneSignal in your Expo project."
+  href="https://documentation.onesignal.com/docs/react-native-expo-sdk-setup"
+  Icon={BookOpen02Icon}
+/>
+
+## Braze
+
+[Braze](https://www.braze.com/) is a customer engagement platform that delivers personalized, cross-channel messaging through push notifications, in-app messaging, email, SMS, and web. Braze supports rich notification content, push notification campaigns, and support for resending notifications after failed deliveries on Android. It provides a [React Native SDK](https://github.com/braze-inc/braze-react-native-sdk) and a [config plugin](https://github.com/braze-inc/braze-expo-plugin/tree/main). Check out the [Expo example app](https://github.com/braze-inc/braze-expo-plugin/tree/main/example) for more details.
+
+<BoxLink
+  title="Braze Expo Setup"
+  description="Follow this guide for a step-by-step setup on how to integrate Braze in your Expo project."
+  href="https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration"
+  Icon={BookOpen02Icon}
+/>
+
+## Customer.io
+
+[Customer.io](http://Customer.io) is a customer engagement platform that allows you to design powerful automated workflows utilizing push notifications, in-app messaging, email, SMS capabilities, and more. Its visual workflow builder allows you to automate complex, data-driven campaigns across multiple channels. Customer.io supports device-side metrics collection that can be used to customize push notifications tailored to user behaviors and preferences. Customer.io provides an [Expo plugin](https://github.com/customerio/customerio-expo-plugin) for direct integration with your Expo project and documentation for using Customer.io push notifications alongside other providers.
+
+<BoxLink
+  title="Customer.io Expo Quick Start Guide"
+  description="Follow this guide for a step-by-step setup on how to integrate Customer.io in your Expo project."
+  href="https://docs.customer.io/sdk/expo/quick-start-guide/"
+  Icon={BookOpen02Icon}
+/>
+
+## Send notifications directly via FCM and APNs
+
+You may choose to send directly to platform push API's from your backend. In this case, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to retrieve the native push token and configure notifications separately for each platform.
+
+Although the client-side code remains cross-platform with [`expo-notifications`](/versions/latest/sdk/notifications/), you will need to implement server-side logic to interact with the [FCM](https://firebase.google.com/docs/cloud-messaging) and [APNs](https://developer.apple.com/documentation/usernotifications) APIs individually.
+
+## React Native Firebase messaging
+
+[React Native Firebase](https://rnfirebase.io/) provides a messaging module that lets you use [Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging) as a unified push notification service for both Android and iOS. While FCM is often associated with Android notifications, it also supports iOS by routing messages through Apple Push Notification service (APNs) behind the scenes.
+
+This approach differs from using FCM solely for Android notifications. Instead, Firebase's cross-platform SDK handles notifications for both platforms through a single service.
+
+> Even though FCM handles notifications for both platforms, iOS notifications still go through APNs. Firebase automatically manages this routing. Learn more in the [React Native Firebase messaging documentation](https://rnfirebase.io/messaging/usage).
+
+## Tips and important considerations
+
+- **Avoid mixing client-side implementations**: Different notification services may have conflicting client-side implementations. Use a consistent approach to prevent potential issues.
+- **Web notifications**: Expo notifications do not support web notifications. However, some third-party solutions may offer this capability. Consider your app's requirements when choosing a service.
+- **Token management**: Track both Expo push tokens and native device tokens in your database. This provides flexibility for future integrations, especially with marketing tools that send notifications directly via FCM or APNs.

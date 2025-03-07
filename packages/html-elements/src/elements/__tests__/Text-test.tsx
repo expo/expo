@@ -1,7 +1,6 @@
 import 'react-native';
-
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import {
   B,
@@ -21,69 +20,83 @@ import {
   Time,
 } from '../Text';
 
-it(`renders P`, () => {
-  const tree = renderer.create(<P>demo</P>);
-  expect(tree).toMatchSnapshot();
+it('renders P', () => {
+  const { toJSON } = render(<P>demo</P>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders B`, () => {
-  const tree = renderer.create(<B>demo</B>);
-  expect(tree).toMatchSnapshot();
+
+it('renders B', () => {
+  const { toJSON } = render(<B>demo</B>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Span`, () => {
-  const tree = renderer.create(<Span>demo</Span>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Span', () => {
+  const { toJSON } = render(<Span>demo</Span>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Strong`, () => {
-  const tree = renderer.create(<Strong>demo</Strong>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Strong', () => {
+  const { toJSON } = render(<Strong>demo</Strong>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Del`, () => {
-  const tree = renderer.create(<Del>demo</Del>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Del', () => {
+  const { toJSON } = render(<Del>demo</Del>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders S`, () => {
-  const tree = renderer.create(<S>demo</S>);
-  expect(tree).toMatchSnapshot();
+
+it('renders S', () => {
+  const { toJSON } = render(<S>demo</S>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders I`, () => {
-  const tree = renderer.create(<I>demo</I>);
-  expect(tree).toMatchSnapshot();
+
+it('renders I', () => {
+  const { toJSON } = render(<I>demo</I>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders EM`, () => {
-  const tree = renderer.create(<EM>demo</EM>);
-  expect(tree).toMatchSnapshot();
+
+it('renders EM', () => {
+  const { toJSON } = render(<EM>demo</EM>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders BR`, () => {
-  const tree = renderer.create(<BR />);
-  expect(tree).toMatchSnapshot();
+
+it('renders BR', () => {
+  const { toJSON } = render(<BR />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Code`, () => {
-  const tree = renderer.create(<Code />);
-  expect(tree).toMatchSnapshot();
+
+it('renders Code', () => {
+  const { toJSON } = render(<Code />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Q`, () => {
-  const tree = renderer.create(<Q>demo</Q>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Q', () => {
+  const { toJSON } = render(<Q>demo</Q>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders BlockQuote`, () => {
-  const tree = renderer.create(<BlockQuote />);
-  expect(tree).toMatchSnapshot();
+
+it('renders BlockQuote', () => {
+  const { toJSON } = render(<BlockQuote />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Mark`, () => {
-  const tree = renderer.create(<Mark />);
-  expect(tree).toMatchSnapshot();
+
+it('renders Mark', () => {
+  const { toJSON } = render(<Mark />);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Time`, () => {
-  const tree = renderer.create(<Time dateTime="2001-05-15T19:00">May 15</Time>);
-  expect(tree).toMatchSnapshot();
+
+it('renders Time', () => {
+  const { toJSON } = render(<Time dateTime="2001-05-15T19:00">May 15</Time>);
+  expect(toJSON()).toMatchSnapshot();
 });
-it(`renders Pre`, () => {
-  const tree = renderer.create(
+
+it('renders Pre', () => {
+  const { toJSON } = render(
     <Pre>{`
     body {
       color: red;
     }
   `}</Pre>
   );
-  expect(tree).toMatchSnapshot();
+  expect(toJSON()).toMatchSnapshot();
 });
