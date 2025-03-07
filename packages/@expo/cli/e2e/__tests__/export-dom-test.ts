@@ -35,6 +35,11 @@ describe('Export DOM Components', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+
+    // TODO(kudo,20250304): Remove this once we publish `@expo/metro-config` with DOM components fixes.
+    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
+    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
+    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -78,14 +83,27 @@ describe('Export DOM Components', () => {
       'utf8'
     );
     const md5DomJsBundle = crypto.createHash('md5').update(domJsBundleContent).digest('hex');
-    expect(domEntry.indexOf(`<script src="${md5DomJsBundle}.js" defer></script>`)).toBeGreaterThan(
-      -1
+    expect(
+      domEntry.indexOf(`<script src="./${md5DomJsBundle}.js" defer></script>`)
+    ).toBeGreaterThan(-1);
+
+    // <link href> should link to MD5 named CSS bundle
+    const domCssContent = await fs.readFile(
+      path.join(outputDir, 'www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css'),
+      'utf8'
     );
+    const md5DomCss = crypto.createHash('md5').update(domCssContent).digest('hex');
+    expect(
+      domEntry.indexOf(`<link rel="preload" href="./${md5DomCss}.css" as="style">`)
+    ).toBeGreaterThan(-1);
 
     // Linked assets should be MD5 named
     //   - icon.png
     const iconAssetModule = `__d((function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
     expect(domJsBundleContent.indexOf(iconAssetModule)).toBeGreaterThan(-1);
+    //   - font.ttf
+    const ttfModule = `__d((function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"}),`;
+    expect(domJsBundleContent.indexOf(ttfModule)).toBeGreaterThan(-1);
 
     // Because sourceMappingURL contains path info, we have to remove it and re-generate the MD5 hash files.
     const replacedFiles = await removeSourceMappingURLAsync(path.join(projectRoot, 'dist'));
@@ -98,17 +116,19 @@ describe('Export DOM Components', () => {
         ios: {
           assets: [
             {
-              // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-              // which is unstable across different machines. We fixed it in upstack pr.
-              ext: 'html',
-              path: expect.pathMatching(/^www\.bundle\/.*\.html$/),
+              ext: 'css',
+              path: expect.pathMatching('www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css'),
             },
             {
-              ext: 'js',
-              // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-              // which is unstable across different machines. We fixed it in upstack pr.
-              path: expect.pathMatching(/^www\.bundle\/.*\.js$/),
+              ext: 'html',
+              path: expect.pathMatching('www.bundle/ab469ef5401a35691a4d802bb080f207.html'),
             },
+
+            {
+              ext: 'js',
+              path: expect.pathMatching('www.bundle/8aa692f3ee62953c10ff581ff3234805.js'),
+            },
+
             {
               ext: 'png',
               path: expect.pathMatching('assets/369745d4a4a6fa62fa0ed495f89aa964'),
@@ -238,20 +258,12 @@ describe('Export DOM Components', () => {
     });
 
     // If this changes then everything else probably changed as well.
-    // expect(findProjectFiles(outputDir)).toEqual([
-    expect(
-      findProjectFiles(outputDir).sort((a, b) => {
-        // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-        // which is unstable across different machines. We fixed it in upstack pr.
-        if (/^www\.bundle\/_expo\/static/.test(a) && !/^www\.bundle\/_expo\/static/.test(b)) {
-          return 1;
-        }
-        if (!/^www\.bundle\/_expo\/static/.test(a) && /^www\.bundle\/_expo\/static/.test(b)) {
-          return -1;
-        }
-        return a.localeCompare(b);
-      })
-    ).toEqual([
+    const outputFiles = findProjectFiles(outputDir);
+    // Remove maps because there are path info inside maps and they are not deterministic across machines.
+    const outputFilesWithoutMap = outputFiles.filter(
+      (file) => !(file.startsWith('www.bundle/') && file.endsWith('.map'))
+    );
+    expect(outputFilesWithoutMap).toEqual([
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
       'assetmap.json',
@@ -265,12 +277,9 @@ describe('Export DOM Components', () => {
 
       'metadata.json',
 
-      // TODO(kudo,20250304): originally the filename is md5 hash from absolute file path,
-      // which is unstable across different machines. We fixed it in upstack pr.
-      expect.stringMatching(/^www\.bundle\/.*\.html$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/css\/.*\.css$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/js\/web\/.*\.js$/),
-      expect.stringMatching(/^www\.bundle\/_expo\/static\/js\/web\/.*\.js\.map$/),
+      'www.bundle/8aa692f3ee62953c10ff581ff3234805.js',
+      'www.bundle/ab469ef5401a35691a4d802bb080f207.html',
+      'www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css',
     ]);
   });
 });

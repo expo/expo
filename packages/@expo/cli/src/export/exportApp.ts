@@ -8,8 +8,10 @@ import path from 'path';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import {
+  addDomBundleToMetadataAsync,
   exportDomComponentAsync,
-  updateDomComponentAssetsForMD5Naming,
+  transformNativeBundleForMd5Filename,
+  transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
@@ -182,7 +184,6 @@ export async function exportAppAsync(
           );
 
           bundles[platform] = bundle;
-          domComponentAssetsMetadata[platform] = [];
 
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
@@ -211,20 +212,26 @@ export async function exportAppAsync(
                   includeSourceMaps: sourceMaps,
                   exp,
                   files,
+                  useMd5Filename: true,
                 });
 
               // Merge the assets from the DOM component into the output assets.
               // @ts-expect-error: mutate assets
               bundle.assets.push(...platformDomComponentsBundle.assets);
 
-              const assetsMetadata = updateDomComponentAssetsForMD5Naming({
+              transformNativeBundleForMd5Filename({
                 domComponentReference: filePath,
                 nativeBundle: bundle,
-                domComponentBundle: platformDomComponentsBundle,
                 files,
                 htmlOutputName,
               });
-              domComponentAssetsMetadata[platform]?.push(...assetsMetadata);
+              domComponentAssetsMetadata[platform] = [
+                ...(await addDomBundleToMetadataAsync(platformDomComponentsBundle)),
+                ...transformDomEntryForMd5Filename({
+                  files,
+                  htmlOutputName,
+                }),
+              ];
             })
           );
 
