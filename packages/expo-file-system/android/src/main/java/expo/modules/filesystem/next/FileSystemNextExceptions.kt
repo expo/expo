@@ -48,3 +48,13 @@ internal class DestinationAlreadyExistsException :
   CodedException(
     "Destination already exists"
   )
+
+internal class FileDoesNotExistsException :
+  CodedException(
+    "File does not exist"
+  )
+
+internal class FileUploadFailedException(reason: String) :
+  CodedException(
+    "File upload failed: $reason"
+ )

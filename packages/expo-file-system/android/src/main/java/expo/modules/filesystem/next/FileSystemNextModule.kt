@@ -12,11 +12,15 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
+import java.net.URL
 
 class FileSystemNextModule : Module() {
   private val context: Context
@@ -63,6 +67,31 @@ class FileSystemNextModule : Module() {
         }
       }
       return@Coroutine destination.path
+    }
+
+    AsyncFunction("uploadFileAsync") Coroutine { file: FileSystemFile, to: URL, options: UploadOptions ->
+      file.validatePermission(Permission.READ)
+      if (!file.exists) {
+        throw FileDoesNotExistsException()
+      }
+
+      val requestBuilder = Request.Builder().url(to)
+      options.headers?.let {
+        it.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
+      }
+      val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+      val mimeType = options.mimeType ?: file.type ?: "application/octet-stream"
+      val fieldName = options.fieldName
+      bodyBuilder.addFormDataPart(fieldName, file.file.name, file.file.asRequestBody(mimeType.toMediaTypeOrNull()))
+      val request = requestBuilder.method(options.httpMethod.value, bodyBuilder.build()).build()
+      val client = OkHttpClient()
+      val response = request.await(client)
+
+      if (!response.isSuccessful) {
+        throw FileUploadFailedException("response status: ${response.code}")
+      }
+
+      return@Coroutine true
     }
 
     Class(FileSystemFile::class) {
