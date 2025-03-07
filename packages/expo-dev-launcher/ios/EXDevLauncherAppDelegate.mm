@@ -11,6 +11,7 @@
 #else
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
+#import <EXDevMenu/EXAppDependencyProvider.h>
 
 @interface RCTAppDelegate ()
 
@@ -25,6 +26,9 @@
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
 {
   if (self = [self init]) {
+#if __has_include(<React-RCTAppDelegate/RCTDependencyProvider.h>) || __has_include(<React_RCTAppDelegate/RCTDependencyProvider.h>)
+    self.dependencyProvider = [EXAppDependencyProvider new];
+#endif
     self.bundleURLGetter = bundleURLGetter;
   }
   return self;
