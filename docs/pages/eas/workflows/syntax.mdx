@@ -387,6 +387,29 @@ jobs:
       prod: boolean # optional
 ```
 
+#### `fingerprint`
+
+Calculates fingerprint of Android and iOS builds.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: fingerprint
+    # @end #
+```
+
+> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+This job outputs the following properties:
+
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
+```
+
 #### `get-build`
 
 Retrieves an existing build from EAS that matches the provided parameters.
