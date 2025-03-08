@@ -38,13 +38,156 @@ With Expo Router, you refer to pages by their URL, or their position relative to
 
 ## Links and Buttons
 
-## Redirects
+However, the typical way to link to a page in Expo Router is to use links, just like web apps. Expo Router has `Link` components for navigating between pages, where the `href` is the same route you would use in `router.navigate`:
+
+{/* prettier-ignore */}
+```tsx app/index.tsx
+import { View } from 'react-native';
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
+import { Link } from 'expo-router';
+/* @end */
+
+export default function Page() {
+  return (
+    <View>
+      /* @info Tapping this will link to the <strong>about</strong> page */
+      <Link href="/about">About</Link>
+    </View>
+  );
+}
+```
+
+By default, Links can only wrap `Text` components. You can use `Pressable` or other components that support `onPress` and `onClick` props inside a link with the `asChild` prop:
+
+{/* prettier-ignore */}
+```tsx
+import { Pressable, Text } from 'react-native';
+import { Link } from 'expo-router';
+
+export default function Page() {
+  return (
+    /* @info The <strong>onPress</strong> event that navigates to <strong>/other</strong> will be passed to <strong>Pressable</strong> */
+    <Link href="/other" asChild>
+    /* @end */
+      <Pressable>
+        <Text>Home</Text>
+      </Pressable>
+    </Link>
+  );
+}
+```
 
 ## Relative routes
 
-useLocalSearchParams
+You don't always have to use the absolute path to a route. Using paths that start with `./` (for the current folder) or `../` (for the parent folder) will navigate relative to the current route.
 
-## Dynamic routes
+A relative URL is a URL prefix with `./`, such as `./article`, or `./article/`. Relative URLs are resolved relative to the current rendered screen.
+
+```tsx
+<Link href="./article">Go to article</Link>
+```
+
+```ts
+router.navigate('./article');
+```
+
+## Dynamic routes and URL parameters
+
+Dynamic routes can be linked to with their full URL, or by passing a `params` object.
+
+Consider this file structure:
+
+<FileTree files={[['app/user/[id].tsx']]} />
+
+Each of these links will navigate to the same page:
+
+{/* prettier-ignore */}
+```tsx app/index.tsx
+/* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
+import { Link } from 'expo-router';
+/* @end */
+import { View, Pressable } from 'react-native';
+
+export default function Page() {
+  return (
+    <View>
+      <Link
+        href="/user/bacon">
+        View user (id inline)
+      </Link>
+      <Link
+        href={{
+          /* @info Navigate to <strong>/user/bacon</strong> */
+          pathname: '/user/[id]',
+          params: { id: 'bacon' }
+          /* @end */
+        }}>
+        View user (id in params in href)
+      </Link>
+      <Pressable onPress={() => router.navigate('/user', { id: 'bacon' })}>
+        <Text>View user (imperative)</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+### Passing query parameters
+
+You can specify query parameters in the link URL itself, or as additional parameters in the `params` object. Any parameters that don't match the name of the dynamic route variable are equivalent to query parameters.
+
+```tsx
+<Link href="/users?limit=20">View users</Link>
+
+<Link
+  href={{
+    pathname: '/users',
+    params: { limit: 20 }
+  }}>
+  View users
+</Link>
+```
+
+### Using dynamic route variables and query parameters
+
+All variables in the link URL are accessible to the receiving page via the `useLocalSearchParams` hook. This hook returns an object with all the URL parameters, including those passed as `params`.
+
+So, if you have a link like this:
+
+```tsx
+<Link href="/users?limit=20">View users</Link>
+```
+
+Then you can read the parameters on the other end like this:
+
+```tsx
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text } from 'react-native';
+
+export default function Users() {
+  const { id, limit } = useLocalSearchParams();
+
+  return (
+    <View>
+      <Text>User ID: {id}</Text>
+      <Text>Limit: {limit}</Text>
+    </View>
+  );
+}
+```
+
+## Update query parameters
+
+Query parameters can be updated without navigating to a new page. This can be done with a `Link` that uses the same URL as the current page, but with updated query parameters, or imperatively.
+
+```tsx
+<Link href="/users?limit=50">View more users</Link>
+
+<Pressable onPress={() => router.setParams({ limit: 50 })}>
+  <Text>View more users</Text>
+</Pressable>
+
+## Redirects
 
 ## Deep links
 

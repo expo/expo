@@ -14,7 +14,7 @@ Look inside the app folder in a typical Expo Router project, and you'll see a lo
 
 <FileTree files={[['app/home.tsx'], ['app/feed/favorites.tsx']]} />
 
-Regular folder and file names without any notation signify _static routes_. Their URL matches exactly as they appear in your file tree. So, a file named **feed/favorites.tsx** will have a URL of `/feed/favorites`.
+Regular folder and file names without any notation signify _static routes_. Their URL matches exactly as they appear in your file tree. So, a file named **favorites.tsx** inside the **feed** folder will have a URL of `/feed/favorites`.
 
 ### Square brackets
 
@@ -25,8 +25,6 @@ If you see square brackets in a folder or file name, you are looking at a _dynam
 ### Parentheses
 
 <FileTree files={[['app/(tabs)/index.tsx'], ['app/(tabs)/settings.tsx']]} />
-
-_Examples: **(tabs)/settings.tsx**_
 
 A folder with its name surrounded in parenthesis indicates a _route group_. These folders are useful for grouping routes together without affecting the URL. For example, a file named **(tabs)/settings.tsx** will have `/settings` for its URL, even though it is not directly in the **app** directory.
 
