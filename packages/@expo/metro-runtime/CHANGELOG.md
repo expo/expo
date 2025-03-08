@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove global polyfill for deprecated `setImmediate` function.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
