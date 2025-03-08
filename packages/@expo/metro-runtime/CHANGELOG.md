@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove global polyfill for deprecated `setImmediate` function. ([#35373](https://github.com/expo/expo/pull/35373) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
