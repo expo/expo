@@ -3,7 +3,7 @@ import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 import type { DevToolsPluginClientOptions } from './devtools.types';
 export { getDevToolsPluginClientAsync, DevToolsPluginClient };
 export type { DevToolsPluginClientOptions };
-export type { EventSubscription } from 'fbemitter';
+export type { EventSubscription } from './DevToolsPluginClient';
 export { setEnableLogging } from './logger';
 /**
  * A React hook to get the DevToolsPluginClient instance.
