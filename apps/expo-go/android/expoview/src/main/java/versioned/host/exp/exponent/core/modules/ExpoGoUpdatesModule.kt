@@ -84,7 +84,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Int, promise: Promise ->
       AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
+        val reader = UpdatesLogReader(context.filesDir)
         val date = Date()
         val epoch = Date(date.time - maxAge)
         val results = reader.getLogEntries(epoch)
@@ -112,7 +112,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
       AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
+        val reader = UpdatesLogReader(context.filesDir)
         reader.purgeLogEntries(
           olderThan = Date()
         ) { error ->

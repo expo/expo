@@ -1,12 +1,23 @@
-import { isRunningInExpoGo } from 'expo';
 import Constants from 'expo-constants';
-import { requireOptionalNativeModule } from 'expo-modules-core';
+import { requireNativeModule, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { ExpoUpdatesModule } from 'expo-updates';
 
 import { getManifestBaseUrl } from './AssetUris';
 
 const ExpoUpdates = requireOptionalNativeModule<ExpoUpdatesModule>('ExpoUpdates');
+
+const NativeExpoGoModule = (() => {
+  try {
+    return requireNativeModule('ExpoGo');
+  } catch {
+    return null;
+  }
+})();
+
+function isRunningInExpoGo(): boolean {
+  return NativeExpoGoModule != null;
+}
 
 // expo-updates (and Expo Go expo-updates override) manages assets from updates and exposes
 // the ExpoUpdates.localAssets constant containing information about the assets.
