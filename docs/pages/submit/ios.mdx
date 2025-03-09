@@ -7,6 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
 This guide outlines how to submit your app to the Apple App Store from your computer or from a CI/CD service.
 
@@ -63,7 +64,7 @@ The command will lead you step by step through the process of submitting the app
 }
 ```
 
-<Collapsible summary="How to find ascAppId">
+<Collapsible summary={<>How to find <CODE>ascAppId</CODE></>}>
   1. Sign in to [App Store Connect](https://appstoreconnect.apple.com/) and select your team.
   2. Navigate to the [Apps](https://appstoreconnect.apple.com/apps).
   3. Click on your app.
@@ -139,7 +140,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
       }
     ```
 
-     <Collapsible summary="How to find ascAppId">
+     <Collapsible summary={<>How to find <CODE>ascAppId</CODE></>}>
       1. Sign in to [App Store Connect](https://appstoreconnect.apple.com/) and select your team.
       2. Navigate to the [Apps](https://appstoreconnect.apple.com/apps).
       3. Click on your app.
