@@ -548,7 +548,7 @@ export default function EmojiList({ onSelect, onCloseModal }: Props) {
 
   return (
     <FlatList
-      horizontal
+      horizontal={true}
       showsHorizontalScrollIndicator={Platform.OS === 'web'}
       data={emoji}
       contentContainerStyle={styles.listContainer}
