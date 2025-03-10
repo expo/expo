@@ -1,6 +1,6 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
-import { mkdirSync, existsSync } from 'fs-extra';
+import { mkdirSync, existsSync } from 'fs';
 import type { OutputOptions } from 'metro/src/shared/types';
 import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
