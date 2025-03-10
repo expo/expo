@@ -1,5 +1,6 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
+import { mkdirSync, existsSync } from 'fs-extra';
 import type { OutputOptions } from 'metro/src/shared/types';
 import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
@@ -128,6 +129,9 @@ export function resolveEagerOptionsAsync(
   if (!assetsDest) {
     destination ??= getTemporaryPath();
     assetsDest = path.join(destination, 'assets');
+    if (!existsSync(assetsDest)) {
+      mkdirSync(assetsDest, { recursive: true });
+    }
   }
 
   if (!bundleOutput) {
