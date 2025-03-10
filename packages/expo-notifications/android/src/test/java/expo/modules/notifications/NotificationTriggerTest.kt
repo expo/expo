@@ -1,7 +1,7 @@
 package expo.modules.notifications
 
-import android.os.Parcel
 import android.os.Bundle
+import android.os.Parcel
 import androidx.test.filters.SmallTest
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
@@ -16,12 +16,17 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 @SmallTest
+@RunWith(RobolectricTestRunner::class)
 class NotificationTriggerTest {
   private var calendarNow: Calendar = Calendar.getInstance()
-  private var calendar5MinutesFromNow: Calendar = Calendar.getInstance().apply {
+  private var calendar5MinutesFromNow: Calendar = (calendarNow.clone() as Calendar).apply {
     add(Calendar.MINUTE, 5)
   }
 
@@ -103,15 +108,24 @@ class NotificationTriggerTest {
 
   @Test
   fun testTimeIntervalTriggerParcel() {
-    // Time interval trigger
-    val timeIntervalTrigger = TimeIntervalTrigger(null, 2, false)
+    val pastTime = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(5)
+    val pastDate = Date(pastTime)
+
+    // Create a time interval trigger with a 2-second interval.
+    // The triggerDate is in the past to verify that nextTriggerDate returns null
+    val timeIntervalTrigger = TimeIntervalTrigger(null, 2, false, pastDate)
+
     val parcel = Parcel.obtain()
     timeIntervalTrigger.writeToParcel(parcel, 0)
     parcel.setDataPosition(0)
+
+    // restore trigger from the parcel
     val timeIntervalTriggerFromParcel = parcelableCreator<TimeIntervalTrigger>().createFromParcel(parcel)
-    assertNull(timeIntervalTriggerFromParcel.channelId)
-    assertFalse(timeIntervalTriggerFromParcel.isRepeating)
-    assertEquals(timeIntervalTriggerFromParcel.timeInterval, 2)
+    assertEquals(timeIntervalTriggerFromParcel.timeInterval, timeIntervalTrigger.timeInterval)
+    assertEquals(timeIntervalTriggerFromParcel.channelId, timeIntervalTrigger.channelId)
+    assertEquals(timeIntervalTriggerFromParcel.isRepeating, timeIntervalTrigger.isRepeating)
+
+    assertNull("Non-repeating trigger should return null when its time has passed", timeIntervalTriggerFromParcel.nextTriggerDate())
   }
 
   @Test
