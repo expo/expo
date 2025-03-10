@@ -70,7 +70,7 @@ final class WeakPlayerObserverDelegate: Hashable {
 class VideoPlayerObserver {
   private weak var owner: VideoPlayer?
   var player: AVPlayer? {
-    owner?.pointer
+    owner?.ref
   }
   var delegates = Set<WeakPlayerObserverDelegate>()
   private var currentItem: VideoPlayerItem?

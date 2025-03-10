@@ -141,10 +141,10 @@ public final class VideoModule: Module {
       }
 
       Property("allowsExternalPlayback") { player -> Bool in
-        return player.pointer.allowsExternalPlayback
+        return player.ref.allowsExternalPlayback
       }
       .set { (player, allowsExternalPlayback: Bool) in
-        player.pointer.allowsExternalPlayback = allowsExternalPlayback
+        player.ref.allowsExternalPlayback = allowsExternalPlayback
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -162,14 +162,14 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        let currentTime = player.pointer.currentTime().seconds
+        let currentTime = player.ref.currentTime().seconds
         return currentTime.isNaN ? 0 : currentTime
       }
       .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
         let clampedTime = max(0, time)
         let timeToSeek = CMTimeMakeWithSeconds(clampedTime, preferredTimescale: .max)
-        player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+        player.ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
       Property("currentLiveTimestamp") { player -> Double? in
@@ -181,15 +181,15 @@ public final class VideoModule: Module {
       }
 
       Property("targetOffsetFromLive") { player -> Double in
-        return player.pointer.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
+        return player.ref.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
       }
       .set { (player, timeOffset: Double) in
         let timeOffset = CMTime(seconds: timeOffset, preferredTimescale: .max)
-        player.pointer.currentItem?.configuredTimeOffsetFromLive = timeOffset
+        player.ref.currentItem?.configuredTimeOffsetFromLive = timeOffset
       }
 
       Property("duration") { player -> Double in
-        let duration = player.pointer.currentItem?.duration.seconds ?? 0
+        let duration = player.ref.currentItem?.duration.seconds ?? 0
         return duration.isNaN ? 0 : duration
       }
 
@@ -201,7 +201,7 @@ public final class VideoModule: Module {
       }
 
       Property("isLive") { player -> Bool in
-        return player.pointer.currentItem?.duration.isIndefinite ?? false
+        return player.ref.currentItem?.duration.isIndefinite ?? false
       }
 
       Property("preservesPitch") { player -> Bool in
@@ -274,11 +274,11 @@ public final class VideoModule: Module {
       }
 
       Function("play") { player in
-        player.pointer.play()
+        player.ref.play()
       }
 
       Function("pause") { player in
-        player.pointer.pause()
+        player.ref.pause()
       }
 
       Function("replace") { (player, source: Either<String, VideoSource>?) in
@@ -298,13 +298,13 @@ public final class VideoModule: Module {
       }
 
       Function("seekBy") { (player, seconds: Double) in
-        let newTime = player.pointer.currentTime() + CMTime(seconds: seconds, preferredTimescale: .max)
+        let newTime = player.ref.currentTime() + CMTime(seconds: seconds, preferredTimescale: .max)
 
-        player.pointer.seek(to: newTime)
+        player.ref.seek(to: newTime)
       }
 
       Function("replay") { player in
-        player.pointer.seek(to: CMTime.zero)
+        player.ref.seek(to: CMTime.zero)
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
