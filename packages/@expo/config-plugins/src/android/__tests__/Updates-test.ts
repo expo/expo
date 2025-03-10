@@ -45,7 +45,6 @@ describe('Android Updates config', () => {
         policy: 'sdkVersion',
       },
       slug: 'my-app',
-      owner: 'owner',
       updates: {
         enabled: false,
         fallbackToCacheTimeout: 2000,
@@ -163,7 +162,6 @@ describe('Android Updates config', () => {
         name: 'foo',
         version: '37.0.0',
         slug: 'my-app',
-        owner: 'owner',
         runtimeVersion: {
           policy: 'appVersion',
         },
