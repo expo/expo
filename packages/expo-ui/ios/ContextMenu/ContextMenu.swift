@@ -79,7 +79,7 @@ struct LongPressContextMenu<ActivationElement: View>: View {
   let elements: [ContextMenuElement]?
   let activationElement: ActivationElement
   let props: ContextMenuProps?
-  
+
   var body: some View {
     activationElement.contextMenu(menuItems: {
       MenuItems(fromElements: elements, props: props)
@@ -132,7 +132,8 @@ struct ContextMenu: ExpoSwiftUI.View {
       let activationElement = props.children?.filter({
         $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
       })
-      SinglePressContextMenu(elements: props.elements,
+      SinglePressContextMenu(
+        elements: props.elements,
         activationElement: UnwrappedChildren(children: activationElement),
         props: props
       )
@@ -143,19 +144,21 @@ struct ContextMenu: ExpoSwiftUI.View {
       let activationElement = props.children?.filter({
         $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
       })
-      if (preview?.count ?? 0 > 0) {
-        LongPressContextMenuWithPreview(elements: props.elements,
+      if preview?.count ?? 0 > 0 {
+        LongPressContextMenuWithPreview(
+          elements: props.elements,
           activationElement: UnwrappedChildren(children: activationElement),
           preview: UnwrappedChildren(children: preview),
           props: props
         )
       } else {
-        LongPressContextMenu(elements: props.elements,
+        LongPressContextMenu(
+          elements: props.elements,
           activationElement: UnwrappedChildren(children: activationElement),
           props: props
         )
       }
-      
+
     }
   }
 }
