@@ -98,7 +98,7 @@ jobs:
       profile: development-simulator
 ```
 
-Run the about workflow with:
+Run the above workflow with:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/create-development-builds.yml']} />
 
@@ -143,8 +143,6 @@ When you're ready to deliver changes to your users, you can build and submit to 
 
 <Prerequisites numberOfRequirements={3}>
   <Requirement number={1} title="Set up EAS Build">
-    To get started, you'll need to set up EAS Build, EAS Submit, and EAS Update.
-
     To set up EAS Build, follow this guide:
 
     <BoxLink
@@ -157,18 +155,18 @@ When you're ready to deliver changes to your users, you can build and submit to 
   </Requirement>
 
   <Requirement number={2} title="Set up EAS Submit">
-    To set up EAS Submit, follow these guides for each app store:
+    To set up EAS Submit, follow the Google Play Store and Apple App Store submissions guides:
 
     <BoxLink
-      title="Google Play Store prerequisites"
-      description="Get your project ready for Google Play Store submissions."
-      href="/submit/android/"
+      title="Apple App Store CI/CD submission guide"
+      description="Get your project ready for Apple App Store submissions."
+      href="/submit/ios/#submitting-your-app-using-cicd-services"
       Icon={BookOpen02Icon}
     />
     <BoxLink
-      title="Apple App Store prerequisites"
-      description="Get your project ready for Apple App Store submissions."
-      href="/submit/ios/"
+      title="Google Play Store CI/CD submission guide"
+      description="Get your project ready for Google Play Store submissions."
+      href="/submit/android/#submitting-your-app-using-cicd-services"
       Icon={BookOpen02Icon}
     />
 
