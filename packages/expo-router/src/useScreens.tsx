@@ -51,6 +51,8 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
 
+export const IsLayoutContext = React.createContext(false);
+
 function getSortedChildren(
   children: RouteNode[],
   order?: ScreenProps[],
@@ -214,9 +216,11 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       const loadable = getLoadable(props, ref);
 
       return (
-        <Route node={value} route={route}>
-          {loadable}
-        </Route>
+        <IsLayoutContext.Provider value={value.type === 'layout'}>
+          <Route node={value} route={route}>
+            {loadable}
+          </Route>
+        </IsLayoutContext.Provider>
       );
     }
   );

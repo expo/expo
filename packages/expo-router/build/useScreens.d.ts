@@ -22,6 +22,7 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
         params?: Record<string, any>;
     }) => string | undefined;
 };
+export declare const IsLayoutContext: React.Context<boolean>;
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */

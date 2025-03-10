@@ -1,6 +1,7 @@
 import { MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
+import { WithAnchorOptions } from '../global-state/routing';
 /**
  * @platform web
  */
@@ -140,9 +141,6 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      */
     replace?: boolean;
     /**
-     * Always pushes a new route, and never pops or replaces to existing route.
-     * You can push the current route multiple times or with new parameters.
-     *
      * @example
      *```tsx
      * import { Link } from 'expo-router';
@@ -193,7 +191,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     /**
      * Replaces the initial screen with the current route.
      */
-    withAnchor?: boolean;
+    withAnchor?: WithAnchorOptions;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];

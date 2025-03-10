@@ -18,6 +18,8 @@ import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 
+export type WithAnchorOptions = 'deep' | 'target' | 'none' | boolean;
+
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
     throw new Error(
@@ -132,7 +134,7 @@ export type LinkToOptions = {
   /**
    * Include the anchor when navigating to a new navigator
    */
-  withAnchor?: boolean;
+  withAnchor?: WithAnchorOptions;
 };
 
 export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
@@ -187,7 +189,7 @@ function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
   type = 'NAVIGATE',
-  withAnchor?: boolean
+  withAnchor?: WithAnchorOptions
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -230,13 +232,38 @@ function getNavigateAction(
     navigationState = nextNavigationState as NavigationState;
   }
 
+  if (withAnchor === true) {
+    withAnchor = 'deep';
+  }
+
   /*
    * We found the target navigator, but the payload is in the incorrect format
    * We need to convert the action state to a payload that can be dispatched
    */
   const rootPayload: Record<string, any> = { params: {} };
   let payload = rootPayload;
+  let parentPayload = payload;
   let params = payload.params;
+
+  let initial: boolean | undefined;
+  let warnedInitial = false;
+
+  if (withAnchor === 'deep' || withAnchor === 'target') {
+    /*
+     * The logic for initial can seen backwards depending on your perspective
+     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+     *
+     * withAnchor flips the perspective.
+     *   True: You want the initialRouteName to load.
+     *   False: You do not want the initialRouteName to load.
+     */
+    initial = false;
+
+    if (withAnchor === 'deep') {
+      rootPayload.initial = initial;
+    }
+  }
 
   // The root level of payload is a bit weird, its params are in the child object
   while (actionStateRoute) {
@@ -246,11 +273,23 @@ function getNavigateAction(
     // Merge the params, ensuring that we create a new object
     payload.params = { ...params };
 
+    if (withAnchor === 'deep') {
+      payload.initial = initial;
+    }
+
+    if (!warnedInitial && (payload.params?.initial || actionStateRoute.params?.initial)) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+      }
+      warnedInitial = true;
+    }
+
     // Params don't include the screen, thats a separate attribute
     delete payload.params['screen'];
 
     // Continue down the payload tree
     // Initially these values are separate, but React Nav merges them after the first layer
+    parentPayload = payload;
     payload = payload.params;
     params = payload;
 
@@ -289,23 +328,32 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
-  if (withAnchor !== undefined) {
-    if (rootPayload.params.initial) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
-      }
+  if (params.initial) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
     }
-    /*
-     * The logic for initial can seen backwards depending on your perspective
-     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
-     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
-     *
-     * withAnchor flips the perspective.
-     *   True: You want the initialRouteName to load.
-     *   False: You do not want the initialRouteName to load.
-     */
-    rootPayload.params.initial = !withAnchor;
   }
+
+  if (withAnchor === 'target') {
+    parentPayload.initial = initial;
+  }
+
+  // console.log(
+  //   JSON.stringify(
+  //     {
+  //       type,
+  //       target: navigationState.key,
+  //       payload: {
+  //         // key: rootPayload.key,
+  //         name: rootPayload.screen,
+  //         params: rootPayload.params,
+  //         initial: rootPayload.initial,
+  //       },
+  //     },
+  //     null,
+  //     2
+  //   )
+  // );
 
   return {
     type,
@@ -314,6 +362,7 @@ function getNavigateAction(
       // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
+      initial: rootPayload.initial,
     },
   };
 }

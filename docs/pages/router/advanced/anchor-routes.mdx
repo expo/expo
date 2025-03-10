@@ -1,0 +1,84 @@
+---
+title: Anchor Routes
+description: Learn how to use the anchor routes to modify navigation history
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+Anchor routes, sometimes referred to as initial routes, are routes that are injected into the start of the navigation history when navigator is loaded.
+
+Expo Router uses a different term to React Navigation due to the different philosophy of the API design. 
+
+- Expo Router uses a **positive** API: A route is assigned to be the anchor and it will be included by setting `withAnchor` to a positive value. 
+- React Navigation uses a **negative** API: A target route by default is the initial route unless `initial: false` is passed, in which case the default initial route is used.
+
+<FileTree
+  files={[
+    ['_layout.tsx'],
+    ['(feed)/_layout.tsx', 'A <Stack> layout'],
+    ['(feed)/profile/[id].tsx', 'A users profile'],
+    ['(feed)/index.tsx', 'A news feed'],
+  ]}
+/>
+
+In the example above, the `(feed)/index.tsx` route is assigned the `/` path and will be the first route shown. When the users navigates backwards the app will close as there is no history. The same logic also applies to deep links to `/profile/<id>`. This is generally undesirable behavior for mobile apps, as going back from a deep-link generally should route to the `/` route before existing. We can achieve this via assigning an anchor route:
+
+```tsx app/(feed)/_layout.tsx
+import { Stack } from 'expo-router'
+
+const unable_settings = {
+  anchor: 'index'
+}
+
+export default function MyLayout() {
+  return <Stack />
+}
+```
+
+Now when the user deep-links to `/profile/1` and navigates backwards, the `/` route will be loaded.
+
+## When are anchor routes applied
+
+Anchor routes are applied in the following two scenarios:
+
+1. During the initial loading of the app, either by opening the app or deep-linking.
+2. When a `_layout` is mounted **for that navigation branch**
+
+<FileTree
+  files={[
+    ['_layout.tsx', 'A <Tabs /> layout '],
+    ['index.tsx'],
+    ['second.tsx'],
+    ['(feed)/_layout.tsx', 'A <Stack> layout'],
+    ['(feed)/feed.tsx', 'The anchor for the <Stack />'],
+    ['(feed)/profile.tsx'],
+    ['(feed)/settings.tsx'],
+  ]}
+/>
+
+We can demonstrate the second scenario using the app structure above
+
+- If the user is on `/` and navigates to `/profile` using `withAnchor` then the anchor route `/feed` will be added to navigation history. Because `(feed)/_layout` was mounted
+- If the user is on `/settings` and navigates to `/profile` using `withAnchor` then the anchor is **not** added because `(feed)/_layout` was already mounted
+- If the user is on `/second` and navigates to `/profile` using `withAnchor` then the anchor is added, because `<Tabs />` creates a branching history and `(feed)/_layout` has not been mounted in this navigation branch.
+
+
+## `withAnchor`
+
+The `withAnchor` is a navigation option that is available as a prop on `<Link />`, `<Redirect />`; and as an option for the imperative APIs.
+
+```tsx
+<Link href="/route" withAnchor />
+<Redirect href="/route" withAnchor />
+
+router.push("/route", { withAnchor: true })
+router.navigate("/route", { withAnchor: true })
+```
+
+`withAnchor` accepts these values:
+
+- `true`: Alias for `deep`
+- `false`: Alias for `none`
+- `deep`: All navigators loaded will include their anchor routes
+- `target`: Only the final targeted navigator will have its anchor route loaded
+- `none`: No anchor routes will be loaded

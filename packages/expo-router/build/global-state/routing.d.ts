@@ -1,5 +1,6 @@
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
+export type WithAnchorOptions = 'deep' | 'target' | 'none' | boolean;
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function reload(this: RouterStore): void;
@@ -22,7 +23,7 @@ export type LinkToOptions = {
     /**
      * Include the anchor when navigating to a new navigator
      */
-    withAnchor?: boolean;
+    withAnchor?: WithAnchorOptions;
 };
 export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
