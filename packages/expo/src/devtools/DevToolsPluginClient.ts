@@ -1,5 +1,3 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
-
 import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
@@ -12,12 +10,16 @@ interface MessageFramePackerMessageKey {
   method: string;
 }
 
+export interface EventSubscription {
+  remove(): void;
+}
+
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
  * All the code should be both compatible with browsers and React Native.
  */
 export abstract class DevToolsPluginClient {
-  protected eventEmitter: EventEmitter = new EventEmitter();
+  private listeners: Record<string, undefined | Set<(params: any) => void>>;
 
   private static defaultWSStore: WebSocketBackingStore = new WebSocketBackingStore();
   private readonly wsStore: WebSocketBackingStore = DevToolsPluginClient.defaultWSStore;
@@ -32,6 +34,7 @@ export abstract class DevToolsPluginClient {
     private readonly options?: DevToolsPluginClientOptions
   ) {
     this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
+    this.listeners = Object.create(null);
   }
 
   /**
@@ -57,7 +60,7 @@ export abstract class DevToolsPluginClient {
       this.wsStore.ws?.close();
       this.wsStore.ws = null;
     }
-    this.eventEmitter.removeAllListeners();
+    this.listeners = Object.create(null);
   }
 
   /**
@@ -88,7 +91,13 @@ export abstract class DevToolsPluginClient {
    * @param listener Listener to be called when a message is received.
    */
   public addMessageListener(method: string, listener: (params: any) => void): EventSubscription {
-    return this.eventEmitter.addListener(method, listener);
+    const listenersForMethod = this.listeners[method] || (this.listeners[method] = new Set());
+    listenersForMethod.add(listener);
+    return {
+      remove: () => {
+        this.listeners[method]?.delete(listener);
+      },
+    };
   }
 
   /**
@@ -97,7 +106,11 @@ export abstract class DevToolsPluginClient {
    * @param listener Listener to be called when a message is received.
    */
   public addMessageListenerOnce(method: string, listener: (params: any) => void): void {
-    this.eventEmitter.once(method, listener);
+    const wrappedListenerOnce = (params: any): void => {
+      listener(params);
+      this.listeners[method]?.delete(wrappedListenerOnce);
+    };
+    this.addMessageListener(method, wrappedListenerOnce);
   }
 
   /**
@@ -155,7 +168,13 @@ export abstract class DevToolsPluginClient {
     if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
       return;
     }
-    this.eventEmitter.emit(messageKey.method, payload);
+
+    const listenersForMethod = this.listeners[messageKey.method];
+    if (listenersForMethod) {
+      for (const listener of listenersForMethod) {
+        listener(payload);
+      }
+    }
   };
 
   /**
