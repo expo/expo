@@ -10,6 +10,7 @@
 - [Android][iOS] Add support for listing available video tracks and currently played video track. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add `sourceLoad` event. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add caching functionality. ([#31781](https://github.com/expo/expo/pull/31781) by [@behenate](https://github.com/behenate))
+- Add `onFirstFrameRender` event to the `VideoView`. ([#35346](https://github.com/expo/expo/pull/35346) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

@@ -25,4 +25,5 @@ interface VideoPlayerListener {
   fun onPlayedToEnd(player: VideoPlayer) {}
   fun onAudioMixingModeChanged(player: VideoPlayer, audioMixingMode: AudioMixingMode, oldAudioMixingMode: AudioMixingMode?) {}
   fun onVideoTrackChanged(player: VideoPlayer, videoTrack: VideoTrack?, oldVideoTrack: VideoTrack?) {}
+  fun onRenderedFirstFrame(player: VideoPlayer) {}
 }
