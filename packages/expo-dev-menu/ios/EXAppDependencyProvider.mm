@@ -4,6 +4,7 @@
 #import <EXDevMenu/EXAppDependencyProvider.h>
 #import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
+#import <ReactCodegen/RCTModuleProviders.h>
 
 @implementation EXAppDependencyProvider {
   NSArray<NSString *> * _URLRequestHandlerClassNames;
@@ -26,6 +27,10 @@
 
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
   return RCTThirdPartyComponentsProvider.thirdPartyFabricComponents;
+}
+
+- (nonnull NSDictionary<NSString *,id<RCTModuleProvider>> *)moduleProviders { 
+  return RCTModuleProviders.moduleProviders;
 }
 
 @end

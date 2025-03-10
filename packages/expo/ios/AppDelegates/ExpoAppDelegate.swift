@@ -33,22 +33,8 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
     self.dependencyProvider = RCTAppDependencyProvider()
     self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
-    let rootView = reactNativeFactory?.rootViewFactory.view(
-      withModuleName: self.moduleName as String,
-      initialProperties: self.initialProps,
-      launchOptions: launchOptions
-    )
-
-    let window = UIWindow(frame: UIScreen.main.bounds)
-    let rootViewController = createRootViewController()
-
-    setRootView(rootView, toRootViewController: rootViewController)
-
-    window.windowScene?.delegate = self
-    window.rootViewController = rootViewController
-    window.makeKeyAndVisible()
-
-    self.window = window
+    window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(withModuleName: self.moduleName, in: window, launchOptions: launchOptions)
   }
 
   @objc

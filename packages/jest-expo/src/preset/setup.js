@@ -6,7 +6,7 @@
 
 const findUp = require('find-up');
 const path = require('path');
-const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
+const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
 
 const publicExpoModules = require('./expoModules');
