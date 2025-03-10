@@ -75,7 +75,19 @@ struct SinglePressContextMenu<ActivationElement: View>: View {
   }
 }
 
-struct LongPressContextMenu<ActivationElement: View, Preview: View>: View {
+struct LongPressContextMenu<ActivationElement: View>: View {
+  let elements: [ContextMenuElement]?
+  let activationElement: ActivationElement
+  let props: ContextMenuProps?
+  
+  var body: some View {
+    activationElement.contextMenu(menuItems: {
+      MenuItems(fromElements: elements, props: props)
+    })
+  }
+}
+
+struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View>: View {
   let elements: [ContextMenuElement]?
   let activationElement: ActivationElement
   let preview: Preview
@@ -121,8 +133,9 @@ struct ContextMenu: ExpoSwiftUI.View {
         $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
       })
       SinglePressContextMenu(elements: props.elements,
-                             activationElement: UnwrappedChildren(children: activationElement),
-                             props: props)
+        activationElement: UnwrappedChildren(children: activationElement),
+        props: props
+      )
     } else {
       let preview = props.children?.filter({
         $0.view is ExpoSwiftUI.HostingView<ContextMenuPreviewProps, ContextMenuPreview>
@@ -130,10 +143,19 @@ struct ContextMenu: ExpoSwiftUI.View {
       let activationElement = props.children?.filter({
         $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
       })
-      LongPressContextMenu(elements: props.elements,
-                           activationElement: UnwrappedChildren(children: activationElement),
-                           preview: UnwrappedChildren(children: preview),
-                           props: props)
+      if (preview?.count ?? 0 > 0) {
+        LongPressContextMenuWithPreview(elements: props.elements,
+          activationElement: UnwrappedChildren(children: activationElement),
+          preview: UnwrappedChildren(children: preview),
+          props: props
+        )
+      } else {
+        LongPressContextMenu(elements: props.elements,
+          activationElement: UnwrappedChildren(children: activationElement),
+          props: props
+        )
+      }
+      
     }
   }
 }
