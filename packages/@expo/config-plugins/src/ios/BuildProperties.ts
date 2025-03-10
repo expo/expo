@@ -70,6 +70,20 @@ export const withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugi
   'withNewArchEnabledPodfileProps'
 );
 
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `extra.updatesNativeDebug` in expo config
+ */
+export const withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'EX_UPDATES_NATIVE_DEBUG',
+      propValueGetter: (config) =>
+        (config.extra?.updatesNativeDebug ?? false).toString(),
+    },
+  ],
+  'withUpdatesNativeDebugPodfileProps'
+);
+
 export function updateIosBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(
   config: SourceConfigType,
   podfileProperties: Record<string, string>,
