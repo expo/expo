@@ -59,21 +59,7 @@ Run the following command to submit a build to the Google Play Store:
 
 <Terminal cmd={['$ eas submit --platform android']} />
 
-The command will lead you step by step through the process of submitting the app. You can configure the submission process by adding a submission profile in **eas.json**:
-
-```json eas.json
-{
-  "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json"
-      }
-    }
-  }
-}
-```
-
-Learn about all the options you can provide in the [eas.json reference](/eas/json/#android-specific-options-1).
+The command will lead you step by step through the process of submitting the app. You can configure the submission process by adding a submission profile in **eas.json**. Learn about all the options you can provide in the [eas.json reference](/eas/json/#android-specific-options-1).
 
 To speed up the submission process, you can use the `--auto-submit` flag to automatically submit a build after it's built:
 
