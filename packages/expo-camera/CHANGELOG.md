@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] scanFromUrlAsync now handles other barcodes formats than QRCode. ([#35185](https://github.com/expo/expo/pull/35185) by [@eliottg](https://github.com/EliottG-Bam))
 - [Android] Add support for the `Google Code Scanner`, similar to the `DataScannerViewController` used on iOS. ([#33347](https://github.com/expo/expo/pull/33347) by [@alanjhughes](https://github.com/alanjhughes))
 - Add support for pausing and resuming a video recording. ([#34002](https://github.com/expo/expo/pull/34002) by [@alanjhughes](https://github.com/alanjhughes))
 - Support returning image ref ([#34656](https://github.com/expo/expo/pull/34656) and ([#34693](https://github.com/expo/expo/pull/34693) by [@alanjhughes](https://github.com/alanjhughes))
