@@ -466,8 +466,8 @@ export const eas = [
   ]),
   makeSection('EAS Submit', [
     makePage('submit/introduction.mdx'),
-    makePage('submit/ios.mdx'),
     makePage('submit/android.mdx'),
+    makePage('submit/ios.mdx'),
     makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Update', [
