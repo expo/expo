@@ -24,9 +24,6 @@
     },
     "updates_testing_debug": {
       "extends": "base",
-      "env": {
-        "EX_UPDATES_NATIVE_DEBUG": "1"
-      },
       "android": {
         "applicationArchivePath": "eas.json",
         "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
@@ -42,9 +39,6 @@
     },
     "updates_testing_release": {
       "extends": "base",
-      "env": {
-        "EX_UPDATES_NATIVE_DEBUG": "1"
-      },
       "android": {
         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
         "withoutCredentials": true

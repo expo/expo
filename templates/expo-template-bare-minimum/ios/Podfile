@@ -6,6 +6,8 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
 
 ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+ENV['EX_UPDATES_NATIVE_DEBUG'] = podfile_properties['EX_UPDATES_NATIVE_DEBUG'] == 'true' ? '1' : '0'
+ENV['EX_UPDATES_CUSTOM_INIT'] = podfile_properties['EX_UPDATES_CUSTOM_INIT'] == 'true' ? '1' : '0'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
