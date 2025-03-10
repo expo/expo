@@ -1,9 +1,11 @@
+/* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const path = require('path');
+const path = require('node:path');
 
-const monorepoRoot = path.join(__dirname, '../..');
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
+const monorepoRoot = path.join(__dirname, '../..');
 
 config.resolver.assetExts.push(
   'kml', // See: ../native-component-list/assets/expo-maps/sample_kml.kml
