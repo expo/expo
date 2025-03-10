@@ -26,9 +26,25 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
 
 When distributing apps through app store testing tracks, you can only use release builds. You cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution-with-eas-build), which works with both release and development builds.
 
-**Android**: Google Play beta provides both closed and open tracks for Android apps. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program.
+<Collapsible summary="Android: Google Play Beta">
 
-**iOS**: Apple provides TestFlight for iOS apps, which allows you to share your app with up to 100 internal testers, or up to 10,000 external testers.
+Before a complete public release, [Google Play beta](https://support.google.com/googleplay/android-developer/answer/9845334?visit_id=638740965629093187-3840249980&rd=1) is another option to distribute your app to testers. You can set up either an internal, closed, or open test track and control who has access to the app.
+
+Each test track has its own requirements. For the internal track, you can only invite up to 100 testers. Both closed and open tracks support larger groups of testers. In closed tracks, you need to invite testers, while in open tracks, anyone can join your program.
+
+To use Google Play beta, you need to upload your app as an AAB (Android App Bundle) to the Google Play Console, set up a test track, and invite users via email or a shareable link. Testers can install the app through the Play Store, and you can collect feedback and crash reports directly from the Google Play Console.
+
+</Collapsible>
+
+<Collapsible summary="iOS: TestFlight">
+
+TestFlight is another option to distribute your app to iOS devices. TestFlight also requires a paid Apple Developer account. TestFlight's internal testing option allows you to create test groups that include up to 100 members of your Apple Developer account team, who then download the app through the TestFlight app. Some teams prefer TestFlight because it doesn't require a new build to add new testers, and apps stay updated automatically.
+
+TestFlight also includes an external testing option that allows you to share your app with up to 10,000 users via an email or a public link.
+
+Both internal and external test distribution in TestFlight require you to [upload your app](/submit/ios) to App Store Connect and wait for the automated review before you can share a build. However, external test builds will need to go through a more formal App Store review (which is distinct from the review that your app must undergo before production release) before being distributed.
+
+</Collapsible>
 
 <BoxLink
   title="EAS Submit"
