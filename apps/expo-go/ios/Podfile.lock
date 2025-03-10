@@ -3422,7 +3422,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: 8e915e1120894daead363cf31ff85cd4d182cd89
-  EXUpdates: 4f1da354bedc829ff5e4e31dd2bffdcdb89280be
+  EXUpdates: c52f9139eaaf52b10da337b71cff06f6c2f6b3ba
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 4e454d1f4065e926edf59cc8ecb08c6b556e0677
@@ -3533,7 +3533,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 1ed5c52b06c6ec39a829e7ba4f4efe7f8a91a64d
   RNFlashList: f1a63d27d13903c8c44d67e0501486ab7a451091
   RNGestureHandler: 54481e63bf74e3aebd744c2ce715d57ab2d63b75
-  RNReanimated: 0ba7c391db5c4d3cec25ae368c2a46b5d5e61a09
+  RNReanimated: 321287dce49bf1f96bb453985219b5af1f20bd0e
   RNScreens: 9ce01d366c096aa6bab28ca5546c1ec6effa5419
   RNSVG: a9d7676ad21a91f78a6bb5c56e975575b7e2f714
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3

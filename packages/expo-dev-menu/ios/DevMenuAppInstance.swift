@@ -17,8 +17,7 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
     self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
   }
 
-  convenience init(manager: DevMenuManager, bridge: RCTBridge) {
-    self.init(manager: manager)
+  func setBridge(_ bridge: RCTBridge) {
     self.reactNativeFactory?.rootViewFactory.bridge = bridge
   }
 
