@@ -1,36 +1,36 @@
 import ExpoModulesCore
 
-internal class SMSUnavailableException: Exception {
+internal final class SMSUnavailableException: Exception {
   override var reason: String {
     "SMS service is not available"
   }
 }
 
-internal class SMSPendingException: Exception {
+internal final class SMSPendingException: Exception {
   override var reason: String {
     "SMS sending in progress, await the old request and then try again"
   }
 }
 
-internal class SMSSendingException: GenericException<String> {
+internal final class SMSSendingException: GenericException<String> {
   override var reason: String {
     param
   }
 }
 
-internal class SMSFileException: GenericException<String> {
+internal final class SMSFileException: GenericException<String> {
   override var reason: String {
     "Failed to attach file: \(param)"
   }
 }
 
-internal class SMSMimeTypeException: GenericException<String> {
+internal final class SMSMimeTypeException: GenericException<String> {
   override var reason: String {
     "Failed to find UTI for mimeType: \(param)"
   }
 }
 
-internal class SMSUriException: GenericException<String> {
+internal final class SMSUriException: GenericException<String> {
   override var reason: String {
     "Invalid file uri: \(param)"
   }

@@ -2,13 +2,13 @@
 
 import ExpoModulesCore
 
-internal class InvalidImageException: GenericException<String> {
+internal final class InvalidImageException: GenericException<String> {
   override var reason: String {
     "Invalid base64 image: \(param.prefix(32))\(param.count > 32 ? "..." : "")"
   }
 }
 
-internal class PasteFailureException: Exception {
+internal final class PasteFailureException: Exception {
   override var reason: String {
     "Failed to get item from clipboard"
   }
