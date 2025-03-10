@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix activationState must be used from main thread only ([#35403](https://github.com/expo/expo/pull/35403) by [@dylancom](https://github.com/dylancom))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))

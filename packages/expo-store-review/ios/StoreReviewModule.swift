@@ -10,10 +10,10 @@ public class StoreReviewModule: Module {
     }
 
     AsyncFunction("requestReview") {
-      guard let currentScene = getForegroundActiveScene() else {
-        throw MissingCurrentWindowSceneException()
-      }
-      Task { @MainActor in
+      try await MainActor.run {
+        guard let currentScene = getForegroundActiveScene() else {
+          throw MissingCurrentWindowSceneException()
+        }
         if #available(iOS 16.0, *) {
           AppStore.requestReview(in: currentScene)
         } else {
