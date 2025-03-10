@@ -158,7 +158,6 @@ struct ContextMenu: ExpoSwiftUI.View {
           props: props
         )
       }
-
     }
   }
 }
