@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 
+import { WithAnchorOptions } from '../global-state/routing';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { IsLayoutContext } from '../useScreens';
 import { Slot } from '../views/Navigator';
-import { WithAnchorOptions } from '../global-state/routing';
 
 export type RedirectProps = {
   /**

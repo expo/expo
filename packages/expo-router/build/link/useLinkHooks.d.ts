@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
-import { Href } from '../types';
 import { WithAnchorOptions } from '../global-state/routing';
+import { Href } from '../types';
 /**
  * @platform web
  */

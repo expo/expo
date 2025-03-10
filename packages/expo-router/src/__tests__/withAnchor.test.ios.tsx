@@ -1,10 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import { Link, Slot, router, useLocalSearchParams } from '../exports';
+import { Link, Slot, router } from '../exports';
 import Stack from '../layouts/Stack';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
-import { store } from '../global-state/router-store';
 
 it('can preserve the initialRoute', () => {
   renderRouter({

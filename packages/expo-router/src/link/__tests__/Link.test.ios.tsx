@@ -1,10 +1,7 @@
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 
-import { router } from '../../imperative-api';
-import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 

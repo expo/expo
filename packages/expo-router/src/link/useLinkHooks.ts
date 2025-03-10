@@ -3,8 +3,8 @@
 import { useMemo, MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent, Platform } from 'react-native';
 
-import { Href } from '../types';
 import { WithAnchorOptions } from '../global-state/routing';
+import { Href } from '../types';
 
 // docsMissing
 /**

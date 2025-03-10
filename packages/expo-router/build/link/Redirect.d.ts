@@ -1,6 +1,6 @@
 /// <reference types="react" />
-import { Href } from '../types';
 import { WithAnchorOptions } from '../global-state/routing';
+import { Href } from '../types';
 export type RedirectProps = {
     /**
      * The path of the route to navigate to. It can either be:
