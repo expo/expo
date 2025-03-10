@@ -6,8 +6,6 @@ hideTOC: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 When you create your first React Native project with `npx create-expo-app` and run it with `npx expo start`, you are most likely using the [Expo Go](https://expo.dev/go) app for development. Expo Go is a native app that we built and deployed to the [App](https://apps.apple.com/us/app/expo-go/id982107779) and [Play](https://play.google.com/store/apps/details?id=host.exp.exponent) stores so you could get coding quickly. It is a sandbox app with a number of native libraries packaged in (see the dependencies list [here](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23)). This means that you can develop the JavaScript side of your app locally and view it on Expo Go.
@@ -64,7 +62,12 @@ If you're developing on Android Device, Android Emulator or iOS Simulator, a com
 
 ## How to convert from Expo Go to a Development build
 
-### Step 1: install `expo-dev-client`
+To migrate from Expo Go, you'll need to
+
+1. install `expo-dev-client`
+2. build the native app using native build tools
+
+The details on how to do this based on the platform you're building for is covered in the [next section](/develop/development-builds/create-a-build).
 
 The Expo Dev Client package includes the launcher UI (shown in the screenshots below), dev menu, extensions to test updates etc. The Expo Go app has the dev menu built in, so we'll need to install it ourselves for a development build.
 
@@ -73,110 +76,3 @@ The Expo Dev Client package includes the launcher UI (shown in the screenshots b
   src="/static/images/dev-client/preview.png"
   caption={`When you run a development build it will look like this, only with your app name and icon included rather than "Microfoam". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
 />
-
-### Step 2: build and install your native app (Development Client)
-
-This step varies based on which platform you're building ofr and whether you're building on EAS or locally.
-
-#### Android Device / Emulator
-
-<Tabs>
-
-<Tab label="Build on EAS">
-**Prerequisites**
-
-- an [Expo](https://expo.dev/) account
-- (optional) an [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-
-<Terminal cmd={['$ eas build --platform android --profile development']} />
-
-Read more about [Android builds on EAS](/tutorial/eas/android-development-build).
-
-</Tab>
-
-<Tab label="On your local machine">
-
-**Prerequisites**
-
-- macOS, Windows or Linux machine
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=windows&platform=android)
-- on Windows, set up [WSL](https://github.com/expo/fyi/blob/main/wsl.md)
-- (optional) an [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-
-Build the native app with:
-
-<Terminal cmd={['$ npx expo run:android']} />
-
-Pressing `a` on the terminal will open it in the Android emulator.
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
-#### iOS Simulator
-
-<Tabs>
-
-<Tab label="Build on EAS">
-**Prerequisites**
-
-- an [Expo](https://expo.dev/) account
-- macOS (iOS Simulators are only available on macOS)
-- an [iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/)
-
-<Terminal cmd={['$ eas build --platform android --profile development']} />
-
-Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-build-for-simulators/).
-
-</Tab>
-
-<Tab label="On your local machine">
-
-**Prerequisites**
-
-- macOS
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios)
-
-<Terminal cmd={['$ npx expo run:ios']} />
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
-#### iOS Device
-
-<Tabs>
-
-<Tab label="Build on EAS">
-**Prerequisites**
-
-- an [Expo](https://expo.dev/) account
-- a paid [Apple Developer](https://developer.apple.com/) account - for creating [signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) so the app could be installed on an iOS device
-
-<Terminal cmd={['$ eas build --platform android --profile development']} />
-
-Read more about [iOS Device builds on EAS](/tutorial/eas/ios-development-build-for-devices/).
-
-</Tab>
-
-<Tab label="On your local machine">
-
-**Prerequisites**
-
-- macOS
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios)
-
-<Terminal cmd={['$ npx expo run:ios']} />
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
-### Step 3: start your bundle
-
-After building and installing your **native app** all that's left to do is to build the JavaScript bundle. For local development, the command is the same: running `npx expo start` in a project that includes the `expo-dev-client` package will automatically try to connect to the Development Build instead of Expo Go (it will be printed out in the terminal);
-
-<Terminal cmd={['$ npx expo start']} />
