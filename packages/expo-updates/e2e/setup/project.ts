@@ -497,6 +497,7 @@ function transformAppJsonForE2E(
         assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
+        updatesNativeDebug: true,
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
@@ -606,6 +607,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       extra: {
+        updatesNativeDebug: true,
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
@@ -760,7 +762,6 @@ export async function initAsync(
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
-      EX_UPDATES_NATIVE_DEBUG: '1',
       EXPO_DEBUG: '1',
       CI: '1',
     },
@@ -787,7 +788,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true',
     'utf-8'
   );
 
