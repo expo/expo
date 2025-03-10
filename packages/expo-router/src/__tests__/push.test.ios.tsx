@@ -6,7 +6,7 @@ import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter, screen, testRouter } from '../testing-library';
+import { act, renderRouter, screen } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 it('stacks should always push a new route', () => {
@@ -38,7 +38,7 @@ it('stacks should always push a new route', () => {
   act(() => router.push('/user/2'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 5,
     key: expect.any(String),
     preloadedRoutes: [],
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
@@ -54,88 +54,80 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
+            },
+            screen: 'index',
+          },
+          screen: 'post/[id]',
         },
         path: undefined,
-        state: {
-          index: 3,
-          key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['user/[id]', 'post/[id]'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'post/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-              path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
             },
-            {
-              key: expect.any(String),
-              name: 'user/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'post/[id]',
-              params: {
-                id: '2',
-                params: {
-                  id: '2',
-                },
-                screen: 'index',
-              },
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'user/[id]',
-              params: {
-                id: '1',
-              },
-              path: undefined,
-              state: {
-                index: 1,
-                key: expect.any(String),
-                preloadedRoutes: [],
-                routeNames: ['index'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {
-                      id: '1',
-                    },
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {
-                      id: '2',
-                    },
-                    path: undefined,
-                  },
-                ],
-                stale: false,
-                type: 'stack',
-              },
-            },
-          ],
-          stale: false,
-          type: 'stack',
+            screen: 'index',
+          },
+          screen: 'user/[id]',
         },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '2',
+          params: {
+            id: '2',
+            params: {
+              id: '2',
+            },
+            screen: 'index',
+          },
+          screen: 'post/[id]',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '1',
+          params: {
+            id: '1',
+            params: {
+              id: '1',
+            },
+            screen: 'index',
+          },
+          screen: 'user/[id]',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          id: '2',
+          params: {
+            id: '2',
+            params: {
+              id: '2',
+            },
+            screen: 'index',
+          },
+          screen: 'user/[id]',
+        },
+        path: undefined,
       },
     ],
     stale: false,
@@ -161,40 +153,30 @@ it('can push & replace with nested Slots', async () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
-it('should navigate as expected when nested Stacks & Tabs', async () => {
+it('pushing should correctly created a nested state', async () => {
   renderRouter({
     index: () => <Text testID="index" />,
-    'apple/_layout': () => <Stack />,
-    'apple/index': () => <Text testID="apple" />,
-    'apple/[type]/_layout': () => <Tabs />,
-    'apple/[type]/color': () => <Text testID="color" />,
-    'apple/[type]/taste': () => <Text testID="taste" />,
+    _layout: () => <Stack />,
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/one': () => <Text testID="one" />,
+    '(tabs)/two': () => <Text testID="two" />,
   });
 
-  act(() => router.push('/apple')); // Push to the root Stack
-  expect(screen).toHavePathname('/apple');
-  expect(screen.getByTestId('apple')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
 
-  act(() => router.push('/apple/1/color')); // Push to the apple/layout
-  expect(screen).toHavePathname('/apple/1/color');
+  act(() => router.push('/two'));
+  expect(screen).toHavePathname('/two');
 
-  act(() => router.push('/apple/1/taste')); // Tabs don't push, so this doesn't affect the history
-  expect(screen).toHavePathname('/apple/1/taste');
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
 
-  act(() => router.push('/apple/2/taste')); // [type] is outside of the tabs, so it pushed to apple/_layout
-  expect(screen).toHavePathname('/apple/2/taste');
-
-  act(() => router.push('/apple/2/color')); // Tabs don't push, so this doesn't affect the history
-  expect(screen).toHavePathname('/apple/2/color');
-
+  // If the push worked correctly, (tabs) should be a nested state.
+  // Going back from the first tab should close the tab navigator
+  // This is special functionality of the tab navigator
+  // https://snack.expo.dev/@mwlawlor/nested-tab-navigator
   act(() => router.back());
-  expect(screen).toHavePathname('/apple/1/taste');
-
-  act(() => router.back());
-  expect(screen).toHavePathname('/apple/1/color');
-
-  act(() => router.back());
-  expect(screen).toHavePathname('/apple');
+  expect(screen).toHavePathname('/');
 });
 
 it('works in a nested layout Stack->Tab->Stack', () => {
@@ -207,21 +189,32 @@ it('works in a nested layout Stack->Tab->Stack', () => {
     '(tabs)/c/_layout': () => <Stack />,
     '(tabs)/c/one': () => <Text testID="c/one" />,
     '(tabs)/c/two': () => <Text testID="c/two" />,
-    d: () => null,
+    d: () => <Text testID="d" />,
   });
 
-  testRouter.push('/a');
+  act(() => router.push('/a'));
+  expect(screen).toHavePathnameWithParams('/a');
   expect(screen.getByTestId('a')).toBeOnTheScreen();
-  testRouter.push('/b');
+
+  act(() => router.push('/b'));
+  expect(screen).toHavePathnameWithParams('/b');
   expect(screen.getByTestId('b')).toBeOnTheScreen();
-  testRouter.push('/c/one');
+
+  act(() => router.push('/c/one'));
+  expect(screen).toHavePathnameWithParams('/c/one');
   expect(screen.getByTestId('c/one')).toBeOnTheScreen();
-  testRouter.push('/c/two');
-  expect(screen.getByTestId('c/two')).toBeOnTheScreen();
-  testRouter.push('/c/two');
+
+  act(() => router.push('/c/two'));
+  expect(screen).toHavePathnameWithParams('/c/two');
   expect(screen.getByTestId('c/two')).toBeOnTheScreen();
 
-  testRouter.push('/d');
+  act(() => router.push('/c/two'));
+  expect(screen).toHavePathnameWithParams('/c/two');
+  expect(screen.getByTestId('c/two')).toBeOnTheScreen();
+
+  act(() => router.push('/d'));
+  expect(screen).toHavePathnameWithParams('/d');
+  expect(screen.getByTestId('d')).toBeOnTheScreen();
 
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 2,

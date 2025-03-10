@@ -413,29 +413,45 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   const NestedLayout = jest.fn(() => <Stack />);
   const NestedNestedLayout = jest.fn(() => <Stack />);
 
+  const Fruit = jest.fn(() => null);
+  const Vegetable = jest.fn(() => null);
+
   renderRouter(
     {
       _layout: RootLayout,
-      '[one]/_layout': NestedLayout,
-      '[one]/a': () => null,
-      '[one]/b': () => null,
-      '[one]/[two]/_layout': NestedNestedLayout,
-      '[one]/[two]/a': () => null,
+      '[fruit]/_layout': NestedLayout,
+      '[fruit]/index': Fruit,
+      '[fruit]/[vegetable]/_layout': NestedNestedLayout,
+      '[fruit]/[vegetable]/index': Vegetable,
     },
     {
-      initialUrl: '/one/a',
+      initialUrl: '/apple',
     }
   );
 
-  testRouter.push('/one/b');
+  expect(screen).toHavePathnameWithParams('/apple');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(0);
+  expect(Fruit).toHaveBeenCalledTimes(1);
+  expect(Vegetable).toHaveBeenCalledTimes(0);
 
-  testRouter.push('/one/two/a');
+  // Rerender the same route, should not rerender the layouts
+  act(() => router.push('/apple'));
+  expect(screen).toHavePathnameWithParams('/apple');
+  expect(RootLayout).toHaveBeenCalledTimes(1);
+  expect(NestedLayout).toHaveBeenCalledTimes(1);
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(0);
+  expect(Fruit).toHaveBeenCalledTimes(2);
+  expect(Vegetable).toHaveBeenCalledTimes(0);
+
+  act(() => router.push('/apple/carrot'));
+  expect(screen).toHavePathnameWithParams('/apple/carrot');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
+  expect(Fruit).toHaveBeenCalledTimes(2);
+  expect(Vegetable).toHaveBeenCalledTimes(1);
 });
 
 test('can preserve the nested initialRouteName when navigating to a nested stack', () => {

@@ -218,6 +218,7 @@ function getNavigateAction(
 
     const didActionAndCurrentStateDiverge =
       actionStateRoute.name !== stateRoute.name ||
+      (actionStateRoute.params && !deepIncludes(actionStateRoute.params, stateRoute.params)) ||
       !childState ||
       !nextNavigationState ||
       (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
@@ -316,4 +317,21 @@ function getNavigateAction(
       params: rootPayload.params,
     },
   };
+}
+
+function deepIncludes(collection: unknown, value: unknown) {
+  if (collection === value) {
+    return true;
+  }
+
+  if (Array.isArray(collection) && Array.isArray(value)) {
+    return value.every((value, index) => deepIncludes(value, value[index]));
+  }
+
+  if (typeof collection === 'object' && typeof value === 'object' && collection && value) {
+    const keysA = Object.keys(value);
+    return keysA.every((key) => deepIncludes(collection[key], value[key]));
+  }
+
+  return false;
 }
