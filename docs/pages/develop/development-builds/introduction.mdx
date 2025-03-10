@@ -8,6 +8,7 @@ hideTOC: true
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 When you create your first React Native project with `npx create-expo-app` and run it with `npx expo start`, you are most likely using the [Expo Go](https://expo.dev/go) app for development. Expo Go is a native app that we built and deployed to the [App](https://apps.apple.com/us/app/expo-go/id982107779) and [Play](https://play.google.com/store/apps/details?id=host.exp.exponent) stores so you could get coding quickly. It is a sandbox app with a number of native libraries packaged in (see the dependencies list [here](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23)). This means that you can develop the JavaScript side of your app locally and view it on Expo Go.
 
@@ -19,9 +20,21 @@ The **JavaScript bundle (`npx expo start`)** is where your app's UI code and bus
 
 Since the native app bundle is immutable, this means that when you're using Expo Go for development, you can only rely on the native code and tools that exist in Expo Go. The only way to get around it is to build your native app yourself instead of using our pre-packaged sandbox. This is exactly what a **Development Build is: your own version of Expo Go** where you are free to use any native libraries and change any native config.
 
+<VideoBoxLink
+  videoId="7J8LRpja9_o"
+  title="Getting the most out of Expo Development Builds"
+  description="In this talk Kadi explains the history of how Expo Go came to be, it's benefits and limitations."
+/>
+
 ## What can't you do in Expo Go and why
 
 Migrating from Expo Go to a Development Build can be a bit overwhelming the first time. Expo Go is the perfect tool for learning, prototyping and experimenting, but most production apps will convert to using Development builds sooner rather than later. It helps to know exactly what is _not_ possible in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
+
+<VideoBoxLink
+  videoId="FdjczjkwQKE"
+  title="Expo Go & Development Builds: which should you use?"
+  description="In this tutorial video Beto explains what each of them is, and when to choose a Development Build."
+/>
 
 ### Use libraries with native code that aren't in Expo Go
 
