@@ -79,8 +79,7 @@ export const withUpdatesNativeDebugGradleProps = createBuildGradlePropsConfigPlu
   [
     {
       propName: 'EX_UPDATES_NATIVE_DEBUG',
-      propValueGetter: (config) =>
-        (config.extra?.updatesNativeDebug ?? false).toString(),
+      propValueGetter: (config) => (config.extra?.updatesNativeDebug ?? false).toString(),
     },
   ],
   'withUpdatesNativeDebugGradleProps'

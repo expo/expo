@@ -63,12 +63,15 @@ const withNewArchEnabledPodfileProps = exports.withNewArchEnabledPodfileProps = 
  */
 const withUpdatesNativeDebugPodfileProps = exports.withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin([{
   propName: 'EX_UPDATES_NATIVE_DEBUG',
-  propValueGetter: config => (config.extra?.updatesNativeDebug ?? false).toString()
+  propValueGetter: config => (config.extra?.updatesNativeDebug ?? false).toString(),
+  removePropWhenValueIsNull: true
 }], 'withUpdatesNativeDebugPodfileProps');
 function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);
-    updateIosBuildProperty(podfileProperties, configToProperty.propName, value);
+    updateIosBuildProperty(podfileProperties, configToProperty.propName, value, {
+      removePropWhenValueIsNull: configToProperty.removePropWhenValueIsNull ?? false
+    });
   }
   return podfileProperties;
 }

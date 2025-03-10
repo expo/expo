@@ -728,6 +728,11 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "key": "EX_UPDATES_NATIVE_DEBUG",
+            "type": "property",
+            "value": "false",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -1165,6 +1170,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+          "EX_UPDATES_NATIVE_DEBUG": "false",
           "expo.jsEngine": "hermes",
           "newArchEnabled": "false",
         },
@@ -1666,6 +1672,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
+            "key": "EX_UPDATES_NATIVE_DEBUG",
+            "type": "property",
+            "value": "false",
+          },
+          {
             "key": "newArchEnabled",
             "type": "property",
             "value": "false",
@@ -2110,6 +2121,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "podfileProperties": {
+          "EX_UPDATES_NATIVE_DEBUG": "false",
           "expo.jsEngine": "hermes",
           "newArchEnabled": "false",
         },
