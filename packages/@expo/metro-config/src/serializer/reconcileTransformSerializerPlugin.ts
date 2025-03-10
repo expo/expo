@@ -5,17 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
+import * as t from '@babel/types';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
+import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
+import util from 'node:util';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import collectDependencies, {
   Dependency,
+  DependencyData,
+  getKeyForDependency,
+  hashKey,
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from '../transform-worker/collect-dependencies';
 import { countLinesAndTerminateMap } from '../transform-worker/count-lines';
@@ -43,10 +49,74 @@ export function sortDependencies(
   // Resort the dependencies to match the current order of the AST.
   const nextDependencies = new Map<string, Dependency>();
 
+  const findDependency = (
+    dep: Readonly<{
+      data: DependencyData;
+      name: string;
+    }>
+  ) => {
+    const original = accordingTo.get(dep.data.key);
+
+    // We can do a quick check first but this may not always work.
+    //
+    // In cases where the original import was ESM but mutated during tree-shaking (such as `export * from "./"`) then the
+    // key will always be based on CJS because we need to transform before collecting a second time.
+    //
+    // In this case, we'll create the inverse key based on ESM to try and find the original dependency.
+    if (original) {
+      return original;
+    }
+
+    // Only perform the hacky inverse key check if it's this specific case that we know about, otherwise throw an error.
+    if (dep.data.isESMImport === false) {
+      const inverseKey = hashKey(
+        getKeyForDependency({
+          asyncType: dep.data.asyncType,
+          isESMImport: !dep.data.isESMImport,
+          name: dep.name,
+          contextParams: dep.data.contextParams,
+        })
+      );
+
+      if (accordingTo.has(inverseKey)) {
+        return accordingTo.get(inverseKey);
+      }
+    }
+
+    // If the dependency was optional, then we can skip throwing the error.
+    if (dep.data.isOptional) {
+      return null;
+    }
+
+    debug(
+      'failed to finding matching dependency',
+      util.inspect(dep, { colors: true, depth: 6 }),
+      util.inspect(accordingTo, { colors: true, depth: 6 })
+    );
+
+    throw new Error(
+      `Dependency ${dep.data.key} (${dep.name}) not found in the original module during optimization pass. Available keys: ${Array.from(
+        accordingTo.entries()
+      )
+        .map(([key, dep]) => `${key} (${dep.data.name})`)
+        .join(', ')}`
+    );
+  };
+
   // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
   dependencies.forEach((dep) => {
+    const original = findDependency(dep);
+
+    // In the case of missing optional dependencies, the absolutePath will not be defined.
+    if (!original) {
+      nextDependencies.set(dep.data.key, {
+        // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
+        data: dep,
+      });
+    }
+
     nextDependencies.set(dep.data.key, {
-      ...(accordingTo.get(dep.data.key) || {}),
+      ...original,
       // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
       data: dep,
     });
@@ -124,7 +194,8 @@ export async function reconcileTransformSerializerPlugin(
         })
         .map((dep) => dep.data.name);
 
-    ast = applyImportSupport(ast, {
+    const file = applyImportSupport(ast, {
+      collectLocations: true,
       filename: value.path,
       importAll,
       importDefault,
@@ -144,14 +215,23 @@ export async function reconcileTransformSerializerPlugin(
       },
     });
 
+    ast = file.ast;
+
     let dependencyMapName = '';
     let dependencies: readonly Dependency[];
 
+    const importDeclarationLocs = file.metadata?.metro?.unstable_importDeclarationLocs ?? null;
     // This pass converts the modules to use the generated import names.
     try {
       // Rewrite the deps to use Metro runtime, collect the new dep positions.
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...reconcile.collectDependenciesOptions,
+        unstable_isESMImportAtSource:
+          importDeclarationLocs != null
+            ? (loc: t.SourceLocation) => {
+                return importDeclarationLocs.has(locToKey(loc));
+              }
+            : null,
         collectOnly: false,
         // This is here for debugging purposes.
         keepRequireNames: FORCE_REQUIRE_NAME_HINTS,

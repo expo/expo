@@ -56,6 +56,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     };
     // Is bundling for webview.
     const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
+    const useMd5Filename = options.customTransformOptions?.useMd5Filename;
     const isExport = options.publicPath.includes('?export_path=');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
     const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
@@ -87,9 +88,16 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         : options.publicPath);
     if (isServerEnv || options.platform === 'web') {
         const type = !data.type ? '' : `.${data.type}`;
-        const assetPath = !isExport
-            ? data.httpServerLocation + '/' + data.name + type
-            : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        let assetPath;
+        if (useMd5Filename) {
+            assetPath = data.hash + type;
+        }
+        else if (!isExport) {
+            assetPath = data.httpServerLocation + '/' + data.name + type;
+        }
+        else {
+            assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        }
         // If size data is known then it should be passed back to ensure the correct dimensions are used.
         if (data.width != null || data.height != null) {
             return {

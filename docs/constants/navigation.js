@@ -377,6 +377,7 @@ export const eas = [
     '',
     [
       makePage('eas/index.mdx'),
+      makePage('eas/json.mdx'),
       makePage('eas/environment-variables.mdx'),
       makePage('eas/using-environment-variables.mdx'),
     ],
@@ -388,7 +389,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
-    makePage('eas/workflows/upgrade.mdx'),
+    makePage('eas/workflows/automating-eas-cli.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -505,6 +506,7 @@ export const eas = [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
+      makePage('eas-update/integration-in-existing-native-apps.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
@@ -529,7 +531,6 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
-    makePage('eas/json.mdx'),
     makePage('eas/webhooks.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),

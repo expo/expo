@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { RudderClient } from './RudderClient';
+import { FetchClient } from './FetchClient';
 import type { TelemetryRecordInternal } from '../types';
 
 const telemetryFile = process.argv[2];
@@ -24,7 +24,7 @@ async function flush() {
   }
 
   if (data.records.length) {
-    const client = new RudderClient();
+    const client = new FetchClient();
     await client.record(data.records);
     await client.flush();
   }

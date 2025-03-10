@@ -3,7 +3,6 @@ package expo.modules.updates.errorrecovery
 import android.os.Message
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.rncompatibility.IReactNativeFeatureFlagsProvider
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.logging.UpdatesLogger
@@ -16,17 +15,15 @@ import org.junit.runner.RunWith
 class ErrorRecoveryTest {
   private var mockDelegate: ErrorRecoveryDelegate = mockk()
   private val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-  private val updatesLogger = UpdatesLogger(context)
-  private var errorRecovery: ErrorRecovery = ErrorRecovery(updatesLogger, mockk<IReactNativeFeatureFlagsProvider>())
+  private val updatesLogger = UpdatesLogger(context.filesDir)
+  private var errorRecovery: ErrorRecovery = ErrorRecovery(updatesLogger, enableBridgelessArchitecture = true)
 
   @Before
   fun setup() {
     mockDelegate = mockk(relaxed = true)
-    val mockFeatureFlagsProvider = mockk<IReactNativeFeatureFlagsProvider>()
-    every { mockFeatureFlagsProvider.enableBridgelessArchitecture } returns true
-    errorRecovery = ErrorRecovery(updatesLogger, mockFeatureFlagsProvider)
+    errorRecovery = ErrorRecovery(updatesLogger, enableBridgelessArchitecture = true)
     errorRecovery.initialize(mockDelegate)
-    errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate, UpdatesLogger(context)))
+    errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate, UpdatesLogger(context.filesDir)))
     // make handler run synchronously
     val messageSlot = slot<Message>()
     every { errorRecovery.handler.sendMessageAtTime(capture(messageSlot), any()) } answers {

@@ -103,6 +103,12 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
                 }
             }
         }
+        // Remove empty chunks
+        for (const chunk of [...chunks.values()]) {
+            if (!chunk.isEntry && chunk.deps.size === 0) {
+                chunks.delete(chunk);
+            }
+        }
     }
     const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions);
     // TODO: Can this be anything besides true?

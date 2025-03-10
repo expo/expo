@@ -7,7 +7,7 @@ import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal 
 
 const debug = require('debug')('expo:telemetry:client:detached') as typeof console.log;
 
-export class RudderDetachedClient implements TelemetryClient {
+export class FetchDetachedClient implements TelemetryClient {
   /** This client should be used for short-lived commands */
   readonly strategy: TelemetryClientStrategy = 'detached';
   /** All recorded telemetry events */
@@ -40,7 +40,7 @@ export class RudderDetachedClient implements TelemetryClient {
       await fs.promises.mkdir(path.dirname(file), { recursive: true });
       await fs.promises.writeFile(file, data);
 
-      const child = spawn(process.execPath, [require.resolve('./flushRudderDetached'), file], {
+      const child = spawn(process.execPath, [require.resolve('./flushFetchDetached'), file], {
         detached: true,
         windowsHide: true,
         shell: false,

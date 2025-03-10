@@ -19,12 +19,16 @@ export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPat
     code: string;
     map: MetroSourceMapSegmentTuple[];
 }>;
-export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, }: {
+export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, }: {
     filename: string;
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'>;
     importDefault: string;
     importAll: string;
-}): TFile;
+    collectLocations?: boolean;
+}): {
+    ast: TFile;
+    metadata?: any;
+};
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
 export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t.File>, options: CollectDependenciesOptions): Readonly<{
@@ -34,6 +38,7 @@ export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t
         data: Readonly<{
             key: string;
             asyncType: import("./collect-dependencies").AsyncDependencyType | null;
+            isESMImport: boolean;
             isOptional?: boolean | undefined;
             locs: readonly t.SourceLocation[];
             contextParams?: Readonly<{

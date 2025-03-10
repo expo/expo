@@ -1,9 +1,8 @@
 import * as tunnel from '@expo/ws-tunnel';
 import chalk from 'chalk';
 import * as fs from 'node:fs';
-import { hostname } from 'node:os';
+import { tmpdir, hostname } from 'node:os';
 import * as path from 'node:path';
-import tempDir from 'temp-dir';
 
 import * as Log from '../../log';
 import { env, envIsWebcontainer } from '../../utils/env';
@@ -61,7 +60,7 @@ function getTunnelSession(): string {
   let session = randomStr() + randomStr() + randomStr();
   if (envIsWebcontainer()) {
     const leaseId = Buffer.from(hostname()).toString('base64url');
-    const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
+    const leaseFile = path.join(tmpdir(), `_ws_tunnel_lease_${leaseId}`);
     try {
       session = fs.readFileSync(leaseFile, 'utf8').trim() || session;
     } catch {}

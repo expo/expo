@@ -64,9 +64,9 @@ on:
 
 Runs your workflow when you push a commit to matching branches and/or tags.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch will trigger the workflow. Supports globs.
+With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch will trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
-With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs.
+With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
 
 When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
@@ -78,11 +78,14 @@ on:
     branches:
       - main
       - feature/**
-      # other branch names and globs
+      - !feature/test-** # other branch names and globs
+
+
     tags:
       - v1
       - v2*
-      # other tag names and globs
+      - !v2-preview** # other tag names and globs
+
 ```
 
 ### `on.pull_request`
@@ -382,6 +385,29 @@ jobs:
     params:
       alias: string # optional
       prod: boolean # optional
+```
+
+#### `fingerprint`
+
+Calculates fingerprint of Android and iOS builds.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: fingerprint
+    # @end #
+```
+
+> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+This job outputs the following properties:
+
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
 ```
 
 #### `get-build`
