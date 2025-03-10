@@ -136,10 +136,12 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
   private fun cleanup() {
     hideAllNotifications()
-    mediaSessions.forEach { (_, session) ->
+
+    val sessionsToRelease = ArrayList(mediaSessions.values)
+    mediaSessions.clear()
+    for (session in sessionsToRelease) {
       session.release()
     }
-    mediaSessions.clear()
   }
 
   private fun hidePlayerNotification(player: ExoPlayer) {
