@@ -5,7 +5,7 @@ import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.ty
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
 // Flag to warn about running on Apple simulator
-let warnAboutRunningOnAppleSimulator = false;
+let warnAboutRunningOniOSSimulator = false;
 
 // @needsAudit
 /**
@@ -64,13 +64,13 @@ export async function registerTaskAsync(
     );
   }
   if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
-    if (!warnAboutRunningOnAppleSimulator) {
+    if (!warnAboutRunningOniOSSimulator) {
       const message =
         Platform.OS === 'ios'
           ? 'On iOS, expo-background-tasks are only available on a device and will not work on a Simulator.'
           : 'Background tasks are not available in the current environment.';
       console.warn(message);
-      warnAboutRunningOnAppleSimulator = true;
+      warnAboutRunningOniOSSimulator = true;
     }
     return;
   }
