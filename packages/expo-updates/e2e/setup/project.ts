@@ -497,6 +497,7 @@ function transformAppJsonForE2E(
         assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
+        updatesNativeDebug: true,
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
