@@ -46,7 +46,7 @@ The Developer menu provides the following options:
 - **Go Home**: To leave your app and navigate back to the dev client's or Expo Go app's Home screen.
 - **Toggle performance monitor**: To view the performance information about your app.
 - **Toggle element inspector**: To enable or disable the element inspector overlay.
-- **Open JS debugger**: To open React Native DevTools which provides access to Console, Sources, Network, Memory, Components, and Profiler, tabs for apps using Hermes. For more information, see the [Debugging with React Native DevTools](#debugging-with-react-native-devtools) section.
+- **Open JS debugger**: To open React Native DevTools which provides access to Console, Sources, Network (**Expo only**), Memory, Components, and Profiler, tabs for apps using Hermes. For more information, see the [Debugging with React Native DevTools](#debugging-with-react-native-devtools) section.
 - **Fast Refresh**: To toggle automatic refreshing of the JS bundle whenever you make changes to files in your project using a text editor.
 
 Now, let's explore some of these options in details.
@@ -81,7 +81,7 @@ This overlay has capabilities to:
 
 > **info** **Starting from React Native 0.76**, React Native DevTools has replaced Chrome DevTools.
 
-**React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing the [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests), and [Memory](#insepcting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components) and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
+**React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing the [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests) (**Expo only**), and [Memory](#insepcting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components) and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
 
 You can use the React Native DevTools on any app using [Hermes](/guides/using-hermes/). **To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started**. Once you have opened the React Native DevTools, it will appear as below:
 
@@ -122,7 +122,9 @@ The **Console** tab gives you access to an interactive terminal, connected direc
   src="/static/images/debugging/inspector-breakpoint-console.png"
 />
 
-### Inspecting network requests
+### Inspecting network requests (Expo only)
+
+> **info** The Network tab in React Native DevTools is only available when you have `expo` installed in your project.
 
 The **Network** tab gives you insights into the network requests made by your app. You can inspect each request and response by clicking on them. This includes `fetch` requests, external loaded media, and in some cases, even requests made by native modules.
 
@@ -149,7 +151,7 @@ The **Memory** tab allows you to inspect the memory usage and take a heap snapsh
 The **Components** tab allows you to inspect the React components in your app. You can view the props, and styles of each component by hovering that component in React Native DevTools. This is a great way to debug your app's UI and understand how your components are structured.
 
 <ContentSpotlight
-  alt="Inspect  a component in React Native DevTools."
+  alt="Inspect a component in React Native DevTools."
   src="/static/images/debugging/inspector-components.png"
   className="max-w-[720px]"
 />
