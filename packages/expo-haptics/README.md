@@ -36,6 +36,8 @@ No additional set up necessary.
 
 Run `npx pod-install` after installing the npm package.
 
+### Permission
+
 This module requires permission to control vibration on the device, it's added automatically.
 
 ```xml
