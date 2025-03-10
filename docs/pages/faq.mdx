@@ -127,7 +127,7 @@ It can be used simultaneously with React Native Community. Regardless of which C
 - Learn about the benefits of [using a framework to build React Native apps](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
 - Learn about the benefits of migrating to Expo CLI such as improved app performance, expedites release, and fostering stronger collaboration across you team in [this blog post](https://expo.dev/blog/from-rnc-cli-to-expo).
 
-> **Note:** EAS Build is compatible with existing React Native projects (where native directories are checked in version control). When these directories are present, it does not run prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
+> **Note:** EAS Build is compatible with existing React Native projects (where native directories are checked into version control). When these directories are present, EAS Build does not run the prebuild step, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
 ## Is Expo Go open source?
 
@@ -135,18 +135,9 @@ Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](ht
 
 ## What can I do or cannot do with Expo Go?
 
-[Expo Go](/get-started/set-up-your-environment/?redirected=#how-would-you-like-to-develop) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
+[Expo Go](/get-started/set-up-your-environment/?redirected=#how-would-you-like-to-develop) is a sandbox that can help you get started quickly with React Native development to learn, prototype, or experiment. It allows you to use libraries included in the Expo SDK or that don't require custom native code. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
 
-**What you can do:**
-
-- Get started quickly with React Native development to learn, prototype, or experiment
-- Use libraries included in the Expo SDK or that don't require custom native code
-
-**What you cannot do:**
-
-- Use third-party libraries that require custom native code
-- Customize native code directly
-- Use it for production apps
+Expo Go cannot use third-party libraries that require custom native code and you cannot edit native code directly in Expo Go. It cannot be used for production apps.
 
 **We strongly recommend any projects that require additional libraries with native code to migrate to [development builds](/develop/development-builds/introduction/). It's like creating a version of Expo Go that is specifically customized to your app's needs.**
 
