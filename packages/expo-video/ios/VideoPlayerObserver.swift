@@ -347,6 +347,9 @@ class VideoPlayerObserver {
       } else {
         status = .readyToPlay
       }
+    @unknown default:
+      log.error("Unhandled `AVPlayerItem.Status` value: \(playerItem.status), returning `.loading` as fallback. Add the missing case as soon as possible.")
+      status = .loading
     }
 
     if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {
