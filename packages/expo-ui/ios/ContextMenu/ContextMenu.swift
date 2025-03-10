@@ -82,7 +82,7 @@ struct LongPressContextMenu<ActivationElement: View, Preview: View>: View {
   let props: ContextMenuProps?
 
   var body: some View {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       activationElement.contextMenu(menuItems: {
         MenuItems(fromElements: elements, props: props)
       }, preview: {
