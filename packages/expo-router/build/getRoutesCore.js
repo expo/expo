@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getRoutes = void 0;
 const matchers_1 = require("./matchers");
+const url_1 = require("./utils/url");
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -38,7 +39,7 @@ function getDirectoryTree(contextModule, options) {
         ignoreList.push(...options.ignore);
     }
     if (!options.preserveApiRoutes) {
-        ignoreList.push(/\+api\.[tj]sx?$/);
+        ignoreList.push(/\+api$/, /\+api\.[tj]sx?$/);
     }
     const rootDirectory = {
         files: new Map(),
@@ -46,12 +47,100 @@ function getDirectoryTree(contextModule, options) {
     };
     let hasRoutes = false;
     let isValid = false;
-    for (const filePath of contextModule.keys()) {
+    const contextKeys = contextModule.keys();
+    const redirects = {};
+    const rewrites = {};
+    let validRedirectDestinations;
+    // If we are keeping redirects as valid routes, then we need to add them to the contextKeys
+    // This is useful for generating a sitemap with redirects, or static site generation that includes redirects
+    if (options.preserveRedirectAndRewrites) {
+        if (options.redirects) {
+            for (const redirect of options.redirects) {
+                // Remove the leading `./` or `/`
+                const source = redirect.source.replace(/^\.?\//, '');
+                const isExternalRedirect = (0, url_1.shouldLinkExternally)(redirect.destination);
+                const targetDestination = isExternalRedirect
+                    ? redirect.destination
+                    : (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(redirect.destination.replace(/^\.?\/?/, ''))));
+                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+                    continue;
+                }
+                // Loop over this once and cache the valid destinations
+                validRedirectDestinations ??= contextKeys.map((key) => {
+                    return [
+                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        key,
+                    ];
+                });
+                const destination = isExternalRedirect
+                    ? targetDestination
+                    : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+                if (!destination) {
+                    /*
+                     * Only throw the error when we are preserving the api routes
+                     * When doing a static export, API routes will not exist so the redirect destination may not exist.
+                     * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+                     * `expo export` swallows this error.
+                     */
+                    if (options.preserveApiRoutes) {
+                        throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+                    }
+                    continue;
+                }
+                const fakeContextKey = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                contextKeys.push(fakeContextKey);
+                redirects[fakeContextKey] = {
+                    source,
+                    destination,
+                    permanent: Boolean(redirect.permanent),
+                    external: isExternalRedirect,
+                    methods: redirect.methods,
+                };
+            }
+        }
+        if (options.rewrites) {
+            for (const rewrite of options.rewrites) {
+                // Remove the leading `./` or `/`
+                const source = rewrite.source.replace(/^\.?\//, '');
+                const targetDestination = (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(rewrite.destination)));
+                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+                    continue;
+                }
+                // Loop over this once and cache the valid destinations
+                validRedirectDestinations ??= contextKeys.map((key) => {
+                    return [
+                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        key,
+                    ];
+                });
+                const destination = validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+                if (!destination) {
+                    /*
+                     * Only throw the error when we are preserving the api routes
+                     * When doing a static export, API routes will not exist so the redirect destination may not exist.
+                     * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+                     * `expo export` swallows this error.
+                     */
+                    if (options.preserveApiRoutes) {
+                        throw new Error(`Redirect destination "${rewrite.destination}" does not exist.`);
+                    }
+                    continue;
+                }
+                // Add a fake context key
+                const fakeContextKey = `./${source}.tsx`;
+                contextKeys.push(fakeContextKey);
+                rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
+            }
+        }
+    }
+    for (const filePath of contextKeys) {
         if (ignoreList.some((regex) => regex.test(filePath))) {
             continue;
         }
         isValid = true;
-        const meta = getFileMeta(filePath, options);
+        const meta = getFileMeta(filePath, options, redirects, rewrites);
         // This is a file that should be ignored. e.g maybe it has an invalid platform?
         if (meta.specificity < 0) {
             continue;
@@ -95,6 +184,35 @@ function getDirectoryTree(contextModule, options) {
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
+        if (meta.isRedirect) {
+            node.destinationContextKey = redirects[filePath].destination;
+            node.permanent = redirects[filePath].permanent;
+            node.generated = true;
+            if (node.type === 'route') {
+                node = options.getSystemRoute({
+                    type: 'redirect',
+                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
+                }, node);
+            }
+            if (redirects[filePath].methods) {
+                node.methods = redirects[filePath].methods;
+            }
+            node.type = 'redirect';
+        }
+        if (meta.isRewrite) {
+            node.destinationContextKey = rewrites[filePath].destination;
+            node.generated = true;
+            if (node.type === 'route') {
+                node = options.getSystemRoute({
+                    type: 'rewrite',
+                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
+                }, node);
+            }
+            if (redirects[filePath].methods) {
+                node.methods = redirects[filePath].methods;
+            }
+            node.type = 'rewrite';
+        }
         if (process.env.NODE_ENV === 'development') {
             // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
             // filter the missing routes.
@@ -268,22 +386,22 @@ pathToRemove = '') {
     }
     return layout;
 }
-function getFileMeta(key, options) {
+function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
-    key = key.replace(/^\.\//, '');
-    const parts = key.split('/');
-    let route = (0, matchers_1.removeSupportedExtensions)(key);
+    const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
+    let route = key;
+    const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
     const filename = parts[parts.length - 1];
     const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
-    const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
+    const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
-        throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
+        throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
     }
     // Nested routes cannot start with the '+' character, except for the '+not-found' route
     if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
-        throw new Error(`Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
+        throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
     let specificity = 0;
     const hasPlatformExtension = validPlatforms.has(platformExtension);
@@ -312,7 +430,7 @@ function getFileMeta(key, options) {
             specificity = -1;
         }
         if (isApi && specificity !== 0) {
-            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`);
+            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`);
         }
         route = route.replace(new RegExp(`.${platformExtension}$`), '');
     }
@@ -321,6 +439,8 @@ function getFileMeta(key, options) {
         specificity,
         isLayout,
         isApi,
+        isRedirect: key in redirects,
+        isRewrite: key in rewrites,
     };
 }
 function getIgnoreList(options) {
@@ -440,6 +560,9 @@ function getLayoutNode(node, options) {
 function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = []) {
     if (node.type === 'route') {
         node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
+    }
+    else if (node.type === 'redirect') {
+        node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];
     }
     else if (node.type === 'layout') {
         if (!node.children) {

@@ -157,5 +157,7 @@ exports[`server-output has expected routes manifest entries 1`] = `
       },
     },
   ],
+  "redirects": [],
+  "rewrites": [],
 }
 `;
