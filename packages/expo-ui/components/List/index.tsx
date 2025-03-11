@@ -110,6 +110,7 @@ export function DataList<T>(props: DataListProps<T>) {
  * A list component that renders its children.
  * @param {NativeListProps} props - The properties for the list component.
  * @returns {JSX.Element} The rendered list with its children.
+ * @platform ios
  */
 export function List(props: NativeListProps) {
   const { children, ...nativeProps } = props;
