@@ -16,7 +16,7 @@
 - [android] Use more robust mechanism for determining empty multipart bodies. ([#33977](https://github.com/expo/expo/pull/33977) by [@wschurman](https://github.com/wschurman))
 - fix E2E tests in Detox debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
 - Fix runtime version validation warning ([#35188](https://github.com/expo/expo/pull/35188) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Pass through the package version to config plugin sync utilities
+- Pass through the package version to config plugin sync utilities ([#35372](https://github.com/expo/expo/pull/35372) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 
