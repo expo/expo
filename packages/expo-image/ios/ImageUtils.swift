@@ -21,6 +21,9 @@ func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   case .memory, .all:
     // `all` doesn't make much sense, so we treat it as `memory`.
     return "memory"
+  @unknown default:
+    log.error("Unhandled `SDImageCacheType` value: \(cacheType), returning `none` as fallback. Add the missing case as soon as possible.")
+    return "none"
   }
 }
 
