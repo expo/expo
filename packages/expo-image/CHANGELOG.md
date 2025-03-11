@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Rename `fetchpriority` prop to `fetchPriority` to silence web error.
 - Fixed `tintColor="currentColor"` conflicts on web. ([#34604](https://github.com/expo/expo/pull/34604) by [@bradleyayers](https://github.com/bradleyayers))
 
 ### 💡 Others
