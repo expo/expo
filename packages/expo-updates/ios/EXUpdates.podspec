@@ -3,9 +3,20 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
+  ENV['EX_UPDATES_NATIVE_DEBUG'] = podfile_properties['updatesNativeDebug'] == 'true' ? '1' : '0'
+end
+if ENV['EX_UPDATES_CUSTOM_INIT'] != '1'
+  ENV['EX_UPDATES_CUSTOM_INIT'] = podfile_properties['updatesCustomInit'] == 'true' ? '1' : '0'
+end
+
 use_dev_client = false
 begin
-  use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
+  # No dev client if we are using native debug
+  if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
+    use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
+  end
 rescue
   use_dev_client = false
 end
