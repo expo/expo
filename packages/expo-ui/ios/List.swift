@@ -5,7 +5,6 @@ import SwiftUI
 
 class ListProps: ExpoSwiftUI.ViewProps {
   @Field var listStyle: String = "automatic"
-  @Field var heightOffset: CGFloat = 0
   @Field var moveEnabled: Bool = false
   @Field var deleteEnabled: Bool = false
   @Field var selectEnabled: Bool = false
