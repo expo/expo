@@ -31,7 +31,7 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     }
 
     switch permissions {
-    case .restricted, .denied:
+    case .restricted, .denied, .writeOnly:
       status = EXPermissionStatusDenied
     case .notDetermined:
       status = EXPermissionStatusUndetermined

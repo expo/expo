@@ -123,6 +123,9 @@ public class LocalizationModule: Module {
       return "roc"
     case .iso8601:
       return "iso8601"
+    @unknown default:
+      log.error("Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible.")
+      return "iso8601"
     }
   }
 
