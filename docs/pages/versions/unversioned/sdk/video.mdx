@@ -293,6 +293,8 @@ import { createVideoPlayer } from 'expo-video';
 const player = createVideoPlayer(videoSource);
 ```
 
+> **warning** On Android, mounting multiple VideoView components at the same time with the same VideoPlayer instance will not work due to a platform limitation. See [issue](https://github.com/expo/expo/issues/35012)
+
 ### Caching videos
 
 If your app frequently replays the same video, caching can be utilized to minimize network usage and enhance user experience, albeit at the cost of increased device storage usage. `expo-video` supports video caching on `Android` and `iOS` platforms. This feature can be activated by setting the [`useCaching`](#videosource) property of a [`VideoSource`](#videosource) object to `true`.
