@@ -29,6 +29,10 @@ jobs:
         uses: ./.github/actions/expo-caches
         with:
           yarn-tools: 'true'
+      - name: 🧶 Yarn install
+        working-directory: tools
+        # if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+        run: yarn install --immutable
 
       ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
       ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.
