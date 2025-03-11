@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Pass through the package version to config plugin sync utilities ([#35372](https://github.com/expo/expo/pull/35372) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 0.27.3 — 2025-03-11
+
+### 🐛 Bug fixes
+
+- Pass through the package version to config plugin sync utilities ([#35372](https://github.com/expo/expo/pull/35372) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.27.2 — 2025-02-26
 
