@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.util.Calendar
@@ -111,10 +110,12 @@ class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: In
  * * trigger around …000 timestamp.*
  */
 @Parcelize
-class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Long, val isRepeating: Boolean) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
-  @IgnoredOnParcel
-  private var triggerDate = Date(Date().time + timeInterval * 1000)
-
+class TimeIntervalTrigger(
+  override val channelId: String?,
+  val timeInterval: Long,
+  val isRepeating: Boolean,
+  private var triggerDate: Date = Date(Date().time + timeInterval * 1000)
+) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
   override fun toBundle() = bundleWithChannelId(
     "type" to "timeInterval",
     "repeats" to isRepeating,

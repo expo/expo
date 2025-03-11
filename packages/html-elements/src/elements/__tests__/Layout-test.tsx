@@ -1,41 +1,40 @@
 import 'react-native';
-
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import { Article, Aside, Footer, Header, Main, Nav, Section } from '../Layout';
 
-it(`renders Footer`, () => {
-  const tree = renderer.create(<Footer />);
-  expect(tree).toMatchSnapshot();
+it('renders Footer', () => {
+  const { toJSON } = render(<Footer />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Nav`, () => {
-  const tree = renderer.create(<Nav />);
-  expect(tree).toMatchSnapshot();
+it('renders Nav', () => {
+  const { toJSON } = render(<Nav />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Aside`, () => {
-  const tree = renderer.create(<Aside />);
-  expect(tree).toMatchSnapshot();
+it('renders Aside', () => {
+  const { toJSON } = render(<Aside />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Header`, () => {
-  const tree = renderer.create(<Header />);
-  expect(tree).toMatchSnapshot();
+it('renders Header', () => {
+  const { toJSON } = render(<Header />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Main`, () => {
-  const tree = renderer.create(<Main />);
-  expect(tree).toMatchSnapshot();
+it('renders Main', () => {
+  const { toJSON } = render(<Main />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Section`, () => {
-  const tree = renderer.create(<Section />);
-  expect(tree).toMatchSnapshot();
+it('renders Section', () => {
+  const { toJSON } = render(<Section />);
+  expect(toJSON()).toMatchSnapshot();
 });
 
-it(`renders Article`, () => {
-  const tree = renderer.create(<Article />);
-  expect(tree).toMatchSnapshot();
+it('renders Article', () => {
+  const { toJSON } = render(<Article />);
+  expect(toJSON()).toMatchSnapshot();
 });

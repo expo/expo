@@ -909,6 +909,33 @@ describe('serializes', () => {
     });
   });
 
+  it(`does not emit empty files when splitting`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./one')
+          import "./one";
+        `,
+      'one.js': `
+          export const a = ""
+        `,
+      'two.js': `
+          import('./foo')
+        `,
+      'foo.js': `
+          export const foo = 'foo';
+        `,
+    });
+
+    // Ensure no async paths are injected
+    expect(artifacts[0].source).toMatch(/"paths":{}/);
+    expect(artifacts[0].source).toMatch(/a = "";/);
+
+    // Ensure no empty files are emitted
+    for (const artifact of artifacts) {
+      expect(artifact.source).not.toEqual('');
+    }
+  });
+
   it(`imports async bundles in second module`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `

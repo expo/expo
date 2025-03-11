@@ -8,6 +8,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "types": "./build/Constants.d.ts",
       "react-server": "./build/Constants.server.js",
       "default": "./build/Constants.js"
     }

@@ -41,7 +41,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^12.5.1",
+    "@testing-library/react-native": "^13.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~12.0.0",
     "date-fns": "^2.28.0",
@@ -49,8 +49,8 @@
     "expo-module-scripts": "^4.0.0",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
-    "react": "18.3.1",
-    "react-native": "0.76.3",
+    "react": "19.0.0",
+    "react-native": "0.78.0",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },
@@ -58,9 +58,8 @@
     "expo": "*"
   },
   "jest": {
-    "preset": "@testing-library/react-native",
+    "preset": "react-native",
     "setupFilesAfterEnv": [
-      "@testing-library/jest-native/extend-expect",
       "./setupTests.ts"
     ],
     "testTimeout": 15000

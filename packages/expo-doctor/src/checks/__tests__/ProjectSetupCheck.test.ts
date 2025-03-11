@@ -1,11 +1,11 @@
-import glob from 'fast-glob';
+import { glob, GlobOptions } from 'glob';
 import { vol } from 'memfs';
 
 import { isFileIgnoredAsync } from '../../utils/files';
 import { ProjectSetupCheck } from '../ProjectSetupCheck';
 
 jest.mock('fs');
-jest.mock('fast-glob');
+jest.mock('glob');
 jest.mock('../../utils/files');
 
 const projectRoot = '/tmp/project';
@@ -51,7 +51,7 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: GlobOptions = {}) => {
       if (
         typeof pattern === 'string' &&
         pattern === 'modules/**/ios/*.podspec' &&
@@ -85,7 +85,7 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: GlobOptions = {}) => {
       if (
         typeof pattern === 'string' &&
         pattern === 'modules/**/android/build.gradle' &&
@@ -119,7 +119,7 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: GlobOptions = {}) => {
       if (
         typeof pattern === 'string' &&
         pattern === 'modules/**/ios/*.podspec' &&
@@ -153,7 +153,7 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: GlobOptions = {}) => {
       if (
         typeof pattern === 'string' &&
         pattern === 'modules/**/android/build.gradle' &&

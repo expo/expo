@@ -1,14 +1,13 @@
 import 'react-native';
-
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import * as Headings from '../Headings';
 
-for (const name of Object.keys(Headings)) {
+const headingComponentNames = Object.keys(Headings);
+
+it.each(headingComponentNames)('renders %s', (name) => {
   const Heading = Headings[name];
-  it(`renders ${name}`, () => {
-    const tree = renderer.create(<Heading />);
-    expect(tree).toMatchSnapshot();
-  });
-}
+  const { toJSON } = render(<Heading />);
+  expect(toJSON()).toMatchSnapshot();
+});

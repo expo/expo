@@ -1,4 +1,4 @@
-import type { IMinimatch } from 'minimatch';
+import type { Minimatch } from 'minimatch';
 
 import type { SourceSkips } from './sourcer/SourceSkips';
 
@@ -291,12 +291,12 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
   sourceSkips: NonNullable<Options['sourceSkips']>;
   enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
 
-  ignorePathMatchObjects: IMinimatch[];
+  ignorePathMatchObjects: Minimatch[];
 
   /**
    * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
    */
-  ignoreDirMatchObjects: IMinimatch[];
+  ignoreDirMatchObjects: Minimatch[];
 };
 
 //#endregion

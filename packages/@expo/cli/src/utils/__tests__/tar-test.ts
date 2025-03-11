@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import tar from 'tar';
+import * as tar from 'tar';
 
 import * as Log from '../../log';
 import { extractAsync } from '../tar';

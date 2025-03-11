@@ -181,6 +181,7 @@ redirects[bare/error-recovery]=eas-update/error-recovery
 redirects[deploy/instant-updates]=eas-update/send-over-the-air-updates
 redirects[eas-update/publish]=eas-update/getting-started
 redirects[eas-update/debug-advanced]=eas-update/debug
+redirects[eas-update/develop-faster]=eas-update/preview
 
 # Redirects for Expo Router docs
 redirects[routing/next-steps]=router/introduction
@@ -320,6 +321,7 @@ redirects[eas-workflows/triggers]=eas/workflows/syntax/#on
 redirects[eas-workflows/jobs]=eas/workflows/syntax/#jobs
 redirects[eas-workflows/control-flow]=eas/workflows/syntax/#control-flow
 redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
+redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites

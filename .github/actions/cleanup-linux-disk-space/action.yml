@@ -9,14 +9,37 @@ runs:
       run: |
         echo 'Disk space before cleanup'
         df -aH
+
+        # Regular package cleanup
         sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^mssql-.*' '^postgresql-.*' '^aspnetcore-*' '^dotnet-.*' '^php.*-.*' 'mono-complete' '^llvm-.*' 'powershell' 'google-chrome-*' 'microsoft-edge-*' 'firefox' 'nginx' 'apache2' 'ghc' '^ghc-*'
         sudo apt-get autoremove -y
+
+        # Remove unnecessary large directories
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /usr/local/.ghcup /opt/ghc
-        echo 'Showing Android SDKs'
-        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --list
-        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall 'ndk;24.0.8215888' 'ndk;25.2.9519653' 'ndk;26.2.11394342'
+
+        # Android SDK cleanup
+        echo 'Showing installed Android SDKs'
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --list_installed
+
+        echo 'Cleaning unnecessary Android SDK components...'
+        echo 'Removing old build tools...'
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "build-tools;31.0.0" "build-tools;32.0.0" "build-tools;33.0.0" "build-tools;33.0.1" "build-tools;33.0.2" "build-tools;33.0.3" "build-tools;34.0.0"
+
+        echo 'Removing old platforms...'
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-32" "platforms;android-33" "platforms;android-33-ext4" "platforms;android-33-ext5" "platforms;android-34" "platforms;android-34-ext8" "platforms;android-34-ext10" "platforms;android-34-ext11" "platforms;android-34-ext12"
+
+        echo 'Removing NDKs...'
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "ndk;26.3.11579264" 
+
+        echo 'Removing extras...'
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "extras;android;m2repository" "extras;google;google_play_services" "extras;google;m2repository"
+
+        # Docker cleanup
+        echo 'Cleaning up Docker resources'
+        docker system prune -af || true
         echo 'Removing all Docker images'
-        docker rmi -f $(docker images -aq)
+        docker rmi -f $(docker images -aq) || true
+
         echo 'Disk space after cleanup'
         df -aH

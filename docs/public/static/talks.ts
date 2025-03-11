@@ -212,6 +212,11 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to build mobile apps without writing a line of code with Bolt and Expo',
+    event: 'Expo Live Stream',
+    videoId: 'dT7hlszpO04',
+  },
+  {
     title: 'How to add Apple home screen widgets to React apps',
     thumbnail: 'widgets.jpg',
     event: 'Expo Live Stream',
@@ -311,6 +316,16 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Master Expo Router API Routes | Handle Requests & Stream Data',
+    event: 'Expo Tutorials',
+    videoId: '2_UzR1wdimI',
+  },
+  {
+    title: 'EAS Workflows: React Native CI/CD for app developers',
+    event: 'EAS Tutorials',
+    videoId: 'OJ2u9tQCpr4',
+  },
   {
     title: 'How to set up iOS Universal Links and Android App Links with Expo Router',
     event: 'Expo Tutorials',

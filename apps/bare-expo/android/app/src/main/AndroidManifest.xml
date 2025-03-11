@@ -36,10 +36,6 @@
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen" android:windowSoftInputMode="adjustResize" android:exported="true" android:supportsPictureInPicture="true">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-      <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
@@ -47,6 +43,12 @@
         <data android:scheme="com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"/>
         <data android:scheme="dev.expo.payments"/>
         <data android:scheme="exp+bare-expo"/>
+      </intent-filter>
+    </activity>
+    <activity android:name=".BrowserLauncherActivity" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
   </application>

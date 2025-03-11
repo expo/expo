@@ -14,7 +14,7 @@ describe('findSharpInstanceAsync', () => {
   it(`will throw an error if sharp-cli is disabled in the environment`, async () => {
     process.env.EXPO_IMAGE_UTILS_NO_SHARP = '1';
     const { findSharpInstanceAsync } = require('../sharp');
-    expect(findSharpInstanceAsync()).rejects.toThrowError(
+    expect(findSharpInstanceAsync()).rejects.toThrow(
       'sharp-cli has been disabled with the environment variable'
     );
   });

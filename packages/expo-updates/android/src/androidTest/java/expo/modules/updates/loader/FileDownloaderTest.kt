@@ -35,7 +35,7 @@ class FileDownloaderTest {
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
-    logger = UpdatesLogger(context)
+    logger = UpdatesLogger(context.filesDir)
   }
 
   @Test

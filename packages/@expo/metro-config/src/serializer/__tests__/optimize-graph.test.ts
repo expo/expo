@@ -343,3 +343,73 @@ it(`cannot expands export all statements with cjs usage`, async () => {
   expect(artifact.source).toMatch('z1');
   expect(artifact.source).toMatch('z2');
 });
+
+it(`recursively expands export all statements with nested statements`, async () => {
+  const [, [artifact]] = await serializeOptimizeAsync({
+    'index.js': `
+          import { z1, DDD } from './x0';
+          console.log(z1, DDD);
+        `,
+    'x0.js': `
+         export * from './x1';
+         export * from './x2';
+        `,
+    'x1.js': `
+      export const z1 = 0;
+      export * from './x2';
+      
+      `,
+    'x2.js': `
+      export const z2 = 0;
+      export const z3 = 0;
+        `,
+  });
+
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatch('z3');
+  expect(artifact.source).toMatch('z2');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
+        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
+      }
+      for (var _key2 in _$$_REQUIRE(_dependencyMap[1])) {
+        exports[_key2] = _$$_REQUIRE(_dependencyMap[1])[_key2];
+      }
+    },"/app/x0.js",["/app/x1.js","/app/x2.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const z1 = 0;
+      for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
+        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
+      }
+      exports.z1 = z1;
+    },"/app/x1.js",["/app/x2.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const z2 = 0;
+      const z3 = 0;
+      exports.z2 = z2;
+      exports.z3 = z3;
+    },"/app/x2.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});

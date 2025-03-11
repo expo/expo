@@ -5,6 +5,7 @@ exports[`renders H1 1`] = `
   aria-level={1}
   className="css-text-146c3p1 r-fontSize-6e8ixz r-fontWeight-vw2c0b r-marginBlock-19oforl"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;
@@ -14,6 +15,7 @@ exports[`renders H2 1`] = `
   aria-level={2}
   className="css-text-146c3p1 r-fontSize-1lijs1h r-fontWeight-vw2c0b r-marginBlock-1u31v3z"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;
@@ -23,6 +25,7 @@ exports[`renders H3 1`] = `
   aria-level={3}
   className="css-text-146c3p1 r-fontSize-tg2c11 r-fontWeight-vw2c0b r-marginBlock-11nzuo4"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;
@@ -32,6 +35,7 @@ exports[`renders H4 1`] = `
   aria-level={4}
   className="css-text-146c3p1 r-fontSize-bzi31h r-fontWeight-vw2c0b r-marginBlock-1hga0el"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;
@@ -41,6 +45,7 @@ exports[`renders H5 1`] = `
   aria-level={5}
   className="css-text-146c3p1 r-fontSize-n230yh r-fontWeight-vw2c0b r-marginBlock-1946khe"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;
@@ -50,6 +55,7 @@ exports[`renders H6 1`] = `
   aria-level={6}
   className="css-text-146c3p1 r-fontSize-ydqdv4 r-fontWeight-vw2c0b r-marginBlock-1jm7qrm"
   dir="auto"
+  ref={[Function]}
   role="heading"
 />
 `;

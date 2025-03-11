@@ -9,6 +9,7 @@ import expo.modules.kotlin.jni.Destructible
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JNIAsyncFunctionBody
 import expo.modules.kotlin.jni.JNIDeallocator
+import expo.modules.kotlin.jni.JNINoArgsFunctionBody
 import expo.modules.kotlin.jni.JNIFunctionBody
 
 /**
@@ -52,6 +53,11 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     setterTakesOwner: Boolean,
     setterExpectedType: Array<ExpectedType>,
     setter: JNIFunctionBody?
+  )
+
+  external fun registerConstant(
+    name: String,
+    getter: JNINoArgsFunctionBody?
   )
 
   external fun registerObject(

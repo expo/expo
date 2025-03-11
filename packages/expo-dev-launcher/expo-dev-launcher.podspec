@@ -92,6 +92,7 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
+  s.dependency "ReactCodegen"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   unless defined?(install_modules_dependencies)

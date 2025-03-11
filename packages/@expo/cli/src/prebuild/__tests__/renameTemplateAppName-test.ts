@@ -1,5 +1,5 @@
-import FastGlob from 'fast-glob';
 import fs from 'fs';
+import * as Glob from 'glob';
 import path from 'path';
 
 import {
@@ -8,9 +8,9 @@ import {
 } from '../renameTemplateAppName';
 
 jest.mock('fs');
-jest.mock('fast-glob');
+jest.mock('glob');
 const ActualFs = jest.requireActual('fs') as typeof fs;
-const ActualFastGlob = jest.requireActual('fast-glob') as typeof FastGlob;
+const ActualGlob = jest.requireActual('glob') as typeof Glob;
 const cwd = path.resolve(__dirname, 'fixtures/contrived-template');
 
 describe('getTemplateFilesToRenameAsync', () => {
@@ -19,8 +19,8 @@ describe('getTemplateFilesToRenameAsync', () => {
   });
 
   it('returns no files when passed an empty rename config', async () => {
-    const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
+    const spyGlob = jest.spyOn(Glob, 'glob').mockImplementation(async (source, options) => {
+      return await ActualGlob.glob(source, { ...options, fs: ActualFs });
     });
 
     const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: [] });

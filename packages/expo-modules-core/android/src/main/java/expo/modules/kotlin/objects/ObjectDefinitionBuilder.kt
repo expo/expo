@@ -35,7 +35,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
   @PublishedApi
   internal val converterProvider = customConverter.mergeWithDefault()
 
-  private var constantsProvider = { emptyMap<String, Any?>() }
+  private var legacyConstantsProvider = { emptyMap<String, Any?>() }
 
   @PublishedApi
   internal var eventsDefinition: EventsDefinition? = null
@@ -53,6 +53,9 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
 
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
+
+  @PublishedApi
+  internal var constants = mutableMapOf<String, ConstantComponentBuilder>()
 
   private val eventObservers = mutableListOf<EventObservingDefinition>()
 
@@ -73,26 +76,27 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
       .toMutableMap()
 
     return ObjectDefinitionData(
-      constantsProvider,
+      legacyConstantsProvider,
       syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
       asyncFunctions,
       eventsDefinition,
-      properties.mapValues { (_, value) -> value.build() }
+      properties.mapValues { (_, value) -> value.build() },
+      constants.mapValues { (_, value) -> value.build() }
     )
   }
 
   /**
    * Definition function setting the module's constants to export.
    */
-  fun Constants(constantsProvider: () -> Map<String, Any?>) {
-    this.constantsProvider = constantsProvider
+  fun Constants(legacyConstantsProvider: () -> Map<String, Any?>) {
+    this.legacyConstantsProvider = legacyConstantsProvider
   }
 
   /**
    * Definition of the module's constants to export.
    */
   fun Constants(vararg constants: Pair<String, Any?>) {
-    constantsProvider = { constants.toMap() }
+    legacyConstantsProvider = { constants.toMap() }
   }
 
   fun Function(
@@ -550,6 +554,25 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
       properties[name] = it
     }
   }
+
+  /**
+   * Creates the read-only constant with given name. The component is basically no-op if you don't call `.get()` on it.
+   */
+  open fun Constant(name: String): ConstantComponentBuilder {
+    return ConstantComponentBuilder(name).also {
+      constants[name] = it
+    }
+  }
+
+  /**
+   * Creates the read-only constant whose getter doesn't take the caller as an argument.
+   */
+  inline fun <reified T> Constant(name: String, crossinline body: () -> T): ConstantComponentBuilder {
+    return ConstantComponentBuilder(name).also {
+      it.get(body)
+      constants[name] = it
+    }
+  }
 }
 
 inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
@@ -558,7 +581,7 @@ inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> U
 
 inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
   val objectData = ObjectDefinitionBuilder().also(block).buildObject()
-  val constants = objectData.constantsProvider()
+  val constants = objectData.legacyConstantsProvider()
   val convertedConstants = Arguments.makeNativeMap(constants)
   val moduleName = "[Anonymous Object]"
 
@@ -575,6 +598,12 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
     .properties
     .forEach { (_, prop) ->
       prop.attachToJSObject(appContext, decorator)
+    }
+
+  objectData
+    .constants
+    .forEach { (_, prop) ->
+      prop.attachToJSObject(decorator)
     }
 
   return JavaScriptModuleObject(runtimeContext.jniDeallocator, moduleName).apply {

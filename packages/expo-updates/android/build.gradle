@@ -129,6 +129,7 @@ dependencies {
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
   testImplementation 'org.robolectric:robolectric:4.14.1'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'
@@ -137,6 +138,7 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:$mockk_version"
   androidTestImplementation "androidx.room:room-testing:$room_version"
+  androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"

@@ -6,6 +6,7 @@
 
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
+#import "ExpoAppInstance.h"
 
 typedef enum EXReactAppManagerStatus {
   kEXReactAppManagerStatusNew,
@@ -43,7 +44,7 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
 @property (nonatomic, strong) id reactHost;
-@property (nonatomic, strong) RCTAppDelegate *reactAppInstance;
+@property (nonatomic, strong) ExpoAppInstance *expoAppInstance;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 

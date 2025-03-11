@@ -95,10 +95,12 @@ Packages in the Expo SDK are intended to support the target React Native version
 
 ## Support for Android and iOS versions
 
-Each version of Expo SDK supports a minimum OS version of Android and iOS. For Android, the `compileSdkVersion` is defined which tells the [Gradle](https://developer.android.com/studio/build) which Android SDK version to use to compile the app. This also means that you can use the Android API features included in that SDK version and from the previous versions.
+Each version of Expo SDK supports a minimum OS version of Android and iOS. For Android, the `compileSdkVersion` is defined which tells the [Gradle](https://developer.android.com/studio/build) which Android SDK version to use to compile the app. This also means that you can use the Android API features included in that SDK version and from the previous versions. For iOS, the [Xcode](https://developer.apple.com/news/upcoming-requirements/) tells the minimum Xcode SDK version to use to compile the app.
 
-| Expo SDK version | Android version | `compileSdkVersion` | iOS version |
-| ---------------- | --------------- | ------------------- | ----------- |
-| 51.0.0           | 6+              | 34                  | 13.4+       |
-| 50.0.0           | 6+              | 34                  | 13.4+       |
-| 49.0.0           | 5+              | 33                  | 13+         |
+| Expo SDK version | Android version | `compileSdkVersion` | iOS version | Xcode version |
+| ---------------- | --------------- | ------------------- | ----------- | ------------- |
+| 51.0.0           | 6+              | 34                  | 13.4+       | 15.4          |
+| 50.0.0           | 6+              | 34                  | 13.4+       | 15.4          |
+| 49.0.0           | 5+              | 33                  | 13+         | 15.4          |
+
+When deciding whether to upgrade your Expo SDK version, consider both Expo's SDK version and app store submission requirements, as described in the above table. Google Play Store and Apple App Store periodically increase their minimum required OS versions and API levels, which are required for new app submissions. Expo has no control over the app store requirements, and you should check [Google](https://developer.android.com/studio/build) and [Apple](https://developer.apple.com/news/upcoming-requirements/) for the current store submission requirements.

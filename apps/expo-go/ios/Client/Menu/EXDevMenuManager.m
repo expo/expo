@@ -63,7 +63,7 @@ static NSString *kEXDevMenuTouchGestureEnabled = @"EXDevMenuTouchGestureEnabled"
   return [_delegate mainHostForDevMenuManager:self];
 }
 
-- (RCTAppDelegate *)mainAppDelegate
+- (RCTReactNativeFactory *)mainAppDelegate
 {
   return [_delegate appDelegateForDevMenuManager:self];
 }

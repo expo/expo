@@ -7,7 +7,7 @@ exports.syncConfigurationToNativeAsync = void 0;
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**
  * Synchronize updates configuration to native files. This needs to do essentially the same thing as `withUpdates`
@@ -66,8 +66,8 @@ async function writeExpoPlistAsync(projectDir, expoPlist) {
     await writePlistAsync(expoPlistPath, expoPlist);
 }
 async function readPlistAsync(plistPath) {
-    if (await fs_extra_1.default.pathExists(plistPath)) {
-        const expoPlistContent = await fs_extra_1.default.readFile(plistPath, 'utf8');
+    if (fs_1.default.existsSync(plistPath)) {
+        const expoPlistContent = await fs_1.default.promises.readFile(plistPath, 'utf8');
         try {
             return plist_1.default.parse(expoPlistContent);
         }
@@ -82,6 +82,6 @@ async function readPlistAsync(plistPath) {
 }
 async function writePlistAsync(plistPath, plistObject) {
     const contents = plist_1.default.build(plistObject);
-    await fs_extra_1.default.mkdirp(path_1.default.dirname(plistPath));
-    await fs_extra_1.default.writeFile(plistPath, contents);
+    await fs_1.default.promises.mkdir(path_1.default.dirname(plistPath), { recursive: true });
+    await fs_1.default.promises.writeFile(plistPath, contents, 'utf8');
 }

@@ -44,7 +44,7 @@ const withSdk52ReactNative78CompatAndroid = config => {
 exports.withSdk52ReactNative78CompatAndroid = withSdk52ReactNative78CompatAndroid;
 const withSdk52ReactNative78CompatAndroidAppGradle = config => {
   return (0, _configPlugins().withAppBuildGradle)(config, async config => {
-    if (!isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion)) {
+    if (!(await isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion))) {
       return config;
     }
     config.modResults.contents = config.modResults.contents.replace(/jscFlavor = ['"]org\.webkit:android-jsc(-intl)?:\+['"]/gm, `jscFlavor = 'io.github.react-native-community:jsc-android$1:2026004.+'`);
@@ -53,7 +53,7 @@ const withSdk52ReactNative78CompatAndroidAppGradle = config => {
 };
 const withSdk52ReactNative78CompatAndroidProjectGradle = config => {
   return (0, _configPlugins().withProjectBuildGradle)(config, async config => {
-    if (!isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion)) {
+    if (!(await isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion))) {
       return config;
     }
     config.modResults.contents = config.modResults.contents.replace(/\ndef jscAndroidDir = new File\([\s\S]+?^\)\n/gm, '');

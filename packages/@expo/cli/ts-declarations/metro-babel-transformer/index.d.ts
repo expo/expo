@@ -4,7 +4,7 @@ declare module 'metro-babel-transformer' {
   export { default } from 'metro-babel-transformer/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-babel-transformer/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-babel-transformer/src/index.js
 declare module 'metro-babel-transformer/src/index' {
   import type * as _babel_types from '@babel/types';
   import type { BabelFileMetadata, TransformOptions } from '@babel/core';
@@ -40,12 +40,14 @@ declare module 'metro-babel-transformer/src/index' {
     names: readonly string[];
     mappings: string;
   }>;
+  export type BabelFileImportLocsMetadata = ReadonlySet<string>;
   export type MetroBabelFileMetadata = {
     metro?:
       | null
       | undefined
       | {
           functionMap?: null | undefined | BabelFileFunctionMapMetadata;
+          unstable_importDeclarationLocs?: null | undefined | BabelFileImportLocsMetadata;
         };
   } & BabelFileMetadata;
   export type BabelTransformer = {

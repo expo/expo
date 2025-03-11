@@ -1,14 +1,10 @@
 import 'react-native';
-
-import React from 'react';
-import renderer, { act } from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import { A } from '../Anchor';
 
-it(`renders A`, () => {
-  let tree;
-  act(() => {
-    tree = renderer.create(<A href="#" target="_parent" />);
-  });
-  expect(tree).toMatchSnapshot();
+it('renders A', () => {
+  const { toJSON } = render(<A href="#" target="_parent" />);
+  expect(toJSON()).toMatchSnapshot();
 });

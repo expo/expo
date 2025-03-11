@@ -10,7 +10,7 @@ internal fun LibraryExtension.applySDKVersions(compileSdk: Int, minSdk: Int, tar
   }
 }
 
-internal fun LibraryExtension.applyLinerOptions() {
+internal fun LibraryExtension.applyLinterOptions() {
   lintOptions.isAbortOnError = false
 }
 

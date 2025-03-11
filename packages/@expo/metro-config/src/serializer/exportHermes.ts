@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { composeSourceMaps } from 'metro-source-map';
 import os from 'os';
 import path from 'path';
@@ -80,14 +80,14 @@ async function directlyBuildHermesBundleAsync({
   filename,
 }: BuildHermesOptions): Promise<HermesBundleOutput> {
   const tempDir = path.join(os.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
-  await fs.ensureDir(tempDir);
+  await fs.promises.mkdir(tempDir, { recursive: true });
   try {
     const tempBundleFile = path.join(tempDir, 'index.js');
-    await fs.writeFile(tempBundleFile, code);
+    await fs.promises.writeFile(tempBundleFile, code, 'utf8');
 
     if (map) {
       const tempSourcemapFile = path.join(tempDir, 'index.js.map');
-      await fs.writeFile(tempSourcemapFile, map);
+      await fs.promises.writeFile(tempSourcemapFile, map, 'utf8');
     }
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
@@ -107,10 +107,10 @@ async function directlyBuildHermesBundleAsync({
     let sourcemap: string | null = null;
 
     if (!map) {
-      hbc = await fs.readFile(tempHbcFile);
+      hbc = await fs.promises.readFile(tempHbcFile);
     } else {
       [hbc, sourcemap] = await Promise.all([
-        fs.readFile(tempHbcFile),
+        fs.promises.readFile(tempHbcFile),
         createHermesSourcemapAsync(map, `${tempHbcFile}.map`),
       ]);
     }
@@ -125,7 +125,7 @@ async function directlyBuildHermesBundleAsync({
     }
     throw error;
   } finally {
-    await fs.remove(tempDir);
+    await fs.promises.rm(tempDir, { force: true, recursive: true });
   }
 }
 
@@ -134,6 +134,7 @@ async function createHermesSourcemapAsync(
   hermesMapFile: string
 ): Promise<string> {
   const bundlerSourcemap = JSON.parse(sourcemap);
-  const hermesSourcemap = await fs.readJSON(hermesMapFile);
+  const hermesSourcemapContent = await fs.promises.readFile(hermesMapFile, 'utf8');
+  const hermesSourcemap = JSON.parse(hermesSourcemapContent);
   return JSON.stringify(composeSourceMaps([bundlerSourcemap, hermesSourcemap]));
 }

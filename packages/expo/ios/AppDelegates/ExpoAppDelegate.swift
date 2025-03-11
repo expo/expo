@@ -1,33 +1,125 @@
 import Dispatch
 import Foundation
-import React_RCTAppDelegate
 import ExpoModulesCore
-
-// TODO(vonovak,20250107) - Remove the if expression when we drop SDK 52 / RN 76 support
-#if canImport(ReactAppDependencyProvider)
 import ReactAppDependencyProvider
-#endif
 
 /**
+ Note: you cannot subclass Swift from Objective-C, use EXAppDelegateWrapper with Obj-C app delegates
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
  by forwarding `UIApplicationDelegate` events to the subscribers.
 
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
+
+ TODO vonovak check macOS support once RN macOS 78 goes out
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: ExpoAppInstance {
-  /**
-   Whether to skip calling the React Native instance setup from `RCTAppDelegate`.
-   Set this property to `false` if your app delegate is not supposed to initialize a React Native app,
-   but only to handle the app delegate subscribers.
-   */
+open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryProvider, UIApplicationDelegate, UISceneDelegate {
+  public var reactNativeFactory: RCTReactNativeFactory?
+
+  /// The window object, used to render the UIViewControllers
+  public var window: UIWindow?
+
+  /// From RCTAppDelegate
+  @objc public var moduleName: String = ""
+  @objc public var initialProps: [AnyHashable: Any]?
+
+  @objc public let reactDelegate = ExpoReactDelegate(
+    handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
+  )
+
+  /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
+  public var automaticallyLoadReactNativeWindow = true
+
+  func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    self.dependencyProvider = RCTAppDependencyProvider()
+    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
+    let rootView = reactNativeFactory?.rootViewFactory.view(
+      withModuleName: self.moduleName as String,
+      initialProperties: self.initialProps,
+      launchOptions: launchOptions
+    )
+
+    let window = UIWindow(frame: UIScreen.main.bounds)
+    let rootViewController = createRootViewController()
+
+    setRootView(rootView, toRootViewController: rootViewController)
+
+    window.windowScene?.delegate = self
+    window.rootViewController = rootViewController
+    window.makeKeyAndVisible()
+
+    self.window = window
+  }
+
   @objc
-  public var shouldCallReactNativeSetup: Bool = true
+  open override func createRootViewController() -> UIViewController {
+    return reactDelegate.createRootViewController()
+  }
 
-  #if os(iOS) || os(tvOS)
+  @objc public override func recreateRootView(
+    withBundleURL: URL?,
+    moduleName: String?,
+    initialProps: [AnyHashable: Any]?,
+    launchOptions: [AnyHashable: Any]?
+  ) -> UIView {
+    guard let reactNativeFactory = self.reactNativeFactory else {
+      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
+    }
+
+    let rootViewFactory = reactNativeFactory.rootViewFactory
+
+    if self.newArchEnabled() {
+      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
+      assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    } else {
+      assert(rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    }
+
+    let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
+
+    if let bundleURL = withBundleURL {
+      configuration?.bundleURLBlock = {
+        return bundleURL
+      }
+    }
+
+    if let moduleName = moduleName {
+      self.moduleName = moduleName
+    }
+
+    if let initialProps = initialProps {
+      self.initialProps = initialProps
+    }
+
+    let rootView: UIView
+    if let factory = rootViewFactory as? ExpoReactRootViewFactory {
+      // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
+      // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
+      rootView = factory.superView(
+        withModuleName: self.moduleName as String,
+        initialProperties: self.initialProps ?? [:],
+        launchOptions: launchOptions ?? [:]
+      )
+    } else {
+      rootView = rootViewFactory.view(
+        withModuleName: self.moduleName as String,
+        initialProperties: self.initialProps,
+        launchOptions: launchOptions
+      )
+    }
+
+    return rootView
+  }
+
+  open override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
+    return bundleURL()
+  }
+
   // MARK: - Initializing the App
+#if os(iOS) || os(tvOS)
 
-  open override func application(
+  open func application(
     _ application: UIApplication,
     willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
@@ -47,62 +139,120 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
   }
 
-  open override func application(
+  open func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-#if canImport(ReactAppDependencyProvider)
-    self.dependencyProvider = RCTAppDependencyProvider()
-#endif
+    if automaticallyLoadReactNativeWindow {
+      loadReactNativeWindow(launchOptions: launchOptions)
+    }
+
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
+      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
+      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    return true
+  }
+
+#elseif os(macOS)
+  open override func applicationWillFinishLaunching(_ notification: Notification) {
+    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
+      $0.responds(to: #selector(applicationWillFinishLaunching(_:)))
+    }
+
+    parsedSubscribers.forEach { subscriber in
+      subscriber.applicationWillFinishLaunching?(notification)
+    }
+  }
+
+  open override func applicationDidFinishLaunching(_ notification: Notification) {
     if shouldCallReactNativeSetup {
-      super.application(application, didFinishLaunchingWithOptions: launchOptions)
+      super.applicationDidFinishLaunching(notification)
     }
 
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { subscriber in
         // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
-        _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
+        _ = subscriber.applicationDidFinishLaunching?(notification)
       }
-    return true
   }
 
   // TODO: - Configuring and Discarding Scenes
+#endif
 
   // MARK: - Responding to App Life-Cycle Events
 
+#if os(iOS) || os(tvOS)
+
   @objc
-  open override func applicationDidBecomeActive(_ application: UIApplication) {
+  open func applicationDidBecomeActive(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationDidBecomeActive?(application) }
   }
 
   @objc
-  open override func applicationWillResignActive(_ application: UIApplication) {
+  open func applicationWillResignActive(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillResignActive?(application) }
   }
 
   @objc
-  open override func applicationDidEnterBackground(_ application: UIApplication) {
+  open func applicationDidEnterBackground(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationDidEnterBackground?(application) }
   }
 
-  open override func applicationWillEnterForeground(_ application: UIApplication) {
+  open func applicationWillEnterForeground(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillEnterForeground?(application) }
   }
 
-  open override func applicationWillTerminate(_ application: UIApplication) {
+  open func applicationWillTerminate(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillTerminate?(application) }
   }
+
+#elseif os(macOS)
+  @objc
+  open override func applicationDidBecomeActive(_ notification: Notification) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationDidBecomeActive?(notification) }
+  }
+
+  @objc
+  open override func applicationWillResignActive(_ notification: Notification) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationWillResignActive?(notification) }
+  }
+
+  @objc
+  open override func applicationDidHide(_ notification: Notification) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationDidHide?(notification) }
+  }
+
+  open override func applicationWillUnhide(_ notification: Notification) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationWillUnhide?(notification) }
+  }
+
+  open override func applicationWillTerminate(_ notification: Notification) {
+    ExpoAppDelegateSubscriberRepository
+      .subscribers
+      .forEach { $0.applicationWillTerminate?(notification) }
+  }
+#endif
 
   // TODO: - Responding to Environment Changes
 
@@ -110,7 +260,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Downloading Data in the Background
 
-  open override func application(
+#if os(iOS) || os(tvOS)
+  open func application(
     _ application: UIApplication,
     handleEventsForBackgroundURLSession identifier: String,
     completionHandler: @escaping () -> Void
@@ -139,21 +290,24 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
   }
 
+#endif
+
   // MARK: - Handling Remote Notification Registration
 
-  open override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  open func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
 
-  open override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+  open func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
-  open override func application(
+#if os(iOS) || os(tvOS)
+  open func application(
     _ application: UIApplication,
     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
@@ -196,9 +350,23 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
   }
 
+#elseif os(macOS)
+  open override func application(
+    _ application: NSApplication,
+    didReceiveRemoteNotification userInfo: [String: Any]
+  ) {
+    let selector = #selector(application(_:didReceiveRemoteNotification:))
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
+
+    subs.forEach { subscriber in
+      subscriber.application?(application, didReceiveRemoteNotification: userInfo)
+    }
+  }
+#endif
+
   // MARK: - Continuing User Activity and Handling Quick Actions
 
-  open override func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
+  open func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
     return ExpoAppDelegateSubscriberRepository
       .subscribers
       .reduce(false) { result, subscriber in
@@ -206,7 +374,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
       }
   }
 
-  open override func application(
+#if os(iOS) || os(tvOS)
+  open func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
@@ -235,14 +404,45 @@ open class ExpoAppDelegate: ExpoAppInstance {
       return subscriber.application?(application, continue: userActivity, restorationHandler: handler) ?? false || result
     }
   }
+#elseif os(macOS)
+  open override func application(
+    _ application: NSApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void
+  ) -> Bool {
+    let selector = #selector(application(_:continue:restorationHandler:))
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
+    let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
+    var allRestorableObjects = [NSUserActivityRestoring]()
 
-  open override func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
+    let handler = { (restorableObjects: [NSUserActivityRestoring]?) in
+      dispatchQueue.sync {
+        if let restorableObjects = restorableObjects {
+          allRestorableObjects.append(contentsOf: restorableObjects)
+        }
+
+        subscribersLeft -= 1
+
+        if subscribersLeft == 0 {
+          restorationHandler(allRestorableObjects)
+        }
+      }
+    }
+
+    return subs.reduce(false) { result, subscriber in
+      return subscriber.application?(application, continue: userActivity, restorationHandler: handler) ?? false || result
+    }
+  }
+#endif
+
+  open func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
     return ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.application?(application, didUpdate: userActivity) }
   }
 
-  open override func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
+  open func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
     return ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach {
@@ -250,8 +450,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
       }
   }
 
-#if !os(tvOS)
-  open override func application(
+#if os(iOS)
+  open func application(
     _ application: UIApplication,
     performActionFor shortcutItem: UIApplicationShortcutItem,
     completionHandler: @escaping (Bool) -> Void
@@ -285,7 +485,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Background Fetch
 
-  open override func application(
+#if os(iOS) || os(tvOS)
+  open func application(
     _ application: UIApplication,
     performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
@@ -330,15 +531,23 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // TODO: - Interacting With WatchKit
 
   // TODO: - Interacting With HealthKit
+#endif
 
   // MARK: - Opening a URL-Specified Resource
+#if os(iOS) || os(tvOS)
 
-  open override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+  open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return ExpoAppDelegateSubscriberRepository.subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(app, open: url, options: options) ?? false || result
     }
   }
-
+#elseif os(macOS)
+  open override func application(_ app: NSApplication, open urls: [URL]) {
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
+      subscriber.application?(app, open: urls)
+    }
+  }
+#endif
   // TODO: - Disallowing Specified App Extension Types
 
   // TODO: - Handling SiriKit Intents
@@ -346,13 +555,13 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // TODO: - Handling CloudKit Invitations
 
   // MARK: - Managing Interface Geometry
+#if os(iOS)
 
   /**
    * Sets allowed orientations for the application. It will use the values from `Info.plist`as the orientation mask unless a subscriber requested
    * a different orientation.
    */
-#if !os(tvOS)
-  open override func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+  open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
     let universalOrientationMask = allowedOrientations(for: .unspecified)
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
@@ -371,8 +580,6 @@ open class ExpoAppDelegate: ExpoAppInstance {
     return parsedSubscribers.isEmpty ? infoPlistOrientations : subscribersMask
   }
 #endif
-
-  #endif // os(iOS)
 
   // MARK: - ExpoAppDelegateSubscriberProtocol
 

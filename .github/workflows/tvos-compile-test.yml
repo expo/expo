@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/tvos-compile-test.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
       - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
       - packages/expo-updates/e2e/setup/project.ts
   push:
@@ -67,7 +69,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches

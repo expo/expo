@@ -5,6 +5,7 @@ exports[`renders A 1`] = `
   className="css-text-146c3p1"
   dir="auto"
   href="#"
+  ref={[Function]}
   role="link"
   target="_parent"
 />

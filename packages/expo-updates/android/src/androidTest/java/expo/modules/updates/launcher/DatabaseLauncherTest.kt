@@ -70,7 +70,7 @@ class DatabaseLauncherTest {
         mockk(),
         mockk()
       ),
-      UpdatesLogger(context)
+      UpdatesLogger(context.filesDir)
     )
     val spyLauncher = spyk(launcher)
     every { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)

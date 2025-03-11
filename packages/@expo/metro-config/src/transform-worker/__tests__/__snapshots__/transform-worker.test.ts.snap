@@ -12,10 +12,10 @@ const style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_module_css");
   const previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
-head.appendChild(style);
+if (!style.parentNode) head.appendChild(style);
 const css = \`._R_BGG_container{background:red}\`;
 if (style.styleSheet){
   style.styleSheet.cssText = css;
@@ -56,10 +56,10 @@ const style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_module_css");
   const previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
-head.appendChild(style);
+if (!style.parentNode) head.appendChild(style);
 const css = \`._R_BGG_container {
   background: red;
 }
@@ -109,10 +109,10 @@ const style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_css");
   const previousStyle = document.querySelector('[data-expo-css-hmr="acme_css"]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
-head.appendChild(style);
+if (!style.parentNode) head.appendChild(style);
 const css = \`body {
   background: red;
 }

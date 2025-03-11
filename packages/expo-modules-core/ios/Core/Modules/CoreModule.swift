@@ -1,10 +1,31 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import Foundation
 
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
+    Constant("expoModulesCoreVersion") {
+      let version = CoreModuleHelper.getVersion()
+      let components = version.split(separator: "-")[0].split(separator: ".").compactMap { Int($0) }
+
+      return [
+        "version": version,
+        "major": components[0],
+        "minor": components[1],
+        "patch": components[2]
+      ]
+    }
+
+    Constant("cacheDir") {
+      FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
+    }
+
+    Constant("documentsDir") {
+      FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+    }
+
     // Expose some common classes and maybe even the `modules` host object in the future.
     Function("uuidv4") { () -> String in
       return UUID().uuidString.lowercased()

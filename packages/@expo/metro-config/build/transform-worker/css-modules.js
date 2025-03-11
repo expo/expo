@@ -107,6 +107,7 @@ function collectCssImports(filename, originalCode, code, cssResults) {
                         name: dep.url,
                         data: {
                             asyncType: null,
+                            isESMImport: false,
                             isOptional: false,
                             locs: [
                                 {

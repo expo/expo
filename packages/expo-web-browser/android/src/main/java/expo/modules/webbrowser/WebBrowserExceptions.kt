@@ -11,3 +11,5 @@ internal class NoPreferredPackageFound : CodedException(
 internal class PackageManagerNotFoundException : CodedException("Package Manager not found")
 
 internal class NoMatchingActivityException : CodedException("No matching browser activity found")
+
+internal class NoUrlProvidedException : CodedException("No url provided")

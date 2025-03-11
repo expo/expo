@@ -18,9 +18,9 @@ function _debug() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -42,8 +42,6 @@ function _InterfaceBuilder() {
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// @ts-ignore
-
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:splash-colorset');
 const SPLASHSCREEN_COLORSET_PATH = exports.SPLASHSCREEN_COLORSET_PATH = 'Images.xcassets/SplashScreenBackground.colorset';
 const withIosSplashColors = (config, splash) => {
@@ -69,7 +67,10 @@ async function configureColorAssets({
   const colorsetPath = _path().default.resolve(iosNamedProjectRoot, SPLASHSCREEN_COLORSET_PATH);
 
   // ensure old SplashScreen colorSet is removed
-  await _fsExtra().default.remove(colorsetPath);
+  await _fs().default.promises.rm(colorsetPath, {
+    force: true,
+    recursive: true
+  });
   await writeColorsContentsJsonFileAsync({
     assetPath: colorsetPath,
     backgroundColor,
@@ -122,14 +123,16 @@ async function writeColorsContentsJsonFileAsync({
 async function writeContentsJsonAsync(directory, {
   colors
 }) {
-  await _fsExtra().default.ensureDir(directory);
-  await _fsExtra().default.writeFile((0, _path().join)(directory, 'Contents.json'), JSON.stringify({
+  await _fs().default.promises.mkdir(directory, {
+    recursive: true
+  });
+  await _fs().default.promises.writeFile((0, _path().join)(directory, 'Contents.json'), JSON.stringify({
     colors,
     info: {
       version: 1,
       // common practice is for the tool that generated the icons to be the "author"
       author: 'expo'
     }
-  }, null, 2));
+  }, null, 2), 'utf8');
 }
 //# sourceMappingURL=withIosSplashColors.js.map

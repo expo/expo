@@ -30,7 +30,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~18.3.12",
+    "@types/react": "~19.0.10",
     "expo-module-scripts": "^4.0.2"
   },
   "peerDependencies": {

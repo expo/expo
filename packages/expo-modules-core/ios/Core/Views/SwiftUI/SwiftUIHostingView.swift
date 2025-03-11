@@ -26,7 +26,7 @@ extension ExpoSwiftUI {
     private let contentView: any ExpoSwiftUI.View
 
     /**
-     Additiional utilities for controlling shadow node behavior.
+     Additional utilities for controlling shadow node behavior.
      */
     private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
@@ -44,7 +44,7 @@ extension ExpoSwiftUI {
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
-      if #available(iOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         controller.sizingOptions = [.intrinsicContentSize]
       }
       self.hostingController = controller
@@ -111,7 +111,6 @@ extension ExpoSwiftUI {
       return true
     }
 
-#if os(iOS) || os(tvOS)
 #if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
@@ -144,7 +143,8 @@ extension ExpoSwiftUI {
      Setups layout constraints of the hosting controller view to match the layout set by React.
      */
     private func setupHostingViewConstraints() {
-      guard let view = hostingController.view else {
+      // NSView is not optional in NSViewController in macOS
+      guard let view = hostingController.view as UIView? else {
         return
       }
       view.translatesAutoresizingMaskIntoConstraints = false
@@ -165,12 +165,26 @@ extension ExpoSwiftUI {
       if window != nil, let parentController = reactViewController() {
         parentController.addChild(hostingController)
         addSubview(hostingController.view)
+        #if os(iOS) || os(tvOS)
         hostingController.didMove(toParent: parentController)
+        #endif
         setupHostingViewConstraints()
       } else {
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
       }
+    }
+
+#if os(macOS)
+    public override func reactViewController() -> NSViewController? {
+      var currentView: NSView? = self
+      while let view = currentView {
+        if let viewController = view.nextResponder as? NSViewController {
+          return viewController
+        }
+        currentView = view.superview
+      }
+      return self.window?.contentViewController
     }
 #endif
   }

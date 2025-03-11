@@ -1,6 +1,6 @@
 import { AndroidConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 
 import fixtures from '../../../__tests__/fixtures/react-native-project';

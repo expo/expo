@@ -86,7 +86,9 @@ export async function graphToSerialAssetsAsync(
     {
       test: pathToRegex(entryFile),
     },
-  ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+  ].map((chunkSettings) =>
+    gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true)
+  );
 
   // Get the common modules and extract them into a separate chunk.
   const entryChunk = [...chunks.values()].find(
@@ -94,7 +96,7 @@ export async function graphToSerialAssetsAsync(
   );
   if (entryChunk) {
     for (const chunk of chunks.values()) {
-      if (chunk !== entryChunk && chunk.isAsync) {
+      if (!chunk.isEntry && chunk.isAsync) {
         for (const dep of chunk.deps.values()) {
           if (entryChunk.deps.has(dep)) {
             // Remove the dependency from the async chunk since it will be loaded in the main chunk.
@@ -146,12 +148,19 @@ export async function graphToSerialAssetsAsync(
     // TODO: Optimize this pass more.
     // Remove all dependencies from async chunks that are already in the common chunk.
     for (const chunk of [...chunks.values()]) {
-      if (chunk !== entryChunk) {
+      if (!chunk.isEntry) {
         for (const dep of chunk.deps) {
           if (entryChunk.deps.has(dep)) {
             chunk.deps.delete(dep);
           }
         }
+      }
+    }
+
+    // Remove empty chunks
+    for (const chunk of [...chunks.values()]) {
+      if (!chunk.isEntry && chunk.deps.size === 0) {
+        chunks.delete(chunk);
       }
     }
   }
@@ -202,7 +211,8 @@ export class Chunk {
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
     public isAsync: boolean = false,
-    public isVendor: boolean = false
+    public isVendor: boolean = false,
+    public isEntry: boolean = false
   ) {
     this.deps = new Set(entries);
   }
@@ -262,7 +272,7 @@ export class Chunk {
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
-      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+      runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
       modulesOnly: this.options.modulesOnly || preModules.length === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
@@ -300,6 +310,7 @@ export class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
+
           // NOTE(kitten): We shouldn't have any async imports on non-async chunks
           // However, due to how chunks merge, some async imports may now be pointing
           // at entrypoint (or vendor) chunks. We omit the path so that the async import
@@ -626,12 +637,14 @@ function chunkIdForModules(modules: Module[]) {
 }
 
 function gatherChunks(
+  runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions<MixedOutput>,
-  isAsync: boolean = false
+  isAsync: boolean = false,
+  isEntry: boolean = false
 ): Set<Chunk> {
   let entryModules = getEntryModulesForChunkSettings(graph, settings);
 
@@ -651,7 +664,9 @@ function gatherChunks(
     entryModules,
     graph,
     options,
-    isAsync
+    isAsync,
+    false,
+    isEntry
   );
 
   // Add all the pre-modules to the first chunk.
@@ -671,13 +686,17 @@ function gatherChunks(
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
+        const isEntry = dependency.data.data.asyncType === 'worker';
+
         gatherChunks(
+          runtimePremodules,
           chunks,
           { test: pathToRegex(dependency.absolutePath) },
-          [],
+          isEntry ? runtimePremodules : [],
           graph,
           options,
-          true
+          true,
+          isEntry
         );
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);

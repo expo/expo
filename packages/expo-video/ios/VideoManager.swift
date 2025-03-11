@@ -14,6 +14,10 @@ class VideoManager {
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 
+  var hasRegisteredPlayers: Bool {
+    return !videoPlayers.allObjects.isEmpty
+  }
+
   func register(videoPlayer: VideoPlayer) {
     Self.managerQueue.async { [weak self, weak videoPlayer] in
       guard let self = self, let videoPlayer = videoPlayer else {
@@ -54,7 +58,7 @@ class VideoManager {
       if player.staysActiveInBackground == true {
         player.setTracksEnabled(videoView.isInPictureInPicture)
       } else if !videoView.isInPictureInPicture {
-        player.pointer.pause()
+        player.ref.pause()
       }
     }
   }
@@ -101,7 +105,7 @@ class VideoManager {
       audioSessionCategoryOptions.remove(.duckOthers)
     }
 
-    if audioSession.categoryOptions != audioSessionCategoryOptions {
+    if audioSession.categoryOptions != audioSessionCategoryOptions || audioSession.category != .playback || audioSession.mode != .moviePlayback {
       do {
         try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
       } catch {
@@ -117,9 +121,6 @@ class VideoManager {
         log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
-
-    // The now playing notification requires correct audio session category, notify the manager of about the change.
-    NowPlayingManager.shared.refreshNowPlaying()
   }
 
   private func findAudioMixingMode() -> AudioMixingMode? {
@@ -128,6 +129,9 @@ class VideoManager {
     })
     var audioMixingMode: AudioMixingMode = .mixWithOthers
 
+    if playingPlayers.isEmpty {
+      return nil
+    }
     for videoPlayer in playingPlayers where (audioMixingMode.priority()) < videoPlayer.audioMixingMode.priority() {
       audioMixingMode = videoPlayer.audioMixingMode
     }

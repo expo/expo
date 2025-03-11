@@ -34,10 +34,6 @@ it('should go back to a previous route in the same stack', () => {
       {
         key: expect.any(String),
         name: '1',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           index: 2,
@@ -90,10 +86,6 @@ it('should go back to a previous route in the same stack', () => {
       {
         key: expect.any(String),
         name: '1',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           index: 0,
@@ -152,10 +144,6 @@ it('should go back to a previous route in different stacks', () => {
       {
         key: expect.any(String),
         name: '1',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           index: 1,
@@ -172,10 +160,6 @@ it('should go back to a previous route in different stacks', () => {
             {
               key: expect.any(String),
               name: '2',
-              params: {
-                params: {},
-                screen: 'c',
-              },
               path: undefined,
               state: {
                 index: 1,
@@ -230,10 +214,6 @@ it('should go back to a previous route in different stacks', () => {
       {
         key: expect.any(String),
         name: '1',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           index: 0,
@@ -293,10 +273,6 @@ it('will replace the route if the provided href is not in the history', () => {
       {
         key: expect.any(String),
         name: '1',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           index: 1,
@@ -313,10 +289,6 @@ it('will replace the route if the provided href is not in the history', () => {
             {
               key: expect.any(String),
               name: '2',
-              params: {
-                params: {},
-                screen: 'c',
-              },
               path: undefined,
               state: {
                 index: 0,
@@ -331,7 +303,6 @@ it('will replace the route if the provided href is not in the history', () => {
                       params: {},
                       screen: 'e',
                     },
-                    path: undefined,
                   },
                 ],
                 stale: false,

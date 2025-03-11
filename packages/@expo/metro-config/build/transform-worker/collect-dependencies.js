@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidRequireCallError = exports.getExportNamesFromPath = void 0;
+exports.hashKey = exports.getKeyForDependency = exports.InvalidRequireCallError = exports.getExportNamesFromPath = void 0;
 /**
  * Copyright 2024-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -64,9 +64,29 @@ function collectDependencies(ast, options) {
         keepRequireNames: options.keepRequireNames,
         allowOptionalDependencies: options.allowOptionalDependencies,
         unstable_allowRequireContext: options.unstable_allowRequireContext,
+        unstable_isESMImportAtSource: options.unstable_isESMImportAtSource ?? null,
         collectOnly: options.collectOnly,
     };
     (0, traverse_1.default)(ast, {
+        // Match new Worker() patterns
+        NewExpression(path, state) {
+            if (path.node.callee.type === 'Identifier' &&
+                (path.node.callee.name === 'Worker' || path.node.callee.name === 'SharedWorker')) {
+                const [firstArg] = path.node.arguments;
+                // Match: new Worker(new URL("../path/to/module", import.meta.url))
+                if (firstArg &&
+                    firstArg.type === 'NewExpression' &&
+                    firstArg.callee.type === 'Identifier' &&
+                    firstArg.callee.name === 'URL' &&
+                    firstArg.arguments.length > 0 &&
+                    firstArg.arguments[0].type === 'StringLiteral') {
+                    const moduleName = firstArg.arguments[0].value;
+                    // Get the NodePath of the first argument of `new Worker(new URL())`
+                    const urlArgPath = path.get('arguments')[0].get('arguments')[0];
+                    processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+                }
+            }
+        },
         CallExpression(path, state) {
             if (visited.has(path.node)) {
                 return;
@@ -75,38 +95,62 @@ function collectDependencies(ast, options) {
             const name = callee.type === 'Identifier' ? callee.name : null;
             if ((0, types_1.isImport)(callee)) {
                 processImportCall(path, state, {
-                    dynamicRequires: options.dynamicRequires,
                     asyncType: 'async',
+                    isESMImport: true,
+                    dynamicRequires: options.dynamicRequires,
                 });
                 return;
             }
             if (name === '__prefetchImport' && !path.scope.getBinding(name)) {
                 processImportCall(path, state, {
-                    dynamicRequires: options.dynamicRequires,
                     asyncType: 'prefetch',
+                    isESMImport: true,
+                    dynamicRequires: options.dynamicRequires,
                 });
                 return;
             }
-            if (state.unstable_allowRequireContext &&
+            // Match `require.context`
+            if (
+            // Feature gate, defaults to `false`.
+            state.unstable_allowRequireContext &&
                 callee.type === 'MemberExpression' &&
+                // `require`
                 callee.object.type === 'Identifier' &&
                 callee.object.name === 'require' &&
+                // `context`
                 callee.property.type === 'Identifier' &&
                 callee.property.name === 'context' &&
                 !callee.computed &&
+                // Ensure `require` refers to the global and not something else.
                 !path.scope.getBinding('require')) {
                 processRequireContextCall(path, state);
                 visited.add(path.node);
                 return;
             }
+            // Match `require.resolveWeak`
+            if (callee.type === 'MemberExpression' &&
+                // `require`
+                callee.object.type === 'Identifier' &&
+                callee.object.name === 'require' &&
+                // `resolveWeak`
+                callee.property.type === 'Identifier' &&
+                callee.property.name === 'resolveWeak' &&
+                !callee.computed &&
+                // Ensure `require` refers to the global and not something else.
+                !path.scope.getBinding('require')) {
+                processResolveWeakCall(path, state);
+                visited.add(path.node);
+                return;
+            }
+            // Match `require.unstable_resolveWorker`
             if (callee.type === 'MemberExpression' &&
                 callee.object.type === 'Identifier' &&
                 callee.object.name === 'require' &&
                 callee.property.type === 'Identifier' &&
-                callee.property.name === 'resolveWeak' &&
+                callee.property.name === 'unstable_resolveWorker' &&
                 !callee.computed &&
                 !path.scope.getBinding('require')) {
-                processResolveWeakCall(path, state);
+                processResolveWorkerCall(path, state);
                 visited.add(path.node);
                 return;
             }
@@ -122,8 +166,12 @@ function collectDependencies(ast, options) {
                 // Ensure `require` refers to the global and not something else.
                 !path.scope.getBinding('require')) {
                 processImportCall(path, state, {
-                    dynamicRequires: options.dynamicRequires,
                     asyncType: 'maybeSync',
+                    // Treat require.unstable_importMaybeSync as an ESM import, like its
+                    // async "await import()" counterpart. Subject to change while
+                    // unstable_.
+                    isESMImport: true,
+                    dynamicRequires: options.dynamicRequires,
                 });
                 visited.add(path.node);
                 return;
@@ -161,6 +209,7 @@ function collectDependencies(ast, options) {
         dependencyMapName: nullthrows(state.dependencyMapIdentifier).name,
     };
 }
+/** Extract args passed to the `require.context` method. */
 function getRequireContextArgs(path) {
     const args = path.get('arguments');
     let directory;
@@ -176,6 +225,7 @@ function getRequireContextArgs(path) {
             throw new InvalidRequireCallError(result.deopt ?? args[0], 'First argument of `require.context` should be a string denoting the directory to require.');
         }
     }
+    // Default to requiring through all directories.
     let recursive = true;
     if (args.length > 1) {
         const result = args[1].evaluate();
@@ -186,11 +236,15 @@ function getRequireContextArgs(path) {
             throw new InvalidRequireCallError(result.deopt ?? args[1], 'Second argument of `require.context` should be an optional boolean indicating if files should be imported recursively or not.');
         }
     }
+    // Default to all files.
     let filter = { pattern: '.*', flags: '' };
     if (args.length > 2) {
+        // evaluate() to check for undefined (because it's technically a scope lookup)
+        // but check the AST for the regex literal, since evaluate() doesn't do regex.
         const result = args[2].evaluate();
         const argNode = args[2].node;
         if (argNode.type === 'RegExpLiteral') {
+            // TODO: Handle `new RegExp(...)` -- `argNode.type === 'NewExpression'`
             filter = {
                 pattern: argNode.pattern,
                 flags: argNode.flags || '',
@@ -200,6 +254,7 @@ function getRequireContextArgs(path) {
             throw new InvalidRequireCallError(args[2], `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode.type}.`);
         }
     }
+    // Default to `sync`.
     let mode = 'sync';
     if (args.length > 3) {
         const result = args[3].evaluate();
@@ -232,9 +287,12 @@ function processRequireContextCall(path, state) {
     const [directory, contextParams] = getRequireContextArgs(path);
     const transformer = state.dependencyTransformer;
     const dep = registerDependency(state, {
+        // We basically want to "import" every file in a folder and then filter them out with the given `filter` RegExp.
         name: directory,
+        // Capture the matching context
         contextParams,
         asyncType: null,
+        isESMImport: false,
         optional: isOptionalDependency(directory, path, state),
         exportNames: ['*'],
     }, path);
@@ -254,6 +312,7 @@ function processResolveWeakCall(path, state) {
     const dependency = registerDependency(state, {
         name,
         asyncType: 'weak',
+        isESMImport: false,
         optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
@@ -261,6 +320,39 @@ function processResolveWeakCall(path, state) {
         path.replaceWith(makeResolveWeakTemplate({
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
+    }
+}
+function processResolveWorkerCall(path, state) {
+    const name = getModuleNameFromCallArgs(path);
+    if (name == null) {
+        throw new InvalidRequireCallError(path);
+    }
+    return processResolveWorkerCallWithName(name, path, state);
+}
+function processResolveWorkerCallWithName(name, path, state) {
+    const dependency = registerDependency(state, {
+        name,
+        asyncType: 'worker',
+        isESMImport: false,
+        optional: isOptionalDependency(name, path, state),
+        exportNames: ['*'],
+    }, path);
+    if (state.collectOnly !== true) {
+        path.replaceWith(makeResolveTemplate({
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+            MODULE_ID: createModuleIDExpression(dependency, state),
+        }));
+    }
+    else {
+        // Inject the async require dependency into the dependency map so it's available in the graph during serialization and splitting.
+        registerDependency(state, {
+            name: nullthrows(state.asyncRequireModulePathStringLiteral).value,
+            asyncType: null,
+            isESMImport: false,
+            optional: false,
+            exportNames: ['*'],
+        }, path);
     }
 }
 function getExportNamesFromPath(path) {
@@ -302,6 +394,7 @@ function collectImports(path, state) {
         registerDependency(state, {
             name: path.node.source.value,
             asyncType: null,
+            isESMImport: true,
             optional: false,
             exportNames: getExportNamesFromPath(path),
         }, path);
@@ -337,6 +430,7 @@ function processImportCall(path, state, options) {
     const dep = registerDependency(state, {
         name,
         asyncType: options.asyncType,
+        isESMImport: options.isESMImport,
         optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
@@ -375,9 +469,18 @@ function processRequireCall(path, state) {
         }
         return;
     }
+    let isESMImport = false;
+    if (state.unstable_isESMImportAtSource) {
+        const isImport = state.unstable_isESMImportAtSource;
+        const loc = getNearestLocFromPath(path);
+        if (loc) {
+            isESMImport = isImport(loc);
+        }
+    }
     const dep = registerDependency(state, {
         name,
         asyncType: null,
+        isESMImport,
         optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
@@ -400,6 +503,7 @@ function registerDependency(state, qualifier, path) {
 }
 function isOptionalDependency(name, path, state) {
     const { allowOptionalDependencies } = state;
+    // The async require module is a 'built-in'. Resolving should never fail -> treat it as non-optional.
     if (name === state.asyncRequireModulePathStringLiteral?.value) {
         return false;
     }
@@ -409,6 +513,7 @@ function isOptionalDependency(name, path, state) {
     if (!allowOptionalDependencies || isExcluded()) {
         return false;
     }
+    // Valid statement stack for single-level try-block: expressionStatement -> blockStatement -> tryStatement
     let sCount = 0;
     let p = path;
     while (p && sCount < 3) {
@@ -433,6 +538,20 @@ function getModuleNameFromCallArgs(path) {
     }
     return null;
 }
+class InvalidRequireCallError extends Error {
+    constructor({ node }, message) {
+        const line = node.loc && node.loc.start && node.loc.start.line;
+        super([`Invalid call at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}`, message]
+            .filter(Boolean)
+            .join('\n'));
+    }
+}
+exports.InvalidRequireCallError = InvalidRequireCallError;
+/**
+ * Produces a Babel template that will throw at runtime when the require call
+ * is reached. This makes dynamic require errors catchable by libraries that
+ * want to use them.
+ */
 const dynamicRequireErrorTemplate = template_1.default.expression(`
   (function(line) {
     throw new Error(
@@ -440,6 +559,10 @@ const dynamicRequireErrorTemplate = template_1.default.expression(`
     );
   })(LINE)
 `);
+/**
+ * Produces a Babel template that transforms an "import(...)" call into a
+ * "require(...)" call to the asyncRequire specified.
+ */
 const makeAsyncRequireTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH)(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
@@ -455,6 +578,9 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
+const makeResolveTemplate = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
@@ -465,43 +591,45 @@ const DefaultDependencyTransformer = {
     transformSyncRequire(path, dependency, state) {
         const moduleIDExpression = createModuleIDExpression(dependency, state);
         path.node.arguments = [moduleIDExpression];
-        if (state.keepRequireNames) {
+        // Always add the debug name argument last
+        if (state.keepRequireNames || dependency.isOptional) {
             path.node.arguments.push(t.stringLiteral(dependency.name));
         }
     },
     transformImportCall(path, dependency, state) {
-        const makeNode = state.keepRequireNames
-            ? makeAsyncRequireTemplateWithName
-            : makeAsyncRequireTemplate;
+        const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+        const makeNode = keepRequireNames ? makeAsyncRequireTemplateWithName : makeAsyncRequireTemplate;
         const opts = {
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             MODULE_ID: createModuleIDExpression(dependency, state),
             DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-            ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+            ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
         };
         path.replaceWith(makeNode(opts));
     },
     transformImportMaybeSyncCall(path, dependency, state) {
-        const makeNode = state.keepRequireNames
+        const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+        const makeNode = keepRequireNames
             ? makeAsyncImportMaybeSyncTemplateWithName
             : makeAsyncImportMaybeSyncTemplate;
         const opts = {
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             MODULE_ID: createModuleIDExpression(dependency, state),
             DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-            ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+            ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
         };
         path.replaceWith(makeNode(opts));
     },
     transformPrefetch(path, dependency, state) {
-        const makeNode = state.keepRequireNames
+        const keepRequireNames = state.keepRequireNames || dependency.isOptional;
+        const makeNode = keepRequireNames
             ? makeAsyncPrefetchTemplateWithName
             : makeAsyncPrefetchTemplate;
         const opts = {
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             MODULE_ID: createModuleIDExpression(dependency, state),
             DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-            ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+            ...(keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
         };
         path.replaceWith(makeNode(opts));
     },
@@ -517,14 +645,37 @@ function createModuleIDExpression(dependency, state) {
 function createModuleNameLiteral(dependency) {
     return t.stringLiteral(dependency.name);
 }
+/**
+ * Given an import qualifier, return a key used to register the dependency.
+ * Attributes can be appended to distinguish various combinations that would
+ * otherwise be considered the same dependency edge.
+ *
+ * For example, the following dependencies would collapse into a single edge
+ * if they simply utilized the `name` property:
+ *
+ * ```
+ * require('./foo');
+ * import foo from './foo'
+ * await import('./foo')
+ * require.context('./foo');
+ * require.context('./foo', true, /something/);
+ * require.context('./foo', false, /something/);
+ * require.context('./foo', false, /something/, 'lazy');
+ * ```
+ *
+ * This method should be utilized by `registerDependency`.
+ */
 function getKeyForDependency(qualifier) {
-    let key = qualifier.name;
-    const { asyncType } = qualifier;
-    if (asyncType) {
-        key += ['', asyncType].join('\0');
+    const { asyncType, contextParams, isESMImport, name } = qualifier;
+    let key = [name, isESMImport ? 'import' : 'require'].join('\0');
+    if (asyncType != null) {
+        key += '\0' + asyncType;
     }
-    const { contextParams } = qualifier;
+    // Add extra qualifiers when using `require.context` to prevent collisions.
     if (contextParams) {
+        // NOTE(EvanBacon): Keep this synchronized with `RequireContextParams`, if any other properties are added
+        // then this key algorithm should be updated to account for those properties.
+        // Example: `./directory__true__/foobar/m__lazy`
         key += [
             '',
             'context',
@@ -536,6 +687,11 @@ function getKeyForDependency(qualifier) {
     }
     return key;
 }
+exports.getKeyForDependency = getKeyForDependency;
+function hashKey(key) {
+    return crypto.createHash('sha1').update(key).digest('base64');
+}
+exports.hashKey = hashKey;
 class DependencyRegistry {
     _dependencies = new Map();
     registerDependency(qualifier) {
@@ -545,10 +701,11 @@ class DependencyRegistry {
             const newDependency = {
                 name: qualifier.name,
                 asyncType: qualifier.asyncType,
-                exportNames: qualifier.exportNames,
+                isESMImport: qualifier.isESMImport,
                 locs: [],
                 index: this._dependencies.size,
-                key: crypto.createHash('sha1').update(key).digest('base64'),
+                key: hashKey(key),
+                exportNames: qualifier.exportNames,
             };
             if (qualifier.optional) {
                 newDependency.isOptional = true;
@@ -577,14 +734,5 @@ class DependencyRegistry {
         return Array.from(this._dependencies.values());
     }
 }
-class InvalidRequireCallError extends Error {
-    constructor({ node }, message) {
-        const line = node.loc && node.loc.start && node.loc.start.line;
-        super([`Invalid call at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}`, message]
-            .filter(Boolean)
-            .join('\n'));
-    }
-}
-exports.InvalidRequireCallError = InvalidRequireCallError;
 exports.default = collectDependencies;
 //# sourceMappingURL=collect-dependencies.js.map

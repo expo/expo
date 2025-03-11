@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import { FetchClient } from './clients/FetchClient';
-import { RudderDetachedClient } from './clients/RudderDetachedClient';
+import { FetchDetachedClient } from './clients/FetchDetachedClient';
 import { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
 import { createContext } from './utils/context';
 import { getAnonymousId } from '../../api/user/UserSettings';
@@ -32,7 +32,7 @@ type TelemetryActor = Required<Pick<TelemetryOptions, 'anonymousId' | 'sessionId
 
 export class Telemetry {
   private context = createContext();
-  private client: TelemetryClient = new RudderDetachedClient();
+  private client: TelemetryClient = new FetchDetachedClient();
   private actor: TelemetryActor;
 
   /** A list of all events, recorded before the telemetry was fully initialized */
@@ -135,13 +135,11 @@ export class Telemetry {
 
 function createClientFromStrategy(strategy: TelemetryOptions['strategy']) {
   // When debugging, use the actual Rudderstack client, but lazy load it
-  if (env.EXPO_NO_TELEMETRY_DETACH || strategy === 'debug') {
-    const { RudderClient } =
-      require('./clients/RudderClient') as typeof import('./clients/RudderClient');
-    return new RudderClient();
+  if (env.EXPO_NO_TELEMETRY_DETACH || strategy === 'debug' || strategy === 'instant') {
+    return new FetchClient();
   }
 
-  return strategy === 'instant' ? new FetchClient() : new RudderDetachedClient();
+  return new FetchDetachedClient();
 }
 
 /** Generate a unique message ID using a random hash and UUID */

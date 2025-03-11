@@ -34,7 +34,11 @@ export class FaviconMiddleware extends ExpoMiddleware {
       faviconImageData = data.source;
       debug('✅ Generated favicon successfully.');
     } catch (error: any) {
+      // Pass through on ENOENT errors
       debug('Failed to generate favicon from Expo config:', error);
+      if (error.code === 'ENOENT') {
+        return next();
+      }
       return next(error);
     }
     // Respond with the generated favicon file

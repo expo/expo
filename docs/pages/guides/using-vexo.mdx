@@ -1,7 +1,5 @@
 ---
 title: Using Vexo
-maxHeadingDepth: 4
-hideTOC: true
 description: A guide on installing and configuring Vexo for real-time user analytics.
 ---
 
@@ -47,15 +45,14 @@ With a two-line integration, Vexo starts collecting data automatically, giving y
      </Tab>
    </Tabs>
 
-4. Initialize Vexo: Add the following code in your app's entry file (for example, **index.js**,
-   **App.js**, or **app/\_layout.tsx** if using Expo Router):
+4. Initialize Vexo: Add the following code in your app's entry file (for example, **index.js**, **App.js**, or **app/\_layout.tsx** if using Expo Router):
 
-```tsx app/_layout.tsx
-import { vexo } from 'vexo-analytics';
+   ```tsx app/_layout.tsx
+   import { vexo } from 'vexo-analytics';
 
-// You may want to wrap this with `if (!__DEV__) { ... }` to only run Vexo in production.
-vexo('YOUR_API_KEY');
-```
+   // You may want to wrap this with `if (!__DEV__) { ... }` to only run Vexo in production.
+   vexo('YOUR_API_KEY');
+   ```
 
 5. Rebuild and run your app: Since `vexo-analytics` includes native code, you need to rebuild your application.
 

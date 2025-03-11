@@ -12,7 +12,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
         tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
@@ -44,8 +44,8 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+        children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;
@@ -72,7 +72,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         navigation: import("@react-navigation/native").NavigationHelpers<ParamListBase, {}>;
         descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     screenListeners?: Partial<{
         tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
         tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
@@ -104,8 +104,8 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
-        children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-    }) => React.ReactElement<any, string | React.JSXElementConstructor<any>>) | undefined;
+        children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
+    }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
     UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
         key: string;
         index: number;

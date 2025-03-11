@@ -1,28 +1,100 @@
 import crypto from 'crypto';
 
-import { updateDomComponentAssetsForMD5Naming } from '../exportDomComponents';
+import {
+  addDomBundleToMetadataAsync,
+  transformDomEntryForMd5Filename,
+  transformNativeBundleForMd5Filename,
+} from '../exportDomComponents';
 import { type BundleOutput, type ExportAssetMap } from '../saveAssets';
 
 jest.mock('crypto');
-describe(updateDomComponentAssetsForMD5Naming, () => {
-  const mockMd5 = jest.fn().mockReturnValue('MOCK_MD5_HASH');
-  const mockSha1 = jest.fn().mockReturnValue('MOCK_SHA1_HASH');
 
-  (crypto.createHash as jest.Mock).mockImplementation((algorithm: string) => {
-    if (algorithm === 'md5') {
-      return {
-        update: jest.fn().mockReturnThis(),
-        digest: mockMd5,
-      };
-    } else if (algorithm === 'sha1') {
-      return {
-        update: jest.fn().mockReturnThis(),
-        digest: mockSha1,
-      };
-    }
-    return jest.fn();
+const mockFilenameMd5 = jest.fn().mockReturnValue('MOCK_FILENAME_MD5_HASH');
+const mockMd5 = jest.fn().mockReturnValue('MOCK_CONTENTS_MD5_HASH');
+
+(crypto.createHash as jest.Mock).mockImplementation((algorithm: string) => {
+  if (algorithm === 'md5') {
+    const self = {
+      isFilename: false,
+      update: jest.fn().mockImplementation((source) => {
+        self.isFilename = source.startsWith('file://');
+        return self;
+      }),
+      digest: jest.fn().mockImplementation(() => {
+        return self.isFilename ? mockFilenameMd5() : mockMd5();
+      }),
+    };
+    return self;
+  }
+  return jest.fn();
+});
+
+describe(addDomBundleToMetadataAsync, () => {
+  it('should add DOM bundle to metadata', async () => {
+    const domComponentBundle: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom1.js',
+          originFilename: 'node_modules/expo/dom/entry.js',
+          type: 'js',
+          metadata: {},
+          source: 'dummy',
+        },
+      ],
+      assets: [
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/Users/kudo/sdk52domota/assets/images',
+          httpServerLocation: './assets/assets/images',
+          width: 100,
+          height: 100,
+          scales: [1, 2, 3],
+          files: [
+            '/Users/kudo/sdk52domota/assets/images/react-logo.png',
+            '/Users/kudo/sdk52domota/assets/images/react-logo@2x.png',
+            '/Users/kudo/sdk52domota/assets/images/react-logo@3x.png',
+          ],
+          hash: '633435dcb418833920a16771610ca404',
+          name: 'react-logo.d883906de993aa65bf0ef0d1bc2ff6ad',
+          type: 'png',
+          fileHashes: [
+            '695d5a1c6f29a689130f3aaa573aec6e',
+            'b507e7f2c91ebc8fe24dee79ccb3b600',
+            '8a4d0e5b845044e56e3b2df627d01cfd',
+          ],
+        },
+      ],
+    };
+
+    const metadata = await addDomBundleToMetadataAsync(domComponentBundle);
+    expect(metadata).toEqual([
+      {
+        ext: 'js',
+        path: 'www.bundle/_expo/static/js/web/entry-dom1.js',
+      },
+    ]);
   });
+});
 
+describe(transformDomEntryForMd5Filename, () => {
+  it('should rename by MD5 content and return metadata in new filename', () => {
+    const files: ExportAssetMap = new Map([
+      [
+        'www.bundle/dom1.html',
+        {
+          contents: 'dummy',
+        },
+      ],
+    ]);
+    const metadata = transformDomEntryForMd5Filename({
+      htmlOutputName: 'www.bundle/dom1.html',
+      files,
+    });
+    expect(metadata).toEqual([{ path: 'www.bundle/MOCK_CONTENTS_MD5_HASH.html', ext: 'html' }]);
+  });
+});
+
+describe(transformNativeBundleForMd5Filename, () => {
   it('should update asset paths and remove leading slashes from filenames', () => {
     const domComponentReference = 'file:///app/components/DomView.tsx';
     const nativeBundle1Chunk = `
@@ -34,7 +106,7 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
   exports.default = undefined;
   var _react = _interopRequireDefault(require(_dependencyMap[1]));
   var _internal = require(_dependencyMap[2]);
-  var filePath = "${mockSha1()}.html";
+  var filePath = "${mockFilenameMd5()}.html";
   var _default = exports.default = _react.default.forwardRef((props, ref) => {
     return _react.default.createElement(_internal.WebView, {
       ref,
@@ -114,40 +186,6 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
       ],
     };
 
-    const domComponentBundle: BundleOutput = {
-      artifacts: [
-        {
-          filename: '_expo/static/js/web/entry-dom1.js',
-          originFilename: 'node_modules/expo/dom/entry.js',
-          type: 'js',
-          metadata: {},
-          source: domBundle1Chunk,
-        },
-      ],
-      assets: [
-        {
-          __packager_asset: true,
-          fileSystemLocation: '/Users/kudo/sdk52domota/assets/images',
-          httpServerLocation: './assets/assets/images',
-          width: 100,
-          height: 100,
-          scales: [1, 2, 3],
-          files: [
-            '/Users/kudo/sdk52domota/assets/images/react-logo.png',
-            '/Users/kudo/sdk52domota/assets/images/react-logo@2x.png',
-            '/Users/kudo/sdk52domota/assets/images/react-logo@3x.png',
-          ],
-          hash: '633435dcb418833920a16771610ca404',
-          name: 'react-logo.d883906de993aa65bf0ef0d1bc2ff6ad',
-          type: 'png',
-          fileHashes: [
-            '695d5a1c6f29a689130f3aaa573aec6e',
-            'b507e7f2c91ebc8fe24dee79ccb3b600',
-            '8a4d0e5b845044e56e3b2df627d01cfd',
-          ],
-        },
-      ],
-    };
     const files: ExportAssetMap = new Map([
       [
         '_expo/static/js/ios/entry-native1.js',
@@ -170,36 +208,15 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
     ]);
     const htmlOutputName = 'www.bundle/dom1.html';
 
-    const assetsMetadata = updateDomComponentAssetsForMD5Naming({
+    transformNativeBundleForMd5Filename({
       domComponentReference,
       nativeBundle,
-      domComponentBundle,
       files,
       htmlOutputName,
     });
 
-    // Expects to add js and html to assets metadata
-    expect(assetsMetadata).toEqual([
-      {
-        ext: 'js',
-        path: 'www.bundle/_expo/static/js/web/entry-dom1.js',
-      },
-      {
-        ext: 'html',
-        path: 'www.bundle/dom1.html',
-      },
-    ]);
-
-    const domJsContents = files.get('/www.bundle/_expo/static/js/web/entry-dom1.js').contents;
-    expect(domJsContents).not.toEqual(domBundle1Chunk);
-    expect(domJsContents).toContain(domComponentBundle.assets[0].fileHashes[0]);
-
-    const domHtmlContents = files.get('www.bundle/dom1.html').contents;
-    expect(domHtmlContents).not.toEqual(domHtml1);
-    expect(domHtmlContents).toContain('MOCK_MD5_HASH');
-
-    const nativeJsContents = files.get('_expo/static/js/ios/entry-native1.js').contents;
+    const nativeJsContents = files.get('_expo/static/js/ios/entry-native1.js')?.contents;
     expect(nativeJsContents).not.toEqual(nativeBundle1Chunk);
-    expect(nativeJsContents).toContain('MOCK_MD5_HASH');
+    expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
   });
 });

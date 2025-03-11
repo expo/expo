@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
 import fs from 'fs/promises';
+import { glob } from 'glob';
 import path from 'path';
 
 import type {
@@ -138,7 +138,7 @@ export async function parseNativePackageClassNameAsync(
 
 let lazyReactPackageRegex: RegExp | null = null;
 let lazyTurboReactPackageRegex: RegExp | null = null;
-export function matchNativePackageClassName(filePath: string, contents: Buffer): string | null {
+export function matchNativePackageClassName(_filePath: string, contents: Buffer): string | null {
   const fileContents = contents.toString();
 
   // [0] Match ReactPackage

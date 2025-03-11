@@ -13,7 +13,7 @@ function getHotReplaceTemplate(id) {
     return `style.setAttribute('data-expo-css-hmr', ${attr});
   const previousStyle = document.querySelector('[data-expo-css-hmr=${attr}]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }`;
 }
 exports.getHotReplaceTemplate = getHotReplaceTemplate;
@@ -23,7 +23,7 @@ function wrapDevelopmentCSS(props) {
 const style = document.createElement('style');
 ${getHotReplaceTemplate(props.filename)}
 style.setAttribute('data-expo-loader', 'css');
-head.appendChild(style);
+if (!style.parentNode) head.appendChild(style);
 const css = \`${withBackTicksEscaped}\`;
 if (style.styleSheet){
   style.styleSheet.cssText = css;

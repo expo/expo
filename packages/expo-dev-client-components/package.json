@@ -32,14 +32,14 @@
     "expo-module-scripts": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^12.5.1"
+    "@testing-library/react-native": "^13.1.0"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
   },
   "jest": {
-    "preset": "@testing-library/react-native",
+    "preset": "react-native",
     "setupFilesAfterEnv": [
       "./setupTests.js"
     ]

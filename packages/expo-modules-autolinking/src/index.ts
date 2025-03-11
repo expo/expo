@@ -14,7 +14,7 @@ import {
 import { type RNConfigCommandOptions, createReactNativeConfigAsync } from './reactNativeConfig';
 import type {
   ModuleDescriptor,
-  CommonModuleDescriptor,
+  CommonNativeModuleDescriptor,
   GenerateModulesProviderOptions,
   GenerateOptions,
   ResolveOptions,
@@ -27,7 +27,7 @@ import type {
 function hasCoreFeatures(
   module: ModuleDescriptor
 ): module is ModuleDescriptorAndroid | ModuleDescriptorIos {
-  return (module as CommonModuleDescriptor).coreFeatures !== undefined;
+  return (module as CommonNativeModuleDescriptor).coreFeatures !== undefined;
 }
 
 /**

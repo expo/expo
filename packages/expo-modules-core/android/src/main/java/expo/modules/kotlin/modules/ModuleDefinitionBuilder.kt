@@ -100,7 +100,7 @@ class ModuleDefinitionBuilder(
    * Also collects all compose view props and generates setters.
    */
   @JvmName("ComposeView")
-  inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
+  inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit = {}) {
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
     P::class.memberProperties.forEach { prop ->
       val kType = prop.returnType.arguments.first().type

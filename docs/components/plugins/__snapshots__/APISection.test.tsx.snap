@@ -8,7 +8,7 @@ exports[`APISection expo-apple-authentication 1`] = `
   >
     Component
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#component"
       id="component"
     >
@@ -59,7 +59,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           AppleAuthenticationButton
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationbutton"
           id="appleauthenticationbutton"
         >
@@ -296,7 +296,7 @@ for more details.
         >
           AppleAuthenticationButtonProps
           <a
-            class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+            class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -352,7 +352,7 @@ for more details.
               buttonStyle
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
               href="#buttonstyle"
               id="buttonstyle"
             >
@@ -432,7 +432,7 @@ for more details.
               buttonType
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
               href="#buttontype"
               id="buttontype"
             >
@@ -512,7 +512,7 @@ for more details.
               cornerRadius
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
               href="#cornerradius"
               id="cornerradius"
             >
@@ -596,7 +596,7 @@ for more details.
               onPress
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
               href="#onpress"
               id="onpress"
             >
@@ -695,7 +695,7 @@ in here.
               style
             </code>
             <a
-              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
               href="#style"
               id="style"
             >
@@ -836,7 +836,7 @@ properties.
         >
           Inherited Props
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5"
             href="#inherited-props"
             id="inherited-props"
           >
@@ -901,7 +901,7 @@ properties.
   >
     Methods
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#methods"
       id="methods"
     >
@@ -952,7 +952,7 @@ properties.
           formatFullName(fullName, formatStyle)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#formatfullnamefullname-formatstyle"
           id="formatfullnamefullname-formatstyle"
         >
@@ -1192,7 +1192,7 @@ properties.
           getCredentialStateAsync(user)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#getcredentialstateasyncuser"
           id="getcredentialstateasyncuser"
         >
@@ -1478,7 +1478,7 @@ value depending on the state of the credential.
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#isavailableasync"
           id="isavailableasync"
         >
@@ -1627,7 +1627,7 @@ value depending on the state of the credential.
           refreshAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#refreshasyncoptions"
           id="refreshasyncoptions"
         >
@@ -1878,7 +1878,7 @@ refresh operation.
           signInAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#signinasyncoptions"
           id="signinasyncoptions"
         >
@@ -2175,7 +2175,7 @@ sign-in operation.
           signOutAsync(options)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#signoutasyncoptions"
           id="signoutasyncoptions"
         >
@@ -2449,7 +2449,7 @@ sign-out operation.
   >
     Event Subscriptions
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#event-subscriptions"
       id="event-subscriptions"
     >
@@ -2500,7 +2500,7 @@ sign-out operation.
           addRevokeListener(listener)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#addrevokelistenerlistener"
           id="addrevokelistenerlistener"
         >
@@ -2643,7 +2643,7 @@ sign-out operation.
   >
     Types
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#types"
       id="types"
     >
@@ -2694,7 +2694,7 @@ sign-out operation.
           AppleAuthenticationCredential
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationcredential"
           id="appleauthenticationcredential"
         >
@@ -3278,7 +3278,7 @@ developers.
           AppleAuthenticationFullName
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationfullname"
           id="appleauthenticationfullname"
         >
@@ -3643,7 +3643,7 @@ may be
           AppleAuthenticationFullNameFormatStyle
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationfullnameformatstyle"
           id="appleauthenticationfullnameformatstyle"
         >
@@ -3832,7 +3832,7 @@ for more details.
           AppleAuthenticationRefreshOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationrefreshoptions"
           id="appleauthenticationrefreshoptions"
         >
@@ -4159,7 +4159,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignInOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationsigninoptions"
           id="appleauthenticationsigninoptions"
         >
@@ -4506,7 +4506,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignOutOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationsignoutoptions"
           id="appleauthenticationsignoutoptions"
         >
@@ -4759,7 +4759,7 @@ OAuth 2.0 protocol
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#subscription"
           id="subscription"
         >
@@ -4897,7 +4897,7 @@ After calling this function, the listener will no longer receive any events from
   >
     Enums
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#enums"
       id="enums"
     >
@@ -4948,7 +4948,7 @@ After calling this function, the listener will no longer receive any events from
           AppleAuthenticationButtonStyle
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationbuttonstyle"
           id="appleauthenticationbuttonstyle"
         >
@@ -5022,7 +5022,7 @@ After calling this function, the listener will no longer receive any events from
             WHITE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#white"
             id="white"
           >
@@ -5091,7 +5091,7 @@ After calling this function, the listener will no longer receive any events from
             WHITE_OUTLINE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#white_outline"
             id="white_outline"
           >
@@ -5160,7 +5160,7 @@ After calling this function, the listener will no longer receive any events from
             BLACK
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#black"
             id="black"
           >
@@ -5230,7 +5230,7 @@ After calling this function, the listener will no longer receive any events from
           AppleAuthenticationButtonType
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationbuttontype"
           id="appleauthenticationbuttontype"
         >
@@ -5304,7 +5304,7 @@ After calling this function, the listener will no longer receive any events from
             SIGN_IN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#sign_in"
             id="sign_in"
           >
@@ -5373,7 +5373,7 @@ After calling this function, the listener will no longer receive any events from
             CONTINUE
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#continue"
             id="continue"
           >
@@ -5442,7 +5442,7 @@ After calling this function, the listener will no longer receive any events from
             SIGN_UP
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#sign_up"
             id="sign_up"
           >
@@ -5546,7 +5546,7 @@ After calling this function, the listener will no longer receive any events from
           AppleAuthenticationCredentialState
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationcredentialstate"
           id="appleauthenticationcredentialstate"
         >
@@ -5673,7 +5673,7 @@ for more details.
             REVOKED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#revoked"
             id="revoked"
           >
@@ -5735,7 +5735,7 @@ for more details.
             AUTHORIZED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#authorized"
             id="authorized"
           >
@@ -5797,7 +5797,7 @@ for more details.
             NOT_FOUND
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#not_found"
             id="not_found"
           >
@@ -5859,7 +5859,7 @@ for more details.
             TRANSFERRED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#transferred"
             id="transferred"
           >
@@ -5922,7 +5922,7 @@ for more details.
           AppleAuthenticationOperation
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationoperation"
           id="appleauthenticationoperation"
         >
@@ -5977,7 +5977,7 @@ for more details.
             IMPLICIT
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#implicit"
             id="implicit"
           >
@@ -6046,7 +6046,7 @@ for more details.
             LOGIN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#login"
             id="login"
           >
@@ -6108,7 +6108,7 @@ for more details.
             REFRESH
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#refresh"
             id="refresh"
           >
@@ -6170,7 +6170,7 @@ for more details.
             LOGOUT
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#logout"
             id="logout"
           >
@@ -6233,7 +6233,7 @@ for more details.
           AppleAuthenticationScope
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationscope"
           id="appleauthenticationscope"
         >
@@ -6403,7 +6403,7 @@ for more details.
             FULL_NAME
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#full_name"
             id="full_name"
           >
@@ -6465,7 +6465,7 @@ for more details.
             EMAIL
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#email"
             id="email"
           >
@@ -6528,7 +6528,7 @@ for more details.
           AppleAuthenticationUserDetectionStatus
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#appleauthenticationuserdetectionstatus"
           id="appleauthenticationuserdetectionstatus"
         >
@@ -6643,7 +6643,7 @@ for more details.
             UNSUPPORTED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#unsupported"
             id="unsupported"
           >
@@ -6712,7 +6712,7 @@ for more details.
             UNKNOWN
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#unknown"
             id="unknown"
           >
@@ -6781,7 +6781,7 @@ for more details.
             LIKELY_REAL
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#likely_real"
             id="likely_real"
           >
@@ -6845,7 +6845,7 @@ exports[`APISection expo-pedometer 1`] = `
   >
     Methods
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#methods"
       id="methods"
     >
@@ -6896,7 +6896,7 @@ exports[`APISection expo-pedometer 1`] = `
           getPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#getpermissionsasync"
           id="getpermissionsasync"
         >
@@ -7022,7 +7022,7 @@ exports[`APISection expo-pedometer 1`] = `
           getStepCountAsync(start, end)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#getstepcountasyncstart-end"
           id="getstepcountasyncstart-end"
         >
@@ -7392,7 +7392,7 @@ a start date that is more than seven days in the past returns only the available
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#isavailableasync"
           id="isavailableasync"
         >
@@ -7535,7 +7535,7 @@ available on this device.
           requestPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#requestpermissionsasync"
           id="requestpermissionsasync"
         >
@@ -7661,7 +7661,7 @@ available on this device.
           watchStepCount(callback)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#watchstepcountcallback"
           id="watchstepcountcallback"
         >
@@ -7940,7 +7940,7 @@ On iOS, the
   >
     Types
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#types"
       id="types"
     >
@@ -7991,7 +7991,7 @@ On iOS, the
           PedometerResult
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#pedometerresult"
           id="pedometerresult"
         >
@@ -8121,7 +8121,7 @@ On iOS, the
           PedometerUpdateCallback(result)
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#pedometerupdatecallbackresult"
           id="pedometerupdatecallbackresult"
         >
@@ -8289,7 +8289,7 @@ On iOS, the
           PermissionExpiration
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#permissionexpiration"
           id="permissionexpiration"
         >
@@ -8387,7 +8387,7 @@ On iOS, the
           PermissionResponse
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#permissionresponse"
           id="permissionresponse"
         >
@@ -8650,7 +8650,7 @@ in order to enable/disable the permission.
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#subscription"
           id="subscription"
         >
@@ -8788,7 +8788,7 @@ After calling this function, the listener will no longer receive any events from
   >
     Enums
     <a
-      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
       href="#enums"
       id="enums"
     >
@@ -8839,7 +8839,7 @@ After calling this function, the listener will no longer receive any events from
           PermissionStatus
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
           href="#permissionstatus"
           id="permissionstatus"
         >
@@ -8894,7 +8894,7 @@ After calling this function, the listener will no longer receive any events from
             DENIED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#denied"
             id="denied"
           >
@@ -8963,7 +8963,7 @@ After calling this function, the listener will no longer receive any events from
             GRANTED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#granted"
             id="granted"
           >
@@ -9032,7 +9032,7 @@ After calling this function, the listener will no longer receive any events from
             UNDETERMINED
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 !font-medium"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 !font-medium"
             href="#undetermined"
             id="undetermined"
           >

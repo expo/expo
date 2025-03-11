@@ -186,3 +186,30 @@ async function readConfigAsync(path: string): Promise<any> {
 async function writeConfigAsync(path: string, result: any) {
   await writeAndroidManifestAsync(path, result);
 }
+
+/**
+ * ADB expects special characters in both the URI path and search parameters to be escaped.
+ *
+ * @example
+ *   - `myapp://(tabs)/explore` -> `myapp://\(tabs\)/explore`
+ *   - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://\(tabs\)/explore?test=a%257Cb%257Cc`
+ */
+export function escapeUri(uri: string) {
+  const [protocol, uriWithoutProtocol] = uri.split('://', 2);
+  const [uriPath, uriParams] = uriWithoutProtocol.split('?', 2);
+
+  // Escape special characters in the URI path using a single backslash
+  // See: https://datatracker.ietf.org/doc/html/rfc1738#section-2.2
+  const escapedUriPath = uriPath.replace(/(^|[^\\])([$\-_.+!*'(),])/g, '$1\\$2');
+
+  if (uriParams?.length) {
+    const escapedUriParams = new URLSearchParams(uriParams);
+    for (const [key, value] of escapedUriParams.entries()) {
+      escapedUriParams.set(key, encodeURIComponent(decodeURIComponent(value)));
+    }
+
+    return `${protocol}://${escapedUriPath}?${escapedUriParams.toString()}`;
+  }
+
+  return `${protocol}://${escapedUriPath}`;
+}

@@ -235,192 +235,192 @@ public class file: ModulesProvider {
 exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
 [
   {
-    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates",
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
@@ -743,192 +743,192 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
 exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
 [
   {
-    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates",
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
@@ -1251,204 +1251,204 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
 exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
 [
   {
-    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-device",
     "packageVersion": "3.3.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-device",
         "sourceDir": "monorepo/node_modules/expo-device/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.2",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates",
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.2",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates-interface/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
   {
-    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
     "projects": [
       {
+        "modules": [],
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },

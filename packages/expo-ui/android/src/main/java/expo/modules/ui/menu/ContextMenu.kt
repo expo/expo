@@ -63,6 +63,7 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
           disabledLeadingIconColor = null.compose,
           disabledTrailingIconColor = null.compose
         ),
+        enabled = !it.disabled,
         modifier = Modifier.background(it.elementColors.containerColor.compose),
         text = { Text(it.text) },
         onClick = {

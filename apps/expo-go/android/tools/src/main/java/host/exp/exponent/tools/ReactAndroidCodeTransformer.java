@@ -227,7 +227,7 @@ public class ReactAndroidCodeTransformer {
       }
     });
     JAVA_FILES_TO_MODIFY.put("modules/network/NetworkingModule.java", null);
-    JAVA_FILES_TO_MODIFY.put("modules/systeminfo/AndroidInfoHelpers.java", null);
+    KOTLIN_FILES_TO_MODIFY.put("modules/systeminfo/AndroidInfoHelpers.kt", null);
     JAVA_FILES_TO_MODIFY.put("uimanager/NativeViewHierarchyManager.java", new MethodVisitor() {
 
       @Override
@@ -296,7 +296,7 @@ public class ReactAndroidCodeTransformer {
       }
     });
 
-    JAVA_FILES_TO_MODIFY.put("BaseReactPackage.java", new MethodVisitor() {
+    KOTLIN_FILES_TO_MODIFY.put("BaseReactPackage.kt", new KtMethodVisitor() {
 
         @Override
       public Node visit(String methodName, MethodDeclaration n) {

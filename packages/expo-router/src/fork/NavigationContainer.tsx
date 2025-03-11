@@ -78,7 +78,7 @@ function NavigationContainerInner(
     validatePathConfig(linking.config);
   }
 
-  const refContainer = React.useRef<NavigationContainerRef<ParamListBase>>(null);
+  const refContainer = React.useRef<NavigationContainerRef<ParamListBase> | null>(null);
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
@@ -148,7 +148,7 @@ function NavigationContainerInner(
 
   const [isResolved, initialState] = useThenable(getInitialState);
 
-  React.useImperativeHandle(ref, () => refContainer.current);
+  React.useImperativeHandle(ref, () => refContainer.current!);
 
   const isLinkingReady = rest.initialState != null || !isLinkingEnabled || isResolved;
 

@@ -60,13 +60,13 @@ Pod::Spec.new do |s|
 
   s.source_files = "**/*.{c,h,m,swift}"
 
-  vendored_frameworks = ['crsqlite.xcframework']
+  vendored_frameworks = []
   if podfile_properties['expo.sqlite.useLibSQL'] === 'true'
     vendored_frameworks << 'libsql.xcframework'
     s.private_header_files = [
       'libsql.xcframework/**/*.h',
     ]
-    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h', 'CRSQLiteLoader.m', 'CRSQLiteLoader.h']
+    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h']
     Pod::UI.message('SQLite: use libSQL integration')
   else
     s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']

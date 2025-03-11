@@ -35,6 +35,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            module-scripts:
+              - 'packages/expo-module-scripts/**'
+              - 'packages/jest-expo/**'
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
@@ -53,13 +60,14 @@ jobs:
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] || 
+            ${{ steps.filter.outputs.module-scripts }} == "true"; then
             # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all
           else
             # On push event check packages changed since previous remote head.
             # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
-            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }}
+            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }} --core
           fi
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

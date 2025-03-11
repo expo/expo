@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import fs from 'fs-extra';
+import fs from 'fs';
 import os from 'os';
 import { join } from 'path';
 
@@ -24,11 +24,11 @@ describe('monorepo', () => {
   let monorepoProject: string | undefined;
 
   function removeProjectPath(str: string | undefined): string | undefined {
-    return str?.replace(monorepoProject, 'monorepo');
+    return str?.replace(monorepoProject!, 'monorepo');
   }
 
   function projectPath(app: string): string {
-    return join(monorepoProject, 'apps', app);
+    return join(monorepoProject!, 'apps', app);
   }
 
   beforeAll(
@@ -46,7 +46,7 @@ describe('monorepo', () => {
   afterAll(async () => {
     if (monorepoProject) {
       console.log(`Removing: ${monorepoProject}`);
-      await fs.remove(monorepoProject);
+      await fs.promises.rm(monorepoProject, { recursive: true, force: true });
     }
   });
 
@@ -123,7 +123,7 @@ describe('monorepo', () => {
       );
 
       expect(generatePackageListResult.status).toBe(0);
-      const generatedFile = await fs.readFile(target, 'utf-8');
+      const generatedFile = await fs.promises.readFile(target, 'utf-8');
       expect(generatedFile).toMatchSnapshot();
     });
   });

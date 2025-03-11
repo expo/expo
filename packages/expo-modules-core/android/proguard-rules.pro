@@ -33,3 +33,7 @@
 -keep class * implements expo.modules.kotlin.views.ComposeProps {
   *;
 }
+
+-keepnames class * implements expo.modules.kotlin.views.ExpoView {
+  *;
+}

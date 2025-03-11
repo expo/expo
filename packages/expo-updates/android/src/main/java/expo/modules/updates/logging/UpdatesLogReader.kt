@@ -1,8 +1,8 @@
 package expo.modules.updates.logging
 
-import android.content.Context
 import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
+import java.io.File
 import java.lang.Long.max
 import java.util.*
 
@@ -10,7 +10,7 @@ import java.util.*
  * Class for reading expo-updates logs
  */
 class UpdatesLogReader(
-  context: Context
+  filesDirectory: File
 ) {
 
   /**
@@ -37,7 +37,7 @@ class UpdatesLogReader(
       .filter { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) }
   }
 
-  private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, context)
+  private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory)
 
   private fun isEntryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
     val entry = UpdatesLogEntry.create(entryString) ?: return false

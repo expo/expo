@@ -10,6 +10,25 @@ namespace react = facebook::react;
 namespace expo {
 
 jni::local_ref<jni::JObject>
+JNINoArgsFunctionBody::invoke(
+  jobject self
+) {
+  // Do NOT use getClass here!
+  // Method obtained from `getClass` will point to the overridden version of the method.
+  // Because of that, it can't be cached - we will try to invoke the nonexistent method
+  // if we receive an object of a different class than the one used to obtain the method id.
+  // The only cacheable method id can be obtain from the base class.
+  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNINoArgsFunctionBody")
+    ->getMethod<jni::local_ref<jni::JObject>()>(
+      "invoke"
+    );
+
+  auto result = jni::Environment::current()->CallObjectMethod(self, method.getId());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
+}
+
+jni::local_ref<jni::JObject>
 JNIFunctionBody::invoke(
   jobject self,
   jobjectArray args

@@ -4,15 +4,18 @@ exports[`warns about unwrapped strings 1`] = `
 <div
   className="css-view-175oi2r"
   dir={null}
+  ref={[Function]}
 >
   <div
     className="css-text-146c3p1 r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-backgroundColor-1kfbv51 r-color-jwli3a"
     dir="auto"
+    ref={[Function]}
   >
     Unwrapped text: "
     <span
       className="css-textHasAncestor-1jxf684"
       dir={null}
+      ref={[Function]}
       style={
         {
           "fontWeight": "bold",

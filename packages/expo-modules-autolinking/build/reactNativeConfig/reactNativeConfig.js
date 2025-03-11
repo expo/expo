@@ -99,7 +99,7 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
         // The rnc-cli will skip this package.
         return null;
     }
-    if (name === 'react-native') {
+    if (name === 'react-native' || name === 'react-native-macos') {
         // Starting from version 0.76, the `react-native` package only defines platforms
         // when @react-native-community/cli-platform-android/ios is installed.
         // Therefore, we need to manually filter it out.

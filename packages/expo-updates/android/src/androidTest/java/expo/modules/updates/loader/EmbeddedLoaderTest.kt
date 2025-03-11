@@ -46,7 +46,7 @@ class EmbeddedLoaderTest {
     )
     configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    logger = UpdatesLogger(context)
+    logger = UpdatesLogger(context.filesDir)
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
     mockLoaderFiles = mockk(relaxed = true)
     loader = EmbeddedLoader(

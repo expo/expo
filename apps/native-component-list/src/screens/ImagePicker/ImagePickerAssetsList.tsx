@@ -3,7 +3,9 @@ import { ImagePickerAsset, ImagePickerResult } from 'expo-image-picker';
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 
-export default function ImagePickerAssetsList(result: ImagePickerResult): JSX.Element | void {
+export default function ImagePickerAssetsList(
+  result: ImagePickerResult
+): React.ReactElement | void {
   return (
     <View>{result.assets?.map((asset, index) => <AssetView key={index} asset={asset} />)}</View>
   );

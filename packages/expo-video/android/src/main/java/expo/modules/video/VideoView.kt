@@ -69,7 +69,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       videoPlayer?.removeListener(this)
       newPlayer?.addListener(this)
-      playerView.player = newPlayer?.player
+      newPlayer?.changePlayerView(playerView)
       field = newPlayer
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)

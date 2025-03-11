@@ -28,6 +28,7 @@ export async function exportDomComponentAsync({
   includeSourceMaps,
   exp,
   files,
+  useMd5Filename = false,
 }: {
   filePath: string;
   projectRoot: string;
@@ -37,6 +38,7 @@ export async function exportDomComponentAsync({
   includeSourceMaps: boolean;
   exp: ExpoConfig;
   files: ExportAssetMap;
+  useMd5Filename?: boolean;
 }): Promise<{
   bundle: BundleOutput;
   htmlOutputName: string;
@@ -44,7 +46,7 @@ export async function exportDomComponentAsync({
   const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
   debug('Bundle DOM Component:', filePath);
   // MUST MATCH THE BABEL PLUGIN!
-  const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+  const hash = crypto.createHash('md5').update(filePath).digest('hex');
   const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
   const generatedEntryPath = toPosixPath(
     filePath.startsWith('file://') ? url.fileURLToPath(filePath) : filePath
@@ -64,9 +66,17 @@ export async function exportDomComponentAsync({
     bytecode: false,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: './',
+    useMd5Filename,
     // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
     minify: true,
   });
+
+  if (useMd5Filename) {
+    for (const artifact of bundle.artifacts) {
+      const md5 = crypto.createHash('md5').update(artifact.source).digest('hex');
+      artifact.filename = `${md5}.${artifact.type}`;
+    }
+  }
 
   const html = await serializeHtmlWithAssets({
     isExporting: true,
@@ -98,79 +108,89 @@ export async function exportDomComponentAsync({
   };
 }
 
+//#region `npx export` for updates
+
 /**
- * For EAS Updates exports,
- * post-processes the DOM component bundle and updates the asset paths to use flattened MD5 naming.
+ * Add the DOM component bundle to the metadata for updates.
  */
-export function updateDomComponentAssetsForMD5Naming({
+export function addDomBundleToMetadataAsync(bundle: BundleOutput): PlatformMetadata['assets'] {
+  const assetsMetadata: PlatformMetadata['assets'] = [];
+  for (const artifact of bundle.artifacts) {
+    if (artifact.type === 'map') {
+      continue;
+    }
+    assetsMetadata.push({
+      path: `${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`,
+      ext: artifact.type,
+    });
+  }
+  return assetsMetadata;
+}
+
+/**
+ * Transform the DOM component entry (*.html) to use MD5 filename by its content.
+ */
+export function transformDomEntryForMd5Filename({
+  files,
+  htmlOutputName,
+}: {
+  files: ExportAssetMap;
+  htmlOutputName: string;
+}): PlatformMetadata['assets'] {
+  const htmlContent = files.get(htmlOutputName);
+  assert(htmlContent);
+  const htmlMd5 = crypto.createHash('md5').update(htmlContent.contents.toString()).digest('hex');
+  const htmlMd5Filename = `${DOM_COMPONENTS_BUNDLE_DIR}/${htmlMd5}.html`;
+  files.set(htmlMd5Filename, htmlContent);
+  files.delete(htmlOutputName);
+  return [
+    {
+      path: htmlMd5Filename,
+      ext: 'html',
+    },
+  ];
+}
+
+/**
+ * Post-transform the native bundle to use MD5 filename based on DOM component entry content.
+ */
+export function transformNativeBundleForMd5Filename({
   domComponentReference,
   nativeBundle,
-  domComponentBundle,
   files,
   htmlOutputName,
 }: {
   domComponentReference: string;
   nativeBundle: BundleOutput;
-  domComponentBundle: BundleOutput;
   files: ExportAssetMap;
   htmlOutputName: string;
-}): PlatformMetadata['assets'] {
-  const assetsMetadata: PlatformMetadata['assets'] = [];
-
-  for (const artifact of domComponentBundle.artifacts) {
-    if (artifact.type !== 'js') {
-      continue;
-    }
-    const artifactAssetName = `/${DOM_COMPONENTS_BUNDLE_DIR}/${artifact.filename}`;
-    let source = artifact.source;
-
-    // [0] Updates asset paths in the DOM component JS bundle (which is a web bundle)
-    for (const asset of domComponentBundle.assets) {
-      const prefix = asset.httpServerLocation.startsWith('./')
-        ? asset.httpServerLocation.slice(2)
-        : asset.httpServerLocation;
-      const uri = `${prefix}/${asset.name}.${asset.type}`;
-      const regexp = new RegExp(`(uri:")(${uri})(")`, 'g');
-      const index = asset.scales.findIndex((s) => s === 1) ?? 0; // DOM components (web) uses 1x assets
-      const md5 = asset.fileHashes[index];
-      source = source.replace(regexp, `$1${md5}.${asset.type}$3`);
-
-      const domJsAssetEntity = files.get(artifactAssetName);
-      assert(domJsAssetEntity);
-      domJsAssetEntity.contents = source;
-    }
-
-    // [1] Updates JS artifacts in HTML
-    const md5 = crypto.createHash('md5').update(source).digest('hex');
-    const htmlAssetEntity = files.get(htmlOutputName);
-    assert(htmlAssetEntity);
-    const regexp = new RegExp(`(<script src=")(.*${artifact.filename})(" defer></script>)`, 'g');
-    htmlAssetEntity.contents = htmlAssetEntity.contents.toString().replace(regexp, `$1${md5}.js$3`);
-
-    assetsMetadata.push({
-      path: artifactAssetName.slice(1),
-      ext: 'js',
-    });
-  }
-
-  // [2] Updates HTML names from native bundle
+}) {
   const htmlContent = files.get(htmlOutputName);
   assert(htmlContent);
   const htmlMd5 = crypto.createHash('md5').update(htmlContent.contents.toString()).digest('hex');
-  const hash = crypto.createHash('sha1').update(domComponentReference).digest('hex');
+  const hash = crypto.createHash('md5').update(domComponentReference).digest('hex');
   for (const artifact of nativeBundle.artifacts) {
     if (artifact.type !== 'js') {
       continue;
     }
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
-    const regexp = new RegExp(`(['"])${hash}\\.html(['"])`, 'g');
-    assetEntity.contents = assetEntity.contents.toString().replace(regexp, `$1${htmlMd5}.html$2`);
+    if (Buffer.isBuffer(assetEntity.contents)) {
+      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
+      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
+      assert(searchBuffer.length === replaceBuffer.length);
+      let index = assetEntity.contents.indexOf(searchBuffer, 0);
+      while (index !== -1) {
+        replaceBuffer.copy(assetEntity.contents, index);
+        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
+      }
+    } else {
+      const search = `${hash}.html`;
+      const replace = `${htmlMd5}.html`;
+      assert(search.length === replace.length);
+      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
+    }
   }
-  assetsMetadata.push({
-    path: htmlOutputName,
-    ext: 'html',
-  });
-
-  return assetsMetadata;
 }
+
+//#endregion `npx export` for updates

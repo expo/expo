@@ -27,4 +27,6 @@ open class ExpoModuleExtension(val project: Project) {
   fun safeExtGet(name: String, default: Any): Any {
     return project.rootProject.extra.safeGet<Any>(name) ?: default
   }
+
+  var canBePublished: Boolean = true
 }

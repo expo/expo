@@ -94,10 +94,15 @@ class ModuleHolder<T : Module>(val module: T) {
 
   private fun attachPrimitives(appContext: AppContext, definition: ObjectDefinitionData, moduleDecorator: JSDecoratorsBridgingObject, name: String) {
     trace("Exporting constants") {
-      val constants = definition.constantsProvider()
+      val constants = definition.legacyConstantsProvider()
       val convertedConstants = Arguments.makeNativeMap(constants)
-
       moduleDecorator.registerConstants(convertedConstants)
+
+      definition
+        .constants
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(moduleDecorator)
+        }
     }
 
     trace("Attaching functions") {

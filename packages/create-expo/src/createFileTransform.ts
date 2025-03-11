@@ -1,6 +1,6 @@
 import path from 'path';
 import picomatch from 'picomatch';
-import { type ReadEntry } from 'tar';
+import type { ReadEntry } from 'tar';
 
 const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 

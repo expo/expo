@@ -18,6 +18,7 @@ export default (program: Command) => {
       'main'
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
+    .option('-c, --core', 'Whether to add core packages to check.', false)
     .option('--no-build', 'Whether to skip `yarn build` check.', false)
     .option('--no-test', 'Whether to skip `yarn test` check.', false)
     .option('--no-lint', 'Whether to skip `yarn lint` check.', false)

@@ -2821,6 +2821,7 @@ test('throws when invalid properties are specified in the config', () => {
     - path (string)
     - initialRouteName (string)
     - screens (object)
+    - alias (array)
     - exact (boolean)
     - stringify (object)
     - parse (object)
