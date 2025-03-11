@@ -10,7 +10,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
 
 ## Submitting your app from your computer
 
-<Prerequisites numberOfRequirements={7}>
+<Prerequisites numberOfRequirements={8}>
   <Requirement number={1} title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
@@ -37,7 +37,23 @@ This guide outlines how to submit your app to the Google Play Store from your co
     ```
 
   </Requirement>
-  <Requirement number={6} title="Build a production app">
+  <Requirement number={6} title="Add draft release">
+    Add a `releaseStatus`(/eas/json/#android-specific-options-1) in the `production` submission profile in **eas.json**:
+
+    ```json eas.json
+    {
+      "submit": {
+        "production": {
+          "android": {
+            "releaseStatus": "draft"
+          }
+        }
+      }
+    }
+    ```
+
+  </Requirement>
+  <Requirement number={7} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
     
     <Terminal cmd={['$ eas build --platform android --profile production']} />
@@ -45,7 +61,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
   </Requirement>
-  <Requirement number={7} title="Upload your app manually at least once">
+  <Requirement number={8} title="Upload your app manually at least once">
     You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
 
     Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.
@@ -97,14 +113,15 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
 
   </Requirement>
   <Requirement number={6} title="Provide a submission profile in eas.json">
-    Then, you'll need to provide a submission profile in **eas.json** that includes your app's `serviceAccountKeyPath`:
+    Then, you'll need to provide a submission profile in **eas.json** that includes your app's `serviceAccountKeyPath` and `releaseStatus`:
 
     ```json eas.json
     {
       "submit": {
         "production": {
           "android": {
-            "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json"
+            "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json",
+            "releaseStatus": "draft"
           }
         }
       }
