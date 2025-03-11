@@ -29,6 +29,7 @@ export interface ListProps {
     /**
      * Makes the list scrollable.
      * @default false
+     * @platform ios 16.0+
      */
     scrollEnabled?: boolean;
     /**
@@ -36,56 +37,51 @@ export interface ListProps {
      * @default false
      */
     editModeEnabled?: boolean;
+    /**
+     * The children elements to be rendered inside the list.
+     */
+    children: React.ReactNode;
+    /**
+     * Callback triggered when an item is deleted from the list.
+     */
+    onDeleteItem?: (index: number) => void;
+    /**
+     * Callback triggered when an item is moved in the list.
+     */
+    onMoveItem?: (from: number, to: number) => void;
+    /**
+     * Callback triggered when the selection changes in a list.
+     */
+    onSelectionChange?: (selection: number[]) => void;
 }
 /**
  * DeleteItemEvent represents an event triggered when an item is deleted from the list.
  */
-type DeleteItemEvent = Partial<ViewEvent<'onDeleteItem', {
+type DeleteItemEvent = ViewEvent<'onDeleteItem', {
     index: number;
-}>>;
+}>;
 /**
  * MoveItemEvent represents an event triggered when an item is moved in the list.
  */
-type MoveItemEvent = Partial<ViewEvent<'onMoveItem', {
+type MoveItemEvent = ViewEvent<'onMoveItem', {
     from: number;
     to: number;
-}>>;
+}>;
 /**
  * SelectItemEvent represents an event triggered when the selection changes in a list.
  */
-type SelectItemEvent = Partial<ViewEvent<'onSelectionChange', {
+type SelectItemEvent = ViewEvent<'onSelectionChange', {
     selection: number[];
-}>>;
-export type NativeListProps = ListProps & DeleteItemEvent & MoveItemEvent & SelectItemEvent & {
+}>;
+export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> & DeleteItemEvent & MoveItemEvent & SelectItemEvent & {
     children: React.ReactNode;
 };
-export type DataListProps<T> = Omit<NativeListProps, 'children'> & {
-    /**
-     * Data for the list.
-     * @property {T[]} data - An array of items to be rendered in the list.
-     */
-    data: T[];
-    /**
-     * Component that renders an item in the list.
-     * @param {T} item - The item to render.
-     * @param {number} index - The index of the item in the list.
-     */
-    renderItem: ({ item, index }: {
-        item: T;
-        index: number;
-    }) => React.ReactNode;
-};
 /**
- * A generic list component that renders items from the given data using a provided render function.
- * @param {DataListProps<T>} props - The properties for the list component.
- * @returns {JSX.Element} The rendered list of items.
+ * A list component that renders its children using a native SwiftUI list.
+ * @param {ListProps} props - The properties for the list component.
+ * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
+ * @platform ios
  */
-export declare function DataList<T>(props: DataListProps<T>): import("react").JSX.Element | null;
-/**
- * A list component that renders its children.
- * @param {NativeListProps} props - The properties for the list component.
- * @returns {JSX.Element} The rendered list with its children.
- */
-export declare function List(props: NativeListProps): import("react").JSX.Element | null;
+export declare function List(props: ListProps): import("react").JSX.Element | null;
 export {};
 //# sourceMappingURL=index.d.ts.map

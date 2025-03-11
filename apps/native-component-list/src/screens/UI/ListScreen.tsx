@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List, DataList, ListStyle } from '@expo/ui/components/List';
+import { List, ListStyle } from '@expo/ui/components/List';
 import { Label } from '@expo/ui/components/Label';
 import { Button } from '@expo/ui/components/Button';
 import { ColorPicker } from '@expo/ui/components/ColorPicker';
@@ -7,8 +7,16 @@ import { Picker } from '@expo/ui/components/Picker';
 import { Switch } from '@expo/ui/components/Switch';
 
 export default function ListScreen() {
-  const [color, setColor] = React.useState<string | null>('blue');
+  const [color, setColor] = React.useState<string>('blue');
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
+  const data  = [
+    { text: 'Good Morning', systemImage: 'sun.max.fill' },
+    { text: 'Weather', systemImage: 'cloud.sun.fill' },
+    { text: 'Settings', systemImage: 'gearshape.fill' },
+    { text: 'Music', systemImage: 'music.note' },
+    { text: 'Home', systemImage: 'house.circle.fill' },
+    { text: 'Location', systemImage: 'location.fill' },
+  ]
   const listStyleOptions: ListStyle[] = [
     'automatic',
     'plain',
@@ -78,33 +86,31 @@ export default function ListScreen() {
         />
       </List>
 
-      <DataList
+      <List
         scrollEnabled={false}
         editModeEnabled={editModeEnabled}
-        onSelectionChange={(event) =>
-          alert(`indexes of selected items: ${event.nativeEvent?.selection.join(', ')}`)
+        onSelectionChange={(items) =>
+          alert(`indexes of selected items: ${items.join(', ')}`)
         }
         moveEnabled={moveEnabled}
-        onMoveItem={(event) =>
-          alert(`moved item at index ${event.nativeEvent.from} to index ${event.nativeEvent.to}`)
+        onMoveItem={(from, to) =>
+          alert(`moved item at index ${from} to index ${to}`)
         }
-        onDeleteItem={(event) => alert(`deleted item at index: ${event.nativeEvent.index}`)}
+        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
         style={{ flex: 1 }}
         listStyle={listStyleOptions[selectedIndex ?? 0]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}
-        data={[
-          { text: 'Good Morning', systemImage: 'sun.max.fill' },
-          { text: 'Weather', systemImage: 'cloud.sun.fill' },
-          { text: 'Settings', systemImage: 'gearshape.fill' },
-          { text: 'Music', systemImage: 'music.note' },
-          { text: 'Home', systemImage: 'house.circle.fill' },
-          { text: 'Location', systemImage: 'location.fill' },
-        ]}
-        renderItem={({ item }) => (
-          <Label color={color!} title={item.text} systemImage={item.systemImage} />
-        )}
-      />
+        
+      >
+           {data.map((item, index) => (
+       <Label
+         key={index}
+         title={item.text}
+         systemImage={item.systemImage}
+         color={color} />
+      ))}
+      </List>
     </>
   );
 }

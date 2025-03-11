@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { Platform, StyleProp, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../src';
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
@@ -46,81 +46,74 @@ export interface ListProps {
    * @default false
    */
   editModeEnabled?: boolean;
+
+  /**
+   * The children elements to be rendered inside the list.
+   */
+  children: React.ReactNode;
+
+  /**
+   * Callback triggered when an item is deleted from the list.
+   */
+  onDeleteItem?: (index: number) => void;
+
+  /**
+   * Callback triggered when an item is moved in the list.
+   */
+  onMoveItem?: (from: number, to: number) => void;
+
+  /**
+   * Callback triggered when the selection changes in a list.
+   */
+  onSelectionChange?: (selection: number[]) => void;
 }
 
 /**
  * DeleteItemEvent represents an event triggered when an item is deleted from the list.
  */
-type DeleteItemEvent = Partial<ViewEvent<'onDeleteItem', { index: number }>>;
+type DeleteItemEvent = ViewEvent<'onDeleteItem', { index: number }>;
 /**
  * MoveItemEvent represents an event triggered when an item is moved in the list.
  */
-type MoveItemEvent = Partial<ViewEvent<'onMoveItem', { from: number; to: number }>>;
+type MoveItemEvent = ViewEvent<'onMoveItem', { from: number; to: number }>;
 /**
  * SelectItemEvent represents an event triggered when the selection changes in a list.
  */
-type SelectItemEvent = Partial<ViewEvent<'onSelectionChange', { selection: number[] }>>;
+type SelectItemEvent = ViewEvent<'onSelectionChange', { selection: number[] }>;
 
-export type NativeListProps = ListProps &
+export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> &
   DeleteItemEvent &
   MoveItemEvent &
   SelectItemEvent & {
     children: React.ReactNode;
   };
-
-export type DataListProps<T> = Omit<NativeListProps, 'children'> & {
-  /**
-   * Data for the list.
-   * @property {T[]} data - An array of items to be rendered in the list.
-   */
-  data: T[];
-
-  /**
-   * Component that renders an item in the list.
-   * @param {T} item - The item to render.
-   * @param {number} index - The index of the item in the list.
-   */
-  renderItem: ({ item, index }: { item: T; index: number }) => React.ReactNode;
-};
-
 const ListNativeView: React.ComponentType<NativeListProps> | null =
   Platform.OS === 'ios' ? requireNativeView<NativeListProps>('ExpoUI', 'ListView') : null;
 
-/**
- * A generic list component that renders items from the given data using a provided render function.
- * @param {DataListProps<T>} props - The properties for the list component.
- * @returns {JSX.Element} The rendered list of items.
- * @platform ios
- */
-export function DataList<T>(props: DataListProps<T>) {
-  const { data, renderItem, ...nativeProps } = props;
-
-  if (!ListNativeView) {
-    return null;
-  }
-  return (
-    <ListNativeView {...nativeProps} style={[props.style, { flex: 1 }]}>
-      {data.map((item, index) => (
-        <View key={index}>{renderItem({ item, index })}</View>
-      ))}
-    </ListNativeView>
-  );
+function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeListProps, 'children'> {
+  return {
+    ...props,
+    onDeleteItem: ({ nativeEvent: { index } }) => props?.onDeleteItem?.(index),
+    onMoveItem: ({ nativeEvent: { from, to } }) => props?.onMoveItem?.(from, to),
+    onSelectionChange: ({ nativeEvent: { selection } }) => props?.onSelectionChange?.(selection),
+  };
 }
 
 /**
- * A list component that renders its children.
- * @param {NativeListProps} props - The properties for the list component.
- * @returns {JSX.Element} The rendered list with its children.
+ * A list component that renders its children using a native SwiftUI list.
+ * @param {ListProps} props - The properties for the list component.
+ * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export function List(props: NativeListProps) {
+export function List(props: ListProps) {
   const { children, ...nativeProps } = props;
 
   if (!ListNativeView) {
     return null;
   }
+
   return (
-    <ListNativeView {...nativeProps} style={[props.style, { flex: 1 }]}>
+    <ListNativeView {...transformListProps(nativeProps)} style={[props.style, { flex: 1 }]}>
       {children}
     </ListNativeView>
   );
