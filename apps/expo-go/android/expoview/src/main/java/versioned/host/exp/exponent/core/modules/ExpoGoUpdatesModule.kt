@@ -137,7 +137,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
     OnDestroy {
       try {
-          moduleScope.cancel()
+        moduleScope.cancel()
       } catch (_: IllegalStateException) {
         Log.e(ExpoGoUpdatesModule::class.java.simpleName, "The scope does not have a job in it")
       }
