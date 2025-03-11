@@ -86,6 +86,7 @@
     "@types/prismjs": "^1.26.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/semver": "^7.5.8",
     "@vvago/vale": "^3.9.6",
     "acorn": "^8.14.1",
     "autoprefixer": "^10.4.21",
