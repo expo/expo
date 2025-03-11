@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- fix non-repeating scheduled notifications ([#35393](https://github.com/expo/expo/pull/35393) by [@vonovak](https://github.com/vonovak))
 - fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
 - [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
 

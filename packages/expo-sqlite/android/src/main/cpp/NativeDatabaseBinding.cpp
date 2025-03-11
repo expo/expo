@@ -20,6 +20,8 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("initHybrid", NativeDatabaseBinding::initHybrid),
       makeNativeMethod("sqlite3_changes",
                        NativeDatabaseBinding::sqlite3_changes),
+      makeNativeMethod("sqlite3_finalize_all_statement", 
+                       NativeDatabaseBinding::sqlite3_finalize_all_statement),
       makeNativeMethod("sqlite3_close", NativeDatabaseBinding::sqlite3_close),
       makeNativeMethod("sqlite3_db_filename",
                        NativeDatabaseBinding::sqlite3_db_filename),
@@ -47,6 +49,20 @@ void NativeDatabaseBinding::registerNatives() {
 }
 
 int NativeDatabaseBinding::sqlite3_changes() { return ::exsqlite3_changes(db); }
+
+int NativeDatabaseBinding::sqlite3_finalize_all_statement() {
+  ::exsqlite3_stmt *stmt = ::exsqlite3_next_stmt(db, nullptr); 
+  int result = SQLITE_OK; 
+  while (stmt) {
+    ::exsqlite3_stmt *nextStmt = ::exsqlite3_next_stmt(db, stmt);
+    int ret = ::exsqlite3_finalize(stmt);
+    if (ret != SQLITE_OK) {
+      result = ret;
+    }
+    stmt = nextStmt;
+  }
+  return result;
+}
 
 int NativeDatabaseBinding::sqlite3_close() {
   // Not setting `db = nullptr` here because we may need the db pointer to get

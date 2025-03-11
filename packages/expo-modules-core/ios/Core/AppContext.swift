@@ -401,7 +401,7 @@ public final class AppContext: NSObject {
       // prevent infinite recursion - exclude NativeProxyModule constants
       .filter { $0.name != NativeModulesProxyModule.moduleName }
       .reduce(into: [String: Any]()) { acc, holder in
-        acc[holder.name] = holder.getConstants()
+        acc[holder.name] = holder.getLegacyConstants()
       }
   }
 

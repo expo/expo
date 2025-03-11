@@ -349,8 +349,7 @@ async function preparePackageJson(
       ...packageJson.dependencies,
     },
     devDependencies: {
-      '@types/react': '~18.0.14',
-      '@types/react-native': '~0.70.6',
+      '@types/react': '~19.0.10',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
       'ts-node': '10.9.1',
@@ -369,7 +368,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.77.0-0',
+        'react-native': 'npm:react-native-tvos@~0.78.0-0',
         '@react-native-tvos/config-tv': '^0.1.1',
       },
       expo: {

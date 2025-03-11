@@ -3430,9 +3430,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vvago/vale@npm:^3.9.2":
-  version: 3.9.3
-  resolution: "@vvago/vale@npm:3.9.3"
+"@vvago/vale@npm:^3.9.6":
+  version: 3.9.6
+  resolution: "@vvago/vale@npm:3.9.6"
   dependencies:
     axios: "npm:^1.4.0"
     rimraf: "npm:^5.0.0"
@@ -3440,7 +3440,7 @@ __metadata:
     unzipper: "npm:^0.10.14"
   bin:
     vale: bin/vale
-  checksum: 10c0/0d05173f93e7a23065ce5bb7381b2fccb4c71eb18a82b76233eff7c06df7e31a95f3393e8e42073c3eaf7798a6a7e67d9e8f760dc61cb6ad61c2f8634fc06a22
+  checksum: 10c0/2483f9b472c20e87c376f8b3b6c17b313cbaf223519bcc5120d96b54b3d5e91c1a44786f1dba637bfdce9a6e36604fdcc7c0e1a8baeeeb5ce4930cc62a2a9160
   languageName: node
   linkType: hard
 
@@ -3811,7 +3811,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.4.0, axios@npm:^1.7.9":
+"axios@npm:^1.4.0":
   version: 1.7.9
   resolution: "axios@npm:1.7.9"
   dependencies:
@@ -3819,6 +3819,17 @@ __metadata:
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10c0/b7a41e24b59fee5f0f26c1fc844b45b17442832eb3a0fb42dd4f1430eb4abc571fe168e67913e8a1d91c993232bd1d1ab03e20e4d1fee8c6147649b576fc1b0b
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.8.2":
+  version: 1.8.2
+  resolution: "axios@npm:1.8.2"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/d8c2969e4642dc6d39555ac58effe06c051ba7aac2bd40cad7a9011c019fb2f16ee011c5a6906cb25b8a4f87258c359314eb981f852e60ad445ecaeb793c7aa2
   languageName: node
   linkType: hard
 
@@ -5982,10 +5993,10 @@ __metadata:
     "@types/prismjs": "npm:^1.26.5"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
-    "@vvago/vale": "npm:^3.9.2"
+    "@vvago/vale": "npm:^3.9.6"
     acorn: "npm:^8.14.0"
     autoprefixer: "npm:^10.4.20"
-    axios: "npm:^1.7.9"
+    axios: "npm:^1.8.2"
     clipboard-copy: "npm:^4.0.1"
     cmdk: "npm:^0.2.0"
     date-fns: "npm:^3.6.0"
@@ -6014,7 +6025,7 @@ __metadata:
     prettier: "npm:^3.4.2"
     prettier-plugin-tailwindcss: "npm:^0.6.9"
     prism-react-renderer: "npm:^2.4.1"
-    prismjs: "npm:^1.29.0"
+    prismjs: "npm:^1.30.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-confetti-explosion: "npm:^2.1.2"
@@ -10550,10 +10561,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prismjs@npm:^1.29.0":
-  version: 1.29.0
-  resolution: "prismjs@npm:1.29.0"
-  checksum: 10c0/d906c4c4d01b446db549b4f57f72d5d7e6ccaca04ecc670fb85cea4d4b1acc1283e945a9cbc3d81819084a699b382f970e02f9d1378e14af9808d366d9ed7ec6
+"prismjs@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "prismjs@npm:1.30.0"
+  checksum: 10c0/f56205bfd58ef71ccfcbcb691fd0eb84adc96c6ff21b0b69fc6fdcf02be42d6ef972ba4aed60466310de3d67733f6a746f89f2fb79c00bf217406d465b3e8f23
   languageName: node
   linkType: hard
 

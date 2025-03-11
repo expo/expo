@@ -21,7 +21,7 @@ describe('exports all platforms with static export', () => {
         E2E_ROUTER_SRC: 'url-polyfill',
         E2E_ROUTER_ASYNC: 'development',
         EXPO_USE_FAST_RESOLVER: 'true',
-        EXPO_UNSTABLE_ATLAS: 'true',
+        EXPO_ATLAS: 'true',
       },
     });
   });

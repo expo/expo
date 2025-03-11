@@ -73,6 +73,12 @@ android {
     buildConfig true
     prefab true
   }
+  packagingOptions {
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libfbjni.so",
+    ]
+  }
 }
 
 dependencies {

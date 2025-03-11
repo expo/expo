@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.rncompatibility.IReactNativeFeatureFlagsProvider
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
@@ -28,7 +27,7 @@ import java.lang.ref.WeakReference
  */
 class ErrorRecovery(
   private val logger: UpdatesLogger,
-  private val reactNativeFeatureFlagsProvider: IReactNativeFeatureFlagsProvider
+  private val enableBridgelessArchitecture: Boolean = true
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
@@ -98,7 +97,7 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandler(devSupportManager: DevSupportManager) {
-    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
+    if (enableBridgelessArchitecture) {
       registerErrorHandlerImplBridgeless()
     } else {
       registerErrorHandlerImplBridge(devSupportManager)
@@ -131,7 +130,7 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandler() {
-    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
+    if (enableBridgelessArchitecture) {
       unregisterErrorHandlerImplBridgeless()
     } else {
       unregisterErrorHandlerImplBridge()

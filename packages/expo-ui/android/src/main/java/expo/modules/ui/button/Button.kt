@@ -58,14 +58,16 @@ data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
-  val systemImage: MutableState<String?> = mutableStateOf(null)
+  val systemImage: MutableState<String?> = mutableStateOf(null),
+  val disabled: MutableState<Boolean> = mutableStateOf(false)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.filledTonalButtonColors(
         containerColor = colors.containerColor.compose,
@@ -77,6 +79,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.BORDERLESS -> TextButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.textButtonColors(
         containerColor = colors.containerColor.compose,
@@ -88,6 +91,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.OUTLINED -> OutlinedButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.outlinedButtonColors(
         containerColor = colors.containerColor.compose,
@@ -99,6 +103,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.ELEVATED -> ElevatedButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.elevatedButtonColors(
         containerColor = colors.containerColor.compose,
@@ -110,6 +115,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     else -> androidx.compose.material3.Button(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.buttonColors(
         containerColor = colors.containerColor.compose,
@@ -134,10 +140,12 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
       val (text) = props.text
       val (colors) = props.elementColors
       val (systemImage) = props.systemImage
+      val (disabled) = props.disabled
       DynamicTheme {
         StyledButton(
           variant ?: ButtonVariant.DEFAULT,
           colors,
+          disabled,
           { onButtonPressed.invoke(ButtonPressedEvent()) }
         ) {
           if (systemImage != null) {

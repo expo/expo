@@ -358,6 +358,7 @@ export const general = [
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
+        makePage('guides/using-push-notifications-services.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -383,8 +384,8 @@ export const eas = [
     '',
     [
       makePage('eas/index.mdx'),
+      makePage('eas/json.mdx'),
       makePage('eas/environment-variables.mdx'),
-      makePage('eas/using-environment-variables.mdx'),
     ],
     {
       expanded: true,
@@ -394,7 +395,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
-    makePage('eas/workflows/upgrade.mdx'),
+    makePage('eas/workflows/automating-eas-cli.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -472,21 +473,22 @@ export const eas = [
   ]),
   makeSection('EAS Submit', [
     makePage('submit/introduction.mdx'),
-    makePage('submit/eas-json.mdx'),
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
-      makePage('eas-update/develop-faster.mdx'),
+      makePage('eas-update/preview.mdx'),
       makePage('eas-update/override.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/github-actions.mdx'),
     ]),
     makeGroup('Deployment', [
       makePage('eas-update/deployment.mdx'),
+      makePage('eas-update/download-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
@@ -510,6 +512,7 @@ export const eas = [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
+      makePage('eas-update/integration-in-existing-native-apps.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
@@ -534,7 +537,6 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
-    makePage('eas/json.mdx'),
     makePage('eas/webhooks.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),

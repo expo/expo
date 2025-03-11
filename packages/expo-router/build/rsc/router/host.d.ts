@@ -25,7 +25,7 @@ type Elements = Promise<Record<string, ReactNode>> & {
  * callServer callback
  * This is not a public API.
  */
-export declare const callServerRSC: (actionId: string, args?: unknown[], fetchCache?: FetchCache) => Promise<ReactNode>;
+export declare const callServerRSC: (actionId: string, args?: unknown[], fetchCache?: FetchCache) => Promise<import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | (string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined)>;
 export declare const fetchRSC: (input: string, params?: unknown, fetchCache?: FetchCache) => Elements;
 export declare const prefetchRSC: (input: string, params?: unknown) => void;
 export declare const Root: ({ initialInput, initialParams, fetchCache, unstable_onFetchData, children, }: {
@@ -34,14 +34,14 @@ export declare const Root: ({ initialInput, initialParams, fetchCache, unstable_
     fetchCache?: FetchCache | undefined;
     unstable_onFetchData?: ((data: unknown) => void) | undefined;
     children: ReactNode;
-}) => import("react").FunctionComponentElement<import("react").ProviderProps<(input: string, searchParams?: URLSearchParams) => void>>;
-export declare const useRefetch: () => any;
+}) => import("react").FunctionComponentElement<import("react").ProviderProps<(input: string, searchParams?: URLSearchParams | string) => void>>;
+export declare const useRefetch: () => (input: string, searchParams?: URLSearchParams | string) => void;
 export declare const Slot: ({ id, children, fallback, }: {
     id: string;
     children?: ReactNode;
     fallback?: ReactNode;
-}) => string | number | true | import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | import("react").FunctionComponentElement<import("react").ProviderProps<ReactNode>>;
-export declare const Children: () => any;
+}) => string | number | bigint | true | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | import("react").FunctionComponentElement<import("react").ProviderProps<ReactNode>>;
+export declare const Children: () => ReactNode;
 /**
  * ServerRoot for SSR
  * This is not a public API.

@@ -61,7 +61,20 @@ export default function Page() {
 
 Expo Router uses a stack-based navigation model, where each new route you navigate to is added to a stack.
 
-For example, navigating from the `/feed` route to the `/profile` route results in the stack being `['/feed', '/profile']`. If you then navigate to `/settings`, the stack becomes `['/feed', '/profile', '/settings']`. While this may resemble traditional web navigation, a key distinction is that screens can have multiple child stacks, each independently controlled. This is known as parallel routing.
+<FileTree
+  files={[
+    ['app/_layout.tsx', '<Stack />'],
+    'app/index.tsx',
+    ['app/feed/_layout.tsx', '<Stack />'],
+    'app/feed/index.tsx',
+    ['app/profile/_layout.tsx', '<Stack />'],
+    'app/profile/index.tsx',
+    ['app/settings/_layout.tsx', '<Stack />'],
+    'app/settings/index.tsx',
+  ]}
+/>
+
+In the above example, the **app/\_layout.tsx** uses a `<Stack />` navigator. Navigating from the `/feed` route to the `/profile` route results in the stack being `['/feed', '/profile']`. If you then navigate to `/settings`, the stack becomes `['/feed', '/profile', '/settings']`. While this may resemble traditional web navigation, a key distinction is that screens can have multiple child stacks, each independently controlled. This is known as parallel routing.
 
 <FileTree
   files={[
@@ -75,7 +88,7 @@ For example, navigating from the `/feed` route to the `/profile` route results i
   ]}
 />
 
-In the example above, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there's a parent stack containing two child stacks.
+In the above example, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there's a parent stack containing two child stacks.
 
 While advancing in a stack is straightforward, moving backward can be more complex due to the non-linear history.
 

@@ -97,7 +97,7 @@
     "@react-navigation/drawer": "^7.1.1",
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^15.0.7",
-    "@testing-library/react-native": "^12.5.1",
+    "@testing-library/react-native": "^13.1.0",
     "immer": "^10.1.1",
     "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
     "tsd": "^0.28.1"

@@ -54,7 +54,10 @@ class DevMenuAppInstanceTest: QuickSpec {
         bridge: mockedBridge
       )
 
-      let extraModules = appInstance.rootViewFactory.extraModules(for: mockedBridge)
+      guard let extraModules = appInstance.reactNativeFactory?.rootViewFactory.extraModules(for: mockedBridge) else {
+        XCTFail("Failed to call extraModules(for:)")
+        return
+      }
 
       expect(extraModules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
       expect(extraModules.first { type(of: $0).moduleName() == "DevSettings" }).toNot(beNil())

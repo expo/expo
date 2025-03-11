@@ -117,15 +117,11 @@ Pod::Spec.new do |s|
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
-    if reactNativeTargetVersion >= 77
-      main.dependency 'ReactAppDependencyProvider'
-    end
+    main.dependency "ReactCodegen"
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
-    if reactNativeTargetVersion >= 74
-      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
-    end
+    ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
     ss.compiler_flags = compiler_flags
     ss.dependency 'React-Core'
   end
@@ -147,6 +143,7 @@ Pod::Spec.new do |s|
     test_spec.requires_app_host = true
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
+    test_spec.dependency 'ReactAppDependencyProvider'
     test_spec.dependency 'React'
     test_spec.platforms = {
       :ios => '15.1'

@@ -20,6 +20,10 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Throw more descriptive error when string resource tag value is empty. ([#34212](https://github.com/expo/expo/pull/34212) by [@wschurman](https://github.com/wschurman))
 
+## 9.0.16 - 2025-02-21
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.15 - 2025-02-06
 
 ### 💡 Others

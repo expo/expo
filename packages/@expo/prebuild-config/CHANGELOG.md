@@ -4,12 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- update JSC reference in prebuild template, fix its usage in `ReactNative78CompatPlugin` ([#35349](https://github.com/expo/expo/pull/35349) by [@vonovak](https://github.com/vonovak))
 - Added `ReactNative78CompatPlugin` to support React Native 0.78. ([#33556](https://github.com/expo/expo/pull/33556) by [@kudo](https://github.com/kudo))
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))

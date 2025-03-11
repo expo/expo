@@ -1,18 +1,27 @@
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
 type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
 type ContentChildren = SubmenuElement | SubmenuElement[];
+/**
+ * @hidden
+ */
 export type ContextMenuContentProps = {
     children: ContentChildren;
 };
+/**
+ * @hidden
+ */
 export type EventHandlers = {
     [key: string]: {
         [key: string]: (event: NativeSyntheticEvent<any>) => void;
     };
 };
+/**
+ * @hidden
+ */
 export type ContextMenuElementBase = {
     contextMenuElementID: string;
 };
@@ -71,7 +80,7 @@ export type SubmenuProps = {
  * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
  * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
  */
-export declare function Submenu(props: SubmenuProps): React.JSX.Element;
+export declare function Submenu(props: SubmenuProps): import("react").JSX.Element;
 /**
  * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
  *
@@ -81,6 +90,6 @@ export declare function Submenu(props: SubmenuProps): React.JSX.Element;
  * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
  * - Android does not support showing a `Picker` element in the context menu.
  */
-export declare function ContextMenu(props: ContextMenuProps): React.JSX.Element;
+export declare function ContextMenu(props: ContextMenuProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -15,6 +15,7 @@ ReactAndroid-temp.aar
 /android/app/google-services.json
 /android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
 /android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
+.kotlin/
 
 # iOS
 /ios/Pods

@@ -21,11 +21,11 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk52-0.76.3-hermes",
+          "key": "sdk52-canary-0.78-hermes-key-01",
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-sonoma-14.6-xcode-16.0",
-        "cocoapods": "1.15.2",
+        "cocoapods": "1.16.2",
         "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",

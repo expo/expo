@@ -6,7 +6,8 @@ const monorepoRoot = path.join(__dirname, '../..');
 const config = getDefaultConfig(__dirname);
 
 config.resolver.assetExts.push(
-  'kml' // See: ../native-component-list/assets/expo-maps/sample_kml.kml
+  'kml', // See: ../native-component-list/assets/expo-maps/sample_kml.kml
+  'wasm', // For expo-sqlite on web
 );
 
 config.resolver.blockList = [
@@ -52,6 +53,14 @@ config.serializer.getModulesRunBeforeMainModule = () => {
     ];
   } catch {}
   return originalGetModulesRunBeforeMainModule();
+};
+
+config.server.enhanceMiddleware = (middleware) => {
+  return (req, res, next) => {
+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    middleware(req, res, next);
+  };
 };
 
 module.exports = config;

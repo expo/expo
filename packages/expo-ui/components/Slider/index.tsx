@@ -1,7 +1,19 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
+
+/**
+ * Colors for slider's core elements.
+ * @platform android
+ */
+export type SliderElementColors = {
+  thumbColor?: string;
+  activeTrackColor?: string;
+  inactiveTrackColor?: string;
+  activeTickColor?: string;
+  inactiveTickColor?: string;
+};
 
 export type SliderProps = {
   /**
@@ -32,13 +44,7 @@ export type SliderProps = {
    * Colors for slider's core elements.
    * @platform android
    */
-  elementColors?: {
-    thumbColor?: string;
-    activeTrackColor?: string;
-    inactiveTrackColor?: string;
-    activeTickColor?: string;
-    inactiveTickColor?: string;
-  };
+  elementColors?: SliderElementColors;
   /**
    * Slider color.
    */
