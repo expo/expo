@@ -42,7 +42,8 @@ var imperative_api_1 = require("./imperative-api");
 Object.defineProperty(exports, "router", { enumerable: true, get: function () { return imperative_api_1.router; } });
 var Link_1 = require("./link/Link");
 Object.defineProperty(exports, "Link", { enumerable: true, get: function () { return Link_1.Link; } });
-Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Link_1.Redirect; } });
+var Redirect_1 = require("./link/Redirect");
+Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");
 Object.defineProperty(exports, "withLayoutContext", { enumerable: true, get: function () { return withLayoutContext_1.withLayoutContext; } });
 // Expo Router Views

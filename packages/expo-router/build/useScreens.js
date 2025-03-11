@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = exports.IsLayoutContext = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -12,6 +12,7 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
+exports.IsLayoutContext = react_1.default.createContext(false);
 function getSortedChildren(children, order, initialRouteName) {
     if (!order?.length) {
         return children
@@ -129,9 +130,11 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }, ref) => {
         const loadable = getLoadable(props, ref);
-        return (<Route_1.Route node={value} route={route}>
-          {loadable}
-        </Route_1.Route>);
+        return (<exports.IsLayoutContext.Provider value={value.type === 'layout'}>
+          <Route_1.Route node={value} route={route}>
+            {loadable}
+          </Route_1.Route>
+        </exports.IsLayoutContext.Provider>);
     });
     QualifiedRoute.displayName = `Route(${value.route})`;
     qualifiedStore.set(value, QualifiedRoute);

@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Add new `withAnchor` options `deep` & `target`. ([#35389](https://github.com/expo/expo/pull/35389) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
 - Fix Fast Refresh not detecting file system updates. ([#34509](https://github.com/expo/expo/pull/34509) by [@marklawlor](https://github.com/marklawlor))
 - Fix getPathFromState generating an invalid path for hoisted index routes. ([#34668](https://github.com/expo/expo/pull/34668) by [@marklawlor](https://github.com/marklawlor))
+- Fix `withAnchor` not working with `<Redirect />` and nested `_layouts` ([#35389](https://github.com/expo/expo/pull/35389) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
