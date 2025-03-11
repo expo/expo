@@ -19,6 +19,10 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
