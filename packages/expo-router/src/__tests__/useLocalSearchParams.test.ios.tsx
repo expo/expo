@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { expectType } from 'tsd';
 
 import { Slot } from '../exports';
 import { useLocalSearchParams } from '../hooks';
@@ -7,7 +8,6 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { screen, renderRouter, act } from '../testing-library';
 import { renderHook, renderHookOnce } from '../testing-library/private';
-import { expectType } from 'tsd';
 
 it(`return styles of deeply nested routes`, () => {
   const { result } = renderHook(() => useLocalSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
