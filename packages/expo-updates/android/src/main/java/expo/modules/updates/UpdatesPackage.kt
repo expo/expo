@@ -56,12 +56,12 @@ class UpdatesPackage : Package {
   override fun createReactActivityHandlers(activityContext: Context): List<ReactActivityHandler> {
     val handler = object : ReactActivityHandler {
       override fun getDelayLoadAppHandler(activity: ReactActivity, reactNativeHost: ReactNativeHost): ReactActivityHandler.DelayLoadAppHandler? {
-        if (!BuildConfig.EX_UPDATES_ANDROID_DELAY_LOAD_APP || useCustomInit) {
+        if (!BuildConfig.EX_UPDATES_ANDROID_DELAY_LOAD_APP || isUsingCustomInit) {
           return null
         }
         val context = activity.applicationContext
         val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-        if (!useDeveloperSupport || BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
+        if (!useDeveloperSupport || isUsingNativeDebug) {
           return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
             CoroutineScope(Dispatchers.IO).launch {
               startUpdatesController(context)
@@ -75,7 +75,7 @@ class UpdatesPackage : Package {
       @WorkerThread
       private suspend fun startUpdatesController(context: Context) {
         withContext(Dispatchers.IO) {
-          if (!UpdatesPackage.useCustomInit) {
+          if (!UpdatesPackage.isUsingCustomInit) {
             UpdatesController.initialize(context)
             // Call the synchronous `launchAssetFile()` function to wait for updates ready
             UpdatesController.instance.launchAssetFile
@@ -120,7 +120,7 @@ class UpdatesPackage : Package {
 
   companion object {
     private val TAG = UpdatesPackage::class.java.simpleName
-    val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
-    val useCustomInit = BuildConfig.EX_UPDATES_CUSTOM_INIT
+    val isUsingNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+    val isUsingCustomInit = BuildConfig.EX_UPDATES_CUSTOM_INIT
   }
 }
