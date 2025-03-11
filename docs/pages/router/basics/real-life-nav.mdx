@@ -11,10 +11,194 @@ Now that we know the basics of how files and folders are named and arranged in E
 
 ## Stacks inside tabs: nested navigators
 
+If the typical starting point for your app is a set of tabs, but one or more tabs may have more than one screen associated with it, nesting a stack navigator inside of a tab is often the way to go. This pattern often results in intuitive URL's and scales well to desktop web apps, where the primary tabs are often always visible.
 
+Consider this navigation tree:
+
+<FileTree
+  files={[
+    ['app/(tabs)/\_layout.tsx'],
+    ['app/(tabs)/index.tsx', 'single page tab'],
+    ['app/(tabs)/feed/_layout.tsx', 'tab with a stack inside'],
+    ['app/(tabs)/feed/index.tsx'],
+    ['app/(tabs)/feed/[postId].tsx'],
+    ['app/(tabs)/settings.tsx', 'single page tab'],
+  ]}
+/>
+
+In the **app/(tabs)\_layout.tsx** file, return a `Tab` component:
+
+```tsx _layout.tsx
+import { Tab } from 'expo-router';
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tab name="index" title="Home" />
+      <Tab name="feed" title="Feed" />
+      <Tab name="settings" title="Settings" />
+    </Tabs>
+  );
+}
+```
+
+In the **app/(tabs)/feed/\_layout.tsx** file, return a `Stack` component:
+
+```tsx feed/_layout.tsx
+import { Stack } from 'expo-router';
+
+/* @info Setting initialRouteName ensures that direct links deep into the stack still push the index route onto the stack first. */
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+/* @end */
+
+export default function FeedLayout() {
+  return <Stack />;
+}
+```
+
+Now, within the **app/(tabs)/feed** folder, you can have `Link` components that point to different posts (e.g., `/feed/123`). Those links will push the `feed/[postId]` route onto the stack, leaving the tab navigator visible.
+
+You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `initialRouteName` to ensure that the `feed/index` route is always the first screen in the stack:
+
+```tsx app/(tabs)/feed/index.tsx
+<Link href="/feed/123" withAnchor>
+  Go to post
+</Link>
+```
+
+You can also nest tabs inside of an outer stack navigator. That is often more useful for displaying modals over the tabs.
+
+[Learn more about nested navigators](/router/advanced/nested-navigators/).
 
 ## One screen, two tabs: sharing routes
 
+Route groups can be used to share a single screen between two different tabs. Consider a navigation tree where there is a Feed tab and a Search tab, and they both share pages for viewing a user profile:
+
+<FileTree
+  files={[
+    ['app/(tabs)/\_layout.tsx'],
+    ['app/(tabs)/(feed)/index.tsx', 'default route'],
+    ['app/(tabs)/(search)/search.tsx'],
+    ['app/(tabs)/(feed,search)/_layout.tsx', 'layout shared between the two tabs'],
+    ['app/(tabs)/(feed,search)/users/[username].tsx', 'shared user profile page'],
+  ]}
+/>
+
+Each of the tabs is put in a group so we can define a third folder that shares routes between two groups (**app/(tabs)/(feed,search)**). Even with the extra layer, **app/(tabs)/(feed)/index.tsx** is still the nearest index, so it will be the default route.
+
+```tsx (tabs)/_layout.tsx
+import { Tab } from 'expo-router';
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tab name="(feed)" title="Feed" />
+      <Tab name="search" title="Search" />
+    </Tabs>
+  );
+}
+```
+
+Both the `(feed)` and `(search)` route groups contain stacks, so they can share a single layout:
+
+```tsx (tabs)/(feed,search)/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function SharedLayout() {
+  return <Stack />;
+}
+```
+
+Now, both tabs can navigate to `/users/evanbacon` and see the same user profile page.
+
+[Learn more about shared routes](/router/advanced/shared-routes/).
+
 ## Authenticated users only: protecting routes
 
+If you have a set of routes that should only be accessible to authenticated users, you can embed those routes in a group whose layout redirects users to a login page if they are not authenticated.
+
+Here's what that looks like:
+
+<FileTree
+  files={[
+    ['app/_layout.tsx'],
+    ['app/login.tsx', 'routes users back to /(logged-in) after authentication'],
+    ['app/(logged-in)/\_layout.tsx', 'includes redirect for unauthenticated users'],
+    ['app/(logged-in)/(tabs)/\_layout.tsx'],
+    ['app/(logged-in)/(tabs)/index.tsx', 'default route for app'],
+    ['app/(logged-in)/(tabs)/feed.tsx'],
+    ['app/(logged-in)/modal.tsx'],
+  ]}
+/>
+
+By default, the app will go to the nearest index, **app/(logged-in)/(tabs)/index.tsx**. However, a route group's layout file will be rendered before the enclosed route is. So, if the user is not authenticated, at this point, we can redirect the user to the login page:
+
+```tsx (logged-in)/_layout.tsx
+import { Redirect, Stack } from 'expo-router';
+
+export default function AuthLayout() {
+  const isAuthenticated = /* check for valid auth token / session */
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
+  return <Stack />;,
+}
+```
+
+Further, if a user tries to navigate to a deep link that's inside the `(logged-in)` group, they will also be redirected to the login page. Every layout on the way to the route you're navigating to is first rendered before the route itself.
+
+The data source for checking authentication status could be React context, a state library, or a 3rd party auth framework. In the case of a reactive data source like context, not only will this redirect an unauthenticated user when first entering app, but it will also redirect them if their session becomes invalid while using the app, as this layout component will re-render at that time.
+
+In the **app/login.tsx** file, attempt to reroute the user to the `/(logged-in)` route after successful authentication:
+
+```tsx login.tsx
+import { Button } from 'react-native';
+import { useRouter } from 'expo-router';
+
+export default function Login() {
+  return (
+    <View>
+      {/* login form */}
+      <Button
+        title="Login"
+        onPress={() => {
+          /* authenticate user */
+          router.replace('/(logged-in)');
+        }}
+      />
+    </View>
+  );
+}
+```
+
+This will cause **app/(logged-in)/\_layout.tsx** to re-render again. This time, the authentication check will pass, and the app will proceed to the default route.
+
+[Learn more about using protected routes to implement authentication](/router/advanced/auhentication/).
+
 ## Sometimes the best route isn't a route at all
+
+Separating your navigation states into distinct routes is meant to serve you and your app. Sometimes the best pattern for the job will not involve navigating to another route at all. Since layout files are just React components, you can use them display all sorts of UI around, besides, or instead of a navigator.
+
+Thinking back to authentication, the protected route setup works great if the user should simply not be able to visit certain pages without logging in. But what about when unauthenticated users can browse an app in read-only mode? In that case, you might want to show a login modal over the app, rather than redirecting the user to a login page:
+
+```tsx /_layout.tsx
+import { SafeAreaView, Modal } from 'react-native';
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  const isAuthenticated = /* check for valid auth token / session */
+
+  return (
+    <SafeAreaView>
+      <Stack />
+      <Modal visible={!isAuthenticated}>{/* login UX */}</Modal>
+    </SafeAreaView>
+  );
+}
+```
+
+[Learn more about displaying modals over routes](advanced/modals/#react-natives-modal-component).
