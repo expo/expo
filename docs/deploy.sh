@@ -343,6 +343,8 @@ redirects[eas-update/known-issues]=eas-update/introduction
 # After consolidating the "Internal distribution" information
 redirects[guides/sharing-preview-releases]=build/internal-distribution
 
+# After merging EAS environment variables guides
+redirects[eas/using-environment-variables]=eas/environment-variables
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

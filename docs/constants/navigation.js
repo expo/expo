@@ -379,7 +379,6 @@ export const eas = [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
       makePage('eas/environment-variables.mdx'),
-      makePage('eas/using-environment-variables.mdx'),
     ],
     {
       expanded: true,
