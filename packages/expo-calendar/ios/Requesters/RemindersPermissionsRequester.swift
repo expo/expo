@@ -31,7 +31,7 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     }
 
     switch permissions {
-    case .restricted, .denied, .writeOnly:
+    case .restricted, .denied:
       status = EXPermissionStatusDenied
     case .notDetermined:
       status = EXPermissionStatusUndetermined

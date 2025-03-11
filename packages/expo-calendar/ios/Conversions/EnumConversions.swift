@@ -13,9 +13,6 @@ func eventAvailabilityToString(_ availability: EKEventAvailability) -> String {
     return "tentative"
   case .unavailable:
     return "unavailable"
-  @unknown default:
-    log.error("Unhandled `EKEventAvailability` value: \(availability), returning `notSupported` as fallback. Add the missing case as soon as possible.")
-    return "notSupported"
   }
 }
 
@@ -29,9 +26,6 @@ func eventStatusToString(_ status: EKEventStatus) -> String {
     return "tentative"
   case .canceled:
     return "cancelled"
-  @unknown default:
-    log.error("Unhandled `EKEventStatus` value: \(status), returning `none` as fallback. Add the missing case as soon as possible.")
-    return "none"
   }
 }
 
@@ -49,9 +43,6 @@ func sourceToString(type: EKSourceType) -> String {
     return "subscribed"
   case .birthdays:
     return "birthdays"
-  @unknown default:
-    log.error("Unhandled `EKSourceType` value: \(type), returning `local` as fallback. Add the missing case as soon as possible.")
-    return "local"
   }
 }
 
@@ -67,9 +58,6 @@ func participantToString(role: EKParticipantRole) -> String {
     return "chair"
   case .nonParticipant:
     return "notParticipant"
-  @unknown default:
-    log.error("Unhandled `EKParticipantRole` value: \(role), returning `unknown` as fallback. Add the missing case as soon as possible.")
-    return "unknown"
   }
 }
 
@@ -98,9 +86,6 @@ func participantTypeToString(type: EKParticipantType) -> String {
     return "group"
   case .resource:
     return "resource"
-  @unknown default:
-    log.error("Unhandled `EKParticipantType` value: \(type), returning `unknown` as fallback. Add the missing case as soon as possible.")
-    return "unknown"
   }
 }
 
@@ -122,9 +107,6 @@ func participantStatusToString(status: EKParticipantStatus) -> String {
     return "completed"
   case .inProcess:
     return "inProcess"
-  @unknown default:
-    log.error("Unhandled `EKParticipantStatus` value: \(status), returning `unknown` as fallback. Add the missing case as soon as possible.")
-    return "unknown"
   }
 }
 
@@ -138,9 +120,6 @@ func recurrenceToString(frequency: EKRecurrenceFrequency) -> String {
     return "monthly"
   case .yearly:
     return "yearly"
-  @unknown default:
-    log.error("Unhandled `EKRecurrenceFrequency` value: \(frequency), returning `daily` as fallback. Add the missing case as soon as possible.")
-    return "daily"
   }
 }
 

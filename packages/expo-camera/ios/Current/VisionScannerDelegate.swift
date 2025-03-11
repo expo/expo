@@ -1,5 +1,4 @@
 import VisionKit
-import ExpoModulesCore
 
 protocol ScannerResultHandler {
   func onItemScanned(result: [String: Any])
@@ -19,9 +18,6 @@ class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate {
       case .barcode(let code):
         handler.onItemScanned(result: BarcodeScannerUtils.visionDataScannerObjectToDictionary(item: code))
       case .text(let text):
-        return
-      @unknown default:
-        log.error("Unhandled `RecognizedItem` value: \(item), returning `nil` as fallback. Add the missing case as soon as possible.")
         return
       }
     }

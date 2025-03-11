@@ -16,9 +16,6 @@ enum ImageCacheType: String, Enumerable {
       return .disk
     case .memory:
       return .memory
-    @unknown default:
-      log.error("Unhandled `SDImageCacheType` value: \(sdImageCacheType), returning `none` as fallback. Add the missing case as soon as possible.")
-      return .none
     }
   }
 }

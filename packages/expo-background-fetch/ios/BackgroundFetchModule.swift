@@ -37,16 +37,12 @@ public class BackgroundFetchModule: Module {
   }
 
   private func getStatus() -> BackgroundFetchStatus {
-    let backgroundRefreshStatus = UIApplication.shared.backgroundRefreshStatus
-    switch backgroundRefreshStatus {
+    switch UIApplication.shared.backgroundRefreshStatus {
     case .restricted:
       return .restricted
     case .available:
       return .available
     case .denied:
-      return .denied
-    @unknown default:
-      log.error("Unhandled `UIBackgroundRefreshStatus` value: \(backgroundRefreshStatus), returning `denied` as fallback. Add the missing case as soon as possible.")
       return .denied
     }
   }

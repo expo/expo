@@ -581,8 +581,6 @@ private func encodeContainerType(_ type: CNContainerType) -> String {
     return "exchange"
   case .cardDAV:
     return "cardDAV"
-  case .unassigned:
-    fallthrough
   @unknown default:
     return "unassigned"
   }

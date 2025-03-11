@@ -50,9 +50,6 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
     return "moment"
   case .smartAlbum:
     return "smartAlbum"
-  @unknown default:
-    log.error("Unhandled `PHAssetCollectionType` value: \(type), returning `album` as fallback. Add the missing case as soon as possible.")
-    return "album"
   }
 }
 
