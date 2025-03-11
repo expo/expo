@@ -1,11 +1,12 @@
 import { Picker } from '@expo/ui/components/Picker';
+import { Section as NativeSection } from '@expo/ui/components/Section';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
 export default function PickerScreen() {
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
   const options = ['$', '$$', '$$$', '$$$$'];
   return (
     <ScrollView>
@@ -21,27 +22,33 @@ export default function PickerScreen() {
               setSelectedIndex(index);
             }}
             variant="segmented"
-            style={{
-              width: 300,
-              height: 100,
-            }}
           />
         </Section>
         <Section title="Menu picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            label="Cost"
-            variant="menu"
-            style={{
-              width: 300,
-              height: 100,
-              flex: 1,
-            }}
-          />
+          <NativeSection style={{ height: 100 }}>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              label="Cost"
+              variant="menu"
+            />
+          </NativeSection>
+        </Section>
+        <Section title="Inline picker">
+          <NativeSection style={{ height: 300 }}>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              label="Cost"
+              variant="inline"
+            />
+          </NativeSection>
         </Section>
         <Section title="Wheel picker">
           <Picker
@@ -65,10 +72,6 @@ export default function PickerScreen() {
               setSelectedIndex(index);
             }}
             color="#ff5500"
-            style={{
-              width: 300,
-              height: 100,
-            }}
           />
         </Section>
         <Section title="Radio picker">
@@ -79,10 +82,6 @@ export default function PickerScreen() {
               setSelectedIndex(index);
             }}
             variant="radio"
-            style={{
-              width: 300,
-              height: 200,
-            }}
           />
         </Section>
       </Page>

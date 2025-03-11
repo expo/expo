@@ -43,10 +43,10 @@ export type PickerProps = {
   onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
-   * The `'radio'` variant is Android only, the `'wheel'` and `'menu'` variants are iOS only,
+   * The `'wheel'`, `'inline'`, `'palette'` and `'menu'` variants are iOS only, the `'radio'` variant is Android only. The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
    * @default 'segmented'
    */
-  variant?: 'wheel' | 'segmented' | 'menu' | 'radio';
+  variant?: 'wheel' | 'segmented' | 'menu' | 'radio' | 'inline' | 'palette';
   /**
    * Optional style to apply to the picker component.
    */
