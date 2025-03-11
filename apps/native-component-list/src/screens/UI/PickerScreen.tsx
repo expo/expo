@@ -6,7 +6,7 @@ import { ScrollView, Text } from 'react-native';
 import { Page, Section } from '../../components/Page';
 
 export default function PickerScreen() {
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
   const options = ['$', '$$', '$$$', '$$$$'];
   return (
     <ScrollView>
