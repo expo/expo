@@ -20,4 +20,54 @@ config.watchFolders = [
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
-module.exports = config;
+// Integrate `react-native-lab` as the React Native version used when bundling
+module.exports = withReactNativeLabPackages(config);
+
+/**
+ * Configure Metro to resolve core React Native packages from the react-native-lab submodule.
+ * Expo Go requires specific fixes which are shipped through this submodule.
+ * This will override and not follow Node module resolution to ensure single package versions are bundled.
+ *
+ * @param {import('expo/metro-config').MetroConfig} config
+ * @returns {import('expo/metro-config').MetroConfig}
+ */
+function withReactNativeLabPackages(config) {
+  // Keep this list up to date for every React Native upgrade.
+  // These packages are all dependent on the current version in react-native-lab.
+  const linkedPackages = [
+    'react',
+    'react-native',
+    // '@react-native/assets-registry', - This is overwritten from Expo CLI and replaced by a virtual module
+    // '@react-native/codegen', - This is not a library used within the app bundle
+    // '@react-native/js-polyfills', - This is not a library used within the app bundle, but configured through `config.serializer.getPolyfills`
+    '@react-native/normalize-colors',
+    '@react-native/virtualized-lists',
+  ];
+
+  // Allow Metro to resolve from react-native-lab dependencies and packages
+  config.watchFolders.push(path.join(reactNativeLabsPath, '..'));
+
+  // Ensure the polyfills are loaded from react-native-lab
+  config.serializer.getPolyfills = () =>
+    require(require.resolve('@react-native/js-polyfills', { paths: [reactNativeLabsPath] }))();
+
+  // The import matcher that matches any of the list packages, e.g. `<packageName>` or `<packageName>/nested/file`
+  const importMatcher = new RegExp(`^(?:(${linkedPackages.join('|')}))(?:(/|$))`);
+  // The react-native-lab location to use when redirecting resolutions to react-native-lab
+  const reactNativeLabsPath = path.join(monorepoRoot, 'react-native-lab/react-native/node_modules');
+
+  // Rewrite imports to the react-native-lab linked packages when on Android or iOS
+  config.resolver.resolveRequest = (context, moduleImport, platform) => {
+    if (platform === 'web' || !importMatcher.test(moduleImport)) {
+      return context.resolveRequest(context, moduleImport, platform);
+    }
+
+    return context.resolveRequest(
+      { ...context, originModulePath: reactNativeLabsPath },
+      moduleImport,
+      platform
+    );
+  };
+
+  return config;
+}
