@@ -186,11 +186,72 @@ Query parameters can be updated without navigating to a new page. This can be do
 <Pressable onPress={() => router.setParams({ limit: 50 })}>
   <Text>View more users</Text>
 </Pressable>
+```
 
 ## Redirects
 
-## Deep links
+You can immediately redirect to another route from a page or layout with the `Redirect` component. This functions like the `replace` imperative navigation function. A redirect will navigate to the new route without rendering the current page.
+
+```tsx
+import { Redirect } from 'expo-router';
+
+export default function Page() {
+  return <Redirect href="/about" />;
+}
+```
+
+### Deep links
+
+Deep linking is when a URL opens a specific page in your app. Expo Router supports deep linking by default, so you can link to any page in your app with a URL from outside of your app, just like you would inside your app with `Link`. This is especially useful for sharing links to specific pages in your app.
+
+On web, deep linking is as simple as navigating to that specific URL in your web browser. On mobile, you define a `scheme` in your [app config](), and this becomes the prefix for deep links into your app.
+
+Assuming your `scheme` is `myapp`, here's some examples of how you would link to a page in your app from a web page or another app:
+
+<FileTree
+  files={[
+    ['app/about.tsx', 'myapp://about'],
+    ['app/profile/index.tsx', 'myapp://profile'],
+    ['app/users/[username].tsx', 'myapp://users/evanbacon'],
+  ]}
+/>
+
+With app links and universal links, you can also link into your app with an https URL. [Learn more]()
 
 ### Initial routes
 
-withAnchor
+When opening a deep link to a page in your app, you will likely want back navigation to work just as if the user navigated to the page from your home page. To do this, you can specify an `initalRouteName` configuration, which defines the page in a layout that should be loaded prior to the deep linked page.
+
+Consider the following file structure:
+
+<FileTree
+  files={[
+    ['app/index.tsx'],
+    ['app/stack/index.tsx'],
+    ['app/stack/second.tsx'],
+    ['app/stack/_layout_.tsx'],
+  ]}
+/>
+
+`stack` is a stack navigator, and `/stack/index` is always the first route in the stack.
+
+To ensure that `/stack/index` is always loaded first, even if the user deep links to `/stack/second`, you can set the `initialRouteName` in **app/stack/_layout_.tsx**:
+
+```tsx
+export const unstable_settings = {
+  // Ensure any route can link back to `/`
+  initialRouteName: 'index',
+};
+```
+
+By default, the `initialRouteName` is only considered when deep linking, and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the initial route to be loaded when navigating directly into another stack inside your app.
+
+So, if **app/index.tsx** contained a link to `/stack/second`, add the `withAnchor` prop to ensure that `/stack/index` is loaded first, which will cause the user to go back to `/stack/index` when they press the back button from `/stack/second`:
+
+```tsx
+<Link href="/stack/second" withAnchor>
+  Go to second
+</Link>
+```
+
+> **info** If you are missing a back button when testing deep links, this can often be fixed by setting an `initialRouteName`.
