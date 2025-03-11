@@ -30,6 +30,7 @@ const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('Expo
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
+ * @platform ios
  */
 export function Label(props: LabelProps) {
   return <LabelNativeView {...props} />;
