@@ -50,7 +50,7 @@
     "nprogress": "0.2.0",
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.4.1",
-    "prismjs": "^1.30.0",
+    "prismjs": "^1.29.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-confetti-explosion": "^2.1.2",

@@ -6025,7 +6025,7 @@ __metadata:
     prettier: "npm:^3.4.2"
     prettier-plugin-tailwindcss: "npm:^0.6.9"
     prism-react-renderer: "npm:^2.4.1"
-    prismjs: "npm:^1.30.0"
+    prismjs: "npm:^1.29.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-confetti-explosion: "npm:^2.1.2"
@@ -10561,10 +10561,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prismjs@npm:^1.30.0":
-  version: 1.30.0
-  resolution: "prismjs@npm:1.30.0"
-  checksum: 10c0/f56205bfd58ef71ccfcbcb691fd0eb84adc96c6ff21b0b69fc6fdcf02be42d6ef972ba4aed60466310de3d67733f6a746f89f2fb79c00bf217406d465b3e8f23
+"prismjs@npm:^1.29.0":
+  version: 1.29.0
+  resolution: "prismjs@npm:1.29.0"
+  checksum: 10c0/d906c4c4d01b446db549b4f57f72d5d7e6ccaca04ecc670fb85cea4d4b1acc1283e945a9cbc3d81819084a699b382f970e02f9d1378e14af9808d366d9ed7ec6
   languageName: node
   linkType: hard
 
