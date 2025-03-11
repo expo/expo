@@ -597,9 +597,82 @@ NATIVE_METHOD(bindTexture) {
   return nullptr;
 }
 
-UNIMPL_NATIVE_METHOD(compressedTexImage2D)
+NATIVE_METHOD(compressedTexImage2D) {
+    CTX();
+    auto target = ARG(0, GLenum);
+    auto level = ARG(1, GLint);
+    auto internalformat = ARG(2, GLenum);
+    if (argc == 7) {
+      auto width = ARG(3, GLsizei);
+      auto height = ARG(4, GLsizei);
+      auto border = ARG(5, GLsizei);
+      auto imageSize = calculateImageSize(width, height, internalformat);
+      if (ARG(6, const jsi::Value &).isNull()) {
+        ctx->addToNextBatch([=] {
+          glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, nullptr);
+        });
+        return nullptr;
+      }
+      auto data = ARG(6, jsi::Object);
 
-UNIMPL_NATIVE_METHOD(compressedTexSubImage2D)
+      if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
+        std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
+        ctx->addToNextBatch([=, vec{std::move(vec)}] {
+            glCompressedTexImage2D(
+              target, level, internalformat, width, height, border, imageSize, vec.data());
+        });
+      } else {
+        auto image = loadImage(runtime, data, &width, &height, nullptr);
+        ctx->addToNextBatch([=] {
+            glCompressedTexImage2D(
+              target, level, internalformat, width, height, border, imageSize, image.get());
+        });
+      }
+    } else {
+      throw std::runtime_error("EXGL: Invalid number of arguments to gl.compressedTexImage2D()!");
+    }
+    return nullptr;
+}
+
+
+NATIVE_METHOD(compressedTexSubImage2D) {
+    CTX();
+    auto target = ARG(0, GLenum);
+    auto level = ARG(1, GLint);
+    auto xoffset = ARG(2, GLint);
+    auto yoffset = ARG(3, GLint);
+    if (argc == 8) {
+      auto width = ARG(4, GLsizei);
+      auto height = ARG(5, GLsizei);
+      auto format = ARG(6, GLenum);
+      auto imageSize = calculateImageSize(width, height, format);
+      if (ARG(7, const jsi::Value &).isNull()) {
+        ctx->addToNextBatch([=] {
+          auto empty = std::make_unique<uint8_t>(imageSize);
+          std::memset(empty.get(), 0, imageSize);
+          glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, empty.get());
+        });
+        return nullptr;
+      }
+
+      auto data = ARG(7, jsi::Object);
+
+      if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
+        std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
+        ctx->addToNextBatch([=, vec{std::move(vec)}] {
+            glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, vec.data());
+        });
+      } else {
+        auto image = loadImage(runtime, data, &width, &height, nullptr);
+        ctx->addToNextBatch([=] {
+            glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, image.get());
+        });
+      }
+    } else {
+      throw std::runtime_error("EXGL: Invalid number of arguments to gl.compressedTexSubImage2D()!");
+    }
+    return nullptr;
+}
 
 SIMPLE_NATIVE_METHOD(
     copyTexImage2D,
@@ -1943,6 +2016,22 @@ NATIVE_METHOD(getExtension) {
         runtime, "TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_TEXTURE_MAX_ANISOTROPY_EXT));
     result.setProperty(
         runtime, "MAX_TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+    return result;
+  }
+  if (name == "WEBGL_compressed_texture_etc") {
+    jsi::Object result(runtime);
+    result.setProperty(runtime, "COMPRESSED_R11_EAC", jsi::Value(GL_COMPRESSED_R11_EAC));
+    result.setProperty(runtime, "COMPRESSED_SIGNED_R11_EAC", jsi::Value(GL_COMPRESSED_SIGNED_R11_EAC));
+    result.setProperty(runtime, "COMPRESSED_RG11_EAC", jsi::Value(GL_COMPRESSED_RG11_EAC));
+    result.setProperty(runtime, "COMPRESSED_SIGNED_RG11_EAC", jsi::Value(GL_COMPRESSED_SIGNED_RG11_EAC));
+    result.setProperty(runtime, "COMPRESSED_RGB8_ETC2", jsi::Value(GL_COMPRESSED_RGB8_ETC2));
+    result.setProperty(runtime, "COMPRESSED_RGBA8_ETC2_EAC", jsi::Value(GL_COMPRESSED_RGBA8_ETC2_EAC));
+    result.setProperty(runtime, "COMPRESSED_SIGNED_R11_EAC", jsi::Value(GL_COMPRESSED_SIGNED_R11_EAC));
+    result.setProperty(runtime, "COMPRESSED_SRGB8_ETC2", jsi::Value(GL_COMPRESSED_SRGB8_ETC2));
+    result.setProperty(runtime, "COMPRESSED_SRGB8_ALPHA8_ETC2_EAC", jsi::Value(GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC));
+    result.setProperty(runtime, "COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2", jsi::Value(GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2));
+    result.setProperty(runtime, "COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2", jsi::Value(GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2));
+
     return result;
   }
   return jsi::Object(runtime);
