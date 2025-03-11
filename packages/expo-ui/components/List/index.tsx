@@ -90,6 +90,7 @@ const ListNativeView: React.ComponentType<NativeListProps> | null =
  * A generic list component that renders items from the given data using a provided render function.
  * @param {DataListProps<T>} props - The properties for the list component.
  * @returns {JSX.Element} The rendered list of items.
+ * @platform ios
  */
 export function DataList<T>(props: DataListProps<T>) {
   const { data, renderItem, ...nativeProps } = props;
