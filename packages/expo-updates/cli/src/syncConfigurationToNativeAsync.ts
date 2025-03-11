@@ -91,6 +91,8 @@ async function syncConfigurationToNativeIosAsync(
     skipSDKVersionRequirement: true,
   });
 
+  const packageVersion = require('../../package.json').version;
+
   const expoPlist = await readExpoPlistAsync(options.projectRoot);
   const updatedExpoPlist = await IOSConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,

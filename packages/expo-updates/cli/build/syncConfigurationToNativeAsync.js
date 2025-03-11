@@ -27,12 +27,12 @@ async function syncConfigurationToNativeAsync(options) {
     }
 }
 exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
-const packageVersion = require('../../package.json').version;
 async function syncConfigurationToNativeAndroidAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
         isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     // sync AndroidManifest.xml
     const androidManifestPath = await config_plugins_1.AndroidConfig.Paths.getAndroidManifestAsync(options.projectRoot);
     if (!androidManifestPath) {
@@ -54,6 +54,7 @@ async function syncConfigurationToNativeIosAsync(options) {
         isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     const expoPlist = await readExpoPlistAsync(options.projectRoot);
     const updatedExpoPlist = await config_plugins_1.IOSConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, expoPlist, packageVersion);
     await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
