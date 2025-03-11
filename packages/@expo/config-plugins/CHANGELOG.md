@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Allow `version` to be overridden on iOS and Android. ([#33637](https://github.com/expo/expo/pull/33637) by [@Titozzz](https://github.com/Titozzz))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 9.0.17 — 2025-03-11
+
+### 🎉 New features
+
+- Allow `version` to be overridden on iOS and Android. ([#33637](https://github.com/expo/expo/pull/33637) by [@Titozzz](https://github.com/Titozzz))
 
 ## 9.0.16 — 2025-02-21
 
