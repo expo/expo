@@ -110,6 +110,9 @@ export async function persistMetroAssetsAsync(
 }
 
 function createKeepFile(assets: AssetData[], outputDirectory: string): void {
+  if (!assets.length) {
+    return;
+  }
   const assetsList = [];
   for (const asset of assets) {
     const prefix = drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
