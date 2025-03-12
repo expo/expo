@@ -14,7 +14,8 @@
     "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "env"
   },
   "taskr": {
     "requires": [
