@@ -85,7 +85,7 @@ export default function StackLayout() {
 }
 ```
 
-While it is possible nest navigators, be sure to only do so when it is truly needed. In our example, if you wanted to then push **products/accessories/index.tsx** onto the stack, it's not necessary to have an additional **\_layout.tsx** in the **accessories** folder with a `Stack` navigator. That would define another stack inside the first one. It is fine to add folders that only affect the URL, but otherwise use the same navigator as the parent folder.
+While it is possible to nest navigators, be sure to only do so when it is truly needed. In our example, if you wanted to then push **products/accessories/index.tsx** onto the stack, it's not necessary to have an additional **\_layout.tsx** in the **accessories** folder with a `Stack` navigator. That would define another stack inside the first one. It is fine to add folders that only affect the URL, but otherwise use the same navigator as the parent folder.
 
 ## Tabs
 
