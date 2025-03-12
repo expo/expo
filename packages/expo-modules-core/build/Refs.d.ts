@@ -4,5 +4,5 @@ import { type RefObject } from 'react';
  * It will be represented as `[React.ref]` in snapshots.
  * @returns A React ref object.
  */
-export declare function createSnapshotFriendlyRef<T>(): RefObject<T>;
+export declare function createSnapshotFriendlyRef<T>(): RefObject<T | null>;
 //# sourceMappingURL=Refs.d.ts.map

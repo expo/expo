@@ -1,11 +1,5 @@
 import React from 'react';
 
-if (!global.setImmediate) {
-  global.setImmediate = function (fn) {
-    return setTimeout(fn, 0);
-  };
-}
-
 if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
   // Stack traces are big with React Navigation
   require('./LogBox').default.install();

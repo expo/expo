@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
 import fs from 'fs/promises';
+import { glob } from 'glob';
 import path from 'path';
 
 import type {

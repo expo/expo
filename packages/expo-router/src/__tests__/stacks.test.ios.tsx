@@ -159,10 +159,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
         path: undefined,
         state: {
           index: 3,
@@ -191,10 +187,6 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'two',
-              params: {
-                params: {},
-                screen: 'index',
-              },
               path: undefined,
               state: {
                 index: 2,
@@ -279,10 +271,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
         path: undefined,
         state: {
           index: 3,
@@ -311,10 +299,6 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'two',
-              params: {
-                params: {},
-                screen: 'index',
-              },
               path: undefined,
               state: {
                 index: 0,
@@ -387,10 +371,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
         path: undefined,
         state: {
           index: 0,

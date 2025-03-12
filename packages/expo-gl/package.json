@@ -44,7 +44,7 @@
     "@types/offscreencanvas": "2019.6.4",
     "@types/webgl2": "^0.0.6",
     "expo-module-scripts": "^4.0.0",
-    "react-test-renderer": "18.3.1"
+    "react-test-renderer": "19.0.0"
   },
   "peerDependencies": {
     "expo": "*",

@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-#import <EXDevMenu/DevClientAppDelegate.h>
+#import <EXDevMenu/DevClientReactNativeFactoryDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXRCTAppDelegateInterceptor : DevClientAppDelegate
+@interface EXRCTAppDelegateInterceptor : DevClientReactNativeFactoryDelegate
 
 @property(nonatomic, weak) id<RCTBridgeDelegate> bridgeDelegate;
 @property(nonatomic, weak) id<RCTBridgeDelegate> interceptor;

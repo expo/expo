@@ -42,36 +42,64 @@ export default function UIScreen() {
             </>
           )}
         </Section>
+        <Section title="Disabled">
+          <Button style={styles.button} disabled>
+            Disabled
+          </Button>
+          <Button style={styles.button}>Enabled</Button>
+        </Section>
         {Platform.OS === 'ios' && (
-          <>
-            <Section title="Button Roles">
-              <Button style={styles.button} role="default">
-                Default
-              </Button>
-              <Button style={styles.button} role="cancel">
-                Cancel
-              </Button>
-              <Button style={styles.button} role="destructive">
-                Destructive
-              </Button>
-            </Section>
-
-            <Section title="Button Images">
-              <Button style={styles.button} systemImage="folder.badge.plus">
-                Folder
-              </Button>
-              <Button style={styles.button} systemImage="tortoise.fill">
-                Tortoise
-              </Button>
-              <Button style={styles.button} systemImage="trash">
-                Trash
-              </Button>
-              <Button style={styles.button} systemImage="heart.fill">
-                Heart
-              </Button>
-            </Section>
-          </>
+          <Section title="Button Roles">
+            <Button style={styles.button} role="default">
+              Default
+            </Button>
+            <Button style={styles.button} role="cancel">
+              Cancel
+            </Button>
+            <Button style={styles.button} role="destructive">
+              Destructive
+            </Button>
+          </Section>
         )}
+        <Section title="Button Images">
+          <Button
+            variant="bordered"
+            style={styles.button}
+            systemImage={{
+              ios: 'folder',
+              android: 'filled.AccountBox',
+            }}>
+            Folder
+          </Button>
+          <Button
+            variant="elevated"
+            style={styles.button}
+            systemImage={{
+              ios: 'tortoise',
+              android: 'filled.Warning',
+            }}>
+            Tortoise
+          </Button>
+          <Button
+            variant="borderless"
+            style={styles.button}
+            systemImage={{
+              ios: 'trash',
+              android: 'outlined.Delete',
+            }}
+            elementColors={{ contentColor: '#FF6347' }}>
+            Trash
+          </Button>
+          <Button
+            variant="outlined"
+            style={styles.button}
+            systemImage={{
+              ios: 'heart',
+              android: 'outlined.Favorite',
+            }}>
+            Heart
+          </Button>
+        </Section>
         {Platform.OS === 'android' && (
           <Section title="Android Custom Colored Buttons">
             <Button
@@ -98,7 +126,7 @@ export default function UIScreen() {
 
 const styles = StyleSheet.create({
   button: {
-    width: 120,
+    width: 150,
     margin: 5,
     overflow: 'visible',
   },

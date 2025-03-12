@@ -1,0 +1,171 @@
+---
+title: Expo UI
+sidebar_title: UI
+description: A set of platform components to build native-feeling UIs.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+`@expo/ui` is a set of native input components that allows you to build fully native interfaces with SwiftUI and Jetpack Compose.
+
+> **warning** This library is currently in alpha and subject to breaking changes. It is unavailable in the Expo Go app, and you should use [development builds](/develop/development-builds/introduction/).
+
+## Installation
+
+<APIInstallSection />
+
+## Examples
+
+### Button
+
+<Tabs>
+<Tab label="Android">
+<ContentSpotlight
+  alt="Button component on Android."
+  src="/static/images/expo-ui/button/android.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Button component on iOS."
+  src="/static/images/expo-ui/button/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="Code">
+```tsx
+import { Button } from '@expo/ui/components/Button';
+
+<Button
+  style={{ flex: 1 }}
+  onPress={() => {
+    setEditingProfile(true);
+  }}>
+  Edit profile
+</Button>
+```
+</Tab>
+</Tabs>
+
+### Picker (segmented variant)
+
+<Tabs>
+<Tab label="Android">
+<ContentSpotlight
+  alt="Picker component on Android."
+  src="/static/images/expo-ui/segmentedPicker/android.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Picker component on iOS."
+  src="/static/images/expo-ui/segmentedPicker/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="Code">
+```tsx
+import { Picker } from '@expo/ui/components/Picker';
+
+<Picker
+  options={['$', '$$', '$$$', '$$$$']}
+  selectedIndex={selectedIndex}
+  onOptionSelected={({ nativeEvent: { index } }) => {
+    setSelectedIndex(index);
+  }}
+/>
+```
+</Tab>
+</Tabs>
+
+### Picker (wheel variant) (iOS only)
+
+<Tabs>
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Picker component on iOS."
+  src="/static/images/expo-ui/menuPicker/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+{/* TODO: Add screenshot on Android once we support the label prop */}
+<Tab label="Code">
+```tsx
+import { Picker } from '@expo/ui/components/Picker';
+
+<Picker
+  options={['$', '$$', '$$$', '$$$$']}
+  selectedIndex={selectedIndex}
+  onOptionSelected={({ nativeEvent: { index } }) => {
+    setSelectedIndex(index);
+  }}
+  variant="wheel"
+  style={{
+    height: 100,
+  }}
+/>
+```
+</Tab>
+</Tabs>
+
+### Switch
+
+<Tabs>
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Switch component on iOS."
+  src="/static/images/expo-ui/switch/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="Code">
+```tsx
+import { Switch } from '@expo/ui/components/Switch';
+
+<Switch
+  checked={checked}
+  onValueChange={checked => {
+    setChecked(checked);
+  }}
+  label="Play music"
+/>
+```
+</Tab>
+</Tabs>
+
+### Switch (checkbox variant)
+
+<Tabs>
+<Tab label="iOS">
+<ContentSpotlight
+  alt="Picker component on iOS."
+  src="/static/images/expo-ui/checkbox/ios.png"
+  className="max-w-[480px]"
+/>
+</Tab>
+<Tab label="Code">
+```tsx
+import { Switch } from '@expo/ui/components/Switch';
+
+<Switch
+  checked={checked}
+  onValueChange={checked => {
+    setChecked(checked);
+  }}
+  label="Play music"
+  variant="checkbox"
+/>
+```
+</Tab>
+</Tabs>
+
+<APISection packageName="expo-ui" apiName="Expo UI" />

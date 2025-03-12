@@ -4,6 +4,6 @@
     "outDir": "./build",
     "emitDeclarationOnly": true
   },
-  "include": ["./components", "src/index.ts"],
+  "include": ["./components", "src/types.ts"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
 }

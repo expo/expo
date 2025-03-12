@@ -8,7 +8,7 @@ var defaultEndPoint = CGPoint(x: 0.5, y: 1.0)
 var defaultLocations: [CGFloat] = []
 
 final class LinearGradientLayer: CALayer {
-  var colors = [CGColor]()
+  var colors = [UIColor]()
   var startPoint = defaultStartPoint
   var endPoint = defaultEndPoint
   var locations = defaultLocations
@@ -29,7 +29,7 @@ final class LinearGradientLayer: CALayer {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func setColors(_ colors: [CGColor]) {
+  func setColors(_ colors: [UIColor]) {
     self.colors = colors
     setNeedsDisplay()
   }
@@ -56,7 +56,7 @@ final class LinearGradientLayer: CALayer {
       return
     }
     let hasAlpha = colors.reduce(false) { result, color in
-      return result || color.alpha < 1.0
+      return result || color.cgColor.alpha < 1.0
     }
 
     UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
@@ -83,15 +83,16 @@ final class LinearGradientLayer: CALayer {
     ctx.saveGState()
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let locations = colors.enumerated().map { (offset: Int, _: CGColor) -> CGFloat in
+    let locations = colors.enumerated().map { (offset: Int, _: UIColor) -> CGFloat in
       if self.locations.count > offset {
         return self.locations[offset]
       } else {
         return CGFloat(offset) / CGFloat(colors.count - 1)
       }
     }
+    let cgColors = colors.map { $0.cgColor } as CFArray
 
-    if let gradient = CGGradient(colorsSpace: colorSpace, colors: colors as CFArray, locations: locations) {
+    if let gradient = CGGradient(colorsSpace: colorSpace, colors: cgColors, locations: locations) {
       let size = bounds.size
 
       ctx.drawLinearGradient(

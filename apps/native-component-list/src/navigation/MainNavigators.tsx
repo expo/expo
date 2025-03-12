@@ -2,6 +2,7 @@ import { BottomTabNavigationOptions, BottomTabNavigationProp } from '@react-navi
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { PathConfig } from '@react-navigation/native';
 import { StackNavigationOptions } from '@react-navigation/stack';
+import React from 'react';
 
 import ExpoApisStackNavigator, { Screens as APIScreens } from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator, {
@@ -13,7 +14,7 @@ import ExpoComponentsStackNavigator, {
 
 type ScreenConfig = {
   linking: PathConfig<{ ExpoApis?: string; ExpoComponents?: string }>;
-  navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
+  navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => React.ReactElement) & {
     navigationOptions: StackNavigationOptions &
       DrawerNavigationOptions &
       BottomTabNavigationOptions;

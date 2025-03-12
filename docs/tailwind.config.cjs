@@ -33,7 +33,6 @@ module.exports = {
       backgroundImage: () => ({
         'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
         'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
-        appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
         'launch-party-banner': "url('/static/images/launch-party-banner-bg.svg')",
         'launch-party-banner-mobile': "url('/static/images/launch-party-banner-bg.svg') 200px",
       }),

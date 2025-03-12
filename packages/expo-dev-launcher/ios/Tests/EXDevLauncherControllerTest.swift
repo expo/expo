@@ -22,9 +22,9 @@ class EXDevLauncherControllerTest: QuickSpec {
     it("extraModulesForBridge should return essential modules") {
       let module = EXDevLauncherController.sharedInstance()
       let bridgeDelegate = MockBridgeDelegate()
-      let bridge = RCTBridge(delegate: bridgeDelegate)
+      let bridge = EXDevLauncherRCTBridge(delegate: bridgeDelegate, launchOptions: nil)!
       waitBridgeReady(bridgeDelegate: bridgeDelegate)
-      let modules = module.extraModules(for: bridge!)
+      let modules = module.extraModules(for: bridge)
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
     }

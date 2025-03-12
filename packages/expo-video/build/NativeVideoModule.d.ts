@@ -4,6 +4,9 @@ type ExpoVideoModule = {
     VideoPlayer: typeof VideoPlayer;
     VideoThumbnail: typeof VideoThumbnail;
     isPictureInPictureSupported(): boolean;
+    setVideoCacheSizeAsync(sizeBytes: number): Promise<void>;
+    clearVideoCacheAsync(): Promise<void>;
+    getCurrentVideoCacheSize(): number;
 };
 declare const _default: ExpoVideoModule;
 export default _default;

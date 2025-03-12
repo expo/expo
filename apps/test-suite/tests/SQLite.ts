@@ -1,6 +1,5 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
-import { Paths } from 'expo-file-system/next';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
@@ -15,6 +14,9 @@ interface UserEntity {
 }
 
 export function test({ describe, expect, it, beforeAll, beforeEach, afterAll, afterEach, ...t }) {
+  const nativeDescribe = process.env.EXPO_OS !== 'web' ? describe : t.xdescribe;
+  const nativeIt = process.env.EXPO_OS !== 'web' ? it : t.xit;
+
   describe('Basic tests', () => {
     it('should be able to drop + create a table, insert, query', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
@@ -37,7 +39,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(semver.lte(row['sqlite_version()'], '3.45.3')).toBe(true);
+      expect(semver.gte(row['sqlite_version()'], '3.45.3')).toBe(true);
       await db.closeAsync();
     });
 
@@ -97,6 +99,8 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       const result = await db.getFirstAsync<any>('SELECT * FROM translations');
       expect(result.key).toBe('hello');
       expect(result.value).toBe('哈囉');
+
+      await db.closeAsync();
     });
 
     it('using getAllAsync for write operations should only run once', async () => {
@@ -114,46 +118,66 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       }
       // If running twice, the second insertion will fail because of the primary key constraint
       expect(error).toBeNull();
+
+      await db.closeAsync();
     });
   });
 
   describe('File system tests', () => {
     beforeAll(async () => {
-      await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
-      await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
+      if (process.env.EXPO_OS !== 'web') {
+        await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
+        await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
+      }
     });
 
-    it('should work with a downloaded .db file', async () => {
-      const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
-      await FS.copyAsync({
-        from: asset.localUri,
-        to: `${FS.documentDirectory}SQLite/downloaded.db`,
-      });
+    nativeIt(
+      'should work with a downloaded .db file',
+      async () => {
+        const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
+        await FS.copyAsync({
+          from: asset.localUri,
+          to: `${FS.documentDirectory}SQLite/downloaded.db`,
+        });
 
-      const db = await SQLite.openDatabaseAsync('downloaded.db');
-      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
-      expect(results.length).toEqual(3);
-      expect(results[0].j).toBeCloseTo(23.4);
-      await db.closeAsync();
-    }, 30000);
+        const db = await SQLite.openDatabaseAsync('downloaded.db');
+        const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+        expect(results.length).toEqual(3);
+        expect(results[0].j).toBeCloseTo(23.4);
+        await db.closeAsync();
+      },
+      30000
+    );
 
     it('should create and delete a database in file system', async () => {
-      const db = await SQLite.openDatabaseAsync('test.db');
+      let db = await SQLite.openDatabaseAsync('test.db');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await db.closeAsync();
+
+      // Double check whether the data is persisted
+      db = await SQLite.openDatabaseAsync('test.db');
+      expect((await db.getAllAsync<UserEntity>('SELECT * FROM users')).length).toBe(1);
+      await db.closeAsync();
+
+      await SQLite.deleteDatabaseAsync('test.db');
+
+      db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
 `);
+      const results2 = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results2.length).toBe(0);
       await db.closeAsync();
-
-      let fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      expect(fileInfo.exists).toBeTruthy();
-
-      await SQLite.deleteDatabaseAsync('test.db');
-      fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      expect(fileInfo.exists).toBeFalsy();
     });
 
-    it('should be able to recreate db from scratch by deleting file', async () => {
+    nativeIt('should be able to recreate db from scratch by deleting file', async () => {
       let db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
 DROP TABLE IF EXISTS users;
@@ -255,6 +279,8 @@ CREATE TABLE customers (id PRIMARY KEY NOT NULL, name VARCHAR(255),email VARCHAR
       await statement.finalizeAsync();
       expect(result.email).toBe('jane@example.com');
       expect(result.name).toBe('Jane Doe');
+
+      await db.closeAsync();
     });
 
     it('runAsync should return changes in RunResult', async () => {
@@ -342,7 +368,8 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       } catch (e) {
         error = e;
       }
-      expect(error.toString()).toMatch(/Access to closed resource/);
+      expect(error.toString()).toMatch(/(Access to closed resource|Statement not found)/);
+      await db.closeAsync();
     });
 
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
@@ -383,6 +410,7 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
         }
         expect(error).toBeNull();
       }
+      await db.closeAsync();
     });
   });
 
@@ -622,45 +650,52 @@ INSERT INTO users (name) VALUES ('aaa');
       expect(error.toString()).toMatch(/Exception from promise1: Expected aaa but received bbb/);
     });
 
-    it('withExclusiveTransactionAsync should execute a transaction atomically and abort other write query', async () => {
-      db = await SQLite.openDatabaseAsync('test.db');
-      await db.execAsync(`
+    nativeIt(
+      'withExclusiveTransactionAsync should execute a transaction atomically and abort other write query',
+      async () => {
+        db = await SQLite.openDatabaseAsync('test.db');
+        await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 INSERT INTO users (name) VALUES ('aaa');
   `);
 
-      const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
-        for (let i = 0; i < 10; ++i) {
-          const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM users');
-          if (result?.name !== 'aaa') {
-            throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
+        const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
+          for (let i = 0; i < 10; ++i) {
+            const result = await txn.getFirstAsync<{ name: string }>('SELECT name FROM users');
+            if (result?.name !== 'aaa') {
+              throw new Error(
+                `Exception from promise1: Expected aaa but received ${result?.name}}`
+              );
+            }
+            await txn.runAsync('UPDATE users SET name = ?', 'aaa');
+            await delayAsync(200);
           }
-          await txn.runAsync('UPDATE users SET name = ?', 'aaa');
-          await delayAsync(200);
-        }
-      });
+        });
 
-      const promise2 = new Promise(async (resolve, reject) => {
-        try {
-          await delayAsync(100);
-          await db?.runAsync('UPDATE users SET name = ?', 'bbb');
-          const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
-          if (result?.name !== 'bbb') {
-            throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
+        const promise2 = new Promise(async (resolve, reject) => {
+          try {
+            await delayAsync(100);
+            await db?.runAsync('UPDATE users SET name = ?', 'bbb');
+            const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
+            if (result?.name !== 'bbb') {
+              throw new Error(
+                `Exception from promise2: Expected bbb but received ${result?.name}}`
+              );
+            }
+            resolve(null);
+          } catch (e) {
+            reject(new Error(`Exception from promise2: ${e.toString()}`));
           }
-          resolve(null);
-        } catch (e) {
-          reject(new Error(`Exception from promise2: ${e.toString()}`));
-        }
-      });
+        });
 
-      const [result1, result2] = await Promise.allSettled([promise1, promise2]);
-      expect(result1.status).toBe('fulfilled');
-      expect(result2.status).toBe('rejected');
-      const error = (result2 as PromiseRejectedResult).reason;
-      expect(error.toString()).toMatch(/Exception from promise2:[\s\S]*database is locked/);
-    });
+        const [result1, result2] = await Promise.allSettled([promise1, promise2]);
+        expect(result1.status).toBe('fulfilled');
+        expect(result2.status).toBe('rejected');
+        const error = (result2 as PromiseRejectedResult).reason;
+        expect(error.toString()).toMatch(/Exception from promise2:[\s\S]*database is locked/);
+      }
+    );
   });
 
   describe('Synchronous calls', () => {
@@ -733,26 +768,6 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
 
       const results = db.getAllSync<UserEntity>('SELECT * FROM users');
       expect(results.length > 0).toBe(true);
-    });
-  });
-
-  describe('CR-SQLite', () => {
-    it('should load crsqlite extension correctly', async () => {
-      const db = await SQLite.openDatabaseAsync('test.db', { enableCRSQLite: true });
-      await db.execAsync(`
-DROP TABLE IF EXISTS foo;
-CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
-`);
-
-      await db.getFirstAsync(`SELECT crsql_as_crr("foo")`);
-      await db.runAsync('INSERT INTO foo (a, b) VALUES (?, ?)', 1, 2);
-      await db.runAsync('INSERT INTO foo (a, b) VALUES (?, ?)', [3, 4]);
-      const result = await db.getFirstAsync<any>(`SELECT * FROM crsql_changes`);
-      expect(result.table).toEqual('foo');
-      expect(result.val).toEqual(2);
-
-      await db.closeAsync();
-      await SQLite.deleteDatabaseAsync('test.db');
     });
   });
 
@@ -861,6 +876,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await statement.executeAsync(['Manu Ginobili', 5, 72.8]);
       await statement.executeAsync(['Nikhilesh Sigatapu', 7, 42.14]);
       await statement.finalizeAsync();
+      await db.closeAsync();
     });
 
     scopedIt('should open a database with a password', async () => {
@@ -885,7 +901,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     });
   });
 
-  describe('Custom path', () => {
+  nativeDescribe('Custom path', () => {
     beforeAll(async () => {
       const dir = FS.cacheDirectory + 'SQLite';
 
@@ -956,7 +972,11 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
-  const sharedContainerRoot = Object.values(Paths.appleSharedContainers)?.[0];
+  let Paths: typeof import('expo-file-system/next').Paths | null = null;
+  try {
+    Paths = require('expo-file-system/next').Paths as typeof import('expo-file-system/next').Paths;
+  } catch {}
+  const sharedContainerRoot = Paths ? Object.values(Paths.appleSharedContainers)?.[0] : null;
   const sharedContainerDir = sharedContainerRoot ? sharedContainerRoot.uri + 'SQLite' : null;
   const scopedIt = sharedContainerDir ? it : t.xit;
 
@@ -1014,6 +1034,9 @@ async function delayAsync(timeMs: number) {
 }
 
 function checkIsSQLCipherSupportedSync(): boolean {
+  if (process.env.EXPO_OS === 'web') {
+    return false;
+  }
   const db = SQLite.openDatabaseSync(':memory:');
   const isSQLCipher = db.getFirstSync('PRAGMA cipher_version') != null;
   db.closeSync();

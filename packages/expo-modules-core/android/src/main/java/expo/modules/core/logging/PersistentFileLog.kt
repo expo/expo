@@ -1,6 +1,5 @@
 package expo.modules.core.logging
 
-import android.content.Context
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -24,7 +23,7 @@ import java.nio.charset.Charset
  */
 class PersistentFileLog(
   category: String,
-  context: Context
+  filesDirectory: File
 ) {
 
   /**
@@ -94,7 +93,7 @@ class PersistentFileLog(
 
   // Private functions
 
-  private val filePath = "${context.filesDir.path}/$FILE_NAME_PREFIX.$category"
+  private val filePath = "${filesDirectory.path}/$FILE_NAME_PREFIX.$category"
 
   private fun ensureFileExists() {
     val fd = File(filePath)

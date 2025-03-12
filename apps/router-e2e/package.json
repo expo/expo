@@ -13,6 +13,8 @@
     "start:04-server-error-boundaries": "E2E_SERVER_FUNCTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=04-server-error-boundaries expo start",
     "export:04-server-error-boundaries": "E2E_SERVER_FUNCTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=04-server-error-boundaries expo export",
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
+    "export:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo export -p web",
+    "start:web-workers": "E2E_ROUTER_ASYNC=development E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
@@ -27,10 +29,10 @@
     "expo-router": "^4.0.0",
     "expo-speech": "~13.0.0",
     "expo-sqlite": "~15.0.0",
-    "react": "18.3.1",
-    "react-native": "0.77.0",
-    "react-native-safe-area-context": "5.1.0",
-    "react-native-screens": "~4.5.0",
+    "react": "19.0.0",
+    "react-native": "0.78.0",
+    "react-native-safe-area-context": "5.2.0",
+    "react-native-screens": "4.9.0",
     "react-native-webview": "13.13.0"
   },
   "devDependencies": {

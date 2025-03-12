@@ -23,10 +23,15 @@ export default function ContextMenuScreen() {
   });
   const MenuItems = (
     <>
-      <Button systemImage="person.crop.circle.badge.xmark" onPress={() => console.log('Pressed1')}>
+      <Button
+        systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+        onPress={() => console.log('Pressed1')}>
         Hello
       </Button>
-      <Button variant="bordered" systemImage="heart" onPress={() => console.log('Pressed2')}>
+      <Button
+        variant="bordered"
+        systemImage={{ ios: 'heart' }}
+        onPress={() => console.log('Pressed2')}>
         I love
       </Button>
       <Picker
@@ -48,10 +53,10 @@ export default function ContextMenuScreen() {
         label="Will u marry doggos?"
         onValueChange={setSwitch2Checked}
       />
-      <Button role="destructive" systemImage="hand.thumbsdown">
+      <Button role="destructive" systemImage={{ ios: 'hand.thumbsdown' }}>
         I don't like doggos 😡
       </Button>
-      <Submenu button={<Button systemImage="heart.slash">Evil submenu</Button>}>
+      <Submenu button={<Button systemImage={{ ios: 'heart.slash' }}>Evil submenu</Button>}>
         <Button>I hate</Button>
         <Button>doggos</Button>
         <Submenu button={<Button>👹Very evil submenu 👺</Button>}>

@@ -107,9 +107,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
-
-        testBuildType System.getProperty('testBuildType', 'debug')
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         debug {
@@ -193,11 +190,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.6.1')
-    androidTestImplementation('androidx.test:runner:1.6.2')
-    androidTestImplementation('androidx.test:rules:1.6.1')
-    androidTestImplementation('androidx.test.ext:junit-ktx:1.2.1')
 }
 
 class ExecuteSetupAndroidProject implements Plugin<Project> {

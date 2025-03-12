@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "runtimeVersion": "1.0",
+    "android": {
+      "package": "com.example.minimal"
+    },
+    "ios": {
+      "bundleIdentifier": "com.example.minimal"
+    }
+  }
+}

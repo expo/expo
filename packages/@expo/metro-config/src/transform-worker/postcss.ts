@@ -10,7 +10,7 @@ import path from 'path';
 import type { AcceptedPlugin, ProcessOptions } from 'postcss';
 import resolveFrom from 'resolve-from';
 
-import { requireUncachedFile, tryRequireThenImport } from './utils/require';
+import { tryRequireThenImport } from './utils/require';
 
 type PostCSSInputConfig = {
   plugins?: any[];
@@ -30,8 +30,7 @@ export async function transformPostCssModule(
   projectRoot: string,
   { src, filename }: { src: string; filename: string }
 ): Promise<{ src: string; hasPostcss: boolean }> {
-  const inputConfig = resolvePostcssConfig(projectRoot);
-
+  const inputConfig = await resolvePostcssConfig(projectRoot);
   if (!inputConfig) {
     return { src, hasPostcss: false };
   }
@@ -235,17 +234,21 @@ export function pluginFactory() {
   };
 }
 
-export function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | null {
-  // TODO: Maybe support platform-specific postcss config files in the future.
-  const jsConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.js');
-
-  if (fs.existsSync(jsConfigPath)) {
-    debug('load file:', jsConfigPath);
-    return requireUncachedFile(jsConfigPath);
+export async function resolvePostcssConfig(
+  projectRoot: string
+): Promise<PostCSSInputConfig | null> {
+  for (const ext of ['.mjs', '.js']) {
+    const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
+    if (fs.existsSync(configPath)) {
+      debug('load file:', configPath);
+      const config = await tryRequireThenImport<
+        PostCSSInputConfig | Record<'default', PostCSSInputConfig>
+      >(configPath);
+      return 'default' in config ? config.default : config;
+    }
   }
 
   const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');
-
   if (fs.existsSync(jsonConfigPath)) {
     debug('load file:', jsonConfigPath);
     return JsonFile.read(jsonConfigPath, { json5: true });
@@ -258,9 +261,11 @@ export function getPostcssConfigHash(projectRoot: string): string | null {
   // TODO: Maybe recurse plugins and add versions to the hash in the future.
   const { stableHash } = require('metro-cache');
 
-  const jsConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.js');
-  if (fs.existsSync(jsConfigPath)) {
-    return stableHash(fs.readFileSync(jsConfigPath, 'utf8')).toString('hex');
+  for (const ext of ['.mjs', '.js']) {
+    const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
+    if (fs.existsSync(configPath)) {
+      return stableHash(fs.readFileSync(configPath, 'utf8')).toString('hex');
+    }
   }
 
   const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');

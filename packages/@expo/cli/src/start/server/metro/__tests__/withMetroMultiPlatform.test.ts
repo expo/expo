@@ -121,7 +121,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         extraNodeModules: {},
@@ -150,7 +150,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
     expect(getResolveFunc()).toHaveBeenNthCalledWith(
       1,
@@ -176,7 +176,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
     expect(getResolveFunc()).toHaveBeenNthCalledWith(
       1,
@@ -202,7 +202,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
@@ -225,7 +225,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
@@ -252,7 +252,7 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
@@ -459,7 +459,7 @@ describe(withExtendedResolver, () => {
       type: 'empty',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
@@ -495,7 +495,7 @@ describe(withExtendedResolver, () => {
       type: 'sourceFile',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
@@ -528,7 +528,7 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         mainFields: ['main', 'module'],
@@ -563,7 +563,7 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
@@ -605,7 +605,7 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
@@ -647,7 +647,7 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       {
         customResolverOptions: { environment: 'node' },
@@ -715,7 +715,7 @@ describe(withExtendedResolver, () => {
       type: 'sourceFile',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.anything(),
       '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
@@ -751,7 +751,7 @@ describe(withExtendedResolver, () => {
               );
 
               expect(result.type).toBe('empty');
-              expect(getResolveFunc()).toBeCalledTimes(1);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(1);
             });
           });
 
@@ -805,7 +805,7 @@ describe(withExtendedResolver, () => {
                 `\0node:${name}`
               );
 
-              expect(getResolveFunc()).toBeCalledTimes(0);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(0);
             });
           });
 
@@ -822,10 +822,36 @@ describe(withExtendedResolver, () => {
               '\0node:@babel/runtime/xxx/foo.js'
             );
 
-            expect(getResolveFunc()).toBeCalledTimes(0);
+            expect(getResolveFunc()).toHaveBeenCalledTimes(0);
           });
         });
       });
+    });
+
+    it(`does not apply virtual externals to imports originating in CSS files`, () => {
+      vol.fromJSON(
+        {
+          'node_modules/@radix-ui/colors/green-dark.css': '',
+          mock: '',
+        },
+        '/'
+      );
+
+      const config = getModifiedConfig();
+
+      const result = config.resolver.resolveRequest!(
+        getNodeResolverContext({
+          originModulePath: '/index.css',
+        }),
+        '@radix-ui/colors/green-dark.css',
+        'web'
+      );
+
+      expect(result).toEqual({
+        type: 'empty',
+      });
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
     it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
@@ -843,7 +869,7 @@ describe(withExtendedResolver, () => {
         type: 'empty',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
     it(`does not extern source-map-support in client environment`, async () => {
@@ -857,7 +883,7 @@ describe(withExtendedResolver, () => {
         type: 'empty',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -911,7 +937,7 @@ describe(withExtendedResolver, () => {
         type: 'sourceFile',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
       expect(getResolveFunc()).toBeCalledWith(
         expect.anything(),
         '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',

@@ -4,7 +4,6 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
@@ -18,7 +17,6 @@ private const val MEMORY_DB_NAME = ":memory:"
 @Suppress("unused")
 class SQLiteModule : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
-  private val cachedStatements: MutableMap<NativeDatabase, MutableList<NativeStatement>> = mutableMapOf()
   private var hasListeners = false
 
   private val context: Context
@@ -248,9 +246,6 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class)
   private fun initDb(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
-    if (database.openOptions.enableCRSQLite) {
-      loadCRSQLiteExtension(database)
-    }
     if (database.openOptions.enableChangeListener) {
       addUpdateHook(database)
     }
@@ -275,7 +270,6 @@ class SQLiteModule : Module() {
     if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    maybeAddCachedStatement(database, statement)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
@@ -367,23 +361,10 @@ class SQLiteModule : Module() {
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    maybeRemoveCachedStatement(database, statement)
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
     statement.isFinalized = true
-  }
-
-  private fun loadCRSQLiteExtension(database: NativeDatabase) {
-    var errCode = database.ref.sqlite3_enable_load_extension(1)
-    if (errCode != NativeDatabaseBinding.SQLITE_OK) {
-      Log.e(TAG, "Failed to enable sqlite3 extensions - errCode[$errCode]")
-      return
-    }
-    errCode = database.ref.sqlite3_load_extension("libcrsqlite", "sqlite3_crsqlite_init")
-    if (errCode != NativeDatabaseBinding.SQLITE_OK) {
-      Log.e(TAG, "Failed to load crsqlite extension - errCode[$errCode]")
-    }
   }
 
   private fun addUpdateHook(database: NativeDatabase) {
@@ -408,12 +389,7 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
-    maybeRemoveAllCachedStatements(database).forEach {
-      it.ref.sqlite3_finalize()
-    }
-    if (database.openOptions.enableCRSQLite) {
-      database.ref.sqlite3_exec("SELECT crsql_finalize()")
-    }
+    maybeFinalizeAllStatements(database)
     val ret = database.ref.sqlite3_close()
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -490,35 +466,16 @@ class SQLiteModule : Module() {
 
   // endregion
 
-  // region cachedStatements managements
+  // region statements managements
 
   @Synchronized
-  private fun maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+  private fun maybeFinalizeAllStatements(database: NativeDatabase) {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    val statements = cachedStatements[database]
-    if (statements != null) {
-      statements.add(statement)
-    } else {
-      cachedStatements[database] = mutableListOf(statement)
+    if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-  }
-
-  @Synchronized
-  private fun maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
-      return
-    }
-    cachedStatements[database]?.remove(statement)
-  }
-
-  @Synchronized
-  private fun maybeRemoveAllCachedStatements(database: NativeDatabase): List<NativeStatement> {
-    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
-      return emptyList()
-    }
-    return cachedStatements.remove(database) ?: emptyList()
   }
 
   // endregion

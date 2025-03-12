@@ -12,7 +12,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    An array of constants definitions.
    */
-  let constants: [ConstantsDefinition]
+  let legacyConstants: [ConstantsDefinition]
+
+  /**
+   A map of constants defined by the object.
+   */
+  let constants: [String: AnyConstantDefinition]
 
   /**
    A map of dynamic properties defined by the object.
@@ -34,8 +39,14 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
         dict[function.name] = function
       }
 
-    self.constants = definitions
+    self.legacyConstants = definitions
       .compactMap { $0 as? ConstantsDefinition }
+
+    self.constants = definitions
+      .compactMap { $0 as? AnyConstantDefinition }
+      .reduce(into: [String: AnyConstantDefinition]()) { dict, constant in
+        dict[constant.name] = constant
+      }
 
     self.properties = definitions
       .compactMap { $0 as? AnyPropertyDefinition }
@@ -53,8 +64,8 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Merges all `constants` definitions into one dictionary.
    */
-  func getConstants() -> [String: Any?] {
-    return constants.reduce(into: [String: Any?]()) { dict, definition in
+  func getLegacyConstants() -> [String: Any?] {
+    return legacyConstants.reduce(into: [String: Any?]()) { dict, definition in
       dict.merge(definition.body()) { $1 }
     }
   }
@@ -68,7 +79,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   }
 
   public func decorate(object: JavaScriptObject, appContext: AppContext) throws {
-    decorateWithConstants(object: object)
+    try decorateWithConstants(object: object, appContext: appContext)
     try decorateWithFunctions(object: object, appContext: appContext)
     try decorateWithProperties(object: object, appContext: appContext)
     try decorateWithClasses(object: object, appContext: appContext)
@@ -76,9 +87,14 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   // MARK: - Internals
 
-  internal func decorateWithConstants(object: JavaScriptObject) {
-    for (key, value) in getConstants() {
+  internal func decorateWithConstants(object: JavaScriptObject, appContext: AppContext) throws {
+    for (key, value) in getLegacyConstants() {
       object.setProperty(key, value: value)
+    }
+
+    for constant in constants.values {
+      let descriptor = try constant.buildDescriptor(appContext: appContext)
+      object.defineProperty(constant.name, descriptor: descriptor)
     }
   }
 

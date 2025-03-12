@@ -12,7 +12,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
@@ -30,7 +29,6 @@ object ReactHostFactory {
     private val weakContext: WeakReference<Context>,
     private val reactNativeHostWrapper: ReactNativeHostWrapper,
     override val bindingsInstaller: BindingsInstaller? = null,
-    private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder()
   ) : ReactHostDelegate {
@@ -58,8 +56,6 @@ object ReactHostFactory {
 
     override val reactPackages: List<ReactPackage>
       get() = reactNativeHostWrapper.packages
-
-    override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
 
     override fun handleInstanceException(error: Exception) {
       val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport

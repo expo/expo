@@ -1,1 +1,1 @@
-{"version":3,"file":"useRejectionHandler.d.ts","sourceRoot":"","sources":["../../src/error-overlay/useRejectionHandler.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAuB1B,wBAAgB,mBAAmB,oCAqClC"}
+{"version":3,"file":"useRejectionHandler.d.ts","sourceRoot":"","sources":["../../src/error-overlay/useRejectionHandler.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAuB1B,wBAAgB,mBAAmB,6BAqClC"}

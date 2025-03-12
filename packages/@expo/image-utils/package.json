@@ -33,7 +33,6 @@
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
-    "fs-extra": "9.0.0",
     "getenv": "^1.0.0",
     "jimp-compact": "0.16.1",
     "parse-png": "^2.1.0",
@@ -43,7 +42,6 @@
     "unique-string": "~2.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.1",
     "@types/getenv": "^0.7.0",
     "@types/semver": "^6.0.0",
     "expo-module-scripts": "^4.0.0"
