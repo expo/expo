@@ -33,6 +33,7 @@ export function useGroupNavigatorChildren(
     const redirects: Map<string, ScreenPropsWithName> = new Map();
 
     let userScreenOrder = Children.map(children, (child): ScreenPropsWithName | null => {
+      // Only custom navigators can have non-element children
       if (!isValidElement(child) || !child) {
         if (isCustomNavigator) {
           nonScreens.push(child);
@@ -69,6 +70,12 @@ export function useGroupNavigatorChildren(
         }
 
         redirects.set(child.props.name, child.props as ScreenPropsWithName);
+      }
+
+      // Custom Navigators can have any type of child
+      if (isCustomNavigator) {
+        nonScreens.push(child);
+        return null;
       }
 
       warnLayoutChildren(contextKey);
