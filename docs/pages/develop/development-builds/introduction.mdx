@@ -2,7 +2,6 @@
 title: Introduction to development builds
 sidebar_title: Introduction
 description: Why use development builds and how to get started.
-hideTOC: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -22,7 +21,7 @@ Since the native app bundle is immutable, this means that when you're using the 
 <VideoBoxLink
   videoId="FdjczjkwQKE"
   title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video Beto explains what each of them is, and when to choose a Development Build."
+  description="In this tutorial video Beto explains what each of them is, and when to choose a development build."
 />
 ## Why use a Development Build (aka _can't_ you do in Expo Go and why)
 
@@ -42,7 +41,7 @@ These native assets are shipped with the native bundle and are immutable once th
 
 ### Remote push notifications
 
-While in-app [notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) are available in Expo Go, remote push notifications (that is, sending a push notification from a server into the app) are unsupported from SDK 53 onwards. This is because a push notification service should be tied to your own push notifications certificates and while it is possible to make it work in Expo Go, it is often cause for much confusion in production builds. It is therefore better to test remote push notifications in Development Builds so you can ensure parity in behavior between development and production.
+While [in-app notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) are available in Expo Go, remote push notifications (that is, sending a push notification from a server to the app) are not. This is because a push notification service should be tied to your own push notification certificates, and while it is possible to make it work in Expo Go, it often causes confusion for production builds. It is recommended to test remote push notifications in development builds so you can ensure parity in behavior between development and production.
 
 ### Universal Links / App Links
 
