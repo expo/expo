@@ -5,7 +5,6 @@ sidebar_title: Navigation
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Once you have a few pages in your app and their layouts setup, it's time to start navigating between them. Navigation in Expo Router works a lot like React Navigation, but with all pages having a URL by default, we can create links and use these URL's to move about our app using familiar web patterns.
 
@@ -148,7 +147,7 @@ You can specify query parameters in the link URL itself, or as additional parame
 </Link>
 ```
 
-### Using dynamic route variables and query parameters
+### Using dynamic route variables and query parameters in the destination page
 
 All variables in the link URL are accessible to the receiving page via the `useLocalSearchParams` hook. This hook returns an object with all the URL parameters, including those passed as `params`.
 
@@ -176,7 +175,7 @@ export default function Users() {
 }
 ```
 
-## Update query parameters
+### Updating query parameters without navigating
 
 Query parameters can be updated without navigating to a new page. This can be done with a `Link` that uses the same URL as the current page, but with updated query parameters, or imperatively.
 
@@ -200,7 +199,7 @@ export default function Page() {
 }
 ```
 
-### Deep links
+## Deep links
 
 Deep linking is when a URL opens a specific page in your app. Expo Router supports deep linking by default, so you can link to any page in your app with a URL from outside of your app, just like you would inside your app with `Link`. This is especially useful for sharing links to specific pages in your app.
 
@@ -218,7 +217,7 @@ Assuming your `scheme` is `myapp`, here's some examples of how you would link to
 
 With app links and universal links, you can also link into your app with an https URL. [Learn more]()
 
-### Initial routes
+## Initial routes
 
 When opening a deep link to a page in your app, you will likely want back navigation to work just as if the user navigated to the page from your home page. To do this, you can specify an `initalRouteName` configuration, which defines the page in a layout that should be loaded prior to the deep linked page.
 
