@@ -178,6 +178,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         const nextNavigationState = stateRoute.state;
         const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
+            (actionStateRoute.params && !deepIncludes(actionStateRoute.params, stateRoute.params)) ||
             !childState ||
             !nextNavigationState ||
             (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
@@ -263,5 +264,18 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
             params: rootPayload.params,
         },
     };
+}
+function deepIncludes(collection, value) {
+    if (collection === value) {
+        return true;
+    }
+    if (Array.isArray(collection) && Array.isArray(value)) {
+        return value.every((value, index) => deepIncludes(value, value[index]));
+    }
+    if (typeof collection === 'object' && typeof value === 'object' && collection && value) {
+        const keysA = Object.keys(value);
+        return keysA.every((key) => deepIncludes(collection[key], value[key]));
+    }
+    return false;
 }
 //# sourceMappingURL=routing.js.map
