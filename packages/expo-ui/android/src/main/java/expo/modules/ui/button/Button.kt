@@ -2,21 +2,9 @@ package expo.modules.ui.button
 
 import android.content.Context
 import android.graphics.Color
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
@@ -31,17 +19,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.Children
-import expo.modules.kotlin.views.ComposableWrapper
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.compose
 import expo.modules.ui.getImageVector
@@ -76,7 +60,7 @@ data class ButtonProps(
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
   val systemImage: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false)
-) : ComposeProps
+) : ComposeProps()
 
 @Composable
 fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
@@ -158,17 +142,27 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
       val (systemImage) = props.systemImage
       val (disabled) = props.disabled
       DynamicTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(48.dp)) {
-          Children()
+        StyledButton(
+          variant ?: ButtonVariant.DEFAULT,
+          colors,
+          disabled,
+          { onButtonPressed.invoke(ButtonPressedEvent()) }
+        ) {
+          if (systemImage != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              getImageVector(systemImage)?.let {
+                Icon(
+                  it,
+                  contentDescription = systemImage,
+                  modifier = Modifier.padding(end = 8.dp)
+                )
+              }
+              Text(text)
+            }
+          } else {
+            Text(text)
+          }
         }
-//        StyledButton(
-//          variant ?: ButtonVariant.DEFAULT,
-//          colors,
-//          disabled,
-//          { onButtonPressed.invoke(ButtonPressedEvent()) }
-//        ) {
-//          Children()
-//        }
       }
     }
   }

@@ -62,7 +62,7 @@ data class DateTimePickerProps(
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
   val is24Hour: MutableState<Boolean> = mutableStateOf(true),
   val color: MutableState<AndroidColor?> = mutableStateOf(null)
-) : ComposeProps
+) : ComposeProps()
 
 @SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)

@@ -36,7 +36,7 @@ data class ContextMenuProps(
   val elements: MutableState<Array<ContextMenuElement>> = mutableStateOf(emptyArray()),
   val activationMethod: MutableState<ActivationMethod> = mutableStateOf(ActivationMethod.SINGLE_PRESS),
   val color: MutableState<Color?> = mutableStateOf(null)
-) : ComposeProps
+) : ComposeProps()
 
 class ContextMenuButtonProps(
   @Field val text: String = "",

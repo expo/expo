@@ -44,5 +44,7 @@ class ExpoUIModule : Module() {
     View(TextInputView::class)  {
       Events("onValueChanged")
     }
+
+    View(ListView::class)
   }
 }

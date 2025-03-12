@@ -59,7 +59,7 @@ data class SwitchProps(
   val value: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch"),
   val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors())
-) : ComposeProps
+) : ComposeProps()
 
 @Composable
 fun SwitchComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier = Modifier) {

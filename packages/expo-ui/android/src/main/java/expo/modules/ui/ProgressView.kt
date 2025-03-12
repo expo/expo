@@ -32,7 +32,7 @@ data class ProgressProps(
   val progress: MutableState<Float?> = mutableStateOf(null),
   val color: MutableState<Color?> = mutableStateOf(null),
   val elementColors: MutableState<ProgressColors> = mutableStateOf(ProgressColors())
-) : ComposeProps
+) : ComposeProps()
 
 class ProgressView(context: Context, appContext: AppContext) : ExpoComposeView<ProgressProps>(context, appContext) {
   override val props = ProgressProps()

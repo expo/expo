@@ -74,7 +74,7 @@ data class PickerProps(
   val selectedIndex: MutableState<Int?> = mutableStateOf(null),
   val elementColors: MutableState<PickerColors> = mutableStateOf(PickerColors()),
   val variant: MutableState<String> = mutableStateOf("segmented")
-) : ComposeProps
+) : ComposeProps()
 
 class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<PickerProps>(context, appContext) {
   override val props = PickerProps()
