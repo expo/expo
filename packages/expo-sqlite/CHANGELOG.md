@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
-- Added [Session Extension](https://www.sqlite.org/sessionintro.html) support. ([#35457](https://github.com/expo/expo/pull/35457) by [@kudo](https://github.com/kudo))
+- Added [Session Extension](https://www.sqlite.org/sessionintro.html) support. ([#35457](https://github.com/expo/expo/pull/35457), [#35458](https://github.com/expo/expo/pull/35458) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
