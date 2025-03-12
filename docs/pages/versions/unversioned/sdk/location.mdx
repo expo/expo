@@ -201,7 +201,7 @@ function openSettings() {
 
 It is possible to request foreground location access first and then ask for background location access later. This can improve the user experience by requesting permissions only when necessary.
 
-**Requesting Background Permissions Directly**
+**Requesting Background Permissions directly**
 
 If you call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) without first requesting foreground permissions, iOS treats it as a request for both `When In Use` and `Always` authorization. The system will then prompt the user for `When In Use` access, and the `Always` authorization prompt will be displayed when the system determines that `Always` authorization is required.
 
