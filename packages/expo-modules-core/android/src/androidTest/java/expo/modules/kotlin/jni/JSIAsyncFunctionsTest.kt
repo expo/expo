@@ -44,14 +44,14 @@ class JSIAsyncFunctionsTest {
     val doubleValue = callAsync("doubleF", "123.3").getDouble()
     val floatValue = callAsync("floatF", "123.3").getFloat()
     val boolValue = callAsync("boolF", "true").getBool()
-    val longValue = callAsync("longF", "21474836470").getLong()
+    val longValue = callAsync("longF", "21474836470").getDouble().toLong()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
     Truth.assertThat(doubleValue).isEqualTo(123.3)
-    Truth.assertThat(floatValue).isEqualTo(123.3f)
+    Truth.assertThat(floatValue).isEqualTo(123.3.toFloat())
     Truth.assertThat(boolValue).isEqualTo(true)
-    Truth.assertThat(longValue).isEqualTo(21474836470L)
+    Truth.assertThat(longValue).isEqualTo(21474836470)
   }
 
   @Test

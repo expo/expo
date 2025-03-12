@@ -50,6 +50,7 @@ object JSTypeConverter {
       is Uri -> value.toJSValue()
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
+      is Long -> value.toDouble()
       is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> value.toJSValue(containerProvider)
@@ -80,6 +81,7 @@ object JSTypeConverter {
       is Uri -> value.toJSValue()
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
+      is Long -> value.toDouble()
       is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> if (useExperimentalConverter) {

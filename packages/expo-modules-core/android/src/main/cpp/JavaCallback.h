@@ -69,8 +69,6 @@ private:
 
   void invokeDouble(double result);
 
-  void invokeLong(long result);
-
   void invokeFloat(float result);
 
   void invokeString(jni::alias_ref<jstring> result);
