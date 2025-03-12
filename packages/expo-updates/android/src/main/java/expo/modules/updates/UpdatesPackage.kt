@@ -121,6 +121,6 @@ class UpdatesPackage : Package {
   companion object {
     private val TAG = UpdatesPackage::class.java.simpleName
     val isUsingNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
-    val isUsingCustomInit = BuildConfig.EX_UPDATES_CUSTOM_INIT
+    internal val isUsingCustomInit = BuildConfig.EX_UPDATES_CUSTOM_INIT
   }
 }
