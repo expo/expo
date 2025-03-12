@@ -22,11 +22,13 @@ export function transformBottomSheetProps(props: BottomSheetProps): NativeBottom
 }
 
 export function BottomSheet(props: BottomSheetProps) {
-  const { width } = Dimensions.get('window');
   return (
     <View>
       <BottomSheetNativeView
-        style={{ position: 'absolute', width }}
+        style={{
+          position: 'absolute',
+          ...props.style,
+        }}
         {...transformBottomSheetProps(props)}
       />
     </View>

@@ -1,7 +1,7 @@
 import { BottomSheet } from '@expo/ui/components/BottomSheet';
 import { Button } from '@expo/ui/components/Button';
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 export default function SectionScreen() {
   const [isOpened, setIsOpened] = React.useState<boolean>(true);
@@ -12,12 +12,19 @@ export default function SectionScreen() {
       <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
       <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-        <Animated.View layout={LinearTransition.duration(300)} style={{ height, padding: 20 }}>
+        <View
+          style={{
+            backgroundColor: 'green',
+            flex: 1,
+            margin: 10,
+            // alignSelf: 'stretch',
+          }}>
           <Button onPress={() => setHeight((h) => (h > 500 ? 100 : h + 100))}>
             Increase height
           </Button>
-        </Animated.View>
+        </View>
       </BottomSheet>
+      <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
     </ScrollView>
   );
 }
