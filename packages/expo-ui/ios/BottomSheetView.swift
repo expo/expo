@@ -12,7 +12,9 @@ struct HeightPreferenceKey: PreferenceKey {
   static var defaultValue: CGFloat?
 
   static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-    guard let nextValue = nextValue() else { return }
+    guard let nextValue = nextValue() else {
+      return
+    }
     value = nextValue
   }
 }
@@ -20,8 +22,7 @@ struct HeightPreferenceKey: PreferenceKey {
 private struct ReadHeightModifier: ViewModifier {
   private var sizeView: some View {
     GeometryReader { geometry in
-      Color.clear.preference(key: HeightPreferenceKey.self,
-                             value: geometry.size.height)
+      Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
     }
   }
 
@@ -48,7 +49,8 @@ struct BottomSheetView: ExpoSwiftUI.View {
               }
             }
             .presentationDetents([.height(self.height)])
-        }.onChange(of: isOpened, perform: { newIsOpened in
+        }
+        .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
             return
           }
