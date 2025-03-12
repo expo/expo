@@ -4,7 +4,7 @@ hideFromSearch: true
 description: Learn how to send notifications with FCM and APNs.
 ---
 
-You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic.
+You may need finer-grained control over your notifications, in which case communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic.
 
 > **Note**: This guide does not aim to be a comprehensive resource for sending notifications via FCM or APNs. We recommend you read the official documentation to make sure you're following the latest instructions.
 
@@ -108,7 +108,7 @@ async function sendFCMv1Notification() {
 }
 ```
 
-**The `experienceId` and `scopeKey` fields are required**. Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
+The `experienceId` and `scopeKey` fields are only applicable when using Expo Go (from SDK 53, push notifications support is removed from Expo Go). Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
 
 FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send-message#node.js) you can use instead of raw `fetch` requests.
 
