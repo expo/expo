@@ -53,14 +53,7 @@ public class SchedulerModule: Module {
           if let error = error {
             promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule notification, \(error)")
           } else {
-            promise.resolve()
-          }
-          UNUserNotificationCenter.current().add(request) {error in
-            if let error = error {
-              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule notification, \(error)")
-            } else {
-              promise.resolve(identifier)
-            }
+            promise.resolve(identifier)
           }
         }
       } catch {

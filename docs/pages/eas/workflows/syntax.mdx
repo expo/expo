@@ -92,7 +92,7 @@ on:
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
@@ -109,7 +109,9 @@ on:
     branches:
       - main
       - feature/**
-      # other branch names and globs
+      - !feature/test-** # other branch names and globs
+
+
     types:
       - opened
       # other event types
@@ -387,6 +389,29 @@ jobs:
       prod: boolean # optional
 ```
 
+#### `fingerprint`
+
+Calculates fingerprint of Android and iOS builds.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: fingerprint
+    # @end #
+```
+
+> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+This job outputs the following properties:
+
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
+```
+
 #### `get-build`
 
 Retrieves an existing build from EAS that matches the provided parameters.
@@ -434,7 +459,9 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment`, it uses the same environment used to create the build referenced in `build_id`.
+
+> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
 
 ```yaml
 jobs:

@@ -49,6 +49,12 @@
 
 - Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
 
+## 2.2.3 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed `kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError` error on Android. ([#35114](https://github.com/expo/expo/pull/35114) by [@kudo](https://github.com/kudo))
+
 ## 2.2.2 - 2025-02-14
 
 ### 🎉 New features
