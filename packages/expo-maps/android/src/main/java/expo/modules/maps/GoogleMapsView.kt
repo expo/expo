@@ -42,7 +42,7 @@ data class GoogleMapsViewProps(
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
-) : ComposeProps
+) : ComposeProps()
 
 @SuppressLint("ViewConstructor")
 class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {

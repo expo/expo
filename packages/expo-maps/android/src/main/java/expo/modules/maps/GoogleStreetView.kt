@@ -17,7 +17,7 @@ data class GoogleStreetViewProps(
   val isStreetNamesEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isUserNavigationEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isZoomGesturesEnabled: MutableState<Boolean> = mutableStateOf(true)
-) : ComposeProps
+) : ComposeProps()
 
 @OptIn(MapsExperimentalFeature::class)
 class GoogleStreetView(

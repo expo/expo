@@ -6,13 +6,14 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.children
+import com.facebook.react.views.view.ReactViewGroup
 
 /**
  * A base class that should be used by compose views.
@@ -27,20 +28,25 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   var content: Any? = null
 
-  var children = mutableStateOf(listOf<ChildElement>())
-
   override fun addView(child: View?, index: Int) {
+    println("adding view: $child")
     when (child) {
       is ComposeView -> super.addView(child, index)
       is ExpoComposeView<*> -> {
         val composableContent = child.content
         if (composableContent is ComposableWrapper) {
-          children.value += ChildElement.Compose { composableContent.composable() }
+          props?.let {
+            val composeChild = ComposableChild.Compose { composableContent.composable() }
+            it._children.value += composeChild
+          }
         }
       }
+
       null -> return
       else -> {
-        children.value += ChildElement.Android(child)
+        props?.let {
+          it._children.value += ComposableChild.Android(child)
+        }
       }
     }
   }
@@ -73,6 +79,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun setContent(
     content: @Composable () -> Unit
   ) {
+    layout.children
     this.content = ComposableWrapper(content)
     layout.setContent { content() }
   }
@@ -80,19 +87,19 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
 class ComposableWrapper(val composable: @Composable () -> Unit)
 
-sealed class ChildElement {
-  data class Android(val view: View) : ChildElement()
-  data class Compose(val content: @Composable () -> Unit) : ChildElement()
+sealed class ComposableChild {
+  data class Android(val view: View) : ComposableChild()
+  data class Compose(val content: @Composable () -> Unit) : ComposableChild()
 }
 
 @Composable
 fun ExpoComposeView<*>.Children(
-  children: List<ChildElement>? = null
+  children: List<ComposableChild>? = null
 ) {
-  val childrenToRender = children ?: this.children.value
+  val childrenToRender = children ?: props?._children?.value.orEmpty()
   childrenToRender.forEach { element ->
     when (element) {
-      is ChildElement.Android -> AndroidView(
+      is ComposableChild.Android -> AndroidView(
         modifier = Modifier.fillMaxWidth(),
         factory = { _ ->
           element.view.apply {
@@ -100,7 +107,7 @@ fun ExpoComposeView<*>.Children(
           }
         },
       )
-      is ChildElement.Compose -> element.content()
+      is ComposableChild.Compose -> element.content()
     }
   }
 }
