@@ -183,7 +183,7 @@ iOS permissions are divided into the two categories `When In Use` and `Always` a
 
 Unfortunately, **iOS does not provide a way to detect whether the user selected `Allow Once` or `Allow While Using the App`**. Both responses result in `When In Use` authorization.
 
-If the user selected `Allow Once` and you subsequently call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) in the same session, the system **will not show another prompt**. Instead the request will **silently fail** and the returned background permission status will be **denied**.
+If the user selected `Allow Once` and you subsequently call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) in the same session, the system **will not show another prompt**. Instead, the request will **silently fail**, and the returned background permission status will be **denied**.
 
 **Handling "Allow Once" scenarios**
 
