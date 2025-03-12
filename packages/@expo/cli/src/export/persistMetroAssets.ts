@@ -45,6 +45,11 @@ export async function persistMetroAssetsAsync(
     return;
   }
 
+  // Ensure that the outputDirectory actually exists
+  if (!fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, { recursive: true });
+  }
+
   let assetsToCopy: AssetData[] = [];
 
   // TODO: Use `files` as below to defer writing files
