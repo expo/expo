@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { SQLiteSession } from './SQLiteSession';
 import {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
@@ -67,6 +68,17 @@ export class SQLiteDatabase {
     const nativeStatement = new ExpoSQLite.NativeStatement();
     await this.nativeDatabase.prepareAsync(nativeStatement, source);
     return new SQLiteStatement(this.nativeDatabase, nativeStatement);
+  }
+
+  /**
+   * Create a new session for the database.
+   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+   * @param dbName The name of the database to create a session for. The default value is `main`.
+   */
+  public async createSessionAsync(dbName: string = 'main'): Promise<SQLiteSession> {
+    const nativeSession = new ExpoSQLite.NativeSession();
+    await this.nativeDatabase.createSessionAsync(nativeSession, dbName);
+    return new SQLiteSession(this.nativeDatabase, nativeSession);
   }
 
   /**
@@ -192,6 +204,20 @@ export class SQLiteDatabase {
     const nativeStatement = new ExpoSQLite.NativeStatement();
     this.nativeDatabase.prepareSync(nativeStatement, source);
     return new SQLiteStatement(this.nativeDatabase, nativeStatement);
+  }
+
+  /**
+   * Create a new session for the database.
+   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+   *
+   * @param dbName The name of the database to create a session for. The default value is `main`.
+   */
+  public createSessionSync(dbName: string = 'main'): SQLiteSession {
+    const nativeSession = new ExpoSQLite.NativeSession();
+    this.nativeDatabase.createSessionSync(nativeSession, dbName);
+    return new SQLiteSession(this.nativeDatabase, nativeSession);
   }
 
   /**
