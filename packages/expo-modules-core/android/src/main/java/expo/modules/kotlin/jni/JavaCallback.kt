@@ -25,6 +25,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
       is Boolean -> invokeNative(result)
       is Double -> invokeNative(result)
       is Float -> invokeNative(result)
+      is Long -> invokeNative(result)
       is String -> invokeNative(result)
       is Collection<*> -> invokeNative(result)
       is Map<*, *> ->
@@ -61,6 +62,10 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
     invokeNative(result)
   }
 
+  operator fun invoke(result: Long) = checkIfValid {
+    invokeNative(result)
+  }
+
   operator fun invoke(result: String) = checkIfValid {
     invokeNative(result)
   }
@@ -82,6 +87,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: Boolean)
   private external fun invokeNative(result: Double)
   private external fun invokeNative(result: Float)
+  private external fun invokeNative(result: Long)
   private external fun invokeNative(result: String)
   private external fun invokeNative(result: Collection<Any?>)
   private external fun invokeNative(result: Map<String, Any?>)

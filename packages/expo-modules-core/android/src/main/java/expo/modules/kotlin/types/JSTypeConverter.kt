@@ -37,6 +37,7 @@ object JSTypeConverter {
       is Bundle -> value.toJSValue(containerProvider)
       is Array<*> -> value.toJSValue(containerProvider)
       is IntArray -> value.toJSValue(containerProvider)
+      is LongArray -> value.toJSValue(containerProvider)
       is FloatArray -> value.toJSValue(containerProvider)
       is DoubleArray -> value.toJSValue(containerProvider)
       is BooleanArray -> value.toJSValue(containerProvider)
@@ -49,7 +50,6 @@ object JSTypeConverter {
       is Uri -> value.toJSValue()
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
-      is Long -> value.toDouble()
       is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> value.toJSValue(containerProvider)
@@ -80,7 +80,6 @@ object JSTypeConverter {
       is Uri -> value.toJSValue()
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
-      is Long -> value.toDouble()
       is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> if (useExperimentalConverter) {

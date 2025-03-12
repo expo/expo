@@ -60,6 +60,7 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeInt),
                    makeNativeMethod("invokeNative", JavaCallback::invokeDouble),
                    makeNativeMethod("invokeNative", JavaCallback::invokeFloat),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeLong),
                    makeNativeMethod("invokeNative", JavaCallback::invokeString),
                    makeNativeMethod("invokeNative", JavaCallback::invokeCollection),
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
@@ -176,6 +177,10 @@ void JavaCallback::invokeInt(int result) {
 }
 
 void JavaCallback::invokeDouble(double result) {
+  invokeJSFunction(result);
+}
+
+void JavaCallback::invokeLong(long result) {
   invokeJSFunction(result);
 }
 
