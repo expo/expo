@@ -174,7 +174,7 @@ To use location tracking or Geofencing in the background, you must request the a
 <Collapsible summary="Expo and iOS permissions">
 iOS permissions are divided into the two categories `When In Use` and `Always` and maps to Expo's foreground and background location permissions requested via:
 
-- [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) → `When In Use`
+- [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) maps to `When In Use`
 - [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) → `Always`
 
 > **NOTE:** When requesting `When In Use` authorization, the user can grant **temporary access** by selecting `Allow Once` in the system permission dialog. This authorization will be valid **only for the current app session** and is automatically revoked when the app is closed.
