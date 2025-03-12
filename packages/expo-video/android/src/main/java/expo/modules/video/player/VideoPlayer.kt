@@ -378,9 +378,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   private fun sendEvent(event: PlayerEvent) {
     // Emits to the native listeners
-    val listenersSnapshot = listeners.toList().mapNotNull { it.get() }
+    val listenersSnapshot = listeners.toList()
 
-    event.emit(this, listenersSnapshot)
+    event.emit(this, listenersSnapshot.mapNotNull { it.get() })
+
     // Emits to the JS side
     if (event.emitToJS) {
       emit(event.name, event.jsEventPayload)
