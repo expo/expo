@@ -19,7 +19,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  *
  * @hidden
  */
-export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): React.JSX.Element | null;
+export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children: userDefinedChildren, router, routerOptions, }: NavigatorProps<T>): React.JSX.Element | null;
 export declare namespace Navigator {
     var Slot: typeof NavigatorSlot;
     var useContext: typeof useNavigatorContext;

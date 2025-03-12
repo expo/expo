@@ -61,13 +61,13 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
   return a.route.length - b.route.length;
 }
 
-export function sortRoutesWithInitial(initialRouteName?: string) {
+export function sortRoutesWithAnchor(anchor?: string) {
   return (a: RouteNode, b: RouteNode): number => {
-    if (initialRouteName) {
-      if (a.route === initialRouteName) {
+    if (anchor) {
+      if (a.route === anchor) {
         return -1;
       }
-      if (b.route === initialRouteName) {
+      if (b.route === anchor) {
         return 1;
       }
     }

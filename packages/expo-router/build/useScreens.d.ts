@@ -22,10 +22,6 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
         params?: Record<string, any>;
     }) => string | undefined;
 };
-/**
- * @returns React Navigation screens sorted by the `route` property.
- */
-export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>>;
 /**

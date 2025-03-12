@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -12,57 +12,6 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
-function getSortedChildren(children, order, initialRouteName) {
-    if (!order?.length) {
-        return children
-            .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
-            .map((route) => ({ route, props: {} }));
-    }
-    const entries = [...children];
-    const ordered = order
-        .map(({ name, redirect, initialParams, listeners, options, getId }) => {
-        if (!entries.length) {
-            console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
-            return null;
-        }
-        const matchIndex = entries.findIndex((child) => child.route === name);
-        if (matchIndex === -1) {
-            console.warn(`[Layout children]: No route named "${name}" exists in nested children:`, children.map(({ route }) => route));
-            return null;
-        }
-        else {
-            // Get match and remove from entries
-            const match = entries[matchIndex];
-            entries.splice(matchIndex, 1);
-            // Ensure to return null after removing from entries.
-            if (redirect) {
-                if (typeof redirect === 'string') {
-                    throw new Error(`Redirecting to a specific route is not supported yet.`);
-                }
-                return null;
-            }
-            return {
-                route: match,
-                props: { initialParams, listeners, options, getId },
-            };
-        }
-    })
-        .filter(Boolean);
-    // Add any remaining children
-    ordered.push(...entries.sort((0, Route_1.sortRoutesWithInitial)(initialRouteName)).map((route) => ({ route, props: {} })));
-    return ordered;
-}
-/**
- * @returns React Navigation screens sorted by the `route` property.
- */
-function useSortedScreens(order) {
-    const node = (0, Route_1.useRouteNode)();
-    const sorted = node?.children?.length
-        ? getSortedChildren(node.children, order, node.initialRouteName)
-        : [];
-    return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
-}
-exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
     if (ErrorBoundary) {
         return {

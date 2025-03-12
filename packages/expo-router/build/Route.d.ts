@@ -1,5 +1,5 @@
 import { type ComponentType, type PropsWithChildren } from 'react';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { sortRoutesWithAnchor, sortRoutes } from './sortRoutes';
 import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
@@ -39,7 +39,7 @@ export type RouteNode = {
 };
 export declare const LocalRouteParamsContext: import("react").Context<Record<string, string | undefined> | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
-export declare function useRouteNode(): RouteNode | null;
+export declare function useRouteNode(): RouteNode;
 export declare function useContextKey(): string;
 export type RouteProps = PropsWithChildren<{
     node: RouteNode;
@@ -49,5 +49,5 @@ export type RouteProps = PropsWithChildren<{
 }>;
 /** Provides the matching routes and filename to the children. */
 export declare function Route({ children, node, route }: RouteProps): import("react").JSX.Element;
-export { sortRoutesWithInitial, sortRoutes };
+export { sortRoutesWithAnchor as sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

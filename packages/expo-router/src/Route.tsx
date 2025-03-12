@@ -3,7 +3,7 @@
 import { createContext, useContext, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { sortRoutesWithAnchor, sortRoutes } from './sortRoutes';
 import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
@@ -41,7 +41,18 @@ export type RouteNode = {
   entryPoints?: string[];
 };
 
-const CurrentRouteContext = createContext<RouteNode | null>(null);
+const CurrentRouteContext = createContext<RouteNode>({
+  type: 'layout',
+  loadRoute: () => {
+    throw new Error('Invalid RouteNode');
+  },
+  children: [],
+  dynamic: null,
+  route: '',
+  contextKey: '',
+  generated: true,
+});
+
 export const LocalRouteParamsContext = createContext<
   Record<string, string | undefined> | undefined
 >({});
@@ -51,7 +62,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /** Return the RouteNode at the current contextual boundary. */
-export function useRouteNode(): RouteNode | null {
+export function useRouteNode(): RouteNode {
   return useContext(CurrentRouteContext);
 }
 
@@ -77,4 +88,4 @@ export function Route({ children, node, route }: RouteProps) {
   );
 }
 
-export { sortRoutesWithInitial, sortRoutes };
+export { sortRoutesWithAnchor as sortRoutesWithInitial, sortRoutes };

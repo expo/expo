@@ -1,15 +1,9 @@
 import { EventMapBase, NavigationState } from '@react-navigation/native';
-import React, { ComponentType, ReactNode } from 'react';
+import React, { FunctionComponent, ComponentType } from 'react';
 import { PickPartial } from '../types';
 import { ScreenProps } from '../useScreens';
-export declare function useFilterScreenChildren(children: ReactNode, { isCustomNavigator, contextKey, }?: {
-    isCustomNavigator?: boolean;
-    /** Used for sending developer hints */
-    contextKey?: string;
-}): {
-    screens: ScreenProps[] | undefined;
-    children: any[];
-};
+import { ScreenPropsWithName } from './useGroupNavigatorChildren';
+import { ScreenRedirectProps } from '../views/ScreenRedirect';
 /**
  * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
  * Return type with `children` prop optional.
@@ -40,7 +34,8 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  * }
  * ```
  */
-export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]): React.ForwardRefExoticComponent<React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, "children">> & React.RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenPropsWithName[]) => ScreenPropsWithName[]): React.ForwardRefExoticComponent<React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, "children">> & React.RefAttributes<unknown>> & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
+    Redirect: FunctionComponent<ScreenRedirectProps>;
 };
 //# sourceMappingURL=withLayoutContext.d.ts.map

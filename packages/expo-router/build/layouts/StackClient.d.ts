@@ -123,6 +123,7 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
     id?: undefined;
 }, "children">> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
+    Redirect: import("react").FunctionComponent<import("../views/ScreenRedirect").ScreenRedirectProps>;
 };
 export default Stack;
 //# sourceMappingURL=StackClient.d.ts.map

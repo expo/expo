@@ -5,9 +5,19 @@ exports.sortRoutes = exports.sortRoutesWithInitial = exports.Route = exports.use
 const react_1 = require("react");
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
-Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
+Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithAnchor; } });
 Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
-const CurrentRouteContext = (0, react_1.createContext)(null);
+const CurrentRouteContext = (0, react_1.createContext)({
+    type: 'layout',
+    loadRoute: () => {
+        throw new Error('Invalid RouteNode');
+    },
+    children: [],
+    dynamic: null,
+    route: '',
+    contextKey: '',
+    generated: true,
+});
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';

@@ -127,6 +127,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: undefined;
 }, "children">> & React.RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<TabsProps, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
+    Redirect: React.FunctionComponent<import("../views/ScreenRedirect").ScreenRedirectProps>;
 };
 export default Tabs;
 //# sourceMappingURL=TabsClient.d.ts.map

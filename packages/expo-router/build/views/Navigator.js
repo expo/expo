@@ -31,8 +31,7 @@ const React = __importStar(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
-const withLayoutContext_1 = require("../layouts/withLayoutContext");
-const useScreens_1 = require("../useScreens");
+const useGroupNavigatorChildren_1 = require("../layouts/useGroupNavigatorChildren");
 exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
@@ -42,25 +41,24 @@ if (process.env.NODE_ENV !== 'production') {
  *
  * @hidden
  */
-function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
+function Navigator({ initialRouteName, screenOptions, children: userDefinedChildren, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-    const { screens, children: nonScreenChildren } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
+    const { screens, children: nonScreenChildren } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(userDefinedChildren, {
         isCustomNavigator: true,
         contextKey,
     });
-    const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? []);
     router ||= native_1.StackRouter;
     const navigation = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
         ...routerOptions,
         id: contextKey,
-        children: sortedScreens || [<Screen_1.Screen key="default"/>],
+        children: screens || [<Screen_1.Screen key="default"/>],
         screenOptions,
         initialRouteName,
     });
     // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
-    if (!sortedScreens.length) {
+    if (!screens.length) {
         console.warn(`Navigator at "${contextKey}" has no children.`);
         return null;
     }
@@ -87,13 +85,13 @@ exports.useNavigatorContext = useNavigatorContext;
 function SlotNavigator(props) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
-    const { screens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
+    const { screens } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)([], {
         contextKey,
     });
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         ...props,
         id: contextKey,
-        children: (0, useScreens_1.useSortedScreens)(screens ?? []),
+        children: screens,
     });
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }

@@ -5,7 +5,7 @@ import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { sortRoutesWithInitial } from '../sortRoutes';
+import { sortRoutesWithAnchor } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
@@ -159,7 +159,7 @@ export function triggersToScreens(
     });
   }
 
-  const sortFn = sortRoutesWithInitial(initialRouteName);
+  const sortFn = sortRoutesWithAnchor(initialRouteName);
 
   const sortedConfigs = configs.sort((a, b) => {
     // External routes should be last. They will eventually be dropped

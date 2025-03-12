@@ -1,0 +1,1 @@
+{"version":3,"file":"ScreenRedirect.d.ts","sourceRoot":"","sources":["../../src/views/ScreenRedirect.tsx"],"names":[],"mappings":"AACA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAG7C,MAAM,MAAM,mBAAmB,GAAG,aAAa,GAAG;IAChD,IAAI,EAAE,MAAM,CAAC;CACd,CAAC;AAEF,wBAAgB,cAAc,CAAC,EAAE,IAAI,EAAE,mBAAmB,EAAE,UAAU,EAAE,EAAE,aAAa,QAUtF"}

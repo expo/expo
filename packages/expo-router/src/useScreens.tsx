@@ -10,14 +10,7 @@ import type {
 } from '@react-navigation/native';
 import React from 'react';
 
-import {
-  DynamicConvention,
-  LoadedRoute,
-  Route,
-  RouteNode,
-  sortRoutesWithInitial,
-  useRouteNode,
-} from './Route';
+import { DynamicConvention, LoadedRoute, Route, RouteNode } from './Route';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -50,78 +43,6 @@ export type ScreenProps<
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
-
-function getSortedChildren(
-  children: RouteNode[],
-  order?: ScreenProps[],
-  initialRouteName?: string
-): { route: RouteNode; props: Partial<ScreenProps> }[] {
-  if (!order?.length) {
-    return children
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {} }));
-  }
-  const entries = [...children];
-
-  const ordered = order
-    .map(({ name, redirect, initialParams, listeners, options, getId }) => {
-      if (!entries.length) {
-        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
-        return null;
-      }
-      const matchIndex = entries.findIndex((child) => child.route === name);
-      if (matchIndex === -1) {
-        console.warn(
-          `[Layout children]: No route named "${name}" exists in nested children:`,
-          children.map(({ route }) => route)
-        );
-        return null;
-      } else {
-        // Get match and remove from entries
-        const match = entries[matchIndex];
-        entries.splice(matchIndex, 1);
-
-        // Ensure to return null after removing from entries.
-        if (redirect) {
-          if (typeof redirect === 'string') {
-            throw new Error(`Redirecting to a specific route is not supported yet.`);
-          }
-          return null;
-        }
-
-        return {
-          route: match,
-          props: { initialParams, listeners, options, getId },
-        };
-      }
-    })
-    .filter(Boolean) as {
-    route: RouteNode;
-    props: Partial<ScreenProps>;
-  }[];
-
-  // Add any remaining children
-  ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} }))
-  );
-
-  return ordered;
-}
-
-/**
- * @returns React Navigation screens sorted by the `route` property.
- */
-export function useSortedScreens(order: ScreenProps[]): React.ReactNode[] {
-  const node = useRouteNode();
-
-  const sorted = node?.children?.length
-    ? getSortedChildren(node.children, order, node.initialRouteName)
-    : [];
-  return React.useMemo(
-    () => sorted.map((value) => routeToScreen(value.route, value.props)),
-    [sorted]
-  );
-}
 
 function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
   if (ErrorBoundary) {

@@ -83,7 +83,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             action: stateToAction(state, layoutRouteNode.route),
         });
     }
-    const sortFn = (0, sortRoutes_1.sortRoutesWithInitial)(initialRouteName);
+    const sortFn = (0, sortRoutes_1.sortRoutesWithAnchor)(initialRouteName);
     const sortedConfigs = configs.sort((a, b) => {
         // External routes should be last. They will eventually be dropped
         if (a.type === 'external' && b.type === 'external') {

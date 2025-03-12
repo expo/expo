@@ -7,8 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Screen } from './Screen';
 import { useContextKey } from '../Route';
-import { useFilterScreenChildren } from '../layouts/withLayoutContext';
-import { useSortedScreens } from '../useScreens';
+import { useGroupNavigatorChildren } from '../layouts/useGroupNavigatorChildren';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -40,19 +39,17 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
   initialRouteName,
   screenOptions,
-  children,
+  children: userDefinedChildren,
   router,
   routerOptions,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-  const { screens, children: nonScreenChildren } = useFilterScreenChildren(children, {
+  const { screens, children: nonScreenChildren } = useGroupNavigatorChildren(userDefinedChildren, {
     isCustomNavigator: true,
     contextKey,
   });
-
-  const sortedScreens = useSortedScreens(screens ?? []);
 
   router ||= StackRouter as unknown as T;
 
@@ -60,13 +57,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     // Used for getting the parent with navigation.getParent('/normalized/path')
     ...routerOptions,
     id: contextKey,
-    children: sortedScreens || [<Screen key="default" />],
+    children: screens || [<Screen key="default" />],
     screenOptions,
     initialRouteName,
   });
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
-  if (!sortedScreens.length) {
+  if (!screens.length) {
     console.warn(`Navigator at "${contextKey}" has no children.`);
     return null;
   }
@@ -94,18 +91,23 @@ export function useNavigatorContext() {
   return context;
 }
 
+const EMPTY_ARRAY: never[] = [];
+
 function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
 
+  debugger;
+
   // Allows adding Screen components as children to configure routes.
-  const { screens } = useFilterScreenChildren([], {
+  // This needs to be a stable reference to avoid re-renders.
+  const { screens: children } = useGroupNavigatorChildren(EMPTY_ARRAY, {
     contextKey,
   });
 
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
-    children: useSortedScreens(screens ?? []),
+    children,
   });
 
   return (
