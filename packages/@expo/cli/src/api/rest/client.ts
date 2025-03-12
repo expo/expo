@@ -22,6 +22,7 @@ export class ApiV2Error extends Error {
   readonly expoApiV2ErrorDetails?: JSONValue;
   readonly expoApiV2ErrorServerStack?: string;
   readonly expoApiV2ErrorMetadata?: object;
+  readonly expoApiV2RequestId?: string;
 
   constructor(response: {
     message: string;
@@ -29,13 +30,20 @@ export class ApiV2Error extends Error {
     stack?: string;
     details?: JSONValue;
     metadata?: object;
+    requestId: string;
   }) {
-    super(response.message);
+    const message = `${response.message}`;
+    super(message);
     this.code = response.code;
     this.expoApiV2ErrorCode = response.code;
     this.expoApiV2ErrorDetails = response.details;
     this.expoApiV2ErrorServerStack = response.stack;
     this.expoApiV2ErrorMetadata = response.metadata;
+    this.expoApiV2RequestId = response.requestId;
+  }
+
+  toString() {
+    return `${super.toString()}${env.EXPO_DEBUG && this.expoApiV2RequestId ? ` (Request Id: ${this.expoApiV2RequestId})` : ''}`;
   }
 }
 
