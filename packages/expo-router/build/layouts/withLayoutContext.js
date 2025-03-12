@@ -62,7 +62,7 @@ const ScreenRedirect_1 = require("../views/ScreenRedirect");
 function withLayoutContext(Nav, processor) {
     return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
-        const { children = [] } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(userDefinedChildren, {
+        const { screens: children } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(userDefinedChildren, {
             contextKey,
             processor,
         });
@@ -70,7 +70,9 @@ function withLayoutContext(Nav, processor) {
         if (!children.length) {
             return null;
         }
-        return <Nav {...props} id={contextKey} ref={ref} children={children}/>;
+        return (<Nav {...props} id={contextKey} ref={ref}>
+          {children}
+        </Nav>);
     }), {
         Screen: Screen_1.Screen,
         Redirect: ScreenRedirect_1.ScreenRedirect,

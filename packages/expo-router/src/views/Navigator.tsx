@@ -23,6 +23,8 @@ if (process.env.NODE_ENV !== 'production') {
 type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
 type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 
+const DEFAULT_SCREENS = [<Screen key="default" />];
+
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
   screenOptions?: UseNavigationBuilderOptions['screenOptions'];
@@ -46,7 +48,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   const contextKey = useContextKey();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-  const { screens, children: nonScreenChildren } = useGroupNavigatorChildren(userDefinedChildren, {
+  const { screens, nonScreens } = useGroupNavigatorChildren(userDefinedChildren, {
     isCustomNavigator: true,
     contextKey,
   });
@@ -64,7 +66,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
   if (!screens.length) {
-    console.warn(`Navigator at "${contextKey}" has no children.`);
+    console.warn(`Navigator at "${contextKey}" has no available screens.`);
     return null;
   }
 
@@ -75,7 +77,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      {nonScreens}
     </NavigatorContext.Provider>
   );
 }
@@ -95,8 +97,6 @@ const EMPTY_ARRAY: never[] = [];
 
 function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
-
-  debugger;
 
   // Allows adding Screen components as children to configure routes.
   // This needs to be a stable reference to avoid re-renders.

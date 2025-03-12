@@ -56,21 +56,21 @@ export function withLayoutContext<
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
 
-      debugger;
-
-      const { children } = useGroupNavigatorChildren(userDefinedChildren, {
+      const { screens: children } = useGroupNavigatorChildren(userDefinedChildren, {
         contextKey,
         processor,
       });
-
-      console.log(children);
 
       // Prevent throwing an error when there are no screens.
       if (!children.length) {
         return null;
       }
 
-      return <Nav {...props} id={contextKey} ref={ref} children={children} />;
+      return (
+        <Nav {...props} id={contextKey} ref={ref}>
+          {children}
+        </Nav>
+      );
     }),
     {
       Screen,

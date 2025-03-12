@@ -36,6 +36,7 @@ exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
 }
+const DEFAULT_SCREENS = [<Screen_1.Screen key="default"/>];
 /**
  * An unstyled custom navigator. Good for basic web layouts.
  *
@@ -44,7 +45,7 @@ if (process.env.NODE_ENV !== 'production') {
 function Navigator({ initialRouteName, screenOptions, children: userDefinedChildren, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-    const { screens, children: nonScreenChildren } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(userDefinedChildren, {
+    const { screens, nonScreens } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(userDefinedChildren, {
         isCustomNavigator: true,
         contextKey,
     });
@@ -59,7 +60,7 @@ function Navigator({ initialRouteName, screenOptions, children: userDefinedChild
     });
     // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
     if (!screens.length) {
-        console.warn(`Navigator at "${contextKey}" has no children.`);
+        console.warn(`Navigator at "${contextKey}" has no available screens.`);
         return null;
     }
     return (<exports.NavigatorContext.Provider value={{
@@ -67,7 +68,7 @@ function Navigator({ initialRouteName, screenOptions, children: userDefinedChild
             contextKey,
             router,
         }}>
-      {nonScreenChildren}
+      {nonScreens}
     </exports.NavigatorContext.Provider>);
 }
 exports.Navigator = Navigator;
@@ -82,16 +83,18 @@ function useNavigatorContext() {
     return context;
 }
 exports.useNavigatorContext = useNavigatorContext;
+const EMPTY_ARRAY = [];
 function SlotNavigator(props) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
-    const { screens } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)([], {
+    // This needs to be a stable reference to avoid re-renders.
+    const { screens: children } = (0, useGroupNavigatorChildren_1.useGroupNavigatorChildren)(EMPTY_ARRAY, {
         contextKey,
     });
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         ...props,
         id: contextKey,
-        children: screens,
+        children,
     });
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }

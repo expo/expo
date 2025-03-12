@@ -1,4 +1,4 @@
-import { JSX, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ScreenProps } from '../useScreens';
 export type ScreenPropsWithName = ScreenProps & {
     name: string;
@@ -14,7 +14,7 @@ export declare function useGroupNavigatorChildren(children: ReactNode, { isCusto
     /** Manually process screen children */
     processor?: (options: ScreenPropsWithName[]) => ScreenPropsWithName[];
 }): {
-    screens: JSX.Element[];
-    children: any[];
+    screens: ReactNode[];
+    nonScreens: ReactNode[];
 };
 //# sourceMappingURL=useGroupNavigatorChildren.d.ts.map

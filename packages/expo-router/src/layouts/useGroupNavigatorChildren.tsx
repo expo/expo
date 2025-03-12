@@ -29,16 +29,13 @@ export function useGroupNavigatorChildren(
   const node = useRouteNode();
 
   return useMemo(() => {
-    const customChildren: ReactNode[] = [];
+    const nonScreens: ReactNode[] = [];
     const redirects: Map<string, ScreenPropsWithName> = new Map();
 
-    debugger;
-
     let userScreenOrder = Children.map(children, (child): ScreenPropsWithName | null => {
-      debugger;
       if (!isValidElement(child) || !child) {
         if (isCustomNavigator) {
-          customChildren.push(child);
+          nonScreens.push(child);
           return null;
         } else {
           warnLayoutChildren(contextKey);
@@ -79,8 +76,8 @@ export function useGroupNavigatorChildren(
     });
 
     // Add an assertion for development
-    if (process.env.NODE_ENV !== 'production') {
-      if (userScreenOrder) {
+    if (userScreenOrder) {
+      if (process.env.NODE_ENV !== 'production') {
         // Assert if names are not unique
         const seen = new Set<string>();
 
@@ -103,7 +100,7 @@ export function useGroupNavigatorChildren(
 
     return {
       screens,
-      children: customChildren,
+      nonScreens,
     };
   }, [children, processor, node]);
 }
@@ -112,7 +109,7 @@ function getScreens(
   node: RouteNode,
   order: ScreenPropsWithName[],
   redirects: Map<string, ScreenPropsWithName>
-) {
+): ReactNode[] {
   const children = node.children;
   const anchor = node.initialRouteName;
 

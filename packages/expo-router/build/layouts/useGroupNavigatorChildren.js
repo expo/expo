@@ -13,12 +13,12 @@ const ScreenRedirect_1 = require("../views/ScreenRedirect");
 function useGroupNavigatorChildren(children, { isCustomNavigator, contextKey, processor, } = {}) {
     const node = (0, Route_1.useRouteNode)();
     return (0, react_1.useMemo)(() => {
-        const customChildren = [];
+        const nonScreens = [];
         const redirects = new Map();
         let userScreenOrder = react_1.Children.map(children, (child) => {
             if (!(0, react_1.isValidElement)(child) || !child) {
                 if (isCustomNavigator) {
-                    customChildren.push(child);
+                    nonScreens.push(child);
                     return null;
                 }
                 else {
@@ -47,8 +47,8 @@ function useGroupNavigatorChildren(children, { isCustomNavigator, contextKey, pr
             return null;
         });
         // Add an assertion for development
-        if (process.env.NODE_ENV !== 'production') {
-            if (userScreenOrder) {
+        if (userScreenOrder) {
+            if (process.env.NODE_ENV !== 'production') {
                 // Assert if names are not unique
                 const seen = new Set();
                 for (const screen of userScreenOrder) {
@@ -66,7 +66,7 @@ function useGroupNavigatorChildren(children, { isCustomNavigator, contextKey, pr
         const screens = getScreens(node, userScreenOrder, redirects);
         return {
             screens,
-            children: customChildren,
+            nonScreens,
         };
     }, [children, processor, node]);
 }
