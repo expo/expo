@@ -757,7 +757,6 @@ export async function initAsync(
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
-      EX_UPDATES_NATIVE_DEBUG: '1',
       EXPO_DEBUG: '1',
       CI: '1',
     },
@@ -784,7 +783,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true\nEX_UPDATES_NATIVE_DEBUG=true',
     'utf-8'
   );
 
@@ -804,6 +803,18 @@ export async function initAsync(
     ].join('\n'),
     'utf-8'
   );
+
+  // Add native debug to iOS Podfile.properties.json
+  const podfilePropertiesJsonPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
+  const podfilePropertiesJsonString = await fs.readFile(podfilePropertiesJsonPath, {
+    encoding: 'utf-8',
+  });
+  const podfilePropertiesJson: any = JSON.parse(podfilePropertiesJsonString);
+  podfilePropertiesJson.updatesNativeDebug = 'true';
+  await fs.writeFile(podfilePropertiesJsonPath, JSON.stringify(podfilePropertiesJson, null, 2), {
+    encoding: 'utf-8',
+  });
+
   await fs.appendFile(
     path.join(projectRoot, 'android', 'app', 'build.gradle'),
     [

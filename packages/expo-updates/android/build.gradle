@@ -49,6 +49,10 @@ def getBoolStringFromPropOrEnv(String name, Boolean defaultValue) {
 // debug builds. (default false)
 def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG", false)
 
+// If true, app is using custom code to initialize expo-updates, so default initialization code
+// will be disabled.
+def exUpdatesCustomInit = getBoolStringFromPropOrEnv("EX_UPDATES_CUSTOM_INIT", false)
+
 // If true, code will run that delays app loading until updates is initialized, to prevent ANR issues.
 // (default true)
 def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROID_DELAY_LOAD_APP", true)
@@ -68,6 +72,7 @@ android {
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", exUpdatesNativeDebug)
+    buildConfigField("boolean", "EX_UPDATES_CUSTOM_INIT", exUpdatesCustomInit)
     buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
     buildConfigField("boolean", "USE_DEV_CLIENT", useDevClient.toString())
   }
