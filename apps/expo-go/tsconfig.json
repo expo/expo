@@ -10,5 +10,5 @@
     "noImplicitAny": true
   },
   "include": ["App.tsx", "src/**/*", "ts-declarations"],
-  "exclude": ["**/__mocks__/*"]
+  "exclude": ["**/__mocks__/*"],
 }

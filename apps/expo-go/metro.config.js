@@ -44,6 +44,9 @@ function withReactNativeLabPackages(config) {
     '@react-native/virtualized-lists',
   ];
 
+  // The react-native-lab location to use when redirecting resolutions to react-native-lab
+  const reactNativeLabsPath = path.join(monorepoRoot, 'react-native-lab/react-native/node_modules');
+
   // Allow Metro to resolve from react-native-lab dependencies and packages
   config.watchFolders.push(path.join(reactNativeLabsPath, '..'));
 
@@ -53,8 +56,6 @@ function withReactNativeLabPackages(config) {
 
   // The import matcher that matches any of the list packages, e.g. `<packageName>` or `<packageName>/nested/file`
   const importMatcher = new RegExp(`^(?:(${linkedPackages.join('|')}))(?:(/|$))`);
-  // The react-native-lab location to use when redirecting resolutions to react-native-lab
-  const reactNativeLabsPath = path.join(monorepoRoot, 'react-native-lab/react-native/node_modules');
 
   // Rewrite imports to the react-native-lab linked packages when on Android or iOS
   config.resolver.resolveRequest = (context, moduleImport, platform) => {
