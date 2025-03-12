@@ -17,16 +17,21 @@
 
 ### 🐛 Bug fixes
 
-- Fix tree shaking multiple exports in the same variable declaration. ([#35330](https://github.com/expo/expo/pull/35330) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove empty files during bundle splitting. ([#35277](https://github.com/expo/expo/pull/35277) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bumping specificity of hot-reloaded CSS style tags. ([#35123](https://github.com/expo/expo/pull/35123) by [@kitten](https://github.com/kitten))
 - Unwrap PostCSS when imported ESM through require on Node 22/23. ([#35268](https://github.com/expo/expo/pull/35268) by [@byCedric](https://github.com/byCedric))
-- Fixed DOM Components support for updates. ([#35280](https://github.com/expo/expo/pull/35280), [#35290](https://github.com/expo/expo/pull/35290) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Upgrade to `minimatch@9` ([#35313](https://github.com/expo/expo/pull/35313) by [@kitten](https://github.com/kitten))
+
+## 0.19.12 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fix tree shaking multiple exports in the same variable declaration. ([#35330](https://github.com/expo/expo/pull/35330) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed DOM Components support for updates. ([#35280](https://github.com/expo/expo/pull/35280), [#35290](https://github.com/expo/expo/pull/35290) by [@kudo](https://github.com/kudo))
 
 ## 0.19.11 - 2025-02-19
 
