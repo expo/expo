@@ -1,4 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
@@ -122,6 +123,9 @@ export class SQLiteDatabase {
   public async withExclusiveTransactionAsync(
     task: (txn: Transaction) => Promise<void>
   ): Promise<void> {
+    if (Platform.OS === 'web') {
+      throw new Error('withExclusiveTransactionAsync is not supported on web');
+    }
     const transaction = await Transaction.createAsync(this);
     let error;
     try {

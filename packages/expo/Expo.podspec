@@ -95,9 +95,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-RCTFabric'
-  if reactNativeTargetVersion >= 77
-    s.dependency 'ReactAppDependencyProvider'
-  end
+  s.dependency 'ReactAppDependencyProvider'
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.compiler_flags = compiler_flags

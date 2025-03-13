@@ -8,8 +8,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.component.SoftwareComponent
@@ -90,18 +93,8 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
         prettyPrintIndent = "  "
       }
 
-      val jsonElement = json.parseToJsonElement(expoModuleConfig.readText())
-      val newJsonElement = jsonElement.jsonObject.toMutableMap().apply {
-        val newAndroidObject = getOrDefault("android", JsonObject(emptyMap())).jsonObject.toMutableMap().apply {
-          put("publication", JsonObject(mapOf(
-            "groupId" to publicationInfo.groupId.toJsonElement(),
-            "artifactId" to publicationInfo.artifactId.toJsonElement(),
-            "version" to publicationInfo.version.toJsonElement(),
-            "repository" to "mavenLocal".toJsonElement(),
-          )))
-        }.toJsonObject()
-        put("android", newAndroidObject)
-      }.toJsonObject()
+      val jsonElement = json.parseToJsonElement(expoModuleConfig.readText()).jsonObject
+      val newJsonElement = modifyModuleConfig(projectName = name, jsonElement, publicationInfo)
 
       val newJsonString = json.encodeToString(JsonObject.serializer(), newJsonElement)
 
@@ -117,5 +110,49 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
   }
 }
 
+private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo): JsonObject {
+  val publicationObject = JsonObject(mapOf(
+    "groupId" to publicationInfo.groupId.toJsonElement(),
+    "artifactId" to publicationInfo.artifactId.toJsonElement(),
+    "version" to publicationInfo.version.toJsonElement(),
+    "repository" to "mavenLocal".toJsonElement(),
+  ))
+
+  val androidObject = currentConfig.getOrDefault("android", JsonObject(emptyMap())).jsonObject.mutate {
+    val subProject = get("projects")
+      ?.jsonArray
+      ?.mapIndexed { index, element -> index to element.jsonObject }
+      ?.find { (_, element) -> element["name"]?.jsonPrimitive?.content == projectName }
+    if (subProject != null) {
+      val (index, project) = subProject
+      val newProject = project.mutate {
+        put("publication", publicationObject)
+      }
+
+      val newProjects = requireNotNull(get("projects"))
+        .jsonArray
+        .toMutableList()
+        .apply {
+          set(index, newProject)
+        }
+        .toJsonArray()
+
+      put("projects", newProjects)
+    } else {
+      put("publication", publicationObject)
+    }
+  }
+
+  return currentConfig.mutate {
+    put("android", androidObject)
+  }
+}
+
 private fun String.toJsonElement(): JsonElement = JsonPrimitive(this)
 private fun Map<String, JsonElement>.toJsonObject(): JsonObject = JsonObject(this)
+private inline fun JsonObject.mutate(block: MutableMap<String, JsonElement>.() -> Unit) =
+  toMutableMap().apply {
+    block()
+  }.toJsonObject()
+
+private fun MutableList<JsonElement>.toJsonArray(): JsonArray = JsonArray(this)

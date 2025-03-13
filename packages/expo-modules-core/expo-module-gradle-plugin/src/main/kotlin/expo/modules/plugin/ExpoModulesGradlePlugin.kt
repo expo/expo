@@ -2,6 +2,7 @@
 
 package expo.modules.plugin
 
+import com.android.build.api.variant.AndroidComponentsExtension
 import expo.modules.plugin.gradle.ExpoGradleHelperExtension
 import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Plugin
@@ -23,7 +24,10 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
-      applyPublishing(expoModuleExtension)
+
+      extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl {
+        applyPublishing(expoModuleExtension)
+      }
     }
 
     // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.

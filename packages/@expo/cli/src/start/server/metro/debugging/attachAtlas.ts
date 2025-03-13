@@ -18,7 +18,7 @@ type AttachAtlasOptions = Pick<EnsureDependenciesOptions, 'exp'> & {
 export async function attachAtlasAsync(
   options: AttachAtlasOptions
 ): Promise<void | ReturnType<typeof import('expo-atlas/cli').createExpoAtlasMiddleware>> {
-  if (!env.EXPO_UNSTABLE_ATLAS) {
+  if (!env.EXPO_ATLAS) {
     return;
   }
 
@@ -99,7 +99,7 @@ function importAtlasForExport(projectRoot: string): null | typeof import('expo-a
  * @internal
  */
 export async function waitUntilAtlasExportIsReadyAsync(projectRoot: string) {
-  if (!env.EXPO_UNSTABLE_ATLAS) return;
+  if (!env.EXPO_ATLAS) return;
 
   const atlas = importAtlasForExport(projectRoot);
 

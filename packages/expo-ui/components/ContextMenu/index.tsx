@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import React, { ReactElement, ReactNode, useMemo } from 'react';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { ButtonProps } from '../Button';
@@ -15,16 +15,25 @@ type SubmenuElement =
 
 type ContentChildren = SubmenuElement | SubmenuElement[];
 
+/**
+ * @hidden
+ */
 export type ContextMenuContentProps = {
   children: ContentChildren;
 };
 
+/**
+ * @hidden
+ */
 export type EventHandlers = {
   [key: string]: {
     [key: string]: (event: NativeSyntheticEvent<any>) => void;
   };
 };
 
+/**
+ * @hidden
+ */
 export type ContextMenuElementBase = { contextMenuElementID: string };
 
 /**

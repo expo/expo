@@ -1,5 +1,23 @@
 import { StyleProp, ViewStyle } from 'react-native';
 /**
+ * Colors for picker's core elements.
+ * @platform android
+ */
+export type PickerElementColors = {
+    activeBorderColor?: string;
+    activeContentColor?: string;
+    inactiveBorderColor?: string;
+    inactiveContentColor?: string;
+    disabledActiveBorderColor?: string;
+    disabledActiveContentColor?: string;
+    disabledInactiveBorderColor?: string;
+    disabledInactiveContentColor?: string;
+    activeContainerColor?: string;
+    inactiveContainerColor?: string;
+    disabledActiveContainerColor?: string;
+    disabledInactiveContainerColor?: string;
+};
+/**
  * Props for the Picker component.
  */
 export type PickerProps = {
@@ -39,20 +57,7 @@ export type PickerProps = {
      * Colors for picker's core elements.
      * @platform android
      */
-    elementColors?: {
-        activeBorderColor?: string;
-        activeContentColor?: string;
-        inactiveBorderColor?: string;
-        inactiveContentColor?: string;
-        disabledActiveBorderColor?: string;
-        disabledActiveContentColor?: string;
-        disabledInactiveBorderColor?: string;
-        disabledInactiveContentColor?: string;
-        activeContainerColor?: string;
-        inactiveContainerColor?: string;
-        disabledActiveContainerColor?: string;
-        disabledInactiveContainerColor?: string;
-    };
+    elementColors?: PickerElementColors;
     /**
      * Picker color. On iOS it only applies to the `menu` variant.
      */
@@ -60,6 +65,9 @@ export type PickerProps = {
 };
 type NativePickerProps = PickerProps;
 export declare function transformPickerProps(props: PickerProps): NativePickerProps;
+/**
+ * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
+ */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

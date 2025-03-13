@@ -9,7 +9,7 @@ declare module 'metro-config/src/configTypes' {
   export * from 'metro-config/src/configTypes.flow';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/configTypes.flow.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/configTypes.flow.js
 declare module 'metro-config/src/configTypes.flow' {
   import type { IntermediateStackFrame } from 'metro/src/Server/symbolicate';
   import type { HandleFunction, Server } from 'connect';
@@ -46,6 +46,7 @@ declare module 'metro-config/src/configTypes.flow' {
         | boolean;
       nonInlinedRequires?: readonly string[];
       unstable_disableES6Transforms?: boolean;
+      unstable_inlinePlatform?: boolean;
       unstable_memoizeInlineRequires?: boolean;
       unstable_nonMemoizedInlineRequires?: readonly string[];
     }>;
@@ -228,6 +229,11 @@ declare module 'metro-config/src/configTypes.flow' {
       timeout: number;
       filePrefix: string;
     }>;
+    unstable_autoSaveCache: Readonly<{
+      enabled: boolean;
+      debounceMs?: number;
+    }>;
+    unstable_lazySha1: boolean;
     unstable_workerThreads: boolean;
     watchman: Readonly<{
       deferStates: readonly string[];
@@ -249,6 +255,9 @@ declare module 'metro-config/src/configTypes.flow' {
             Partial<
               {
                 healthCheck?: Readonly<Partial<WatcherConfigT['healthCheck']>>;
+                unstable_autoSaveCache?: Readonly<
+                  Partial<WatcherConfigT['unstable_autoSaveCache']>
+                >;
               } & WatcherConfigT
             >
           >;
@@ -294,7 +303,7 @@ declare module 'metro-config/src/configTypes.flow' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/defaults.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/defaults/defaults.js
 declare module 'metro-config/src/defaults/defaults' {
   import type { RootPerfLogger } from 'metro-config/src/configTypes.flow';
   export const assetExts: any;
@@ -308,9 +317,9 @@ declare module 'metro-config/src/defaults/defaults' {
   export const noopPerfLoggerFactory: () => RootPerfLogger;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/defaults/index.js
 declare module 'metro-config/src/defaults/index' {
-  // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/index.js
+  // See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/defaults/index.js
 
   // NOTE(cedric): This file can't be typed properly due to complex CJS structures
 
@@ -321,15 +330,15 @@ declare module 'metro-config/src/defaults/index' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/validConfig.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/defaults/validConfig.js
 declare module 'metro-config/src/defaults/validConfig' {
   const $$EXPORT_DEFAULT_DECLARATION$$: () => any;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/index.js
 declare module 'metro-config/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/index.js
+  // See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/index.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
   export type * from 'metro-config/src/configTypes.flow';
@@ -337,7 +346,7 @@ declare module 'metro-config/src/index' {
   export { loadConfig, mergeConfig, resolveConfig } from 'metro-config/src/loadConfig';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/loadConfig.js
+// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-config/src/loadConfig.js
 declare module 'metro-config/src/loadConfig' {
   import type { ConfigT, InputConfigT, YargArguments } from 'metro-config/src/configTypes.flow';
   type CosmiConfigResult = {

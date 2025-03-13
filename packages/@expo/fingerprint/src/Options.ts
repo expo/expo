@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import type { IMinimatch } from 'minimatch';
+import type { Minimatch } from 'minimatch';
 import os from 'os';
 import path from 'path';
 
@@ -92,7 +92,7 @@ async function collectIgnorePathsAsync(
   projectRoot: string,
   pathsFromConfig: Config['ignorePaths'],
   options: Options | undefined
-): Promise<IMinimatch[]> {
+): Promise<Minimatch[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
     ...(pathsFromConfig ?? []),

@@ -361,6 +361,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
   '/eas-update/build-locally/': '/eas-update/standalone-service/',
   '/eas-update/updating-your-app/': '/eas-update/getting-started/',
+  '/eas-update/develop-faster/': '/eas-update/preview/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -481,4 +482,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
   '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
   '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
+  '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+  '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+
+  // After merging EAS environment variables guides
+  '/eas/using-environment-variables/': '/eas/environment-variables/',
 };

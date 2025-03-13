@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatArrayOfReactDelegateHandler = exports.generateModulesProviderAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_1 = __importDefault(require("fs"));
+const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const fileUtils_1 = require("../fileUtils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -17,7 +17,7 @@ async function findPodspecFiles(revision) {
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
-    const podspecFiles = await (0, fast_glob_1.default)('*/*.podspec', {
+    const podspecFiles = await (0, glob_1.glob)('*/*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });

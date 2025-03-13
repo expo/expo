@@ -35,14 +35,14 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
     "expo-module-scripts": "~4.0.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^9.0.0"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
     "commander": "^7.2.0",
-    "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",
+    "glob": "^10.4.2",
     "require-from-string": "^2.0.2",
     "resolve-from": "^5.0.0"
   }

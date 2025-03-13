@@ -11,7 +11,7 @@ import Button from '../components/Button';
 const gradientColors = ['#90dffe', '#38a3d1'] as const;
 
 export default function ViewShotScreen() {
-  const view = useRef<View>();
+  const view = useRef<View>(null);
   const [image, setImage] = useState<string>();
   const [screenUri, setScreenUri] = useState<string>();
 
@@ -65,11 +65,7 @@ export default function ViewShotScreen() {
   const imageSource = { uri: image };
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-      <View
-        style={styles.snapshotContainer}
-        collapsable={false}
-        // @ts-expect-error
-        ref={view}>
+      <View style={styles.snapshotContainer} collapsable={false} ref={view}>
         <LinearGradient colors={gradientColors} style={styles.gradient} start={[0, 0]} end={[0, 1]}>
           <Image style={styles.snapshot} source={imageSource} />
           <Text style={styles.text}>Snapshot will show above</Text>

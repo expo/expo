@@ -6,6 +6,9 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+- Remove `DevToolsPluginClient`'s `protected eventEmitter` property and drop `fbemitter`. ([#35376](https://github.com/expo/expo/pull/35376) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
@@ -23,6 +26,12 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [apple] Move `AppDelegate` integration from `expo-modules-core` to `expo` package. ([#34985](https://github.com/expo/expo/pull/34985) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Add EXAppDelegateWrapper import to Expo.h ([#35172](https://github.com/expo/expo/pull/35172) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 52.0.38 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed `BlobManager` crash when passing `Blob` in our patched `FormData`. ([#35243](https://github.com/expo/expo/pull/35243) by [@kudo](https://github.com/kudo))
 
 ## 52.0.37 - 2025-02-20
 

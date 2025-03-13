@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import glob from 'fast-glob';
 import fs from 'fs';
+import { glob } from 'glob';
 import { createRequire } from 'module';
 import path from 'path';
 
