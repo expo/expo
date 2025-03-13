@@ -9,12 +9,13 @@ import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderI
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-When you create a new Expo app with `npx create-expo-app`, you start off with a project where you update the JavaScript code on your local machine and view the changes in the Expo Go app. A **Development Build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native config. In this guide you will learn how to convert your project that runs on Expo Go into a Development Build which will make the native side of your app fully customizable.
+When you create a new Expo app with `npx create-expo-app`, you start off with a project where you update the JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native config. In this guide, you will learn how to convert your project that runs on Expo Go into a development build, which will make the native side of your app fully customizable.
 
 <VideoBoxLink videoId="uQCE9zl3dXU" title="How to create a development build" />
 
@@ -26,47 +27,47 @@ The requirements for building the native app depend on which platform you are us
 
 ### Build on EAS
 
-This is the easiest way to build your native app as it requires no native build tools on your side. The builds happen on the EAS servers which makes it possible to trigger iOS builds from non-macOS platforms.
+This is the easiest way to build your native app, as it requires no native build tools on your side. The builds happen on the EAS servers, which makes it possible to trigger iOS builds from non-macOS platforms.
 
-|             | Android | iOS Simulator | iPhone Device |
-| ----------- | ------- | ------------- | ------------- |
-| **macOS**   | ✅      | ✅            | ✅ (\*)       |
-| **Windows** | ✅      | ✅            | ✅ (\*)       |
-| **Linux**   | ✅      | ✅            | ✅ (\*)       |
+|             | Android    | iOS Simulator | iPhone Device   |
+| ----------- | ---------- | ------------- | --------------- |
+| **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
+| **Windows** | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
+| **Linux**   | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
 
-(\*) All builds that run on iPhone require a paid [Apple Developer](developer.apple.com) account for build signing.
+(\*) All builds that run on an iPhone device require a paid [Apple Developer](developer.apple.com) account for build signing.
 
 ### Build locally using the EAS CLI
 
-Any EAS CLI command can be built on your local machine with the `--local` flag. This requires for your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
+Any EAS CLI command can be built on your local machine with the `--local` flag. This requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. Read more about [local app development](/build-reference/local-builds/).
 
-|             | Android   | iOS Simulator | iPhone Device |
-| ----------- | --------- | ------------- | ------------- |
-| **macOS**   | ✅        | ✅            | ✅ (\*)       |
-| **Windows** | ✅ (\*\*) | ❌            | ❌            |
-| **Linux**   | ✅        | ❌            | ❌            |
+|             | Android           | iOS Simulator | iPhone Device   |
+| ----------- | ----------------- | ------------- | --------------- |
+| **macOS**   | <YesIcon/>        | <YesIcon/>    | <YesIcon/> (\*) |
+| **Windows** | <YesIcon/> (\*\*) | <NoIcon />    | <NoIcon />      |
+| **Linux**   | <YesIcon/>        | <NoIcon />    | <NoIcon />      |
 
-(\*) All builds that run on iPhone require a paid [Apple Developer](developer.apple.com) account for build signing.
+(\*) All builds that run on an iPhone device require a paid [Apple Developer](developer.apple.com) account for build signing.
 
 (\*\*) No first-class support, but possible with [WSL](https://github.com/expo/fyi/blob/main/wsl.md).
 
 ### Build on locally without EAS
 
-It is of course possible to build without using EAS. This requires for your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation).
+To build locally without EAS requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation).
 
-|             | Android | iOS Simulator | iPhone Device |
-| ----------- | ------- | ------------- | ------------- |
-| **macOS**   | ✅      | ✅            | ✅            |
-| **Windows** | ✅      | ❌            | ❌            |
-| **Linux**   | ✅      | ❌            | ❌            |
+|             | Android    | iOS Simulator | iPhone Device |
+| ----------- | ---------- | ------------- | ------------- |
+| **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/>    |
+| **Windows** | <YesIcon/> | <NoIcon />    | <NoIcon />    |
+| **Linux**   | <YesIcon/> | <NoIcon />    | <NoIcon />    |
 
-## Instructions
+## Get started
 
 For detailed, step-by-step instructions, see our [EAS Tutorial](/tutorial/eas/introduction). Available also as a [tutorial series](https://www.youtube.com/playlist?list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2) on YouTube.
 
 <Step label="1">
 
-## Install expo-dev-client
+### Install expo-dev-client
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
@@ -80,7 +81,7 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 <Step label="2">
 
-## Build the native app (Android)
+### Build the native app (Android)
 
 <Tabs>
 
@@ -106,8 +107,6 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
 - on Windows, set up [WSL](https://github.com/expo/fyi/blob/main/wsl.md)
 - (optional) an [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 
-Build the native app with:
-
 <Terminal cmd={['$ npx expo run:android']} />
 
 Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
@@ -118,7 +117,7 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 </Step>
 
 <Step label="2">
-## Build the native app (iOS Simulator)
+### Build the native app (iOS Simulator)
 
 <Tabs>
 
@@ -153,7 +152,7 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 </Step>
 
 <Step label="2">
-## Build the native app (iOS Device)
+### Build the native app (iOS Device)
 
 <Tabs>
 
@@ -187,34 +186,34 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 </Step>
 
 <Step label="3">
-## Install the app
+### Install the app
 
-Now you'll need to install the native app on your device, emulator or simulator.
+You'll need to install the native app on your device, emulator, or simulator.
 
-### When building on EAS
+#### When building on EAS
 
-If created your Development Build on EAS, the CLI will prompt you to install the app the build is finished. You can also install previous builds from the expo.dev dashboard or using [Expo Orbit](https://expo.dev/orbit).
+If you create your development build on EAS, the CLI will prompt you to install the app after the build is finished. You can also install previous builds from the expo.dev dashboard or using [Expo Orbit](https://expo.dev/orbit).
 
-### When building locally using EAS CLI
+#### When building locally using EAS CLI
 
-When building locally the output of the build will be an archive. You may drag and drop this on your iOS Simulator / Android Emulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install a build from your local machine onto any platform.
+When building locally the output of the build will be an archive. You may drag and drop this on your Android Emulator/iOS Simulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install a build from your local machine on any platform.
 
-### When building locally without EAS CLI
+#### When building locally without EAS CLI
 
 Local builds will get installed automatically once the build finishes.
 
 </Step>
 
-<Step label="3">
-## Start the bundler
+<Step label="4">
+### Start the bundler
 
-The Development Client builtin step **2** is the native side of your app (basically your own version of Expo Go!). So, to continue developing you'll want to also start the JavaScript bundler.
+The development client built in **step 2** is the native side of your app (basically your own version of Expo Go). To continue developing, you'll also want to start the JavaScript bundler.
 
 Depending on how you built the app, this may already be running, but if you close the process for any reason, there is no need to rebuild your development client. Simply restart the JavaScript bundler with:
 
-<Terminal cmd={['npx expo start']} />
+<Terminal cmd={['$ npx expo start']} />
 
-This is the same command as you would have used with Expo Go. It detects whether your project has `expo-dev-client` installed in which case it will default to targeting your development build instead of Expo Go.
+This is the same command you would have used with Expo Go. It detects whether your project has `expo-dev-client` installed, in which case it will default to targeting your development build instead of Expo Go.
 
 </Step>
 
