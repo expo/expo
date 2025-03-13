@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ReactElement, ReactNode, useMemo } from 'react';
+import { ComponentType, ReactElement, ReactNode, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { ButtonProps } from '../Button';
@@ -13,23 +13,17 @@ type SubmenuElement =
   | ReactElement<PickerProps>
   | ReactElement<SubmenuProps>;
 
-type ContentChildren = SubmenuElement | SubmenuElement[];
-
-/**
- * @hidden
- */
 export type ContextMenuContentProps = {
-  children: ContentChildren;
+  children: SubmenuElement | SubmenuElement[];
 };
 
 /**
  * @hidden
  */
-export type EventHandlers = {
-  [key: string]: {
-    [key: string]: (event: NativeSyntheticEvent<any>) => void;
-  };
-};
+export type EventHandlers = Record<
+  string,
+  Record<string, (event: NativeSyntheticEvent<any>) => void>
+>;
 
 /**
  * @hidden
@@ -52,7 +46,7 @@ export type ContextMenuProps = {
    * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
    * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.
    */
-  Items: React.ReactElement<ContextMenuContentProps>;
+  Items: ReactElement<ContextMenuContentProps>;
 
   /**
    * Determines how the context menu will be activated.
@@ -87,11 +81,11 @@ export type SubmenuProps = {
   /**
    * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
    */
-  button: React.ReactElement<ButtonProps>;
+  button: ReactElement<ButtonProps>;
   /**
    * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type NativeMenuProps = ContextMenuProps & {
@@ -114,10 +108,7 @@ type NativeMenuProps = ContextMenuProps & {
   ) => void;
 };
 
-const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
-  'ExpoUI',
-  'ContextMenu'
-);
+const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
 /**
  * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
@@ -145,9 +136,9 @@ export function ContextMenu(props: ContextMenuProps) {
   );
 
   const createEventHandler =
-    (handlerType: string) => (e: NativeSyntheticEvent<{ contextMenuElementID: string }>) => {
-      const handler = eventHandlersMap[e.nativeEvent.contextMenuElementID]?.[handlerType];
-      handler?.(e);
+    (handlerType: string) => (event: NativeSyntheticEvent<{ contextMenuElementID: string }>) => {
+      const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
+      handler?.(event);
     };
 
   return (

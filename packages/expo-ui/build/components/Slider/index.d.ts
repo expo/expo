@@ -22,12 +22,12 @@ export type SliderProps = {
      */
     value?: number;
     /**
-     * The number of steps between the minimum and maximum values. 0 signifies infinite steps.
+     * The number of steps between the minimum and maximum values, `0` signifies infinite steps.
      * @default 0
      */
     steps?: number;
     /**
-     * The mininum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
+     * The minimum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
      * @default 0
      */
     min?: number;
@@ -53,6 +53,9 @@ export type SliderProps = {
 type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
     value: number;
 }>;
+/**
+ * @hidden
+ */
 export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
 export declare function Slider(props: SliderProps): import("react").JSX.Element;
 export {};

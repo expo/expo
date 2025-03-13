@@ -33,8 +33,8 @@ export type PickerProps = {
    */
   selectedIndex: number | null;
   /**
-   * A label displayed on the picker when in `menu` variant inside a form section on iOS.
-   * @platform iOS
+   * A label displayed on the picker when in `'menu'` variant inside a form section on iOS.
+   * @platform ios
    */
   label?: string;
   /**
@@ -43,7 +43,7 @@ export type PickerProps = {
   onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
-   * The 'wheel' and 'menu' variants are iOS only, the 'radio' variant is Android only.
+   * The `'radio'` variant is Android only, the `'wheel'` and `'menu'` variants are iOS only,
    * @default 'segmented'
    */
   variant?: 'wheel' | 'segmented' | 'menu' | 'radio';
@@ -58,7 +58,7 @@ export type PickerProps = {
    */
   elementColors?: PickerElementColors;
   /**
-   * Picker color. On iOS it only applies to the `menu` variant.
+   * Picker color. On iOS it only applies to the `'menu'` variant.
    */
   color?: string;
 };
@@ -70,6 +70,9 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
 
 type NativePickerProps = PickerProps;
 
+/**
+ * @hidden
+ */
 export function transformPickerProps(props: PickerProps): NativePickerProps {
   return {
     ...props,

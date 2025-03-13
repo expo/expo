@@ -16,7 +16,7 @@ export type ProgressProps = {
    */
   style?: StyleProp<ViewStyle>;
   /**
-   * The current progress value of the slider. This is a number between 0 and 1.
+   * The current progress value of the slider. This is a number between `0` and `1`.
    */
   progress?: number | null;
   /**
