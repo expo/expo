@@ -1,5 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { SQLiteSession } from './SQLiteSession';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
 export { SQLiteOpenOptions };
 /**
@@ -37,6 +38,12 @@ export declare class SQLiteDatabase {
      * @param source A string containing the SQL query.
      */
     prepareAsync(source: string): Promise<SQLiteStatement>;
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    createSessionAsync(dbName?: string): Promise<SQLiteSession>;
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
@@ -113,6 +120,15 @@ export declare class SQLiteDatabase {
      * @param source A string containing the SQL query.
      */
     prepareSync(source: string): SQLiteStatement;
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     *
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    createSessionSync(dbName?: string): SQLiteSession;
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
