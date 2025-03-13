@@ -26,7 +26,8 @@ Copy the content of the **.gitignore** file into the **.easignore** file. Then, 
 ```bash .easignore
 # Copy everything from your .gitignore file here
 
-# Additional ignores specific to EAS builds
+# Ignore files that EAS Build doesn't need to build your app
+/docs
 
 # Ignore native directories (if you are using EAS Build)
 /android
@@ -49,3 +50,17 @@ Save the file and trigger a new build.
 </Step>
 
 You've successfully configured your **.easignore** file.
+
+### Adding files to your project upload with .easignore
+
+In addition to ignoring additional files beyond what is in your gitignore file, you can also use the **.easignore** file to include files with your EAS Build upload that are not committed to source control. This is useful if you have custom scripts that generate temporary files needed for your build process just prior to build. To upload a file not in source control to EAS Build, add it to the **.easignore** file with a `!` prefix, along with the rest of your .gitignore contents. The `!` prefixed file should be last , so it takes precedence over any prior rules that would ignore it.
+
+```bash .easignore
+# Copy everything from your .gitignore file here
+
+/android
+/ios
+
+# Include a file not in source control
+!temp_file.json
+```
