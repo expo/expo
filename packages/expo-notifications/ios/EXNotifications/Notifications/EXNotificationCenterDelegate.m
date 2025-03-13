@@ -161,13 +161,13 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
   [_delegates addPointer:(__bridge void * _Nullable)(delegate)];
   if ([delegate respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+
     NSArray *responsesToProcess = [_pendingNotificationResponses copy];
+    [_pendingNotificationResponses removeAllObjects];
 
     for (UNNotificationResponse *response in responsesToProcess) {
       [delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:^{
-        @synchronized (self) {
-          [self->_pendingNotificationResponses removeObject:response];
-        }
+        // completion handler doesn't need to do anything
       }];
     }
   }
