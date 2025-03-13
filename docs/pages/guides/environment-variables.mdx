@@ -5,7 +5,6 @@ description: Learn how to use environment variables in an Expo project.
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { Terminal } from '~/ui/components/Snippet';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
@@ -70,7 +69,7 @@ We recommend against using `NODE_ENV` to switch between **.env** files (such as 
 
 Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
 
-If you use EAS, consider using `eas env:pull` instead: this will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`.
+If you use EAS, consider using `eas env:pull` instead: this will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`. You can accomplish a similar behavior without EAS by writing a script to overwrite **.env.local** or **.env** with the appropriate contents for the environment you wish to work with.
 
 ### Disabling environment variables
 
