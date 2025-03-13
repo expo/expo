@@ -3,6 +3,9 @@ import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../src/types';
 
+/**
+ * @hidden Not used anywhere yet.
+ */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 
 /**
@@ -88,11 +91,14 @@ const TextInputNativeView: React.ComponentType<NativeTextInputProps> = requireNa
   'TextInputView'
 );
 
+/**
+ * @hidden
+ */
 function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
   return {
     ...props,
-    onValueChanged: (e) => {
-      props.onChangeText?.(e.nativeEvent.value);
+    onValueChanged: (event) => {
+      props.onChangeText?.(event.nativeEvent.value);
     },
   };
 }

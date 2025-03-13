@@ -1,5 +1,8 @@
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../src/types';
+/**
+ * @hidden Not used anywhere yet.
+ */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 /**
  * Props for the TextInput component.
@@ -60,7 +63,7 @@ export type TextInputProps = {
      */
     autocorrection?: boolean;
 };
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
