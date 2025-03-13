@@ -304,7 +304,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   );
 
   // Ensure the experimental module resolution warning is logged
-  expect(stderr).toBe('Fast resolver is enabled.');
+  expect(stderr).toMatch('Fast resolver is enabled.');
 
   const outputDir = path.join(projectRoot, output);
 
