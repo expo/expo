@@ -15,36 +15,36 @@ export class SQLiteSession {
      * @see [`sqlite3session_attach`](https://www.sqlite.org/session/sqlite3session_attach.html)
      * @param table The table to attach. If `null`, all tables are attached.
      */
-    async attachAsync(table) {
-        await this.nativeSession.attachAsync(this.nativeDatabase, table);
+    attachAsync(table) {
+        return this.nativeSession.attachAsync(this.nativeDatabase, table);
     }
     /**
      * Enable or disable the session asynchronously.
      * @see [`sqlite3session_enable`](https://www.sqlite.org/session/sqlite3session_enable.html)
      * @param enabled Whether to enable or disable the session.
      */
-    async enableAsync(enabled) {
-        await this.nativeSession.enableAsync(this.nativeDatabase, enabled);
+    enableAsync(enabled) {
+        return this.nativeSession.enableAsync(this.nativeDatabase, enabled);
     }
     /**
      * Close the session asynchronously.
      * @see [`sqlite3session_delete`](https://www.sqlite.org/session/sqlite3session_delete.html)
      */
-    async closeAsync() {
-        await this.nativeSession.closeAsync(this.nativeDatabase);
+    closeAsync() {
+        return this.nativeSession.closeAsync(this.nativeDatabase);
     }
     /**
      * Create a changeset asynchronously.
      * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
      */
-    async createChangesetAsync() {
+    createChangesetAsync() {
         return this.nativeSession.createChangesetAsync(this.nativeDatabase);
     }
     /**
      * Create an inverted changeset asynchronously.
      * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasync).
      */
-    async createInvertedChangesetAsync() {
+    createInvertedChangesetAsync() {
         return this.nativeSession.createInvertedChangesetAsync(this.nativeDatabase);
     }
     /**
@@ -52,15 +52,15 @@ export class SQLiteSession {
      * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
      * @param changeset The changeset to apply.
      */
-    async applyChangesetAsync(changeset) {
-        await this.nativeSession.applyChangesetAsync(this.nativeDatabase, changeset);
+    applyChangesetAsync(changeset) {
+        return this.nativeSession.applyChangesetAsync(this.nativeDatabase, changeset);
     }
     /**
      * Invert a changeset asynchronously.
      * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
      * @param changeset The changeset to invert.
      */
-    async invertChangesetAsync(changeset) {
+    invertChangesetAsync(changeset) {
         return this.nativeSession.invertChangesetAsync(this.nativeDatabase, changeset);
     }
     //#endregion
