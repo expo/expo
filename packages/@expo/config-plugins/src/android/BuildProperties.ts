@@ -72,6 +72,19 @@ export const withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin<
   'withNewArchEnabledGradleProps'
 );
 
+/**
+ * A config-plugin to update `android/gradle.properties` from the `updates.useNativeDebug` in expo config
+ */
+export const withUpdatesNativeDebugGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'EX_UPDATES_NATIVE_DEBUG',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug ?? false).toString(),
+    },
+  ],
+  'withUpdatesNativeDebugGradleProps'
+);
+
 export function updateAndroidBuildPropertiesFromConfig<
   SourceConfigType extends BuildPropertiesConfig,
 >(
