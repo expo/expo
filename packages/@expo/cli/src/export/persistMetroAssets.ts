@@ -45,8 +45,8 @@ export async function persistMetroAssetsAsync(
     return;
   }
 
-  // Ensure that the outputDirectory actually exists
-  if (!fs.existsSync(outputDirectory)) {
+  // For iOS, we need to ensure that the outputDirectory actually exists
+  if (platform === 'ios' && !fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory, { recursive: true });
   }
 
