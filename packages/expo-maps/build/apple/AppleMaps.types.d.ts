@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
