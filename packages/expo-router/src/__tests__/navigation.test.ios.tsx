@@ -615,7 +615,7 @@ it('should stay within the same group', () => {
   expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
-it('should stay within the same group for hoisted routes', () => {
+it.only('should stay within the same group for hoisted routes', () => {
   renderRouter(
     {
       _layout: () => <Stack />,

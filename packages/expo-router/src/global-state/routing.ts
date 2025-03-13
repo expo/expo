@@ -171,6 +171,8 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
 
   href = resolveHrefStringWithSegments(href, this.routeInfo, options);
 
+  debugger;
+
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
   if (!state || state.routes.length === 0) {
@@ -306,6 +308,22 @@ function getNavigateAction(
      */
     rootPayload.params.initial = !withAnchor;
   }
+
+  console.log(
+    JSON.stringify(
+      {
+        type,
+        target: navigationState.key,
+        payload: {
+          // key: rootPayload.key,
+          name: rootPayload.screen,
+          params: rootPayload.params,
+        },
+      },
+      null,
+      2
+    )
+  );
 
   return {
     type,

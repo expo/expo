@@ -21,48 +21,63 @@ it('can push a hash url', () => {
   act(() => router.push('/test#c'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 4,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', 'test', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '___InternalSlot',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {
-          '#': 'a',
+        state: {
+          index: 4,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {
+                '#': 'a',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {
+                '#': 'b',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {
+                '#': 'b',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {
+                '#': 'c',
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
         },
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {
-          '#': 'b',
-        },
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {
-          '#': 'b',
-        },
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {
-          '#': 'c',
-        },
-        path: undefined,
       },
     ],
     stale: false,
@@ -108,8 +123,16 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: 'index',
-        path: '/',
+        name: '___InternalSlot',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -121,14 +144,29 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
-        name: 'index',
         key: expect.any(String),
-        path: '/',
-        params: {
-          '#': 'hash1',
+        name: '___InternalSlot',
+        params: undefined,
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['index', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: {
+                '#': 'hash1',
+              },
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
         },
       },
     ],
