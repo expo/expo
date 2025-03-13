@@ -209,6 +209,7 @@ class VideoPlayerObserver {
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
+    NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
   }
 
   func startOrUpdateTimeUpdates(forInterval interval: Double) {
