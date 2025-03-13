@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+- Output formatting improvements ([#35483](https://github.com/expo/expo/pull/35483) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.12.7 — 2025-02-14
 
