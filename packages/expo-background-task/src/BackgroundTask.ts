@@ -68,7 +68,7 @@ export async function registerTaskAsync(
       const message =
         Platform.OS === 'ios'
           ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
-          : 'Background tasks are not available in the current environment.';
+          : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
       console.warn(message);
       warnAboutRunningOniOSSimulator = true;
     }

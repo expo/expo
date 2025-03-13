@@ -56,8 +56,8 @@ export async function registerTaskAsync(taskName, options = {}) {
     if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
         if (!warnAboutRunningOniOSSimulator) {
             const message = Platform.OS === 'ios'
-                ? 'On iOS, expo-background-tasks can only be used on a physical device and is not supported on the simulator.'
-                : 'Background tasks are not available in the current environment.';
+                ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
+                : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
             console.warn(message);
             warnAboutRunningOniOSSimulator = true;
         }
