@@ -29,10 +29,10 @@ struct PickerView: ExpoSwiftUI.View {
         .tint(props.color)
 #if !os(tvOS)
         .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
+        .if(props.variant == "palette", { $0.pickerStyle(.palette) })
 #endif
         .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
         .if(props.variant == "inline", { $0.pickerStyle(.inline) })
-        .if(props.variant == "palette", { $0.pickerStyle(.palette) })
         .if(props.variant == "menu", { $0.pickerStyle(.menu) })
         .onChange(of: selection, perform: { newValue in
           if props.selectedIndex == newValue {
