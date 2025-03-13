@@ -97,7 +97,7 @@
     "structured-headers": "^0.4.1",
     "tar": "^7.4.3",
     "terminal-link": "^2.1.1",
-    "undici": "^6.18.2",
+    "undici": "^6.21.1",
     "wrap-ansi": "^7.0.0",
     "ws": "^8.12.1"
   },
