@@ -137,7 +137,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   private fun cleanup() {
     hideAllNotifications()
 
-    val sessionsToRelease = ArrayList(mediaSessions.values)
+    val sessionsToRelease = mediaSessions.values.toList()
     mediaSessions.clear()
     for (session in sessionsToRelease) {
       session.release()
