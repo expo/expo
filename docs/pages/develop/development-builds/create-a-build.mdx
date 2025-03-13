@@ -10,6 +10,7 @@ import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderI
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -49,7 +50,7 @@ Any EAS CLI command can be built on your local machine with the `--local` flag. 
 
 (\*) All builds that run on an iPhone device require a paid [Apple Developer](developer.apple.com) account for build signing.
 
-(\*\*) No first-class support, but possible with [WSL](https://github.com/expo/fyi/blob/main/wsl.md).
+(\*\*) No first-class support, but possible with [WSL](http://expo.fyi/wsl.md).
 
 ### Build on locally without EAS
 
@@ -86,11 +87,20 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 <Tabs>
 
 <Tab label="Build on EAS">
-**Prerequisites**
 
-- an [Expo](https://expo.dev/) account
-- the [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and configured
-- (optional) an [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+  <Requirement number={2} title="EAS CLI">
+    The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+  </Requirement>
+  <Requirement number={3} title="An Android Emulator (optional)">
+    An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
+    app on an emulator.
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
@@ -100,12 +110,17 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
 
 <Tab label="On your local machine">
 
-**Prerequisites**
-
-- macOS, Windows or Linux machine
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=windows&platform=android)
-- on Windows, set up [WSL](https://github.com/expo/fyi/blob/main/wsl.md)
-- (optional) an [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+<Prerequisites numberOfRequirements={2}>
+  <Requirement number={1} title="Development environment set up">
+    A macOS, Windows, or Linux machine with your local [development
+    environment](https://reactnative.dev/docs/set-up-your-environment?os=windows&platform=android)
+    set up.
+  </Requirement>
+  <Requirement number={2} title="An Android Emulator (optional)">
+    An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
+    app on an emulator.
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ npx expo run:android']} />
 
@@ -122,12 +137,20 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 <Tabs>
 
 <Tab label="Build on EAS">
-**Prerequisites**
 
-- an [Expo](https://expo.dev/) account
-- the [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and configured
-- macOS (iOS Simulators are only available on macOS)
-- an [iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/)
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+  <Requirement number={2} title="EAS CLI">
+    The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+  </Requirement>
+  <Requirement number={3} title="macOS with iOS Simulator installed">
+    iOS Simulators are available only on macOS. Make sure you have the [iOS
+    Simulator](/workflow/ios-simulator/) installed.
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
@@ -137,10 +160,15 @@ Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-buil
 
 <Tab label="On your local machine">
 
-**Prerequisites**
-
-- macOS
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios)
+<Prerequisites numberOfRequirements={2}>
+  <Requirement number={1} title="macOS">
+    iOS Simulators are available only on macOS.
+  </Requirement>
+  <Requirement number={2} title="Development environment set up">
+    Set up your local [development
+    environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios).
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ npx expo run:ios']} />
 
@@ -157,11 +185,21 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 <Tabs>
 
 <Tab label="Build on EAS">
-**Prerequisites**
 
-- an [Expo](https://expo.dev/) account
-- the [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and configured
-- a paid [Apple Developer](https://developer.apple.com/) account - for creating [signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) so the app could be installed on an iOS device
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+  <Requirement number={2} title="EAS CLI">
+    The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+  </Requirement>
+  <Requirement number={3} title="Apple Developer account">
+    A paid [Apple Developer](https://developer.apple.com/) account for creating [signing
+    credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) so the app
+    could be installed on an iOS device.
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
@@ -171,10 +209,15 @@ Read more about [iOS Device builds on EAS](/tutorial/eas/ios-development-build-f
 
 <Tab label="On your local machine">
 
-**Prerequisites**
-
-- macOS
-- set up your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios)
+<Prerequisites numberOfRequirements={2}>
+  <Requirement number={1} title="macOS">
+    macOS is required to compile the native app for iOS devices.
+  </Requirement>
+  <Requirement number={2} title="Development environment set up">
+    Set up your local [development
+    environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios).
+  </Requirement>
+</Prerequisites>
 
 <Terminal cmd={['$ npx expo run:ios --device']} />
 
@@ -192,11 +235,11 @@ You'll need to install the native app on your device, emulator, or simulator.
 
 #### When building on EAS
 
-If you create your development build on EAS, the CLI will prompt you to install the app after the build is finished. You can also install previous builds from the expo.dev dashboard or using [Expo Orbit](https://expo.dev/orbit).
+If you create your development build on EAS, the CLI will prompt you to install the app after the build is finished. You can also install previous builds from the [expo.dev](https://expo.dev/) dashboard or using [Expo Orbit](https://expo.dev/orbit).
 
 #### When building locally using EAS CLI
 
-When building locally the output of the build will be an archive. You may drag and drop this on your Android Emulator/iOS Simulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install a build from your local machine on any platform.
+When building locally the output of the build will be an archive. You may drag and drop this on your Android Emulator/iOS Simulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install a build from your local machine.
 
 #### When building locally without EAS CLI
 
