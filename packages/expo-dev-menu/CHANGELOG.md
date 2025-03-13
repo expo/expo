@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed compilation error (could not build module 'ReactCodegen') on iOS.
+- Fixed compilation error (could not build module 'ReactCodegen') on iOS. ([#35473](https://github.com/expo/expo/pull/35473) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
