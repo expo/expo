@@ -20,6 +20,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added guards to avoid task options to crash the app.
 - [iOS] Added error handler to the streaming location/heading methods since these can fail while streaming ([#35004](https://github.com/expo/expo/pull/35004) by [@chrfalch](https://github.com/chrfalch))
 
 ## 18.0.6 - 2025-02-10
