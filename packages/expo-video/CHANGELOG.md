@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix memory leaks caused by the uninvalidated subtitles observer. ([#31781](https://github.com/expo/expo/pull/31781) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 2.0.5 — 2025-01-10
