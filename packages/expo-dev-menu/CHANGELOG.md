@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed compilation error (could not build module 'ReactCodegen') on iOS.
+
 ### 💡 Others
 
 ## 6.0.20 — 2025-03-11
