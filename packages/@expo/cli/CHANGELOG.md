@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- export:embed should create tmp assets directory if needed. ([#35387](https://github.com/expo/expo/pull/35387) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.22.19 — 2025-03-11
