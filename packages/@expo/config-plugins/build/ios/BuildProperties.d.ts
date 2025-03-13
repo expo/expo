@@ -25,6 +25,10 @@ export declare const withJsEnginePodfileProps: ConfigPlugin<void>;
  * A config-plugin to update `ios/Podfile.properties.json` from the `newArchEnabled` in expo config
  */
 export declare const withNewArchEnabledPodfileProps: ConfigPlugin<void>;
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+export declare const withUpdatesNativeDebugPodfileProps: ConfigPlugin<void>;
 export declare function updateIosBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(config: SourceConfigType, podfileProperties: Record<string, string>, configToPropertyRules: ConfigToPropertyRuleType<SourceConfigType>[]): Record<string, string>;
 export declare function updateIosBuildProperty(podfileProperties: Record<string, string>, name: string, value: string | null | undefined, options?: {
     removePropWhenValueIsNull?: boolean;

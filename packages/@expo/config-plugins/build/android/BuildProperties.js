@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createBuildGradlePropsConfigPlugin = createBuildGradlePropsConfigPlugin;
 exports.updateAndroidBuildPropertiesFromConfig = updateAndroidBuildPropertiesFromConfig;
 exports.updateAndroidBuildProperty = updateAndroidBuildProperty;
-exports.withNewArchEnabledGradleProps = exports.withJsEngineGradleProps = void 0;
+exports.withUpdatesNativeDebugGradleProps = exports.withNewArchEnabledGradleProps = exports.withJsEngineGradleProps = void 0;
 function _androidPlugins() {
   const data = require("../plugins/android-plugins");
   _androidPlugins = function () {
@@ -57,6 +57,14 @@ const withNewArchEnabledGradleProps = exports.withNewArchEnabledGradleProps = cr
   propName: 'newArchEnabled',
   propValueGetter: config => (config.android?.newArchEnabled ?? config.newArchEnabled ?? false).toString()
 }], 'withNewArchEnabledGradleProps');
+
+/**
+ * A config-plugin to update `android/gradle.properties` from the `updates.useNativeDebug` in expo config
+ */
+const withUpdatesNativeDebugGradleProps = exports.withUpdatesNativeDebugGradleProps = createBuildGradlePropsConfigPlugin([{
+  propName: 'EX_UPDATES_NATIVE_DEBUG',
+  propValueGetter: config => (config?.updates?.useNativeDebug ?? false).toString()
+}], 'withUpdatesNativeDebugGradleProps');
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);

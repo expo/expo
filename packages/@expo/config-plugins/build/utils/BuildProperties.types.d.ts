@@ -22,4 +22,6 @@ export interface ConfigToPropertyRuleType<SourceConfigType extends BuildProperti
     propName: string;
     /** Passing config and get the property value */
     propValueGetter: (config: SourceConfigType) => string | null | undefined;
+    /** Remove property value if value is falsy */
+    removePropWhenValueIsNull?: boolean;
 }

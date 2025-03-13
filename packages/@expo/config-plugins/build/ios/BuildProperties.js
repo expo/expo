@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createBuildPodfilePropsConfigPlugin = createBuildPodfilePropsConfigPlugin;
 exports.updateIosBuildPropertiesFromConfig = updateIosBuildPropertiesFromConfig;
 exports.updateIosBuildProperty = updateIosBuildProperty;
-exports.withNewArchEnabledPodfileProps = exports.withJsEnginePodfileProps = void 0;
+exports.withUpdatesNativeDebugPodfileProps = exports.withNewArchEnabledPodfileProps = exports.withJsEnginePodfileProps = void 0;
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
@@ -57,10 +57,21 @@ const withNewArchEnabledPodfileProps = exports.withNewArchEnabledPodfileProps = 
   propName: 'newArchEnabled',
   propValueGetter: config => (config.ios?.newArchEnabled ?? config.newArchEnabled ?? false).toString()
 }], 'withNewArchEnabledPodfileProps');
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+const withUpdatesNativeDebugPodfileProps = exports.withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin([{
+  propName: 'updatesNativeDebug',
+  propValueGetter: config => (config?.updates?.useNativeDebug ?? false).toString(),
+  removePropWhenValueIsNull: true
+}], 'withUpdatesNativeDebugPodfileProps');
 function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);
-    updateIosBuildProperty(podfileProperties, configToProperty.propName, value);
+    updateIosBuildProperty(podfileProperties, configToProperty.propName, value, {
+      removePropWhenValueIsNull: configToProperty.removePropWhenValueIsNull ?? false
+    });
   }
   return podfileProperties;
 }
