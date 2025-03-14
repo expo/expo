@@ -7,6 +7,10 @@ const path = require('node:path');
 const config = getDefaultConfig(__dirname);
 const monorepoRoot = path.join(__dirname, '../..');
 
+// NOTE(cedric): `@babel/runtime/*` helpers are used as CJS, while being resolved as ESM causing issues
+// We need to resolve that before launching SDK 53 and remove this option.
+config.resolver.unstable_enablePackageExports = false;
+
 config.resolver.assetExts.push(
   'kml', // See: ../native-component-list/assets/expo-maps/sample_kml.kml
   'wasm' // For expo-sqlite on web
