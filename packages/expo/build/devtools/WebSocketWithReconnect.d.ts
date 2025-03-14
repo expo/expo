@@ -1,3 +1,4 @@
+/// <reference types="../src/types/globals.d.ts" />
 import type { DevToolsPluginClientOptions } from './devtools.types';
 export interface Options {
     /**

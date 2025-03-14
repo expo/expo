@@ -3,7 +3,7 @@ import { cleanup } from '@testing-library/react-native';
 afterEach(cleanup);
 
 jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const View = require('react-native/Libraries/Components/View/View').default;
   const React = require('react');
   const MockSwitch = React.forwardRef((props, ref) => {
     return React.createElement(View, { ...props, onPress: props.onValueChange });
