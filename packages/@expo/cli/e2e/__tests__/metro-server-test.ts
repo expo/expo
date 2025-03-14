@@ -5,7 +5,7 @@ import { createExpoStart } from '../utils/expo';
 const expo = createExpoStart({
   env: {
     TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-    EXPO_USE_FAST_RESOLVER: 'true',
+    EXPO_USE_FAST_RESOLVER: 'false',
   },
 });
 

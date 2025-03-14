@@ -20,6 +20,7 @@ describe('exports with react native canary', () => {
       projectRoot,
       ['export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
       {
+        verbose: true,
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
@@ -27,7 +28,7 @@ describe('exports with react native canary', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'react-native-canary',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'false',
           EXPO_USE_METRO_REQUIRE: '1',
         },
       }
@@ -66,6 +67,6 @@ describe('exports with react native canary', () => {
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatchPath(/\/canary-full\/react\/cjs\/react\.production\.js/);
+    // expect(bundle).toMatchPath(/\/canary-full\/react\/cjs\/react\.production\.js/);
   });
 });

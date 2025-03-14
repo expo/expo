@@ -23,7 +23,7 @@ describe('export-no-ssg', () => {
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       }
     );
