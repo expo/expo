@@ -124,7 +124,7 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
 
 <Terminal cmd={['$ npx expo run:android']} />
 
-The same `apk` will can be installed on Android devices as well as Emulators.
+The same `apk` can be installed on Android devices as well as emulators.
 
 Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
 
@@ -154,7 +154,7 @@ Read more about [local app development](/guides/local-app-development/#local-bui
   </Requirement>
 </Prerequisites>
 
-Edit `development` profile in **eas.json** and set the [simulator](/eas/json/#simulator) option to `true` (you may want to create a separate profile for simulator builds if you also want to create iOS device builds for this project).
+Edit `development` profile in **eas.json** and set the [`simulator`](/eas/json/#simulator) option to `true` (you have to create a separate profile for simulator builds if you also want to create iOS device builds for this project).
 
 ```json eas.json
 {
@@ -170,7 +170,7 @@ Edit `development` profile in **eas.json** and set the [simulator](/eas/json/#si
 
 <Terminal cmd={['$ eas build --platform ios --profile development']} />
 
-iOS Simulator builds can only be installed on iOS Simulators and will not be installable on real devices.
+iOS Simulator builds can only be installed on simulators and not on real devices.
 
 Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-build-for-simulators/).
 
@@ -221,7 +221,7 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 
 <Terminal cmd={['$ eas build --platform ios --profile development']} />
 
-iOS device builds can only be installed on iPhone devices and will not be installable on iOS Simulators.
+iOS device builds can only be installed on iPhone devices and not on iOS Simulators.
 
 Read more about [iOS device builds on EAS](/tutorial/eas/ios-development-build-for-devices/).
 
