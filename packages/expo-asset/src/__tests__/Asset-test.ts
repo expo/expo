@@ -73,8 +73,9 @@ if (Platform.OS !== 'web') {
 
     it(`automatically registers a source resolver`, () => {
       require('../index');
-      const { setCustomSourceTransformer } =
-        require('react-native/Libraries/Image/resolveAssetSource').default;
+      const {
+        setCustomSourceTransformer,
+      } = require('react-native/Libraries/Image/resolveAssetSource');
       expect(setCustomSourceTransformer).toHaveBeenCalledTimes(1);
     });
   });
