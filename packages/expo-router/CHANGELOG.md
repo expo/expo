@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.19 — 2025-03-14
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.18 — 2025-03-11
 
 ### 🐛 Bug fixes
