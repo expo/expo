@@ -1,3 +1,6 @@
+import { ExpoConfig } from '@expo/config-types';
+
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
 import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
@@ -16,6 +19,7 @@ import {
   getUpdateUrl,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
+import { withPlugins } from '../plugins/withPlugins';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
@@ -34,6 +38,23 @@ export enum Config {
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesPlist, withUpdatesNativeDebugPodfileProps]);
+};
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+export const withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'updatesNativeDebug',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug === true ? 'true' : undefined),
+    },
+  ],
+  'withUpdatesNativeDebugPodfileProps'
+);
+
+const withUpdatesPlist: ConfigPlugin = (config) => {
   return withExpoPlist(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
