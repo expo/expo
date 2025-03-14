@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose `setOptions()` on `SplashScreen` from `expo-splash-screen`. ([#33796)(https://github.com/expo/expo/pull/33796) by [@Tobbe](https://github.com/Tobbe))
+
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
