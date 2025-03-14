@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 18.0.8 — 2025-03-14
+
+### 💡 Others
+
 - On iOS, added setting the scope value as per our documentation. ([#35452](https://github.com/expo/expo/pull/35452) by [@chrfalch](https://github.com/chrfalch))
 
 ## 18.0.7 — 2025-02-19
