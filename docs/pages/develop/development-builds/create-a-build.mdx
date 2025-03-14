@@ -30,7 +30,7 @@ The requirements for building the native app depend on which platform you are us
 
 This is the easiest way to build your native app, as it requires no native build tools on your side. The builds happen on the EAS servers, which makes it possible to trigger iOS builds from non-macOS platforms.
 
-|             | Android    | iOS Simulator | iPhone Device   |
+|             | Android    | iOS Simulator | iPhone device   |
 | ----------- | ---------- | ------------- | --------------- |
 | **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
 | **Windows** | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
@@ -42,7 +42,7 @@ This is the easiest way to build your native app, as it requires no native build
 
 Any EAS CLI command can be built on your local machine with the `--local` flag. This requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. Read more about [local app development](/build-reference/local-builds/).
 
-|             | Android           | iOS Simulator | iPhone Device   |
+|             | Android           | iOS Simulator | iPhone device   |
 | ----------- | ----------------- | ------------- | --------------- |
 | **macOS**   | <YesIcon/>        | <YesIcon/>    | <YesIcon/> (\*) |
 | **Windows** | <YesIcon/> (\*\*) | <NoIcon />    | <NoIcon />      |
@@ -56,7 +56,7 @@ Any EAS CLI command can be built on your local machine with the `--local` flag. 
 
 To build locally without EAS requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation).
 
-|             | Android    | iOS Simulator | iPhone Device |
+|             | Android    | iOS Simulator | iPhone device |
 | ----------- | ---------- | ------------- | ------------- |
 | **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/>    |
 | **Windows** | <YesIcon/> | <NoIcon />    | <NoIcon />    |
@@ -124,6 +124,8 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
 
 <Terminal cmd={['$ npx expo run:android']} />
 
+The same `apk` can be installed on Android devices as well as emulators.
+
 Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
 
 </Tab>
@@ -152,7 +154,23 @@ Read more about [local app development](/guides/local-app-development/#local-bui
   </Requirement>
 </Prerequisites>
 
-<Terminal cmd={['$ eas build --platform android --profile development']} />
+Edit `development` profile in **eas.json** and set the [`simulator`](/eas/json/#simulator) option to `true` (you have to create a separate profile for simulator builds if you also want to create iOS device builds for this project).
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+iOS Simulator builds can only be installed on simulators and not on real devices.
 
 Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-build-for-simulators/).
 
@@ -180,7 +198,7 @@ Read more about [local app development](/guides/local-app-development/#local-bui
 </Step>
 
 <Step label="2">
-### Build the native app (iOS Device)
+### Build the native app (iOS device)
 
 <Tabs>
 
@@ -201,9 +219,11 @@ Read more about [local app development](/guides/local-app-development/#local-bui
   </Requirement>
 </Prerequisites>
 
-<Terminal cmd={['$ eas build --platform android --profile development']} />
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
 
-Read more about [iOS Device builds on EAS](/tutorial/eas/ios-development-build-for-devices/).
+iOS device builds can only be installed on iPhone devices and not on iOS Simulators.
+
+Read more about [iOS device builds on EAS](/tutorial/eas/ios-development-build-for-devices/).
 
 </Tab>
 
