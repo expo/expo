@@ -68,6 +68,15 @@ export default function ContextMenuScreen() {
               label="Will u marry doggos?"
               onValueChange={setSwitch2Checked}
             />
+            <Picker
+              options={['$', '$$']}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              label="Cost"
+              variant="palette"
+            />
             <Button role="destructive" systemImage={{ ios: 'hand.thumbsdown' }}>
               I don't like doggos 😡
             </Button>
