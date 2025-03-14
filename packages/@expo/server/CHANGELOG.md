@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.5.3 — 2025-03-14
+
+### 💡 Others
+
 - Constrain `undici` to `^6.18.2`, since `^7.0.0` drops Node 18 support which we still support for SDK 52. ([#35507](https://github.com/expo/expo/pull/35507) by [@kitten](https://github.com/kitten))
 
 ## 0.5.2 — 2025-03-11
