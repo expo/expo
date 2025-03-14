@@ -81,7 +81,7 @@ export async function loadMetroConfigAsync(
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
   if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
-    process.env.EXPO_USE_FAST_RESOLVER = '1';
+    // process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
   const serverRoot = getMetroServerRoot(projectRoot);

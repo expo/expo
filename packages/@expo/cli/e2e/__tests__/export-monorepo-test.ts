@@ -54,7 +54,7 @@ async function exportApp(monorepoRoot: string, workspacePath: string) {
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_FAST_RESOLVER: 'true',
+        EXPO_USE_FAST_RESOLVER: 'false',
       },
       // NOTE(cedric): this is a temporary workaround to avoid `@expo/cli` or `@expo/metro-config` to link to packages inside the expo/expo monorepo
       // For some reason, this has gotten more unstable than it was and may result in unexpected SHA1 files not being calculated (even though they are included in the watch folders)

@@ -27,7 +27,7 @@ describe('exports with react native canary', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'react-native-canary',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'false',
           EXPO_USE_METRO_REQUIRE: '1',
         },
       }

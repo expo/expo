@@ -93,7 +93,7 @@ for (const args of [
 describe('server', () => {
   const expo = createExpoStart({
     env: {
-      EXPO_USE_FAST_RESOLVER: 'true',
+      EXPO_USE_FAST_RESOLVER: 'false',
     },
   });
 
@@ -167,7 +167,7 @@ describe('server', () => {
 describe('start - dev clients', () => {
   const expo = createExpoStart({
     env: {
-      EXPO_USE_FAST_RESOLVER: 'true',
+      EXPO_USE_FAST_RESOLVER: 'false',
     },
   });
 
@@ -210,7 +210,7 @@ describe('start - webcontainer', () => {
       EXPO_USE_STATIC: 'server',
       E2E_ROUTER_SRC: 'server',
       E2E_ROUTER_ASYNC: 'development',
-      EXPO_USE_FAST_RESOLVER: 'true',
+      EXPO_USE_FAST_RESOLVER: 'false',
       // Force webcontainer mode
       CI: 'false',
       EXPO_FORCE_WEBCONTAINER_ENV: 'true',

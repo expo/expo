@@ -23,7 +23,7 @@ describe('server-output', () => {
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'server',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
+        EXPO_USE_FAST_RESOLVER: 'false',
       },
     });
     console.timeEnd('export-server');

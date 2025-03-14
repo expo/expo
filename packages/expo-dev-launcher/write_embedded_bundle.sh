@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export NODE_ENV=production
-export EXPO_USE_FAST_RESOLVER=1
+export EXPO_USE_FAST_RESOLVER=false
 export EXPO_NO_TELEMETRY=1
 
 # Generate temporary app.json for `npx expo export:embed` and indicate that we want to use JSC bundling profile.

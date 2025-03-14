@@ -51,7 +51,7 @@ describe('Export DOM Components', () => {
         env: {
           NODE_ENV: 'production',
           TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       }
     );
