@@ -152,6 +152,20 @@ Read more about [local app development](/guides/local-app-development/#local-bui
   </Requirement>
 </Prerequisites>
 
+Edit `development` profile in **eas.json** and set the [simulator](/eas/json/#simulator) option to `true` (you may want to create a separate profile for simulator builds if you also want to create iOS device builds for this project).
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
 <Terminal cmd={['$ eas build --platform ios --profile development']} />
 
 Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-build-for-simulators/).
