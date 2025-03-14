@@ -103,6 +103,13 @@ export type ManifestActivity = {
   // ...
 };
 
+export type ManifestActivityAlias = {
+  $: ManifestActivity['$'] & {
+    'android:targetActivity'?: string;
+  };
+  'intent-filter'?: ManifestIntentFilter[];
+};
+
 export type ManifestUsesLibrary = {
   $: AndroidManifestAttributes & {
     'android:required'?: StringBoolean;
@@ -112,6 +119,7 @@ export type ManifestUsesLibrary = {
 export type ManifestApplication = {
   $: ManifestApplicationAttributes;
   activity?: ManifestActivity[];
+  'activity-alias'?: ManifestActivityAlias[];
   service?: ManifestService[];
   receiver?: ManifestReceiver[];
   'meta-data'?: ManifestMetaData[];
@@ -213,6 +221,18 @@ export function getMainActivityOrThrow(androidManifest: AndroidManifest): Manife
   return mainActivity;
 }
 
+function hasMainActionIntentFilter(intentFilter: ManifestIntentFilter): boolean {
+  return !!intentFilter.action?.find(
+    (action) => action.$['android:name'] === 'android.intent.action.MAIN'
+  );
+}
+
+function hasLauncherCategoryIntentFilter(intentFilter: ManifestIntentFilter): boolean {
+  return !!intentFilter.category?.find(
+    (category) => category.$['android:name'] === 'android.intent.category.LAUNCHER'
+  );
+}
+
 export function getRunnableActivity(androidManifest: AndroidManifest): ManifestActivity | null {
   // Get enabled activities
   const enabledActivities = androidManifest?.manifest?.application?.[0]?.activity?.filter?.(
@@ -223,19 +243,54 @@ export function getRunnableActivity(androidManifest: AndroidManifest): ManifestA
     return null;
   }
 
-  // Get the activity that has a runnable intent-filter
-  for (const activity of enabledActivities) {
-    if (Array.isArray(activity['intent-filter'])) {
-      for (const intentFilter of activity['intent-filter']) {
-        if (
-          intentFilter.action?.find(
-            (action) => action.$['android:name'] === 'android.intent.action.MAIN'
-          ) &&
-          intentFilter.category?.find(
-            (category) => category.$['android:name'] === 'android.intent.category.LAUNCHER'
-          )
-        ) {
-          return activity;
+  const { mainActionActivites, runnableActivities } = enabledActivities.reduce(
+    (prev, activity) => {
+      if (Array.isArray(activity['intent-filter'])) {
+        for (const intentFilter of activity['intent-filter']) {
+          const isMainActionIntentFilter = hasMainActionIntentFilter(intentFilter);
+          const isLauncherCategoryIntentFilter = hasLauncherCategoryIntentFilter(intentFilter);
+
+          if (isMainActionIntentFilter && isLauncherCategoryIntentFilter) {
+            prev.runnableActivities.push(activity);
+          }
+          if (isMainActionIntentFilter) {
+            prev.mainActionActivites.push(activity);
+          }
+        }
+      }
+      return prev;
+    },
+    { mainActionActivites: [] as ManifestActivity[], runnableActivities: [] as ManifestActivity[] }
+  );
+
+  if (runnableActivities.length) {
+    return runnableActivities[0];
+  }
+
+  // No runnable activity found, look for enabled activity aliases
+  const enabledActivityAliases = androidManifest?.manifest?.application?.[0]?.[
+    'activity-alias'
+  ]?.filter?.((e: any) => e.$['android:enabled'] !== 'false' && e.$['android:enabled'] !== false);
+
+  if (!enabledActivityAliases) {
+    return null;
+  }
+
+  // Look for the activity alias that has a runnable intent-filter
+  // and a targetActivity pointing to an existing main action activity
+  for (const activityAlias of enabledActivityAliases) {
+    if (Array.isArray(activityAlias['intent-filter'])) {
+      for (const intentFilter of activityAlias['intent-filter']) {
+        const isMainActionIntentFilter = hasMainActionIntentFilter(intentFilter);
+        const isLauncherCategoryIntentFilter = hasLauncherCategoryIntentFilter(intentFilter);
+        if (isMainActionIntentFilter && isLauncherCategoryIntentFilter) {
+          const targetActivity = activityAlias.$['android:targetActivity'];
+          if (targetActivity) {
+            const target = mainActionActivites.find((e) => e.$['android:name'] === targetActivity);
+            if (target) {
+              return target;
+            }
+          }
         }
       }
     }
