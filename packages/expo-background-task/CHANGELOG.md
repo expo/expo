@@ -10,7 +10,10 @@
 
 ### 💡 Others
 
-## 0.1.2 — 2025-02-14
+- added throwing an exception if registerTask is run on an iOS Simulator or a device without background modes enabled ([#35350](https://github.com/expo/expo/pull/35350) by [@chrfalch](https://github.com/chrfalch))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 0.1.2 - 2025-02-14
 
 _This version does not introduce any user-facing changes._
 
@@ -28,4 +31,4 @@ _This version does not introduce any user-facing changes._
 
 ## 0.0.0 — 2025-01-21
 
-> > > > > > > 1362a71283d ([background-task][gradle] - start use new expo modules gradle plugin (#34431))### 🎉 New features- Added expo-background-task package ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+- Added expo-background-task package ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
