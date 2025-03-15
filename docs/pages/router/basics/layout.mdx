@@ -5,7 +5,6 @@ sidebar_title: Layout
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Each folder within the **app** directory (including **app** itself) can define a layout in the form of a **\_layout.tsx** file inside the folder. This file defines how all the pages within that folder are arranged. This is where you would define a stack navigator, tab navigator, drawer navigator, or any other layout that you want to use for the pages in that folder. The layout file exports a default component that is rendered prior to whatever page you are navigating to within that folder.
 
@@ -100,10 +99,10 @@ Much like a stack, you can implement a tab navigator in your layout file, and al
   ]}
 />
 
-In the **\_layout.tsx** file, return a `Tab` component:
+In the **\_layout.tsx** file, return a `Tabs` component:
 
 ```tsx _layout.tsx
-import { Tab } from 'expo-router';
+import { Tabs } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TabLayout() {

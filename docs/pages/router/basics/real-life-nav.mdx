@@ -26,17 +26,17 @@ Consider this navigation tree:
   ]}
 />
 
-In the **app/(tabs)\_layout.tsx** file, return a `Tab` component:
+In the **app/(tabs)\_layout.tsx** file, return a `Tabs` component:
 
 ```tsx _layout.tsx
-import { Tab } from 'expo-router';
+import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
     <Tabs>
-      <Tab name="index" title="Home" />
-      <Tab name="feed" title="Feed" />
-      <Tab name="settings" title="Settings" />
+      <Tab.Screen name="index" options={{ title: 'Home' }} />
+      <Tab.Screen name="feed" options={{ title: 'Feed' }} />
+      <Tab.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }
