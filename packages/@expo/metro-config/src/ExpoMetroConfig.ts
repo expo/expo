@@ -246,7 +246,6 @@ export function getDefaultConfig(
         // This is removed for server platforms.
         web: ['browser'],
       },
-      unstable_conditionNames: ['require', 'import'],
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
