@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig, Platform } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs';
 import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
@@ -154,16 +155,13 @@ export function withExtendedResolver(
   }
 ) {
   if (isReactServerComponentsEnabled) {
-    Log.warn(
-      `Experimental React Server Components is enabled. Production exports are not supported yet.`
-    );
+    Log.warn(`React Server Components (beta) is enabled.`);
+  }
+  if (isReactCanaryEnabled) {
+    Log.warn(`Experimental React 19 canary is enabled.`);
   }
   if (isFastResolverEnabled) {
-    Log.warn(`Experimental module resolution is enabled.`);
-  }
-
-  if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Canary version is enabled.`);
+    Log.log(chalk.dim`Fast resolver is enabled.`);
   }
 
   const defaultResolver = metroResolver.resolve;

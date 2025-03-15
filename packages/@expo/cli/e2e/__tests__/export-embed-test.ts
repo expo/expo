@@ -271,7 +271,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   await fs.promises.mkdir(path.join(projectRoot, output));
 
   // `npx expo export:embed`
-  const { stderr } = await executeExpoAsync(
+  const { stdout } = await executeExpoAsync(
     projectRoot,
     // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
@@ -304,7 +304,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   );
 
   // Ensure the experimental module resolution warning is logged
-  expect(stderr).toBe('Experimental module resolution is enabled.');
+  expect(stdout).toMatch('Fast resolver is enabled.');
 
   const outputDir = path.join(projectRoot, output);
 
