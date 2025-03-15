@@ -1,11 +1,7 @@
 import NextHead from 'next/head';
 import type { PropsWithChildren } from 'react';
 
-type HeadProps = PropsWithChildren<{
-  title?: string;
-  description?: string;
-  canonicalUrl?: string;
-}>;
+type HeadProps = PropsWithChildren<{ title?: string; description?: string; canonicalUrl?: string }>;
 
 const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 
@@ -46,6 +42,7 @@ const DocumentationHead = ({ title, description, canonicalUrl, children }: HeadP
       />
       <meta property="twitter:image" content={OGImageURL} />
       <meta name="google-site-verification" content="izrqNurn_EXfYbNIFgVIhEXkkZk9DleELH4UouM8s3k" />
+
       {children}
     </NextHead>
   );
