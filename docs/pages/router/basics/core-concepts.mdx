@@ -1,0 +1,62 @@
+---
+title: Core concepts of file-based Routing
+description: Learn the ground rules of Expo Router and how it relates to the rest of your code.
+sidebar_title: Core concepts
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+Before we dive into how to construct your app's navigation tree with Expo Router, let's first understand the core concepts that make up the foundation of file-based routing in Expo Router, and how an Expo Router project might differ in structure from other React Native projects.
+
+## The rules of Expo Router
+
+### 1. All screens / pages are files inside of /app
+
+All navigation routes in your app are defined by the files and folders inside the **app** directory. Every file inside the **app** folder has a default export that defines a distinct page in your app (except for the special **\_layout** files, which we'll get to in a moment).
+
+Accordingly, folders define groups of related screens together as stacks, tabs, or in other arrangements.
+
+### 2. All pages have a URL
+
+All pages have a URL path that matches the file's location in the **app** directory, which can be used to navigate to that page in the address bar on the web, or as an app-specific deep link in a navtive mobile app. This is what is meant by Expo Router supporting "universal deep-linking". All pages in your app can be navigated to with a URL, regardless of the platform.
+
+### 3. First index.tsx is the initial route
+
+With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. This could be an **app/index.tsx** file, or, if you want to show an initial tab in a tab navigator, it could be an **app/(tabs)/index.tsx** file. If you nest **index.tsx** deeper than the top level folder, the key is to use route groups rather than static folder names, as a route group inside of **app** would still match the `/` URL.
+
+### 4. Root \_layout.tsx replaces App.jsx
+
+Every project should have a **\_layout.tsx** file directly inside the **app** folder. This file is rendered before any other route in your app, and is where you would put initialization code that may have previously gone inside an **App.js** file, such as loading fonts or interacting with the splash screen.
+
+### 5. Non-navigation components live outside of /app
+
+In Expo Router, the **app** folder is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level folders. If you put a non-route inside of the **app** folder, Expo Router will attempt to treat it like a route.
+
+Alternatively, you can create a top-level **src** folder and put your routes inside the **src/app** folder, with non-route components going in folders like **src/components**, **src/utils**, etc. This is the only other folder structure that Expo Router will recognize.
+
+### 6. It's still React Navigation is under the hood
+
+While this may sound quite a bit different from React Navigation, actually, Expo Router is actually built on top of React Navigation. You can think of Expo Router as an Expo CLI optimization that is translating your file structure into React Navigation components that you previously defined in your own code.
+
+This also means that you can often refer to React Navigation documentation for how to style or configure navigation, as the default stack and tab navigators use the exact same options.
+
+## The rules of Expo Router applied
+
+Let's use what we've learned about how Expo Router works to quickly identify key elements of the following project file structure:
+
+<FileTree
+  files={[
+    ['app/index.tsx'],
+    ['app/about.tsx'],
+    ['app/\_layout_.tsx'],
+    ['app/profile/friends.tsx'],
+    ['components/TextField.tsx'],
+    ['components/Toolbar.tsx'],
+  ]}
+/>
+
+- **app/index.tsx** is the initial route, and will appear first when you open the app or navigate to your web app's root URL.
+- **app/home.tsx** is a page with the route `/home`, so you can navigate to it with a URL like `yourapp.com/home` in the browser, or `myapp://home` in a native app.
+- **app/\_layout.tsx** is the root layout. Any initialization code you may have previously put in **App.js** should go here.
+- **app/profile/friends.tsx** is a page with the route `/profile/friends`.
+- **TextField.tsx** and **Toolbar.tsx** are not in the **app** directory, so they will not be considered pages that navigated to. However, they can be used as components in the pages inside of **app**.
