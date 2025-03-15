@@ -23,10 +23,22 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     namedRegex: TRegex;
     /** Indicates that the route was generated and does not map to any file in the project's routes directory. */
     generated?: boolean;
+    /** Indicates that this is a redirect that should use 301 instead of 307 */
+    permanent?: boolean;
+    /** If a redirect, which methods are allowed. Undefined represents all methods */
+    methods?: string[];
 };
 export type ExpoRouterServerManifestV1<TRegex = string> = {
     /**
-     * Routes that are matched first and return static HTML files for a given path.
+     * Rewrites. These occur first
+     */
+    rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
+    /**
+     * List of routes that match second. Returns 301 and redirects to another path.
+     */
+    redirects: ExpoRouterServerManifestV1Route<TRegex>[];
+    /**
+     * Routes that return static HTML files for a given path.
      * These are only matched against requests with method `GET` and `HEAD`.
      */
     htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];

@@ -39,4 +39,6 @@ export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
 
+export type { RedirectConfig } from './getRoutesCore';
+
 export type * from './types';

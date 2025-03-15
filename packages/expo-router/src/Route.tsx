@@ -20,7 +20,7 @@ export type LoadedRoute = {
 
 export type RouteNode = {
   /** The type of RouteNode */
-  type: 'route' | 'api' | 'layout';
+  type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
@@ -33,12 +33,18 @@ export type RouteNode = {
   route: string;
   /** Context Module ID, used for matching children. */
   contextKey: string;
+  /** Redirect Context Module ID, used for matching children. */
+  destinationContextKey?: string;
+  /** Is the redirect permanent. */
+  permanent?: boolean;
   /** Added in-memory */
   generated?: boolean;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
   /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
   entryPoints?: string[];
+  /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
+  methods?: string[];
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);

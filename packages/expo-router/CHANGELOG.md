@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))

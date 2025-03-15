@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReactNavigationConfig = exports.getReactNavigationScreensConfig = void 0;
+exports.getReactNavigationConfig = exports.getReactNavigationScreensConfig = exports.parseRouteSegments = void 0;
 const matchers_1 = require("./matchers");
 // `[page]` -> `:page`
 // `page` -> `page`
@@ -36,6 +36,7 @@ function parseRouteSegments(segments) {
         // Join to return as a path.
         .join('/'));
 }
+exports.parseRouteSegments = parseRouteSegments;
 function convertRouteNodeToScreen(node, metaOnly) {
     const path = parseRouteSegments(node.route);
     if (!node.children.length) {
