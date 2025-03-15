@@ -18,7 +18,7 @@ const withMediaLibraryExternalStorage = (config) => {
         return config;
     });
 };
-const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
+const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled, preventAutomaticLimitedAccessAlert, } = {}) => {
     config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
         NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
         NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',
@@ -31,6 +31,12 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
         'android.permission.WRITE_EXTERNAL_STORAGE',
         isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
     ].filter(Boolean));
+    if (preventAutomaticLimitedAccessAlert) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults.PHPhotoLibraryPreventAutomaticLimitedAccessAlert = true;
+            return config;
+        });
+    }
     return withMediaLibraryExternalStorage(config);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withMediaLibrary, pkg.name, pkg.version);
