@@ -46,7 +46,7 @@ const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNative
   'StepperView'
 );
 
-export function transformSliderProps(props: StepperProps): NativeStepperProps {
+export function transformStepperProps(props: StepperProps): NativeStepperProps {
   return {
     ...props,
     step: props.step ?? 1,
@@ -58,5 +58,5 @@ export function transformSliderProps(props: StepperProps): NativeStepperProps {
 }
 
 export function Stepper(props: StepperProps) {
-  return <StepperNativeView {...transformSliderProps(props)} />;
+  return <StepperNativeView {...transformStepperProps(props)} />;
 }
