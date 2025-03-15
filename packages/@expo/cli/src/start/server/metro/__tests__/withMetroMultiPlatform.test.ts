@@ -122,7 +122,7 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         extraNodeModules: {},
         mainFields: ['react-native', 'browser', 'main'],
@@ -203,7 +203,7 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -226,7 +226,7 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -253,7 +253,7 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -359,7 +359,7 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
+      expect(getResolveFunc()).toHaveBeenCalledWith(expect.anything(), '@expo/vector-icons', platform);
     });
   });
 
@@ -384,7 +384,7 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         '@expo/vector-icons/FontAwesome',
         platform
@@ -412,7 +412,7 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         'react-native-vector-icons',
         platform
@@ -435,7 +435,7 @@ describe(withExtendedResolver, () => {
     });
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
-    expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
+    expect(getResolveFunc()).toHaveBeenCalledWith(expect.anything(), '@expo/vector-icons', platform);
   });
 
   it(`resolves a node.js built-in as a shim on web`, async () => {
@@ -460,7 +460,7 @@ describe(withExtendedResolver, () => {
     });
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -496,7 +496,7 @@ describe(withExtendedResolver, () => {
     });
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
         mainFields: ['browser', 'module', 'main'],
@@ -529,7 +529,7 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['main', 'module'],
         preferNativePlatform: false,
@@ -564,7 +564,7 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
         dev: true,
@@ -606,7 +606,7 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
         dev: true,
@@ -648,7 +648,7 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'node' },
         dev: true,
@@ -716,7 +716,7 @@ describe(withExtendedResolver, () => {
     });
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.anything(),
       '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
       'web'
@@ -938,7 +938,7 @@ describe(withExtendedResolver, () => {
       });
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
         platform
