@@ -5,9 +5,6 @@ type HeadProps = PropsWithChildren<{
   title?: string;
   description?: string;
   canonicalUrl?: string;
-  searchRank?: number;
-  searchLevel?: number;
-  searchPosition?: number;
 }>;
 
 const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
@@ -15,15 +12,7 @@ const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 const BASE_TITLE = 'Expo Documentation';
 const BASE_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
 
-const DocumentationHead = ({
-  title,
-  description,
-  canonicalUrl,
-  searchRank,
-  searchLevel,
-  searchPosition,
-  children,
-}: HeadProps) => {
+const DocumentationHead = ({ title, description, canonicalUrl, children }: HeadProps) => {
   const OGImageURL = `${BASE_OG_URL}&title=${encodeURIComponent(title ?? BASE_TITLE)}&description=${encodeURIComponent(description ?? BASE_DESCRIPTION)}`;
 
   return (
@@ -57,14 +46,6 @@ const DocumentationHead = ({
       />
       <meta property="twitter:image" content={OGImageURL} />
       <meta name="google-site-verification" content="izrqNurn_EXfYbNIFgVIhEXkkZk9DleELH4UouM8s3k" />
-
-      {/* Search ranking metadata for Algolia */}
-      {searchRank !== undefined && <meta name="searchRank" content={String(searchRank)} />}
-      {searchLevel !== undefined && <meta name="searchLevel" content={String(searchLevel)} />}
-      {searchPosition !== undefined && (
-        <meta name="searchPosition" content={String(searchPosition)} />
-      )}
-
       {children}
     </NextHead>
   );
