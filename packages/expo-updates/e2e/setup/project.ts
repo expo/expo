@@ -495,6 +495,7 @@ function transformAppJsonForE2E(
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
+        useNativeDebug: true,
       },
       extra: {
         eas: {
@@ -605,6 +606,10 @@ export function transformAppJsonForUpdatesDisabledE2E(
       newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
+      updates: {
+        enabled: false,
+        useNativeDebug: true,
+      },
       extra: {
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
@@ -786,7 +791,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nEX_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true',
     'utf-8'
   );
 

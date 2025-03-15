@@ -14,5 +14,9 @@ export declare enum Config {
     DISABLE_ANTI_BRICKING_MEASURES = "EXUpdatesDisableAntiBrickingMeasures"
 }
 export declare const withUpdates: ConfigPlugin;
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+export declare const withUpdatesNativeDebugPodfileProps: ConfigPlugin<void>;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null): Promise<ExpoPlist>;
 export declare function setVersionsConfigAsync(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist): Promise<ExpoPlist>;

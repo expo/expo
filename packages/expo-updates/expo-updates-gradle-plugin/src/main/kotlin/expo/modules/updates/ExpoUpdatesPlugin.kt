@@ -27,7 +27,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     val entryFile = detectedEntryFile(reactExtension)
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
-    if (isNativeDebuggingEnabled(reactExtension)) {
+    if (isNativeDebuggingEnabled(project)) {
       logger.warn("Disable all react.debuggableVariants because EX_UPDATES_NATIVE_DEBUG=1")
       reactExtension.debuggableVariants.set(listOf())
     }
@@ -128,9 +128,9 @@ private fun detectedEntryFile(config: ReactExtension): File {
   }
 }
 
-private fun isNativeDebuggingEnabled(config: ReactExtension): Boolean {
+private fun isNativeDebuggingEnabled(project: Project): Boolean {
   if (System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1") {
     return true
   }
-  return config.project.findProperty("EX_UPDATES_NATIVE_DEBUG") == "true"
+  return project.findProperty("EX_UPDATES_NATIVE_DEBUG") == "true"
 }
