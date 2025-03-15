@@ -1,1 +1,1 @@
-export const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
+export { default as getDevServer } from 'react-native/Libraries/Core/Devtools/getDevServer';
