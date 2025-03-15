@@ -14,7 +14,6 @@ const createContext = ({
   origin,
   nodeModulesPaths = [],
   packageExports,
-  isESMImport,
   override,
 }: {
   origin: string;
@@ -22,7 +21,6 @@ const createContext = ({
   isServer?: boolean;
   nodeModulesPaths?: string[];
   packageExports?: boolean;
-  isESMImport?: boolean;
   override?: Partial<SupportedContext>;
 }): SupportedContext & { unstable_fileSystemLookup?: (filepath: string) => any } => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
@@ -63,11 +61,10 @@ const createContext = ({
     unstable_enablePackageExports: !!packageExports,
     unstable_conditionsByPlatform: {},
     unstable_conditionNames: isServer
-      ? ['node', isESMImport === true ? 'import' : 'require']
+      ? ['node']
       : platform === 'web'
-        ? [isESMImport === true ? 'import' : 'require', 'browser']
-        : [isESMImport === true ? 'import' : 'require', 'react-native'],
-    isESMImport,
+        ? ['browser']
+        : ['react-native'],
     ...override,
   };
 };
@@ -138,7 +135,7 @@ function resolveTo(
     origin: path.isAbsolute(from) ? from : path.join(originProjectRoot, from),
     nodeModulesPaths,
     packageExports,
-    isESMImport,
+    override: { isESMImport },
   });
   const res = resolver(context, moduleId, platform);
 
