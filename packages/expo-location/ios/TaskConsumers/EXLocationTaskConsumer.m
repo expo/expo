@@ -91,15 +91,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-  if (error.domain == kCLErrorDomain) {
-    // This error might happen when the device is not able to find out the location. Try to restart monitoring location.
-    [manager stopUpdatingLocation];
-    [manager stopMonitoringSignificantLocationChanges];
-    [manager startUpdatingLocation];
-    [manager startMonitoringSignificantLocationChanges];
-  } else {
-    [_task executeWithData:nil withError:error];
-  }
+  [_task executeWithData:nil withError:error];
 }
 
 # pragma mark - internal
