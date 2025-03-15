@@ -10,6 +10,7 @@ public class ExpoUIModule: Module {
     View(PickerView.self)
     View(SwitchView.self)
     View(SectionView.self)
+    View(BottomSheetView.self)
     View(SliderView.self)
     View(ExpoUI.ContextMenu.self)
     View(ExpoUI.ContextMenuActivationElement.self)
