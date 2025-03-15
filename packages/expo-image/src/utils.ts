@@ -1,5 +1,5 @@
 import { SharedRef } from 'expo';
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import { type ImageResizeMode } from 'react-native';
 
 import {

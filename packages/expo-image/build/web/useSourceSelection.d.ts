@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import React from 'react';
 import { ImageSource } from '../Image.types';
 export interface SrcSetSource extends ImageSource {
