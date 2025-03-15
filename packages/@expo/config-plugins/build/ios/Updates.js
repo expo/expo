@@ -21,6 +21,13 @@ function _iosPlugins() {
   };
   return data;
 }
+function _withPlugins() {
+  const data = require("../plugins/withPlugins");
+  _withPlugins = function () {
+    return data;
+  };
+  return data;
+}
 function _Updates() {
   const data = require("../utils/Updates");
   _Updates = function () {
@@ -31,13 +38,6 @@ function _Updates() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _withPlugins() {
-  const data = require("../plugins/withPlugins");
-  _withPlugins = function () {
     return data;
   };
   return data;

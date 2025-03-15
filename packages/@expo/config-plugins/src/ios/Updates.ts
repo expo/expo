@@ -4,6 +4,7 @@ import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
 import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
+import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
   getDisableAntiBrickingMeasures,
@@ -19,7 +20,6 @@ import {
   getUpdateUrl,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
-import { withPlugins } from '../plugins/withPlugins';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
