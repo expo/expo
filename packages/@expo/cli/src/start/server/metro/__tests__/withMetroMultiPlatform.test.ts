@@ -68,6 +68,7 @@ function getResolverContext(
     customResolverOptions: {},
     originModulePath: '/index.js',
     getPackage: () => null,
+    isESMImport: false,
     ...context,
   } as any;
 }
@@ -574,10 +575,11 @@ describe(withExtendedResolver, () => {
         originModulePath: '/index.js',
         preferNativePlatform: true,
         sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
-        unstable_conditionNames: ['node', 'import', 'require', 'react-server', 'workerd'],
+        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        isESMImport: false, // NOTE(cedric): this affects the `conditionNames`, if imported as ESM - `require` should be `import`
       },
       'react-foobar',
       platform
@@ -597,6 +599,7 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
+        isESMImport: true, // NOTE(cedric): this affects the `conditionNames`, if imported as ESM - `require` should be `import`
         customResolverOptions: {
           environment: 'react-server',
         },
@@ -616,10 +619,11 @@ describe(withExtendedResolver, () => {
         originModulePath: '/index.js',
         preferNativePlatform: false,
         sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
-        unstable_conditionNames: ['node', 'import', 'require', 'react-server', 'workerd'],
+        unstable_conditionNames: ['node', 'import', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        isESMImport: true,
       },
       'react-foobar',
       platform
@@ -662,6 +666,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        isESMImport: false,
       },
       'react-foobar',
       platform

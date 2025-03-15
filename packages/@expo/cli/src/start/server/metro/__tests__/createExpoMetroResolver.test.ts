@@ -14,6 +14,7 @@ const createContext = ({
   origin,
   nodeModulesPaths = [],
   packageExports,
+  isESMImport,
   override,
 }: {
   origin: string;
@@ -21,6 +22,7 @@ const createContext = ({
   isServer?: boolean;
   nodeModulesPaths?: string[];
   packageExports?: boolean;
+  isESMImport?: boolean;
   override?: Partial<SupportedContext>;
 }): SupportedContext & { unstable_fileSystemLookup?: (filepath: string) => any } => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
@@ -61,11 +63,11 @@ const createContext = ({
     unstable_enablePackageExports: !!packageExports,
     unstable_conditionsByPlatform: {},
     unstable_conditionNames: isServer
-      ? ['node', 'require']
+      ? ['node', isESMImport === true ? 'import' : 'require']
       : platform === 'web'
-        ? ['require', 'import', 'browser']
-        : ['require', 'import', 'react-native'],
-
+        ? [isESMImport === true ? 'import' : 'require', 'browser']
+        : [isESMImport === true ? 'import' : 'require', 'react-native'],
+    isESMImport,
     ...override,
   };
 };
@@ -117,6 +119,7 @@ function resolveTo(
     nodeModulesPaths,
     packageExports,
     preserveSymlinks,
+    isESMImport,
   }: {
     platform: string;
     isServer?: boolean;
@@ -124,6 +127,7 @@ function resolveTo(
     nodeModulesPaths?: string[];
     packageExports?: boolean;
     preserveSymlinks?: boolean;
+    isESMImport?: boolean;
   },
   type: 'sourceFile' | 'assetFiles' = 'sourceFile'
 ) {
@@ -134,6 +138,7 @@ function resolveTo(
     origin: path.isAbsolute(from) ? from : path.join(originProjectRoot, from),
     nodeModulesPaths,
     packageExports,
+    isESMImport,
   });
   const res = resolver(context, moduleId, platform);
 
@@ -187,7 +192,7 @@ describe(createFastResolver, () => {
       ).toEqual(expect.stringMatching(/\/node_modules\/react-dom\/server\.node\.js$/));
     });
 
-    it(`asserts missing export in package`, () => {
+    it('asserts missing export in package', () => {
       // Sanity
       expect(() =>
         resolveTo('react-dom/foo.js', { platform: 'web', packageExports: true, isServer: true })
@@ -319,10 +324,13 @@ describe(createFastResolver, () => {
         expect.stringMatching(/\/native-component-list\/App.tsx$/)
       );
     });
-    it('ignores package exports with @babel/runtime due to metro bugs', () => {
-      expect(resolveTo('@babel/runtime/helpers/interopRequireDefault', { platform })).toEqual(
-        expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/)
-      );
+
+    it('resolves @babel/runtime package exports as CJS', () => {
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform
+        })
+      ).toEqual(expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/));
       expect(
         resolveTo('@babel/runtime/helpers/interopRequireDefault', {
           platform,
@@ -336,6 +344,39 @@ describe(createFastResolver, () => {
           isServer: true,
         })
       ).toEqual(expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/));
+    });
+
+    it('resolves @babel/runtime package exports as ESM', () => {
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform,
+          isESMImport: true,
+        })
+      ).toEqual(
+        // NOTE(cedric): even though the import was used as ESM, package exports is disabled so we can't resolve ESM
+        expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/)
+      );
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform,
+          packageExports: true,
+          isESMImport: true,
+        })
+      ).toEqual(
+        expect.stringMatching(/\/@babel\/runtime\/helpers\/esm\/interopRequireDefault.js$/)
+      );
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform,
+          packageExports: true,
+          isServer: true,
+          isESMImport: true,
+        })
+      ).toEqual(
+        // NOTE(cedric): exporting for server prefers `node` even for ESM imports.
+        // `node` is defined in babel's exports and points towards CJS.
+        expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/)
+      );
     });
 
     it('resolves with baseUrl', () => {

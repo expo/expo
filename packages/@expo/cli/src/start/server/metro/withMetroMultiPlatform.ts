@@ -752,13 +752,15 @@ export function withExtendedResolver(
         if (context.customResolverOptions?.environment === 'react-server') {
           context.unstable_conditionNames = [
             'node',
-            'import',
-            'require',
+            context.isESMImport === true ? 'import' : 'require',
             'react-server',
             'workerd',
           ];
         } else {
-          context.unstable_conditionNames = ['node', 'require'];
+          context.unstable_conditionNames = [
+            'node',
+            context.isESMImport === true ? 'import' : 'require',
+          ];
         }
       } else {
         // Non-server changes
