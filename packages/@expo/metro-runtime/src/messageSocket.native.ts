@@ -1,7 +1,8 @@
 /* eslint-env browser */
+import getDevServer from 'react-native/Libraries/Core/Devtools/getDevServer';
+import WebSocket from 'react-native/Libraries/WebSocket/WebSocket';
 
 function createWebSocketConnection(path: string = '/message') {
-  const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {
     throw new Error('Cannot create devtools websocket connections in embedded environments.');
@@ -9,7 +10,6 @@ function createWebSocketConnection(path: string = '/message') {
 
   const devServerUrl = new URL(devServer.url);
   const serverScheme = devServerUrl.protocol === 'https:' ? 'wss' : 'ws';
-  const WebSocket = require('react-native/Libraries/WebSocket/WebSocket').default;
   return new WebSocket(`${serverScheme}://${devServerUrl.host}${path}`);
 }
 

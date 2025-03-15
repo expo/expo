@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Use `import` instead of inline `require` for message socket to support React Native 0.78 and 0.79.
+
 ## 4.0.1 - 2025-01-19
 
 ### 🐛 Bug fixes
