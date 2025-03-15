@@ -6,9 +6,9 @@ import ExpoModulesCore
 class StepperProps: ExpoSwiftUI.ViewProps {
   @Field var value: Float = 0
   @Field var step: Float = 1
-  @Field var min: Float? = nil
-  @Field var max: Float? = nil
   @Field var label: String = ""
+  @Field var min: Float?
+  @Field var max: Float?
   var onValueChanged = EventDispatcher()
 }
 
