@@ -359,7 +359,11 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toHaveBeenCalledWith(expect.anything(), '@expo/vector-icons', platform);
+      expect(getResolveFunc()).toHaveBeenCalledWith(
+        expect.anything(),
+        '@expo/vector-icons',
+        platform
+      );
     });
   });
 
@@ -435,7 +439,11 @@ describe(withExtendedResolver, () => {
     });
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
-    expect(getResolveFunc()).toHaveBeenCalledWith(expect.anything(), '@expo/vector-icons', platform);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
+      expect.anything(),
+      '@expo/vector-icons',
+      platform
+    );
   });
 
   it(`resolves a node.js built-in as a shim on web`, async () => {
