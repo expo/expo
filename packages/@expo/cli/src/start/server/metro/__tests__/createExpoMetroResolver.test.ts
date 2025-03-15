@@ -328,7 +328,7 @@ describe(createFastResolver, () => {
     it('resolves @babel/runtime package exports as CJS', () => {
       expect(
         resolveTo('@babel/runtime/helpers/interopRequireDefault', {
-          platform
+          platform,
         })
       ).toEqual(expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/));
       expect(
