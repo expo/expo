@@ -26,6 +26,7 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [apple] Move `AppDelegate` integration from `expo-modules-core` to `expo` package. ([#34985](https://github.com/expo/expo/pull/34985) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Add EXAppDelegateWrapper import to Expo.h ([#35172](https://github.com/expo/expo/pull/35172) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Unpack default from inline `require` of React Native modules to support 0.78 and 0.79.
 
 ## 52.0.39 - 2025-03-14
 
