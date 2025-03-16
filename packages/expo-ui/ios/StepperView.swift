@@ -32,7 +32,7 @@ struct StepperView: ExpoSwiftUI.View {
 
   var body: some View {
     #if os(tvOS)
-    Text("Stepper not supported on this tvOS")
+    Text("Stepper not supported on tvOS")
     #else
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy) {
       Stepper(props.label, value: value, in: range, step: props.step)
