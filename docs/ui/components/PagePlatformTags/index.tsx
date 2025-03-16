@@ -27,6 +27,23 @@ export function PagePlatformTags({ platforms }: Props) {
               </Tooltip.Root>
             );
           }
+          if (platform.includes('**')) {
+            return (
+              <Tooltip.Root key={platform}>
+                <Tooltip.Trigger className="cursor-default">
+                  <PlatformTag platform={platform} className="!rounded-full !px-2.5" />
+                </Tooltip.Trigger>
+                <Tooltip.Content side="bottom">
+                  {platform.startsWith('android') && (
+                    <FOOTNOTE>Android Emulator may not be fully supported</FOOTNOTE>
+                  )}
+                  {platform.startsWith('ios') && (
+                    <FOOTNOTE>iOS Simulator may not be fully supported</FOOTNOTE>
+                  )}
+                </Tooltip.Content>
+              </Tooltip.Root>
+            );
+          }
           return (
             <PlatformTag
               platform={platform}
