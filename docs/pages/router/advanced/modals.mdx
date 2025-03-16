@@ -30,6 +30,8 @@ For most use cases, you can use the `Modal` component and customize it according
 
 A modal screen is a file created inside the **app** directory and is used as a route within the existing stack. It is used for complex interactions that need to be part of the navigation system, such as multi-step forms where you can link to a specific screen after the process completes.
 
+> **warning** Modals only present over a screen in the same stack. It won't work in separate or nested stacks.
+
 Below is an example of how a modal screen works on different platforms:
 
 <ContentSpotlight file="expo-router/modal.mp4" />
