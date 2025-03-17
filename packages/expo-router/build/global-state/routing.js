@@ -209,6 +209,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
     }
     if (type === 'PUSH' && navigationState.type !== 'stack') {
+        // Only stack navigators have a push action, we fallback to NAVIGATE if the navigator is not a stack
         type = 'NAVIGATE';
     }
     if (navigationState.type === 'expo-tab') {
