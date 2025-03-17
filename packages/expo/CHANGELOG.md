@@ -6,6 +6,7 @@
 
 ### 🛠 Breaking changes
 
+- Change expo/types export. ([#35484](https://github.com/expo/expo/pull/35484) by [@aleqsio](https://github.com/aleqsio))
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Remove `DevToolsPluginClient`'s `protected eventEmitter` property and drop `fbemitter`. ([#35376](https://github.com/expo/expo/pull/35376) by [@kitten](https://github.com/kitten))
 
