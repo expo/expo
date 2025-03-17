@@ -99,7 +99,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
 
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
     // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
-    return bundleURL()
+    return bridge.bundleURL ?? bundleURL()
   }
 
   // MARK: - Initializing the App
