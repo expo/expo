@@ -41,7 +41,6 @@ export function DocumentationPageWrapper(props: DocumentationElementsProps) {
               modificationDate={props.meta.modificationDate}
               platforms={props.meta.platforms}
               searchRank={props.meta.searchRank}
-              searchLevel={props.meta.searchLevel}
               searchPosition={props.meta.searchPosition}>
               {props.children}
             </DocumentationPage>
