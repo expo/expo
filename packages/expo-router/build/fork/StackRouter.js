@@ -75,7 +75,6 @@ function StackRouter(options) {
                         else {
                             /**
                              * React Navigation causes navigation events to behave differently when 'getID()' is used.
-                             * This is by design, as when 'getID()' is present Stacks can no longer have duplicate keys
                              *
                              * Default behavior (without 'getID()'):
                              *  - 'navigate': If the route is the current route, the params are updated; else the new route is pushed
