@@ -122,8 +122,8 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         it.onNotificationReceived(notification)
       }
     } else if (notification.shouldPresent()) {
-      // TODO vonovak remove this? - this branch doesn't seem to execute at all
-      // because only data-only notifications reach this point and they are not presented
+      // only data-only notifications reach this point and we present them if they fall into the documented exception:
+      // https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications
       NotificationsService.present(context, notification)
     }
   }
@@ -138,8 +138,11 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
-    // TODO in what cases should this run? only in bg, always? iOS alignment?
-    runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
+    if (!isAppInForeground()) {
+      // do not run in foreground for better alignment with iOS
+      // iOS doesn't run background tasks for notification responses at all
+      runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
+    }
     if (notificationResponse.action.opensAppToForeground()) {
       openAppToForeground(context, notificationResponse)
     }
