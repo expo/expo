@@ -257,6 +257,7 @@ function getNavigateAction(
   }
 
   if (type === 'PUSH' && navigationState.type !== 'stack') {
+    // Only stack navigators have a push action, we fallback to NAVIGATE if the navigator is not a stack
     type = 'NAVIGATE';
   }
 
