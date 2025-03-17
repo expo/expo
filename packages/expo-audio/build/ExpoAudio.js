@@ -13,6 +13,12 @@ const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
     return replace.call(this, resolveSource(source));
 };
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const setQueue = AudioModule.AudioPlayer.prototype.setQueue;
+AudioModule.AudioPlayer.prototype.setQueue = function (sources) {
+    const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+    return setQueue.call(this, resolvedSources);
+};
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);

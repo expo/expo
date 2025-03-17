@@ -150,17 +150,8 @@ public class AudioModule: Module {
         player.replaceCurrentSource(source: source)
       }
 
-      Function("setQueue") { (player, sources: [String]) in
-        // TODO: Handle all asset types
-        // Convert string URLs to AudioSource objects
-        let audioSources = sources.map { sourceUrl -> AudioSource in
-          var source = AudioSource()
-          if let url = URL(string: sourceUrl) {
-            source.uri = url
-          }
-          return source
-        }
-        player.setQueue(sources: audioSources)
+      Function("setQueue") { (player, sources: [AudioSource]) in
+        player.setQueue(sources: sources)
       }
 
       Function("pause") { player in

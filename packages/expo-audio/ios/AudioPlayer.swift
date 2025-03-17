@@ -66,7 +66,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     queue = sources
     currentQueueIndex = -1
 
-    // Start with first track if queue isn't empty
     if !queue.isEmpty {
       advanceQueue(to: 0)
     }

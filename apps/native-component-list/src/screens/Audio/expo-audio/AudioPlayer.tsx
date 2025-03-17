@@ -16,6 +16,9 @@ const remoteSource =
 
 const testAssets = [
   {
+    uri: localSource,
+  },
+  {
     uri: 'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
   },
   {
