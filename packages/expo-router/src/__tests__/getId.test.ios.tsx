@@ -14,12 +14,12 @@ function createMockRoute(routeName: string, contextKey: string, children: RouteN
 describe(createGetIdForRoute, () => {
   it(`returns the context string when the route is not dynamic and there are no search params`, () => {
     const getId = createGetIdForRoute(createMockRoute('foo', './foo.tsx'));
-    expect(getId()).toBe('');
+    expect(getId({})).toBe(undefined);
   });
 
   it(`should ignore search params`, () => {
     const getId = createGetIdForRoute(createMockRoute('foo', './foo.tsx'));
-    expect(getId({ params: { foo: 'bar' } })).toBe('');
+    expect(getId({ params: { foo: 'bar' } })).toBe(undefined);
   });
 
   it(`returns a function that picks deep the dynamic name from params`, () => {

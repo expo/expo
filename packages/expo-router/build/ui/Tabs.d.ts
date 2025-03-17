@@ -86,6 +86,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
+            pop?: boolean | undefined;
         }): void;
         navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigateDeprecated<RouteName_3 extends string>(options: {
@@ -163,6 +164,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
+            pop?: boolean | undefined;
         }): void;
         navigateDeprecated<RouteName_8 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigateDeprecated<RouteName_9 extends string>(options: {
@@ -210,6 +212,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
+            pop?: boolean | undefined;
         }): void;
         navigateDeprecated<RouteName_13 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         navigateDeprecated<RouteName_14 extends string>(options: {

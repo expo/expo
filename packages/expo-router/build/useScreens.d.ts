@@ -29,9 +29,9 @@ export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>>;
 /**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
+ * @param getId
  * @returns a function which provides a screen id that matches the dynamic route name in params. */
-export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>, getId: ScreenProps['getId']): ScreenProps['getId'];
+export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>, getId?: ScreenProps['getId']): NonNullable<ScreenProps['getId']>;
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any, any>['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 //# sourceMappingURL=useScreens.d.ts.map

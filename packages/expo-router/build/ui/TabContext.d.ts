@@ -64,6 +64,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         params: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
+        pop?: boolean | undefined;
     }): void;
     navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
     navigateDeprecated<RouteName_3 extends string>(options: {
@@ -122,6 +123,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         params: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
+        pop?: boolean | undefined;
     }): void;
     navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
     navigateDeprecated<RouteName_3 extends string>(options: {

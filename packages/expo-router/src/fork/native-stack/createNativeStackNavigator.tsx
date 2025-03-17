@@ -6,7 +6,6 @@ import {
   type StackActionHelpers,
   StackActions,
   type StackNavigationState,
-  StackRouter,
   type StackRouterOptions,
   type StaticConfig,
   type TypedNavigator,
@@ -20,6 +19,8 @@ import {
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import * as React from 'react';
+
+import { StackRouter } from '../StackRouter';
 
 function NativeStackNavigator({
   id,

@@ -139,7 +139,7 @@ function getQualifiedRouteComponent(value) {
 }
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
+ * @param getId
  * @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route, getId) {
     const include = new Map();
@@ -150,13 +150,6 @@ function createGetIdForRoute(route, getId) {
     }
     return (options = {}) => {
         const { params = {} } = options;
-        if (params.__EXPO_ROUTER_key) {
-            const key = params.__EXPO_ROUTER_key;
-            delete params.__EXPO_ROUTER_key;
-            if (getId == null) {
-                return key;
-            }
-        }
         if (getId != null) {
             return getId(options);
         }
@@ -178,7 +171,8 @@ function createGetIdForRoute(route, getId) {
                 segments.push(`[${dynamic.name}]`);
             }
         }
-        return segments.join('/') ?? route.contextKey;
+        const id = segments.join('/') ?? route.contextKey;
+        return id ? id : undefined;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;

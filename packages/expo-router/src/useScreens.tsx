@@ -228,12 +228,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 }
 
 /**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
+ * @param getId
  * @returns a function which provides a screen id that matches the dynamic route name in params. */
 export function createGetIdForRoute(
   route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>,
-  getId: ScreenProps['getId']
-): ScreenProps['getId'] {
+  getId?: ScreenProps['getId']
+): NonNullable<ScreenProps['getId']> {
   const include = new Map<string, DynamicConvention>();
 
   if (route.dynamic) {
@@ -244,14 +244,6 @@ export function createGetIdForRoute(
 
   return (options = {}) => {
     const { params = {} } = options;
-    if (params.__EXPO_ROUTER_key) {
-      const key = params.__EXPO_ROUTER_key;
-      delete params.__EXPO_ROUTER_key;
-      if (getId == null) {
-        return key;
-      }
-    }
-
     if (getId != null) {
       return getId(options);
     }
@@ -273,7 +265,9 @@ export function createGetIdForRoute(
       }
     }
 
-    return segments.join('/') ?? route.contextKey;
+    const id = segments.join('/') ?? route.contextKey;
+
+    return id ? id : undefined;
   };
 }
 

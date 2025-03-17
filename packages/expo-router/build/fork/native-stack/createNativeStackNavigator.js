@@ -27,8 +27,9 @@ exports.createNativeStackNavigator = void 0;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const React = __importStar(require("react"));
+const StackRouter_1 = require("../StackRouter");
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_getStateForRouteNamesChange, ...rest }) {
-    const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+    const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(StackRouter_1.StackRouter, {
         id,
         initialRouteName,
         children,

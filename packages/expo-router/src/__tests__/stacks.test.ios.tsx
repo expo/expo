@@ -2,10 +2,12 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
+import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { act, screen, renderRouter, testRouter } from '../testing-library';
+
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
@@ -459,4 +461,56 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('apple')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+});
+
+test('does not rearrange the history when navigating to a route with the same name', () => {
+  renderRouter(
+    {
+      '[fruit]': function Fruit() {
+        return <Text testID="fruit">{useLocalSearchParams().fruit}</Text>;
+      },
+    },
+    {
+      initialUrl: '/apple',
+    }
+  );
+
+  act(() => router.push('/banana'));
+  act(() => router.navigate('/apple'));
+
+  // /apple should be in the route history twice in index 0 and 2
+  expect(screen).toHaveRouterState({
+    index: 2,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['_sitemap', '[fruit]', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '[fruit]',
+        params: {
+          fruit: 'apple',
+        },
+        path: '/apple',
+      },
+      {
+        key: expect.any(String),
+        name: '[fruit]',
+        params: {
+          fruit: 'banana',
+        },
+        path: undefined,
+      },
+      {
+        key: expect.any(String),
+        name: '[fruit]',
+        params: {
+          fruit: 'apple',
+        },
+        path: '/apple',
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  } as any);
 });

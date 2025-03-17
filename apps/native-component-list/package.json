@@ -47,7 +47,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/elements": "2.2.5",
-    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/native": "^7.0.15",
     "@react-navigation/stack": "^7.1.1",
     "@shopify/flash-list": "1.7.3",
     "@shopify/react-native-skia": "1.5.0",
