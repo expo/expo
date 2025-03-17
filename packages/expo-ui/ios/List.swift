@@ -15,11 +15,16 @@ class ListProps: ExpoSwiftUI.ViewProps {
   var onSelectionChange = EventDispatcher()
 }
 
-struct ListView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ListProps
+struct ListView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ListProps
   @State private var selection: Set<Int> = []
   @State var editModeEnabled: EditMode = .inactive
   @State var search: String = ""
+
+  init(props: ListProps) {
+    self.props = props
+  }
+
   var body: some View {
     let list = List(selection: props.selectEnabled ? $selection : nil) {
       UnwrappedChildren { child, isHostingView in
