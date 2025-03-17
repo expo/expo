@@ -60,9 +60,6 @@ module.exports = {
         slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
         wave: 'wave 0.25s ease-in-out 4',
       },
-      boxShadow: {
-        kbd: '0 .1rem 0 1px var(--expo-theme-border-default)',
-      },
     },
     [
       plugin(function ({ addUtilities }) {

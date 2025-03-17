@@ -968,7 +968,191 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     });
   });
 
+  addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+}
+
+function addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+  describe('Session Extension', () => {
+    // Referenced from: https://github.com/livestorejs/wa-sqlite-build-env/blob/main/test/session-ext.ts
+
+    function randomVerb() {
+      const verbs = [
+        'Buy',
+        'Clean',
+        'Cook',
+        'Fix',
+        'Learn',
+        'Make',
+        'Organize',
+        'Plan',
+        'Read',
+        'Write',
+        'Call',
+        'Email',
+        'Meet',
+        'Visit',
+        'Attend',
+        'Prepare',
+        'Review',
+        'Study',
+        'Practice',
+        'Exercise',
+        'Paint',
+        'Draw',
+        'Create',
+        'Design',
+        'Build',
+        'Repair',
+        'Update',
+        'Finish',
+        'Start',
+        'Schedule',
+      ];
+      return verbs[Math.floor(Math.random() * verbs.length)];
+    }
+
+    function randomThing() {
+      const things = [
+        'groceries',
+        'car',
+        'dinner',
+        'leaky faucet',
+        'new skill',
+        'cake',
+        'closet',
+        'vacation',
+        'book',
+        'essay',
+        'friend',
+        'client',
+        'colleague',
+        'grandma',
+        'conference',
+        'presentation',
+        'report',
+        'exam',
+        'instrument',
+        'workout routine',
+        'bedroom',
+        'portrait',
+        'website',
+        'furniture',
+        'birdhouse',
+        'bike',
+        'software',
+        'project',
+        'business plan',
+        'appointment',
+      ];
+      return things[Math.floor(Math.random() * things.length)];
+    }
+
+    function randomTodo() {
+      return `${randomVerb()} ${randomThing()}`;
+    }
+
+    it('should support rollback session', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE todo (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, group_id INTEGER, counter INTEGER);
+INSERT INTO todo (title, group_id, counter) VALUES ('initial todo', 1, 0);
+`);
+
+      interface TodoEntity {
+        id: number;
+        title: string;
+        group_id: number;
+        counter: number;
+      }
+
+      async function newSessionAsync(groupId: number): Promise<SQLite.SQLiteSession> {
+        const session = await db.createSessionAsync('main');
+        await session.attachAsync(null);
+        return session;
+      }
+
+      async function newTodoAsync(sessions: SQLite.SQLiteSession[], groupId: number) {
+        const session = sessions[groupId];
+        await session.enableAsync(true);
+        await db.runAsync('INSERT INTO todo (title, group_id, counter) VALUES (?, ?, ?)', [
+          randomTodo(),
+          groupId,
+          0,
+        ]);
+        await session.enableAsync(false);
+      }
+
+      async function rewindSessionAsync(sessions: SQLite.SQLiteSession[], groupId: number) {
+        const session = sessions[groupId];
+        await session.enableAsync(true);
+        const changeset = await session.createChangesetAsync();
+        const invertedChangeset = await session.invertChangesetAsync(changeset);
+        await session.applyChangesetAsync(invertedChangeset);
+      }
+
+      const initialResults = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      expect(initialResults.length).toBe(1);
+
+      const groupIds = [0, 1, 2];
+      const sessions = await Promise.all(groupIds.map(newSessionAsync));
+      for (const groupId of groupIds) {
+        await newTodoAsync(sessions, groupId);
+      }
+
+      const checkpoint1Results = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      expect(checkpoint1Results.length).toBe(4);
+
+      // extra update bound to session 2
+      const session2 = sessions[2];
+      await session2.enableAsync(true);
+      await db.runAsync('UPDATE todo SET title = ?, counter = counter + 3 WHERE id = ?', [
+        'updated todo in session 2',
+        1,
+      ]);
+      await session2.enableAsync(false);
+
+      // extra update bound to session 1
+      const session1 = sessions[1];
+      await session1.enableAsync(true);
+      await db.runAsync('UPDATE todo SET title = ?, counter = counter + 1 WHERE id = ?', [
+        'updated todo in session 1',
+        1,
+      ]);
+      await session1.enableAsync(false);
+
+      const checkpoint2Results = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      expect(checkpoint2Results.find((entity) => entity?.id === 1)?.title).toBe(
+        'updated todo in session 1'
+      );
+
+      // rewind session 0
+      await rewindSessionAsync(sessions, 0);
+      const checkpoint3Results = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      // reverted: newTodoAsync(groupId=0)
+      expect(checkpoint3Results.length).toEqual(3);
+      expect(checkpoint3Results.find((entity) => entity?.group_id === 0)).toBeUndefined();
+
+      // rewind session 1
+      await rewindSessionAsync(sessions, 1);
+      const checkpoint4Results = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      // reverted: newTodoAsync(groupId=1) + updated title
+      expect(checkpoint4Results.length).toEqual(2);
+      expect(checkpoint4Results.find((entity) => entity?.id === 1)?.title).toBe(
+        'updated todo in session 2'
+      );
+
+      // rewind session 2
+      await rewindSessionAsync(sessions, 2);
+      const checkpoint5Results = await db.getAllAsync<TodoEntity>('SELECT * FROM todo');
+      // reverted as intial state
+      expect(checkpoint5Results.length).toEqual(1);
+      expect(checkpoint5Results).toEqual(initialResults);
+
+      await Promise.all(sessions.map((session) => session.closeAsync()));
+      await db.closeAsync();
+    });
+  });
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {

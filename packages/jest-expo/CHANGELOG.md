@@ -10,9 +10,15 @@
 
 ### 🐛 Bug fixes
 
-- Fixed jest error from `FormData`. ([#35162](https://github.com/expo/expo/pull/35162) by [@WoLewicki](https://github.com/WoLewicki))
+- Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
 
 ### 💡 Others
+
+## 52.0.6 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed jest error from `FormData`. ([#35162](https://github.com/expo/expo/pull/35162) by [@WoLewicki](https://github.com/WoLewicki))
 
 ## 52.0.5 - 2025-02-21
 

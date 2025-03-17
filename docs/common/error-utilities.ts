@@ -482,4 +482,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
   '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
   '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
+  '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+  '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+
+  // After merging EAS environment variables guides
+  '/eas/using-environment-variables/': '/eas/environment-variables/',
 };

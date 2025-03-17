@@ -1,6 +1,9 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
+/// <reference types="../src/types/globals.d.ts" />
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
+export interface EventSubscription {
+    remove(): void;
+}
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
  * All the code should be both compatible with browsers and React Native.
@@ -8,7 +11,7 @@ import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.typ
 export declare abstract class DevToolsPluginClient {
     readonly connectionInfo: ConnectionInfo;
     private readonly options?;
-    protected eventEmitter: EventEmitter;
+    private listeners;
     private static defaultWSStore;
     private readonly wsStore;
     protected isClosed: boolean;

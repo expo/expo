@@ -8,9 +8,7 @@
     "test": "jest",
     "lint": "eslint .",
     "start": "expo start --port 80",
-    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml",
-    "postinstall": "yarn fix-expo-go-rn-resolution",
-    "fix-expo-go-rn-resolution": "./scripts/fix_rn_location.sh"
+    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
   "license": "MIT",
@@ -67,7 +65,7 @@
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "19.0.0",
-    "react-native": "0.78.0",
+    "react-native": "0.79.0-rc.0",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-infinite-scroll-view": "^0.4.5",
@@ -75,7 +73,7 @@
     "react-native-maps": "1.18.0",
     "react-native-pager-view": "6.5.1",
     "react-native-paper": "^5.12.5",
-    "react-native-reanimated": "4.0.0-beta.2",
+    "react-native-reanimated": "3.17.1",
     "react-native-safe-area-context": "5.2.0",
     "react-native-screens": "4.9.0",
     "react-native-svg": "15.11.2",

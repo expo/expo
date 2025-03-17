@@ -29,7 +29,7 @@ public extension ExpoSwiftUIView {
    Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
    */
   func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
-    children: [ExpoSwiftUI.Child]? = nil,
+    children: [ExpoSwiftUI.Child?]? = nil,
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
     -> T = { child, _ in  child }
   ) -> some View {
@@ -39,17 +39,18 @@ public extension ExpoSwiftUIView {
     let childrenArray = Array(children)
     return AnyView(
       ForEach(0..<childrenArray.count, id: \.self) { index in
-        let child = childrenArray[index]
-        if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
-          let content = hostingView.getContentView()
-          let propsObject = hostingView.getProps() as any ObservableObject
-          transform(
-            AnyView(
-              content
-                .environmentObject(propsObject)
-                .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)), true)
-        } else {
-          transform(AnyView(child), false)
+        if let child = childrenArray[index] {
+          if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
+            let content = hostingView.getContentView()
+            let propsObject = hostingView.getProps() as any ObservableObject
+            transform(
+              AnyView(
+                content
+                  .environmentObject(propsObject)
+                  .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)), true)
+          } else {
+            transform(AnyView(child), false)
+          }
         }
       }
     )

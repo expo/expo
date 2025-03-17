@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- support Java `long` values in arrays and maps ([#35446](https://github.com/expo/expo/pull/35446) by [@vonovak](https://github.com/vonovak))
 - [iOS] Add `UnwrappedChildren` for nested SwiftUI views. ([#34954](https://github.com/expo/expo/pull/34954) by [@andrew-levy](https://github.com/andrew-levy))
 - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
 - Implemented dispatching events by SwiftUI views. ([#33860](https://github.com/expo/expo/pull/33860) by [@tsapeta](https://github.com/tsapeta))
@@ -29,6 +30,7 @@
 - Fix UnimplementedExpoView on macOS. ([#35014](https://github.com/expo/expo/pull/35014) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix tvOS breakage. ([#35146](https://github.com/expo/expo/pull/35146) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix calls to `AsyncFunction` not working in the initial render of a `View`. ([#35176](https://github.com/expo/expo/pull/35176) by [@behenate](https://github.com/behenate))
+- [Android] Fixed `ConcurrentModificationException` being thrown by `JNIDeallocator.deallocate` during the app reload. ([#35322](https://github.com/expo/expo/pull/35322) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -47,6 +49,12 @@
 ### ⚠️ Notices
 
 - Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
+
+## 2.2.3 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed `kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError` error on Android. ([#35114](https://github.com/expo/expo/pull/35114) by [@kudo](https://github.com/kudo))
 
 ## 2.2.2 - 2025-02-14
 

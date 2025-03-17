@@ -18,7 +18,7 @@ let nextNativeStatementId = 0;
 
 function getWorker(): Worker {
   if (!worker) {
-    worker = new Worker('/expo-sqlite/worker.js', { type: 'module' });
+    worker = new Worker(new URL('./worker', window.location.href));
     worker.addEventListener('message', (event) => {
       if (event.data.type === 'onDatabaseChange') {
         // @ts-expect-error EventEmitter type for NativeModule is not inferred correctly on web.

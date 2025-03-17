@@ -1,7 +1,6 @@
 jest.mock('@expo/devcert');
 jest.mock('@expo/image-utils');
 jest.mock('@expo/osascript');
-jest.mock('@expo/rudder-sdk-node');
 jest.mock('@expo/spawn-async');
 jest.mock('@expo/webpack-config');
 jest.mock('@expo/package-manager');

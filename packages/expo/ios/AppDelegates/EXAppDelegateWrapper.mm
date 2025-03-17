@@ -70,9 +70,6 @@
 #else
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-  self.dependencyProvider = [RCTAppDependencyProvider new];
-#endif
   [super applicationDidFinishLaunching:notification];
   return [_expoAppDelegate applicationDidFinishLaunching:notification];
 }
@@ -97,10 +94,7 @@
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-	return self.dependencyProvider.thirdPartyFabricComponents;
-#endif
-	return @{};
+  return self.dependencyProvider.thirdPartyFabricComponents;
 }
 
 #pragma mark - RCTHostDelegate

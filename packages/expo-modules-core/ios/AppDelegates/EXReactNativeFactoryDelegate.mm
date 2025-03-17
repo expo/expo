@@ -8,7 +8,6 @@
 
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 @implementation EXReactNativeFactoryDelegate
 

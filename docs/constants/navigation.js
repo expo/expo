@@ -377,8 +377,8 @@ export const eas = [
     '',
     [
       makePage('eas/index.mdx'),
+      makePage('eas/json.mdx'),
       makePage('eas/environment-variables.mdx'),
-      makePage('eas/using-environment-variables.mdx'),
     ],
     {
       expanded: true,
@@ -388,7 +388,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
-    makePage('eas/workflows/upgrade.mdx'),
+    makePage('eas/workflows/automating-eas-cli.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -466,9 +466,9 @@ export const eas = [
   ]),
   makeSection('EAS Submit', [
     makePage('submit/introduction.mdx'),
-    makePage('submit/eas-json.mdx'),
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
@@ -505,6 +505,7 @@ export const eas = [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
+      makePage('eas-update/integration-in-existing-native-apps.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
@@ -529,7 +530,6 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
-    makePage('eas/json.mdx'),
     makePage('eas/webhooks.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),
@@ -721,7 +721,7 @@ function makePage(file) {
 
   const result = {
     // TODO(cedric): refactor name into title
-    name: data.title,
+    name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
     isNew: data.isNew ?? undefined,

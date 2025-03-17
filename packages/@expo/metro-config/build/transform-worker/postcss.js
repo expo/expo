@@ -180,7 +180,8 @@ async function resolvePostcssConfig(projectRoot) {
         const configPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + ext);
         if (fs_1.default.existsSync(configPath)) {
             debug('load file:', configPath);
-            return await (0, require_1.tryRequireThenImport)(configPath);
+            const config = await (0, require_1.tryRequireThenImport)(configPath);
+            return 'default' in config ? config.default : config;
         }
     }
     const jsonConfigPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + '.json');

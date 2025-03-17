@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import tar from 'tar';
+import { extract as tarExtract } from 'tar';
 
 import * as Log from '../log';
 
@@ -23,5 +23,5 @@ export async function extractAsync(input: string, output: string): Promise<void>
   debug(`Extracting ${input} to ${output} using JS tar module`);
   // tar node module has previously had problems with big files, and seems to
   // be slower, so only use it as a backup.
-  await tar.extract({ file: input, cwd: output });
+  await tarExtract({ file: input, cwd: output });
 }

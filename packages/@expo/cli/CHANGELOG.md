@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Silence missing favicon file error. ([#35357](https://github.com/expo/expo/pull/35357) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix importing `@radix-ui/colors` in CSS files. ([#35213](https://github.com/expo/expo/pull/35213) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure HMR updates use the same serializer pass as initial bundles. ([#35110](https://github.com/expo/expo/pull/35110) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix async bundling. ([#34986](https://github.com/expo/expo/pull/34986) by [@EvanBacon](https://github.com/EvanBacon))
@@ -22,7 +23,6 @@
 - Fix `static` and `server` projects not starting up correctly when project path contains URI-unsafe characters like spaces. ([#34289](https://github.com/expo/expo/pull/34289) by [@kitten](https://github.com/kitten))
 - Add fallback resolution strategy for dependencies and optional peer dependencies of `expo` and `expo-router` to prevent broken resolution for isolated dependencies and hoisting issues. ([#34286](https://github.com/expo/expo/pull/34286) by [@kitten](https://github.com/kitten))
 - Preserve proxy leases on webcontainers ([#34831](https://github.com/expo/expo/pull/34831) by [@kitten](https://github.com))
-- Ensure `UsbmuxClient` can load binary plist pair record data from Apple devices. ([#35262](https://github.com/expo/expo/pull/35262) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -41,6 +41,25 @@
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - Move Expo Atlas out of experimental phase by renaming environment variable to `EXPO_ATLAS`. ([#35260](https://github.com/expo/expo/pull/35260) by [@byCedric](https://github.com/byCedric))
+- Phase out `@expo/rudder-sdk-node` usage in telemetry. ([#35271](https://github.com/expo/expo/pull/35271) by [@byCedric](https://github.com/byCedric))
+- Fully remove `@expo/rudder-sdk-node` usage in telemetry. ([#35299](https://github.com/expo/expo/pull/35299) by [@byCedric](https://github.com/byCedric))
+- Bump Metro typescript declarations to `0.81.3`. ([#35306](https://github.com/expo/expo/pull/35306) by [@byCedric](https://github.com/byCedric))
+- Upgrade to `minimatch@9` ([#35313](https://github.com/expo/expo/pull/35313) by [@kitten](https://github.com/kitten))
+- Upgrade to `tar@7` ([#35314](https://github.com/expo/expo/pull/35314) by [@kitten](https://github.com/kitten))
+- Add requestId to API error ([#35442](https://github.com/expo/expo/pull/35442) by [@wschurman](https://github.com/wschurman))
+
+## 0.22.20 - 2025-03-14
+
+### 🐛 Bug fixes
+
+- export:embed should create tmp assets directory if needed. ([#35387](https://github.com/expo/expo/pull/35387) by [@douglowder](https://github.com/douglowder))
+
+## 0.22.19 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Ensure `UsbmuxClient` can load binary plist pair record data from Apple devices. ([#35262](https://github.com/expo/expo/pull/35262) by [@byCedric](https://github.com/byCedric))
+- Fixed DOM Components support for updates. ([#35280](https://github.com/expo/expo/pull/35280), [#35290](https://github.com/expo/expo/pull/35290) by [@kudo](https://github.com/kudo))
 
 ## 0.22.18 - 2025-02-20
 

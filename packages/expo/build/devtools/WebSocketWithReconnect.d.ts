@@ -1,3 +1,4 @@
+/// <reference types="../src/types/globals.d.ts" />
 import type { DevToolsPluginClientOptions } from './devtools.types';
 export interface Options {
     /**
@@ -42,8 +43,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private isClosed;
     private sendQueue;
     private lastCloseEvent;
-    private readonly emitter;
-    private readonly eventSubscriptions;
+    private eventListeners;
     private readonly wsBinaryType?;
     constructor(url: string, options?: Options);
     close(code?: number, reason?: string): void;
@@ -51,9 +51,10 @@ export declare class WebSocketWithReconnect implements WebSocket {
     addEventListener(event: 'open', listener: () => void): void;
     addEventListener(event: 'error', listener: (event: WebSocketErrorEvent) => void): void;
     addEventListener(event: 'close', listener: (event: WebSocketCloseEvent) => void): void;
-    removeEventListener(_event: string, listener: (event: any) => void): void;
+    removeEventListener(event: string, listener: (event: any) => void): void;
     private connect;
     send(data: string | ArrayBufferView | Blob | ArrayBufferLike): void;
+    private emitEvent;
     private handleOpen;
     private handleMessage;
     private handleError;

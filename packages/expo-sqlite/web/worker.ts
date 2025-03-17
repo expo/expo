@@ -14,7 +14,7 @@ import {
   SQLITE_OPEN_READWRITE,
   SQLITE_OPEN_CREATE,
 } from './wa-sqlite/sqlite-constants';
-import WaSQLiteFactory from './wa-sqlite/wa-sqlite.mjs';
+import WaSQLiteFactory from './wa-sqlite/wa-sqlite';
 // @ts-expect-error wasm module is not typed
 import wasmModule from './wa-sqlite/wa-sqlite.wasm';
 import {

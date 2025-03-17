@@ -92,6 +92,7 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
+  s.dependency "ReactCodegen"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   unless defined?(install_modules_dependencies)
@@ -116,7 +117,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
-    test_spec.dependency 'ReactAppDependencyProvider'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
   end

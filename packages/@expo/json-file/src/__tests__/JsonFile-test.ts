@@ -80,7 +80,8 @@ describe('async', () => {
     vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json') });
 
     await expect(JsonFile.readAsync(testFilename)).rejects.toThrowError(
-      /Cause: SyntaxError: Unexpected string in JSON at position 602/
+      // based on node version you may get different error messages
+      /Cause: SyntaxError: (Unexpected string|Expected ':' after property name) in JSON at position 602/
     );
   });
 
@@ -221,7 +222,8 @@ describe('sync', () => {
     vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json') });
 
     expect(() => JsonFile.read(testFilename)).toThrow(
-      /Cause: SyntaxError: Unexpected string in JSON at position 602/
+      // based on node version you may get different error messages
+      /Cause: SyntaxError: (Unexpected string|Expected ':' after property name) in JSON at position 602/
     );
   });
 

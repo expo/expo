@@ -156,6 +156,13 @@ export async function graphToSerialAssetsAsync(
         }
       }
     }
+
+    // Remove empty chunks
+    for (const chunk of [...chunks.values()]) {
+      if (!chunk.isEntry && chunk.deps.size === 0) {
+        chunks.delete(chunk);
+      }
+    }
   }
 
   const jsAssets = await serializeChunksAsync(
@@ -303,6 +310,7 @@ export class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
+
           // NOTE(kitten): We shouldn't have any async imports on non-async chunks
           // However, due to how chunks merge, some async imports may now be pointing
           // at entrypoint (or vendor) chunks. We omit the path so that the async import

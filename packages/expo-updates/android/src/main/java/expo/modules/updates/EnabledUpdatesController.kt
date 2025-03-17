@@ -44,7 +44,7 @@ class EnabledUpdatesController(
 ) : IUpdatesController {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
@@ -56,7 +56,7 @@ class EnabledUpdatesController(
   private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
-    UpdatesLogReader(context).purgeLogEntries {
+    UpdatesLogReader(context.filesDir).purgeLogEntries {
       if (it != null) {
         logger.error("UpdatesLogReader: error in purgeLogEntries", it, UpdatesErrorCode.Unknown)
       }

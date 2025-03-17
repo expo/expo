@@ -7,7 +7,11 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   removeItem: jest.fn(() => new Promise((resolve) => resolve(null))),
 }));
 
-jest.mock('@react-native-community/netinfo');
+jest.mock('@react-native-community/netinfo', () => ({
+  addEventListener: jest.fn(),
+  fetch: jest.fn(() => new Promise((resolve) => resolve(null))),
+  removeEventListener: jest.fn(),
+}));
 
 describe('User Authentication Flow', () => {
   let Store;
@@ -30,7 +34,6 @@ describe('User Authentication Flow', () => {
     originalFetch = null;
 
     jest.restoreAllMocks();
-    jest.resetModules();
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
