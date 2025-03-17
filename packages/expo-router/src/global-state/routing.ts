@@ -171,8 +171,6 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
 
   href = resolveHrefStringWithSegments(href, this.routeInfo, options);
 
-  debugger;
-
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
   if (!state || state.routes.length === 0) {
