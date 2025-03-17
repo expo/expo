@@ -40,6 +40,9 @@ export default function DocumentationPage({
   platforms,
   hideTOC,
   modificationDate,
+  searchRank,
+  searchLevel,
+  searchPosition,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
@@ -141,6 +144,13 @@ export default function DocumentationPage({
         {(version === 'unversioned' ||
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+        {searchRank && <meta name="searchRank" content={String(searchRank)} />}
+        {searchLevel ? (
+          <meta name="searchLevel" content={String(searchLevel)} />
+        ) : (
+          <meta name="searchLevel" content={String(searchRank)} />
+        )}
+        {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
       </DocumentationHead>
       <div
         className={mergeClasses(
