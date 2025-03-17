@@ -120,14 +120,14 @@ export type Locale = {
      * @example
      * `'USD'`, `'EUR'`, `'PLN'`.
      */
-    langageCurrencyCode: string | null;
+    languageCurrencyCode: string | null;
     /**
-     * Currency symbol for the currency specified by `langageCurrencyCode`.
+     * Currency symbol for the currency specified by `languageCurrencyCode`.
      * Prefer using `currencySymbol` for any internalization purposes.
      * @example
      * `'$'`, `'€'`, `'zł'`.
      */
-    langageCurrencySymbol: string | null;
+    languageCurrencySymbol: string | null;
     /**
      * Decimal separator used for formatting numbers with fractional parts.
      * @example
