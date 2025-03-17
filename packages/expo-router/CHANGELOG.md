@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
-- Prevent React Navigation from rearranging stack screens.
+- Prevent React Navigation from rearranging stack screens. ([#35544](https://github.com/expo/expo/pull/35544) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
