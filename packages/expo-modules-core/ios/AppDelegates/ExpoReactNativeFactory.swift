@@ -50,9 +50,9 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
     configuration.sourceURLForBridge = nil
 
-     configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
-       weakDelegate.loadSource?(for: bridge, onProgress: onProgress, onComplete: onComplete)
-     }
+    configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
+      weakDelegate.loadSource?(for: bridge, onProgress: onProgress, onComplete: onComplete)
+    }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
       configuration.extraModulesForBridge = { bridge in
