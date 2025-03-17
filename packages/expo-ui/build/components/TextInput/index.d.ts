@@ -63,7 +63,7 @@ export type TextInputProps = {
      */
     autocorrection?: boolean;
 };
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & ViewEvent<'onValueChanged', {
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
