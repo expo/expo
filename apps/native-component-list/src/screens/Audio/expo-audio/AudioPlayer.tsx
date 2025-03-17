@@ -15,9 +15,9 @@ const remoteSource =
   'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02';
 
 const testAssets = [
-  {
-    uri: localSource,
-  },
+  localSource,
+  null,
+  'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
   {
     uri: 'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
   },
@@ -78,9 +78,8 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   };
 
   const setQueue = () => {
-    const remoteTestAssets = testAssets.map((test) => test.uri);
-    console.log('Setting queue with sources:', JSON.stringify(remoteTestAssets));
-    player?.setQueue(remoteTestAssets);
+    console.log('Setting queue with sources:', JSON.stringify(testAssets));
+    player?.setQueue(testAssets);
   };
 
   return (
