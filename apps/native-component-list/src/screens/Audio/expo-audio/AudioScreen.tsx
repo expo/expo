@@ -4,6 +4,7 @@ import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
 import AudioPlayer from './AudioPlayer';
+import AudioQueuePlayer from './AudioQueuePlayer';
 import HeadingText from '../../../components/HeadingText';
 import ListButton from '../../../components/ListButton';
 
@@ -21,6 +22,14 @@ export default function AudioScreen(props: any) {
       <ListButton title="Deactivate Audio" onPress={() => setIsAudioActiveAsync(false)} />
       <HeadingText>Audio mode</HeadingText>
       <AudioModeSelector />
+      <HeadingText>Queue player</HeadingText>
+      <AudioQueuePlayer
+        // TODO: remove init source
+        source={{
+          uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+        }}
+        style={styles.player}
+      />
       <HeadingText>HTTP player</HeadingText>
       <AudioPlayer
         source={{
