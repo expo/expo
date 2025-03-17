@@ -3,6 +3,7 @@
 import AVFoundation
 import MediaPlayer
 import ExpoModulesCore
+import Photos
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   lazy var contentKeyManager = ContentKeyManager()
@@ -146,24 +147,46 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     try? self.replaceCurrentItem(with: nil)
   }
 
-  func replaceCurrentItem(with videoSource: VideoSource?) throws {
+  func replaceCurrentItem(with videoSource: VideoSource?, asset: AVAsset? = nil) throws {
     guard
       let videoSource = videoSource,
       let url = videoSource.uri
     else {
-      DispatchQueue.main.async { [ref] in
-        ref.replaceCurrentItem(with: nil)
+      DispatchQueue.main.async { [pointer] in
+        pointer.replaceCurrentItem(with: nil)
       }
       return
     }
-
-    let playerItem = if let headers = videoSource.headers {
-      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: ["AVURLAssetHTTPHeaderFieldsKey": headers])
-    } else {
-      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: nil)
+    
+    if url.scheme == "ph" {
+      let identifier = [url.host ?? "", url.path].joined(separator: "")
+      guard let phAsset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject
+      else {
+        DispatchQueue.main.async { [ref] in
+          ref.replaceCurrentItem(with: nil)
+        }
+        return
+      }
+      PHImageManager.default().requestAVAsset(forVideo: phAsset, options: nil) { avAsset, audioMix, info in
+        DispatchQueue.main.async {
+          guard let avAsset = avAsset else {
+            DispatchQueue.main.async {
+              self.ref.replaceCurrentItem(with: nil)
+            }
+            return
+          }
+          try? self.replaceCurrentItem(with: videoSource, asset: avAsset)
+        }
+      }
     }
-
-    ref.automaticallyWaitsToMinimizeStalling = false
+    
+    let asset = if let headers = videoSource.headers {
+      AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+    }
+    else {
+      AVURLAsset(url: url)
+    }
+    let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
