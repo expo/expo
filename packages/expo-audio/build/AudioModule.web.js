@@ -138,6 +138,11 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.isPlaying = false;
     }
     replace(source) {
+        this.loaded = false;
+        this.emit(PLAYBACK_STATUS_UPDATE, {
+            ...getStatusFromMedia(this.media, this.id),
+            isLoaded: this.loaded,
+        });
         this.src = source;
         this.media = this._createMediaElement();
     }
