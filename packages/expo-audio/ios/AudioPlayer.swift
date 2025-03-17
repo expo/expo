@@ -17,10 +17,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ref.rate != 0.0
   }
 
+  private var queue: [AudioSource] = []
+  private var currentQueueIndex: Int = -1
+  private var isPlayingBeforeQueueAdvance = false
+
   // MARK: Observers
   private var timeToken: Any?
   private var cancellables = Set<AnyCancellable>()
   private var endObserver: NSObjectProtocol?
+  private var queueObservation: NSKeyValueObservation?
+  private var queueItemObserver: NSObjectProtocol?
 
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
@@ -54,11 +60,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
-  private var queue: [AudioSource] = []
-  private var currentQueueIndex: Int = -1
-  private var queueObservation: NSKeyValueObservation?
-  private var queueItemObserver: NSObjectProtocol?
-  private var isPlayingBeforeQueueAdvance = false
+  private func cleanupQueueObservers() {
+    queueObservation?.invalidate()
+    queueObservation = nil
+
+    if let observer = queueItemObserver {
+      NotificationCenter.default.removeObserver(observer)
+      queueItemObserver = nil
+    }
+  }
 
   func setQueue(sources: [AudioSource]) {
     cleanupQueueObservers()
@@ -68,16 +78,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     if !queue.isEmpty {
       advanceQueue(to: 0)
-    }
-  }
-
-  private func cleanupQueueObservers() {
-    queueObservation?.invalidate()
-    queueObservation = nil
-
-    if let observer = queueItemObserver {
-      NotificationCenter.default.removeObserver(observer)
-      queueItemObserver = nil
     }
   }
 
@@ -97,9 +97,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     cleanupQueueObservers()
 
     // Observe when the current item becomes ready to play
-    queueObservation = ref.observe(\.currentItem?.status) { [weak self] player, _ in
+    queueObservation = ref.observe(\.currentItem?.status) { [weak self] _, _ in
       guard let self = self,
-            let currentItem = player.currentItem,
+            let currentItem = self.ref.currentItem,
             currentItem.status == .readyToPlay else { return }
 
       // Set up notification for when this track ends
@@ -118,12 +118,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func setupTrackEndNotification(for item: AVPlayerItem) {
-    // Remove any existing observer
     if let observer = queueItemObserver {
       NotificationCenter.default.removeObserver(observer)
     }
 
-    // Add new observer for track completion
     queueItemObserver = NotificationCenter.default.addObserver(
       forName: .AVPlayerItemDidPlayToEndTime,
       object: item,
@@ -132,14 +130,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       guard let self = self else { return }
 
       if self.isLooping {
-        // Handle looping
         self.ref.seek(to: CMTime.zero)
         self.ref.play()
       } else if self.currentQueueIndex < self.queue.count - 1 {
-        // Move to next track
         self.advanceQueue(to: self.currentQueueIndex + 1)
       } else {
-        // End of queue reached
         self.updateStatus(with: [
           "isPlaying": false,
           "currentTime": self.duration,
