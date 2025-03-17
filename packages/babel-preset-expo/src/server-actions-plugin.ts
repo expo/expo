@@ -21,8 +21,7 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import url from 'url';
+import url, { pathToFileURL } from 'node:url';
 
 import { getPossibleProjectRoot } from './common';
 

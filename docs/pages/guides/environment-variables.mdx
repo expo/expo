@@ -5,7 +5,6 @@ description: Learn how to use environment variables in an Expo project.
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { Terminal } from '~/ui/components/Snippet';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
@@ -56,17 +55,21 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### Using multiple .env files to define separate environments
 
-You can define any of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use), so it is possible to have separate **.env**, **.env.local**, **.env.production** and so on, files and they will load according to the standard priority.
+You can define any of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use), so it is possible to have separate **.env** and **.env.local**, files and they will load according to the standard priority.
 
-You may choose to commit the default **.env** file or other standard configurations to version control, but generally **.env.local** files should be added to your **.gitignore**:
+You may choose to commit the default **.env** file or other standard configurations, but generally **.env.local** files should be added to your **.gitignore**, because they are used to specify environment configuration specific to your local machine (such as, for example, your network IP address if you need it to make a request against a local server).
 
 ```bash .gitignore
 .env*.local
 ```
 
-If you create an environment-specific file, like **.env.test**, you can load it by setting `NODE_ENV` when running the Expo CLI:
+#### Environment variables and `NODE_ENV`
 
-<Terminal cmd={['$ NODE_ENV=test npx expo start']} />
+We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) — it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
+
+Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
+
+If you use EAS, consider using `eas env:pull` instead: this will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`. You can accomplish a similar behavior without EAS by writing a script to overwrite **.env.local** or **.env** with the appropriate contents for the environment you wish to work with.
 
 ### Disabling environment variables
 
@@ -103,7 +106,7 @@ Update your **.env** files to prefix any variables used within your JavaScript c
 Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ```diff
-- import Config from "react-native-config";
+- import Config from 'react-native-config';
 
 - const apiUrl = Config.API_URL;
 + const apiUrl = process.env.EXPO_PUBLIC_API_URL;

@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
+import { LocationErrorCallback, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
 /**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [`LocationProviderStatus`](#locationproviderstatus).
@@ -42,9 +42,11 @@ export declare function getLastKnownPositionAsync(options?: LocationLastKnownOpt
  * @param options
  * @param callback This function is called on each location update. It receives an object of type
  * [`LocationObject`](#locationobject) as the first argument.
+ * @param errorHandler This function is called when an error occurs. It receives a string with the
+ * error message as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  */
-export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<LocationSubscription>;
+export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback, errorHandler?: LocationErrorCallback): Promise<LocationSubscription>;
 /**
  * Gets the current heading information from the device. To simplify, it calls `watchHeadingAsync`
  * and waits for a couple of updates, and then returns the one that is accurate enough.
@@ -56,12 +58,14 @@ export declare function getHeadingAsync(): Promise<LocationHeadingObject>;
  *
  * @param callback This function is called on each compass update. It receives an object of type
  * [LocationHeadingObject](#locationheadingobject) as the first argument.
+ * @param errorHandler This function is called when an error occurs. It receives a string with the
+ * error message as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  *
  * @platform android
  * @platform ios
  */
-export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<LocationSubscription>;
+export declare function watchHeadingAsync(callback: LocationHeadingCallback, errorHandler?: LocationErrorCallback): Promise<LocationSubscription>;
 /**
  * Geocode an address string to latitude-longitude location.
  *

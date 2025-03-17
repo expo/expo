@@ -27,7 +27,7 @@ export const Header = ({
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
-      <nav className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
+      <header className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
         <div className="flex items-center gap-8">
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
@@ -80,7 +80,7 @@ export const Header = ({
             </Button>
           </div>
         </div>
-      </nav>
+      </header>
       {isMobileMenuVisible && (
         <nav
           className={mergeClasses(

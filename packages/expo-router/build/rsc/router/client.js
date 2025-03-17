@@ -56,7 +56,7 @@ const equalRouteProps = (a, b) => {
 const RouterContext = (0, react_1.createContext)(null);
 const InnerRouter = ({ routerData }) => {
     const refetch = (0, host_js_1.useRefetch)();
-    const initialRouteRef = (0, react_1.useRef)();
+    const initialRouteRef = (0, react_1.useRef)(null);
     if (!initialRouteRef.current) {
         initialRouteRef.current = parseRoute(new URL(getHref()));
     }

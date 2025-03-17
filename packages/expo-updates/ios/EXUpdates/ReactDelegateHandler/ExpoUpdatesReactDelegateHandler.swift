@@ -22,6 +22,10 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return nil
+    }
+
     AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     if !controller.isActiveController {
@@ -59,13 +63,19 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   // MARK: AppControllerDelegate implementations
 
   public func appController(_ appController: AppControllerInterface, didStartWithSuccess success: Bool) {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return
+    }
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
-    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
-      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+
+    guard let appDelegate = (UIApplication.shared.delegate as? ReactNativeFactoryProvider) ??
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ReactNativeFactoryProvider) else {
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
-    let rootView = rctAppDelegate.recreateRootView(
+
+    let rootView = appDelegate.recreateRootView(
       withBundleURL: AppController.sharedInstance.launchAssetUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,

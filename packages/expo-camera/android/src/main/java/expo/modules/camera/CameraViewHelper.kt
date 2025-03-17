@@ -40,3 +40,9 @@ object CameraViewHelper {
     return stream.toByteArray()
   }
 }
+
+fun Bitmap.toByteArray(): ByteArray {
+  val stream = ByteArrayOutputStream()
+  this.compress(Bitmap.CompressFormat.PNG, 90, stream)
+  return stream.toByteArray()
+}

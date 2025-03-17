@@ -48,8 +48,6 @@ class DevMenuPackagerConnectionHandler {
       devDelegate.reload()
     case "toggleDevMenu":
       self.manager?.toggleMenu()
-    case "toggleRemoteDebugging":
-      devDelegate.toggleRemoteDebugging()
     case "toggleElementInspector":
       devDelegate.toggleElementInsector()
     case "togglePerformanceMonitor":

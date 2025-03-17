@@ -31,9 +31,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = void 0;
 const core_1 = require("@babel/core");
@@ -41,8 +38,7 @@ const core_1 = require("@babel/core");
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
-const node_url_1 = require("node:url");
-const url_1 = __importDefault(require("url"));
+const node_url_1 = __importStar(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
@@ -499,7 +495,7 @@ function reactServerActionsPlugin(api) {
                 // This can happen in tests or systems that use Babel standalone.
                 throw new Error('[Babel] Expected a filename to be set in the state');
             }
-            const outputKey = url_1.default.pathToFileURL(filePath).href;
+            const outputKey = node_url_1.default.pathToFileURL(filePath).href;
             file.metadata.reactServerActions = payload;
             file.metadata.reactServerReference = outputKey;
         },

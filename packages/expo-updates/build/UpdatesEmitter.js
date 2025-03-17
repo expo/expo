@@ -1,8 +1,7 @@
-import { EventEmitter as JsEventEmitter } from 'fbemitter';
 import ExpoUpdatesModule from './ExpoUpdates';
 export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
-const _jsEventEmitter = new JsEventEmitter();
+const _updatesStateChangeListeners = new Set();
 // Reemits native state change events
 function _handleNativeStateChangeEvent(params) {
     const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
@@ -13,14 +12,19 @@ function _handleNativeStateChangeEvent(params) {
     }
     newParams.context = transformedContext;
     latestContext = transformedContext;
-    _jsEventEmitter.emit('Expo.updatesStateChangeEvent', newParams);
+    _updatesStateChangeListeners.forEach((listener) => listener(newParams));
 }
 /**
  * Add listener for state change events
  * @hidden
  */
 export const addUpdatesStateChangeListener = (listener) => {
-    return _jsEventEmitter.addListener('Expo.updatesStateChangeEvent', listener);
+    _updatesStateChangeListeners.add(listener);
+    return {
+        remove() {
+            _updatesStateChangeListeners.delete(listener);
+        },
+    };
 };
 /**
  * Allows JS test to emit a simulated native state change event (used in unit testing)

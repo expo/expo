@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-audio'
 packageName: 'expo-audio'
 iconUrl: '/static/images/packages/expo-av.png'
 platforms: ['android', 'ios', 'web']
-isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -17,8 +16,6 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 > **warning** This page documents an upcoming version of the Audio library. **Expo Audio is currently in alpha and subject to breaking changes.**
 
 `expo-audio` is a cross-platform audio library for accessing the native audio capabilities of the device.
-
-> **Info** Audio recording APIs are not available on tvOS (Apple TV).
 
 Note that audio automatically stops if headphones/bluetooth audio devices are disconnected.
 
@@ -113,7 +110,10 @@ import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } fro
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
-  const record = () => audioRecorder.record();
+  const record = async () => {
+    await audioRecorder.prepareToRecordAsync();
+    audioRecorder.record();
+  };
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.

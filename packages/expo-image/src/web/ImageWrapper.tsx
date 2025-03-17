@@ -1,4 +1,4 @@
-import React, { useEffect, Ref } from 'react';
+import React, { useEffect, Ref, useId } from 'react';
 
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { ImageWrapperProps } from './ImageWrapper.types';
@@ -44,6 +44,8 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
 
+    const tintId = useId();
+
     // Thumbhash uri always has to start with 'thumbhash:/'
     const { resolvedSource, isImageHash } = useImageHashes(source);
     const objectPosition = getObjectPositionFromContentPositionObject(
@@ -56,7 +58,7 @@ const ImageWrapper = React.forwardRef(
     }
     return (
       <>
-        <ColorTintFilter tintColor={tintColor} />
+        <ColorTintFilter id={tintId} tintColor={tintColor} />
         <img
           ref={ref}
           alt={accessibilityLabel}
@@ -66,13 +68,13 @@ const ImageWrapper = React.forwardRef(
           style={{
             objectPosition,
             ...absoluteFilledPosition,
-            ...getTintColorStyle(tintColor),
+            ...getTintColorStyle(tintId, tintColor),
             ...style,
             ...(isImageHash ? hashPlaceholderStyle : {}),
           }}
           // @ts-ignore
           // eslint-disable-next-line react/no-unknown-property
-          fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
+          fetchPriority={getFetchPriorityFromImagePriority(priority || 'normal')}
           {...getImageWrapperEventHandler(events, sourceWithHeaders)}
           {...getImgPropsFromSource(source)}
           {...props}

@@ -4,7 +4,7 @@ export class AsyncNgrok {
   getActiveUrl = jest.fn(() => this.serverUrl);
 
   startAsync = jest.fn(async () => {
-    this.serverUrl = 'http://exp.tunnel.dev/foobar';
+    this.serverUrl = 'http://exp.ngrok-tunnel.dev/foobar';
   });
 
   stopAsync = jest.fn(async () => {

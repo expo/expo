@@ -9,14 +9,15 @@ type VideoBoxLinkProps = {
   title: string;
   description: ReactNode;
   videoId: string;
+  time?: number;
   className?: string;
 };
 
-export function VideoBoxLink({ title, description, videoId, className }: VideoBoxLinkProps) {
+export function VideoBoxLink({ title, description, videoId, time, className }: VideoBoxLinkProps) {
   return (
     <A
       openInNewTab
-      href={`https://www.youtube.com/watch?v=${videoId}`}
+      href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
       className={mergeClasses(
         'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
         'hocus:shadow-sm',

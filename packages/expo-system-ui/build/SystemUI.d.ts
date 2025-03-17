@@ -1,7 +1,7 @@
 import { ColorValue } from 'react-native';
 /**
  * Changes the root view background color.
- * Call this function in the root file outside of you component.
+ * Call this function in the root file outside of your component.
  *
  * @example
  * ```ts

@@ -125,7 +125,7 @@ it(`adds dom components proxy for ios in production`, () => {
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
-    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
+    var filePath = "d42c4b55f14e2195bf85622978627ebe.html";
     var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
@@ -147,7 +147,7 @@ it(`adds dom components proxy for android in production`, () => {
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
-    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
+    var filePath = "d42c4b55f14e2195bf85622978627ebe.html";
     var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref

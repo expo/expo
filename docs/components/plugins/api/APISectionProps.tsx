@@ -6,6 +6,7 @@ import { APITypeOrSignatureType } from '~/components/plugins/api/components/APIT
 import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
 import {
+  CommentTagData,
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
@@ -15,6 +16,7 @@ import {
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   extractDefaultPropValue,
+  getAllTagData,
   getCommentOrSignatureComment,
   getTagData,
   resolveTypeName,
@@ -26,6 +28,7 @@ export type APISectionPropsProps = {
   data: PropsDefinitionData[];
   sdkVersion: string;
   defaultProps?: DefaultPropsDefinitionData;
+  parentPlatforms?: CommentTagData[];
   header?: string;
 };
 
@@ -78,6 +81,7 @@ const renderProps = (
   def: PropsDefinitionData,
   sdkVersion: string,
   defaultValues?: DefaultPropsDefinitionData,
+  parentPlatforms?: CommentTagData[],
   exposeInSidebar?: boolean
 ): JSX.Element => {
   const propsDeclarations = getPropsBaseTypes(def)
@@ -88,9 +92,15 @@ const renderProps = (
     <div key={`props-definition-${def.name}`} className="[&>*]:last:!mb-0">
       {propsDeclarations?.map(prop =>
         prop
-          ? renderProp(prop, sdkVersion, extractDefaultPropValue(prop, defaultValues), {
-              exposeInSidebar,
-            })
+          ? renderProp(
+              prop,
+              sdkVersion,
+              extractDefaultPropValue(prop, defaultValues),
+              parentPlatforms,
+              {
+                exposeInSidebar,
+              }
+            )
           : null
       )}
       {renderInheritedProps(def, sdkVersion, exposeInSidebar)}
@@ -102,12 +112,14 @@ export const renderProp = (
   propData: PropData,
   sdkVersion: string,
   defaultValue?: string,
+  parentPlatforms?: CommentTagData[],
   { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
+  const platforms = getAllTagData('platform', extractedComment);
 
   return (
     <div
@@ -119,6 +131,7 @@ export const renderProp = (
         comment={extractedComment}
         baseNestingLevel={baseNestingLevel}
         deprecated={Boolean(getTagData('deprecated', extractedComment))}
+        platforms={platforms.length ? platforms : parentPlatforms}
       />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
@@ -159,6 +172,7 @@ export const renderProp = (
 const APISectionProps = ({
   data,
   defaultProps,
+  parentPlatforms,
   header = 'Props',
   sdkVersion,
 }: APISectionPropsProps) => {
@@ -175,12 +189,14 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
+          {baseProp?.comment && (
+            <APICommentTextBlock comment={baseProp.comment} includePlatforms={!parentPlatforms} />
+          )}
           <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(propsDefinition, sdkVersion, defaultProps, header === 'Props')
+        renderProps(propsDefinition, sdkVersion, defaultProps, parentPlatforms, header === 'Props')
       )}
     </>
   );

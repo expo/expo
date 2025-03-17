@@ -4,7 +4,7 @@ exports[`getHotReplaceTemplate should generate the correct template 1`] = `
 "style.setAttribute('data-expo-css-hmr', "foo");
   const previousStyle = document.querySelector('[data-expo-css-hmr="foo"]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }"
 `;
 
@@ -18,10 +18,10 @@ const style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "test_css");
   const previousStyle = document.querySelector('[data-expo-css-hmr="test_css"]');
   if (previousStyle) {
-    previousStyle.parentNode.removeChild(previousStyle);
+    previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
-head.appendChild(style);
+if (!style.parentNode) head.appendChild(style);
 const css = \`body { color: red; }\`;
 if (style.styleSheet){
   style.styleSheet.cssText = css;
@@ -36,7 +36,7 @@ exports[`wrapDevelopmentCSS should transform css in dev mode for server componen
 if (typeof __expo_rsc_inject_module === 'function') {
   __expo_rsc_inject_module({
     id: "test.css",
-    code: "(()=>{const head = document.head || document.getElementsByTagName('head')[0];\\nconst style = document.createElement('style');\\nstyle.setAttribute('data-expo-css-hmr', \\"test_css\\");\\n  const previousStyle = document.querySelector('[data-expo-css-hmr=\\"test_css\\"]');\\n  if (previousStyle) {\\n    previousStyle.parentNode.removeChild(previousStyle);\\n  }\\nstyle.setAttribute('data-expo-loader', 'css');\\nhead.appendChild(style);\\nconst css = \`body { color: red; }\`;\\nif (style.styleSheet){\\n  style.styleSheet.cssText = css;\\n} else {\\n  style.appendChild(document.createTextNode(css));\\n}})();",
+    code: "(()=>{const head = document.head || document.getElementsByTagName('head')[0];\\nconst style = document.createElement('style');\\nstyle.setAttribute('data-expo-css-hmr', \\"test_css\\");\\n  const previousStyle = document.querySelector('[data-expo-css-hmr=\\"test_css\\"]');\\n  if (previousStyle) {\\n    previousStyle.parentNode.replaceChild(style, previousStyle);\\n  }\\nstyle.setAttribute('data-expo-loader', 'css');\\nif (!style.parentNode) head.appendChild(style);\\nconst css = \`body { color: red; }\`;\\nif (style.styleSheet){\\n  style.styleSheet.cssText = css;\\n} else {\\n  style.appendChild(document.createTextNode(css));\\n}})();",
   });
 } else {
   throw new Error('RSC SSR CSS injection function is not found (__expo_rsc_inject_module)');

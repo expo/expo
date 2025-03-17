@@ -58,7 +58,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         source?: string | undefined;
         target?: string | undefined;
     }>)): void;
-    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
     navigate<RouteName_1 extends string>(options: {
         name: string;
         params: object | undefined;
@@ -116,7 +116,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         source?: string | undefined;
         target?: string | undefined;
     }>)): void;
-    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
     navigate<RouteName_1 extends string>(options: {
         name: string;
         params: object | undefined;
@@ -130,9 +130,6 @@ export declare const TabsNavigatorContext: import("react").Context<({
         merge?: boolean | undefined;
     }): void;
     preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
-    /**
-     * @hidden
-     */
     reset(state: Readonly<{
         key: string;
         index: number;

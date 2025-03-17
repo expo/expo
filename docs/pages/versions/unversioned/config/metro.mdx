@@ -8,7 +8,6 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -59,10 +58,6 @@ Client environment variable inlining can be disabled with the environment variab
 
 Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported.
 
-<Tabs>
-
-<Tab label="SDK 50 and above">
-
 CSS support is enabled by default. You can disable the feature by setting `isCSSEnabled` in the Metro config.
 
 ```js metro.config.js
@@ -72,23 +67,6 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: false,
 });
 ```
-
-</Tab>
-
-<Tab label="SDK 49">
-
-To enable CSS support, set `isCSSEnabled` to `true` in the Metro config.
-
-```js metro.config.js
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  isCSSEnabled: true,
-});
-```
-
-</Tab>
-
-</Tabs>
 
 ### Global CSS
 
@@ -404,7 +382,7 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 ## Bundle splitting
 
-> This feature is web-only in SDK 50.
+> This feature is web-only in SDK 50 and above.
 
 In SDK 50, Expo CLI automatically splits web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (available by default in Expo Router).
 
@@ -512,6 +490,70 @@ export async function GET(req: Request) {
   });
 }
 ```
+
+## Web workers
+
+> **warning** This feature is experimental and subject to breaking changes.
+
+```ts
+new Worker(new URL('./worker', window.location.href));
+```
+
+Expo Metro has experimental web worker support in SDK 53 and above. This feature is currently web-only and does not work on native, usage on native will trigger an error "Property 'Worker' doesn't exist".
+
+Web workers can be used to offload work to a separate thread on web, allowing the main thread to remain responsive. This is useful for computationally expensive tasks, such as image processing, cryptography, or other tasks that would otherwise block the main thread.
+
+Workers can be generated inline using `Blob`, but sometimes you may want to leverage modern features like TypeScript or importing other modules.
+
+Web workers depend on Expo bundle splitting support, which means you need to either use Expo Router or install and import `@expo/metro-runtime`. You also cannot use the environment `EXPO_NO_METRO_LAZY=1` with web workers.
+
+Consider the following example of a worker that doubles a number:
+
+```ts worker.ts
+self.onmessage = ({ data }) => {
+  const result = data * 2; // Example: double the number
+  self.postMessage(result);
+};
+```
+
+This worker file can be imported as a `Worker` in the main app:
+
+```ts
+// worker is of type `Worker`
+const worker = new Worker(new URL('./worker', window.location.href));
+
+worker.onmessage = ({ data }) => {
+  console.log(`Worker responded: ${data}`);
+};
+
+worker.postMessage(5);
+```
+
+Behind the scenes, Expo CLI is generating code like this:
+
+```ts
+const worker = new Worker(
+  new URL('/worker.bundle?platform=web&dev=true&etc', window.location.href)
+);
+```
+
+The generated bundle URL changes based on development/production to ensure the worker is loaded and bundled correctly. Unlike traditional bundle splitting, a worker file needs to contain its own copy of all modules and cannot depend on common modules in the main bundle.
+
+The native API `Worker` is traditionally unavailable in React Native and not provided by the Expo SDK, so even though this bundling feature technically works for all platforms, it's only useful on web. You could theoretically write a native Expo module that polyfills the `Worker` API if you want to support native platforms too. Alternatively, you can use the "worklet" API in React Native Reanimated to offload work to a separate thread on native.
+
+Alternatively, you can import Workers using the public path by first putting a transformed JS file in the **public** directory, then referencing it in the worker import with a variable:
+
+```ts
+// Will avoid the transform and use the public path directly.
+const worker = new Worker('/worker.js');
+
+// The variable breaks the transform causing the literal path to be used instead of the transformed path.
+const path = '/worker.js';
+
+const anotherWorker = new Worker(new URL(path, window.location.href));
+```
+
+Using a variable in the `Worker` constructor is not supported for bundling. To inspect the internal URL, you may use the internal syntax `require.unstable_resolveWorker('./path/to/worker.js')` to get the URL fragment.
 
 ## Bare workflow setup
 

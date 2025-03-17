@@ -25,8 +25,15 @@ internal class SQLiteErrorException(message: String) :
 internal class InvalidConvertibleException(message: String) :
   CodedException(message)
 
+@DoNotStrip
+internal class UnsupportedOperationException(message: String) :
+  CodedException(if (message.isNotEmpty()) "Unsupported operations: $message" else "Unsupported operations")
+
 internal class AccessClosedResourceException :
   CodedException("Access to closed resource")
 
 internal class InvalidBindParameterException :
   CodedException("Invalid bind parameter")
+
+internal class InvalidArgumentsException(message: String) :
+  CodedException("Invalid arguments: $message")

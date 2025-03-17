@@ -16,7 +16,6 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
@@ -181,12 +180,6 @@ class AppContext(
    * Provides access to the image loader from the legacy module registry
    */
   val imageLoader: ImageLoaderInterface?
-    get() = legacyModule()
-
-  /**
-   * Provides access to the bar code scanner manager from the legacy module registry
-   */
-  val barcodeScanner: BarCodeScannerInterface?
     get() = legacyModule()
 
   /**

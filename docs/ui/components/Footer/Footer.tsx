@@ -34,10 +34,15 @@ export const Footer = ({
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
 
-  const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
+  const shouldShowModifiedDate = !isExpoPackage && !isTutorial && title;
 
   return (
-    <footer className={mergeClasses('flex flex-col gap-10', title && 'pt-10', !title && 'pt-6')}>
+    <footer
+      className={mergeClasses(
+        'flex flex-col gap-10 px-14 pb-10',
+        title ? 'pt-10' : 'pt-6',
+        'max-lg-gutters:px-4 max-lg-gutters:pb-12'
+      )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
@@ -98,7 +103,7 @@ export const Footer = ({
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
             {!isDev && shouldShowModifiedDate && modificationDate && (
               <LI className="!mt-4 !text-2xs !text-quaternary">
-                Last updated on {modificationDate}
+                Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (

@@ -1,5 +1,4 @@
 {
-  "name": "expo-cellular",
   "platforms": ["apple", "android", "web"],
   "apple": {
     "modules": ["CellularModule"]

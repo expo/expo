@@ -1,7 +1,9 @@
 import { type EventSubscription } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { SQLiteSession } from './SQLiteSession';
 import {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
@@ -13,8 +15,6 @@ import {
 import { createDatabasePath } from './pathUtils';
 
 export { SQLiteOpenOptions };
-
-let memoWarnCRSQLiteDeprecation = false;
 
 /**
  * A SQLite database.
@@ -71,6 +71,17 @@ export class SQLiteDatabase {
   }
 
   /**
+   * Create a new session for the database.
+   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+   * @param dbName The name of the database to create a session for. The default value is `main`.
+   */
+  public async createSessionAsync(dbName: string = 'main'): Promise<SQLiteSession> {
+    const nativeSession = new ExpoSQLite.NativeSession();
+    await this.nativeDatabase.createSessionAsync(nativeSession, dbName);
+    return new SQLiteSession(this.nativeDatabase, nativeSession);
+  }
+
+  /**
    * Execute a transaction and automatically commit/rollback based on the `task` result.
    *
    * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
@@ -124,6 +135,9 @@ export class SQLiteDatabase {
   public async withExclusiveTransactionAsync(
     task: (txn: Transaction) => Promise<void>
   ): Promise<void> {
+    if (Platform.OS === 'web') {
+      throw new Error('withExclusiveTransactionAsync is not supported on web');
+    }
     const transaction = await Transaction.createAsync(this);
     let error;
     try {
@@ -190,6 +204,20 @@ export class SQLiteDatabase {
     const nativeStatement = new ExpoSQLite.NativeStatement();
     this.nativeDatabase.prepareSync(nativeStatement, source);
     return new SQLiteStatement(this.nativeDatabase, nativeStatement);
+  }
+
+  /**
+   * Create a new session for the database.
+   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+   *
+   * @param dbName The name of the database to create a session for. The default value is `main`.
+   */
+  public createSessionSync(dbName: string = 'main'): SQLiteSession {
+    const nativeSession = new ExpoSQLite.NativeSession();
+    this.nativeDatabase.createSessionSync(nativeSession, dbName);
+    return new SQLiteSession(this.nativeDatabase, nativeSession);
   }
 
   /**
@@ -407,6 +435,17 @@ export class SQLiteDatabase {
     return allRows;
   }
 
+  /**
+   * Synchronize the local database with the remote libSQL server.
+   * This method is only available from libSQL integration.
+   */
+  public syncLibSQL(): void {
+    if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
+      throw new Error('syncLibSQL is not supported in the current environment');
+    }
+    return this.nativeDatabase.syncLibSQL();
+  }
+
   //#endregion
 }
 
@@ -430,8 +469,10 @@ export async function openDatabaseAsync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
-  maybeWarnCRSQLiteDeprecation(options);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databasePath,
+    flattenOpenOptions(openOptions)
+  );
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
@@ -453,8 +494,10 @@ export function openDatabaseSync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
-  maybeWarnCRSQLiteDeprecation(options);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databasePath,
+    flattenOpenOptions(openOptions)
+  );
   nativeDatabase.initSync();
   return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
@@ -470,8 +513,11 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  maybeWarnCRSQLiteDeprecation(options);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    flattenOpenOptions(openOptions),
+    serializedData
+  );
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -489,8 +535,11 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  maybeWarnCRSQLiteDeprecation(options);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    flattenOpenOptions(openOptions),
+    serializedData
+  );
   nativeDatabase.initSync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -556,21 +605,11 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    maybeWarnCRSQLiteDeprecation(options);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, options);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(
+      db.databasePath,
+      flattenOpenOptions(options)
+    );
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }
-}
-
-// TODO(kudo,20241017) - Remove `enableCRSQLite` in SDK 53.
-function maybeWarnCRSQLiteDeprecation(openOptions: SQLiteOpenOptions | undefined | null) {
-  const enableCRSQLite = openOptions?.enableCRSQLite === true;
-  if (!enableCRSQLite || __DEV__ !== true || memoWarnCRSQLiteDeprecation) {
-    return;
-  }
-  console.warn(
-    'CR-SQLite is no longer actively maintained. The experimental `enableCRSQLite` option is deprecated and will be removed in SDK 53.'
-  );
-  memoWarnCRSQLiteDeprecation = true;
 }

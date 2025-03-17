@@ -2,7 +2,7 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, NodePath, types } from '@babel/core';
-import nodePath from 'path';
+import nodePath from 'node:path';
 import resolveFrom from 'resolve-from';
 
 import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from './common';

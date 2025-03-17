@@ -9,5 +9,15 @@ public class ExpoUIModule: Module {
     View(Button.self)
     View(PickerView.self)
     View(SwitchView.self)
+    View(SectionView.self)
+    View(SliderView.self)
+    View(ExpoUI.ContextMenu.self)
+    View(ExpoUI.ContextMenuActivationElement.self)
+    View(ExpoUI.ContextMenuPreview.self)
+    View(ColorPickerView.self)
+    View(DateTimePickerView.self)
+    View(TextInputView.self)
+    View(ProgressView.self)
+    View(GaugeView.self)
   }
 }

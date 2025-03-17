@@ -30,6 +30,13 @@ export const CameraScreens = [
       return optionalRequire(() => require('./CameraScreenPauseRecording'));
     },
   },
+  {
+    name: 'Camera Image Ref',
+    route: 'camera/expo-camera-image-ref',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenImageRef'));
+    },
+  },
 ];
 
 export default function CameraScreen() {

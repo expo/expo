@@ -6,7 +6,7 @@
 
 const findUp = require('find-up');
 const path = require('path');
-const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
+const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
 
 const publicExpoModules = require('./expoModules');
@@ -293,5 +293,10 @@ try {
 // Installs web implementations of global things that are normally installed through JSI.
 require('expo-modules-core/src/web/index.web');
 
+jest.doMock('expo/src/winter/FormData', () => ({
+  // The `installFormDataPatch` function is for native runtime only,
+  // so we don't need to patch `FormData` for the jest runtime.
+  installFormDataPatch: jest.fn(),
+}));
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');

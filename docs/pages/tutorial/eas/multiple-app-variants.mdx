@@ -1,15 +1,20 @@
 ---
 title: Configure multiple app variants
 sidebar_title: Multiple app variants
-description: Learn how to configure app config to install multiple app variants on a single device.
+description: Learn how to configure dynamic app config to install multiple app variants on a single device.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll configure our project to run multiple build types (development, preview, production) on a single device simultaneously. This setup will allow us to test various stages of our app development without the need to uninstall and reinstall different versions.
+
+<VideoBoxLink videoId="UtJJCAfrjIg" title="Watch: How to configure multiple app variants" />
+
+---
 
 Each variant requires a unique Android Application ID and iOS Bundle Identifier to enable simultaneous installations on one device. Here's how the IDs are set up in our **app.json** file:
 
@@ -32,19 +37,35 @@ Each variant requires a unique Android Application ID and iOS Bundle Identifier 
 
 <Step label="1">
 
-## Convert app.json to app.config.js for dynamic configuration
+## Add app.config.js for dynamic configuration
 
 **app.json** contains app-related configuration in a JSON file. It's static and isn't ideal if we want to use [dynamic values for certain properties](/workflow/configuration/#dynamic-configuration). We're going to add different Android Application IDs and iOS Bundle Identifiers for all build profiles based on [environment variables](/workflow/configuration/#switching-configuration-based-on-the-environment).
 
-- In the code editor, rename **app.json** to **app.config.js**.
-- In **app.config.js**, add environment variables called `IS_DEV` and`IS_PREVIEW` for `development` and `preview` build profiles:
+- In the root of your project, create a new file called **app.config.js**.
+- In **app.config.js**, export a default function that takes `config` as its argument. We'll then destructure the `config` to copy all existing properties from **app.json**.
+
+```js app.config.js
+export default ({ config }) => ({
+  /* @info The <CODE>config</CODE> object copies all existing configuration from app.json file.*/
+  ...config,
+  /* @end */
+});
+```
+
+</Step>
+
+<Step label="2">
+
+## Update dynamic values based on environment
+
+To identify the build type, let's add two environment variables called `IS_DEV` and`IS_PREVIEW` for `development` and `preview` build profiles in **app.config.js**:
 
 ```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
 const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
 ```
 
-- Add two functions that dynamically change the app name, Android Application ID and iOS Bundle Identifier:
+Then, add two functions that dynamically change the app name, Android Application ID and iOS Bundle Identifier:
 
 ```js app.config.js
 const getUniqueIdentifier = () => {
@@ -72,33 +93,35 @@ const getAppName = () => {
 };
 ```
 
-- We'll use `getAppName()` to assign varying `name` values for the app and `getUniqueIdentifier()` to differentiate `android.package` and `ios.bundleIdentifier` for development and preview builds:
+We'll use `getAppName()` to assign dynamic `name` values for the app and `getUniqueIdentifier()` to differentiate `android.package` and `ios.bundleIdentifier` for development and preview builds:
 
 {/* prettier-ignore */}
 ```js app.config.js
-export default {
+export default ({ config }) => ({
+  ...config,
   /* @info Using <CODE>getAppName()</CODE> for "name" property */
   name: getAppName(),
   /* @end */
-  /* @hide ... */ /* @end */
   ios: {
+    /* @info Include existing <CODE>ios</CODE> configuration from app.json */
+    ...config.ios,
+    /* @end */
     /* @info Using <CODE>getUniqueIdentifier()</CODE> for "bundleIdentifier" property */
     bundleIdentifier: getUniqueIdentifier(),
-    /* @end */
-    /* @hide ... */ /* @end */
   },
   android: {
+    /* @info Include existing <CODE>android</CODE> configuration from app.json */
+    ...config.android,
+    /* @end */
     /* @info Using <CODE>getUniqueIdentifier()</CODE> for "package" property */
     package: getUniqueIdentifier(),
-    /* @end */
-    /* @hide ... */ /* @end */
   },
 };
 ```
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 ## Configure eas.json
 
@@ -138,7 +161,7 @@ Since our `ios-simulator` build profile extends `development`, this configuratio
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 ## Run development server
 
@@ -168,6 +191,8 @@ Now, our development build will run on both Android and iOS, displaying the modi
   className="max-w-[240px]"
 />
 
+You can now continue using **app.json** for static values and use **app.config.js** for dynamic values.
+
 </Step>
 
 ## Summary
@@ -177,10 +202,10 @@ Now, our development build will run on both Android and iOS, displaying the modi
   name="EAS_TUTORIAL"
   summary={
     <>
-      We successfully switched to <strong>app.config.js</strong> for dynamic settings, added
-      environment variables in <strong>eas.json</strong> to configure specific build profile, and
-      learned how to start the development server with a custom <strong>package.json</strong>{' '}
-      script.
+      We successfully created <strong>app.config.js</strong> just for our dynamic configuration
+      while leaving static configuration in **app.json** unchanged, added environment variables in{' '}
+      <strong>eas.json</strong> to configure specific build profile, and learned how to start the
+      development server with a custom <strong>package.json</strong> script.
     </>
   }
   nextChapterDescription="In the next chapter, learn about what are internal distribution builds, why we need them, and how to create them."

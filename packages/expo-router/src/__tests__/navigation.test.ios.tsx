@@ -480,12 +480,58 @@ it('can navigate to hoisted groups', () => {
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to nested groups', () => {
+it('can navigate to the index of a nested groups', () => {
   renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
     'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/index': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)'));
+
+  expect(screen).toHavePathname('/example/folder');
+  expect(screen.getByTestId('index')).toBeTruthy();
+});
+
+it('can navigate to the first route of a nested group when there is not an index route', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to the index of a hoisted nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/index': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)'));
+
+  expect(screen).toHavePathname('/example/folder');
+  expect(screen.getByTestId('index')).toBeTruthy();
+});
+
+it('can navigate to the first route of a hoisted nested group when there is not an index route', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
     'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
   });
 
@@ -1629,7 +1675,7 @@ describe('navigation action fallbacks', () => {
     expect(screen).toHavePathname('/');
   }
 
-  it.only('can fall back correctly for tab navigators', () => {
+  it('can fall back correctly for tab navigators', () => {
     renderRouter({
       _layout: () => <Tabs />,
       one: () => <Text testID="one" />,

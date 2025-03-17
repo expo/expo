@@ -60,6 +60,13 @@ Running [EAS Build](/build/introduction) locally will use [iOS capabilities sign
         'Sets the iOS `com.apple.developer.icloud-container-environment` entitlement used for AdHoc iOS builds. Possible values: `Development`, `Production`. [Learn more](https://github.com/expo/eas-cli/issues/693).',
       default: 'undefined',
     },
+    {
+      name: 'kvStoreIdentifier',
+      platform: 'ios',
+      description:
+        'Overrides the default iOS `com.apple.developer.ubiquity-kvstore-identifier` entitlement, which uses your Apple Team ID and bundle identifier. This may be needed if your app was transferred to another Apple Team after enabling iCloud storage.',
+      default: 'undefined',
+    },
   ]}
 />
 

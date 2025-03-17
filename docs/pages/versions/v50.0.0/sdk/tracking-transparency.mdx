@@ -8,7 +8,7 @@ packageName: 'expo-tracking-transparency'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -117,7 +117,11 @@ import * as ExpoTrackingTransparency from 'expo-tracking-transparency';
 
 ### Android
 
-<AndroidPermissions permissions={['com.google.android.gms.permission.AD_ID']} />
+The following permissions are added automatically through the library's **AndroidManifest.xml**.
+
+| Android Permission                        | Description                                                                                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `com.google.android.gms.permission.AD_ID` | Allows access to the Advertising ID for tracking and analytics. Required for apps targeting Android 13 (API level 33) or higher that use Google Play services' Advertising ID. |
 
 ### iOS
 

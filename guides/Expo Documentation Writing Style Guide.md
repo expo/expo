@@ -179,12 +179,19 @@ We, sometimes, have buttons that lead to an Expo Snack. Use title case for these
 - Correct: Try this example on Snack
 - Incorrect: Try This Example On Snack
 
-### Filenames as bold text
+### File and directory names as bold text
 
-Filenames are used as bold text in the markdown files.
+File and directory names are used as bold text in the markdown files.
 
-- Correct: Your app's configuration is located in **app.json/app.config.js**
-- Incorrect: Your app's configuration is loaded in `app.json/app.config.js`
+Example:
+
+- Correct: Your app's configuration is located in **app.json/app.config.js**.
+- Incorrect: Your app's configuration is loaded in `app.json/app.config.js`.
+
+Example:
+
+- Correct: If you commit your **android** or **ios** directories, it won't work.
+- Incorrect: If you commit your `android` or `ios` directories, it won't work.
 
 ### Capitalization
 
@@ -205,6 +212,10 @@ Link the appropriate text rather than using the word "here". The linked text sho
 Use [internal links](https://github.com/expo/expo/blob/main/docs/README.md#internal-linking) when referencing a documentation page/topic that already exists. This helps avoid referencing the same piece of information copied from multiple places and gives the subject a single source of truth. For example:
 
 - When referencing Expo CLI in a standalone apps document, instead of going through the steps of installing the Expo CLI from scratch, mention that Expo CLI is required and use internal linking to Expo CLI installation steps mentioned in the "Getting Started" section.
+
+#### Linking to Expo FYI pages
+
+When linking to the [Expo FYI pages](https://github.com/expo/fyi), use shorthand links, such as https://expo.fyi/bundle-identifier instead of the full URL (https://github.com/expo/fyi/blob/main/bundle-identifier.md).
 
 ### Accessibility
 

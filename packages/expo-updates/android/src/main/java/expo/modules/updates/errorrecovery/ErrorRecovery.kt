@@ -3,12 +3,12 @@ package expo.modules.updates.errorrecovery
 import android.os.Handler
 import android.os.HandlerThread
 import com.facebook.react.bridge.DefaultJSExceptionHandler
+import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.rncompatibility.IReactNativeFeatureFlagsProvider
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference
  */
 class ErrorRecovery(
   private val logger: UpdatesLogger,
-  private val reactNativeFeatureFlagsProvider: IReactNativeFeatureFlagsProvider
+  private val enableBridgelessArchitecture: Boolean = true
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
@@ -98,7 +98,7 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandler(devSupportManager: DevSupportManager) {
-    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
+    if (enableBridgelessArchitecture) {
       registerErrorHandlerImplBridgeless()
     } else {
       registerErrorHandlerImplBridge(devSupportManager)
@@ -115,11 +115,8 @@ class ErrorRecovery(
       return
     }
 
-    val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
-      override fun handleException(e: Exception) {
-        this@ErrorRecovery.handleException(e)
-      }
-    }
+    val defaultJSExceptionHandler = JSExceptionHandler { e -> this@ErrorRecovery.handleException(e) }
+
     val devSupportManagerClass = devSupportManager.javaClass
     previousExceptionHandler = devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
       field.isAccessible = true
@@ -131,7 +128,7 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandler() {
-    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
+    if (enableBridgelessArchitecture) {
       unregisterErrorHandlerImplBridgeless()
     } else {
       unregisterErrorHandlerImplBridge()

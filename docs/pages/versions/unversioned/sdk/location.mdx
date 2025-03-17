@@ -61,6 +61,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
     {
       name: 'locationAlwaysPermission',
       platform: 'ios',
+      deprecated: true,
       description:
         'A string to set the [`NSLocationAlwaysUsageDescription`](#permission-nslocationalwaysusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
@@ -68,6 +69,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
     {
       name: 'locationWhenInUsePermission',
       platform: 'ios',
+      deprecated: true,
       description:
         'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
@@ -100,6 +102,19 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
+### Background location
+
+Background location allows your app to receive location updates while it is running in the background and includes both location updates and region monitoring through geofencing. This feature is subject to platform API limitations and system constraints:
+
+- Background location will stop if the user terminates the app.
+- Background location resumes if the user restarts the app.
+- <PlatformTag platform="android" /> A terminated app will not automatically restart when a location
+  or geofencing event occurs due to platform limitations.
+- <PlatformTag platform="ios" /> The system will restart the terminated app when a new geofence
+  event occurs.
+
+> **Info** On Android, the result of removing an app from the recent apps list varies by device vendor. For example, some implementations treat removing an app from the recent apps list as killing it. Read more about these differences here: [https://dontkillmyapp.com](https://dontkillmyapp.com).
+
 ### Background location configuration&ensp;<PlatformTag platform="ios" />
 
 To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
@@ -122,11 +137,9 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 ### Background location methods
 
-> **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
-
 To use Background Location methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- Location permissions must be granted.
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
   specified in **Info.plist** file. See [Background location
@@ -139,8 +152,8 @@ To use Background Location methods, the following requirements apply:
 
 To use Geofencing methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
-- The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- Location permissions must be granted.
+- The Geofencing task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 
 When using Geofencing, the following platform differences apply:
 
@@ -152,6 +165,59 @@ When using Geofencing, the following platform differences apply:
 - <PlatformTag platform="ios" /> There is a [limit of
   20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions)
   `regions` that can be simultaneously monitored.
+
+### Background permissions
+
+To use location tracking or Geofencing in the background, you must request the appropriate permissions:
+
+- On Android, you must request both foreground and background permissions.
+- On iOS, it must be granted with the `Always` option using [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
+
+<Collapsible summary="Expo and iOS permissions">
+iOS permissions are divided into the two categories `When In Use` and `Always` and maps to Expo's foreground and background location permissions requested via:
+
+- [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) maps to `When In Use`
+- [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) maps to `Always`
+
+> **Note:** When requesting `When In Use` authorization, the user can grant **temporary access** by selecting `Allow Once` in the system permission dialog. This authorization will be valid **only for the current app session** and is automatically revoked when the app is closed.
+
+**Detecting "Allow Once" versus "Allow While Using the App"**
+
+Unfortunately, **iOS does not provide a way to detect whether the user selected `Allow Once` or `Allow While Using the App`**. Both responses result in `When In Use` authorization.
+
+If the user selected `Allow Once` and you subsequently call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) in the same session, the system **will not show another prompt**. Instead, the request will **silently fail**, and the returned background permission status will be **denied**.
+
+**Handling "Allow Once" scenarios**
+
+If you suspect the user selected `Allow Once` and needs to request background permissions, they must **manually enable background location** in the Settings app. You can use `Linking` to open the Settings app within your app:
+
+```js
+import { Linking } from 'react-native';
+
+function openSettings() {
+  Linking.openURL('app-settings:');
+}
+```
+
+**Incremental permission requests**
+
+It is possible to request foreground location access first and then ask for background location access later. This can improve the user experience by requesting permissions only when necessary.
+
+**Requesting Background Permissions directly**
+
+If you call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) without first requesting foreground permissions, iOS treats it as a request for both `When In Use` and `Always` authorization. The system will then prompt the user for `When In Use` access, and the `Always` authorization prompt will be displayed when the system determines that `Always` authorization is required.
+
+Remember that the user has the option of granting your app `When In Use` authorization instead. You must always be prepared to run with `When In Use` permission.
+
+</Collapsible>
+
+## Deferred locations
+
+When using background locations, you can configure the location manager to defer updates. This helps save battery by reducing update frequency. You can set updates to trigger only after the device has moved a certain distance or after a specified time interval.
+
+Deferred updates are configured through [`LocationTaskOptions`](#locationtaskoptions) using the [`deferredUpdatesDistance`](#locationtaskoptions), [`deferredUpdatesInterval`](#locationtaskoptions) and [`deferredTimeout`](#locationtaskoptions) properties.
+
+> Deferred locations apply only when the app is in the background.
 
 ## Usage
 
@@ -262,7 +328,7 @@ import * as Location from 'expo-location';
 
 ### Android
 
-> **warning**: Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
+> **warning** Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
 
 When you install the `expo-location` module, it automatically adds the following permissions:
 
@@ -305,3 +371,5 @@ The following usage description keys are used by this library:
     'NSLocationWhenInUseUsageDescription',
   ]}
 />
+
+**NSLocationAlwaysUsageDescription** and **NSLocationWhenInUseUsageDescription** are deprecated in favor of **NSLocationAlwaysAndWhenInUseUsageDescription** from iOS 11.

@@ -22,7 +22,7 @@ const withAndroidSplashDrawables = (config, splash) => {
 };
 exports.withAndroidSplashDrawables = withAndroidSplashDrawables;
 async function setSplashDrawableAsync({
-  resizeMode
+  image
 }, projectRoot) {
   const filePath = await _configPlugins().AndroidConfig.Paths.getResourceXMLPathAsync(projectRoot, {
     name: 'ic_launcher_background',
@@ -40,7 +40,7 @@ async function setSplashDrawableAsync({
           // TODO: Ensure these keys don't get out of sync
           'android:drawable': '@color/splashscreen_background'
         }
-      }, {
+      }, image && {
         bitmap: [{
           $: {
             'android:gravity': 'center',

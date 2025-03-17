@@ -1,8 +1,13 @@
+import { ExpoConfig } from '@expo/config-types';
+
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
 import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
+import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
+  getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
   getUpdatesCheckOnLaunch,
@@ -26,12 +31,30 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'EXUpdatesHasEmbeddedUpdate',
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
+  DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesPlist, withUpdatesNativeDebugPodfileProps]);
+};
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+export const withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'updatesNativeDebug',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug === true ? 'true' : undefined),
+    },
+  ],
+  'withUpdatesNativeDebugPodfileProps'
+);
+
+const withUpdatesPlist: ConfigPlugin = (config) => {
   return withExpoPlist(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
@@ -106,6 +129,13 @@ export async function setUpdatesConfigAsync(
     newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
+  }
+
+  const disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(config);
+  if (disableAntiBrickingMeasures) {
+    newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
+  } else {
+    delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);

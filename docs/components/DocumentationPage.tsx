@@ -40,6 +40,9 @@ export default function DocumentationPage({
   platforms,
   hideTOC,
   modificationDate,
+  searchRank,
+  searchLevel,
+  searchPosition,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
@@ -54,23 +57,25 @@ export default function DocumentationPage({
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
 
   useEffect(() => {
-    router?.events.on('routeChangeStart', url => {
-      if (layoutRef.current) {
+    if (layoutRef.current) {
+      layoutRef.current.contentRef.current?.getScrollRef().current?.focus();
+      router?.events.on('routeChangeStart', url => {
         if (
           RoutesUtils.getPageSection(pathname) !== RoutesUtils.getPageSection(url) ||
-          pathname === '/'
+          pathname === '/' ||
+          !layoutRef.current
         ) {
           window.__sidebarScroll = 0;
         } else {
           window.__sidebarScroll = layoutRef.current.getSidebarScrollTop();
         }
-      }
-    });
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
+      });
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [layoutRef.current, tableOfContentsRef.current]);
 
   const handleResize = () => {
     if (WindowUtils.getViewportSize().width >= breakpoints.medium + 124) {
@@ -81,7 +86,7 @@ export default function DocumentationPage({
 
   const handleContentScroll = (contentScrollPosition: number) => {
     window.requestAnimationFrame(() => {
-      if (tableOfContentsRef?.current?.handleContentScroll) {
+      if (tableOfContentsRef.current?.handleContentScroll) {
         tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
       }
     });
@@ -139,12 +144,22 @@ export default function DocumentationPage({
         {(version === 'unversioned' ||
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+        {searchRank && <meta name="searchRank" content={String(searchRank)} />}
+        {searchLevel ? (
+          <meta name="searchLevel" content={String(searchLevel)} />
+        ) : (
+          <meta name="searchLevel" content={String(searchRank)} />
+        )}
+        {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
       </DocumentationHead>
       <div
         className={mergeClasses(
-          'mx-auto px-14 py-10',
-          'max-lg-gutters:px-4 max-lg-gutters:pb-12 max-lg-gutters:pt-5'
-        )}>
+          'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
+          'bg-gradient-to-b from-default to-transparent opacity-90'
+        )}
+      />
+      <main
+        className={mergeClasses('mx-auto px-14 pt-10', 'max-lg-gutters:px-4 max-lg-gutters:pt-5')}>
         {version && version === 'unversioned' && (
           <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
             This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
@@ -164,15 +179,15 @@ export default function DocumentationPage({
         {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
         {children}
-        <Footer
-          title={title}
-          sourceCodeUrl={sourceCodeUrl}
-          packageName={packageName}
-          previousPage={previousPage}
-          nextPage={nextPage}
-          modificationDate={modificationDate}
-        />
-      </div>
+      </main>
+      <Footer
+        title={title}
+        sourceCodeUrl={sourceCodeUrl}
+        packageName={packageName}
+        previousPage={previousPage}
+        nextPage={nextPage}
+        modificationDate={modificationDate}
+      />
     </DocumentationNestedScrollLayout>
   );
 }

@@ -212,6 +212,23 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toEqual(sources2);
   });
 
+  it('should transform expo config paths as relative paths', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    appJson.expo.extra ||= {};
+    appJson.expo.extra.testFile = '/app/test-file.txt';
+    appJson.expo.extra.testNestedFile = '/app/nested/test-file.txt';
+    vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig.extra.testFile).toBe('test-file.txt');
+    expect(expoConfig.extra.testNestedFile).toBe('nested/test-file.txt');
+  });
+
   it('should contain external icon file in app.json', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');

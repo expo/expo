@@ -1,4 +1,10 @@
-export { VideoView, isPictureInPictureSupported } from './VideoView';
+export {
+  isPictureInPictureSupported,
+  clearVideoCacheAsync,
+  setVideoCacheSizeAsync,
+  getCurrentVideoCacheSize,
+} from './VideoModule';
+export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
 export { VideoContentFit, VideoViewProps } from './VideoView.types';
@@ -17,6 +23,9 @@ export {
   BufferOptions,
   AudioMixingMode,
   VideoThumbnailOptions,
+  VideoSize,
+  SubtitleTrack,
+  VideoTrack,
 } from './VideoPlayer.types';
 
 export {

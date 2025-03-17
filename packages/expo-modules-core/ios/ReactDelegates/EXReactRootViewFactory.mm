@@ -1,7 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
-#import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 #import <ExpoModulesCore/Swift.h>
 

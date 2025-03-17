@@ -54,12 +54,6 @@ it('stacks should always push a new route', () => {
         name: '(group)',
         params: {
           id: '1',
-          params: {
-            id: '1',
-            params: { id: '1' },
-            screen: 'index',
-          },
-          screen: 'post/[id]',
         },
         path: undefined,
         state: {
@@ -73,7 +67,9 @@ it('stacks should always push a new route', () => {
               name: 'post/[id]',
               params: {
                 id: '1',
-                params: { id: '1' },
+                params: {
+                  id: '1',
+                },
                 screen: 'index',
               },
               path: undefined,
@@ -83,7 +79,9 @@ it('stacks should always push a new route', () => {
               name: 'user/[id]',
               params: {
                 id: '1',
-                params: { id: '1' },
+                params: {
+                  id: '1',
+                },
                 screen: 'index',
               },
               path: undefined,
@@ -93,7 +91,9 @@ it('stacks should always push a new route', () => {
               name: 'post/[id]',
               params: {
                 id: '2',
-                params: { id: '2' },
+                params: {
+                  id: '2',
+                },
                 screen: 'index',
               },
               path: undefined,
@@ -103,8 +103,6 @@ it('stacks should always push a new route', () => {
               name: 'user/[id]',
               params: {
                 id: '1',
-                params: { id: '1' },
-                screen: 'index',
               },
               path: undefined,
               state: {
@@ -116,13 +114,17 @@ it('stacks should always push a new route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: { id: '1' },
+                    params: {
+                      id: '1',
+                    },
                     path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: { id: '2' },
+                    params: {
+                      id: '2',
+                    },
                     path: undefined,
                   },
                 ],
@@ -236,10 +238,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
       {
         key: expect.any(String),
         name: '(tabs)',
-        params: {
-          params: {},
-          screen: 'a',
-        },
         path: undefined,
         state: {
           history: [
@@ -272,10 +270,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             {
               key: expect.any(String),
               name: 'c',
-              params: {
-                params: {},
-                screen: 'one',
-              },
               path: undefined,
               state: {
                 index: 2,
@@ -378,10 +372,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
       {
         key: expect.any(String),
         name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
         path: undefined,
         state: {
           index: 2,
@@ -404,10 +394,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             {
               key: expect.any(String),
               name: 'two',
-              params: {
-                params: {},
-                screen: 'index',
-              },
               path: undefined,
               state: {
                 index: 1,
@@ -442,6 +428,72 @@ it('targets the correct Stack when pushing to a nested layout', () => {
         name: 'a',
         params: {},
         path: undefined,
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+});
+
+it('push should also add anchor routes', () => {
+  renderRouter({
+    index: () => null,
+    '(group)/_layout': {
+      default: () => <Stack />,
+      unstable_settings: {
+        anchor: 'apple',
+      },
+    },
+    '(group)/index': () => null,
+    '(group)/apple': () => null,
+    '(group)/orange': () => null,
+  });
+
+  // Initial stale state
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    routes: [{ name: 'index', path: '/' }],
+    stale: true,
+  });
+
+  act(() => router.push('/orange', { withAnchor: true }));
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 1,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        path: undefined,
+        state: {
+          index: 1,
+          preloadedRoutes: [],
+          key: expect.any(String),
+          routeNames: ['apple', 'index', 'orange'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'apple',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'orange',
+              params: {},
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,

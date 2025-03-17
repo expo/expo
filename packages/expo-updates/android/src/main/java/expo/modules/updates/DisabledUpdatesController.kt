@@ -35,7 +35,7 @@ class DisabledUpdatesController(
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
 
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
@@ -160,6 +160,10 @@ class DisabledUpdatesController(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled."))
+  }
+
+  override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
 
   @Synchronized

@@ -112,6 +112,13 @@ export default function App() {
     setExtraParamsString(JSON.stringify(params, null, 2));
   });
 
+  const handleSetUpdateURLAndRequestHeadersOverride = runBlockAsync(async () => {
+    Updates.setUpdateURLAndRequestHeadersOverride({
+      updateUrl: `${Constants.expoConfig?.updates?.url}-override`,
+      requestHeaders: {},
+    });
+  });
+
   const handleReadAssetFiles = runBlockAsync(async () => {
     const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
@@ -257,6 +264,10 @@ export default function App() {
             onPress={handleCheckAndDownloadAtSameTime}
           />
           <TestButton testID="reload" onPress={handleReload} />
+          <TestButton
+            testID="setUpdateURLAndRequestHeadersOverride"
+            onPress={handleSetUpdateURLAndRequestHeadersOverride}
+          />
         </View>
       </View>
 

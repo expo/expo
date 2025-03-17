@@ -132,5 +132,5 @@ it(`fails when favicon from Expo config is invalid`, async () => {
   );
 
   expect(next).toBeCalledTimes(1);
-  expect(next).toBeCalledWith(expect.any(Error));
+  expect(next).toBeCalledWith();
 });

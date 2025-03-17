@@ -53,7 +53,7 @@ export default function BackgroundTaskScreen() {
         minimumInterval: 15, // 15 minutes
       });
     }
-    setIsRegistered(!isRegistered);
+    setIsRegistered(await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER));
   };
 
   const renderText = () => {

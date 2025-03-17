@@ -16,10 +16,12 @@ describe(normalizeOptionsAsync, () => {
 
   it('should return the default options if no options are provided', async () => {
     const options = await normalizeOptionsAsync('/app');
-    // @ts-expect-error: mutate the objects to only show patterns in the snapshot
-    options.ignorePathMatchObjects = options.ignorePathMatchObjects.map(({ pattern }) => pattern);
-    // @ts-expect-error: mutate the objects to only show patterns in the snapshot
-    options.ignoreDirMatchObjects = options.ignoreDirMatchObjects.map(({ pattern }) => pattern);
+    expect(options.ignorePathMatchObjects.length).toBeGreaterThan(0);
+    expect(options.ignoreDirMatchObjects.length).toBeGreaterThan(0);
+
+    // Because the default ignored paths change over time, we don't want to snapshot them.
+    delete options.ignorePathMatchObjects;
+    delete options.ignoreDirMatchObjects;
     expect(options).toMatchSnapshot();
   });
 
@@ -80,6 +82,33 @@ module.exports = config;
       });
 
       const { hashAlgorithm } = await normalizeOptionsAsync('/app', { hashAlgorithm: 'md5' });
+      expect(hashAlgorithm).toBe('md5');
+    });
+  });
+
+  it('should not overwrite config options from null explicit options', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  concurrentIoLimit: 10,
+  debug: true,
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+
+      const { concurrentIoLimit, debug, hashAlgorithm } = await normalizeOptionsAsync('/app', {
+        concurrentIoLimit: null,
+        debug: undefined,
+        hashAlgorithm: 'md5',
+      });
+      expect(concurrentIoLimit).toBe(10);
+      expect(debug).toBe(true);
       expect(hashAlgorithm).toBe('md5');
     });
   });

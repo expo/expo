@@ -33,6 +33,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import java.io.File
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -313,7 +314,7 @@ class AudioModule : Module() {
       }
 
       Property("uri") { ref ->
-        ref.uri
+        ref.filePath
       }
 
       Property("isRecording") { ref ->
@@ -321,7 +322,7 @@ class AudioModule : Module() {
       }
 
       Property("currentTime") { ref ->
-        ref.uptime
+        ref.startTime
       }
 
       AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
@@ -331,7 +332,9 @@ class AudioModule : Module() {
 
       Function("record") { ref: AudioRecorder ->
         checkRecordingPermission()
-        ref.record()
+        if (!ref.isPrepared) {
+          ref.record()
+        }
       }
 
       Function("pause") { ref: AudioRecorder ->
@@ -345,7 +348,11 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { ref: AudioRecorder ->
-        ref.getAudioRecorderStatus()
+        try {
+          return@Function ref.getAudioRecorderStatus()
+        } catch (e: Exception) {
+          throw e
+        }
       }
 
       AsyncFunction("getCurrentInput") { ref: AudioRecorder ->
@@ -362,16 +369,24 @@ class AudioModule : Module() {
     }
   }
 
-  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.let {
-    val factory = createDataSourceFactory(it)
-    it.uri?.let { uri ->
-      val item = MediaItem.fromUri(uri)
-      buildMediaSourceFactory(factory, item)
+  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uri ->
+    val factory = createDataSourceFactory(source)
+    val uri = if (Util.isLocalFileUri(Uri.parse(source.uri))) {
+      Uri.fromFile(File(source.uri))
+    } else {
+      Uri.parse(source.uri)
     }
+    val item = MediaItem.fromUri(uri)
+    buildMediaSourceFactory(factory, item)
   }
 
   private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
-    val isLocal = Util.isLocalFileUri(Uri.parse(audioSource.uri))
+    val uri = if (Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
+      Uri.fromFile(File(audioSource.uri))
+    } else {
+      Uri.parse(audioSource.uri)
+    }
+    val isLocal = Util.isLocalFileUri(uri)
     return if (isLocal) {
       DefaultDataSource.Factory(context)
     } else {
@@ -379,7 +394,6 @@ class AudioModule : Module() {
         audioSource.headers?.let { headers ->
           setDefaultRequestProperties(headers)
         }
-        DefaultDataSource.Factory(context, this)
       }
     }
   }
@@ -396,14 +410,13 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    val newFactory = when (val type = uri?.let { retrieveStreamType(it) }) {
+    return when (val type = uri?.let { retrieveStreamType(it) }) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
       else -> throw IllegalStateException("Unsupported type: $type")
-    }
-    return newFactory.createMediaSource(MediaItem.fromUri(uri))
+    }.createMediaSource(mediaItem)
   }
 
   private fun <T> runOnMain(block: () -> T): T =

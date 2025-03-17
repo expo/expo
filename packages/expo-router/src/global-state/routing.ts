@@ -130,7 +130,7 @@ export type LinkToOptions = {
   relativeToDirectory?: boolean;
 
   /**
-   *
+   * Include the anchor when navigating to a new navigator
    */
   withAnchor?: boolean;
 };
@@ -211,7 +211,7 @@ function getNavigateAction(
 
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
 
-    const childState = actionStateRoute.state;
+    const childState: any = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
 
     const dynamicName = matchDynamicName(actionStateRoute.name);
@@ -245,6 +245,7 @@ function getNavigateAction(
     payload.screen = actionStateRoute.name;
     // Merge the params, ensuring that we create a new object
     payload.params = { ...params };
+
     // Params don't include the screen, thats a separate attribute
     delete payload.params['screen'];
 

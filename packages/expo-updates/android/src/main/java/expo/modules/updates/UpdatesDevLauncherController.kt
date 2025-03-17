@@ -54,7 +54,7 @@ class UpdatesDevLauncherController(
 
   private var launcher: Launcher? = null
 
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
@@ -364,6 +364,10 @@ class UpdatesDevLauncherController(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+  }
+
+  override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 
   companion object {

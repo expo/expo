@@ -143,14 +143,36 @@ function getPathDataFromState(state, options) {
             // If there is no `screens` property or no nested state, we return pattern
             if (!currentOptions[route.name].screens || route.state === undefined) {
                 // START FORK
-                // Expo Router can end up in some configs that React Navigation doesn't seem to support
-                // We can get around this by providing a fake state
+                // Expo Router allows you to navigate to a (group) and not specify a target screen
+                // This is different from React Navigation, which requires a target screen
+                // We need to handle this case here, by selecting either the index screen or the first screen of the group
+                // IMPORTANT: This does not affect groups that use _layout files with initialRouteNames
+                // Layout files create a new route config. This only affects groups without layouts that have their screens
+                // hoisted.
+                // Example:
+                // - /home/_layout
+                // - /home/(a|b|c)/index          --> Hoisted to /home/_layout navigator
+                // - /home/(a|b|c)/other          --> Hoisted to /home/_layout navigator
+                // - /home/(profile)/me           --> Hoisted to /home/_layout navigator
+                //
+                // route.push('/home/(a)')        --> This should navigate to /home/(a)/index
+                // route.push('/home/(profile)')  --> This should navigate to /home/(profile)/me
                 const screens = currentOptions[route.name].screens;
-                const screen = route.params && 'screen' in route.params
-                    ? route.params.screen?.toString()
-                    : screens
-                        ? Object.keys(screens)[0]
-                        : undefined;
+                // Determine what screen the user wants to navigate to. If no screen is specified, assume there is an index screen
+                // In the examples above, this ensures that /home/(a) navigates to /home/(a)/index
+                const targetScreen = 
+                // This is typed as unknown, so we need to add these extra assertions
+                route.params && 'screen' in route.params && typeof route.params.screen === 'string'
+                    ? route.params.screen
+                    : 'index';
+                // If the target screen is not in the screens object, default to the first screen
+                // In the examples above, this ensures that /home/(profile) navigates to /home/(profile)/me
+                // As there is no index screen in the group
+                const screen = screens
+                    ? screens[targetScreen]
+                        ? targetScreen
+                        : Object.keys(screens)[0]
+                    : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
                     route = { ...screens[screen], name: screen, key: screen };
                     currentOptions = screens;

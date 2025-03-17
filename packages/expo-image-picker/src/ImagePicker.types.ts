@@ -54,6 +54,15 @@ export enum MediaTypeOptions {
  */
 export type MediaType = 'images' | 'videos' | 'livePhotos';
 
+/**
+ * The default tab with which the image picker will be opened.
+ * - `'photos'` - the photos/videos tab will be opened.
+ * - `'albums'` - the albums tab will be opened.
+ *
+ * @platform android
+ */
+export type DefaultTab = 'photos' | 'albums';
+
 // @needsAudit
 export enum VideoExportPreset {
   /**
@@ -483,6 +492,12 @@ export type ImagePickerOptions = {
    */
   orderedSelection?: boolean;
   /**
+   * Choose the default tab with which the image picker will be opened.
+   * @default 'photos'
+   * @platform android
+   */
+  defaultTab?: DefaultTab;
+  /**
    * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
    * Defaults to `0` (no limit).
    * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
@@ -502,9 +517,8 @@ export type ImagePickerOptions = {
    * Selects the camera-facing type. The `CameraType` enum provides two options:
    * `front` for the front-facing camera and `back` for the back-facing camera.
    * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
+   * - **On Web**, if this option is not provided, use "camera" as the default value of internal input element for backwards compatibility.
    * @default CameraType.back
-   * @platform android
-   * @platform ios
    */
   cameraType?: CameraType;
   /**
@@ -522,7 +536,10 @@ export type ImagePickerOptions = {
   legacy?: boolean;
 };
 
-// @needsAudit
+/**
+ * @hidden
+ * @deprecated Only used internally.
+ */
 export type OpenFileBrowserOptions = {
   /**
    * Choose what type of media to pick.
@@ -530,7 +547,7 @@ export type OpenFileBrowserOptions = {
    */
   mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
   // @docsMissing
-  capture?: boolean;
+  capture?: boolean | CameraType;
   /**
    * Whether or not to allow selecting multiple media files at once.
    * @platform web

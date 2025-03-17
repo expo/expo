@@ -34,10 +34,12 @@ export default function PickerScreen() {
             onOptionSelected={({ nativeEvent: { index } }) => {
               setSelectedIndex(index);
             }}
+            label="Cost"
             variant="menu"
             style={{
               width: 300,
               height: 100,
+              flex: 1,
             }}
           />
         </Section>
@@ -49,6 +51,34 @@ export default function PickerScreen() {
               setSelectedIndex(index);
             }}
             variant="wheel"
+            style={{
+              width: 300,
+              height: 200,
+            }}
+          />
+        </Section>
+        <Section title="Tinted picker">
+          <Picker
+            options={options}
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSelectedIndex(index);
+            }}
+            color="#ff5500"
+            style={{
+              width: 300,
+              height: 100,
+            }}
+          />
+        </Section>
+        <Section title="Radio picker">
+          <Picker
+            options={options}
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSelectedIndex(index);
+            }}
+            variant="radio"
             style={{
               width: 300,
               height: 200,

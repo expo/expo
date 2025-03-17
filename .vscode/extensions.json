@@ -2,6 +2,7 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "stkb.rewrap"
+    "stkb.rewrap",
+    "unifiedjs.vscode-mdx"
   ]
 }

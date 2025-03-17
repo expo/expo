@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import type { PropsWithChildren } from 'react';
+import { Children, type PropsWithChildren } from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
@@ -19,6 +19,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
   // for now I've shortened the length of permalinks.
   const component = props.children as JSX.Element;
   const children = component.props.children ?? '';
+  const hasMultipleChildren = Children.toArray(children).length > 1;
 
   if (!props.nestingLevel) {
     return children;
@@ -35,13 +36,13 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
 
   return (
     <PermalinkBase component={component} className="group flex gap-1">
-      {children}
+      {hasMultipleChildren ? <span>{children}</span> : children}
       <Button
         theme="quaternary"
         className={mergeClasses(
-          'relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default',
+          'relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default',
           'invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100',
-          isDeepNested && 'size-[22px]',
+          isDeepNested && 'size-[22px] min-w-[22px]',
           props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8',
           props.additionalProps?.className
         )}

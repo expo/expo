@@ -72,7 +72,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
           </div>
           <div
             className={mergeClasses(
-              'flex h-[calc(100dvh-60px)] w-full overflow-hidden',
+              'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
               'max-lg-gutters:overflow-auto',
               isMobileMenuVisible && 'hidden'
             )}>

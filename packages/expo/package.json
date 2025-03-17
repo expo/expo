@@ -82,17 +82,17 @@
     "expo-keep-awake": "~14.0.1",
     "expo-modules-autolinking": "2.0.2",
     "expo-modules-core": "2.0.6",
-    "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
-    "@types/react": "~18.3.12",
-    "@types/react-test-renderer": "^18.3.0",
+    "@types/react": "~19.0.10",
+    "@types/react-test-renderer": "^19.0.0",
     "expo-module-scripts": "^4.0.2",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-native": "0.76.3"
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.79.0-rc.0",
+    "ws": "^8.18.0"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",

@@ -193,8 +193,8 @@ it('nested layouts', async () => {
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
   expect(AppLayout).toHaveBeenCalledTimes(1);
-  expect(TabsLayout).toHaveBeenCalledTimes(1);
-  expect(StackLayout).toHaveBeenCalledTimes(1);
+  expect(TabsLayout).toHaveBeenCalledTimes(2);
+  expect(StackLayout).toHaveBeenCalledTimes(2);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);

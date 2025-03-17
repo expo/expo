@@ -1,4 +1,5 @@
 #import "ExpoAppInstance.h"
+#import "ExpoGoReactNativeFactory.h"
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RCTHost.h>
 
@@ -10,6 +11,8 @@
     _sourceURL = sourceURL;
     _manager = manager;
     _onLoad = onLoad;
+    self.dependencyProvider = [RCTAppDependencyProvider new];
+    self.reactNativeFactory = [[ExpoGoReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
 }

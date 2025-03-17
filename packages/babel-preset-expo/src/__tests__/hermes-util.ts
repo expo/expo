@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import process from 'process';
@@ -81,6 +80,6 @@ export async function compileToHermesBytecodeAsync({
     }
     throw error;
   } finally {
-    await fse.remove(tempDir);
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
   }
 }

@@ -447,13 +447,6 @@ abstract class ReactNativeActivity :
     val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
     if (devSettings != null) {
       devSettings.setExponentActivityId(activityId)
-      if (devSettings.isRemoteJSDebugEnabled) {
-        if (manifest?.jsEngine == "hermes") {
-          // Disable remote debugging when running on Hermes
-          devSettings.isRemoteJSDebugEnabled = false
-        }
-        waitForReactAndFinishLoading()
-      }
     }
 
     val appKey = manifest!!.getAppKey()
