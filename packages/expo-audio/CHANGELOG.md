@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixing asset file path resolving. ([#35210](https://github.com/expo/expo/pull/35210) by [@alexplevako](https://github.com/alexplevako))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))

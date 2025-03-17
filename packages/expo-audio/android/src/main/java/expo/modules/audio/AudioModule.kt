@@ -1,6 +1,7 @@
 package expo.modules.audio
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
@@ -370,31 +371,35 @@ class AudioModule : Module() {
   }
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uri ->
-    val factory = createDataSourceFactory(source)
-    val uri = if (Util.isLocalFileUri(Uri.parse(source.uri))) {
-      Uri.fromFile(File(source.uri))
-    } else {
-      Uri.parse(source.uri)
+    when {
+      uri.startsWith("http://") || uri.startsWith("https://") ->
+        buildMediaSourceFactory(httpDataSourceFactory(source.headers), MediaItem.fromUri(Uri.parse(uri)))
+      else ->
+        buildMediaSourceFactory(DefaultDataSource.Factory(context), MediaItem.fromUri(getResourceURI(uri)))
     }
-    val item = MediaItem.fromUri(uri)
-    buildMediaSourceFactory(factory, item)
   }
 
-  private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
-    val uri = if (Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
-      Uri.fromFile(File(audioSource.uri))
-    } else {
-      Uri.parse(audioSource.uri)
-    }
-    val isLocal = Util.isLocalFileUri(uri)
-    return if (isLocal) {
-      DefaultDataSource.Factory(context)
-    } else {
-      OkHttpDataSource.Factory(httpClient).apply {
-        audioSource.headers?.let { headers ->
-          setDefaultRequestProperties(headers)
-        }
+  private fun httpDataSourceFactory(headers: Map<String, String>?): DataSource.Factory {
+    return OkHttpDataSource.Factory(httpClient).apply {
+      headers?.let { headers ->
+        setDefaultRequestProperties(headers)
       }
+    }
+  }
+
+  private fun getResourceURI(file: String): Uri {
+    val resId = context.resources.getIdentifier(file, "raw", context.packageName)
+
+    return when {
+      resId == 0 ->
+        Uri.fromFile(File(file))
+      else ->
+        Uri.Builder()
+          .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+          .authority(context.packageName)
+          .appendPath("raw")
+          .appendPath(file)
+          .build()
     }
   }
 
