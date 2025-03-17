@@ -20,4 +20,11 @@ export {
   reloadAppAsync,
 } from 'expo-modules-core';
 
+export type {
+  SharedRef as SharedRefType,
+  EventEmitter as EventEmitterType,
+  NativeModule as NativeModuleType,
+  SharedObject as SharedObjectType,
+} from 'expo-modules-core/types';
+
 export { useEvent, useEventListener } from './hooks/useEvent';
