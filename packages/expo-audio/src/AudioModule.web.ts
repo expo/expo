@@ -203,6 +203,31 @@ export class AudioPlayerWeb
     throw new Error('Not implemented');
   }
 
+  // TODO
+  addToQueue(sources: AudioSource[], insertBeforeIndex?: number): void {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  removeFromQueue(sources: AudioSource[]): void {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  skipToQueueIndex(index: number): void {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  skipToNext(): void {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  skipToPrevious(): void {
+    throw new Error('Not implemented');
+  }
+
   async seekTo(seconds: number): Promise<void> {
     this.media.currentTime = seconds / 1000;
   }

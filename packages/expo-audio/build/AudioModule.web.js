@@ -153,6 +153,26 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     setQueue(sources) {
         throw new Error('Not implemented');
     }
+    // TODO
+    addToQueue(sources, insertBeforeIndex) {
+        throw new Error('Not implemented');
+    }
+    // TODO
+    removeFromQueue(sources) {
+        throw new Error('Not implemented');
+    }
+    // TODO
+    skipToQueueIndex(index) {
+        throw new Error('Not implemented');
+    }
+    // TODO
+    skipToNext() {
+        throw new Error('Not implemented');
+    }
+    // TODO
+    skipToPrevious() {
+        throw new Error('Not implemented');
+    }
     async seekTo(seconds) {
         this.media.currentTime = seconds / 1000;
     }

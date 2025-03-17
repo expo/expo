@@ -80,6 +80,87 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     return queueIndex
   }
 
+  func addToQueue(sources: [AudioSource], insertBeforeIndex: Int? = nil) {
+    guard !sources.isEmpty else { return }
+
+    var insertIndex = insertBeforeIndex
+
+    // If insertBeforeIndex is nil or out of bounds, add to the end
+    if insertIndex == nil || insertIndex! >= queue.count || insertIndex! < 0 {
+      insertIndex = queue.count
+    }
+
+    queue.insert(contentsOf: sources, at: insertIndex!)
+
+    // If the queue was empty, start playing the first track
+    if queueIndex == -1 && !queue.isEmpty {
+      advanceQueue(to: 0)
+    }
+  }
+
+  func removeFromQueue(sources: [AudioSource]) {
+    // Create a set of URIs to remove for efficient lookup
+    let urisToRemove = Set(sources.compactMap { $0.uri?.absoluteString })
+
+    let indicesToRemove = queue.enumerated()
+      .filter { _, source in
+        if let uri = source.uri?.absoluteString, urisToRemove.contains(uri) {
+          return true
+        }
+        return false
+      }
+      .map { index, _ in index }
+      .sorted(by: >)
+
+    for index in indicesToRemove {
+      queue.remove(at: index)
+    }
+
+    // Check if current track was removed or if the index is now out of bounds
+    if indicesToRemove.contains(queueIndex) || queueIndex >= queue.count {
+      if queue.isEmpty {
+        queueIndex = -1
+
+        ref.pause()
+
+        return
+      }
+
+      // If current track was removed, play the next track or the first track
+      let nextIndex = min(queueIndex, queue.count - 1)
+      advanceQueue(to: nextIndex)
+      return
+    }
+
+    // Check if tracks were removed before the current index
+    let removedBeforeCurrent = indicesToRemove.filter { $0 < queueIndex }
+
+    if !removedBeforeCurrent.isEmpty {
+      // Adjust queueIndex if tracks were removed before it
+      queueIndex -= removedBeforeCurrent.count
+    }
+  }
+
+  func skipToQueueIndex(index: Int) {
+    guard index >= 0 && index < queue.count else { return }
+
+    advanceQueue(to: index)
+  }
+
+  func skipToNext() {
+    guard !queue.isEmpty else { return }
+
+    let nextIndex = (queueIndex + 1) % queue.count
+    skipToQueueIndex(index: nextIndex)
+  }
+
+  func skipToPrevious() {
+    guard !queue.isEmpty else { return }
+
+    let previousIndex = (queueIndex - 1 + queue.count) % queue.count
+    skipToQueueIndex(index: previousIndex)
+  }
+
   private func cleanupQueueObservers() {
     queueObservation?.invalidate()
     queueObservation = nil

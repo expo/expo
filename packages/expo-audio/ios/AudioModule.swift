@@ -162,6 +162,26 @@ public class AudioModule: Module {
         player.setQueue(sources: sources)
       }
 
+      Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in
+        player.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
+      }
+
+      Function("removeFromQueue") { (player, sources: [AudioSource]) in
+        player.removeFromQueue(sources: sources)
+      }
+
+      Function("skipToQueueIndex") { (player, index: Int) in
+        player.skipToQueueIndex(index: index)
+      }
+
+      Function("skipToNext") { (player) in
+        player.skipToNext()
+      }
+
+      Function("skipToPrevious") { (player) in
+        player.skipToPrevious()
+      }
+
       Function("pause") { player in
         player.ref.pause()
       }

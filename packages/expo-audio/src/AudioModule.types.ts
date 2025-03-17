@@ -134,6 +134,37 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   setQueue(sources: AudioSource[]): void;
 
   /**
+   * Adds tracks to the queue at an optionally specified index.
+   * @param tracks Array of AudioSource objects that will be added
+   * @param insertBeforeIndex The index of the track that will be located immediately after the inserted tracks. Set it to null to add at the end of the queue
+   */
+  addToQueue(tracks: AudioSource[], insertBeforeIndex?: number): void;
+
+  /**
+   * Removes tracks from the queue.
+   * If the current track is removed, the next track will be activated.
+   * If the current track was the last track in the queue, the first track will be activated.
+   * @param tracks The AudioSource objects that will be removed
+   */
+  removeFromQueue(tracks: AudioSource[]): void;
+
+  /**
+   * Skips to a track in the queue.
+   * @param index The track index
+   */
+  skipToQueueIndex(index: number): void;
+
+  /**
+   * Skips to the next track in the queue.
+   */
+  skipToNext(): void;
+
+  /**
+   * Skips to the previous track in the queue.
+   */
+  skipToPrevious(): void;
+
+  /**
    * Seeks the playback by the given number of seconds.
    * @param seconds The number of seconds to seek by.
    */

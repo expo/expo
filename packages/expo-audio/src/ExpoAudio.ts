@@ -33,6 +33,23 @@ AudioModule.AudioPlayer.prototype.setQueue = function (sources: AudioSource[]) {
   return setQueue.call(this, resolvedSources);
 };
 
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const addToQueue = AudioModule.AudioPlayer.prototype.addToQueue;
+AudioModule.AudioPlayer.prototype.addToQueue = function (
+  sources: AudioSource[],
+  insertBeforeIndex?: number
+) {
+  const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+  return addToQueue.call(this, resolvedSources, insertBeforeIndex);
+};
+
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const removeFromQueue = AudioModule.AudioPlayer.prototype.removeFromQueue;
+AudioModule.AudioPlayer.prototype.removeFromQueue = function (sources: AudioSource[]) {
+  const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+  return removeFromQueue.call(this, resolvedSources);
+};
+
 // @docsMissing
 export function useAudioPlayer(
   source: AudioSource = null,

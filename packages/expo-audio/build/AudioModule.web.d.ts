@@ -32,6 +32,11 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     pause(): void;
     replace(source: AudioSource): void;
     setQueue(sources: AudioSource[]): void;
+    addToQueue(sources: AudioSource[], insertBeforeIndex?: number): void;
+    removeFromQueue(sources: AudioSource[]): void;
+    skipToQueueIndex(index: number): void;
+    skipToNext(): void;
+    skipToPrevious(): void;
     seekTo(seconds: number): Promise<void>;
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
