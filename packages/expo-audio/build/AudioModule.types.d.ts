@@ -87,6 +87,12 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     replace(source: AudioSource): void;
     /**
+     * Sets a queue of audio sources to be played in sequence.
+     * @param sources The array of audio sources.
+     * @hidden
+     */
+    setQueue(sources: AudioSource[]): void;
+    /**
      * Seeks the playback by the given number of seconds.
      * @param seconds The number of seconds to seek by.
      */

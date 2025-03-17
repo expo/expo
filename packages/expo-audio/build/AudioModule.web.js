@@ -141,6 +141,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.media = this._createMediaElement();
     }
+    // TODO
+    setQueue(sources) {
+        throw new Error('Not implemented');
+    }
     async seekTo(seconds) {
         this.media.currentTime = seconds / 1000;
     }

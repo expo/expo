@@ -54,6 +54,102 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
+  private var queue: [AudioSource] = []
+  private var currentQueueIndex: Int = -1
+  private var queueObservation: NSKeyValueObservation?
+  private var queueItemObserver: NSObjectProtocol?
+  private var isPlayingBeforeQueueAdvance = false
+
+  func setQueue(sources: [AudioSource]) {
+    cleanupQueueObservers()
+
+    queue = sources
+    currentQueueIndex = -1
+
+    // Start with first track if queue isn't empty
+    if !queue.isEmpty {
+      advanceQueue(to: 0)
+    }
+  }
+
+  private func cleanupQueueObservers() {
+    queueObservation?.invalidate()
+    queueObservation = nil
+
+    if let observer = queueItemObserver {
+      NotificationCenter.default.removeObserver(observer)
+      queueItemObserver = nil
+    }
+  }
+
+  private func advanceQueue(to index: Int) {
+    guard index >= 0 && index < queue.count else { return }
+
+    isPlayingBeforeQueueAdvance = isPlaying
+
+    currentQueueIndex = index
+    replaceCurrentSource(source: queue[currentQueueIndex])
+
+    // Set up observation for this item
+    setupQueueItemObservation()
+  }
+
+  private func setupQueueItemObservation() {
+    cleanupQueueObservers()
+
+    // Observe when the current item becomes ready to play
+    queueObservation = ref.observe(\.currentItem?.status) { [weak self] player, _ in
+      guard let self = self,
+            let currentItem = player.currentItem,
+            currentItem.status == .readyToPlay else { return }
+
+      // Set up notification for when this track ends
+      self.setupTrackEndNotification(for: currentItem)
+
+      // Resume playback if it was playing before
+      if self.isPlayingBeforeQueueAdvance {
+        self.ref.play()
+      }
+
+      self.updateStatus(with: [
+        "isPlaying": self.isPlayingBeforeQueueAdvance,
+        "currentTime": 0
+      ])
+    }
+  }
+
+  private func setupTrackEndNotification(for item: AVPlayerItem) {
+    // Remove any existing observer
+    if let observer = queueItemObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+
+    // Add new observer for track completion
+    queueItemObserver = NotificationCenter.default.addObserver(
+      forName: .AVPlayerItemDidPlayToEndTime,
+      object: item,
+      queue: nil
+    ) { [weak self] _ in
+      guard let self = self else { return }
+
+      if self.isLooping {
+        // Handle looping
+        self.ref.seek(to: CMTime.zero)
+        self.ref.play()
+      } else if self.currentQueueIndex < self.queue.count - 1 {
+        // Move to next track
+        self.advanceQueue(to: self.currentQueueIndex + 1)
+      } else {
+        // End of queue reached
+        self.updateStatus(with: [
+          "isPlaying": false,
+          "currentTime": self.duration,
+          "didJustFinish": true
+        ])
+      }
+    }
+  }
+
   func play(at rate: Float) {
     addPlaybackEndNotification()
     registerTimeObserver()

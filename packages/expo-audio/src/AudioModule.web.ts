@@ -188,6 +188,11 @@ export class AudioPlayerWeb
     this.media = this._createMediaElement();
   }
 
+  // TODO
+  setQueue(sources: AudioSource[]): void {
+    throw new Error('Not implemented');
+  }
+
   async seekTo(seconds: number): Promise<void> {
     this.media.currentTime = seconds / 1000;
   }
