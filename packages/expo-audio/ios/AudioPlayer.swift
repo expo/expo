@@ -18,7 +18,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private var queue: [AudioSource] = []
-  private var currentQueueIndex: Int = -1
+  private var queueIndex: Int = -1
   private var isPlayingBeforeQueueAdvance = false
 
   // MARK: Observers
@@ -60,6 +60,26 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
+  var currentQueue: [[String: Any]] {
+    return queue.enumerated().map { _, source in
+      var result: [String: Any] = [:]
+
+      if let uri = source.uri {
+        result["uri"] = uri.absoluteString
+      }
+
+      if let headers = source.headers {
+        result["headers"] = headers
+      }
+
+      return result
+    }
+  }
+
+  var currentQueueIndex: Int {
+    return queueIndex
+  }
+
   private func cleanupQueueObservers() {
     queueObservation?.invalidate()
     queueObservation = nil
@@ -74,7 +94,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     cleanupQueueObservers()
 
     queue = sources
-    currentQueueIndex = -1
+    queueIndex = -1
 
     if !queue.isEmpty {
       advanceQueue(to: 0)
@@ -86,8 +106,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     isPlayingBeforeQueueAdvance = isPlaying
 
-    currentQueueIndex = index
-    replaceCurrentSource(source: queue[currentQueueIndex])
+    queueIndex = index
+    replaceCurrentSource(source: queue[queueIndex])
 
     // Set up observation for this item
     setupQueueItemObservation()
@@ -132,15 +152,19 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       if self.isLooping {
         self.ref.seek(to: CMTime.zero)
         self.ref.play()
-      } else if self.currentQueueIndex < self.queue.count - 1 {
-        self.advanceQueue(to: self.currentQueueIndex + 1)
-      } else {
-        self.updateStatus(with: [
-          "isPlaying": false,
-          "currentTime": self.duration,
-          "didJustFinish": true
-        ])
+        return
       }
+
+      if self.queueIndex < self.queue.count - 1 {
+        self.advanceQueue(to: self.queueIndex + 1)
+        return
+      }
+
+      self.updateStatus(with: [
+        "isPlaying": false,
+        "currentTime": self.duration,
+        "didJustFinish": true
+      ])
     }
   }
 

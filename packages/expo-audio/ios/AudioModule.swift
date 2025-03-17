@@ -116,6 +116,14 @@ public class AudioModule: Module {
         player.isPaused
       }
 
+      Property("currentQueue") { player in
+        player.currentQueue
+      }
+
+      Property("currentQueueIndex") { player in
+        player.currentQueueIndex
+      }
+
       Property("volume") { player in
         player.ref.volume
       }.set { (player, volume: Double) in

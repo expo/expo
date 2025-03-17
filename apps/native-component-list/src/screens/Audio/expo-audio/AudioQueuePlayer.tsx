@@ -82,6 +82,11 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     player?.setQueue(testAssets);
   };
 
+  const getQueueInfo = () => {
+    console.log('Queue info:', JSON.stringify(player?.currentQueue));
+    console.log('Current queue index:', player?.currentQueueIndex);
+  };
+
   return (
     <Player
       {...status}
@@ -92,7 +97,8 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
       pause={() => player.pause()}
       replace={() => setQueue()}
       replay={() => {
-        return player.seekTo(0);
+        getQueueInfo();
+        // return player.seekTo(0);
       }}
       setPosition={(position: number) => {
         return player.seekTo(position);

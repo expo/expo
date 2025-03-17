@@ -20,6 +20,8 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     get duration(): number;
     get currentTime(): number;
     get paused(): boolean;
+    get currentQueue(): AudioSource[];
+    get currentQueueIndex(): number;
     get isLoaded(): boolean;
     get playbackRate(): number;
     set playbackRate(value: number);

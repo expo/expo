@@ -75,6 +75,14 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     currentStatus: AudioStatus;
     /**
+     * The current queue of audio sources.
+     */
+    currentQueue: AudioSource[];
+    /**
+     * The current index of the queue. Returns -1 when queue is empty.
+     */
+    currentQueueIndex: number;
+    /**
      * Start playing audio.
      */
     play(): void;
@@ -89,7 +97,6 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
      * Sets a queue of audio sources to be played in sequence.
      * @param sources The array of audio sources.
-     * @hidden
      */
     setQueue(sources: AudioSource[]): void;
     /**

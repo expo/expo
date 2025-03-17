@@ -111,6 +111,14 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     get paused() {
         return this.media.paused;
     }
+    // TODO: Implement
+    get currentQueue() {
+        return [];
+    }
+    // TODO: Implement
+    get currentQueueIndex() {
+        return -1;
+    }
     get isLoaded() {
         return this.loaded;
     }

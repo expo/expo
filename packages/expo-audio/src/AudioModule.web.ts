@@ -149,6 +149,16 @@ export class AudioPlayerWeb
     return this.media.paused;
   }
 
+  // TODO: Implement
+  get currentQueue(): AudioSource[] {
+    return [];
+  }
+
+  // TODO: Implement
+  get currentQueueIndex(): number {
+    return -1;
+  }
+
   get isLoaded(): boolean {
     return this.loaded;
   }
