@@ -138,11 +138,6 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     moduleName = `${moduleName}/${segments.shift()}`;
   }
 
-  // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
-  if (moduleName === '@babel/runtime') {
-    return path;
-  }
-
   // self-reference
   const closestPackageJson = findClosestPackageJson(options.basedir, options);
   if (closestPackageJson) {

@@ -22,7 +22,7 @@
     "expo-video": "~2.0.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.78.0",
+    "react-native": "0.79.0-rc.1",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {

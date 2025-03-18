@@ -379,7 +379,6 @@ export const eas = [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
       makePage('eas/environment-variables.mdx'),
-      makePage('eas/using-environment-variables.mdx'),
     ],
     {
       expanded: true,
@@ -722,7 +721,7 @@ function makePage(file) {
 
   const result = {
     // TODO(cedric): refactor name into title
-    name: data.title,
+    name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
     isNew: data.isNew ?? undefined,

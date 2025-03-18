@@ -27,3 +27,9 @@ internal class ContextMenuProps: ExpoSwiftUI.ViewProps {
   var onContextMenuSwitchCheckedChanged = EventDispatcher()
   @Field var activationMethod: ActivationMethod? = .singlePress
 }
+
+internal class ContextMenuPreviewProps: ExpoSwiftUI.ViewProps {
+}
+
+internal class ContextMenuActivationElementProps: ExpoSwiftUI.ViewProps {
+}

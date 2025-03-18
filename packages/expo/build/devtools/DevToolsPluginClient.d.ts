@@ -1,3 +1,4 @@
+/// <reference types="../src/types/globals.d.ts" />
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 export interface EventSubscription {

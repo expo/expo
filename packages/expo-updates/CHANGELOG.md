@@ -10,6 +10,8 @@
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
+- Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -25,10 +27,21 @@
 - Fixed build error on iOS Expo Go. ([#34485](https://github.com/expo/expo/pull/34485) by [@kudo](https://github.com/kudo))
 - Fixed Android unit test errors in BuilDataTest. ([#34510](https://github.com/expo/expo/pull/34510) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
-- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - Drop `fbemitter` in favor of custom emitter. ([#35317](https://github.com/expo/expo/pull/35317) by [@kitten](https://github.com/kitten))
+
+## 0.27.3 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Pass through the package version to config plugin sync utilities ([#35372](https://github.com/expo/expo/pull/35372) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.27.2 - 2025-02-26
+
+### 💡 Others
+
+- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.27.1 - 2025-02-21
 

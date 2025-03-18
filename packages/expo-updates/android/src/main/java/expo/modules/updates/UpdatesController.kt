@@ -35,7 +35,7 @@ object UpdatesController {
     }
     val useDeveloperSupport =
       (context as? ReactApplication)?.reactNativeHost?.useDeveloperSupport ?: false
-    if (useDeveloperSupport && !BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
+    if (useDeveloperSupport && !UpdatesPackage.isUsingNativeDebug) {
       if (BuildConfig.USE_DEV_CLIENT) {
         val devLauncherController = initializeAsDevLauncherWithoutStarting(context)
         singletonInstance = devLauncherController

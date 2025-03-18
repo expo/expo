@@ -13,6 +13,8 @@ public class ExpoUIModule: Module {
     View(BottomSheetView.self)
     View(SliderView.self)
     View(ExpoUI.ContextMenu.self)
+    View(ExpoUI.ContextMenuActivationElement.self)
+    View(ExpoUI.ContextMenuPreview.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
     View(TextInputView.self)
