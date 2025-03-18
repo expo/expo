@@ -7,10 +7,6 @@ const path = require('node:path');
 const config = getDefaultConfig(__dirname);
 const monorepoRoot = path.join(__dirname, '../..');
 
-// NOTE(cedric): `@babel/runtime/*` helpers are used as CJS, while being resolved as ESM causing issues
-// We need to resolve that before launching SDK 53 and remove this option.
-config.resolver.unstable_enablePackageExports = false;
-
 // Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
 // Note, omitting folders disables Metro from resolving files within these folders
 // This also happens when symlinks falls within these folders, but the real location doesn't.
