@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add `Stepper` view on iOS. ([#35525](https://github.com/expo/expo/pull/35525) by [@andrew-levy](https://github.com/andrew-levy))
 - Add TextInput for Android. ([#35228](https://github.com/expo/expo/pull/35228) by [@aleqsio](https://github.com/aleqsio))
 - Add context menu previews. ([#35369](https://github.com/expo/expo/pull/35369) by [@aleqsio](https://github.com/aleqsio)).
 - Add TextInput for iOS. ([#35098](https://github.com/expo/expo/pull/35098) by [@aleqsio](https://github.com/aleqsio))

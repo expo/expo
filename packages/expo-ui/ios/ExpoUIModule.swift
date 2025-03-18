@@ -19,5 +19,6 @@ public class ExpoUIModule: Module {
     View(TextInputView.self)
     View(ProgressView.self)
     View(GaugeView.self)
+    View(StepperView.self)
   }
 }
