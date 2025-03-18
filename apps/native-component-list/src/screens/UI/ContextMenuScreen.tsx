@@ -21,68 +21,36 @@ export default function ContextMenuScreen() {
     player.muted = true;
     player.play();
   });
-  const MenuItems = (
-    <>
-      <Button
-        systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
-        onPress={() => console.log('Pressed1')}>
-        Hello
-      </Button>
-      <Picker
-        options={['$', '$$']}
-        selectedIndex={selectedIndex}
-        onOptionSelected={({ nativeEvent: { index } }) => {
-          setSelectedIndex(index);
-        }}
-        label="Cost"
-        variant="palette"
-      />
-      <Button
-        variant="bordered"
-        systemImage={{ ios: 'heart' }}
-        onPress={() => console.log('Pressed2')}>
-        I love
-      </Button>
-      <Picker
-        label="Doggos"
-        options={['very', 'veery', 'veeery', 'much']}
-        variant="menu"
-        selectedIndex={selectedIndex}
-        onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
-      />
-      <Switch
-        value={switchChecked}
-        label="Do u love doggos?"
-        variant="checkbox"
-        onValueChange={setSwitchChecked}
-      />
-      <Switch
-        value={switch2Checked}
-        variant="switch"
-        label="Will u marry doggos?"
-        onValueChange={setSwitch2Checked}
-      />
-      <Button role="destructive" systemImage={{ ios: 'hand.thumbsdown' }}>
-        I don't like doggos 😡
-      </Button>
-      <Submenu button={<Button systemImage={{ ios: 'heart.slash' }}>Evil submenu</Button>}>
-        <Button>I hate</Button>
-        <Button>doggos</Button>
-        <Submenu button={<Button>👹Very evil submenu 👺</Button>}>
-          <Button>I KILL</Button>
-          <Button>DOGGOS</Button>
-        </Submenu>
-      </Submenu>
-    </>
-  );
 
   return (
     <View>
       <Section title="Single-Press Context Menu" row>
-        <ContextMenu Items={MenuItems} style={{ width: 150, height: 50 }}>
-          <Button variant="bordered" style={{ width: 150, height: 50 }}>
-            Show Menu
-          </Button>
+        <ContextMenu style={{ width: 150, height: 50 }}>
+          <ContextMenu.Items>
+            <Button
+              systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+              onPress={() => console.log('Pressed1')}>
+              Hello
+            </Button>
+            <Button
+              variant="bordered"
+              systemImage={{ ios: 'heart' }}
+              onPress={() => console.log('Pressed2')}>
+              I love
+            </Button>
+            <Picker
+              label="Doggos"
+              options={['very', 'veery', 'veeery', 'much']}
+              variant="menu"
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+            />
+          </ContextMenu.Items>
+          <ContextMenu.Trigger>
+            <Button variant="bordered" style={{ width: 150, height: 50 }}>
+              Show Menu
+            </Button>
+          </ContextMenu.Trigger>
         </ContextMenu>
       </Section>
       <Section title="Long-Press Context Menu" row>
