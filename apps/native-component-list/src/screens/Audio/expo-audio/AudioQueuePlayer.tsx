@@ -1,6 +1,15 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, AudioSource, useAudioPlayerStatus } from 'expo-audio';
-import React from 'react';
-import { StyleProp, ViewStyle, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleProp,
+  ViewStyle,
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
@@ -11,12 +20,10 @@ type AudioPlayerProps = {
 };
 
 const localSource = require('../../../../assets/sounds/polonez.mp3');
-const remoteSource =
-  'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02';
-
 const testAssets = [
   localSource,
   null,
+  'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
   'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
   {
     uri: 'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
@@ -51,9 +58,13 @@ const testAssets = [
 ];
 
 export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
-  const [currentSource, setCurrentSource] = React.useState(source);
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
+  const [queueItems, setQueueItems] = useState<AudioSource[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+
+  console.log(player.currentQueueIndex);
+
   const setVolume = (volume: number) => {
     player.volume = volume;
   };
@@ -71,79 +82,78 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     player.setPlaybackRate(rate);
   };
 
-  const replaceSource = () => {
-    const source = currentSource === localSource ? remoteSource : localSource;
-    player.replace(source);
-    setCurrentSource(source);
-  };
-
   const setQueue = () => {
     console.log('Setting queue with sources:', JSON.stringify(testAssets));
     player?.setQueue(testAssets);
   };
 
-  const getQueueInfo = () => {
-    console.log('Queue info:', JSON.stringify(player?.currentQueue));
-    console.log('Current queue index:', player?.currentQueueIndex);
-  };
-
-  const addTracksToQueue = () => {
-    player?.addToQueue(
-      [
-        'https://d2518709tqai8z.cloudfront.net/audios/fd0d946e-0e78-44b9-b8f4-1f24cc2bb118.mp3',
-        'https://d2518709tqai8z.cloudfront.net/audios/fd0d946e-0e78-44b9-b8f4-1f24cc2bb118.mp3',
-      ],
-      0
-    );
-    console.log('Added tracks to queue');
-  };
-
-  const removeFromQueue = () => {
-    player?.removeFromQueue([
-      'https://d2518709tqai8z.cloudfront.net/audios/fd0d946e-0e78-44b9-b8f4-1f24cc2bb118.mp3',
-    ]);
-    console.log('Removed track from queue');
-  };
-
-  const skipToNext = () => {
-    player?.skipToNext();
-    console.log('Skipped to next track');
-  };
-
-  const skipToPrevious = () => {
-    player?.skipToPrevious();
-    console.log('Skipped to previous track');
-  };
-
-  const skipToIndex = () => {
-    player?.skipToQueueIndex(0);
-    console.log('Skipped to index 0');
+  const renderTrackName = (item: AudioSource) => {
+    if (typeof item === 'string') {
+      return item.split('/').pop();
+    }
+    if (item && typeof item === 'object' && item.uri) {
+      return item.uri.toString().split('/').pop();
+    }
+    return 'Unknown Track';
   };
 
   return (
-    <View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={setQueue}>
-          <Text style={styles.buttonText}>1</Text>
-          <Text style={styles.buttonLabel}>Set Queue</Text>
+    <View style={styles.container}>
+      <View style={styles.queueContainer}>
+        <View style={styles.queueHeader}>
+          <Text style={styles.queueTitle}>Queue</Text>
+          <TouchableOpacity style={styles.setQueueButton} onPress={setQueue}>
+            <Text style={styles.setQueueButtonText}>Set Queue</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.queueList}>
+          {queueItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.queueItem, index === currentIndex && styles.activeQueueItem]}
+              onPress={() => player?.skipToQueueIndex(index)}>
+              <View style={styles.trackInfo}>
+                {index === currentIndex && (
+                  <Ionicons
+                    name={status.playing ? 'play-circle' : 'pause-circle'}
+                    size={24}
+                    color="#007AFF"
+                    style={styles.playingIcon}
+                  />
+                )}
+                <Text
+                  style={[styles.trackName, index === currentIndex && styles.activeTrackName]}
+                  numberOfLines={1}>
+                  {renderTrackName(item)}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => player?.removeFromQueue([item])}>
+                <Ionicons name="close-circle-outline" size={24} color="#FF3B30" />
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.controls}>
+        <TouchableOpacity style={styles.controlButton} onPress={() => player?.skipToPrevious()}>
+          <Ionicons name="play-skip-back" size={24} color="#007AFF" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={addTracksToQueue}>
-          <Text style={styles.buttonText}>2</Text>
-          <Text style={styles.buttonLabel}>Add to Queue</Text>
+
+        <TouchableOpacity
+          style={[styles.controlButton, styles.playPauseButton]}
+          onPress={() => (status.playing ? player?.pause() : player?.play())}>
+          <Ionicons name={status.playing ? 'pause' : 'play'} size={32} color="#007AFF" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={removeFromQueue}>
-          <Text style={styles.buttonText}>3</Text>
-          <Text style={styles.buttonLabel}>Remove</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={skipToNext}>
-          <Text style={styles.buttonText}>4</Text>
-          <Text style={styles.buttonLabel}>Next</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={skipToPrevious}>
-          <Text style={styles.buttonText}>5</Text>
-          <Text style={styles.buttonLabel}>Previous</Text>
+
+        <TouchableOpacity style={styles.controlButton} onPress={() => player?.skipToNext()}>
+          <Ionicons name="play-skip-forward" size={24} color="#007AFF" />
         </TouchableOpacity>
       </View>
+
       <Player
         {...status}
         audioPan={0}
@@ -152,13 +162,8 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
         play={() => player.play()}
         pause={() => player.pause()}
         replace={() => setQueue()}
-        replay={() => {
-          getQueueInfo();
-          return player.seekTo(0);
-        }}
-        setPosition={(position: number) => {
-          return player.seekTo(position);
-        }}
+        replay={() => player.seekTo(0)}
+        setPosition={(position: number) => player.seekTo(position)}
         setIsLooping={setIsLooping}
         setRate={setRate}
         setIsMuted={setIsMuted}
@@ -170,22 +175,82 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  queueContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  queueHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
+  queueTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
-  buttonText: {
-    fontSize: 18,
+  setQueueButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  setQueueButtonText: {
     color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
-  buttonLabel: {
-    fontSize: 12,
-    color: '#fff',
+  queueList: {
+    flex: 1,
+  },
+  queueItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5EA',
+  },
+  activeQueueItem: {
+    backgroundColor: '#F2F2F7',
+  },
+  trackInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playingIcon: {
+    marginRight: 8,
+  },
+  trackName: {
+    fontSize: 16,
+    color: '#000',
+    flex: 1,
+  },
+  activeTrackName: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  removeButton: {
+    padding: 4,
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5EA',
+  },
+  controlButton: {
+    padding: 12,
+  },
+  playPauseButton: {
+    marginHorizontal: 24,
   },
 });
