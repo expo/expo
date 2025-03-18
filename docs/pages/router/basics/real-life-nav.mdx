@@ -88,13 +88,13 @@ Route groups can be used to share a single screen between two different tabs. Co
 Each of the tabs is put in a group so we can define a third folder that shares routes between two groups (**app/(tabs)/(feed,search)**). Even with the extra layer, **app/(tabs)/(feed)/index.tsx** is still the nearest index, so it will be the default route.
 
 ```tsx (tabs)/_layout.tsx
-import { Tab } from 'expo-router';
+import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
     <Tabs>
-      <Tab name="(feed)" title="Feed" />
-      <Tab name="search" title="Search" />
+      <Tabs.Screen name="(feed)" options={{ title="Feed" }} />
+      <Tabs.Screen name="search" options={{ title="Search" }} />
     </Tabs>
   );
 }
