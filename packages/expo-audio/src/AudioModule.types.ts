@@ -124,6 +124,8 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
 
   /**
    * Replaces the current audio source with a new one.
+   * Internally uses the queue functionality (equivalent to setQueue([source])).
+   * Maintains backward compatibility with previous replace behavior.
    */
   replace(source: AudioSource): void;
 

@@ -332,7 +332,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       .store(in: &cancellables)
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  private func replaceCurrentSource(source: AudioSource) {
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
     ref.pause()

@@ -138,6 +138,11 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     return 'Unknown Track';
   };
 
+  const replaceQueue = () => {
+    player?.replace(localSource);
+    setQueueItems(player?.getCurrentQueue());
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.queueContainer}>
@@ -158,6 +163,11 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
             </TouchableOpacity>
             <TouchableOpacity style={styles.setQueueButton} onPress={setQueue}>
               <Text style={styles.setQueueButtonText}>Set Queue</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.setQueueButton, styles.replaceButton]}
+              onPress={replaceQueue}>
+              <Text style={styles.setQueueButtonText}>Replace</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -325,6 +335,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    marginLeft: 8,
+  },
+  replaceButton: {
+    backgroundColor: '#FF3B30',
   },
   setQueueButtonText: {
     color: '#fff',

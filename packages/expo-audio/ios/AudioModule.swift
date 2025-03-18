@@ -151,7 +151,7 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.replaceCurrentSource(source: source)
+        player.setQueue(sources: [source])
       }
 
       Function("stop") { (player) in
