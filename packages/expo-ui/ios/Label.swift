@@ -11,13 +11,17 @@ class LabelViewProps: ExpoSwiftUI.ViewProps {
 
 struct LabelView: ExpoSwiftUI.View {
   @EnvironmentObject var props: LabelViewProps
+  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   var body: some View {
-    Label(
-      title: { Text(props.title ?? "") },
-      icon: { Image(systemName: props.systemImage ?? "") }
-    )
-    .if(props.color != nil) {
-      $0.accentColor(props.color)
+    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
+      Label(
+        title: { Text(props.title ?? "") },
+        icon: { Image(systemName: props.systemImage ?? "") }
+      )
+      .if(props.color != nil) {
+        $0.accentColor(props.color)
+      }
+      .fixedSize()
     }
   }
 }
