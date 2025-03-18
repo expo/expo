@@ -7,7 +7,7 @@ let shouldShowAlertKey = "shouldShowAlert"
 let shouldPlaySoundKey = "shouldPlaySound"
 let shouldSetBadgeKey = "shouldSetBadge"
 
-public protocol SingleNotificationHandlerTaskDelegate {
+public protocol SingleNotificationHandlerTaskDelegate: AnyObject {
   func taskDidFinish(_ task: SingleNotificationHandlerTask)
   func handleNotification(_ notification: UNNotification)
   func handleNotificationTimeout(_ notification: UNNotification)
@@ -49,10 +49,9 @@ public class SingleNotificationHandlerTask {
       completionHandler(presentationOptions(behavior))
       finish()
       return true
-    } else {
-      finish()
-      return false
     }
+  finish()
+  return false
   }
 
   public func finish() {
@@ -60,7 +59,6 @@ public class SingleNotificationHandlerTask {
     self.completionHandler = nil
     delegate.taskDidFinish(self)
   }
-
 
   func presentationOptions(_ behavior: [String: Any]) -> UNNotificationPresentationOptions {
     var options: UNNotificationPresentationOptions = []
