@@ -18,7 +18,6 @@
 #import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
-#import <EXDevMenu/EXAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -86,7 +85,7 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
-    self.dependencyProvider = [EXAppDependencyProvider new];
+    self.dependencyProvider = [RCTAppDependencyProvider new];
     self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
