@@ -11,7 +11,6 @@ export type PageMetadata = {
   platforms?: string[];
   modificationDate?: string;
   searchRank?: number;
-  searchLevel?: number;
   searchPosition?: number;
 };
 
