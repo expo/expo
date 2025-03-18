@@ -20,6 +20,8 @@ config.watchFolders = [
   path.join(monorepoRoot, 'packages'), // Allow Metro to resolve all workspace files of the monorepo
   path.join(monorepoRoot, 'node_modules'), // Allow Metro to resolve "shared" `node_modules` of the monorepo
   path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
+  path.join(monorepoRoot, 'apps/native-component-list'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/native-component-list`
+  path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
 // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
