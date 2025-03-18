@@ -4,9 +4,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  isCSSEnabled: true,
-});
+const config = getDefaultConfig(__dirname, { isCSSEnabled: true });
 const monorepoRoot = path.join(__dirname, '../..');
 
 // Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
@@ -22,17 +20,9 @@ config.watchFolders = [
 config.transformer.enableBabelRCLookup = false;
 
 config.resolver.blockList = [
-  // Copied from expo-yarn-workspaces
-  /\/__tests__\//,
-  /\/android\/React(Android|Common)\//,
-  /\/versioned-react-native\//,
-
   /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
-
-// Copied from expo-yarn-workspaces
-config.resolver.assetExts.push('db');
 
 module.exports = config;

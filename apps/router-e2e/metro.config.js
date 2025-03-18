@@ -55,6 +55,7 @@ config.watchFolders = [
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
+// Allow experimental import support to be turned on through `EXPO_USE_METRO_REQUIRE=true` for E2E tests
 config.transformer.getTransformOptions = () => ({
   transform: {
     experimentalImportSupport: boolish('EXPO_USE_METRO_REQUIRE', false),
@@ -63,11 +64,6 @@ config.transformer.getTransformOptions = () => ({
 });
 
 config.resolver.blockList = [
-  // Copied from expo-yarn-workspaces
-  /\/__tests__\//,
-  /\/android\/React(Android|Common)\//,
-  /\/versioned-react-native\//,
-
   /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
   /node_modules\/pretty-format\/node_modules\/react-is/,
