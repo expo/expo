@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
+- Fix handling URL with both hash and params ([#33646](https://github.com/expo/expo/pull/33646) by [@stephentuso](https://github.com/stephentuso))
 
 ### 💡 Others
 
