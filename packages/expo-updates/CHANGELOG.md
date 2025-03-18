@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.27.4 — 2025-03-18
+
+### 🎉 New features
+
+- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
 
 ## 0.27.3 — 2025-03-11
 
