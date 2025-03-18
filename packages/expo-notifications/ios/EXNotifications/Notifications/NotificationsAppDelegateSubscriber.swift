@@ -11,6 +11,9 @@ public class NotificationsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
     notificationCenterManager.didFailRegistration(error)
   }
+
+  public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  }
 }
 
 private func dataToString(_ data: Data) -> String {
