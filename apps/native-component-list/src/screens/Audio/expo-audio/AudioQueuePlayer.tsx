@@ -9,6 +9,8 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 import { JsiAudioBar } from './JsiAudioBar';
@@ -20,14 +22,12 @@ type AudioPlayerProps = {
 };
 
 const localSource = require('../../../../assets/sounds/polonez.mp3');
+
 const testAssets = [
   localSource,
   null,
   'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
   'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
-  {
-    uri: 'https://d2518709tqai8z.cloudfront.net/audios/2ed772c1-70a7-4cef-b4af-73923321998b.mp3',
-  },
   {
     uri: 'https://d2518709tqai8z.cloudfront.net/audios/b75223d8-4314-4e8c-b027-fa28d51aba0e.mp3',
   },
@@ -61,6 +61,11 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
   const [queueItems, setQueueItems] = useState<AudioSource[]>([]);
+  const [selectedTracks, setSelectedTracks] = useState<number[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addTrackUrl, setAddTrackUrl] = useState('');
+  const [addTrackIndex, setAddTrackIndex] = useState('');
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const setVolume = (volume: number) => {
     player.volume = volume;
@@ -82,18 +87,45 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
   const setQueue = () => {
     console.log('Setting queue with sources:', JSON.stringify(testAssets));
     player?.setQueue(testAssets);
-
     setQueueItems(player?.getCurrentQueue());
   };
 
   const stopPlayer = () => {
     player?.stop();
     setQueueItems([]);
+    setSelectedTracks([]);
+    setIsSelectionMode(false);
   };
 
   const removeFromQueue = (sources: AudioSource[]) => {
     player?.removeFromQueue(sources);
     setQueueItems(player?.getCurrentQueue());
+  };
+
+  const toggleTrackSelection = (index: number) => {
+    setSelectedTracks((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const removeSelectedTracks = () => {
+    const tracksToRemove = selectedTracks.map((index) => queueItems[index]);
+    removeFromQueue(tracksToRemove);
+    setSelectedTracks([]);
+    setIsSelectionMode(false);
+  };
+
+  const addTrackToQueue = () => {
+    if (!addTrackUrl) return;
+
+    const newTrack = addTrackUrl === 'local' ? localSource : { uri: addTrackUrl };
+    const index = addTrackIndex ? parseInt(addTrackIndex, 10) : undefined;
+
+    player?.addToQueue([newTrack], index);
+    setQueueItems(player?.getCurrentQueue());
+    setAddTrackUrl('');
+    setAddTrackIndex('');
+    setShowAddModal(false);
   };
 
   const renderTrackName = (item: AudioSource) => {
@@ -111,9 +143,23 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
       <View style={styles.queueContainer}>
         <View style={styles.queueHeader}>
           <Text style={styles.queueTitle}>Queue</Text>
-          <TouchableOpacity style={styles.setQueueButton} onPress={setQueue}>
-            <Text style={styles.setQueueButtonText}>Set Queue</Text>
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={[styles.headerButton, isSelectionMode && styles.activeHeaderButton]}
+              onPress={() => setIsSelectionMode(!isSelectionMode)}>
+              <Ionicons
+                name="checkbox-outline"
+                size={24}
+                color={isSelectionMode ? '#007AFF' : '#666'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.headerButton} onPress={() => setShowAddModal(true)}>
+              <Ionicons name="add-circle-outline" size={24} color="#007AFF" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.setQueueButton} onPress={setQueue}>
+              <Text style={styles.setQueueButtonText}>Set Queue</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView style={styles.queueList}>
@@ -123,8 +169,11 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
               style={[
                 styles.queueItem,
                 index === player?.currentQueueIndex && styles.activeQueueItem,
+                isSelectionMode && selectedTracks.includes(index) && styles.selectedQueueItem,
               ]}
-              onPress={() => player?.skipToQueueIndex(index)}>
+              onPress={() =>
+                isSelectionMode ? toggleTrackSelection(index) : player?.skipToQueueIndex(index)
+              }>
               <View style={styles.trackInfo}>
                 {index === player?.currentQueueIndex && (
                   <Ionicons
@@ -143,9 +192,13 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
                   {renderTrackName(item)}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.removeButton} onPress={() => removeFromQueue([item])}>
-                <Ionicons name="close-circle-outline" size={24} color="#FF3B30" />
-              </TouchableOpacity>
+              {!isSelectionMode && (
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeFromQueue([item])}>
+                  <Ionicons name="close-circle-outline" size={24} color="#FF3B30" />
+                </TouchableOpacity>
+              )}
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -172,6 +225,49 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
           <Ionicons name="play-skip-forward" size={24} color="#007AFF" />
         </TouchableOpacity>
       </View>
+
+      {isSelectionMode && selectedTracks.length > 0 && (
+        <TouchableOpacity style={styles.removeSelectedButton} onPress={removeSelectedTracks}>
+          <Text style={styles.removeSelectedText}>Remove Selected ({selectedTracks.length})</Text>
+        </TouchableOpacity>
+      )}
+
+      <Modal
+        visible={showAddModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowAddModal(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Track to Queue</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter URL or 'local' for local track"
+              value={addTrackUrl}
+              onChangeText={setAddTrackUrl}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Insert at index (optional)"
+              value={addTrackIndex}
+              onChangeText={setAddTrackIndex}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setShowAddModal(false)}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.addButton]}
+                onPress={addTrackToQueue}>
+                <Text style={styles.modalButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Player
         {...status}
@@ -208,6 +304,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerButton: {
+    padding: 8,
+    marginRight: 8,
+  },
+  activeHeaderButton: {
+    backgroundColor: '#E3F2FD',
+    borderRadius: 8,
+  },
   queueTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -237,6 +345,9 @@ const styles = StyleSheet.create({
   },
   activeQueueItem: {
     backgroundColor: '#F2F2F7',
+  },
+  selectedQueueItem: {
+    backgroundColor: '#E3F2FD',
   },
   trackInfo: {
     flex: 1,
@@ -271,5 +382,60 @@ const styles = StyleSheet.create({
   },
   playPauseButton: {
     marginHorizontal: 24,
+  },
+  removeSelectedButton: {
+    backgroundColor: '#FF3B30',
+    padding: 16,
+    alignItems: 'center',
+  },
+  removeSelectedText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 16,
+  },
+  modalButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#E5E5EA',
+  },
+  addButton: {
+    backgroundColor: '#007AFF',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
