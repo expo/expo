@@ -76,6 +76,7 @@ public class PresentationModule: Module, NotificationDelegate {
 
   func serializeNotifications(_ notifications: [UNNotification]) -> [[AnyHashable: Any]] {
     return notifications.map { notification in
+      // TODO: convert serialization to Records
       return EXNotificationSerializer.serializedNotification(notification)
     }
   }
