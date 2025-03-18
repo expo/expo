@@ -62,6 +62,21 @@ struct BottomSheetView: ExpoSwiftUI.View {
           isOpened = props.isOpened
         })
     } else {
+      Rectangle().hidden()
+        .sheet(isPresented: $isOpened) {
+          Children()
+        }
+        .onChange(of: isOpened, perform: { newIsOpened in
+          if props.isOpened == newIsOpened {
+            return
+          }
+          props.onIsOpenedChange([
+            "isOpened": newIsOpened
+          ])
+        })
+        .onReceive(props.objectWillChange, perform: {
+          isOpened = props.isOpened
+        })
     }
   }
 }
