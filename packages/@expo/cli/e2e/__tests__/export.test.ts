@@ -304,7 +304,6 @@ describe('server', () => {
       projectRoot,
       ['export', '--source-maps', '--dump-assetmap', '--platform=web', '--dev'],
       {
-        verbose: true,
         env: {
           NODE_ENV: 'production',
           TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
@@ -315,8 +314,15 @@ describe('server', () => {
 
     // Ensure the app entry has the expected export name
     expect(findProjectFiles(path.join(projectRoot, 'dist'))).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
+      'assetmap.json',
+      'assets/assets/font.3858f62230ac3c915f300c664312c63f.ttf',
+      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15.png',
+      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
+      'favicon.ico',
+      'index.html',
+      'metadata.json',
     ]);
   });
 });
