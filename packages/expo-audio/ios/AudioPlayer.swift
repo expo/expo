@@ -60,7 +60,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
-  var currentQueue: [[String: Any]] {
+  func getCurrentQueue() -> [[String: Any]] {
     return queue.enumerated().map { _, source in
       var result: [String: Any] = [:]
 
@@ -96,6 +96,25 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     if queueIndex == -1 && !queue.isEmpty {
       advanceQueue(to: 0)
     }
+  }
+
+  func stop() {
+    ref.pause()
+    ref.replaceCurrentItem(with: nil)
+
+
+    queue = []
+    queueIndex = -1
+    isPlayingBeforeQueueAdvance = false
+
+    cleanupQueueObservers()
+
+    updateStatus(with: [
+      "isPlaying": false,
+      "isLoaded": false,
+      "currentTime": 0,
+      "duration": 0
+    ])
   }
 
   func removeFromQueue(sources: [AudioSource]) {

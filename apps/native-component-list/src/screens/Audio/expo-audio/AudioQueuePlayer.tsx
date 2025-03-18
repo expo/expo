@@ -61,9 +61,6 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
   const [queueItems, setQueueItems] = useState<AudioSource[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-
-  console.log(player.currentQueueIndex);
 
   const setVolume = (volume: number) => {
     player.volume = volume;
@@ -85,6 +82,18 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
   const setQueue = () => {
     console.log('Setting queue with sources:', JSON.stringify(testAssets));
     player?.setQueue(testAssets);
+
+    setQueueItems(player?.getCurrentQueue());
+  };
+
+  const stopPlayer = () => {
+    player?.stop();
+    setQueueItems([]);
+  };
+
+  const removeFromQueue = (sources: AudioSource[]) => {
+    player?.removeFromQueue(sources);
+    setQueueItems(player?.getCurrentQueue());
   };
 
   const renderTrackName = (item: AudioSource) => {
@@ -111,10 +120,13 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
           {queueItems.map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.queueItem, index === currentIndex && styles.activeQueueItem]}
+              style={[
+                styles.queueItem,
+                index === player?.currentQueueIndex && styles.activeQueueItem,
+              ]}
               onPress={() => player?.skipToQueueIndex(index)}>
               <View style={styles.trackInfo}>
-                {index === currentIndex && (
+                {index === player?.currentQueueIndex && (
                   <Ionicons
                     name={status.playing ? 'play-circle' : 'pause-circle'}
                     size={24}
@@ -123,14 +135,15 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
                   />
                 )}
                 <Text
-                  style={[styles.trackName, index === currentIndex && styles.activeTrackName]}
+                  style={[
+                    styles.trackName,
+                    index === player?.currentQueueIndex && styles.activeTrackName,
+                  ]}
                   numberOfLines={1}>
                   {renderTrackName(item)}
                 </Text>
               </View>
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => player?.removeFromQueue([item])}>
+              <TouchableOpacity style={styles.removeButton} onPress={() => removeFromQueue([item])}>
                 <Ionicons name="close-circle-outline" size={24} color="#FF3B30" />
               </TouchableOpacity>
             </TouchableOpacity>
@@ -147,6 +160,12 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
           style={[styles.controlButton, styles.playPauseButton]}
           onPress={() => (status.playing ? player?.pause() : player?.play())}>
           <Ionicons name={status.playing ? 'pause' : 'play'} size={32} color="#007AFF" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.controlButton, styles.playPauseButton]}
+          onPress={stopPlayer}>
+          <Ionicons name="stop" size={32} color="#007AFF" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.controlButton} onPress={() => player?.skipToNext()}>

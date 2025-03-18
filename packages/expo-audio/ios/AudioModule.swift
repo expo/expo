@@ -116,10 +116,6 @@ public class AudioModule: Module {
         player.isPaused
       }
 
-      Property("currentQueue") { player in
-        player.currentQueue
-      }
-
       Property("currentQueueIndex") { player in
         player.currentQueueIndex
       }
@@ -158,8 +154,16 @@ public class AudioModule: Module {
         player.replaceCurrentSource(source: source)
       }
 
+      Function("stop") { (player) in
+        player.stop()
+      }
+
       Function("setQueue") { (player, sources: [AudioSource]) in
         player.setQueue(sources: sources)
+      }
+
+      Function("getCurrentQueue") { (player) in
+        player.getCurrentQueue()
       }
 
       Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in

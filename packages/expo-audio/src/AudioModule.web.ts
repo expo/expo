@@ -150,11 +150,6 @@ export class AudioPlayerWeb
   }
 
   // TODO: Implement
-  get currentQueue(): AudioSource[] {
-    return [];
-  }
-
-  // TODO: Implement
   get currentQueueIndex(): number {
     return -1;
   }
@@ -193,6 +188,11 @@ export class AudioPlayerWeb
     this.isPlaying = false;
   }
 
+  // TODO
+  stop(): void {
+    throw new Error('Not implemented');
+  }
+
   replace(source: AudioSource): void {
     this.src = source;
     this.media = this._createMediaElement();
@@ -200,6 +200,11 @@ export class AudioPlayerWeb
 
   // TODO
   setQueue(sources: AudioSource[]): void {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  getCurrentQueue(): AudioSource[] {
     throw new Error('Not implemented');
   }
 

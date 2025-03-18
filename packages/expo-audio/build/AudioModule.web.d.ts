@@ -20,7 +20,6 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     get duration(): number;
     get currentTime(): number;
     get paused(): boolean;
-    get currentQueue(): AudioSource[];
     get currentQueueIndex(): number;
     get isLoaded(): boolean;
     get playbackRate(): number;
@@ -30,8 +29,10 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     get currentStatus(): AudioStatus;
     play(): void;
     pause(): void;
+    stop(): void;
     replace(source: AudioSource): void;
     setQueue(sources: AudioSource[]): void;
+    getCurrentQueue(): AudioSource[];
     addToQueue(sources: AudioSource[], insertBeforeIndex?: number): void;
     removeFromQueue(sources: AudioSource[]): void;
     skipToQueueIndex(index: number): void;
