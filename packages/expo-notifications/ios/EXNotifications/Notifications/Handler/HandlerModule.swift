@@ -64,6 +64,4 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
       "notification": EXNotificationSerializer.serializedNotification(notification)
     ])
   }
-
-
 }
