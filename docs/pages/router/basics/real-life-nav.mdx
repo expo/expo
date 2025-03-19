@@ -132,7 +132,7 @@ Here's what that looks like:
   ]}
 />
 
-By default, the app will go to the nearest index, **app/(logged-in)/(tabs)/index.tsx**. However, a route group's layout file will be rendered before the enclosed route is. So, if the user is not authenticated, at this point, we can redirect the user to the login page:
+By default, the app will go to the nearest index, **app/(logged-in)/(tabs)/index.tsx**. However, a route group's layout file will be rendered before the enclosed route is. So, if the user is not authenticated, at this point, you can redirect the user to the login page:
 
 ```tsx (logged-in)/_layout.tsx
 import { Redirect, Stack } from 'expo-router';
