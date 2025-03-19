@@ -46,7 +46,7 @@ In the **app/(tabs)/feed/\_layout.tsx** file, return a `Stack` component:
 ```tsx feed/_layout.tsx
 import { Stack } from 'expo-router';
 
-/* @info Setting initialRouteName ensures that direct links deep into the stack still push the index route onto the stack first. */
+/* @info Setting <CODE>initialRouteName</CODE> ensures that direct links deep into the stack still push the index route onto the stack first. */
 export const unstable_settings = {
   initialRouteName: 'index',
 };
