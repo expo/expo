@@ -244,7 +244,7 @@ export const unstable_settings = {
 };
 ```
 
-By default, the `initialRouteName` is only considered when deep linking, and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the initial route to be loaded when navigating directly into another stack inside your app.
+By default, the `initialRouteName` is only considered when deep linking and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the initial route to be loaded when navigating directly into another stack inside your app.
 
 So, if **app/index.tsx** contained a link to `/stack/second`, add the `withAnchor` prop to ensure that `/stack/index` is loaded first, which will cause the user to go back to `/stack/index` when they press the back button from `/stack/second`:
 
