@@ -9,7 +9,7 @@ class AppDelegate: ExpoAppDelegate {
   // AppDelegate keeps a nullable reference to the updates controller
   var updatesController: (any InternalAppControllerInterface)?
 
-  let packagerUrl = URL(string:  "http://localhost:8081/index.bundle?platform=ios&dev=true")
+  let packagerUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&dev=true")
   let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 
   static func shared() -> AppDelegate {
@@ -31,7 +31,7 @@ class AppDelegate: ExpoAppDelegate {
 
   // If this is a debug build, and native debugging not enabled,
   // then this returns true.
-  public static func isRunningWithPackager() -> Bool {
+  static func isRunningWithPackager() -> Bool {
     return EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled()
   }
 
@@ -56,7 +56,6 @@ class AppDelegate: ExpoAppDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-
     initializeReactNativeAndUpdates(launchOptions)
 
     // Create custom view controller, where the React Native view will be created
@@ -120,7 +119,9 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
   }
 
   private func createView() {
-    let rootViewFactory: RCTRootViewFactory = appDelegate.reactNativeFactory!.rootViewFactory
+    guard let rootViewFactory: RCTRootViewFactory = appDelegate.reactNativeFactory?.rootViewFactory else {
+      fatalError("rootViewFactory has not been initialized")
+    }
     let rootView = rootViewFactory.view(
       withModuleName: appDelegate.moduleName,
       initialProperties: appDelegate.initialProps,
