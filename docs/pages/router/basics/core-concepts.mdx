@@ -28,7 +28,7 @@ With Expo Router, you do not define an initial route or first screen in code. Ra
 
 Every project should have a **\_layout.tsx** file directly inside the **app** directory. This file is rendered before any other route in your app and is where you would put the initialization code that may have previously gone inside an **App.jsx** file, such as loading fonts or interacting with the splash screen.
 
-### 5. Non-navigation components live outside of /app
+### 5. Non-navigation components live outside of app directory
 
 In Expo Router, the **app** directory is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level directories. If you put a non-route inside of the **app** directory, Expo Router will attempt to treat it like a route.
 
