@@ -171,7 +171,7 @@ jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => ({
 }));
 
 jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
-  __esModule: true, // Marks this as an ES module mock
+  __esModule: true,
   default: {
     ignoreLogs: (patterns) => {
       // Do nothing.
