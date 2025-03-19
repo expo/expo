@@ -40,7 +40,7 @@ Just like on the web, an **index.tsx** file indicates the default route for a fo
 
 <FileTree files={[['app/\_layout.tsx'], ['app/(tabs)/\_layout.tsx'], ['app/feed/\_layout.tsx']]} />
 
-**\_layout.tsx** files are special files that are not pages themselves, but define how groups of routes inside a folder relate to each other. If a folder of routes are arranged as a stack or tabs, the layout route is where you would define that relationship by using a stack navigator or tab navigator component.
+**\_layout.tsx** files are special files that are not pages themselves but define how groups of routes inside a directory relate to each other. If a directory of routes is arranged as a stack or tabs, the layout route is where you would define that relationship by using a stack navigator or tab navigator component.
 
 Layout routes are rendered prior to the actual page routes inside their folder. This means that the **\_layout.tsx** directly inside the app folder is rendered before anything else in the app, and is where you would put initialization code that may have previously gone inside an **App.js** file.
 
