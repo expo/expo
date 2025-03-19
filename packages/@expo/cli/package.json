@@ -114,7 +114,7 @@
     "@graphql-codegen/typescript": "^2.8.7",
     "@graphql-codegen/typescript-operations": "^2.5.12",
     "@playwright/test": "^1.40.1",
-    "@swc/core": "~1.2.249",
+    "@swc/core": "^1.11.11",
     "@taskr/clear": "^1.1.0",
     "@taskr/esnext": "^1.1.0",
     "@taskr/watch": "^1.1.0",
