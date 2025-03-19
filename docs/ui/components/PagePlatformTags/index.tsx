@@ -13,7 +13,7 @@ export function PagePlatformTags({ platforms }: Props) {
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {
           if (platform.includes('*')) {
-            const text = platform.replace('*', ' - device only');
+            const text = platform.replace('*', ' (device only)');
             return (
               <Tooltip.Root key={text}>
                 <Tooltip.Trigger className="cursor-default">
