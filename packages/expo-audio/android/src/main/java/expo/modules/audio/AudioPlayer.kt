@@ -180,6 +180,7 @@ class AudioPlayer(
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
       "duration" to duration,
+      "currentQueueIndex" to player.currentMediaItemIndex,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "didJustFinish" to (player.playbackState == Player.STATE_ENDED),

@@ -186,14 +186,14 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
               key={index}
               style={[
                 styles.queueItem,
-                index === player?.getCurrentQueueIndex() && styles.activeQueueItem,
+                index === status?.currentQueueIndex && styles.activeQueueItem,
                 isSelectionMode && selectedTracks.includes(index) && styles.selectedQueueItem,
               ]}
               onPress={() =>
                 isSelectionMode ? toggleTrackSelection(index) : player?.skipToQueueIndex(index)
               }>
               <View style={styles.trackInfo}>
-                {index === player?.getCurrentQueueIndex() && (
+                {index === status?.currentQueueIndex && (
                   <Ionicons
                     name={status.playing ? 'play-circle' : 'pause-circle'}
                     size={24}
@@ -204,7 +204,7 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
                 <Text
                   style={[
                     styles.trackName,
-                    index === player?.getCurrentQueueIndex() && styles.activeTrackName,
+                    index === status?.currentQueueIndex && styles.activeTrackName,
                   ]}
                   numberOfLines={1}>
                   {renderTrackName(item)}

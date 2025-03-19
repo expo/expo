@@ -60,6 +60,7 @@ function getStatusFromMedia(media, id) {
         currentTime: media.currentTime * 1000,
         playbackState: '',
         timeControlStatus: isPlaying ? 'playing' : 'paused',
+        currentQueueIndex: null,
         reasonForWaitingToPlay: '',
         playing: isPlaying,
         didJustFinish: media.ended,

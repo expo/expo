@@ -290,6 +290,20 @@ class AudioModule : Module() {
         }
       }
 
+      Function("addToQueue") { ref: AudioPlayer, sources: List<AudioSource>, insertBeforeIndex: Int? ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaItems = createMediaItems(sources)
+
+            if (insertBeforeIndex != null) {
+              ref.player.addMediaItems(insertBeforeIndex, mediaItems)
+            } else {
+              ref.player.addMediaItems(mediaItems)
+            }
+          }
+        }
+      }
+
       Function("removeFromQueue") { ref: AudioPlayer, sources: List<AudioSource> ->
         runOnMain {
           if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {

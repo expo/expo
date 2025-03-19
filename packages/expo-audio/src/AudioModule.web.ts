@@ -82,6 +82,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     currentTime: media.currentTime * 1000,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',
+    currentQueueIndex: null, // todo: implement
     reasonForWaitingToPlay: '',
     playing: isPlaying,
     didJustFinish: media.ended,
