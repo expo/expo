@@ -180,7 +180,7 @@ This will cause **app/(logged-in)/\_layout.tsx** to re-render again. This time, 
 
 ## Sometimes the best route isn't a route at all
 
-Separating your navigation states into distinct routes is meant to serve you and your app. Sometimes the best pattern for the job will not involve navigating to another route at all. Since layout files are just React components, you can use them display all sorts of UI around, besides, or instead of a navigator.
+Separating your navigation states into distinct routes is meant to serve you and your app. Sometimes the best pattern for the job will not involve navigating to another route at all. Since layout files are just React components, you can use them to display all sorts of UI around, besides, or instead of a navigator.
 
 Thinking back to authentication, the protected route setup works great if the user should simply not be able to visit certain pages without logging in. But what about when unauthenticated users can browse an app in read-only mode? In that case, you might want to show a login modal over the app, rather than redirecting the user to a login page:
 
