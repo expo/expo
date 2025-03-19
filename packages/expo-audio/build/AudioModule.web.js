@@ -111,10 +111,6 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     get paused() {
         return this.media.paused;
     }
-    // TODO: Implement
-    get currentQueueIndex() {
-        return -1;
-    }
     get isLoaded() {
         return this.loaded;
     }
@@ -145,6 +141,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     stop() {
         throw new Error('Not implemented');
     }
+    // TODO
+    clearQueue() {
+        throw new Error('Not implemented');
+    }
     replace(source) {
         this.src = source;
         this.media = this._createMediaElement();
@@ -155,6 +155,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     }
     // TODO
     getCurrentQueue() {
+        throw new Error('Not implemented');
+    }
+    // TODO
+    getCurrentQueueIndex() {
         throw new Error('Not implemented');
     }
     // TODO

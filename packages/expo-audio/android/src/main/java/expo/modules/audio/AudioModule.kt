@@ -266,10 +266,94 @@ class AudioModule : Module() {
             val mediaSource = createMediaItem(source)
             val wasPlaying = ref.player.isPlaying
             mediaSource?.let {
-              ref.player.replaceMediaItem(0, it.mediaItem)
+              ref.player.clearMediaItems() // clear potential queued tracks
+              ref.player.setMediaItem(it.mediaItem)
               if (wasPlaying) {
                 ref.player.play()
               }
+            }
+          }
+        }
+      }
+
+      Function("setQueue") { ref: AudioPlayer, sources: List<AudioSource> ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaItems = createMediaItems(sources)
+
+            if (mediaItems.isNotEmpty()) {
+              ref.player.clearMediaItems()
+              ref.player.setMediaItems(mediaItems)
+              ref.player.prepare()
+            }
+          }
+        }
+      }
+
+      Function("removeFromQueue") { ref: AudioPlayer, sources: List<AudioSource> ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaItems = createMediaItems(sources)
+
+            ref.removeFromQueue(mediaItems)
+          }
+        }
+      }
+
+      Function("getCurrentQueue") { ref: AudioPlayer ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_GET_TIMELINE)) {
+            val currentMediaItems = ref.getCurrentQueue()
+
+            // convert MediaItem to AudioSource
+            currentMediaItems.map { mediaItem ->
+              val uri = mediaItem.localConfiguration?.uri?.toString() ?: ""
+              AudioSource(uri = uri, headers = null)
+            }
+          } else {
+            emptyList()
+          }
+        }
+      }
+
+      Function("getCurrentQueueIndex") { ref: AudioPlayer ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_GET_TIMELINE)) {
+            ref.player.currentMediaItemIndex
+          }
+        }
+      }
+
+      Function("clearQueue") { ref: AudioPlayer ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            ref.player.clearMediaItems()
+            ref.player.stop()
+          }
+        }
+      }
+
+      Function("skipToNext") { ref: AudioPlayer ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_SEEK_TO_NEXT)) {
+            ref.player.seekToNextMediaItem()
+          }
+        }
+      }
+
+      Function("skipToPrevious") { ref: AudioPlayer ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_SEEK_TO_PREVIOUS)) {
+            ref.player.seekToPreviousMediaItem()
+          }
+        }
+      }
+
+      Function("skipToQueueIndex") { ref: AudioPlayer, index: Int ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_SEEK_TO_MEDIA_ITEM)) {
+            if (index >= 0 && index < ref.player.mediaItemCount) {
+              ref.player.seekTo(index, 0)
             }
           }
         }
@@ -378,6 +462,12 @@ class AudioModule : Module() {
     }
     val item = MediaItem.fromUri(uri)
     buildMediaSourceFactory(factory, item)
+  }
+
+  fun createMediaItems(sources: List<AudioSource>): List<MediaItem> {
+    return sources.mapNotNull { source ->
+      createMediaItem(source)?.mediaItem
+    }
   }
 
   private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {

@@ -90,6 +90,12 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     setQueueItems(player?.getCurrentQueue());
   };
 
+  const clearQueue = () => {
+    player?.clearQueue();
+    setQueueItems([]);
+    setSelectedTracks([]);
+  };
+
   const stopPlayer = () => {
     player?.stop();
     setQueueItems([]);
@@ -147,8 +153,10 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     <View style={styles.container}>
       <View style={styles.queueContainer}>
         <View style={styles.queueHeader}>
-          <Text style={styles.queueTitle}>Queue</Text>
           <View style={styles.headerButtons}>
+            <TouchableOpacity style={styles.headerButton} onPress={clearQueue}>
+              <Ionicons name="trash-outline" size={24} color="red" />
+            </TouchableOpacity>
             <TouchableOpacity
               style={[styles.headerButton, isSelectionMode && styles.activeHeaderButton]}
               onPress={() => setIsSelectionMode(!isSelectionMode)}>
@@ -178,14 +186,14 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
               key={index}
               style={[
                 styles.queueItem,
-                index === player?.currentQueueIndex && styles.activeQueueItem,
+                index === player?.getCurrentQueueIndex() && styles.activeQueueItem,
                 isSelectionMode && selectedTracks.includes(index) && styles.selectedQueueItem,
               ]}
               onPress={() =>
                 isSelectionMode ? toggleTrackSelection(index) : player?.skipToQueueIndex(index)
               }>
               <View style={styles.trackInfo}>
-                {index === player?.currentQueueIndex && (
+                {index === player?.getCurrentQueueIndex() && (
                   <Ionicons
                     name={status.playing ? 'play-circle' : 'pause-circle'}
                     size={24}
@@ -196,7 +204,7 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
                 <Text
                   style={[
                     styles.trackName,
-                    index === player?.currentQueueIndex && styles.activeTrackName,
+                    index === player?.getCurrentQueueIndex() && styles.activeTrackName,
                   ]}
                   numberOfLines={1}>
                   {renderTrackName(item)}
@@ -320,7 +328,6 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 8,
-    marginRight: 8,
   },
   activeHeaderButton: {
     backgroundColor: '#E3F2FD',
@@ -338,7 +345,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   replaceButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: 'green',
   },
   setQueueButtonText: {
     color: '#fff',

@@ -149,11 +149,6 @@ export class AudioPlayerWeb
     return this.media.paused;
   }
 
-  // TODO: Implement
-  get currentQueueIndex(): number {
-    return -1;
-  }
-
   get isLoaded(): boolean {
     return this.loaded;
   }
@@ -193,6 +188,11 @@ export class AudioPlayerWeb
     throw new Error('Not implemented');
   }
 
+  // TODO
+  clearQueue(): void {
+    throw new Error('Not implemented');
+  }
+
   replace(source: AudioSource): void {
     this.src = source;
     this.media = this._createMediaElement();
@@ -205,6 +205,11 @@ export class AudioPlayerWeb
 
   // TODO
   getCurrentQueue(): AudioSource[] {
+    throw new Error('Not implemented');
+  }
+
+  // TODO
+  getCurrentQueueIndex(): number | null {
     throw new Error('Not implemented');
   }
 

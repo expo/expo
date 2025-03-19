@@ -103,11 +103,6 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   currentStatus: AudioStatus;
 
   /**
-   * The current index of the queue. Returns -1 when queue is empty.
-   */
-  currentQueueIndex: number;
-
-  /**
    * Start playing audio.
    */
   play(): void;
@@ -121,6 +116,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Pauses playback, unloads current track or queue, updates playback status.
    */
   stop(): void;
+
+  /**
+   * Clears the queue and stops the playback.
+   */
+  clearQueue(): void;
 
   /**
    * Replaces the current audio source with a new one.
@@ -139,6 +139,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * The current queue of audio sources.
    */
   getCurrentQueue(): AudioSource[];
+
+  /**
+   * The current index of the queue. Returns null if no track loaded
+   */
+  getCurrentQueueIndex(): number | null;
 
   /**
    * Adds tracks to the queue at an optionally specified index.
