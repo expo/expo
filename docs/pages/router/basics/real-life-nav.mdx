@@ -150,7 +150,7 @@ export default function AuthLayout() {
 
 Further, if a user tries to navigate to a deep link that's inside the `(logged-in)` group, they will also be redirected to the login page. Every layout on the way to the route you're navigating to is first rendered before the route itself.
 
-The data source for checking authentication status could be React context, a state library, or a 3rd party auth framework. In the case of a reactive data source like context, not only will this redirect an unauthenticated user when first entering app, but it will also redirect them if their session becomes invalid while using the app, as this layout component will re-render at that time.
+The data source for checking authentication status could be React context, a state library, or a third-party auth framework. In the case of a reactive data source like context, not only will this redirect an unauthenticated user when first entering the app, but it will also redirect them if their session becomes invalid while using the app, as this layout component will re-render at that time.
 
 In the **app/login.tsx** file, attempt to reroute the user to the `/(logged-in)` route after successful authentication:
 
