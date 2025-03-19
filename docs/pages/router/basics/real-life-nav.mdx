@@ -4,6 +4,9 @@ description: Apply Expo Router basics to real-life navigation patterns used in y
 sidebar_title: Common patterns
 ---
 
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 
 Now that you know the basics of how files and directories are named and arranged in Expo Router, let's apply that knowledge, looking at some real-life navigation patterns you might use in your app.
@@ -72,7 +75,12 @@ You can also navigate from any other tab to a post in the feed tab with the same
 
 You can also nest tabs inside of an outer stack navigator. That is often more useful for displaying modals over the tabs.
 
-[Learn more about nested navigators](/router/advanced/nested-navigators/).
+<BoxLink
+  title="Nested navigators"
+  description="Learn more about how to use nested navigators in your Expo Router app."
+  href="/router/advanced/nested-navigators/"
+  Icon={DocsLogo}
+/>
 
 ## One screen, two tabs: sharing routes
 
@@ -96,8 +104,8 @@ import { Tabs } from 'expo-router';
 export default function TabLayout() {
   return (
     <Tabs>
-      <Tabs.Screen name="(feed)" options={{ title="Feed" }} />
-      <Tabs.Screen name="search" options={{ title="Search" }} />
+      <Tabs.Screen name="(feed)" options={{ title = 'Feed' }} />
+      <Tabs.Screen name="search" options={{ title = 'Search' }} />
     </Tabs>
   );
 }
@@ -115,7 +123,12 @@ export default function SharedLayout() {
 
 Now, both tabs can navigate to `/users/evanbacon` and see the same user profile page.
 
-[Learn more about shared routes](/router/advanced/shared-routes/).
+<BoxLink
+  title="Shared Routes"
+  description="Learn more about how distinct routes can share the same URL in Expo Router."
+  href="/router/advanced/shared-routes/"
+  Icon={DocsLogo}
+/>
 
 ## Authenticated users only protecting routes
 
@@ -179,7 +192,12 @@ export default function Login() {
 
 This will cause **app/(logged-in)/\_layout.tsx** to re-render again. This time, the authentication check will pass, and the app will proceed to the default route.
 
-[Learn more about using protected routes to implement authentication](/router/advanced/auhentication/).
+<BoxLink
+  title="Expo Router Authentication Guide"
+  description="Follow an in-depth example of implementing authentication using protected routes."
+  href="/router/advanced/auhentication/"
+  Icon={DocsLogo}
+/>
 
 ## Sometimes the best route isn't a route at all
 
@@ -203,4 +221,9 @@ export default function Layout() {
 }
 ```
 
-[Learn more about displaying modals over routes](/advanced/modals/#react-natives-modal-component).
+<BoxLink
+  title="Modals in Expo Router"
+  description="Learn multiple patterns for displaying modals in Expo Router, including using a modal inside of a layout file."
+  href="/advanced/modals/"
+  Icon={DocsLogo}
+/>
