@@ -57,7 +57,7 @@ export default function FeedLayout() {
 }
 ```
 
-Now, within the **app/(tabs)/feed** folder, you can have `Link` components that point to different posts (e.g., `/feed/123`). Those links will push the `feed/[postId]` route onto the stack, leaving the tab navigator visible.
+Now, within the **app/(tabs)/feed** directory, you can have `Link` components that point to different posts (for example, `/feed/123`). Those links will push the `feed/[postId]` route onto the stack, leaving the tab navigator visible.
 
 You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `initialRouteName` to ensure that the `feed/index` route is always the first screen in the stack:
 
