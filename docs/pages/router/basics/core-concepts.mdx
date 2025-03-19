@@ -30,7 +30,7 @@ Every project should have a **\_layout.tsx** file directly inside the **app** fo
 
 ### 5. Non-navigation components live outside of /app
 
-In Expo Router, the **app** folder is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level folders. If you put a non-route inside of the **app** folder, Expo Router will attempt to treat it like a route.
+In Expo Router, the **app** directory is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level directories. If you put a non-route inside of the **app** directory, Expo Router will attempt to treat it like a route.
 
 Alternatively, you can create a [top-level **src** directory](/router/reference/src-directory/) and put your routes inside the **src/app** directory, with non-route components going in folders like **src/components**, **src/utils**, and so on. This is the only other directory structure that Expo Router will recognize.
 
