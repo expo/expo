@@ -22,7 +22,7 @@ export default function Home() {
 }
 ```
 
-Expo Router apps default to stack navigation, where navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack. Usually, you would want to use the `router.navigate` function. This will either push a new page onto the stack or unwinding to an existing route on the stack. However, you can also call `router.push` to explicitly push a new page onto the stack, `router.back` to go back to the previous page, or `router.replace` to replace the current page on the stack.
+Expo Router apps default to stack navigation, where navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack. Usually, you would want to use the `router.navigate` function. This will either push a new page onto the stack or unwind to an existing route on the stack. However, you can also call `router.push` to explicitly push a new page onto the stack, `router.back` to go back to the previous page, or `router.replace` to replace the current page on the stack.
 
 With Expo Router, you refer to pages by their URL, or their position relative to the **app** folder. Check out the following file structure and how you would navigate to each page:
 
