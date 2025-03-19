@@ -71,6 +71,6 @@ Consider the following project file structure to identify the different types of
 - **app/users/[userId].tsx** is a dynamic route that matches `/users/123`, `/users/456`, and so on.
 - **app/(tabs)** is a route group. It will not factor into the URL, so `/feed` will match **app/(tabs)/feed.tsx**.
 - **app/(tabs)/index.tsx** is the default route for the **(tabs)** folder, so it will be the initially-focusd tab, and will match the `/` URL.
-- **app/(tabs)/_layout.tsx** is a layout file defining how the three pages inside **app/(tabs)** relate to each other. If we use a tab navigator component inside of this file, then those screens will be arranged as tabs.
+- **app/(tabs)/_layout.tsx** is a layout file defining how the three pages inside **app/(tabs)/** relate to each other. If you use a tab navigator component inside of this file, then those screens will be arranged as tabs.
 - **app/\_layout.tsx** is the root layout file, and is rendered before any other route in the app.
 - **+not-found.tsx** is a special route that will be displayed if the user navigates to a route that doesn't exist in your app.
