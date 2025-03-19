@@ -27,12 +27,15 @@ Consider the following navigation tree:
 
 In the **app/(tabs)\_layout.tsx** file, return a `Tabs` component:
 
+{/* prettier-ignore */}
 ```tsx _layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    /* @info Each navigator adds it's own header, so you will likely want to hide the header in the outer navigator. */
+    <Tabs screenOptions={{ headerShown: false }}>
+    /* @end */
       <Tab.Screen name="index" options={{ title: 'Home' }} />
       <Tab.Screen name="feed" options={{ title: 'Feed' }} />
       <Tab.Screen name="settings" options={{ title: 'Settings' }} />
