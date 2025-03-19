@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions } from './NativeDatabase';
+import { SQLiteSession } from './SQLiteSession';
 import { SQLiteStatement, } from './SQLiteStatement';
 import { createDatabasePath } from './pathUtils';
 /**
@@ -53,6 +54,16 @@ export class SQLiteDatabase {
         const nativeStatement = new ExpoSQLite.NativeStatement();
         await this.nativeDatabase.prepareAsync(nativeStatement, source);
         return new SQLiteStatement(this.nativeDatabase, nativeStatement);
+    }
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    async createSessionAsync(dbName = 'main') {
+        const nativeSession = new ExpoSQLite.NativeSession();
+        await this.nativeDatabase.createSessionAsync(nativeSession, dbName);
+        return new SQLiteSession(this.nativeDatabase, nativeSession);
     }
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
@@ -172,6 +183,19 @@ export class SQLiteDatabase {
         const nativeStatement = new ExpoSQLite.NativeStatement();
         this.nativeDatabase.prepareSync(nativeStatement, source);
         return new SQLiteStatement(this.nativeDatabase, nativeStatement);
+    }
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     *
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    createSessionSync(dbName = 'main') {
+        const nativeSession = new ExpoSQLite.NativeSession();
+        this.nativeDatabase.createSessionSync(nativeSession, dbName);
+        return new SQLiteSession(this.nativeDatabase, nativeSession);
     }
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.

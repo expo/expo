@@ -43,6 +43,8 @@ public:
   // helpers
   jni::local_ref<jni::JString> convertSqlLiteErrorToString();
 
+  sqlite3 *rawdb() { return db; }
+
 private:
   explicit NativeDatabaseBinding(
       jni::alias_ref<NativeDatabaseBinding::jhybridobject> jThis)

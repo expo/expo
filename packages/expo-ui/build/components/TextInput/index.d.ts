@@ -1,5 +1,8 @@
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../src/types';
+/**
+ * @hidden Not used anywhere yet.
+ */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 /**
  * Props for the TextInput component.
@@ -30,6 +33,27 @@ export type TextInputProps = {
     numberOfLines?: number;
     /**
      * Determines which keyboard to open, e.g., numeric.
+     *
+     * Types that work on both platforms:
+     * - default
+     * - numeric
+     * - email-address
+     * - phone-pad
+     * - decimal-pad
+     * - ascii-capable
+     * - url
+     *
+     * Types that only work on Android:
+     * - password
+     * - password-numeric
+     *
+     * Types that only work on iOS:
+     * - numbers-and-punctuation
+     * - name-phone-pad
+     * - twitter
+     * - web-search
+     * - ascii-capable-number-pad
+     *
      * @default default
      */
     keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
@@ -41,7 +65,6 @@ export type TextInputProps = {
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
-    eventIndex: number;
 }>;
 export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
