@@ -140,7 +140,7 @@ Consider the following file structure:
   ]}
 />
 
-For example, you may want to wrap any route inside the **social** directory with a header and footer, but you want navigating between the pages to simply replace the current page rather than pushing a new page onto a stack, like what would happen with a `Stack` navigator. In the **\_layout.tsx** file, return a `Slot` component surrounded by your header and footer:
+For example, you may want to wrap any route inside the **social** directory with a header and footer, but you want navigating between the pages to simply replace the current page rather than pushing new pages onto a stack, which can then later be popped off with a "back" navigation action. In the **\_layout.tsx** file, return a `Slot` component surrounded by your header and footer:
 
 ```tsx app/social/_layout.tsx
 import { Slot } from 'expo-router';
