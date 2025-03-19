@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
+- Update mocks to for esm exports. ([#35574](https://github.com/expo/expo/pull/35574) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

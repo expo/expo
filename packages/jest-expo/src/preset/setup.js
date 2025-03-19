@@ -165,20 +165,26 @@ jest.mock('@react-native/assets-registry/registry', () => ({
   })),
 }));
 
-jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
+jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => ({
+  __esModule: true,
+  default: mockNativeModules,
+}));
 
 jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
-  ignoreLogs: (patterns) => {
-    // Do nothing.
-  },
-  ignoreAllLogs: (value) => {
-    // Do nothing.
-  },
-  install: () => {
-    // Do nothing.
-  },
-  uninstall: () => {
-    // Do nothing.
+  __esModule: true,
+  default: {
+    ignoreLogs: (patterns) => {
+      // Do nothing.
+    },
+    ignoreAllLogs: (value) => {
+      // Do nothing.
+    },
+    install: () => {
+      // Do nothing.
+    },
+    uninstall: () => {
+      // Do nothing.
+    },
   },
 }));
 
