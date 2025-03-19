@@ -125,6 +125,8 @@ It's also possible for shared groups to only contain the shared pages, with each
 
 Now, both tabs can navigate to `/users/evanbacon` and see the same user profile page.
 
+When you're already focused on a tab and navigating to a user, you will stay in that current tab's group. But when deep-linking directly to a user profile page from outside the app, Expo Router has to pick one of the two groups, so it will pick the first group alphabetically. Therefore, deep-linking to `/users/evanbacon` will show the user profile in the Feed tab.
+
 <BoxLink
   title="Shared Routes"
   description="Learn more about how distinct routes can share the same URL in Expo Router."
