@@ -9,7 +9,7 @@ export type DisclosureGroupProps = {
   title: string;
 
   /**
-   * Expandation state of the DisclosureGroup.
+   * If true, the DisclosureGroup displays it's content.
    */
   isExpanded?: boolean;
 
