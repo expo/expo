@@ -1,5 +1,7 @@
 import ExpoModulesCore
 import Combine
+import AVFoundation
+import Foundation
 
 private enum AudioConstants {
   static let playbackStatus = "playbackStatusUpdate"
@@ -17,16 +19,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ref.rate != 0.0
   }
 
-  private var queue: [AudioSource] = []
-  private var queueIndex: Int = -1
-  private var isPlayingBeforeQueueAdvance = false
+  private var audioQueue: AudioQueue?
 
   // MARK: Observers
   private var timeToken: Any?
   private var cancellables = Set<AnyCancellable>()
   private var endObserver: NSObjectProtocol?
-  private var queueObservation: NSKeyValueObservation?
-  private var queueItemObserver: NSObjectProtocol?
 
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
@@ -45,6 +43,24 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.interval = interval
     super.init(ref)
 
+    self.audioQueue = AudioQueue(player: ref)
+    self.audioQueue?.onQueueChanged = { [weak self] (info: [String: Any]) -> [String: Any]? in
+      guard let self = self else { return nil }
+
+      if let isLooping = info["queryLooping"] as? Bool {
+        return ["isLooping": self.isLooping]
+      }
+
+      var statusInfo = info
+
+      if let isPlaying = info["isPlaying"] as? Bool {
+        statusInfo["playing"] = isPlaying
+      }
+
+      self.updateStatus(with: statusInfo)
+      return nil
+    }
+
     setupPublisher()
   }
 
@@ -61,53 +77,23 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func getCurrentQueue() -> [[String: Any]] {
-    return queue.enumerated().map { _, source in
-      var result: [String: Any] = [:]
-
-      if let uri = source.uri {
-        result["uri"] = uri.absoluteString
-      }
-
-      if let headers = source.headers {
-        result["headers"] = headers
-      }
-
-      return result
-    }
+    return audioQueue?.getCurrentQueue() ?? []
   }
 
   var currentQueueIndex: Int {
-    return queueIndex
+    return audioQueue?.currentIndex ?? -1
   }
 
   func addToQueue(sources: [AudioSource], insertBeforeIndex: Int? = nil) {
-    guard !sources.isEmpty else { return }
-
-    var insertIndex = insertBeforeIndex
-
-    // If insertBeforeIndex is nil or out of bounds, add to the end
-    if insertIndex == nil || insertIndex! >= queue.count || insertIndex! < 0 {
-      insertIndex = queue.count
-    }
-
-    queue.insert(contentsOf: sources, at: insertIndex!)
-
-    // If the queue was empty, start playing the first track
-    if queueIndex == -1 && !queue.isEmpty {
-      advanceQueue(to: 0)
-    }
+    audioQueue?.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
   }
 
   func stop() {
     ref.pause()
     ref.replaceCurrentItem(with: nil)
 
-
-    queue = []
-    queueIndex = -1
-    isPlayingBeforeQueueAdvance = false
-
-    cleanupQueueObservers()
+    // todo: add clear fn
+    audioQueue?.setQueue(sources: [])
 
     updateStatus(with: [
       "isPlaying": false,
@@ -117,155 +103,24 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ])
   }
 
-  func removeFromQueue(sources: [AudioSource]) {
-    // Create a set of URIs to remove for efficient lookup
-    let urisToRemove = Set(sources.compactMap { $0.uri?.absoluteString })
-
-    let indicesToRemove = queue.enumerated()
-      .filter { _, source in
-        if let uri = source.uri?.absoluteString, urisToRemove.contains(uri) {
-          return true
-        }
-        return false
-      }
-      .map { index, _ in index }
-      .sorted(by: >)
-
-    for index in indicesToRemove {
-      queue.remove(at: index)
-    }
-
-    // Check if current track was removed or if the index is now out of bounds
-    if indicesToRemove.contains(queueIndex) || queueIndex >= queue.count {
-      if queue.isEmpty {
-        queueIndex = -1
-
-        ref.pause()
-
-        return
-      }
-
-      // If current track was removed, play the next track or the first track
-      let nextIndex = min(queueIndex, queue.count - 1)
-      advanceQueue(to: nextIndex)
-      return
-    }
-
-    // Check if tracks were removed before the current index
-    let removedBeforeCurrent = indicesToRemove.filter { $0 < queueIndex }
-
-    if !removedBeforeCurrent.isEmpty {
-      // Adjust queueIndex if tracks were removed before it
-      queueIndex -= removedBeforeCurrent.count
-    }
+ func removeFromQueue(sources: [AudioSource]) {
+    audioQueue?.removeFromQueue(sources: sources)
   }
 
   func skipToQueueIndex(index: Int) {
-    guard index >= 0 && index < queue.count else { return }
-
-    advanceQueue(to: index)
+    audioQueue?.skipToIndex(index)
   }
 
   func skipToNext() {
-    guard !queue.isEmpty else { return }
-
-    let nextIndex = (queueIndex + 1) % queue.count
-    skipToQueueIndex(index: nextIndex)
+    audioQueue?.skipToNext()
   }
 
   func skipToPrevious() {
-    guard !queue.isEmpty else { return }
-
-    let previousIndex = (queueIndex - 1 + queue.count) % queue.count
-    skipToQueueIndex(index: previousIndex)
-  }
-
-  private func cleanupQueueObservers() {
-    queueObservation?.invalidate()
-    queueObservation = nil
-
-    if let observer = queueItemObserver {
-      NotificationCenter.default.removeObserver(observer)
-      queueItemObserver = nil
-    }
+    audioQueue?.skipToPrevious()
   }
 
   func setQueue(sources: [AudioSource]) {
-    cleanupQueueObservers()
-
-    queue = sources
-    queueIndex = -1
-
-    if !queue.isEmpty {
-      advanceQueue(to: 0)
-    }
-  }
-
-  private func advanceQueue(to index: Int) {
-    guard index >= 0 && index < queue.count else { return }
-
-    isPlayingBeforeQueueAdvance = isPlaying
-
-    queueIndex = index
-    replaceCurrentSource(source: queue[queueIndex])
-
-    // Set up observation for this item
-    setupQueueItemObservation()
-  }
-
-  private func setupQueueItemObservation() {
-    cleanupQueueObservers()
-
-    // Observe when the current item becomes ready to play
-    queueObservation = ref.observe(\.currentItem?.status) { [weak self] _, _ in
-      guard let self = self,
-            let currentItem = self.ref.currentItem,
-            currentItem.status == .readyToPlay else { return }
-
-      // Set up notification for when this track ends
-      self.setupTrackEndNotification(for: currentItem)
-
-      // Resume playback if it was playing before
-      if self.isPlayingBeforeQueueAdvance {
-        self.ref.play()
-      }
-
-      self.updateStatus(with: [
-        "isPlaying": self.isPlayingBeforeQueueAdvance,
-        "currentTime": 0
-      ])
-    }
-  }
-
-  private func setupTrackEndNotification(for item: AVPlayerItem) {
-    if let observer = queueItemObserver {
-      NotificationCenter.default.removeObserver(observer)
-    }
-
-    queueItemObserver = NotificationCenter.default.addObserver(
-      forName: .AVPlayerItemDidPlayToEndTime,
-      object: item,
-      queue: nil
-    ) { [weak self] _ in
-      guard let self = self else { return }
-
-      if self.isLooping {
-        self.ref.seek(to: CMTime.zero)
-        self.ref.play()
-        return
-      }
-
-      if self.queueIndex < self.queue.count - 1 {
-        self.advanceQueue(to: self.queueIndex + 1)
-        return
-      }
-
-      self.updateStatus(with: [
-        "isPlaying": false,
-        "currentTime": self.duration,
-        "didJustFinish": true
-      ])
-    }
+    audioQueue?.setQueue(sources: sources)
   }
 
   func play(at rate: Float) {
@@ -285,7 +140,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   func currentStatus() -> [String: Any] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
-    return [
+    var statusDict: [String: Any] = [
       "id": id,
       "currentTime": currentTime,
       "playbackState": statusToString(status: ref.status),
@@ -301,6 +156,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]
+
+     // Add queue index if it exists and is valid
+    if let index = audioQueue?.currentIndex, index >= 0 {
+      statusDict["currentQueueIndex"] = index
+    } else {
+      statusDict["currentQueueIndex"] = NSNull()
+    }
+
+    return statusDict
   }
 
   func updateStatus(with dict: [String: Any]) {
@@ -330,23 +194,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         }
       }
       .store(in: &cancellables)
-  }
-
-  private func replaceCurrentSource(source: AudioSource) {
-    let wasPlaying = ref.timeControlStatus == .playing
-    let wasSamplingEnabled = samplingEnabled
-    ref.pause()
-
-    // Remove the audio tap if it is active
-    if samplingEnabled {
-      setSamplingEnabled(enabled: false)
-    }
-    ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
-    shouldInstallAudioTap = wasSamplingEnabled
-
-    if wasPlaying {
-      ref.play()
-    }
   }
 
   private func playerIsBuffering() -> Bool {
