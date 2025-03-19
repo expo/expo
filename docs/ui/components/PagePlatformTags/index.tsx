@@ -13,10 +13,11 @@ export function PagePlatformTags({ platforms }: Props) {
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {
           if (platform.includes('*')) {
+            const text = platform.replace('*', ' - device only');
             return (
-              <Tooltip.Root key={platform}>
+              <Tooltip.Root key={text}>
                 <Tooltip.Trigger className="cursor-default">
-                  <PlatformTag platform={platform} className="rounded-full px-2.5 py-1.5" />
+                  <PlatformTag platform={text} className="rounded-full px-2.5 py-1.5" />
                 </Tooltip.Trigger>
                 <Tooltip.Content side="bottom">
                   {platform.startsWith('android') && (
