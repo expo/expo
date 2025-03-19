@@ -73,6 +73,9 @@ class GroupViewManagerWrapper(
   }
 
   override fun getChildCount(parent: ViewGroup): Int {
+    if(parent is ExpoComposeView<*>) {
+      return parent.getComposeChildCount()
+    }
     return viewWrapperDelegate.viewGroupDefinition
       ?.getChildCountAction
       ?.invoke(parent)
@@ -82,6 +85,9 @@ class GroupViewManagerWrapper(
   }
 
   override fun getChildAt(parent: ViewGroup, index: Int): View? {
+    if(parent is ExpoComposeView<*>) {
+      return parent.getComposeChildAt(index)
+    }
     viewWrapperDelegate.viewGroupDefinition
       ?.getChildAtAction
       ?.let {
@@ -100,6 +106,7 @@ class GroupViewManagerWrapper(
         super.removeViewAt(parent, index)
       }
   }
+
 
   override fun removeView(parent: ViewGroup, view: View) {
     viewWrapperDelegate.viewGroupDefinition

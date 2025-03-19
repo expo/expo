@@ -1,5 +1,6 @@
 package expo.modules.kotlin.views
 
+import android.view.View
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 
@@ -8,5 +9,5 @@ import androidx.compose.runtime.mutableStateOf
  * Needed for the R8 to not remove needed  signatures that are used to receive prop types.
  */
 open class ComposeProps {
-  var _children: MutableState<List<ComposableChild>> = mutableStateOf(emptyList())
+  var innerChildren: MutableState<List<View>> = mutableStateOf(emptyList())
 }

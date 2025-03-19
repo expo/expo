@@ -30,7 +30,7 @@ data class TextInputProps(
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
-) : ComposeProps
+) : ComposeProps()
 
 fun String.keyboardType(): KeyboardType {
   return when (this) {
