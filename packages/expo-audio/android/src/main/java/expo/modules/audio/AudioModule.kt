@@ -260,6 +260,12 @@ class AudioModule : Module() {
         }
       }
 
+      Function("stop") { ref: AudioPlayer ->
+        runOnMain {
+          ref.player.stop()
+        }
+      }
+
       Function("replace") { ref: AudioPlayer, source: AudioSource ->
         runOnMain {
           if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
