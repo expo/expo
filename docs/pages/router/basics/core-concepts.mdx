@@ -59,4 +59,4 @@ Let's apply these foundational rules of Expo Router to quickly identify key elem
 - **app/home.tsx** is a page with the route `/home`, so you can navigate to it with a URL like `yourapp.com/home` in the browser, or `myapp://home` in a native app.
 - **app/\_layout.tsx** is the root layout. Any initialization code you may have previously put in **App.jsx** should go here.
 - **app/profile/friends.tsx** is a page with the route `/profile/friends`.
-- **TextField.tsx** and **Toolbar.tsx** are not in the **app** directory, so they will not be considered pages that navigated to. However, they can be used as components in the pages inside of **app**.
+- **TextField.tsx** and **Toolbar.tsx** are not in the **app** directory, so they will not be considered pages. They will not have a URL, and they cannot be the target of a navigation action. However, they can be used as components in the pages inside of the **app** directory.
