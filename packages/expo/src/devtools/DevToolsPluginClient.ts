@@ -76,13 +76,19 @@ export abstract class DevToolsPluginClient {
     this.sendMessageImpl(method, params);
   }
 
-  private async sendMessageImpl(method: string, params: any) {
+  private sendMessageImpl(method: string, params: any) {
     const messageKey: MessageFramePackerMessageKey = {
       pluginName: this.connectionInfo.pluginName,
       method,
     };
-    const packedData = await this.messageFramePacker.pack({ messageKey, payload: params });
-    this.wsStore.ws?.send(packedData);
+    const packedData = this.messageFramePacker.pack({ messageKey, payload: params });
+    if (!(packedData instanceof Promise)) {
+      this.wsStore.ws?.send(packedData);
+      return;
+    }
+    packedData.then((data) => {
+      this.wsStore.ws?.send(data);
+    });
   }
 
   /**
@@ -153,18 +159,20 @@ export abstract class DevToolsPluginClient {
   };
 
   private handleMessageImpl = async (event: WebSocketMessageEvent) => {
-    let buffer: ArrayBuffer;
-    if (event.data instanceof ArrayBuffer) {
-      buffer = event.data;
+    let data: ArrayBuffer | string;
+    if (typeof event.data === 'string') {
+      data = event.data;
+    } else if (event.data instanceof ArrayBuffer) {
+      data = event.data;
     } else if (ArrayBuffer.isView(event.data)) {
-      buffer = event.data.buffer;
+      data = event.data.buffer;
     } else if (event.data instanceof Blob) {
-      buffer = await blobToArrayBufferAsync(event.data);
+      data = await blobToArrayBufferAsync(event.data);
     } else {
       logger.warn('Unsupported received data type in handleMessageImpl');
       return;
     }
-    const { messageKey, payload } = await this.messageFramePacker.unpack(buffer);
+    const { messageKey, payload } = this.messageFramePacker.unpack(data);
     if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
       return;
     }
