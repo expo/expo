@@ -22,7 +22,7 @@ All pages have a URL path that matches the file's location in the **app** direct
 
 ### 3. First index.tsx is the initial route
 
-With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. This could be an **app/index.tsx** file, or, if you want to show an initial tab in a tab navigator, it could be an **app/(tabs)/index.tsx** file. If you nest **index.tsx** deeper than the top level folder, the key is to use route groups rather than static folder names, as a route group inside of **app** would still match the `/` URL.
+With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. This could be an **app/index.tsx** file, or if you want to show an initial tab in a tab navigator, it could be an **app/(tabs)/index.tsx** file. If you nest **index.tsx** deeper than the top-level directory, the key is to use route groups rather than static directory names, as a route group inside of **app** would still match the `/` URL.
 
 ### 4. Root \_layout.tsx replaces App.jsx
 
