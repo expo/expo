@@ -111,7 +111,7 @@ export default function TabLayout() {
 }
 ```
 
-Both the `(feed)` and `(search)` route groups contain stacks, so they can share a single layout:
+Both the `(feed)` and `(search)` route groups contain stacks, so they can also share a single layout:
 
 ```tsx (tabs)/(feed,search)/_layout.tsx
 import { Stack } from 'expo-router';
@@ -120,6 +120,8 @@ export default function SharedLayout() {
   return <Stack />;
 }
 ```
+
+It's also possible for shared groups to only contain the shared pages, with each distinct group having its own layout file.
 
 Now, both tabs can navigate to `/users/evanbacon` and see the same user profile page.
 
