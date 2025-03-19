@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 18.0.9 — 2025-03-31
