@@ -20,7 +20,7 @@ Regular folder and file names without any notation signify _static routes_. Thei
 
 <FileTree files={[['app/[userName].tsx'], ['app/products/[productId]/index.tsx']]} />
 
-If you see square brackets in a folder or file name, you are looking at a _dynamic route_. The name of the route includes a parameter that can be used when rendering the page. The parameter could be either in a folder name or a file name. For example, a file named **[userName].tsx** will match `/evanbacon`, `/expo`, or another username. Then you can access that parameter with the `useLocalSearchParams` hook inside the page, using that to load the data for that specific user.
+If you see square brackets in a file or directory name, you are looking at a _dynamic route_. The name of the route includes a parameter that can be used when rendering the page. The parameter could be either in a folder name or a file name. For example, a file named **[userName].tsx** will match `/evanbacon`, `/expo`, or another username. Then, you can access that parameter with the `useLocalSearchParams` hook inside the page, using that to load the data for that specific user.
 
 ### Parentheses
 
