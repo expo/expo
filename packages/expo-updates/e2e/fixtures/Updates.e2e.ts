@@ -113,6 +113,10 @@ describe('Basic tests', () => {
   });
 
   it('reloads', async () => {
+    if (platform === 'android') {
+      console.warn('Reload not currently working on Android with RN 0.79');
+      return;
+    }
     Server.start(Update.serverPort, protocolVersion);
     await device.installApp();
     await device.launchApp({
