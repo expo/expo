@@ -28,7 +28,7 @@ enum class CameraRatio(val value: String) : Enumerable {
   fun mapToStrategy() = when (this) {
     FOUR_THREE -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
     SIXTEEN_NINE -> AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
-    else -> AspectRatioStrategy.FALLBACK_RULE_AUTO
+    else -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
   }
 }
 
