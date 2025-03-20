@@ -1,7 +1,5 @@
 import ExpoModulesCore
 import Combine
-import AVFoundation
-import Foundation
 
 private enum AudioConstants {
   static let playbackStatus = "playbackStatusUpdate"

@@ -67,8 +67,8 @@ class AudioQueue {
             self.sources.append(contentsOf: sources)
         }
 
-        // If this is the first item, set it as current
-        if self.sources.count == sources.count {
+        // set index to 0 if previously reset
+        if currentIndex == -1 {
             advanceToIndex(0)
         }
     }
