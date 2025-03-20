@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'expo.modules.asset'
-version = '11.0.4'
+version = '11.0.5'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,6 +14,6 @@ android {
   namespace "expo.modules.asset"
   defaultConfig {
     versionCode 1
-    versionName "11.0.4"
+    versionName "11.0.5"
   }
 }

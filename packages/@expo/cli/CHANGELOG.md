@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.22.21 — 2025-03-20
+
+### 🐛 Bug fixes
+
 - Use explicit user-provided port for `expo run ios --port` when running in headless mode. ([#35582](https://github.com/expo/expo/pull/35582) by [@byCedric](https://github.com/byCedric))
 
 ## 0.22.20 — 2025-03-14
