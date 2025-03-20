@@ -35,7 +35,6 @@ public extension NotificationDelegate {
  Singleton that sets itself as the UserNotificationCenter delegate,
  and calls its own delegates in response to notification center calls.
  */
-@objc(EXNotificationCenterManager)
 public class NotificationCenterManager: NSObject,
   UNUserNotificationCenterDelegate,
   NotificationDelegate {
@@ -47,19 +46,14 @@ public class NotificationCenterManager: NSObject,
   var pendingResponses: [UNNotificationResponse] = []
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
 
-  // TODO: Once Swift conversion is complete, the old EXNotificationDelegate class will be removed, and
-  // we will need to add the initialization code below.
-  // For now, we allow EXNotificationDelegate to add itself as the user notification delegate, and call the
-  // shared instance of this class.
-  //
   private override init() {
     super.init()
     if UNUserNotificationCenter.current().delegate != nil {
       NSLog(
-        "[expo-notifications] EXNotificationCenterDelegate encountered already present delegate of " +
-        "UNUserNotificationCenter. EXNotificationCenterDelegate will not overwrite the value not to break other " +
+        "[expo-notifications] NotificationCenterManager encountered already present delegate of " +
+        "UNUserNotificationCenter. NotificationCenterManager will not overwrite the value not to break other " +
         "features of your app.  In return, expo-notifications may not work properly.  To fix this problem either " +
-        "remove setting of the second delegate, or set the delegate to an instance of EXNotificationCenterDelegate " +
+        "remove setting of the second delegate, or set the delegate to an instance of NotificationCenterManager " +
         "manually afterwards."
       )
       return
