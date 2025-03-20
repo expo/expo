@@ -11,6 +11,7 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  Platform,
 } from 'react-native';
 
 import { JsiAudioBar } from './JsiAudioBar';
@@ -274,23 +275,25 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
         </View>
       </Modal>
 
-      {/* TODO: FIX FOR WEB */}
-      <Player
-        {...status}
-        audioPan={0}
-        volume={player.volume}
-        style={style}
-        play={() => player.play()}
-        pause={() => player.pause()}
-        replace={() => setQueue()}
-        replay={() => player.seekTo(0)}
-        setPosition={(position: number) => player.seekTo(position)}
-        setIsLooping={setIsLooping}
-        setRate={setRate}
-        setIsMuted={setIsMuted}
-        setVolume={setVolume}
-        extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
-      />
+      {/* Currently slider crashing on web */}
+      {Platform.OS !== 'web' && (
+        <Player
+          {...status}
+          audioPan={0}
+          volume={player.volume}
+          style={style}
+          play={() => player.play()}
+          pause={() => player.pause()}
+          replace={() => setQueue()}
+          replay={() => player.seekTo(0)}
+          setPosition={(position: number) => player.seekTo(position)}
+          setIsLooping={setIsLooping}
+          setRate={setRate}
+          setIsMuted={setIsMuted}
+          setVolume={setVolume}
+          extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
+        />
+      )}
     </View>
   );
 }
