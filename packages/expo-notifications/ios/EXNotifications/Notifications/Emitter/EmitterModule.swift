@@ -9,7 +9,6 @@ let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
 let onDidClearNotificationResponse = "onDidClearNotificationResponse"
 
 public class EmitterModule: Module, NotificationDelegate {
-  var presentedNotifications: Set<String> = []
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
@@ -42,7 +41,7 @@ public class EmitterModule: Module, NotificationDelegate {
     // TODO: convert serialization to Records
     let serializedNotification = EXNotificationSerializer.serializedNotification(notification)
     self.sendEvent(onDidReceiveNotification, serializedNotification as [String: Any])
-    completionHandler([.badge, .banner, .sound])
+    completionHandler([])
     return true
   }
 }

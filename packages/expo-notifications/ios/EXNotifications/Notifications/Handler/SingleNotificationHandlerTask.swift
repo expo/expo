@@ -50,8 +50,8 @@ public class SingleNotificationHandlerTask {
       finish()
       return true
     }
-  finish()
-  return false
+    finish()
+    return false
   }
 
   public func finish() {
@@ -64,6 +64,7 @@ public class SingleNotificationHandlerTask {
     var options: UNNotificationPresentationOptions = []
 
     /*
+    (Alert option was deprecated in iOS 14)
     if let shouldShowAlert = behavior[shouldShowAlertKey] as? Bool, shouldShowAlert {
       options.insert(.alert)
     }
