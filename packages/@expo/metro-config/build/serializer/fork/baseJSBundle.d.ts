@@ -24,6 +24,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
         splitChunks?: boolean;
         output?: string;
         includeSourceMaps?: boolean;
+        isExporting?: boolean;
     };
     debugId?: string;
 };
