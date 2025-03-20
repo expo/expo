@@ -15,7 +15,7 @@ import {
 } from '../link/useDomComponentNavigation';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
-import { ScreenUnique } from '../useScreens';
+import { UniqueOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -140,7 +140,7 @@ export type LinkToOptions = {
    *
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
-  unique?: ScreenUnique;
+  unique?: UniqueOptions;
 };
 
 export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
@@ -196,7 +196,7 @@ function getNavigateAction(
   navigationState: NavigationState,
   type = 'NAVIGATE',
   withAnchor?: boolean,
-  unique?: ScreenUnique
+  unique?: UniqueOptions
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the

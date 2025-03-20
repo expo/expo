@@ -57,7 +57,7 @@ export declare class RouterStore {
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & Readonly<{
+    }>, "routes" | "stale">> & Readonly<{
         stale?: true | undefined;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
@@ -69,7 +69,7 @@ export declare class RouterStore {
             routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & Readonly<{
+        }>, "routes" | "stale">> & Readonly<{
             stale?: true | undefined;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
         }> & any) | undefined;

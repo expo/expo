@@ -67,7 +67,7 @@ const stackRouterOverride = (original) => {
                             [action.payload.name]: getIdFunction(),
                         },
                     });
-                    return filterUnique(nextState, actionGetId);
+                    return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
                 }
                 case 'NAVIGATE': {
                     /**
@@ -90,7 +90,7 @@ const stackRouterOverride = (original) => {
                             }),
                         },
                     });
-                    return filterUnique(nextState, actionGetId);
+                    return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
                 }
                 default: {
                     return original.getStateForAction(state, action, options);
@@ -102,7 +102,7 @@ const stackRouterOverride = (original) => {
 exports.stackRouterOverride = stackRouterOverride;
 function getActionUniqueIdFn(actionGetId, name) {
     if (typeof actionGetId === 'function') {
-        return actionGetId;
+        return (options) => actionGetId(options.params ?? {});
     }
     else if (actionGetId === true) {
         return (options) => (0, useScreens_1.getUniqueId)(name, options);

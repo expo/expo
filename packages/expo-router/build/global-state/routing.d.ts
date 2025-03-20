@@ -1,6 +1,6 @@
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
-import { ScreenUnique } from '../useScreens';
+import { UniqueOptions } from '../useScreens';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function reload(this: RouterStore): void;
@@ -30,7 +30,7 @@ export type LinkToOptions = {
      *
      * If used with `push`, the history will be filtered even if no navigation occurs.
      */
-    unique?: ScreenUnique;
+    unique?: UniqueOptions;
 };
 export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map

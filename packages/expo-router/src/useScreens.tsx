@@ -13,6 +13,7 @@ import React from 'react';
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
+import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';
 import { Try } from './views/Try';
@@ -43,12 +44,12 @@ export type ScreenProps<
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
-  unique?: ScreenUnique;
+  unique?: UniqueOptions;
 };
 
-export type ScreenUnique =
+export type UniqueOptions =
   | boolean
-  | ((options: { params?: Record<string, any> }) => string | undefined);
+  | ((name: string, params: UnknownOutputParams) => string | undefined);
 
 function getSortedChildren(
   children: RouteNode[],
@@ -99,8 +100,8 @@ function getSortedChildren(
           // If unique is set, use it as the getId function.
           if (typeof unique === 'string') {
             getId = () => unique;
-          } else if (typeof unique === 'function') {
-            getId = unique;
+          } else if (typeof unique === 'function' && name) {
+            getId = (options) => unique(name, options.params || {});
           } else if (unique === true && name) {
             getId = (options) => getUniqueId(name, options);
           }

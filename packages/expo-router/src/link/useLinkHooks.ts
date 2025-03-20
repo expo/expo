@@ -4,7 +4,7 @@ import { useMemo, MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent, Platform } from 'react-native';
 
 import { Href } from '../types';
-import { ScreenUnique } from '../useScreens';
+import { UniqueOptions } from '../useScreens';
 
 // docsMissing
 /**
@@ -218,7 +218,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
-  unique?: ScreenUnique;
+  unique?: UniqueOptions;
 }
 
 // Mutate the style prop to add the className on web.

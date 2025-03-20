@@ -1,6 +1,7 @@
 import type { EventMapBase, NavigationState, ParamListBase, RouteConfig, RouteProp, ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
+import { UnknownOutputParams } from './types';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
     name?: string;
@@ -21,17 +22,15 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
     getId?: ({ params }: {
         params?: Record<string, any>;
     }) => string | undefined;
-    unique?: ScreenUnique;
+    unique?: UniqueOptions;
 };
-export type ScreenUnique = boolean | ((options: {
-    params?: Record<string, any>;
-}) => string | undefined);
+export type UniqueOptions = boolean | ((params: Record<string, UnknownOutputParams>) => string | undefined);
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
 export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
-export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>>;
+export declare function getQualifiedRouteComponent(value: RouteNode): React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>> | React.ComponentType<any>;
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any, any>['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 export declare function getUniqueId(name: string, options?: {

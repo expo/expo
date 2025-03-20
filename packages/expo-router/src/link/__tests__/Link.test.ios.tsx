@@ -1,13 +1,13 @@
+import { NavigationState } from '@react-navigation/native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen, testRouter } from '../../testing-library';
+import { renderRouter, screen } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
-import { NavigationState } from '@react-navigation/native';
 
 // Render and observe the props of the Link component.
 
@@ -280,6 +280,115 @@ describe('unique', () => {
           name: '[slug]',
           params: {
             slug: 'apple',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+  });
+
+  test('can dynamically route using unique function', () => {
+    renderRouter(
+      {
+        '[slug]': () => (
+          <Link testID="link" href="/apple?id=1" unique={(_, params) => params.id?.toString()}>
+            Slug
+          </Link>
+        ),
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    act(() => router.push('/apple?id=1'));
+    act(() => router.push('/apple?id=1'));
+    act(() => router.push('/apple?id=2'));
+    act(() => router.push('/banana'));
+
+    expect(screen).toHaveRouterState({
+      index: 4,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '1' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '1' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '2' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'banana' },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+
+    // Should push /apple and remove all previous instances of /apple
+    act(() => fireEvent.press(screen.getByTestId('link')));
+
+    expect(screen).toHaveRouterState({
+      index: 3,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+          },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+            id: '2',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'banana',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+            id: '1',
           },
           path: undefined,
         },

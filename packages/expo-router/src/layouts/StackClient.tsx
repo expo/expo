@@ -19,7 +19,7 @@ import {
 import { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
-import { ScreenUnique, getUniqueId } from '../useScreens';
+import { UniqueOptions, getUniqueId } from '../useScreens';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -69,7 +69,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
       // The dynamic getId added to an action, `router.push('screen', { unique: true })`
       const actionGetId =
         action.payload && 'unique' in action.payload
-          ? (action.payload.unique as ScreenUnique)
+          ? (action.payload.unique as UniqueOptions)
           : undefined;
 
       // Handle if 'getID' or 'unique' is set.
@@ -109,7 +109,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             },
           });
 
-          return filterUnique(nextState, actionGetId);
+          return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
         }
         case 'NAVIGATE': {
           /**
@@ -133,7 +133,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             },
           });
 
-          return filterUnique(nextState, actionGetId);
+          return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
         }
         default: {
           return original.getStateForAction(state, action, options);
@@ -144,11 +144,11 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 };
 
 function getActionUniqueIdFn(
-  actionGetId: ScreenUnique | undefined,
+  actionGetId: UniqueOptions | undefined,
   name: string
 ): GetId | undefined {
   if (typeof actionGetId === 'function') {
-    return actionGetId;
+    return (options) => actionGetId(name, options.params ?? {});
   } else if (actionGetId === true) {
     return (options) => getUniqueId(name, options);
   }
@@ -165,7 +165,7 @@ function filterUnique<
     | StackNavigationState<ParamListBase>
     | PartialState<StackNavigationState<ParamListBase>>
     | null,
->(state: T, unique?: ScreenUnique): T {
+>(state: T, unique: UniqueOptions): T {
   if (!state || !unique) {
     return state;
   }
@@ -185,6 +185,10 @@ function filterUnique<
   }
 
   const id = getId({ params: current.params });
+
+  if (!id) {
+    return state;
+  }
 
   // TypeScript needs a type assertion here for the filter to work.
   let routes = state.routes as PartialRoute<Route<string, object | undefined>>[];
