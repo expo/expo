@@ -13,4 +13,8 @@ internal class NativeSession : SharedRef<NativeSessionBinding>(NativeSessionBind
   override fun equals(other: Any?): Boolean {
     return other is NativeSession && this.ref == other.ref
   }
+
+  override fun hashCode(): Int {
+    return ref.hashCode()
+  }
 }

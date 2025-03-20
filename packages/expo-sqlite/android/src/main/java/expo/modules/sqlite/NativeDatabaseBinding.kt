@@ -8,7 +8,7 @@ import java.io.Closeable
 
 private typealias UpdateListener = (databaseName: String, tableName: String, operationType: Int, rowID: Long) -> Unit
 
-@Suppress("KotlinJniMissingFunction")
+@Suppress("KotlinJniMissingFunction", "FunctionName")
 @DoNotStrip
 internal class NativeDatabaseBinding : Closeable {
   @DoNotStrip
@@ -35,6 +35,7 @@ internal class NativeDatabaseBinding : Closeable {
   /**
    * Disable data change notifications
    */
+  @Suppress("unused")
   fun disableUpdateHook() {
     mUpdateListener = null
     sqlite3_update_hook(false)

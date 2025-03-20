@@ -2,16 +2,17 @@
 
 import ExpoModulesCore
 
-final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable, Hashable {
+final class NativeDatabase: SharedObject, Equatable, Hashable {
+  var pointer: OpaquePointer?
   let databasePath: String
   let openOptions: OpenDatabaseOptions
   var isClosed = false
   var extraPointer: OpaquePointer?
 
   init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions) {
+    self.pointer = pointer
     self.databasePath = databasePath
     self.openOptions = openOptions
-    super.init(pointer)
   }
 
   // MARK: - Equatable
