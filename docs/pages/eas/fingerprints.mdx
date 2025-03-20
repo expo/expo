@@ -1,0 +1,30 @@
+---
+title: Fingerprints with EAS
+sidebar_title: Fingerprints
+description: Learn how @expo/fingerprint is integrated into EAS and how to take advantage of it
+---
+
+[`@expo/fingerprint`](/versions/latest/sdk/fingerprint/) is a library that generates a unique hash (fingerprint) of your React Native project. This fingerprint is derived from various aspects of your project, including:
+
+- App dependencies
+- Native code and native project files
+- Project configuration, such as **app.json** and **eas.json**
+
+Think of it like a checksum that represents the "native state" of your app. The fingerprint changes whenever you make changes that could affect the native layer of your application. It's also possible to compare the contents of the fingerprint to determine what caused it to change, which can be very useful to guide when you should increment your [runtime version](/eas-update/runtime-versions).
+
+EAS deeply integrates with `@expo/fingerprint` to make it easy for you to take advantage of the information that it can provide, without any additional work on your part to set it up.
+
+## How fingerprints work with Builds and Updates
+
+When you create a new build using EAS Build, or publish an update with EAS Update, the current fingerprint for your project will be generated and associated with it. You can find a link to the fingerprint details on the build or update details page, and from the fingerprint details page you can compare it with any other fingerprint. If you run a build, then add a native dependency and run another build, when you compare the fingerprints associated with each of the builds you will see the additional dependency reflected.
+
+
+
+
+## Uses of 
+
+You can configure how the fingerprint is calculated using:
+- A `.fingerprintignore` file (similar to `.gitignore`) to exclude certain files from the hash calculation
+- A `fingerprint.config.js` file for more advanced configuration options
+
+This is particularly useful in continuous deployment scenarios, where you want automated systems to handle both updates and new builds based on the types of changes made to your project.
