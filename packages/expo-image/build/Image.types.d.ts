@@ -1,5 +1,4 @@
-import type { NativeModule, SharedRef } from 'expo';
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { NativeModule, SharedRef, SharedRefType } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
