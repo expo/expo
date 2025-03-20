@@ -48,7 +48,7 @@ function getUserMedia(constraints) {
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
-function getStatusFromMedia(media, id) {
+function getStatusFromMedia(media, id, player) {
     const isPlaying = !!(media.currentTime > 0 &&
         !media.paused &&
         !media.ended &&
@@ -60,7 +60,7 @@ function getStatusFromMedia(media, id) {
         currentTime: media.currentTime * 1000,
         playbackState: '',
         timeControlStatus: isPlaying ? 'playing' : 'paused',
-        currentQueueIndex: null,
+        currentQueueIndex: player.currentQueueIndex,
         reasonForWaitingToPlay: '',
         playing: isPlaying,
         didJustFinish: media.ended,
@@ -134,7 +134,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.volume = value;
     }
     get currentStatus() {
-        return getStatusFromMedia(this.media, this.id);
+        return getStatusFromMedia(this.media, this.id, this);
     }
     play() {
         this.media.play();
@@ -268,14 +268,14 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.currentTime = seconds / 1000;
     }
     _loadTrackAtIndex(index) {
-        console.log('hello');
         if (index < 0 || index >= this.queue.length)
             return;
         const wasPlaying = this.isPlaying;
         this.currentQueueIndex = index;
         this.src = this.queue[index];
+        // remove old track to avoid parallel playback
+        this.remove();
         this.media = this._createMediaElement();
-        // Resume playback if it was playing before
         if (wasPlaying) {
             this.play();
         }
@@ -293,18 +293,18 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.pause();
         this.media.removeAttribute('src');
         this.media.load();
-        getStatusFromMedia(this.media, this.id);
+        getStatusFromMedia(this.media, this.id, this);
     }
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
         media.ontimeupdate = () => {
-            this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+            this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id, this));
         };
         media.onloadeddata = () => {
             this.loaded = true;
             this.emit(PLAYBACK_STATUS_UPDATE, {
-                ...getStatusFromMedia(media, this.id),
+                ...getStatusFromMedia(media, this.id, this),
                 isLoaded: this.loaded,
             });
         };

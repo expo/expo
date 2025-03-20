@@ -13,7 +13,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private isPlaying;
     private loaded;
     private queue;
-    private currentQueueIndex;
+    currentQueueIndex: number;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
