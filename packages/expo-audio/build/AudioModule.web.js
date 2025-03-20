@@ -194,46 +194,33 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     removeFromQueue(sources) {
         if (!sources || sources.length === 0 || this.queue.length === 0)
             return;
-        const urisToRemove = new Set(sources.map((source) => typeof source === 'string'
-            ? source
-            : typeof source === 'number'
-                ? String(source)
-                : source?.uri || ''));
-        // Find indices to remove
+        const sourcesToRemove = sources.map((source) => {
+            const uri = typeof source === 'object' ? source?.uri || '' : `${source}`;
+            return { source, uri };
+        });
         const indicesToRemove = [];
-        this.queue.forEach((source, index) => {
-            const uri = typeof source === 'string'
-                ? source
-                : typeof source === 'number'
-                    ? String(source)
-                    : source?.uri || '';
-            if (urisToRemove.has(uri)) {
+        const remainingSources = [...sourcesToRemove];
+        this.queue.forEach((queueSource, index) => {
+            const queueUri = typeof queueSource === 'object' ? queueSource?.uri || '' : `${queueSource}`;
+            const matchIndex = remainingSources.findIndex((item) => item.uri === queueUri);
+            if (matchIndex !== -1) {
                 indicesToRemove.push(index);
+                remainingSources.splice(matchIndex, 1);
             }
         });
-        // Sort in descending order to remove from end first
         indicesToRemove.sort((a, b) => b - a);
-        // Remove items
         for (const index of indicesToRemove) {
             this.queue.splice(index, 1);
         }
-        // Handle current index adjustments
         if (indicesToRemove.includes(this.currentQueueIndex) ||
             this.currentQueueIndex >= this.queue.length) {
             if (this.queue.length === 0) {
                 this.clearQueue();
                 return;
             }
-            // If current track was removed, play the next track or the first track
             const nextIndex = Math.min(this.currentQueueIndex, this.queue.length - 1);
             this.currentQueueIndex = nextIndex;
             this._loadTrackAtIndex(nextIndex);
-            return;
-        }
-        // Adjust current index if items were removed before it
-        const removedBeforeCurrent = indicesToRemove.filter((index) => index < this.currentQueueIndex);
-        if (removedBeforeCurrent.length > 0) {
-            this.currentQueueIndex -= removedBeforeCurrent.length;
         }
     }
     skipToNext() {
