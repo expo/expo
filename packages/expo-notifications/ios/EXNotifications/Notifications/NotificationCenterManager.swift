@@ -71,7 +71,7 @@ public class NotificationCenterManager: NSObject,
     delegates.append(delegate)
     var handled = false
     for pendingResponse in pendingResponses {
-      handled = delegate.didReceiveResponse(pendingResponse, completionHandler: {})
+      handled = delegate.didReceiveResponse(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
       pendingResponses.removeAll()
