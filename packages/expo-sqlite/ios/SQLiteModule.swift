@@ -73,6 +73,7 @@ public final class SQLiteModule: Module {
       try ensureDatabasePathExists(path: databasePath)
     }
 
+    // swiftlint:disable:next line_length
     AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
       try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
     }
