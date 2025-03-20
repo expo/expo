@@ -21,6 +21,18 @@ public class EmitterModule: Module, NotificationDelegate {
     OnStopObserving {
       NotificationCenterManager.shared.removeDelegate(self)
     }
+
+    AsyncFunction("getLastNotificationResponseAsync") {(promise: Promise) in
+      if let lastResponse: UNNotificationResponse = NotificationCenterManager.shared.lastResponse {
+        promise.resolve(EXNotificationSerializer.serializedNotificationResponse(lastResponse))
+      }
+      promise.resolve(nil)
+    }
+
+    AsyncFunction("clearLastNotificationResponseAsync") {(promise: Promise) in
+      NotificationCenterManager.shared.lastResponse = nil
+      promise.resolve(nil)
+    }
   }
 
   public func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
