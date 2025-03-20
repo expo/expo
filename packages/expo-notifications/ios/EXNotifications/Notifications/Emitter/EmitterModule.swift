@@ -9,7 +9,6 @@ let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
 let onDidClearNotificationResponse = "onDidClearNotificationResponse"
 
 public class EmitterModule: Module, NotificationDelegate {
-
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
