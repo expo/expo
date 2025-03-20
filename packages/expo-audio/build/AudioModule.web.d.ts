@@ -28,7 +28,6 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     get currentStatus(): AudioStatus;
     play(): void;
     pause(): void;
-    stop(): void;
     clearQueue(): void;
     replace(source: AudioSource): void;
     setQueue(sources: AudioSource[]): void;

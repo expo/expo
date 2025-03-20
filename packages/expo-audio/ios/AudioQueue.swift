@@ -4,13 +4,20 @@ import ExpoModulesCore
 
 class AudioQueue {
     private var sources: [AudioSource] = []
-    private(set) var currentIndex: Int = -1
     private var player: AVPlayer
     private var observers: [NSObjectProtocol] = []
     private var statusObservation: NSKeyValueObservation?
     private var wasPlayingBeforeAdvance = false
 
-    var onQueueChanged: (([String: Any]) -> [String: Any]?)?
+    private weak var audioPlayer: AudioPlayer?
+
+    private(set) var currentIndex: Int = -1 {
+        didSet {
+            if oldValue != currentIndex {
+                self.audioPlayer?.updateStatus(with: [:])
+            }
+        }
+    }
 
     var currentSource: AudioSource? {
         guard currentIndex >= 0 && currentIndex < sources.count else { return nil }
@@ -26,8 +33,9 @@ class AudioQueue {
         return sources.count
     }
 
-    init(player: AVPlayer) {
+    init(player: AVPlayer, audioPlayer: AudioPlayer) {
         self.player = player
+        self.audioPlayer = audioPlayer
     }
 
     deinit {
@@ -43,9 +51,6 @@ class AudioQueue {
         if !sources.isEmpty {
             advanceToIndex(0)
         }
-
-        let queueInfo: [String: Any] = ["queue": getCurrentQueue()]
-        _ = onQueueChanged?(queueInfo)
     }
 
     func addToQueue(sources: [AudioSource], insertBeforeIndex: Int? = nil) {
@@ -66,9 +71,6 @@ class AudioQueue {
         if self.sources.count == sources.count {
             advanceToIndex(0)
         }
-
-        let queueInfo: [String: Any] = ["queue": getCurrentQueue()]
-        _ = onQueueChanged?(queueInfo)
     }
 
     func removeFromQueue(sources: [AudioSource]) {
@@ -81,6 +83,7 @@ class AudioQueue {
                 if let uri = source.uri?.absoluteString, urisToRemove.contains(uri) {
                     return true
                 }
+
                 return false
             }
             .map { index, _ in index }
@@ -94,14 +97,15 @@ class AudioQueue {
         // Handle current index adjustments
         if indicesToRemove.contains(currentIndex) || currentIndex >= self.sources.count {
             if self.sources.isEmpty {
-                currentIndex = -1
-                player.pause()
+                clearQueue()
+
                 return
             }
 
             // If current track was removed, play the next track or the first track
             let nextIndex = min(currentIndex, self.sources.count - 1)
             advanceToIndex(nextIndex)
+
             return
         }
 
@@ -152,6 +156,14 @@ class AudioQueue {
         }
     }
 
+    func clearQueue() {
+        cleanup()
+        sources = []
+        currentIndex = -1
+
+        player.replaceCurrentItem(with: nil)
+    }
+
     private func advanceToIndex(_ index: Int) {
         guard index >= 0 && index < sources.count else { return }
 
@@ -178,8 +190,6 @@ class AudioQueue {
             if self.wasPlayingBeforeAdvance {
                 self.player.play()
             }
-
-            self.notifyQueueChanged()
         }
     }
 
@@ -191,54 +201,32 @@ class AudioQueue {
         ) { [weak self] _ in
             guard let self = self else { return }
 
-            // Check if we should loop the current track
-             if let onQueueChanged = self.onQueueChanged {
-                let response = onQueueChanged(["queryLooping": true])
-                 let isLooping = (response)?["isLooping"] as? Bool ?? false
+            if self.audioPlayer?.isLooping == true {
+                self.player.seek(to: CMTime.zero)
+                self.player.play()
 
-                if isLooping {
-                    self.player.seek(to: CMTime.zero)
-                    self.player.play()
-                    return
-                }
+                return
             }
 
             // Move to next track if available
             if self.currentIndex < self.sources.count - 1 {
                 self.advanceToIndex(self.currentIndex + 1)
+
                 return
             }
-
-            // Notify that playback finished
-            self.notifyQueueChanged(additionalInfo: [
-                "isPlaying": false,
-                "didJustFinish": true
-            ])
         }
 
         observers.append(observer)
     }
 
     private func cleanup() {
-        // Remove all observers
         statusObservation?.invalidate()
         statusObservation = nil
 
         for observer in observers {
             NotificationCenter.default.removeObserver(observer)
         }
+
         observers.removeAll()
-    }
-
-    private func notifyQueueChanged(additionalInfo: [String: Any] = [:]) {
-        guard let onQueueChanged = onQueueChanged else { return }
-
-        var info: [String: Any] = [
-            "currentQueueIndex": currentIndex,
-            "queueSize": sources.count
-        ]
-
-         info.merge(additionalInfo) { _, new in new }
-        _ = onQueueChanged(info)
     }
 }

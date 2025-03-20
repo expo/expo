@@ -116,10 +116,6 @@ public class AudioModule: Module {
         player.isPaused
       }
 
-      Property("currentQueueIndex") { player in
-        player.currentQueueIndex
-      }
-
       Property("volume") { player in
         player.ref.volume
       }.set { (player, volume: Double) in
@@ -154,10 +150,6 @@ public class AudioModule: Module {
         player.setQueue(sources: [source])
       }
 
-      Function("stop") { (player) in
-        player.stop()
-      }
-
       Function("setQueue") { (player, sources: [AudioSource]) in
         player.setQueue(sources: sources)
       }
@@ -166,12 +158,26 @@ public class AudioModule: Module {
         player.getCurrentQueue()
       }
 
+      Function("getCurrentQueueIndex") { (player) -> Any in
+        let index = player.getCurrentQueueIndex()
+
+        if index >= 0 {
+          return index
+        } else {
+          return NSNull()
+        }
+      }
+
       Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in
         player.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
       }
 
       Function("removeFromQueue") { (player, sources: [AudioSource]) in
         player.removeFromQueue(sources: sources)
+      }
+
+      Function("clearQueue") { (player) in
+        player.clearQueue()
       }
 
       Function("skipToQueueIndex") { (player, index: Int) in

@@ -185,11 +185,6 @@ export class AudioPlayerWeb
   }
 
   // TODO
-  stop(): void {
-    throw new Error('Not implemented');
-  }
-
-  // TODO
   clearQueue(): void {
     throw new Error('Not implemented');
   }

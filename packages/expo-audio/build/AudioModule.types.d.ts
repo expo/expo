@@ -83,10 +83,6 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     pause(): void;
     /**
-     * Pauses playback, unloads current track or queue, updates playback status.
-     */
-    stop(): void;
-    /**
      * Clears the queue and stops the playback.
      */
     clearQueue(): void;

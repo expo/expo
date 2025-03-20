@@ -96,13 +96,6 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
     setSelectedTracks([]);
   };
 
-  const stopPlayer = () => {
-    player?.stop();
-    setQueueItems([]);
-    setSelectedTracks([]);
-    setIsSelectionMode(false);
-  };
-
   const removeFromQueue = (sources: AudioSource[]) => {
     player?.removeFromQueue(sources);
     setQueueItems(player?.getCurrentQueue());
@@ -231,12 +224,6 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
           style={[styles.controlButton, styles.playPauseButton]}
           onPress={() => (status.playing ? player?.pause() : player?.play())}>
           <Ionicons name={status.playing ? 'pause' : 'play'} size={32} color="#007AFF" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.controlButton, styles.playPauseButton]}
-          onPress={stopPlayer}>
-          <Ionicons name="stop" size={32} color="#007AFF" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.controlButton} onPress={() => player?.skipToNext()}>

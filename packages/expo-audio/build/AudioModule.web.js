@@ -139,10 +139,6 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.isPlaying = false;
     }
     // TODO
-    stop() {
-        throw new Error('Not implemented');
-    }
-    // TODO
     clearQueue() {
         throw new Error('Not implemented');
     }

@@ -43,23 +43,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.interval = interval
     super.init(ref)
 
-    self.audioQueue = AudioQueue(player: ref)
-    self.audioQueue?.onQueueChanged = { [weak self] (info: [String: Any]) -> [String: Any]? in
-      guard let self = self else { return nil }
-
-      if let isLooping = info["queryLooping"] as? Bool {
-        return ["isLooping": self.isLooping]
-      }
-
-      var statusInfo = info
-
-      if let isPlaying = info["isPlaying"] as? Bool {
-        statusInfo["playing"] = isPlaying
-      }
-
-      self.updateStatus(with: statusInfo)
-      return nil
-    }
+    self.audioQueue = AudioQueue(player: ref, audioPlayer: self)
 
     setupPublisher()
   }
@@ -80,7 +64,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     return audioQueue?.getCurrentQueue() ?? []
   }
 
-  var currentQueueIndex: Int {
+  func getCurrentQueueIndex() -> Int {
     return audioQueue?.currentIndex ?? -1
   }
 
@@ -88,19 +72,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     audioQueue?.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
   }
 
-  func stop() {
-    ref.pause()
-    ref.replaceCurrentItem(with: nil)
-
-    // todo: add clear fn
-    audioQueue?.setQueue(sources: [])
-
-    updateStatus(with: [
-      "isPlaying": false,
-      "isLoaded": false,
-      "currentTime": 0,
-      "duration": 0
-    ])
+ func clearQueue() {
+    audioQueue?.clearQueue()
   }
 
  func removeFromQueue(sources: [AudioSource]) {
@@ -161,6 +134,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     if let index = audioQueue?.currentIndex, index >= 0 {
       statusDict["currentQueueIndex"] = index
     } else {
+      // if no queue items exist, set to null. Queue index will be -1 internally
       statusDict["currentQueueIndex"] = NSNull()
     }
 
