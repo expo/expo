@@ -21,16 +21,20 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const setVolume = (volume: number) => {
     player.volume = volume;
   };
+
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
   };
+
   const setIsLooping = (isLooping: boolean) => {
     player.loop = isLooping;
   };
+
   const setRate = (rate: number, shouldCorrectPitch: boolean) => {
     player.shouldCorrectPitch = shouldCorrectPitch;
     player.setPlaybackRate(rate);
   };
+
   const replaceSource = () => {
     const source = currentSource === localSource ? remoteSource : localSource;
     player.replace(source);
