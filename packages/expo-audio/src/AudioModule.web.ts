@@ -198,29 +198,22 @@ export class AudioPlayerWeb
 
   replace(source: AudioSource): void {
     this.src = source;
-    this.media = this._createMediaElement();
+    this.setQueue([source]);
   }
 
   clearQueue(): void {
     this.queue = [];
     this.currentQueueIndex = -1;
-    this.pause();
-    this.media.src = '';
-    this.loaded = false;
 
-    // Emit status update
-    // this._emitStatusUpdate({
-    //   currentTime: 0,
-    //   duration: 0,
-    //   isLoaded: false,
-    //   isPlaying: false,
-    // });
+    this.remove();
   }
 
   setQueue(sources: AudioSource[]): void {
     if (!sources || sources.length === 0) {
       return;
     }
+
+    this.clearQueue();
 
     this.queue = sources.filter((source) => source);
 
@@ -329,8 +322,10 @@ export class AudioPlayerWeb
       return;
     }
 
-    const nextIndex = (this.currentQueueIndex + 1) % this.queue.length;
-    this._loadTrackAtIndex(nextIndex);
+    const nextIndex = this.currentQueueIndex + 1;
+    if (nextIndex < this.queue.length) {
+      this._loadTrackAtIndex(nextIndex);
+    }
   }
 
   skipToPrevious(): void {
@@ -338,8 +333,10 @@ export class AudioPlayerWeb
       return;
     }
 
-    const prevIndex = (this.currentQueueIndex - 1 + this.queue.length) % this.queue.length;
-    this._loadTrackAtIndex(prevIndex);
+    const prevIndex = this.currentQueueIndex - 1;
+    if (prevIndex >= 0) {
+      this._loadTrackAtIndex(prevIndex);
+    }
   }
 
   skipToQueueIndex(index: number): void {
