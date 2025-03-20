@@ -27,6 +27,7 @@ export type BaseWorkerMessage = SyncWorkerMessage | AsyncWorkerMessage;
 //#region Request messages
 
 export interface MessageTypeMap {
+  backupDatabase: BackupDatabaseMessage;
   close: CloseMessage;
   deleteDatabase: DeleteDatabaseMessage;
   exec: ExecMessage;
@@ -54,6 +55,16 @@ export interface MessageTypeMap {
 export type SQLiteWorkerMessageType = keyof MessageTypeMap;
 
 export type SQLiteWorkerMessage = MessageTypeMap[SQLiteWorkerMessageType];
+
+type BackupDatabaseMessage = BaseWorkerMessage & {
+  type: 'backupDatabase';
+  data: {
+    destNativeDatabaseId: number;
+    destDatabaseName: string;
+    sourceNativeDatabaseId: number;
+    sourceDatabaseName: string;
+  };
+};
 
 type CloseMessage = BaseWorkerMessage & {
   type: 'close';
@@ -263,6 +274,7 @@ export interface ResultTypeMap {
   getColumnNames: SQLiteColumnNames;
   finalize: void;
   deleteDatabase: void;
+  backupDatabase: void;
   serialize: Uint8Array;
   sessionCreate: void;
   sessionAttach: void;

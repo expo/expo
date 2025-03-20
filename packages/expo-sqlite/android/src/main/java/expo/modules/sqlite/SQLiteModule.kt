@@ -76,6 +76,20 @@ class SQLiteModule : Module() {
       ensureDatabasePathExists(databasePath)
     }
 
+    AsyncFunction("backupDatabaseAsync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+
+    AsyncFunction("deleteDatabaseAsync") { databasePath: String ->
+      deleteDatabase(databasePath)
+    }
+    Function("deleteDatabaseSync") { databasePath: String ->
+      deleteDatabase(databasePath)
+    }
+
     // region NativeDatabase
 
     Class(NativeDatabase::class) {
@@ -486,6 +500,13 @@ class SQLiteModule : Module() {
     if (!dbFile.delete()) {
       throw DeleteDatabaseFileException(databasePath)
     }
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) {
+    maybeThrowForClosedDatabase(destDatabase)
+    maybeThrowForClosedDatabase(sourceDatabase)
+    NativeDatabaseBinding.sqlite3_backup(destDatabase.ref, destDatabaseName, sourceDatabase.ref, sourceDatabaseName)
   }
 
   @Throws(AccessClosedResourceException::class)

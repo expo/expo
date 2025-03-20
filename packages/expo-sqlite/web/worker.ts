@@ -92,6 +92,16 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
   let result: ResultType | undefined;
 
   switch (type) {
+    case 'backupDatabase': {
+      await backupDatabase(
+        data.destNativeDatabaseId,
+        data.destDatabaseName,
+        data.sourceNativeDatabaseId,
+        data.sourceDatabaseName
+      );
+      break;
+    }
+
     case 'close': {
       await closeDatabase(data.nativeDatabaseId);
       break;
@@ -226,6 +236,21 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
 }
 
 //#region Request handlers
+
+async function backupDatabase(
+  destNativeDatabaseId: number,
+  destDatabaseName: string,
+  sourceNativeDatabaseId: number,
+  sourceDatabaseName: string
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const destDb = databaseIdMap.get(destNativeDatabaseId);
+  if (!destDb) throw new Error(`Database not found - nativeDatabaseId[${destNativeDatabaseId}]`);
+  const sourceDb = databaseIdMap.get(sourceNativeDatabaseId);
+  if (!sourceDb)
+    throw new Error(`Database not found - nativeDatabaseId[${sourceNativeDatabaseId}]`);
+  await sqlite3.backup(destDb.pointer, destDatabaseName, sourceDb.pointer, sourceDatabaseName);
+}
 
 async function closeDatabase(nativeDatabaseId: number) {
   maybeFinalizeAllStatements(nativeDatabaseId);

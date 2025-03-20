@@ -73,6 +73,13 @@ public final class SQLiteModule: Module {
       try ensureDatabasePathExists(path: databasePath)
     }
 
+    AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+
     // MARK: - NativeDatabase
 
     // swiftlint:disable:next closure_body_length
@@ -486,6 +493,18 @@ public final class SQLiteModule: Module {
       try FileManager.default.removeItem(atPath: path)
     } catch {
       throw DeleteDatabaseFileException(path)
+    }
+  }
+
+  private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
+    try maybeThrowForClosedDatabase(destDatabase)
+    try maybeThrowForClosedDatabase(sourceDatabase)
+    guard let backup = exsqlite3_backup_init(destDatabase.pointer, destDatabaseName, sourceDatabase.pointer, sourceDatabaseName) else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
+    }
+    exsqlite3_backup_step(backup, -1)
+    if exsqlite3_backup_finish(backup) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
     }
   }
 

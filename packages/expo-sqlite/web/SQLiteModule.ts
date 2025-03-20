@@ -403,6 +403,33 @@ export class SQLiteModule extends NativeModule {
     // No-op for web
   }
 
+  async backupDatabaseAsync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: string,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: string
+  ): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'backupDatabase', {
+      destNativeDatabaseId: destDatabase.id,
+      destDatabaseName,
+      sourceNativeDatabaseId: sourceDatabase.id,
+      sourceDatabaseName,
+    });
+  }
+  backupDatabaseSync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: string,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: string
+  ): void {
+    invokeWorkerSync(getWorker(), 'backupDatabase', {
+      destNativeDatabaseId: destDatabase.id,
+      destDatabaseName,
+      sourceNativeDatabaseId: sourceDatabase.id,
+      sourceDatabaseName,
+    });
+  }
+
   async importAssetDatabaseAsync(
     databasePath: string,
     assetDatabasePath: string,
