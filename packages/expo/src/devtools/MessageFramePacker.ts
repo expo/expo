@@ -85,8 +85,7 @@ export class MessageFramePacker<T extends MessageKeyTypeBase> {
   public unpack(packedData: string | ArrayBuffer): MessageFrame<T> {
     // Fast path to unpack as string given `JSON.parse` is fast.
     if (typeof packedData === 'string') {
-      const { messageKey, payload } = JSON.parse(packedData);
-      return { messageKey, payload };
+      return JSON.parse(packedData);
     }
 
     // [0] messageKeyLength (4 bytes)
