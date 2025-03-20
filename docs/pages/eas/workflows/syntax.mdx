@@ -394,12 +394,12 @@ jobs:
   publish_update:
     type: update
 
-  print_debug:
+  print_debug_info:
     needs: [publish_update]
     steps:
-      - name: Print debug
-        run: |
-          echo "Updates published: ${{ fromJSON(needs.publish_update.outputs.updates_json)[0].group }}, ${{ fromJSON(needs.publish_update.outputs.updates_json)[1].group }}"
+      - run: |
+          echo "First update group: ${{ needs.publish_update.outputs.first_update_group_id }}"
+          echo "Second update group: ${{ fromJSON(needs.publish_update.outputs.updates_json || '[]')[1].group }}"
 ```
 
 ## Pre-packaged jobs
@@ -555,6 +555,16 @@ jobs:
       profile: string # optional, default: production
 ```
 
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "android_package_id": string | null // Submitted Android package ID. https://expo.fyi/android-package
+}
+```
+
 #### `update`
 
 Publishes an update using [EAS Update](/eas-update/introduction/).
@@ -577,8 +587,8 @@ This job outputs the following properties:
 
 ```json
 {
-  "first_update_group_id": string | null,
-  "updates_json": string | null
+  "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for development client deep link.
+  "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
 }
 ```
 
@@ -646,7 +656,7 @@ A list of outputs for the job. Job outputs are available to all downstream jobs 
 
 In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
 
-Outputs of the jobs are later accessible in [interpolation context](#Interpolation) under `needs.<job_id>.outputs.<output_name>` or `after.<job_id>.outputs.<output_name>`.
+Outputs of the jobs are later accessible in [interpolation context](#interpolation) under `needs.<job_id>.outputs.<output_name>` or `after.<job_id>.outputs.<output_name>`.
 
 ```yaml
 jobs:
