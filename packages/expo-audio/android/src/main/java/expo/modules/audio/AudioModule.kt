@@ -200,7 +200,7 @@ class AudioModule : Module() {
         }
       }
 
-      Property("mute") { ref ->
+      Property("muted") { ref ->
         runOnMain {
           ref.player.isDeviceMuted
         }
