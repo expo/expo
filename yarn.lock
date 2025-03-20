@@ -3995,7 +3995,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash@^4.14.161", "@types/lodash@^4.17.0":
+"@types/lodash@^4.17.0":
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.5.tgz#e6c29b58e66995d57cd170ce3e2a61926d55ee04"
   integrity sha512-MBIOHVZqVqgfro1euRDWX7OO0fBVUUMrN6Pwm8LQsz8cWhEpihlvR70ENj3f40j58TNxZaWv2ndSkInykNBBJw==
