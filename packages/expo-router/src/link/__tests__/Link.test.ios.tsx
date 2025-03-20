@@ -4,9 +4,10 @@ import { Platform, Text, View } from 'react-native';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
+import { renderRouter, screen, testRouter } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
+import { NavigationState } from '@react-navigation/native';
 
 // Render and observe the props of the Link component.
 
@@ -201,4 +202,90 @@ it('can preserve the initialRoute with shared groups', () => {
   expect(screen.getByTestId('orange')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+});
+
+describe('unique', () => {
+  test('can dynamically route using unique', () => {
+    renderRouter(
+      {
+        '[slug]': () => (
+          <Link testID="link" href="/apple" unique>
+            Slug
+          </Link>
+        ),
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    act(() => router.push('/apple'));
+    act(() => router.push('/apple'));
+    act(() => router.push('/banana'));
+
+    expect(screen).toHaveRouterState({
+      index: 3,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'banana' },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+
+    // Should push /apple and remove all previous instances of /apple
+    act(() => fireEvent.press(screen.getByTestId('link')));
+
+    expect(screen).toHaveRouterState({
+      index: 1,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'banana',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+  });
 });

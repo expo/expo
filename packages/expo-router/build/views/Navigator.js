@@ -33,6 +33,7 @@ const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const useScreens_1 = require("../useScreens");
+const StackClient_1 = require("../layouts/StackClient");
 exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
@@ -50,7 +51,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
         contextKey,
     });
     const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? []);
-    router ||= native_1.StackRouter;
+    router ||= StackClient_1.StackRouter;
     const navigation = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
         ...routerOptions,
@@ -90,7 +91,7 @@ function SlotNavigator(props) {
     const { screens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
         contextKey,
     });
-    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(StackClient_1.StackRouter, {
         ...props,
         id: contextKey,
         children: (0, useScreens_1.useSortedScreens)(screens ?? []),

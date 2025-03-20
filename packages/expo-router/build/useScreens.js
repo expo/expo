@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.getUniqueId = exports.routeToScreen = exports.screenOptionsFactory = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -20,7 +20,7 @@ function getSortedChildren(children, order, initialRouteName) {
     }
     const entries = [...children];
     const ordered = order
-        .map(({ name, redirect, initialParams, listeners, options, getId }) => {
+        .map(({ name, redirect, initialParams, listeners, options, getId, unique }) => {
         if (!entries.length) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
@@ -40,6 +40,24 @@ function getSortedChildren(children, order, initialRouteName) {
                     throw new Error(`Redirecting to a specific route is not supported yet.`);
                 }
                 return null;
+            }
+            if (getId) {
+                console.warn(`Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'unique'`);
+                if (unique) {
+                    console.warn(`Screen ${name} cannot use both getId and unique together.`);
+                }
+            }
+            else if (unique) {
+                // If unique is set, use it as the getId function.
+                if (typeof unique === 'string') {
+                    getId = () => unique;
+                }
+                else if (typeof unique === 'function') {
+                    getId = unique;
+                }
+                else if (unique === true && name) {
+                    getId = (options) => getUniqueId(name, options);
+                }
             }
             return {
                 route: match,
@@ -138,50 +156,6 @@ function getQualifiedRouteComponent(value) {
     return QualifiedRoute;
 }
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
-/**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
- * @returns a function which provides a screen id that matches the dynamic route name in params. */
-function createGetIdForRoute(route, getId) {
-    const include = new Map();
-    if (route.dynamic) {
-        for (const segment of route.dynamic) {
-            include.set(segment.name, segment);
-        }
-    }
-    return (options = {}) => {
-        const { params = {} } = options;
-        if (params.__EXPO_ROUTER_key) {
-            const key = params.__EXPO_ROUTER_key;
-            delete params.__EXPO_ROUTER_key;
-            if (getId == null) {
-                return key;
-            }
-        }
-        if (getId != null) {
-            return getId(options);
-        }
-        const segments = [];
-        for (const dynamic of include.values()) {
-            const value = params?.[dynamic.name];
-            if (Array.isArray(value) && value.length > 0) {
-                // If we are an array with a value
-                segments.push(value.join('/'));
-            }
-            else if (value && !Array.isArray(value)) {
-                // If we have a value and not an empty array
-                segments.push(value);
-            }
-            else if (dynamic.deep) {
-                segments.push(`[...${dynamic.name}]`);
-            }
-            else {
-                segments.push(`[${dynamic.name}]`);
-            }
-        }
-        return segments.join('/') ?? route.contextKey;
-    };
-}
-exports.createGetIdForRoute = createGetIdForRoute;
 function screenOptionsFactory(route, options) {
     return (args) => {
         // Only eager load generated components
@@ -204,7 +178,24 @@ function screenOptionsFactory(route, options) {
 }
 exports.screenOptionsFactory = screenOptionsFactory;
 function routeToScreen(route, { options, getId, ...props } = {}) {
-    return (<primitives_1.Screen {...props} getId={createGetIdForRoute(route, getId)} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
+    return (<primitives_1.Screen {...props} name={route.route} key={route.route} getId={getId} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
 exports.routeToScreen = routeToScreen;
+function getUniqueId(name, options = {}) {
+    return name
+        .split('/')
+        .map((segment) => {
+        if (segment.startsWith('[...')) {
+            return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
+        }
+        else if (segment.startsWith('[')) {
+            return options.params?.[segment.slice(1, -1)] || segment;
+        }
+        else {
+            return segment;
+        }
+    })
+        .join('/');
+}
+exports.getUniqueId = getUniqueId;
 //# sourceMappingURL=useScreens.js.map

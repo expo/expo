@@ -10,14 +10,7 @@ import type {
 } from '@react-navigation/native';
 import React from 'react';
 
-import {
-  DynamicConvention,
-  LoadedRoute,
-  Route,
-  RouteNode,
-  sortRoutesWithInitial,
-  useRouteNode,
-} from './Route';
+import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -49,7 +42,13 @@ export type ScreenProps<
       }) => ScreenListeners<TState, TEventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
+
+  unique?: ScreenUnique;
 };
+
+export type ScreenUnique =
+  | boolean
+  | ((options: { params?: Record<string, any> }) => string | undefined);
 
 function getSortedChildren(
   children: RouteNode[],
@@ -64,7 +63,7 @@ function getSortedChildren(
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, redirect, initialParams, listeners, options, getId }) => {
+    .map(({ name, redirect, initialParams, listeners, options, getId, unique }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -87,6 +86,24 @@ function getSortedChildren(
             throw new Error(`Redirecting to a specific route is not supported yet.`);
           }
           return null;
+        }
+
+        if (getId) {
+          console.warn(
+            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'unique'`
+          );
+          if (unique) {
+            console.warn(`Screen ${name} cannot use both getId and unique together.`);
+          }
+        } else if (unique) {
+          // If unique is set, use it as the getId function.
+          if (typeof unique === 'string') {
+            getId = () => unique;
+          } else if (typeof unique === 'function') {
+            getId = unique;
+          } else if (unique === true && name) {
+            getId = (options) => getUniqueId(name, options);
+          }
         }
 
         return {
@@ -227,56 +244,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   return QualifiedRoute;
 }
 
-/**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
- * @returns a function which provides a screen id that matches the dynamic route name in params. */
-export function createGetIdForRoute(
-  route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>,
-  getId: ScreenProps['getId']
-): ScreenProps['getId'] {
-  const include = new Map<string, DynamicConvention>();
-
-  if (route.dynamic) {
-    for (const segment of route.dynamic) {
-      include.set(segment.name, segment);
-    }
-  }
-
-  return (options = {}) => {
-    const { params = {} } = options;
-    if (params.__EXPO_ROUTER_key) {
-      const key = params.__EXPO_ROUTER_key;
-      delete params.__EXPO_ROUTER_key;
-      if (getId == null) {
-        return key;
-      }
-    }
-
-    if (getId != null) {
-      return getId(options);
-    }
-
-    const segments: string[] = [];
-
-    for (const dynamic of include.values()) {
-      const value = params?.[dynamic.name];
-      if (Array.isArray(value) && value.length > 0) {
-        // If we are an array with a value
-        segments.push(value.join('/'));
-      } else if (value && !Array.isArray(value)) {
-        // If we have a value and not an empty array
-        segments.push(value);
-      } else if (dynamic.deep) {
-        segments.push(`[...${dynamic.name}]`);
-      } else {
-        segments.push(`[${dynamic.name}]`);
-      }
-    }
-
-    return segments.join('/') ?? route.contextKey;
-  };
-}
-
 export function screenOptionsFactory(
   route: RouteNode,
   options?: ScreenProps['options']
@@ -310,11 +277,29 @@ export function routeToScreen(
   return (
     <Screen
       {...props}
-      getId={createGetIdForRoute(route, getId)}
       name={route.route}
       key={route.route}
+      getId={getId}
       options={screenOptionsFactory(route, options)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );
+}
+
+export function getUniqueId(
+  name: string,
+  options: { params?: Record<string, any> | undefined } = {}
+) {
+  return name
+    .split('/')
+    .map((segment) => {
+      if (segment.startsWith('[...')) {
+        return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
+      } else if (segment.startsWith('[')) {
+        return options.params?.[segment.slice(1, -1)] || segment;
+      } else {
+        return segment;
+      }
+    })
+    .join('/');
 }

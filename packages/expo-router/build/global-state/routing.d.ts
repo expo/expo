@@ -1,5 +1,6 @@
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
+import { ScreenUnique } from '../useScreens';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function reload(this: RouterStore): void;
@@ -23,6 +24,13 @@ export type LinkToOptions = {
      * Include the anchor when navigating to a new navigator
      */
     withAnchor?: boolean;
+    /**
+     * When navigating in a Stack, if the target is valid then screens in the history that matches
+     * the uniqueness constraint will be removed.
+     *
+     * If used with `push`, the history will be filtered even if no navigation occurs.
+     */
+    unique?: ScreenUnique;
 };
 export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
