@@ -76,6 +76,9 @@ class AudioQueue {
     func removeFromQueue(sources: [AudioSource]) {
         guard !sources.isEmpty else { return }
 
+        let currentItem = player.currentItem
+        let wasPlaying = player.rate != 0
+
         let urisToRemove = Set(sources.compactMap { $0.uri?.absoluteString })
 
         let indicesToRemove = self.sources.enumerated()
@@ -104,7 +107,14 @@ class AudioQueue {
 
             // If current track was removed, play the next track or the first track
             let nextIndex = min(currentIndex, self.sources.count - 1)
-            advanceToIndex(nextIndex)
+
+            // Update index without replacing the player item if it's still playing
+            currentIndex = nextIndex
+
+            // Only advance if we need to change the track
+            if currentItem == nil || indicesToRemove.contains(currentIndex) {
+                advanceToIndex(nextIndex)
+            }
 
             return
         }
