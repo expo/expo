@@ -9,6 +9,7 @@
  * https://github.com/facebook/metro/blob/87f717b8f5987827c75c82b3cb390060672628f0/packages/metro/src/DeltaBundler/Serializers/hmrJSBundle.js#L1C1-L152C30
  */
 
+import type createModuleIdFactory from '@bycedric/metro/metro/lib/createModuleIdFactory';
 import jscSafeUrl from 'jsc-safe-url';
 import type { DeltaResult, Module, ReadOnlyGraph } from 'metro';
 import type { HmrModule } from 'metro-runtime/src/modules/types.flow';
@@ -21,7 +22,7 @@ import { isJsModule, wrapModule } from './js';
 
 type Options = {
   clientUrl: EntryPointURL;
-  createModuleId: (id: string) => number;
+  createModuleId: ReturnType<typeof createModuleIdFactory>;
   includeAsyncPaths: boolean;
   projectRoot: string;
   serverRoot: string;
@@ -88,7 +89,7 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
   const inverseDependenciesById = Object.create(null);
   Object.keys(inverseDependencies).forEach((path: string) => {
     inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map(
-      options.createModuleId
+      (dependencyPath) => options.createModuleId(dependencyPath)
     );
   });
   return addParamsToDefineCall(code.src, inverseDependenciesById);
@@ -124,7 +125,7 @@ function getInverseDependencies(
   return inverseDependencies;
 }
 
-function hmrJSBundle(
+export default function hmrJSBundle(
   delta: DeltaResult<any>,
   graph: ReadOnlyGraph<any>,
   options: Options
@@ -139,5 +140,3 @@ function hmrJSBundle(
     deleted: [...delta.deleted].map((path: string) => options.createModuleId(path)),
   };
 }
-
-export default hmrJSBundle;

@@ -1,5 +1,5 @@
+import Server from '@bycedric/metro/metro/Server';
 import fs from 'fs/promises';
-import { Server } from 'metro';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 

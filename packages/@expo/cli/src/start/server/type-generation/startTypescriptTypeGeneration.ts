@@ -1,6 +1,6 @@
+import Server from '@bycedric/metro/metro/Server';
 import { getConfig } from '@expo/config';
 import fs from 'fs/promises';
-import { Server } from 'metro';
 import path from 'path';
 
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';

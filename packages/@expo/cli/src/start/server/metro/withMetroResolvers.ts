@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ConfigT as MetroConfig } from '@bycedric/metro/metro-config';
+import type { ResolutionContext, CustomResolutionContext } from '@bycedric/metro/metro-resolver';
+import * as metroResolver from '@bycedric/metro/metro-resolver';
 import chalk from 'chalk';
-import { ConfigT as MetroConfig } from 'metro-config';
-import type { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -30,7 +30,7 @@ export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
 }
 
 function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize = require('metro-core/src/canonicalize');
+  const canonicalize = require('@bycedric/metro/metro-core/canonicalize');
 
   // Compound key for the resolver cache
   return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';

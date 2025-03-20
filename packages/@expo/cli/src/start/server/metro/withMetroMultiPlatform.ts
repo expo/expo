@@ -4,13 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import Bundler from '@bycedric/metro/metro/Bundler';
+import { ConfigT } from '@bycedric/metro/metro-config';
+import {
+  Resolution,
+  ResolutionContext,
+  CustomResolutionContext,
+} from '@bycedric/metro/metro-resolver';
+import * as metroResolver from '@bycedric/metro/metro-resolver';
 import { ExpoConfig, Platform } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
-import Bundler from 'metro/src/Bundler';
-import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -815,7 +819,7 @@ export async function withMetroMultiPlatformAsync(
   if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
-    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+    require('@bycedric/metro/metro-config/defaults/defaults').moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/require'
     );
   }

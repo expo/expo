@@ -1,17 +1,17 @@
+import { ReadOnlyGraph } from '@bycedric/metro/metro';
+import Bundler from '@bycedric/metro/metro/Bundler';
+import type { TransformOptions } from '@bycedric/metro/metro/DeltaBundler/Worker';
+import MetroHmrServer from '@bycedric/metro/metro/HmrServer';
+import RevisionNotFoundError from '@bycedric/metro/metro/IncrementalBundler/RevisionNotFoundError';
+import type MetroServer from '@bycedric/metro/metro/Server';
+import formatBundlingError from '@bycedric/metro/metro/lib/formatBundlingError';
+import { loadConfig, resolveConfig, ConfigT } from '@bycedric/metro/metro-config';
+import { Terminal } from '@bycedric/metro/metro-core';
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
-import type Metro from 'metro';
-import { ReadOnlyGraph } from 'metro';
-import Bundler from 'metro/src/Bundler';
-import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
-import MetroHmrServer from 'metro/src/HmrServer';
-import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
-import formatBundlingError from 'metro/src/lib/formatBundlingError';
-import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
-import { Terminal } from 'metro-core';
 import util from 'node:util';
 import path from 'path';
 
@@ -21,6 +21,11 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
+import {
+  assertMetroPrivateServer,
+  type MetroPrivateHmrServer,
+  type MetroPrivateServer,
+} from './metroPrivateServer';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -103,7 +108,7 @@ export async function loadMetroConfigAsync(
     ...(await loadConfig(
       { cwd: projectRoot, projectRoot, ...options },
       // If the project does not have a metro.config.js, then we use the default config.
-      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
+      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined // TODO(cedric): also move over `@expo/metro-config` to `@bycedric/metro`
     )),
     reporter: {
       update(event: any) {
@@ -185,8 +190,8 @@ export async function instantiateMetroAsync(
     }).exp,
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
-  metro: Metro.Server;
-  hmrServer: MetroHmrServer | null;
+  metro: MetroPrivateServer;
+  hmrServer: MetroPrivateHmrServer | null;
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
@@ -227,7 +232,7 @@ export async function instantiateMetroAsync(
     // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
     // @ts-expect-error: can't mutate readonly config
-    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: MetroServer) => {
       if (customEnhanceMiddleware) {
         metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
       }
@@ -293,21 +298,20 @@ export async function instantiateMetroAsync(
 
   // This function ensures that modules in source maps are sorted in the same
   // order as in a plain JS bundle.
-  metro._getSortedModules = function (this: Metro.Server, graph: ReadOnlyGraph) {
+  metro._getSortedModules = function (this: MetroPrivateServer, graph: ReadOnlyGraph) {
     const modules = [...graph.dependencies.values()];
 
     const ctx = {
-      platform: graph.transformOptions.platform,
+      // TODO(cedric): this can be undefined, but it's required in the create module ID context
+      platform: graph.transformOptions.platform!,
       environment: graph.transformOptions.customTransformOptions?.environment,
     };
     // Assign IDs to modules in a consistent order
     for (const module of modules) {
-      // @ts-expect-error
       this._createModuleId(module.path, ctx);
     }
     // Sort by IDs
     return modules.sort(
-      // @ts-expect-error
       (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
     );
   };
@@ -320,11 +324,16 @@ export async function instantiateMetroAsync(
     } catch {
       // Add fallback for monorepo tests up until the fork is merged.
       Log.warn('Failed to load HMR serializer from @expo/metro-config, using fallback version.');
-      hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
+      hmrJSBundle = require('@bycedric/metro/DeltaBundler/Serializers/hmrJSBundle');
     }
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.
-    hmrServer._prepareMessage = async function (this: MetroHmrServer, group, options, changeEvent) {
+    hmrServer._prepareMessage = async function (
+      this: MetroPrivateHmrServer,
+      group,
+      options,
+      changeEvent
+    ) {
       // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
       // with patch for `_createModuleId`.
       const logger = !options.isInitialUpdate ? changeEvent?.logger : null;
@@ -351,14 +360,14 @@ export async function instantiateMetroAsync(
         logger?.point('serialize_start');
         // NOTE(EvanBacon): This is the patch
         const moduleIdContext = {
-          platform: revision.graph.transformOptions.platform,
+          // TODO(cedric): this can be undefined, but it's required in the create module ID context
+          platform: revision.graph.transformOptions.platform!,
           environment: revision.graph.transformOptions.customTransformOptions?.environment,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,
           // NOTE(EvanBacon): This is also the patch
           createModuleId: (moduleId: string) => {
-            // @ts-expect-error
             return this._createModuleId(moduleId, moduleIdContext);
           },
           includeAsyncPaths: group.graphOptions.lazy,
@@ -387,6 +396,9 @@ export async function instantiateMetroAsync(
       }
     };
   }
+
+  // TODO(cedric): expand the private server assertion to guard better against overwrites not set up properly
+  assertMetroPrivateServer(metro);
 
   return {
     metro,

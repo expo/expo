@@ -7,7 +7,7 @@
 // a user's project.
 // See: https://github.com/expo/expo/pull/34286
 
-import type { ResolutionContext } from 'metro-resolver';
+import type { ResolutionContext } from '@bycedric/metro/metro-resolver';
 import path from 'path';
 
 import type { StrictResolver, StrictResolverFactory } from './withMetroMultiPlatform';

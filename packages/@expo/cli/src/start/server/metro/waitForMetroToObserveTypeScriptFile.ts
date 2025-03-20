@@ -1,6 +1,7 @@
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
+import type { MetroPrivateServer } from './metroPrivateServer';
 
 const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
 
@@ -19,7 +20,7 @@ export type FileChangeEvent = {
 export function waitForMetroToObserveTypeScriptFile(
   projectRoot: string,
   runner: {
-    metro: import('metro').Server;
+    metro: MetroPrivateServer;
     server: ServerLike;
   },
   callback: () => Promise<void>
@@ -66,7 +67,7 @@ export function waitForMetroToObserveTypeScriptFile(
 
 export function observeFileChanges(
   runner: {
-    metro: import('metro').Server;
+    metro: MetroPrivateServer;
     server: ServerLike;
   },
   files: string[],
@@ -116,7 +117,7 @@ export function observeFileChanges(
 
 export function observeAnyFileChanges(
   runner: {
-    metro: import('metro').Server;
+    metro: MetroPrivateServer;
     server: ServerLike;
   },
   callback: (events: FileChangeEvent[]) => void | Promise<void>

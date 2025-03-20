@@ -6,15 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chunk = void 0;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 exports.getSortedModules = getSortedModules;
-/**
- * Copyright © 2023 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+const sourceMapString_1 = __importDefault(require("@bycedric/metro/metro/DeltaBundler/Serializers/sourceMapString"));
+const bundleToString_1 = __importDefault(require("@bycedric/metro/metro/lib/bundleToString"));
 const assert_1 = __importDefault(require("assert"));
-const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
-const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportHermes_1 = require("./exportHermes");

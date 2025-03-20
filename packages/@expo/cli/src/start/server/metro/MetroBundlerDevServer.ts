@@ -4,25 +4,24 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { DeltaResult, TransformInputOptions } from '@bycedric/metro/metro';
+import baseJSBundle from '@bycedric/metro/metro/DeltaBundler/Serializers/baseJSBundle';
+import {
+  sourceMapGeneratorNonBlocking,
+  type SourceMapGeneratorOptions,
+} from '@bycedric/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
+import type { Client as MetroHmrClient } from '@bycedric/metro/metro/HmrServer';
+import type { GraphRevision } from '@bycedric/metro/metro/IncrementalBundler';
+import bundleToString from '@bycedric/metro/metro/lib/bundleToString';
+import getGraphId from '@bycedric/metro/metro/lib/getGraphId';
+import type { TransformProfile } from '@bycedric/metro/metro-babel-transformer';
+import type { CustomResolverOptions } from '@bycedric/metro/metro-resolver/types';
+import { getConfig, type ExpoConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { DeltaResult, TransformInputOptions } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import {
-  sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
-} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import type MetroHmrServer from 'metro/src/HmrServer';
-import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
-import { GraphRevision } from 'metro/src/IncrementalBundler';
-import bundleToString from 'metro/src/lib/bundleToString';
-import getGraphId from 'metro/src/lib/getGraphId';
-import { TransformProfile } from 'metro-babel-transformer';
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -34,7 +33,11 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
-import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
+import {
+  assertMetroPrivateServer,
+  type MetroPrivateHmrServer,
+  type MetroPrivateServer,
+} from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -122,7 +125,7 @@ const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
-  private hmrServer: MetroHmrServer | null = null;
+  private hmrServer: MetroPrivateHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;

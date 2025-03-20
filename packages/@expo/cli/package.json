@@ -41,6 +41,7 @@
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.8",
     "@babel/runtime": "^7.20.0",
+    "@bycedric/metro": " 0.82.0-rc.4",
     "@expo/code-signing-certificates": "^0.0.5",
     "@expo/config": "~11.0.3",
     "@expo/config-plugins": "~9.1.4",

@@ -1,12 +1,12 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+import type { MixedOutput, Module, ReadOnlyGraph, Reporter } from '@bycedric/metro/metro';
+import { stableHash } from '@bycedric/metro/metro-cache';
+import type { ConfigT as MetroConfig, InputConfigT } from '@bycedric/metro/metro-config';
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import { stableHash } from 'metro-cache';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';

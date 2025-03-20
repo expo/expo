@@ -1,5 +1,5 @@
+import type { BundleOptions as MetroBundleOptions } from '@bycedric/metro/metro/shared/types.flow';
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';

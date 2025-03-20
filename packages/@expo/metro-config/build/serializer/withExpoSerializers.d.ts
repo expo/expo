@@ -1,5 +1,11 @@
-import { MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { ConfigT, InputConfigT } from 'metro-config';
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import type { MetroConfig, MixedOutput, Module, ReadOnlyGraph } from '@bycedric/metro/metro';
+import type { ConfigT, InputConfigT } from '@bycedric/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;

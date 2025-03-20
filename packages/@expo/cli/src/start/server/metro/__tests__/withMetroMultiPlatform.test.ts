@@ -1,7 +1,7 @@
+import { ConfigT } from '@bycedric/metro/metro-config';
+import { CustomResolutionContext } from '@bycedric/metro/metro-resolver';
 import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
-import { ConfigT } from 'metro-config';
-import { CustomResolutionContext } from 'metro-resolver/src';
 import assert from 'node:assert';
 
 import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
@@ -92,7 +92,7 @@ function getNodeResolverContext({
 }
 
 function getResolveFunc() {
-  return require('metro-resolver').resolve;
+  return require('@bycedric/metro/metro-resolver').resolve;
 }
 
 describe(withExtendedResolver, () => {

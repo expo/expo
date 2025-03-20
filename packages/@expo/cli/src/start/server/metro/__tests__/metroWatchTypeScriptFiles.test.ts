@@ -28,7 +28,7 @@ function createRunner() {
         addListener: jest.fn(),
       },
     } as any as {
-      metro: import('metro').Server;
+      metro: MetroPrivateServer;
       server: ServerLike;
     },
   };

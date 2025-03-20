@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = hmrJSBundle;
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
 const metro_transform_plugins_1 = require("metro-transform-plugins");
 const node_path_1 = __importDefault(require("node:path"));
@@ -60,7 +61,7 @@ function prepareModule(module, graph, options) {
     // Transform the inverse dependency paths to ids.
     const inverseDependenciesById = Object.create(null);
     Object.keys(inverseDependencies).forEach((path) => {
-        inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map(options.createModuleId);
+        inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map((dependencyPath) => options.createModuleId(dependencyPath));
     });
     return (0, metro_transform_plugins_1.addParamsToDefineCall)(code.src, inverseDependenciesById);
 }
@@ -93,5 +94,4 @@ function hmrJSBundle(delta, graph, options) {
         deleted: [...delta.deleted].map((path) => options.createModuleId(path)),
     };
 }
-exports.default = hmrJSBundle;
 //# sourceMappingURL=hmrJSBundle.js.map

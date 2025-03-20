@@ -8,7 +8,7 @@
  * A fork of my proposed Metro change https://github.com/facebook/metro/pull/1036/files
  */
 
-import type { FileCandidates } from 'metro-resolver';
+import type { FileCandidates } from '@bycedric/metro/metro-resolver';
 import path from 'path';
 
 function groupExtensions(exts: readonly string[]): string[][] {
