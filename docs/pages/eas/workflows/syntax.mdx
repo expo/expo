@@ -321,6 +321,87 @@ jobs:
     # @end #
 ```
 
+## Interpolation
+
+You can customize behavior of workflow — commands executed, control flow, environment variables, build profile, app version — based on the workflow run context.
+
+### `after` and `needs`
+
+If you specify a job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job outputs a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Example usage:
+
+```yaml
+jobs:
+  setup:
+    outputs:
+      date: ${{ steps.current_date.outputs.date }}
+    steps:
+      - id: current_date
+        run: |
+          DATE=$(date +"%Y.%-m.%-d")
+          set-output date "$DATE"
+
+  build_ios:
+    needs: [setup]
+    type: build
+    env:
+      # You might use process.env.VERSION_SUFFIX to customize
+      # app version in your dynamic app config.
+      VERSION_SUFFIX: ${{ needs.setup.outputs.date }}
+    params:
+      platform: ios
+      profile: development
+```
+
+### `github`
+
+To ease the migration from GitHub Actions to EAS Workflows we expose some context you may find useful.
+
+```json
+{
+  "event_name": "pull_request" | "push" | "schedule" | "workflow_dispatch",
+  "sha": string,
+  "ref": string, // e.g. refs/heads/main
+  "ref_name": string, // e.g. main
+  "ref_type": "branch" | "tag" | "other"
+}
+```
+
+If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+
+### `success()`, `failure()`
+
+`success()` returns `true` only if no previous job has failed. `failure()` returns `true` if any previous job has failed.
+
+### `fromJSON()`, `toJSON()`
+
+`fromJSON()` is `JSON.parse`, `toJSON` is `JSON.stringify`. You can use them to save / process JSON output.
+
+Example usage:
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+
+  print_debug:
+    needs: [publish_update]
+    steps:
+      - name: Print debug
+        run: |
+          echo "Updates published: ${{ fromJSON(needs.publish_update.outputs.updates_json)[0].group }}, ${{ fromJSON(needs.publish_update.outputs.updates_json)[1].group }}"
+```
+
 ## Pre-packaged jobs
 
 ### `jobs.<job_id>.type`
@@ -491,6 +572,17 @@ jobs:
       channel: string # optional - cannot be used with branch
 ```
 
+
+This job outputs the following properties:
+
+```json
+{
+  "first_update_group_id": string | null,
+  "updates_json": string | null
+}
+```
+
+
 #### `maestro`
 
 Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
@@ -553,6 +645,8 @@ jobs:
 A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
 
 In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
+
+Outputs of the jobs are later accessible in [interpolation context](#Interpolation) under `needs.<job_id>.outputs.<output_name>` or `after.<job_id>.outputs.<output_name>`.
 
 ```yaml
 jobs:
