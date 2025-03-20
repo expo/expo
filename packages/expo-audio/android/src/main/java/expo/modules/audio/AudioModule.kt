@@ -332,7 +332,7 @@ class AudioModule : Module() {
 
       Function("record") { ref: AudioRecorder ->
         checkRecordingPermission()
-        if (!ref.isPrepared) {
+        if (ref.isPrepared) {
           ref.record()
         }
       }
