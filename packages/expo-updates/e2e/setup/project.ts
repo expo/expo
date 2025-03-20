@@ -495,7 +495,7 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -838,18 +838,18 @@ export async function initAsync(
     'utf-8'
   );
 
-  // Add native debug to iOS Podfile.properties.json
-  const podfilePropertiesJsonPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
-  const podfilePropertiesJsonString = await fs.readFile(podfilePropertiesJsonPath, {
-    encoding: 'utf-8',
-  });
-  const podfilePropertiesJson: any = JSON.parse(podfilePropertiesJsonString);
-  podfilePropertiesJson.updatesNativeDebug = 'true';
-  // For custom init, add the property to iOS Podfile.properties.json
-  podfilePropertiesJson.updatesCustomInit = 'true';
-  await fs.writeFile(podfilePropertiesJsonPath, JSON.stringify(podfilePropertiesJson, null, 2), {
-    encoding: 'utf-8',
-  });
+  // Add custom init to iOS Podfile.properties.json if needed
+  if (useCustomInit) {
+    const podfilePropertiesJsonPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
+    const podfilePropertiesJsonString = await fs.readFile(podfilePropertiesJsonPath, {
+      encoding: 'utf-8',
+    });
+    const podfilePropertiesJson: any = JSON.parse(podfilePropertiesJsonString);
+    podfilePropertiesJson.updatesCustomInit = 'true';
+    await fs.writeFile(podfilePropertiesJsonPath, JSON.stringify(podfilePropertiesJson, null, 2), {
+      encoding: 'utf-8',
+    });
+  }
 
   const customInitSourcesDirectory = path.join(
     repoRoot,
