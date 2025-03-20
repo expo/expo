@@ -274,7 +274,7 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
         </View>
       </Modal>
 
-      <Player
+      {/* <Player
         {...status}
         audioPan={0}
         volume={player.volume}
@@ -289,7 +289,7 @@ export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
         setIsMuted={setIsMuted}
         setVolume={setVolume}
         extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
-      />
+      /> */}
     </View>
   );
 }

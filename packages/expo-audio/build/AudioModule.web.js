@@ -78,6 +78,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.interval = interval;
         this.media = this._createMediaElement();
+        if (source) {
+            this.queue = [source];
+            this.currentQueueIndex = 0;
+        }
     }
     id = nextId();
     isAudioSamplingSupported = false;
@@ -88,6 +92,8 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     interval = 100;
     isPlaying = false;
     loaded = false;
+    queue = [];
+    currentQueueIndex = -1;
     get playing() {
         return this.isPlaying;
     }
@@ -138,48 +144,141 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.pause();
         this.isPlaying = false;
     }
-    // TODO
-    clearQueue() {
-        throw new Error('Not implemented');
-    }
     replace(source) {
         this.src = source;
         this.media = this._createMediaElement();
     }
-    // TODO
+    clearQueue() {
+        this.queue = [];
+        this.currentQueueIndex = -1;
+        this.pause();
+        this.media.src = '';
+        this.loaded = false;
+        // Emit status update
+        // this._emitStatusUpdate({
+        //   currentTime: 0,
+        //   duration: 0,
+        //   isLoaded: false,
+        //   isPlaying: false,
+        // });
+    }
     setQueue(sources) {
-        throw new Error('Not implemented');
+        if (!sources || sources.length === 0) {
+            return;
+        }
+        this.queue = sources.filter((source) => source);
+        this._loadTrackAtIndex(0);
     }
-    // TODO
     getCurrentQueue() {
-        throw new Error('Not implemented');
+        return [...this.queue];
     }
-    // TODO
     getCurrentQueueIndex() {
-        throw new Error('Not implemented');
+        if (this.currentQueueIndex >= 0) {
+            return this.currentQueueIndex;
+        }
+        return null;
     }
-    // TODO
     addToQueue(sources, insertBeforeIndex) {
-        throw new Error('Not implemented');
+        if (!sources || sources.length === 0) {
+            return;
+        }
+        if (insertBeforeIndex !== undefined &&
+            insertBeforeIndex >= 0 &&
+            insertBeforeIndex <= this.queue.length) {
+            this.queue.splice(insertBeforeIndex, 0, ...sources);
+            // Adjust queue index
+            if (this.currentQueueIndex >= 0 && insertBeforeIndex <= this.currentQueueIndex) {
+                this.currentQueueIndex += sources.length;
+            }
+        }
+        else {
+            this.queue.push(...sources);
+        }
+        // set index to 0 if previously reset
+        if (this.currentQueueIndex === -1) {
+            this._loadTrackAtIndex(0);
+        }
     }
-    // TODO
     removeFromQueue(sources) {
-        throw new Error('Not implemented');
+        if (!sources || sources.length === 0 || this.queue.length === 0)
+            return;
+        const urisToRemove = new Set(sources.map((source) => typeof source === 'string'
+            ? source
+            : typeof source === 'number'
+                ? String(source)
+                : source?.uri || ''));
+        // Find indices to remove
+        const indicesToRemove = [];
+        this.queue.forEach((source, index) => {
+            const uri = typeof source === 'string'
+                ? source
+                : typeof source === 'number'
+                    ? String(source)
+                    : source?.uri || '';
+            if (urisToRemove.has(uri)) {
+                indicesToRemove.push(index);
+            }
+        });
+        // Sort in descending order to remove from end first
+        indicesToRemove.sort((a, b) => b - a);
+        // Remove items
+        for (const index of indicesToRemove) {
+            this.queue.splice(index, 1);
+        }
+        // Handle current index adjustments
+        if (indicesToRemove.includes(this.currentQueueIndex) ||
+            this.currentQueueIndex >= this.queue.length) {
+            if (this.queue.length === 0) {
+                this.clearQueue();
+                return;
+            }
+            // If current track was removed, play the next track or the first track
+            const nextIndex = Math.min(this.currentQueueIndex, this.queue.length - 1);
+            this.currentQueueIndex = nextIndex;
+            this._loadTrackAtIndex(nextIndex);
+            return;
+        }
+        // Adjust current index if items were removed before it
+        const removedBeforeCurrent = indicesToRemove.filter((index) => index < this.currentQueueIndex);
+        if (removedBeforeCurrent.length > 0) {
+            this.currentQueueIndex -= removedBeforeCurrent.length;
+        }
     }
-    // TODO
-    skipToQueueIndex(index) {
-        throw new Error('Not implemented');
-    }
-    // TODO
     skipToNext() {
-        throw new Error('Not implemented');
+        if (this.queue.length === 0 || this.currentQueueIndex === -1) {
+            return;
+        }
+        const nextIndex = (this.currentQueueIndex + 1) % this.queue.length;
+        this._loadTrackAtIndex(nextIndex);
     }
-    // TODO
     skipToPrevious() {
-        throw new Error('Not implemented');
+        if (this.queue.length === 0 || this.currentQueueIndex === -1) {
+            return;
+        }
+        const prevIndex = (this.currentQueueIndex - 1 + this.queue.length) % this.queue.length;
+        this._loadTrackAtIndex(prevIndex);
+    }
+    skipToQueueIndex(index) {
+        if (index < 0 || index >= this.queue.length) {
+            return;
+        }
+        this._loadTrackAtIndex(index);
     }
     async seekTo(seconds) {
         this.media.currentTime = seconds / 1000;
+    }
+    _loadTrackAtIndex(index) {
+        console.log('hello');
+        if (index < 0 || index >= this.queue.length)
+            return;
+        const wasPlaying = this.isPlaying;
+        this.currentQueueIndex = index;
+        this.src = this.queue[index];
+        this.media = this._createMediaElement();
+        // Resume playback if it was playing before
+        if (wasPlaying) {
+            this.play();
+        }
     }
     // Not supported on web
     setAudioSamplingEnabled(enabled) {
