@@ -1,9 +1,9 @@
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
+import UpstreamTerminalReporter from '@bycedric/metro/metro/lib/TerminalReporter';
+import { Terminal } from '@bycedric/metro/metro-core';
+import type { WatcherStatus } from '@bycedric/metro/metro-file-map';
 import chalk from 'chalk';
-import UpstreamTerminalReporter from 'metro/src/lib/TerminalReporter';
-import { Terminal } from 'metro-core';
-import type { WatcherStatus } from 'metro-file-map';
 import util from 'util';
 
 import {

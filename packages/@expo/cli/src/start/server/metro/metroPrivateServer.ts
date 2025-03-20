@@ -1,9 +1,9 @@
-import { TransformInputOptions } from 'metro';
-import type Metro from 'metro';
-import { ConfigT } from 'metro-config';
+import { TransformInputOptions } from '@bycedric/metro/metro';
+import type Server from '@bycedric/metro/metro/Server';
+import { ConfigT } from '@bycedric/metro/metro-config';
 import assert from 'node:assert';
 
-export type MetroPrivateServer = import('metro').Server & {
+export type MetroPrivateServer = Server & {
   _bundler: import('metro/src/IncrementalBundler').default;
   _config: ConfigT;
   _createModuleId: (path: string, context?: { environment?: string; platform: string }) => number;
@@ -34,7 +34,7 @@ export type MetroPrivateServer = import('metro').Server & {
   _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<any>): boolean;
 };
 
-export function assertMetroPrivateServer(metro: Metro.Server): asserts metro is MetroPrivateServer {
+export function assertMetroPrivateServer(metro: Server): asserts metro is MetroPrivateServer {
   assert(metro, 'Metro server undefined.');
   assert(
     '_config' in metro && '_bundler' in metro,

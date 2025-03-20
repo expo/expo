@@ -1,5 +1,5 @@
+import type { MetroConfig } from '@bycedric/metro/metro';
 import connect from 'connect';
-import type { MetroConfig } from 'metro';
 
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';

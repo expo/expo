@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import Server from '@bycedric/metro/metro/Server';
+import splitBundleOptions from '@bycedric/metro/metro/lib/splitBundleOptions';
+import output from '@bycedric/metro/metro/shared/output/bundle';
+import type { BundleOptions } from '@bycedric/metro/metro/shared/types.flow';
 import { getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';

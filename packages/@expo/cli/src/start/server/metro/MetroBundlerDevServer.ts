@@ -4,25 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { DeltaResult, TransformInputOptions } from '@bycedric/metro/metro';
+import baseJSBundle from '@bycedric/metro/metro/DeltaBundler/Serializers/baseJSBundle';
+import {
+  sourceMapGeneratorNonBlocking,
+  type SourceMapGeneratorOptions,
+} from '@bycedric/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
+import type MetroHmrServer from '@bycedric/metro/metro/HmrServer';
+import type { Client as MetroHmrClient } from '@bycedric/metro/metro/HmrServer';
+import { GraphRevision } from '@bycedric/metro/metro/IncrementalBundler';
+import bundleToString from '@bycedric/metro/metro/lib/bundleToString';
+import getGraphId from '@bycedric/metro/metro/lib/getGraphId';
+import { TransformProfile } from '@bycedric/metro/metro-babel-transformer';
+import type { CustomResolverOptions } from '@bycedric/metro/metro-resolver/types';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { DeltaResult, TransformInputOptions } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import {
-  sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
-} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import type MetroHmrServer from 'metro/src/HmrServer';
-import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
-import { GraphRevision } from 'metro/src/IncrementalBundler';
-import bundleToString from 'metro/src/lib/bundleToString';
-import getGraphId from 'metro/src/lib/getGraphId';
-import { TransformProfile } from 'metro-babel-transformer';
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 

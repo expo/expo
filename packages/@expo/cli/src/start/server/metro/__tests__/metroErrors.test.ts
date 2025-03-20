@@ -1,5 +1,5 @@
-import FailedToResolveNameError from 'metro-resolver/src/errors/FailedToResolveNameError';
-import FailedToResolvePathError from 'metro-resolver/src/errors/FailedToResolvePathError';
+import FailedToResolveNameError from '@bycedric/metro/metro-resolver/errors/FailedToResolveNameError';
+import FailedToResolvePathError from '@bycedric/metro/metro-resolver/errors/FailedToResolvePathError';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from '../metroErrors';
 

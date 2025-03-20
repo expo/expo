@@ -1255,6 +1255,24 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bycedric/metro@ 0.82.0-rc.1":
+  version "0.82.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@bycedric/metro/-/metro-0.82.0-rc.1.tgz#d3c0b81c2fd029ceafd34eb9211571010b1e2507"
+  integrity sha512-Y4TzgxRCHGiOnA6AR28rxhqt/lHvD1PdwXiUAt/YGyUvuHKxB28Vufx/hYehJ7jqXKPV4/rRNj25JlJFDPfZBg==
+  dependencies:
+    metro "0.82.0"
+    metro-babel-transformer "0.82.0"
+    metro-cache "0.82.0"
+    metro-cache-key "0.82.0"
+    metro-config "0.82.0"
+    metro-core "0.82.0"
+    metro-file-map "0.82.0"
+    metro-resolver "0.82.0"
+    metro-runtime "0.82.0"
+    metro-source-map "0.82.0"
+    metro-transform-plugins "0.82.0"
+    metro-transform-worker "0.82.0"
+
 "@callstack/react-theme-provider@^3.0.9":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@callstack/react-theme-provider/-/react-theme-provider-3.0.9.tgz#01035fa1231f1fffc1a806be1b55eb82716e80c1"
@@ -4287,13 +4305,6 @@
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@types/wrap-ansi/-/wrap-ansi-8.0.1.tgz#59dc91b83a2e949971da8617592d9eaaf6592774"
   integrity sha512-cjwgM6WWy9YakrQ36Pq0vg5XoNblVEaNq+/pHngKl4GyyDIxTeskPoG+tp4LsRk0lHrA4LaLJqlvYridi7mzlw==
-
-"@types/write-file-atomic@^2.1.1":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@types/write-file-atomic/-/write-file-atomic-2.1.2.tgz#1657761692b70cf9ad2593e4eb4ac498adb9463f"
-  integrity sha512-/P4wq72qka9+JNqDgHe7Kr2Gpu1kmhA0H8tLlKi9G0eXmePiuT9k0izZAdkXXNA6Nb27xnzdgjRv2jZWO3+2oQ==
-  dependencies:
-    "@types/node" "*"
 
 "@types/ws@^8.0.0", "@types/ws@^8.5.4":
   version "8.5.4"
@@ -16354,15 +16365,6 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
-
-write-file-atomic@^2.3.0:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-2.4.3.tgz#1fd2e9ae1df3e75b8d8c367443c692d4ca81f481"
-  integrity sha512-GaETH5wwsX+GcnzhPgKcKjJ6M2Cq3/iZp1WyY/X1CSqrW+jVNM9Y7D8EC2sM4ZG/V8wZlSniJnCKWPmBYAucRQ==
-  dependencies:
-    graceful-fs "^4.1.11"
-    imurmurhash "^0.1.4"
-    signal-exit "^3.0.2"
 
 write-file-atomic@^4.0.2:
   version "4.0.2"
