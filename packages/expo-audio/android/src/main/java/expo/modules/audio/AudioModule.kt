@@ -11,7 +11,6 @@ import androidx.media3.common.C.CONTENT_TYPE_DASH
 import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
 import androidx.media3.common.C.CONTENT_TYPE_SS
-import androidx.media3.common.C.VOLUME_FLAG_ALLOW_RINGER_MODES
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -35,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
 import kotlin.math.min
+import androidx.core.net.toUri
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
@@ -87,14 +87,14 @@ class AudioModule : Module() {
       if (!appIsPaused) {
         appIsPaused = true
         if (!staysActiveInBackground) {
-          for (player in players.values) {
+          players.values.forEach { player ->
             if (player.player.isPlaying) {
               player.isPaused = true
               player.ref.pause()
             }
           }
 
-          for (recorder in recorders.values) {
+          recorders.values.forEach { recorder ->
             if (recorder.isRecording) {
               recorder.pauseRecording()
             }
@@ -107,14 +107,14 @@ class AudioModule : Module() {
       if (appIsPaused) {
         appIsPaused = false
         if (!staysActiveInBackground) {
-          for (player in players.values) {
+          players.values.forEach { player ->
             if (player.isPaused) {
               player.isPaused = false
               player.ref.play()
             }
           }
 
-          for (recorder in recorders.values) {
+          recorders.values.forEach { recorder ->
             if (recorder.isPaused) {
               recorder.record()
             }
@@ -179,7 +179,7 @@ class AudioModule : Module() {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
         }
       }.set { ref, isLooping: Boolean ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.repeatMode = if (isLooping) {
             Player.REPEAT_MODE_ONE
           } else {
@@ -201,13 +201,11 @@ class AudioModule : Module() {
       }
 
       Property("muted") { ref ->
-        runOnMain {
-          ref.player.isDeviceMuted
-        }
-      }.set { ref, muted: Boolean ->
-        appContext.mainQueue.launch {
-          ref.player.setDeviceMuted(muted, VOLUME_FLAG_ALLOW_RINGER_MODES)
-        }
+        ref.isMuted
+      }.set { ref, muted: Boolean? ->
+        val newMuted = muted ?: false
+        ref.isMuted = newMuted
+        ref.setVolume(if (newMuted) 0f else ref.previousVolume)
       }
 
       Property("shouldCorrectPitch") { ref ->
@@ -238,10 +236,8 @@ class AudioModule : Module() {
         runOnMain {
           ref.player.volume
         }
-      }.set { ref, volume: Float ->
-        runOnMain {
-          ref.player.volume = volume
-        }
+      }.set { ref, volume: Float? ->
+        ref.setVolume(volume)
       }
 
       Function("play") { ref: AudioPlayer ->
@@ -371,12 +367,12 @@ class AudioModule : Module() {
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uri ->
     val factory = createDataSourceFactory(source)
-    val uri = if (Util.isLocalFileUri(Uri.parse(source.uri))) {
+    val sourceUri = if (Util.isLocalFileUri(uri.toUri())) {
       Uri.fromFile(File(source.uri))
     } else {
-      Uri.parse(source.uri)
+      source.uri.toUri()
     }
-    val item = MediaItem.fromUri(uri)
+    val item = MediaItem.fromUri(sourceUri)
     buildMediaSourceFactory(factory, item)
   }
 
