@@ -30,10 +30,9 @@ data class RecordingOptions(
   @Field val maxFileSize: Int = 0
 ) : Record
 
-enum class PictureFormat(val value: String): Enumerable {
+enum class PictureFormat(val value: String) : Enumerable {
   JPEG("jpg"),
   PNG("png");
 
   fun toExtension() = ".${this.value}"
 }
-
