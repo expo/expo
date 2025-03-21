@@ -104,8 +104,8 @@ import { Tabs } from 'expo-router';
 export default function TabLayout() {
   return (
     <Tabs>
-      <Tabs.Screen name="(feed)" options={{ title = 'Feed' }} />
-      <Tabs.Screen name="search" options={{ title = 'Search' }} />
+      <Tabs.Screen name="(feed)" options={{ title: 'Feed' }} />
+      <Tabs.Screen name="search" options={{ title: 'Search' }} />
     </Tabs>
   );
 }
@@ -164,7 +164,7 @@ export default function AuthLayout() {
     return <Redirect href="/login" />;
   }
 
-  return <Stack />;,
+  return <Stack />;
 }
 ```
 
