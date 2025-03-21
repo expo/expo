@@ -3,6 +3,8 @@
 This is the log of notable changes to the Expo client that are developer-facing.
 Package-specific changes not released in any SDK will be added here just before the release. Until then, you can find them in changelogs of the individual packages (see [packages](./packages) directory).
 
+Note: Individual packages that remain compatible with older SDK versions may receive updates and even new features after that SDK’s initial release. These updates will not retroactively be added to the SDK’s changelog section here. Please refer to the changelogs of individual packages for the most accurate and up-to-date information.
+
 ## Unpublished
 
 ### 📚 3rd party library updates
