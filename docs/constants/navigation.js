@@ -242,7 +242,7 @@ export const general = [
       makePage('router/basics/notation.mdx'),
       makePage('router/basics/layout.mdx'),
       makePage('router/basics/navigation.mdx'),
-      makePage('router/basics/real-life-nav.mdx'),
+      makePage('router/basics/common-navigation-patterns.mdx'),
     ]),
     makeGroup('Navigation patterns', [
       makePage('router/advanced/stack.mdx'),
