@@ -48,7 +48,7 @@ config.serializer.getModulesRunBeforeMainModule = () => {
   return originalGetModulesRunBeforeMainModule();
 };
 
-// `expo-sqlite` uses `SharedArrayBuffers` on web, which require explicit COOP and COEP headers
+// `expo-sqlite` uses `SharedArrayBuffer` on web, which requires explicit COOP and COEP headers
 // See: https://github.com/expo/expo/pull/35208
 config.server.enhanceMiddleware = (middleware) => {
   return (req, res, next) => {
