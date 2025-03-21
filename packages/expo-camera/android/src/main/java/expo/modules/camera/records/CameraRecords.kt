@@ -5,7 +5,6 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.video.Quality
 import com.google.mlkit.vision.barcode.common.Barcode
-import expo.modules.camera.CameraExceptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
