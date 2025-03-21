@@ -3,8 +3,8 @@
 package expo.modules.sqlite
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -62,7 +62,7 @@ class SQLiteModule : Module() {
       if (dbFile.exists() && !forceOverwrite) {
         return@AsyncFunction
       }
-      val assetFile = Uri.parse(assetDatabasePath).toFile()
+      val assetFile = assetDatabasePath.toUri().toFile()
       if (!assetFile.isFile) {
         throw OpenDatabaseException(assetDatabasePath)
       }
@@ -309,7 +309,7 @@ class SQLiteModule : Module() {
     }
     try {
       val parsedPath =
-        Uri.parse(databasePath).path ?: throw IOException("Couldn't parse Uri - $databasePath")
+        databasePath.toUri().path ?: throw IOException("Couldn't parse Uri - $databasePath")
       val path = File(parsedPath)
       val parentPath =
         path.parentFile ?: throw IOException("Parent directory is null for path '$path'.")
