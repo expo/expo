@@ -6,12 +6,14 @@ on:
     paths:
       - .github/workflows/home.yml
       - apps/expo-go/**
+      - react-native-lab/**
       - yarn.lock
   push:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/home.yml
       - apps/expo-go/**
+      - react-native-lab/**
       - yarn.lock
 
 concurrency:
