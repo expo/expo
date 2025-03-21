@@ -14,6 +14,7 @@
 
 - Rename `fetchpriority` prop to `fetchPriority` to silence web error. ([#35411](https://github.com/expo/expo/pull/35411) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed `tintColor="currentColor"` conflicts on web. ([#34604](https://github.com/expo/expo/pull/34604) by [@bradleyayers](https://github.com/bradleyayers))
+- [iOS] Fixed image be cropped with `contentPosition` on New Architecture mode. ([#35630](https://github.com/expo/expo/pull/35630) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
