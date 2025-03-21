@@ -9,8 +9,8 @@ import UserNotifications
  */
 public protocol NotificationDelegate: AnyObject {
   func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool
-  func didReceiveResponse(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool
-  func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool
+  func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool
+  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool
   func openSettings(_ notification: UNNotification?)
   func didRegister(_ deviceToken: String)
   func didFailRegistration(_ error: Error)
@@ -20,10 +20,10 @@ public extension NotificationDelegate {
   func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     return false
   }
-  func didReceiveResponse(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
+  func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     return false
   }
-  func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
     return false
   }
   func openSettings(_ notification: UNNotification?) {}
@@ -65,7 +65,7 @@ public class NotificationCenterManager: NSObject,
     delegates.append(delegate)
     var handled = false
     for pendingResponse in pendingResponses {
-      handled = delegate.didReceiveResponse(pendingResponse, completionHandler: {}) || handled
+      handled = delegate.didReceive(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
       pendingResponses.removeAll()
@@ -115,7 +115,7 @@ public class NotificationCenterManager: NSObject,
   ) {
     var handled = false
     for delegate in delegates {
-      handled = delegate.didReceiveResponse(response, completionHandler: completionHandler) || handled
+      handled = delegate.didReceive(response, completionHandler: completionHandler) || handled
     }
     if !handled {
       pendingResponses.append(response)
@@ -133,7 +133,7 @@ public class NotificationCenterManager: NSObject,
   public func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     var handled = false
     for delegate in delegates {
-      handled = delegate.didReceiveNotification(notification, completionHandler: completionHandler) || handled
+      handled = delegate.didReceive(notification, completionHandler: completionHandler) || handled
     }
     if !handled {
       completionHandler(.noData)

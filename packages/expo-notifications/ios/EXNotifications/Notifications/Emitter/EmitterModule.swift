@@ -35,12 +35,12 @@ public class EmitterModule: Module, NotificationDelegate {
     }
   }
 
-  public func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+  public func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
     completionHandler(.noData)
     return true
   }
 
-  public func didReceiveResponse(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
+  public func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     NotificationCenterManager.shared.lastResponse = response
     // TODO: convert serialization to Records
     let serializedResponse = EXNotificationSerializer.serializedNotificationResponse(response)
