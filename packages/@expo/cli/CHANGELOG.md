@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Mute require cycle warnings triggered from node_modules in API routes. [#27039](https://github.com/expo/expo/pull/27039) by [@hdwatts](https://github.com/hdwatts)
+
 ### 🛠 Breaking changes
 
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
