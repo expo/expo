@@ -82,6 +82,14 @@ internal class NativeDatabaseBinding : Closeable {
       System.loadLibrary("expo-sqlite")
     }
 
+    @JvmStatic
+    external fun sqlite3_backup(
+      destDatabase: NativeDatabaseBinding,
+      destDatabaseName: String,
+      sourceDatabase: NativeDatabaseBinding,
+      sourceDatabaseName: String
+    ): Int
+
     // These error code should be synced with sqlite3.h
     const val SQLITE_OK = 0
 

@@ -218,6 +218,24 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       expect(results[0].j).toBeCloseTo(23.4);
       await db.closeAsync();
     }, 30000);
+
+    it('should support sqlite db backup', async () => {
+      const srcDb = await SQLite.openDatabaseAsync('test.db');
+      await srcDb.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const destDb = await SQLite.openDatabaseAsync(':memory:');
+      await SQLite.backupDatabaseAsync({
+        sourceDatabase: srcDb,
+        destDatabase: destDb,
+      });
+      const results = await destDb.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await srcDb.closeAsync();
+      await destDb.closeAsync();
+    });
   });
 
   describe('Statements', () => {

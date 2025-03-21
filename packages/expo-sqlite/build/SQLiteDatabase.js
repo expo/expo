@@ -405,6 +405,34 @@ export function deleteDatabaseSync(databaseName, directory) {
     return ExpoSQLite.deleteDatabaseSync(databasePath);
 }
 /**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export function backupDatabaseAsync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }) {
+    return ExpoSQLite.backupDatabaseAsync(destDatabase.nativeDatabase, destDatabaseName ?? 'main', sourceDatabase.nativeDatabase, sourceDatabaseName ?? 'main');
+}
+/**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export function backupDatabaseSync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }) {
+    return ExpoSQLite.backupDatabaseSync(destDatabase.nativeDatabase, destDatabaseName ?? 'main', sourceDatabase.nativeDatabase, sourceDatabaseName ?? 'main');
+}
+/**
  * Add a listener for database changes.
  * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#sqliteopenoptions) when opening the database.
  *
