@@ -50,7 +50,10 @@ export function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Result {
-  jest.useFakeTimers();
+  // Enable fake timers only if not already enabled by the user, to avoid overriding their configuration
+  if (!('isFake' in Date)) {
+    jest.useFakeTimers();
+  }
 
   const mockContext = getMockContext(context);
 
