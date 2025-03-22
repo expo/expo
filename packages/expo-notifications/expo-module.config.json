@@ -4,10 +4,12 @@
     "modules": [
       "BadgeModule",
       "CategoriesModule",
+      "EmitterModule",
+      "HandlerModule",
       "PresentationModule",
       "PushTokenModule",
-      "ServerRegistrationModule",
-      "SchedulerModule"
+      "SchedulerModule",
+      "ServerRegistrationModule"
     ],
     "appDelegateSubscribers": ["NotificationsAppDelegateSubscriber"]
   },
