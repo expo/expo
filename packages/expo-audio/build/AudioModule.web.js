@@ -75,13 +75,10 @@ function getStatusFromMedia(media, id, player) {
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source, interval) {
         super();
-        this.src = source;
+        const sourceArray = Array.isArray(source) ? source : [source];
         this.interval = interval;
         this.media = this._createMediaElement();
-        if (source) {
-            this.queue = [source];
-            this.currentQueueIndex = 0;
-        }
+        this.setQueue(sourceArray);
     }
     id = nextId();
     isAudioSamplingSupported = false;

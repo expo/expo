@@ -33,7 +33,9 @@ AudioModule.AudioPlayer.prototype.removeFromQueue = function (sources) {
 };
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
+    const parsedSource = Array.isArray(source)
+        ? source.map(resolveSource).filter(Boolean)
+        : resolveSource(source);
     return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
 }
 // @docsMissing

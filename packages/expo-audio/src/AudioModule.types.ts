@@ -29,7 +29,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Initializes a new audio player instance with the given source.
    * @hidden
    */
-  constructor(source: AudioSource, updateInterval: number);
+  constructor(source: AudioSource | AudioSource[], updateInterval: number);
 
   /**
    * Unique identifier for the player object.

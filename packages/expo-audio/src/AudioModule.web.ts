@@ -104,16 +104,14 @@ export class AudioPlayerWeb
   extends globalThis.expo.SharedObject<AudioEvents>
   implements AudioPlayer
 {
-  constructor(source: AudioSource, interval: number) {
+  constructor(source: AudioSource | AudioSource[], interval: number) {
     super();
-    this.src = source;
+
+    const sourceArray = Array.isArray(source) ? source : [source];
     this.interval = interval;
     this.media = this._createMediaElement();
 
-    if (source) {
-      this.queue = [source];
-      this.currentQueueIndex = 0;
-    }
+    this.setQueue(sourceArray);
   }
 
   id: number = nextId();

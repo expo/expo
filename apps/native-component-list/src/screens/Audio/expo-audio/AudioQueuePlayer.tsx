@@ -18,7 +18,7 @@ import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
 type AudioPlayerProps = {
-  source: AudioSource | string | number;
+  source: AudioSource | AudioSource[] | string | number;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -61,7 +61,7 @@ const testAssets = [
 export default function AudioQueuePlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
-  const [queueItems, setQueueItems] = useState<AudioSource[]>([]);
+  const [queueItems, setQueueItems] = useState<AudioSource[]>(player?.getCurrentQueue() || []);
   const [selectedTracks, setSelectedTracks] = useState<number[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addTrackUrl, setAddTrackUrl] = useState('');
