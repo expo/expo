@@ -10,10 +10,14 @@ class DateTimePickerProps: ExpoSwiftUI.ViewProps {
   var onDateSelected = EventDispatcher()
 }
 
-struct DateTimePickerView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: DateTimePickerProps
+struct DateTimePickerView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: DateTimePickerProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var date = Date()
+
+  init(props: DateTimePickerProps) {
+    self.props = props
+  }
 
   var body: some View {
     #if os(tvOS)

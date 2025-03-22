@@ -19,13 +19,13 @@ internal protocol AnyViewLifecycleMethod: AnyDefinition {
   /**
    Calls the lifecycle method for the given view.
    */
-  func callAsFunction(_ view: UIView)
+  func callAsFunction(_ view: AppleView)
 }
 
 /**
  Element of the view definition that represents a lifecycle method, such as `OnViewDidUpdateProps`.
  */
-public final class ViewLifecycleMethod<ViewType: UIView>: AnyViewLifecycleMethod {
+public final class ViewLifecycleMethod<ViewType>: AnyViewLifecycleMethod {
   /**
    The actual closure that gets called when the view signals an event in view's lifecycle.
    */
@@ -38,11 +38,19 @@ public final class ViewLifecycleMethod<ViewType: UIView>: AnyViewLifecycleMethod
     self.closure = closure
   }
 
-  func callAsFunction(_ view: UIView) {
-    guard let view = view as? ViewType else {
-      log.warn("Cannot call lifecycle method '\(type)', given view is not of type '\(ViewType.self)'")
-      return
+  func callAsFunction(_ view: AppleView) {
+    switch view {
+    case .uikit(let view):
+      if let view = view as? ViewType {
+        closure(view)
+        return
+      }
+    case .swiftui(let view):
+      if let view = view as? ViewType {
+        closure(view)
+        return
+      }
     }
-    closure(view)
+    log.warn("Cannot call lifecycle method '\(type)', given view is not of type '\(ViewType.self)'")
   }
 }

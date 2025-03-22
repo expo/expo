@@ -3,9 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct Button: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ButtonProps
+struct Button: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ButtonProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+
+  init(props: ButtonProps) {
+    self.props = props
+  }
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {

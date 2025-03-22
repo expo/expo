@@ -11,10 +11,14 @@ class SwitchProps: ExpoSwiftUI.ViewProps {
   var onValueChange = EventDispatcher()
 }
 
-struct SwitchView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: SwitchProps
+struct SwitchView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: SwitchProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
+
+  init(props: SwitchProps) {
+    self.props = props
+  }
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {

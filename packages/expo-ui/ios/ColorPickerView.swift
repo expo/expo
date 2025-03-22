@@ -10,8 +10,8 @@ class ColorPickerProps: ExpoSwiftUI.ViewProps {
   var onValueChanged = EventDispatcher()
 }
 
-struct ColorPickerView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ColorPickerProps
+struct ColorPickerView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ColorPickerProps
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear
 

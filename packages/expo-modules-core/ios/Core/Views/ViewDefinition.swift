@@ -50,19 +50,19 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
 
   // MARK: - AnyViewDefinition
 
-  public func createView(appContext: AppContext) -> UIView? {
+  public func createView(appContext: AppContext) -> AppleView? {
     if let expoViewType = ViewType.self as? AnyExpoView.Type {
 #if RCT_NEW_ARCH_ENABLED
       if let fabricViewType = ViewType.self as? ExpoFabricView.Type {
-        return ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext)
+        return AppleView.from(ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext))
       }
 #endif
-      return expoViewType.init(appContext: appContext)
+      return AppleView.from(expoViewType.init(appContext: appContext))
     }
     if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
-      return legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView
+      return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
     }
-    return ViewType(frame: .zero)
+    return AppleView.from(ViewType(frame: .zero))
   }
 
   public func propsDict() -> [String: AnyViewProp] {
@@ -79,7 +79,7 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
     return eventNames
   }
 
-  public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView) {
+  public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView) {
     for method in lifecycleMethods where method.type == type {
       method(view)
     }
