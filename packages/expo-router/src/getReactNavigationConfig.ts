@@ -34,7 +34,7 @@ function convertDynamicRouteToReactNavigation(segment: string): string {
   return segment;
 }
 
-function parseRouteSegments(segments: string): string {
+export function parseRouteSegments(segments: string): string {
   return (
     // NOTE(EvanBacon): When there are nested routes without layouts
     // the node.route will be something like `app/home/index`
