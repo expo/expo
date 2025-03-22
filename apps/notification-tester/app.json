@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "notification-tester",
+    "slug": "notification-tester",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "expnotify",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vonovak.microfoam"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.brents.microfoam"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#232323",
+          "defaultChannel": "defaultExpoChannel",
+          "sounds": ["./assets/pop_sound.wav", "./assets/bells_sound.wav"],
+          "enableBackgroundRemoteNotifications": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "runtimeVersion": "be975abaed5ef1ab51b8eff6c95f384a8700debe",
+    "owner": "brents",
+    "extra": {
+      "eas": {
+        "projectId": "f19296df-44bd-482a-90bb-2af254c6ac42"
+      }
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
