@@ -2,7 +2,7 @@ import { PermissionResponse } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions } from './Audio.types';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
-    constructor(source: AudioSource, interval: number);
+    constructor(source: AudioSource | AudioSource[], interval: number);
     id: number;
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
@@ -12,6 +12,8 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private interval;
     private isPlaying;
     private loaded;
+    private queue;
+    currentQueueIndex: number;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -29,7 +31,17 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     play(): void;
     pause(): void;
     replace(source: AudioSource): void;
+    clearQueue(): void;
+    setQueue(sources: AudioSource[]): void;
+    getCurrentQueue(): AudioSource[];
+    getCurrentQueueIndex(): number | null;
+    addToQueue(sources: AudioSource[], insertBeforeIndex?: number): void;
+    removeFromQueue(sources: AudioSource[]): void;
+    skipToNext(): void;
+    skipToPrevious(): void;
+    skipToQueueIndex(index: number): void;
     seekTo(seconds: number): Promise<void>;
+    private _loadTrackAtIndex;
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;

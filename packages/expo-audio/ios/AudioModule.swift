@@ -147,7 +147,49 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.replaceCurrentSource(source: source)
+        player.setQueue(sources: [source])
+      }
+
+      Function("setQueue") { (player, sources: [AudioSource]) in
+        player.setQueue(sources: sources)
+      }
+
+      Function("getCurrentQueue") { (player) in
+        player.getCurrentQueue()
+      }
+
+      Function("getCurrentQueueIndex") { (player) -> Any in
+        let index = player.getCurrentQueueIndex()
+
+        if index >= 0 {
+          return index
+        } else {
+          return NSNull()
+        }
+      }
+
+      Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in
+        player.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
+      }
+
+      Function("removeFromQueue") { (player, sources: [AudioSource]) in
+        player.removeFromQueue(sources: sources)
+      }
+
+      Function("clearQueue") { (player) in
+        player.clearQueue()
+      }
+
+      Function("skipToQueueIndex") { (player, index: Int) in
+        player.skipToQueueIndex(index: index)
+      }
+
+      Function("skipToNext") { (player) in
+        player.skipToNext()
+      }
+
+      Function("skipToPrevious") { (player) in
+        player.skipToPrevious()
       }
 
       Function("pause") { player in

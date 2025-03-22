@@ -13,9 +13,29 @@ const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
     return replace.call(this, resolveSource(source));
 };
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const setQueue = AudioModule.AudioPlayer.prototype.setQueue;
+AudioModule.AudioPlayer.prototype.setQueue = function (sources) {
+    const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+    return setQueue.call(this, resolvedSources);
+};
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const addToQueue = AudioModule.AudioPlayer.prototype.addToQueue;
+AudioModule.AudioPlayer.prototype.addToQueue = function (sources, insertBeforeIndex) {
+    const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+    return addToQueue.call(this, resolvedSources, insertBeforeIndex);
+};
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const removeFromQueue = AudioModule.AudioPlayer.prototype.removeFromQueue;
+AudioModule.AudioPlayer.prototype.removeFromQueue = function (sources) {
+    const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+    return removeFromQueue.call(this, resolvedSources);
+};
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
+    const parsedSource = Array.isArray(source)
+        ? source.map(resolveSource).filter(Boolean)
+        : resolveSource(source);
     return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
 }
 // @docsMissing
@@ -70,7 +90,9 @@ export function useAudioRecorderState(recorder, interval = 500) {
  * @param updateInterval
  */
 export function createAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
+    const parsedSource = Array.isArray(source)
+        ? source.map(resolveSource).filter(Boolean)
+        : resolveSource(source);
     return new AudioModule.AudioPlayer(parsedSource, updateInterval);
 }
 // @docsMissing
