@@ -386,6 +386,12 @@ export class AudioPlayerWeb
     };
 
     media.onended = () => {
+      if (this.loop) {
+        this._loadTrackAtIndex(this.currentQueueIndex);
+
+        return;
+      }
+
       this.skipToNext();
     };
 

@@ -289,6 +289,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
             });
         };
         media.onended = () => {
+            if (this.loop) {
+                this._loadTrackAtIndex(this.currentQueueIndex);
+                return;
+            }
             this.skipToNext();
         };
         return media;
