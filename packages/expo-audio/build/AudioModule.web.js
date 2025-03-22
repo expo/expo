@@ -288,6 +288,9 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
                 isLoaded: this.loaded,
             });
         };
+        media.onended = () => {
+            this.skipToNext();
+        };
         return media;
     }
 }

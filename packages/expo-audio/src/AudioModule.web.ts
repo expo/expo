@@ -385,6 +385,10 @@ export class AudioPlayerWeb
       });
     };
 
+    media.onended = () => {
+      this.skipToNext();
+    };
+
     return media;
   }
 }
