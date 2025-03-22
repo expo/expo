@@ -347,6 +347,13 @@ redirects[guides/sharing-preview-releases]=build/internal-distribution
 # After merging EAS environment variables guides
 redirects[eas/using-environment-variables]=eas/environment-variables
 
+# After Expo Router Getting Started Guide
+redirects[router/reference/authentication]=router/advanced/authentication
+redirects[router/advanced/root-layout]=router/basics/layout/#root-layout
+redirects[router/reference/not-found]=router/error-handling
+redirects[router/navigating-pages]=router/basics/navigation
+redirects[router/create-pages]=router/basics/core-concepts
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
