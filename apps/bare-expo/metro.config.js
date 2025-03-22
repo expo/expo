@@ -1,6 +1,7 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
+const { boolish, bool } = require('getenv');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -24,15 +25,35 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
-// When testing on MacOS we need to swap out `react-native` for `react-native-macos`
+// Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
+config.transformer.enableBabelRCLookup = false;
+
+// We'd like to get rid of `native-component-list` being a part of the final bundle.
+// Otherwise, some tests may fail due to timeouts (bundling takes significantly more time).
+const removeNCLFromBundle = boolish('CI', false) || boolish('NO_NCL', false);
+
 config.resolver.resolveRequest = (context, moduleName, platform) => {
+  // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
   if (
     platform === 'macos' &&
     (moduleName === 'react-native' || moduleName.startsWith('react-native/'))
   ) {
-    const newModuleName = moduleName.replace('react-native', 'react-native-macos');
-    return context.resolveRequest(context, newModuleName, platform);
+    return context.resolveRequest(
+      context,
+      moduleName.replace('react-native', 'react-native-macos'),
+      platform
+    );
   }
+
+  // We'd like to get rid of `native-component-list` being a part of the final bundle.
+  // Otherwise, some tests may fail due to timeouts (bundling takes significantly more time).
+  if (
+    removeNCLFromBundle &&
+    (moduleName === 'native-component-list' || moduleName.startsWith('native-component-list/'))
+  ) {
+    return { type: 'empty' };
+  }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 
@@ -57,8 +78,5 @@ config.server.enhanceMiddleware = (middleware) => {
     middleware(req, res, next);
   };
 };
-
-// Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
-config.transformer.enableBabelRCLookup = false;
 
 module.exports = config;
