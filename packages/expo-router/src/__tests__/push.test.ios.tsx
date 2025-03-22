@@ -23,7 +23,9 @@ it('stacks should always push a new route', () => {
 
   // Initial stale state
   expect(store.rootStateSnapshot()).toStrictEqual({
-    routes: [{ name: 'index', path: '/' }],
+    routes: [
+      { name: '___InternalSlot', state: { routes: [{ name: 'index', path: '/' }], stale: true } },
+    ],
     stale: true,
   });
 
@@ -38,94 +40,109 @@ it('stacks should always push a new route', () => {
   act(() => router.push('/user/2'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '___InternalSlot',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: '(group)',
-        params: {
-          id: '1',
-        },
-        path: undefined,
         state: {
-          index: 3,
+          index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['user/[id]', 'post/[id]'],
+          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'post/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-              path: undefined,
+              name: 'index',
+              params: undefined,
+              path: '/',
             },
             {
               key: expect.any(String),
-              name: 'user/[id]',
-              params: {
-                id: '1',
-                params: {
-                  id: '1',
-                },
-                screen: 'index',
-              },
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'post/[id]',
-              params: {
-                id: '2',
-                params: {
-                  id: '2',
-                },
-                screen: 'index',
-              },
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'user/[id]',
+              name: '(group)',
               params: {
                 id: '1',
               },
               path: undefined,
               state: {
-                index: 1,
+                index: 3,
                 key: expect.any(String),
                 preloadedRoutes: [],
-                routeNames: ['index'],
+                routeNames: ['user/[id]', 'post/[id]'],
                 routes: [
                   {
                     key: expect.any(String),
-                    name: 'index',
+                    name: 'post/[id]',
                     params: {
                       id: '1',
+                      params: {
+                        id: '1',
+                      },
+                      screen: 'index',
                     },
                     path: undefined,
                   },
                   {
                     key: expect.any(String),
-                    name: 'index',
+                    name: 'user/[id]',
                     params: {
-                      id: '2',
+                      id: '1',
+                      params: {
+                        id: '1',
+                      },
+                      screen: 'index',
                     },
                     path: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'post/[id]',
+                    params: {
+                      id: '2',
+                      params: {
+                        id: '2',
+                      },
+                      screen: 'index',
+                    },
+                    path: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'user/[id]',
+                    params: {
+                      id: '1',
+                    },
+                    path: undefined,
+                    state: {
+                      index: 1,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '1',
+                          },
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '2',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                 ],
                 stale: false,
@@ -224,92 +241,107 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   testRouter.push('/d');
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 2,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '(tabs)', 'd', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '___InternalSlot',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: '(tabs)',
-        path: undefined,
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
-          routeNames: ['a', 'b', 'c'],
+          preloadedRoutes: [],
+          routeNames: ['index', '(tabs)', 'd', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'a',
-              params: {},
-              path: undefined,
+              name: 'index',
+              params: undefined,
+              path: '/',
             },
             {
               key: expect.any(String),
-              name: 'b',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'c',
+              name: '(tabs)',
               path: undefined,
               state: {
+                history: [
+                  {
+                    key: expect.any(String),
+                    type: 'route',
+                  },
+                  {
+                    key: expect.any(String),
+                    type: 'route',
+                  },
+                ],
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
-                routeNames: ['one', 'two'],
+                preloadedRouteKeys: [],
+                routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
                     key: expect.any(String),
-                    name: 'one',
+                    name: 'a',
                     params: {},
                     path: undefined,
                   },
                   {
                     key: expect.any(String),
-                    name: 'two',
+                    name: 'b',
                     params: {},
                     path: undefined,
                   },
                   {
                     key: expect.any(String),
-                    name: 'two',
-                    params: {},
+                    name: 'c',
                     path: undefined,
+                    state: {
+                      index: 2,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['one', 'two'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'one',
+                          params: {},
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'two',
+                          params: {},
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'two',
+                          params: {},
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                 ],
                 stale: false,
-                type: 'stack',
+                type: 'tab',
               },
+            },
+            {
+              key: expect.any(String),
+              name: 'd',
+              params: {},
+              path: undefined,
             },
           ],
           stale: false,
-          type: 'tab',
+          type: 'stack',
         },
-      },
-      {
-        key: expect.any(String),
-        name: 'd',
-        params: {},
-        path: undefined,
       },
     ],
     stale: false,
@@ -352,54 +384,42 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   act(() => router.push('/a')); // Should push to the root stack
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 3,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
         key: expect.any(String),
-        name: 'a',
+        name: '___InternalSlot',
         params: undefined,
-        path: '/a',
-      },
-      {
-        key: expect.any(String),
-        name: 'b',
-        params: {},
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'one',
-        path: undefined,
         state: {
-          index: 2,
+          index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'two', 'page'],
+          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'index',
+              name: 'a',
+              params: undefined,
+              path: '/a',
+            },
+            {
+              key: expect.any(String),
+              name: 'b',
               params: {},
               path: undefined,
             },
             {
               key: expect.any(String),
-              name: 'page',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'two',
+              name: 'one',
               path: undefined,
               state: {
-                index: 1,
+                index: 2,
                 key: expect.any(String),
                 preloadedRoutes: [],
-                routeNames: ['index', 'page'],
+                routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
@@ -413,21 +433,48 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                     params: {},
                     path: undefined,
                   },
+                  {
+                    key: expect.any(String),
+                    name: 'two',
+                    path: undefined,
+                    state: {
+                      index: 1,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index', 'page'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {},
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'page',
+                          params: {},
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
+                  },
                 ],
                 stale: false,
                 type: 'stack',
               },
             },
+            {
+              key: expect.any(String),
+              name: 'a',
+              params: {},
+              path: undefined,
+            },
           ],
           stale: false,
           type: 'stack',
         },
-      },
-      {
-        key: expect.any(String),
-        name: 'a',
-        params: {},
-        path: undefined,
       },
     ],
     stale: false,
@@ -451,44 +498,72 @@ it('push should also add anchor routes', () => {
 
   // Initial stale state
   expect(store.rootStateSnapshot()).toStrictEqual({
-    routes: [{ name: 'index', path: '/' }],
+    routes: [
+      {
+        name: '___InternalSlot',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
+      },
+    ],
     stale: true,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routeNames: ['___InternalSlot'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '___InternalSlot',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: '(group)',
-        path: undefined,
         state: {
           index: 1,
-          preloadedRoutes: [],
           key: expect.any(String),
-          routeNames: ['apple', 'index', 'orange'],
+          preloadedRoutes: [],
+          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'apple',
+              name: 'index',
               params: undefined,
+              path: '/',
             },
             {
               key: expect.any(String),
-              name: 'orange',
-              params: {},
+              name: '(group)',
               path: undefined,
+              state: {
+                index: 1,
+                key: expect.any(String),
+                preloadedRoutes: [],
+                routeNames: ['apple', 'index', 'orange'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'apple',
+                    params: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'orange',
+                    params: {},
+                    path: undefined,
+                  },
+                ],
+                stale: false,
+                type: 'stack',
+              },
             },
           ],
           stale: false,

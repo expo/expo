@@ -6,6 +6,7 @@ import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
 import { RouterStore } from '../global-state/router-store';
+import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
@@ -206,6 +207,8 @@ function prepareConfigResources(options?: Options<object>, previousSegments?: st
   }
 
   const initialRoutes = getInitialRoutes(options);
+
+  debugger;
 
   const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
 
@@ -500,9 +503,11 @@ const createNormalizedConfigs = (
           ? joinPaths(parentPattern || '', config.path || '')
           : config.path || '';
 
-      configs.push(
-        createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
-      );
+      if (screen !== INTERNAL_SLOT_NAME) {
+        configs.push(
+          createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
+        );
+      }
     }
 
     if (config.screens) {
@@ -530,6 +535,8 @@ const createNormalizedConfigs = (
   }
 
   routeNames.pop();
+
+  console.log(JSON.stringify(configs, null, 2));
 
   return configs;
 };

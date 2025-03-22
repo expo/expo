@@ -307,6 +307,22 @@ function getNavigateAction(
     rootPayload.params.initial = !withAnchor;
   }
 
+  console.log(
+    JSON.stringify(
+      {
+        type,
+        target: navigationState.key,
+        payload: {
+          // key: rootPayload.key,
+          name: rootPayload.screen,
+          params: rootPayload.params,
+        },
+      },
+      null,
+      2
+    )
+  );
+
   return {
     type,
     target: navigationState.key,
