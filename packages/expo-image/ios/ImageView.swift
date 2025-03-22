@@ -362,7 +362,20 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
-    sdImageView.layer.frame.origin = offset
+    if sdImageView.layer.mask != nil {
+      // In New Architecture mode, React Native adds a mask layer to image subviews.
+      // When moving the layer frame, we must move the mask layer with a compensation value.
+      // This prevents the layer from being cropped.
+      // See https://github.com/expo/expo/issues/34201
+      // and https://github.com/facebook/react-native/blob/c72d4c5ee97/packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm#L1066-L1076
+      CATransaction.begin()
+      CATransaction.setDisableActions(true)
+      sdImageView.layer.frame.origin = offset
+      sdImageView.layer.mask?.frame.origin = CGPoint(x: -offset.x, y: -offset.y)
+      CATransaction.commit()
+    } else {
+      sdImageView.layer.frame.origin = offset
+    }
   }
 
   internal func renderSourceImage(_ image: UIImage?) {
