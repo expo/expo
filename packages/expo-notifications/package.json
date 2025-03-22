@@ -35,7 +35,11 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "projects": [
+      {
+        "preset": "jest-expo/ios"
+      }
+    ]
   },
   "dependencies": {
     "@expo/image-utils": "^0.6.0",
