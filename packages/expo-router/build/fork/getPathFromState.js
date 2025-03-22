@@ -174,7 +174,7 @@ function getPathDataFromState(state, options) {
                         : Object.keys(screens)[0]
                     : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-                    route = { ...screens[screen], name: screen, key: screen };
+                    route = { params: route.params?.params || {}, name: screen, key: screen };
                     currentOptions = screens;
                 }
                 else {
