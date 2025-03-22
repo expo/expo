@@ -12,7 +12,7 @@ import fs from 'fs';
 import type { AssetData } from 'metro';
 import path from 'path';
 
-import { getAssetLocalPath } from './metroAssetLocalPath';
+import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
 import { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
@@ -83,6 +83,9 @@ export async function persistMetroAssetsAsync(
   } else {
     assetsToCopy = [...assets];
   }
+  if (platform === 'android') {
+    createKeepFile(assetsToCopy, outputDirectory);
+  }
 
   const batches: Record<string, string> = {};
 
@@ -110,6 +113,25 @@ export async function persistMetroAssetsAsync(
   if (!files) {
     await copyInBatchesAsync(batches);
   }
+}
+
+function createKeepFile(assets: AssetData[], outputDirectory: string): void {
+  if (!assets.length) {
+    return;
+  }
+  const assetsList = [];
+  for (const asset of assets) {
+    const prefix = drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
+    assetsList.push(`@${prefix}/${getResourceIdentifier(asset)}`);
+  }
+  const keepPath = path.join(outputDirectory, 'raw/keep.xml');
+  const content = `<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="${assetsList.join(',')}" />`;
+  fs.mkdir(path.dirname(keepPath), { recursive: true }, (err) => {
+    if (err) {
+      return;
+    }
+    fs.writeFileSync(keepPath, content);
+  });
 }
 
 export function getAssetIdForLogGrouping(
