@@ -29,7 +29,6 @@ function NativeStackNavigator({
   screenListeners,
   screenOptions,
   screenLayout,
-  UNSTABLE_getStateForRouteNamesChange,
   ...rest
 }: NativeStackNavigatorProps) {
   const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
@@ -46,7 +45,6 @@ function NativeStackNavigator({
     screenListeners,
     screenOptions,
     screenLayout,
-    UNSTABLE_getStateForRouteNamesChange,
   });
 
   React.useEffect(

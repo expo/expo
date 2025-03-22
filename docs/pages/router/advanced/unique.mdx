@@ -1,0 +1,106 @@
+---
+title: Unique routes
+description: Learn how to enforce unique routes in Expo Router
+---
+
+> **warning** Unique routes may freeze your app due to an upstream issue with `react-native-screens`. Expo is working with Software Mansion to resolve the issue.
+
+An advanced navigation pattern is for Stack based navigators is unique routes. When unique routes are enabled, when a screen is added to Stack the navigation history will be scanned and routes that match the uniqueness condition will be removed. This ensure that only a single route in the stack matches the uniqueness condition.
+
+## Options
+
+There are two options for uniqueness conditions:
+
+- `true`: Use the default uniqueness function
+- `Function` Specify your own uniqueness function
+
+The default uniqueness function returns the screen's pathname without search params or the hash.
+
+The uniqueness identifier function has the signature of `(routeName: string, params: Record<string, string | string[]>) => string | undefined`.
+
+## Assigning unique on the navigator
+
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/index.tsx',
+    'app/[profile].tsx',
+  ]}
+/>
+
+Using the example app above, we can create a uniqueness constraint to ensure that each `[profile]` page is unique.
+
+```tsx app/_layout.tsx
+
+export default function() {
+  return (
+    <Stack>
+      <Stack.Screen name="[profile]" unique={({ profile }) => profile} />
+    </Stack>
+  )
+}
+```
+
+If we now navigate to `/profile-2` and our history is
+
+- `/profile-1`
+- `/profile-2`
+- `/profile-3`
+
+The new history will push the new route, but also remove any previous entries 
+
+- `/profile-1`
+- `/profile-3`
+- `/profile-2`
+
+## Creating unique Links
+
+`unique` can also be added to the `<Link />` component to create links that enforce
+
+```tsx 
+<Link href="/unique-link" unique />
+<Link href="/unique-link" unique={(name) => name === 'unique-link' ? name : undefined} />
+```
+
+## Using the imperative API
+
+The imperative api also accepts a `unique` option
+
+```tsx 
+router.navigate('/unique-link', { unique: true })
+router.navigate('/unique-link', { unique: (name) => name === 'unique-link' ? name : undefined })
+
+router.push('/unique-link', { unique: true })
+router.push('/unique-link', { unique: (name) => name === 'unique-link' ? name : undefined })
+```
+
+## Push vs Navigate
+
+When `unique` is used dynamically via `<Link />` or the imperative API, the `navigate` and `push` events apply the unique constraint differently.
+
+- *navigate*: Only applies the constraint if the current route is changed
+- *push*: Always applies the constraint
+
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/index.tsx',
+    'app/[profile].tsx',
+  ]}
+/>
+
+Using the app structure above, if we have the history of
+
+- `/profile-1`
+- `/profile-2`
+- `/profile-2`
+- `/profile-3`
+- `/profile-2`
+
+```tsx
+// Will NOT apply the uniqueness constraint as the current route is the target route
+router.navigate("/profile-2", { unique: (_, { profile } => profile === 'profile-2' ? profile : undefined )})
+
+// Will apply the uniqueness constraint
+router.push("/profile-2", { unique: (_, { profile } => profile === 'profile-2' ? profile : undefined )})
+```

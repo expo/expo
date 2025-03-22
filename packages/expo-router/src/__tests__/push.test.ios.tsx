@@ -1,3 +1,4 @@
+import { NavigationState } from '@react-navigation/native';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -498,5 +499,192 @@ it('push should also add anchor routes', () => {
     ],
     stale: false,
     type: 'stack',
+  });
+});
+
+describe('unique', () => {
+  test('can dynamically route using unique', () => {
+    renderRouter(
+      {
+        '[slug]': () => null,
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    act(() => router.push('/apple'));
+    act(() => router.push('/apple'));
+    act(() => router.push('/banana'));
+
+    expect(screen).toHaveRouterState({
+      index: 3,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'banana' },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+
+    // Should push /apple and remove all previous instances of /apple
+    act(() => router.push('/apple', { unique: true }));
+
+    expect(screen).toHaveRouterState({
+      index: 1,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'banana',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+  });
+
+  test('can dynamically route using unique function', () => {
+    renderRouter(
+      {
+        '[slug]': () => null,
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    act(() => router.push('/apple?id=1'));
+    act(() => router.push('/apple?id=1'));
+    act(() => router.push('/apple?id=2'));
+    act(() => router.push('/banana'));
+
+    expect(screen).toHaveRouterState({
+      index: 4,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple' },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '1' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '1' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'apple', id: '2' },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: { slug: 'banana' },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
+
+    // Should push /apple and remove all previous instances of /apple
+    act(() => router.push('/apple', { unique: (_, params) => params.id?.toString() }));
+
+    expect(screen).toHaveRouterState({
+      index: 3,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+          },
+          path: '/apple',
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+            id: '2',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'banana',
+          },
+          path: undefined,
+        },
+        {
+          key: expect.any(String),
+          name: '[slug]',
+          params: {
+            slug: 'apple',
+            id: '1',
+          },
+          path: undefined,
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    } as NavigationState);
   });
 });

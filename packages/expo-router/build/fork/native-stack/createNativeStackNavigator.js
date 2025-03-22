@@ -27,7 +27,7 @@ exports.createNativeStackNavigator = void 0;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const React = __importStar(require("react"));
-function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_getStateForRouteNamesChange, ...rest }) {
+function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         id,
         initialRouteName,
@@ -36,7 +36,6 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         screenListeners,
         screenOptions,
         screenLayout,
-        UNSTABLE_getStateForRouteNamesChange,
     });
     React.useEffect(() => 
     // @ts-expect-error: there may not be a tab navigator in parent

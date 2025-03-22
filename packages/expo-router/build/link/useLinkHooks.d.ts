@@ -1,6 +1,7 @@
 import { MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
+import { UniqueOptions } from '../useScreens';
 /**
  * @platform web
  */
@@ -194,11 +195,18 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Replaces the initial screen with the current route.
      */
     withAnchor?: boolean;
+    /**
+     * When navigating in a Stack, if the target is valid then screens in the history that matches
+     * the uniqueness constraint will be removed.
+     *
+     * If used with `push`, the history will be filtered even if no navigation occurs.
+     */
+    unique?: UniqueOptions;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
     className?: string;
-}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
+}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;
