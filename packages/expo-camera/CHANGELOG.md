@@ -10,6 +10,7 @@
 - Add support for pausing and resuming a video recording. ([#34002](https://github.com/expo/expo/pull/34002) by [@alanjhughes](https://github.com/alanjhughes))
 - Support returning image ref ([#34656](https://github.com/expo/expo/pull/34656) and ([#34693](https://github.com/expo/expo/pull/34693) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Support better formatted data on barcode scanning results. ([#34801](https://github.com/expo/expo/pull/34801) by [@alanjhughes](https://github.com/alanjhughes))
+- Support saving images PNGs in native. ([#35615](https://github.com/expo/expo/pull/35615) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

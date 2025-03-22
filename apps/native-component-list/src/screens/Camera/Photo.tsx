@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import React from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 const pictureSize = 150;
 
@@ -27,7 +28,7 @@ export default class Photo extends React.Component<Props, State> {
   componentDidMount() {
     this._mounted = true;
 
-    if (this.props.uri.endsWith('jpg')) {
+    if (this.props.uri.endsWith('jpg') || this.props.uri.endsWith('png')) {
       this.setState(() => ({ uri: this.props.uri }));
     } else {
       this.getVideoThumbnail(this.props.uri).then((uri) =>
