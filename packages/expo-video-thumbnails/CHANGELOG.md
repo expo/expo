@@ -14,6 +14,10 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 
+## 9.0.4 — 2025-03-22
+
+- Created **getNativeThumbnailAsync()**. Returns an image reference of the generated image. ([#35240](https://github.com/expo/expo/issues/35240) by [@mistermunchkin](https://github.com/MisterMunchkin))
+
 ## 9.0.3 - 2025-01-10
 
 _This version does not introduce any user-facing changes._
