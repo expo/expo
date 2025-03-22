@@ -90,7 +90,9 @@ export function useAudioRecorderState(recorder, interval = 500) {
  * @param updateInterval
  */
 export function createAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
+    const parsedSource = Array.isArray(source)
+        ? source.map(resolveSource).filter(Boolean)
+        : resolveSource(source);
     return new AudioModule.AudioPlayer(parsedSource, updateInterval);
 }
 // @docsMissing

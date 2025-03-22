@@ -129,10 +129,13 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
  * @param updateInterval
  */
 export function createAudioPlayer(
-  source: AudioSource | string | number | null = null,
+  source: AudioSource | AudioSource[] | string | number | null = null,
   updateInterval: number = 500
 ): AudioPlayer {
-  const parsedSource = resolveSource(source);
+  const parsedSource = Array.isArray(source)
+    ? source.map(resolveSource).filter(Boolean)
+    : resolveSource(source);
+
   return new AudioModule.AudioPlayer(parsedSource, updateInterval);
 }
 

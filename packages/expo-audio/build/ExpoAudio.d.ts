@@ -18,7 +18,7 @@ export declare function useAudioRecorderState(recorder: AudioRecorder, interval?
  * @param source
  * @param updateInterval
  */
-export declare function createAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioPlayer;
+export declare function createAudioPlayer(source?: AudioSource | AudioSource[] | string | number | null, updateInterval?: number): AudioPlayer;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
 export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>;
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
