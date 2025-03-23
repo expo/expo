@@ -70,11 +70,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     audioQueue?.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
   }
 
- func clearQueue() {
+  func clearQueue() {
     audioQueue?.clearQueue()
   }
 
- func removeFromQueue(sources: [AudioSource]) {
+  func removeFromQueue(sources: [AudioSource]) {
     audioQueue?.removeFromQueue(sources: sources)
   }
 
@@ -128,7 +128,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "isBuffering": isBuffering
     ]
 
-     // Add queue index if it exists and is valid
+    // Add queue index if it exists and is valid
     if let index = audioQueue?.currentIndex, index >= 0 {
       statusDict["currentQueueIndex"] = index
     } else {
