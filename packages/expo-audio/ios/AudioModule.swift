@@ -159,18 +159,17 @@ public class AudioModule: Module {
         player.setQueue(sources: sources)
       }
 
-      Function("getCurrentQueue") { (player) in
+      Function("getCurrentQueue") { player in
         player.getCurrentQueue()
       }
 
-      Function("getCurrentQueueIndex") { (player) -> Any in
+      Function("getCurrentQueueIndex") { player -> Any in
         let index = player.getCurrentQueueIndex()
 
         if index >= 0 {
           return index
-        } else {
-          return NSNull()
         }
+      return NSNull()
       }
 
       Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in
@@ -181,7 +180,7 @@ public class AudioModule: Module {
         player.removeFromQueue(sources: sources)
       }
 
-      Function("clearQueue") { (player) in
+      Function("clearQueue") { player in
         player.clearQueue()
       }
 
@@ -189,11 +188,11 @@ public class AudioModule: Module {
         player.skipToQueueIndex(index: index)
       }
 
-      Function("skipToNext") { (player) in
+      Function("skipToNext") { player in
         player.skipToNext()
       }
 
-      Function("skipToPrevious") { (player) in
+      Function("skipToPrevious") { player in
         player.skipToPrevious()
       }
 
