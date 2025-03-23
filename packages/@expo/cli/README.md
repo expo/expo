@@ -50,6 +50,8 @@ The `@expo/cli` package is a CLI binary that should be used via the `expo` packa
 npx expo
 ```
 
+> ⭐️ Be sure to star the Expo GitHub repo if you enjoy using the project!
+
 ## Design
 
 This CLI has the following purposes:
@@ -132,13 +134,12 @@ There are two testing scripts:
 ### E2E Testing Guidelines
 
 - E2E tests should be resilient and reliable, be sure to give them plenty of time for network requests.
-- When testing locally you had to have Bun installed, it can be done via Volta - `volta install bun`.
+- When testing locally you had to have [Bun installed](https://bun.sh/docs/installation).
 - When testing locally you should attempt to reuse node modules for faster results. In the `npx expo prebuild` and `npx expo start` commands for instance, we utilize a helper method that will default to reusing a project + **node_modules** when run locally. This can be [toggled off](https://github.com/expo/expo/blob/11a5a4d27b7e1c8e4d6ddf0401397d789d89f52a/packages/%40expo/cli/e2e/__tests__/utils.ts#L174) to bootstrap a fresh project every time.
 - When bootstrapping test projects, utilize the temporary folder `os.tmpdir()` as this folder is automatically cleaned up when the computer restarts.
 
 ## Coming from Expo CLI
 
-> [!important]
 > TL;DR: `expo-cli` was 'make it work', whereas `@expo/cli` is 'make it right, make it fast'.
 
 The legacy global `expo-cli` package was deprecated in favor of this versioned `@expo/cli` package for the following reasons:
