@@ -24,6 +24,20 @@ public final class PedometerModule: Module {
       return CMPedometer.isStepCountingAvailable()
     }
 
+    AsyncFunction("isRecordingAvailableAsync") {
+      return CMPedometer.isStepCountingAvailable()
+    }
+
+    // iOS does not expose a way to start recording history
+    AsyncFunction("subscribeRecording") {
+      promise.resolve(nil)
+    }
+
+    // iOS does not expose a way to stop recording history
+    AsyncFunction("unsubscribeRecording") {
+      promise.resolve(nil)
+    }
+
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
       let startDate = Date(timeIntervalSince1970: startTime / 1000.0)
       let endDate = Date(timeIntervalSince1970: endTime / 1000.0)
@@ -74,9 +88,11 @@ public final class PedometerModule: Module {
         guard let data else {
           return
         }
-        self?.sendEvent(EVENT_PEDOMETER_UPDATE, [
-          "steps": data.numberOfSteps
-        ])
+        self?.sendEvent(
+          EVENT_PEDOMETER_UPDATE,
+          [
+            "steps": data.numberOfSteps
+          ])
       }
 
       pedometer.startUpdates(from: startDate, withHandler: handler)
