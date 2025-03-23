@@ -476,6 +476,13 @@ module.exports = {
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
           { name: 'getStepCountAsync', argumentsCount: 2, key: 'getStepCountAsync' },
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
+          {
+            name: 'isRecordingAvailableAsync',
+            argumentsCount: 0,
+            key: 'isRecordingAvailableAsync',
+          },
+          { name: 'subscribeRecording', argumentsCount: 0, key: 'subscribeRecording' },
+          { name: 'unsubscribeRecording', argumentsCount: 0, key: 'unsubscribeRecording' },
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
         ],
         ExpoNetwork: [
