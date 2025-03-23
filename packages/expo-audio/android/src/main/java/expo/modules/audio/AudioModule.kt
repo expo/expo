@@ -140,16 +140,24 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double ->
-        val mediaSource = createMediaItem(source)
+      Constructor { sources: List<AudioSource>?, updateInterval: Double ->
         runOnMain {
           val player = AudioPlayer(
             context,
             appContext,
-            mediaSource,
             updateInterval
           )
           players[player.id] = player
+
+          if (sources != null && sources.isNotEmpty()) {
+            val mediaItems = createMediaItems(sources)
+
+            if (mediaItems.isNotEmpty()) {
+              player.player.setMediaItems(mediaItems)
+              player.player.prepare()
+            }
+          }
+
           player
         }
       }

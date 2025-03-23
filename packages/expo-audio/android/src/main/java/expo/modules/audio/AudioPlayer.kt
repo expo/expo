@@ -34,7 +34,6 @@ private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource?,
   private val updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
@@ -60,13 +59,7 @@ class AudioPlayer(
   init {
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     addPlayerListeners()
-    source?.let {
-      setMediaSource(source)
-    }
-  }
 
-  private fun setMediaSource(source: MediaSource) {
-    player.setMediaSource(source)
     player.prepare()
     startUpdating()
   }
