@@ -32,11 +32,11 @@ AudioModule.AudioPlayer.prototype.removeFromQueue = function (sources) {
     return removeFromQueue.call(this, resolvedSources);
 };
 // @docsMissing
-export function useAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = Array.isArray(source)
-        ? source.map(resolveSource).filter(Boolean)
-        : resolveSource(source);
-    return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
+export function useAudioPlayer(sources = null, updateInterval = 500) {
+    const parsedSources = (Array.isArray(sources) ? sources : [sources])
+        .map(resolveSource)
+        .filter(Boolean);
+    return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSources, updateInterval), [JSON.stringify(parsedSources)]);
 }
 // @docsMissing
 export function useAudioPlayerStatus(player) {
@@ -90,10 +90,10 @@ export function useAudioRecorderState(recorder, interval = 500) {
  * @param updateInterval
  */
 export function createAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = Array.isArray(source)
-        ? source.map(resolveSource).filter(Boolean)
-        : resolveSource(source);
-    return new AudioModule.AudioPlayer(parsedSource, updateInterval);
+    const parsedSources = (Array.isArray(source) ? source : [source])
+        .map(resolveSource)
+        .filter(Boolean);
+    return new AudioModule.AudioPlayer(parsedSources, updateInterval);
 }
 // @docsMissing
 export async function setIsAudioActiveAsync(active) {

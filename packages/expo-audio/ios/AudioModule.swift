@@ -55,10 +55,15 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(from: source)
+      Constructor { (sources: [AudioSource]?, updateInterval: Double) -> AudioPlayer in
+        let avPlayer = AudioUtils.createAVPlayer()
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         AudioComponentRegistry.shared.add(player)
+
+        if let sources = sources, !sources.isEmpty {
+          try player.setQueue(sources: sources)
+        }
+
         return player
       }
 

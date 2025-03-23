@@ -13,10 +13,10 @@ export declare class NativeAudioModule extends NativeModule {
 }
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
-     * Initializes a new audio player instance with the given source.
+     * Initializes a new audio player instance with the given sources.
      * @hidden
      */
-    constructor(source: AudioSource | AudioSource[], updateInterval: number);
+    constructor(sources: AudioSource[], updateInterval: number);
     /**
      * Unique identifier for the player object.
      */
