@@ -6,6 +6,10 @@
 
 ### 🎉 New features
 
+- **`expo-sensor`**
+  - [Android] Implemented `getStepCountAsync` for `Pedometer`
+  - [Android] Added Recording API related functions to `Pedometer`
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

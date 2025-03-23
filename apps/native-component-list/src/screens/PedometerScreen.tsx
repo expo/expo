@@ -1,7 +1,7 @@
 import { H2 } from '@expo/html-elements';
 import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import usePermissions from '../utilities/usePermissions';
@@ -45,14 +45,20 @@ function usePedometerHistory({
   }, []);
 
   React.useEffect(() => {
-    if (Platform.OS !== 'ios') {
-      setData({ steps: 0 });
-      return;
-    }
-
-    Pedometer.getStepCountAsync(start, end).then((data) => {
-      if (isMounted.current) {
-        setData(data);
+    Pedometer.isRecordingAvailableAsync().then((isRecordingAvailable) => {
+      if (!isRecordingAvailable) {
+        console.log('Pedometer history is not available on this device.');
+        if (isMounted.current) {
+          setData({ steps: 0 });
+        }
+      } else {
+        Pedometer.subscribeRecording();
+        Pedometer.getStepCountAsync(start, end).then((data) => {
+          console.log('Pedometer history data:', data);
+          if (isMounted.current) {
+            setData(data);
+          }
+        });
       }
     });
   }, [start, end]);
@@ -84,12 +90,19 @@ function StepHistoryMessage() {
     return yesterday;
   }, [today]);
 
+  const isHistoryAvailable = useResolvedValue(Pedometer.isRecordingAvailableAsync);
+
   const data = usePedometerHistory({ start: yesterday, end: today });
 
   const message = data ? `Steps in the last day: ${data.steps}` : `Loading health data...`;
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
+      {!isHistoryAvailable ? (
+        <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>
+          Pedometer history is not available on this device.
+        </Text>
+      ) : null}
       <Text>{message}</Text>
     </View>
   );
