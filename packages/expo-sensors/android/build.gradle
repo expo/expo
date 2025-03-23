@@ -13,3 +13,7 @@ android {
     versionName "14.0.1"
   }
 }
+
+dependencies {
+  implementation("com.google.android.gms:play-services-fitness:21.2.0")
+}

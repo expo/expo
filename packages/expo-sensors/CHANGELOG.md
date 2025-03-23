@@ -6,6 +6,10 @@
 
 ### 🎉 New features
 
+- **`expo-sensor`**
+  - [Android] Implemented `getStepCountAsync` for `Pedometer`
+  - [Android] Added Recording API related functions to `Pedometer`
+
 ### 🐛 Bug fixes
 
 - Add missing `getPermissionsAsync` and `requestPermissionsAsync` implementations to native DeviceMotion modules. ([#33719](https://github.com/expo/expo/pull/33719) by [@ratley](https://github.com/ratley))
