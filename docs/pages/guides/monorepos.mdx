@@ -162,7 +162,7 @@ In monorepos, we can't hardcode paths to packages anymore since we can't be sure
 
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
-If you are using [Expo Router](/router/introduction/), which the default template enables, do not change the entrypoint. By default [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) is activated, which enables the auto server root detection for Metro. You can skip this step.
+If you are using [Expo Router](/router/introduction/) do not change the entrypoint. By default [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) is activated, which enables the auto server root detection for Metro. You can skip this step.
 
 Otherwise, open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
 
