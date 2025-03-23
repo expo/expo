@@ -51,7 +51,7 @@ If the command fails, refer to the [Installing Expo modules](/bare/installing-ex
 
 <Collapsible summary="Your project must use the registerRootComponent function instead of registerComponent">
 
-If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (eg: it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
+If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
 
 We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/versions/latest/sdk/register-root-component.mdx) instead of React Native's `registerApplication`. This will ensure that Expo is able to configure React Native to load assets, such as images, that are included in updates. If you do not use `registerRootComponent`, you may find that your assets will not be available in release builds.
 
@@ -75,7 +75,7 @@ index a850d03..8fb69fd 100644
 +export default registerRootComponent(App);
 ```
 
-After making that change, update your [MainActivity](/versions/latest/sdk/register-root-component/#manual-android-setup) and [AppDelegate](/versions/latest/sdk/register-root-component/#manual-ios-setup) to use the module name `"main"` instead of your app name.
+After making that change, update your [`MainActivity`](/versions/latest/sdk/register-root-component/#manual-android-setup) and [`AppDelegate`](/versions/latest/sdk/register-root-component/#manual-ios-setup) to use the module name `"main"` instead of your app name.
 
 </Collapsible>
 
