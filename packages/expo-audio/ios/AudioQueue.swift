@@ -114,8 +114,10 @@ class AudioQueue {
       if wasPlaying && currentIndex >= self.sources.count {
         let newLastIndex = self.sources.count - 1
 
-        if newLastIndex >= 0 {
+        if newLastIndex >= 0 && indicesToRemove.contains(currentIndex) {
           advanceToIndex(newLastIndex)
+        } else {
+          currentIndex = newLastIndex
         }
 
         return
