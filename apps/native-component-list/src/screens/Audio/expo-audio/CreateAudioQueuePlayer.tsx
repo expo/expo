@@ -93,7 +93,6 @@ export default function CreateAudioQueuePlayer({ style }: AudioPlayerProps) {
   };
 
   const setQueue = () => {
-    console.log('Setting queue with sources:', JSON.stringify(testAssets));
     player?.setQueue(testAssets);
     setQueueItems(player?.getCurrentQueue());
   };

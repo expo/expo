@@ -111,6 +111,18 @@ class AudioQueue {
         return
       }
 
+      // Check if we're removing the last item that was playing
+      // This happens when the currentIndex is now out of bounds
+      if wasPlaying && currentIndex >= self.sources.count {
+        let newLastIndex = self.sources.count - 1
+
+        if newLastIndex >= 0 {
+          advanceToIndex(newLastIndex)
+        }
+
+        return
+      }
+
       // If current track was removed, play the next track or the first track
       let nextIndex = min(currentIndex, self.sources.count - 1)
 
