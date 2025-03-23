@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Audio player queue support ([#35609](https://github.com/expo/expo/pull/35609) by [@mihailapuste](https://github.com/mihailapuste))
 - [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
