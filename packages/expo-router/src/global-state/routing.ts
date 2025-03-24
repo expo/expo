@@ -15,7 +15,7 @@ import {
 } from '../link/useDomComponentNavigation';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
-import { UniqueOptions } from '../useScreens';
+import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -135,12 +135,11 @@ export type LinkToOptions = {
   withAnchor?: boolean;
 
   /**
-   * When navigating in a Stack, if the target is valid then screens in the history that matches
-   * the uniqueness constraint will be removed.
+   * When navigating in a Stack, remove all screen from the history that match the singular condition
    *
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
-  unique?: UniqueOptions;
+  dangerouslySingular?: SingularOptions;
 };
 
 export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
@@ -187,7 +186,13 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
   }
 
   return navigationRef.dispatch(
-    getNavigateAction(state, rootState, options.event, options.withAnchor, options.unique)
+    getNavigateAction(
+      state,
+      rootState,
+      options.event,
+      options.withAnchor,
+      options.dangerouslySingular
+    )
   );
 }
 
@@ -196,7 +201,7 @@ function getNavigateAction(
   navigationState: NavigationState,
   type = 'NAVIGATE',
   withAnchor?: boolean,
-  unique?: UniqueOptions
+  singular?: SingularOptions
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -302,7 +307,7 @@ function getNavigateAction(
       // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
-      unique,
+      singular,
     },
   };
 }

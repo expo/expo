@@ -507,13 +507,13 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-describe('unique', () => {
-  test('unique should only allow one instance of a screen', () => {
+describe('singular', () => {
+  test('singular should only allow one instance of a screen', () => {
     renderRouter(
       {
         _layout: () => (
           <Stack>
-            <Stack.Screen name="[slug]" unique />
+            <Stack.Screen name="[slug]" dangerouslySingular />
           </Stack>
         ),
         '[slug]': () => <Text>slug</Text>,
@@ -536,7 +536,7 @@ describe('unique', () => {
       stale: true,
     });
 
-    // Normally pushing would add a new route, but since we have unique set to true
+    // Normally pushing would add a new route, but since we have singular set to true
     // Nothing should happen, as the current route is already the same as the target route
     act(() => router.push('/apple'));
     expect(screen).toHaveRouterState({
@@ -587,7 +587,7 @@ describe('unique', () => {
       type: 'stack',
     } as NavigationState);
 
-    // Normally pushing would add a new route, but since we have unique set to true
+    // Normally pushing would add a new route, but since we have singular set to true
     // It rearranges the Stack to move /apple to the current route
     act(() => router.push('/apple'));
     expect(screen).toHaveRouterState({

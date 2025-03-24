@@ -7,9 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Screen } from './Screen';
 import { useContextKey } from '../Route';
+import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import { useSortedScreens } from '../useScreens';
-import { StackRouter } from '../layouts/StackClient';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;

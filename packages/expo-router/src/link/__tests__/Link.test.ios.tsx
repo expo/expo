@@ -204,12 +204,12 @@ it('can preserve the initialRoute with shared groups', () => {
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-describe('unique', () => {
-  test('can dynamically route using unique', () => {
+describe('singular', () => {
+  test('can dynamically route using singular', () => {
     renderRouter(
       {
         '[slug]': () => (
-          <Link testID="link" href="/apple" unique>
+          <Link testID="link" href="/apple" dangerouslySingular>
             Slug
           </Link>
         ),
@@ -289,11 +289,14 @@ describe('unique', () => {
     } as NavigationState);
   });
 
-  test('can dynamically route using unique function', () => {
+  test('can dynamically route using singular function', () => {
     renderRouter(
       {
         '[slug]': () => (
-          <Link testID="link" href="/apple?id=1" unique={(_, params) => params.id?.toString()}>
+          <Link
+            testID="link"
+            href="/apple?id=1"
+            dangerouslySingular={(_, params) => params.id?.toString()}>
             Slug
           </Link>
         ),

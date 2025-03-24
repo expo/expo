@@ -44,10 +44,10 @@ export type ScreenProps<
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
-  unique?: UniqueOptions;
+  dangerouslySingular?: SingularOptions;
 };
 
-export type UniqueOptions =
+export type SingularOptions =
   | boolean
   | ((name: string, params: UnknownOutputParams) => string | undefined);
 
@@ -64,55 +64,69 @@ function getSortedChildren(
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, redirect, initialParams, listeners, options, getId, unique }) => {
-      if (!entries.length) {
-        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
-        return null;
-      }
-      const matchIndex = entries.findIndex((child) => child.route === name);
-      if (matchIndex === -1) {
-        console.warn(
-          `[Layout children]: No route named "${name}" exists in nested children:`,
-          children.map(({ route }) => route)
-        );
-        return null;
-      } else {
-        // Get match and remove from entries
-        const match = entries[matchIndex];
-        entries.splice(matchIndex, 1);
-
-        // Ensure to return null after removing from entries.
-        if (redirect) {
-          if (typeof redirect === 'string') {
-            throw new Error(`Redirecting to a specific route is not supported yet.`);
-          }
+    .map(
+      ({
+        name,
+        redirect,
+        initialParams,
+        listeners,
+        options,
+        getId,
+        dangerouslySingular: singular,
+      }) => {
+        if (!entries.length) {
+          console.warn(
+            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
+          );
           return null;
         }
-
-        if (getId) {
+        const matchIndex = entries.findIndex((child) => child.route === name);
+        if (matchIndex === -1) {
           console.warn(
-            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'unique'`
+            `[Layout children]: No route named "${name}" exists in nested children:`,
+            children.map(({ route }) => route)
           );
-          if (unique) {
-            console.warn(`Screen ${name} cannot use both getId and unique together.`);
-          }
-        } else if (unique) {
-          // If unique is set, use it as the getId function.
-          if (typeof unique === 'string') {
-            getId = () => unique;
-          } else if (typeof unique === 'function' && name) {
-            getId = (options) => unique(name, options.params || {});
-          } else if (unique === true && name) {
-            getId = (options) => getUniqueId(name, options);
-          }
-        }
+          return null;
+        } else {
+          // Get match and remove from entries
+          const match = entries[matchIndex];
+          entries.splice(matchIndex, 1);
 
-        return {
-          route: match,
-          props: { initialParams, listeners, options, getId },
-        };
+          // Ensure to return null after removing from entries.
+          if (redirect) {
+            if (typeof redirect === 'string') {
+              throw new Error(`Redirecting to a specific route is not supported yet.`);
+            }
+            return null;
+          }
+
+          if (getId) {
+            console.warn(
+              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+            );
+            if (singular) {
+              console.warn(
+                `Screen ${name} cannot use both getId and dangerouslySingular together.`
+              );
+            }
+          } else if (singular) {
+            // If singular is set, use it as the getId function.
+            if (typeof singular === 'string') {
+              getId = () => singular;
+            } else if (typeof singular === 'function' && name) {
+              getId = (options) => singular(name, options.params || {});
+            } else if (singular === true && name) {
+              getId = (options) => getSingularId(name, options);
+            }
+          }
+
+          return {
+            route: match,
+            props: { initialParams, listeners, options, getId },
+          };
+        }
       }
-    })
+    )
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps>;
@@ -287,7 +301,7 @@ export function routeToScreen(
   );
 }
 
-export function getUniqueId(
+export function getSingularId(
   name: string,
   options: { params?: Record<string, any> | undefined } = {}
 ) {

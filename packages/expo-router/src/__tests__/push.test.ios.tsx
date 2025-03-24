@@ -575,8 +575,8 @@ it('push should also add anchor routes', () => {
   });
 });
 
-describe('unique', () => {
-  test('can dynamically route using unique', () => {
+describe('singular', () => {
+  test('can dynamically route using singular', () => {
     renderRouter(
       {
         '[slug]': () => null,
@@ -626,7 +626,7 @@ describe('unique', () => {
     } as NavigationState);
 
     // Should push /apple and remove all previous instances of /apple
-    act(() => router.push('/apple', { unique: true }));
+    act(() => router.push('/apple', { dangerouslySingular: true }));
 
     expect(screen).toHaveRouterState({
       index: 1,
@@ -656,7 +656,7 @@ describe('unique', () => {
     } as NavigationState);
   });
 
-  test('can dynamically route using unique function', () => {
+  test('can dynamically route using singular function', () => {
     renderRouter(
       {
         '[slug]': () => null,
@@ -713,31 +713,16 @@ describe('unique', () => {
     } as NavigationState);
 
     // Should push /apple and remove all previous instances of /apple
-    act(() => router.push('/apple', { unique: (_, params) => params.id?.toString() }));
+    act(() => {
+      return router.push('/apple', { dangerouslySingular: (_, params) => params.slug?.toString() });
+    });
 
     expect(screen).toHaveRouterState({
-      index: 3,
+      index: 1,
       key: expect.any(String),
       preloadedRoutes: [],
       routeNames: ['_sitemap', '[slug]', '+not-found'],
       routes: [
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'apple',
-          },
-          path: '/apple',
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'apple',
-            id: '2',
-          },
-          path: undefined,
-        },
         {
           key: expect.any(String),
           name: '[slug]',
@@ -751,7 +736,6 @@ describe('unique', () => {
           name: '[slug]',
           params: {
             slug: 'apple',
-            id: '1',
           },
           path: undefined,
         },
