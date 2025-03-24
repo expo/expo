@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve devtools plugins transport performance. ([#35581](https://github.com/expo/expo/pull/35581) by [@kudo](https://github.com/kudo))
+
 ## 0.22.21 — 2025-03-20
 
 ### 🐛 Bug fixes
