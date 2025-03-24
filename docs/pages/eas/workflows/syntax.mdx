@@ -323,7 +323,7 @@ jobs:
 
 ## Interpolation
 
-You can customize the behavior of a workflow &mdash; commands executed, control flow, environment variables, build profile, app version &mdash; based on the workflow run context.
+You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
 
 ### `after` and `needs`
 
@@ -379,13 +379,27 @@ To ease the migration from GitHub Actions to EAS Workflows we expose some contex
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    # @info #
+    if: ${{ github.ref_name == 'main' }}
+    # @end #
+    params:
+      platform: ios
+      profile: production
+```
+
 ### `success()`, `failure()`
 
 `success()` returns `true` only if no previous job has failed. `failure()` returns `true` if any previous job has failed.
 
 ### `fromJSON()`, `toJSON()`
 
-`fromJSON()` is `JSON.parse`, `toJSON` is `JSON.stringify`. You can use them to consume or produce JSON outputs.
+`fromJSON()` is `JSON.parse()`, and `toJSON()` is `JSON.stringify()`. You can use them to consume or produce JSON outputs.
 
 Example usage:
 
@@ -582,7 +596,6 @@ jobs:
       channel: string # optional - cannot be used with branch
 ```
 
-
 This job outputs the following properties:
 
 ```json
@@ -591,7 +604,6 @@ This job outputs the following properties:
   "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
 }
 ```
-
 
 #### `maestro`
 
@@ -652,11 +664,16 @@ jobs:
 
 ### `jobs.<job_id>.outputs`
 
-A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
+A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the `set-output` function within a job step.
+
+Downstream jobs can access these outputs using the following expressions within [interpolation contexts](#interpolation):
+
+- `needs.<job_id>.outputs.<output_name>`
+- `after.<job_id>.outputs.<output_name>`
+
+Here, `<job_id>` refers to the identifier of the upstream job, and `<output_name>` refers to the specific output variable you want to access.
 
 In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
-
-Outputs of the jobs are later accessible in [interpolation context](#interpolation) under `needs.<job_id>.outputs.<output_name>` or `after.<job_id>.outputs.<output_name>`.
 
 ```yaml
 jobs:
