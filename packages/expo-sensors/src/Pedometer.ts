@@ -55,11 +55,11 @@ export function isRecordingAvailableAsync(): Promise<boolean> {
 
 /**
  * Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
- * Recording API, if available, until unsubscribed. Subsequent calls are safe, ignored.
+ * Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
  * @return Returns a promise that fulfills when the subscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  * @platform android
  */
 export async function subscribeRecording(): Promise<void> {
@@ -74,8 +74,8 @@ export async function subscribeRecording(): Promise<void> {
  * @return Returns a promise that fulfills when the unsubscription is successful.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > In order to free up resources, you should make sure to unsubscribe from
- * > the collection of sensor datawhen your app is no longer in need of it.
+ * > To free up resources, you should make sure to unsubscribe from
+ * > the collection of sensor data when your app is no longer in need of it.
  * > Unsubscribing will also reset the historical data that was collected.
  * @platform android
  */
@@ -98,7 +98,7 @@ export async function unsubscribeRecording(): Promise<void> {
  * > a start date that is more than seven days in the past returns only the available data.
  *
  * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
- * > LocalRecordingClient stores up to 10 days of data.
+ * > `LocalRecordingClient` stores up to 10 days of data.
  */
 export async function getStepCountAsync(start: Date, end: Date): Promise<PedometerResult> {
   if (!ExponentPedometer.getStepCountAsync) {
