@@ -8,6 +8,9 @@ import kotlin.text.trim
 
 open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
   override fun apply(settings: Settings) {
+    // Adds a property to the settings that indicates that the `expo-autolinking-plugin` is available.
+    settings.gradle.extensions.extraProperties.set("expoAutolinkingSettingsPlugin", true)
+
     // Creates an extension that allows users to link expo modules and add additional configuration.
     settings.extensions.create("expoAutolinking", ExpoAutolinkingSettingsExtension::class.java, settings)
 
