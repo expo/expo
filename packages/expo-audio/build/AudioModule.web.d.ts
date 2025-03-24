@@ -46,6 +46,8 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     private mediaRecorderUptimeOfLastStartResume;
     private mediaRecorderIsRecording;
     private timeoutIds;
+    private analyserNode;
+    private audioContext;
     get isRecording(): boolean;
     record(): void;
     getAvailableInputs(): RecordingInput[];
@@ -60,6 +62,7 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     clearTimeouts(): void;
     private createMediaRecorder;
     private getAudioRecorderDurationMillis;
+    private getMeteringLevel;
 }
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;

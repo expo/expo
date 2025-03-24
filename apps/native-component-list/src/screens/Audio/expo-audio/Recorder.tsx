@@ -40,6 +40,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     ...RecordingPresets.HIGH_QUALITY,
     isMeteringEnabled: true,
   });
+  const [metering, setMetering] = React.useState<number[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -55,6 +56,11 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   });
 
   const recorderState = useAudioRecorderState(audioRecorder);
+
+  useEffect(() => {
+    const metering = recorderState.metering ?? -60;
+    setMetering([metering]);
+  }, [recorderState.metering]);
 
   const record = () => audioRecorder.record();
 
@@ -160,6 +166,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       </View>
       <View style={styles.centerer}>
         {renderRecorderButtons()}
+        <View style={styles.meteringContainer}>
+          <View style={[styles.meteringBar, { height: 50 }]} />
+          <Text>{metering[0]?.toFixed(2)} dB</Text>
+        </View>
         <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
           {_formatTime(recorderState.durationMillis / 1000)}
         </Text>
@@ -232,5 +242,16 @@ const styles = StyleSheet.create({
   },
   smallIcon: {
     fontSize: 24,
+  },
+  meteringContainer: {
+    flexDirection: 'row',
+    height: 50,
+    alignItems: 'center',
+    gap: 10,
+    marginVertical: 10,
+  },
+  meteringBar: {
+    width: 20,
+    backgroundColor: 'red',
   },
 });
