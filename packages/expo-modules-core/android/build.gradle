@@ -60,6 +60,10 @@ def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
+expoModule {
+  canBePublished false
+}
+
 android {
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
