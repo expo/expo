@@ -327,7 +327,7 @@ You can customize the behavior of a workflow &mdash; commands executed, control 
 
 ### `after` and `needs`
 
-If you specify a job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+When you specify an upstream job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
 
 ```json
 {
