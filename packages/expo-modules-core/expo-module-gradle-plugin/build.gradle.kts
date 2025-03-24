@@ -1,5 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -12,14 +11,20 @@ repositories {
   mavenCentral()
 }
 
-
-val isExpoAutolinkingSettingsPluginAvailable = project
+val gradleProperties = project
   .rootProject
   .gradle
   .parent
   ?.extensions
   ?.extraProperties
-  ?.get("expoAutolinkingSettingsPlugin") as? Boolean == true
+
+val expoAutolinkingSettingsPlugin = if (gradleProperties?.has("expoAutolinkingSettingsPlugin") == true) {
+  gradleProperties.get("expoAutolinkingSettingsPlugin") as? Boolean
+} else {
+  false
+}
+
+val isExpoAutolinkingSettingsPluginAvailable = expoAutolinkingSettingsPlugin == true
 
 dependencies {
   implementation(gradleApi())
