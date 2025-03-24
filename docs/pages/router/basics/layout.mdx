@@ -72,7 +72,7 @@ When you navigate to `/products`, it will first go to the default route, which i
 
 The `Stack` component implements [React Navigation's native stack](https://reactnavigation.org/docs/native-stack-navigator/) and can use the same screen options. However, you do not have to define the pages specifically inside the navigator. The files inside the directory will be automatically treated as eligible routes in the stack. However, if you want to define screen options, you can add a `Stack.Screen` component inside the `Stack` component. The `name` prop should match the route name, but you do not need to supply a `component` prop; Expo Router will map this automatically:
 
-```tsx _layout.tsx
+```tsx app/products/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function StackLayout() {
