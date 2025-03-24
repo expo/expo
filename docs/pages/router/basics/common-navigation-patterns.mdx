@@ -98,7 +98,7 @@ Route groups can be used to share a single screen between two different tabs. Co
 
 Each of the tabs is put in a group so you can define a third directory that shares routes between two groups (**app/(tabs)/(feed,search)/**). Even with the extra layer, **app/(tabs)/(feed)/index.tsx** is still the nearest index, so it will be the default route.
 
-```tsx (tabs)/_layout.tsx
+```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
