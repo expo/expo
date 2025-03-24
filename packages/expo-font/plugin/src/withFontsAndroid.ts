@@ -39,12 +39,20 @@ export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
 
 export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => {
   return withMainApplication(config, async (config) => {
+    const fontsDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
+    await fs.mkdir(fontsDir, { recursive: true });
+
+    const isJava = config.modResults.language === 'java';
+    config.modResults.contents = addImports(
+      config.modResults.contents,
+      ['com.facebook.react.common.assets.ReactFontManager'],
+      isJava
+    );
+
     for (const { fontName, fontFiles } of fonts) {
       const xmlFileName = fontName.toLowerCase().replace(/ /g, '_')!;
       const resolvedFonts = await resolveFontPaths(fontFiles, config.modRequest.projectRoot);
       const fontXml = generateFontFamilyXml(resolvedFonts);
-      const fontsDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
-      await fs.mkdir(fontsDir, { recursive: true });
       const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
       await fs.writeFile(xmlPath, fontXml);
 
@@ -55,12 +63,6 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
         })
       );
 
-      const isJava = config.modResults.language === 'java';
-      config.modResults.contents = addImports(
-        config.modResults.contents,
-        ['com.facebook.react.common.assets.ReactFontManager'],
-        isJava
-      );
       config.modResults.contents = appendContentsInsideDeclarationBlock(
         config.modResults.contents,
         'onCreate',
