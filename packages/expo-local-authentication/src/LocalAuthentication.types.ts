@@ -93,8 +93,8 @@ export type LocalAuthenticationOptions = {
    * After several failed attempts the system will fallback to the device passcode. This setting
    * allows you to disable this option and instead handle the fallback yourself. This can be
    * preferable in certain custom authentication workflows. This behaviour maps to using the iOS
-   * [LAPolicyDeviceOwnerAuthenticationWithBiometrics](https://developer.apple.com/documentation/localauthentication/lapolicy/lapolicydeviceownerauthenticationwithbiometrics?language=objc)
-   * policy rather than the [LAPolicyDeviceOwnerAuthentication](https://developer.apple.com/documentation/localauthentication/lapolicy/lapolicydeviceownerauthentication?language=objc)
+   * [`LAPolicyDeviceOwnerAuthenticationWithBiometrics`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthenticationwithbiometrics)
+   * policy rather than the [`LAPolicyDeviceOwnerAuthentication`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthentication?language=objc)
    * policy. Defaults to `false`.
    */
   disableDeviceFallback?: boolean;
