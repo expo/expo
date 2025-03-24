@@ -40,7 +40,7 @@ private const val WIDTH_KEY = "width"
 private const val EXIF_KEY = "exif"
 private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
-private const val EXT_KEY = "ext"
+private const val FORMAT_KEY = "format"
 private const val ID_KEY = "id"
 
 fun getMirroredOrientation(orientation: Int): Int {
@@ -153,13 +153,13 @@ class ResolveTakenPicture(
           bitmap.recycle()
           // Save Exif data to the image if requested
           if (options.exif) {
-            val exifFromFile = ExifInterface(filePath!!)
+            val exifFromFile = ExifInterface(filePath)
             addExifData(exifFromFile, exifInterface)
           }
           val imageFile = File(filePath)
           val fileUri = Uri.fromFile(imageFile).toString()
           response.putString(URI_KEY, fileUri)
-          response.putString(EXT_KEY, options.imageType.toExtension())
+          response.putString(FORMAT_KEY, options.imageType.toExtension())
 
           // Write base64-encoded image to the response if requested
           if (options.base64) {
@@ -190,13 +190,13 @@ class ResolveTakenPicture(
 
         // write compressed image to file in cache directory
         val filePath = writeStreamToFile(directory, imageStream, options.imageType.toExtension())
-        val imageFile = filePath?.let { File(it) }
+        val imageFile = File(filePath)
 
         // handle image uri
         val fileUri = Uri.fromFile(imageFile).toString()
 
         // read exif information
-        val exifInterface = ExifInterface(filePath!!)
+        val exifInterface = ExifInterface(filePath)
 
         return Bundle().apply {
           putString(URI_KEY, fileUri)
@@ -273,7 +273,7 @@ class ResolveTakenPicture(
 }
 
 @Throws(Exception::class)
-fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream, extension: String = PictureFormat.JPEG.toExtension()): String? {
+fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream, extension: String = PictureFormat.JPEG.toExtension()): String {
   try {
     val outputPath = FileSystemUtils.generateOutputPath(directory, DIRECTORY_NAME, extension)
     FileOutputStream(outputPath).use { outputStream ->
@@ -283,5 +283,4 @@ fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream, exten
   } catch (e: IOException) {
     throw WriteImageException(e.message)
   }
-  return null
 }

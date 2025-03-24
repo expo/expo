@@ -568,7 +568,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     response["uri"] = ExpoCameraUtils.write(data: processedImageData, to: path)
     response["width"] = width
     response["height"] = height
-    response["ext"] = options.imageType.rawValue
+    response["format"] = options.imageType.rawValue
 
     if options.base64 {
       response["base64"] = processedImageData.base64EncodedString()

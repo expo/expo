@@ -277,7 +277,7 @@ export default function CameraScreen() {
     } else {
       await FileSystem.moveAsync({
         from: photo.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${photo.ext}`,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${photo.format}`,
       });
     }
     setState((state) => ({ ...state, newPhotos: true }));
