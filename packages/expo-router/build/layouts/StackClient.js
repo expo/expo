@@ -19,9 +19,9 @@ function isStackAction(action) {
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
  *
- * Expo Router allows for a screen to be matched by name and path params, a 'getID' function or a unique id.
+ * Expo Router allows for a screen to be matched by name and path params, a 'getID' function or a singular id.
  *
- * Instead of reimplementing the entire StackRouter, we can override the getStateForAction method to handle the unique screen logic.
+ * Instead of reimplementing the entire StackRouter, we can override the getStateForAction method to handle the singular screen logic.
  *
  */
 const stackRouterOverride = (original) => {
@@ -33,11 +33,11 @@ const stackRouterOverride = (original) => {
             if (!isStackAction(action)) {
                 return original.getStateForAction(state, action, options);
             }
-            // The dynamic getId added to an action, `router.push('screen', { unique: true })`
-            const actionGetId = action.payload && 'unique' in action.payload
-                ? action.payload.unique
+            // The dynamic getId added to an action, `router.push('screen', { singular: true })`
+            const actionSingularOptions = action.payload && 'singular' in action.payload
+                ? action.payload.singular
                 : undefined;
-            // Handle if 'getID' or 'unique' is set.
+            // Handle if 'getID' or 'singular' is set.
             function getIdFunction(fn) {
                 // Actions can be fired by the user, so we do need to validate their structure.
                 if (!('payload' in action) ||
@@ -47,17 +47,20 @@ const stackRouterOverride = (original) => {
                     return;
                 }
                 const name = action.payload.name;
-                // The static getId added as a prop to `<Screen unique />` or `<Screen getId={} />`
-                const screenGetId = options.routeGetIdList[name];
-                // If the navigation action has a unique id function, use it.
-                return getActionUniqueIdFn(actionGetId, name) || screenGetId || fn;
+                return (
+                // The dynamic singular added to an action, `router.push('screen', { singular: () => 'id' })`
+                getActionSingularIdFn(actionSingularOptions, name) ||
+                    // The static getId added as a prop to `<Screen singular />` or `<Screen getId={} />`
+                    options.routeGetIdList[name] ||
+                    // The custom singular added by Expo Router to support its concept of `navigate`
+                    fn);
             }
             switch (action.type) {
                 case 'PUSH': {
                     /**
                      * PUSH should always push
                      *
-                     * If 'getID' or 'unique' is set and a match is found, instead of pushing a new screen,
+                     * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
                      * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
                      */
                     const nextState = original.getStateForAction(state, action, {
@@ -67,7 +70,14 @@ const stackRouterOverride = (original) => {
                             [action.payload.name]: getIdFunction(),
                         },
                     });
-                    return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
+                    /**
+                     * React Navigation doesn't support dynamic getId function on the action. Because of this,
+                     * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
+                     * doesn't remove the duplicates. We need to filter the state to only have singular screens.
+                     */
+                    return actionSingularOptions
+                        ? filterSingular(nextState, actionSingularOptions)
+                        : nextState;
                 }
                 case 'NAVIGATE': {
                     /**
@@ -78,7 +88,7 @@ const stackRouterOverride = (original) => {
                      * If both the name and route params match, the screen is replaced.
                      * If the name / route params do not match, the screen is pushed.
                      *
-                     * If 'getID' or 'unique' is set and a match is found, instead of pushing a new screen,
+                     * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
                      * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
                      */
                     const nextState = original.getStateForAction(state, action, {
@@ -86,11 +96,18 @@ const stackRouterOverride = (original) => {
                         routeGetIdList: {
                             ...options.routeGetIdList,
                             [action.payload.name]: getIdFunction((options) => {
-                                return (0, useScreens_1.getUniqueId)(action.payload.name, options);
+                                return (0, useScreens_1.getSingularId)(action.payload.name, options);
                             }),
                         },
                     });
-                    return actionGetId ? filterUnique(nextState, actionGetId) : nextState;
+                    /**
+                     * React Navigation doesn't support dynamic getId function on the action. Because of this,
+                     * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
+                     * doesn't remove the duplicates. We need to filter the state to only have singular screens.
+                     */
+                    return actionSingularOptions
+                        ? filterSingular(nextState, actionSingularOptions)
+                        : nextState;
                 }
                 default: {
                     return original.getStateForAction(state, action, options);
@@ -100,21 +117,21 @@ const stackRouterOverride = (original) => {
     };
 };
 exports.stackRouterOverride = stackRouterOverride;
-function getActionUniqueIdFn(actionGetId, name) {
+function getActionSingularIdFn(actionGetId, name) {
     if (typeof actionGetId === 'function') {
-        return (options) => actionGetId(options.params ?? {});
+        return (options) => actionGetId(name, options.params ?? {});
     }
     else if (actionGetId === true) {
-        return (options) => (0, useScreens_1.getUniqueId)(name, options);
+        return (options) => (0, useScreens_1.getSingularId)(name, options);
     }
     return undefined;
 }
 /**
- * If there is a dynamic unique on an action, then we need to filter the state to only have unique screens.
- * As multiples may have been added before we did the unique navigation.
+ * If there is a dynamic singular on an action, then we need to filter the state to only have singular screens.
+ * As multiples may have been added before we did the singular navigation.
  */
-function filterUnique(state, unique) {
-    if (!state || !unique) {
+function filterSingular(state, singular) {
+    if (!state || !singular) {
         return state;
     }
     if (!state.routes) {
@@ -123,11 +140,14 @@ function filterUnique(state, unique) {
     const currentIndex = state.index || state.routes.length - 1;
     const current = state.routes[currentIndex];
     const name = current.name;
-    const getId = getActionUniqueIdFn(unique, name);
+    const getId = getActionSingularIdFn(singular, name);
     if (!getId) {
         return state;
     }
     const id = getId({ params: current.params });
+    if (!id) {
+        return state;
+    }
     // TypeScript needs a type assertion here for the filter to work.
     let routes = state.routes;
     routes = routes.filter((route, index) => {

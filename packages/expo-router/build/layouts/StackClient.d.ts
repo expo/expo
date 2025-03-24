@@ -1,7 +1,7 @@
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { ComponentProps } from 'react';
-declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "id"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -50,7 +50,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     }>>(original: import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "id"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -106,15 +106,15 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
  *
- * Expo Router allows for a screen to be matched by name and path params, a 'getID' function or a unique id.
+ * Expo Router allows for a screen to be matched by name and path params, a 'getID' function or a singular id.
  *
- * Instead of reimplementing the entire StackRouter, we can override the getStateForAction method to handle the unique screen logic.
+ * Instead of reimplementing the entire StackRouter, we can override the getStateForAction method to handle the singular screen logic.
  *
  */
 export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UNSTABLE_router']>;
 declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react").JSX.Element) & {
     Screen: (props: ComponentProps<typeof RNStack.Screen> & {
-        unique?: boolean;
+        singular?: boolean;
     }) => null;
 };
 export default Stack;

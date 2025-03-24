@@ -31,9 +31,9 @@ const React = __importStar(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
+const StackClient_1 = require("../layouts/StackClient");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const useScreens_1 = require("../useScreens");
-const StackClient_1 = require("../layouts/StackClient");
 exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';

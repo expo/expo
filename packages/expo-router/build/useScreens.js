@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUniqueId = exports.routeToScreen = exports.screenOptionsFactory = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.getSingularId = exports.routeToScreen = exports.screenOptionsFactory = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -20,7 +20,7 @@ function getSortedChildren(children, order, initialRouteName) {
     }
     const entries = [...children];
     const ordered = order
-        .map(({ name, redirect, initialParams, listeners, options, getId, unique }) => {
+        .map(({ name, redirect, initialParams, listeners, options, getId, dangerouslySingular: singular, }) => {
         if (!entries.length) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
@@ -42,21 +42,21 @@ function getSortedChildren(children, order, initialRouteName) {
                 return null;
             }
             if (getId) {
-                console.warn(`Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'unique'`);
-                if (unique) {
-                    console.warn(`Screen ${name} cannot use both getId and unique together.`);
+                console.warn(`Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`);
+                if (singular) {
+                    console.warn(`Screen ${name} cannot use both getId and dangerouslySingular together.`);
                 }
             }
-            else if (unique) {
-                // If unique is set, use it as the getId function.
-                if (typeof unique === 'string') {
-                    getId = () => unique;
+            else if (singular) {
+                // If singular is set, use it as the getId function.
+                if (typeof singular === 'string') {
+                    getId = () => singular;
                 }
-                else if (typeof unique === 'function') {
-                    getId = unique;
+                else if (typeof singular === 'function' && name) {
+                    getId = (options) => singular(name, options.params || {});
                 }
-                else if (unique === true && name) {
-                    getId = (options) => getUniqueId(name, options);
+                else if (singular === true && name) {
+                    getId = (options) => getSingularId(name, options);
                 }
             }
             return {
@@ -181,7 +181,7 @@ function routeToScreen(route, { options, getId, ...props } = {}) {
     return (<primitives_1.Screen {...props} name={route.route} key={route.route} getId={getId} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
 exports.routeToScreen = routeToScreen;
-function getUniqueId(name, options = {}) {
+function getSingularId(name, options = {}) {
     return name
         .split('/')
         .map((segment) => {
@@ -197,5 +197,5 @@ function getUniqueId(name, options = {}) {
     })
         .join('/');
 }
-exports.getUniqueId = getUniqueId;
+exports.getSingularId = getSingularId;
 //# sourceMappingURL=useScreens.js.map

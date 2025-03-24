@@ -22,18 +22,18 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
     getId?: ({ params }: {
         params?: Record<string, any>;
     }) => string | undefined;
-    unique?: UniqueOptions;
+    dangerouslySingular?: SingularOptions;
 };
-export type UniqueOptions = boolean | ((params: Record<string, UnknownOutputParams>) => string | undefined);
+export type SingularOptions = boolean | ((name: string, params: UnknownOutputParams) => string | undefined);
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
 export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
-export declare function getQualifiedRouteComponent(value: RouteNode): React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>> | React.ComponentType<any>;
+export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>>;
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any, any>['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
-export declare function getUniqueId(name: string, options?: {
+export declare function getSingularId(name: string, options?: {
     params?: Record<string, any> | undefined;
 }): string;
 //# sourceMappingURL=useScreens.d.ts.map

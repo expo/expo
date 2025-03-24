@@ -150,10 +150,10 @@ function linkTo(href, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor, options.unique));
+    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
 }
 exports.linkTo = linkTo;
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, unique) {
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -242,7 +242,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
             // key: rootPayload.key,
             name: rootPayload.screen,
             params: rootPayload.params,
-            unique,
+            singular,
         },
     };
 }

@@ -1,6 +1,6 @@
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
-import { UniqueOptions } from '../useScreens';
+import { SingularOptions } from '../useScreens';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function reload(this: RouterStore): void;
@@ -25,12 +25,11 @@ export type LinkToOptions = {
      */
     withAnchor?: boolean;
     /**
-     * When navigating in a Stack, if the target is valid then screens in the history that matches
-     * the uniqueness constraint will be removed.
+     * When navigating in a Stack, remove all screen from the history that match the singular condition
      *
      * If used with `push`, the history will be filtered even if no navigation occurs.
      */
-    unique?: UniqueOptions;
+    dangerouslySingular?: SingularOptions;
 };
 export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
