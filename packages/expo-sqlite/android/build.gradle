@@ -5,6 +5,10 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
+expoModule {
+  canBePublished false
+}
+
 String toPlatformIndependentPath(File path) {
   def result = path.toString()
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
