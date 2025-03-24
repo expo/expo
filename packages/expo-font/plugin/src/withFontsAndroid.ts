@@ -49,26 +49,28 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
       isJava
     );
 
-    for (const { fontName, fontFiles } of fonts) {
-      const xmlFileName = fontName.toLowerCase().replace(/ /g, '_')!;
-      const resolvedFonts = await resolveFontPaths(fontFiles, config.modRequest.projectRoot);
-      const fontXml = generateFontFamilyXml(resolvedFonts);
-      const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
-      await fs.writeFile(xmlPath, fontXml);
+    Promise.all(
+      fonts.map(async ({ fontName, fontFiles }) => {
+        const xmlFileName = fontName.toLowerCase().replace(/ /g, '_')!;
+        const resolvedFonts = await resolveFontPaths(fontFiles, config.modRequest.projectRoot);
+        const fontXml = generateFontFamilyXml(resolvedFonts);
+        const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
+        await fs.writeFile(xmlPath, fontXml);
 
-      await Promise.all(
-        resolvedFonts.map(async (file) => {
-          const destPath = path.join(fontsDir, path.basename(file));
-          await fs.copyFile(path.resolve(__dirname, file), destPath);
-        })
-      );
+        await Promise.all(
+          resolvedFonts.map(async (file) => {
+            const destPath = path.join(fontsDir, path.basename(file));
+            await fs.copyFile(path.resolve(__dirname, file), destPath);
+          })
+        );
 
-      config.modResults.contents = appendContentsInsideDeclarationBlock(
-        config.modResults.contents,
-        'onCreate',
-        `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `
-      );
-    }
+        config.modResults.contents = appendContentsInsideDeclarationBlock(
+          config.modResults.contents,
+          'onCreate',
+          `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `
+        );
+      })
+    );
 
     return config;
   });
