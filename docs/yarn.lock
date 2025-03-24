@@ -494,55 +494,55 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-base@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@expo/styleguide-base@npm:2.0.2"
+"@expo/styleguide-base@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@expo/styleguide-base@npm:2.0.3"
   dependencies:
     "@radix-ui/colors": "npm:^3.0.0"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/50bb61d98c54bbfc4c41251e534731dbd5b68fbd51ea8c2dbf9db4bc30696b040bd681d14a325d3c099e9e0add0fdce7bff32be86e6ac912d4f554ea216d4681
+  checksum: 10c0/e361ef1e94df58a2a15f7ad91d9145c04558a294e9975ca57d2a019fc27465904c99f7fb4fd530d8692bce16301c3a3a862cc3597091b847137e0d8c8bd2b70d
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@expo/styleguide-icons@npm:2.1.2"
+"@expo/styleguide-icons@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "@expo/styleguide-icons@npm:2.1.3"
   dependencies:
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/70b79b3675b4ac4dc143fee62d6eaec76dc700cfe074dd3a22a7a36fe579d4f7dd11327f07fbb8289be487b517717ddfb40cbd93dc8b184dd54932b4c6b35d5b
+  checksum: 10c0/72eb1987b35aee6f50ed83135d4df35b6d58c752a1e317be354fdf2a7cd6cbe4c60d858c4acaf94863128588ae42f99955e5f5db9dc8261cecd674423298e6a4
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^2.2.7":
-  version: 2.2.7
-  resolution: "@expo/styleguide-search-ui@npm:2.2.7"
+"@expo/styleguide-search-ui@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@expo/styleguide-search-ui@npm:2.3.1"
   dependencies:
-    "@expo/styleguide": "npm:^9.0.4"
-    "@expo/styleguide-icons": "npm:^2.1.2"
-    "@sanity/client": "npm:^6.21.3"
-    "@sanity/image-url": "npm:^1.0.2"
+    "@expo/styleguide": "npm:^9.0.5"
+    "@expo/styleguide-icons": "npm:^2.1.3"
+    "@sanity/client": "npm:^6.28.3"
+    "@sanity/image-url": "npm:^1.1.0"
     cmdk: "npm:^0.2.1"
     lodash.groupby: "npm:^4.6.0"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/f10e95430f3ca49e17304bb789f8a247bef5d6272c03b61e1a8d96ab917c5ddb345000205677a4c9a45a68f8627e715d01be085b69ccffa213a5fbc5a0004ac6
+  checksum: 10c0/961caa6804d127ceb4c6edda43ca56d67ce915ae644ab25ef516c151f02c1815dcc257f6a2cff99ba39add6b255873cd4e9451248269349c9da74ef6b62a6cb3
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^9.0.4":
-  version: 9.0.4
-  resolution: "@expo/styleguide@npm:9.0.4"
+"@expo/styleguide@npm:^9.0.5":
+  version: 9.0.5
+  resolution: "@expo/styleguide@npm:9.0.5"
   dependencies:
-    "@expo/styleguide-base": "npm:^2.0.2"
+    "@expo/styleguide-base": "npm:^2.0.3"
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/d8cbc0c67506e0b9e5908b0e5439b3b042f311b33a434144f7c858b567f673267bacb32b2359bcb85d026ce7c4d41219daafeea311f80253b8b25b9994fafcc2
+  checksum: 10c0/be3a5735d30a5a0d28f560f85dbc37bd36fb4197ee6ef0a7916718b649ee8f346128203a88cb9a601e8b43c60b080e5073a8f2df34ae7cc478592a541a2dacac
   languageName: node
   linkType: hard
 
@@ -2373,14 +2373,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sanity/client@npm:^6.21.3":
-  version: 6.24.1
-  resolution: "@sanity/client@npm:6.24.1"
+"@sanity/client@npm:^6.28.3":
+  version: 6.28.3
+  resolution: "@sanity/client@npm:6.28.3"
   dependencies:
     "@sanity/eventsource": "npm:^5.0.2"
-    get-it: "npm:^8.6.5"
+    get-it: "npm:^8.6.7"
     rxjs: "npm:^7.0.0"
-  checksum: 10c0/73cc86c0b0355f8011fa7d624d1f4467ccdc593b16c17856c3556eee5809c66a939910f43098c7214eb02bb97bced9b51f6dbe9f7e989a419a33d39903caa272
+  checksum: 10c0/a153107a002f782d82427ab283718d47720c5c3c5ca300593ee4634294506cd9cd16213c58f0bc6671c74f3098c8c99ca3f56471bcc909bc0b22198b2e61a0b8
   languageName: node
   linkType: hard
 
@@ -2396,7 +2396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sanity/image-url@npm:^1.0.2":
+"@sanity/image-url@npm:^1.1.0":
   version: 1.1.0
   resolution: "@sanity/image-url@npm:1.1.0"
   checksum: 10c0/ae7bf95e79871f1d4673d74eab96e107bb60068878b80f0891b67708bd4683e525b8dfb5c97afdf6f0427529f1001acb2cb22b1d409315cce4a079d49f65e687
@@ -5660,10 +5660,10 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.7.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^9.0.4"
-    "@expo/styleguide-base": "npm:^2.0.2"
-    "@expo/styleguide-icons": "npm:^2.1.2"
-    "@expo/styleguide-search-ui": "npm:^2.2.7"
+    "@expo/styleguide": "npm:^9.0.5"
+    "@expo/styleguide-base": "npm:^2.0.3"
+    "@expo/styleguide-icons": "npm:^2.1.3"
+    "@expo/styleguide-search-ui": "npm:^2.3.1"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
@@ -5906,7 +5906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.6, follow-redirects@npm:^1.15.9":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -6118,18 +6118,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-it@npm:^8.6.5":
-  version: 8.6.5
-  resolution: "get-it@npm:8.6.5"
+"get-it@npm:^8.6.7":
+  version: 8.6.7
+  resolution: "get-it@npm:8.6.7"
   dependencies:
     "@types/follow-redirects": "npm:^1.14.4"
     "@types/progress-stream": "npm:^2.0.5"
     decompress-response: "npm:^7.0.0"
-    follow-redirects: "npm:^1.15.6"
+    follow-redirects: "npm:^1.15.9"
     is-retry-allowed: "npm:^2.2.0"
     progress-stream: "npm:^2.0.0"
     tunnel-agent: "npm:^0.6.0"
-  checksum: 10c0/d4ef44279148576fed2dc5cf0afef20ed0eabe72ab7506364fef2903833a0e7a5c73191ee3983da5e4fe6b2fa6e9effe90e6eff8b1b2db5224f46b4bc0fd7310
+  checksum: 10c0/6dd0c48c186959fa2ea5dc9b7c251eb38ea5d0c51c7290a8f7f2ea07f05ecf33dc1375ad30ba5d903bd9556c535555df78355d4546d246ba8efcc6b6111c8511
   languageName: node
   linkType: hard
 
