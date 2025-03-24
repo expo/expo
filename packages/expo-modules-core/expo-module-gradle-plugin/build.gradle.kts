@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -11,11 +12,24 @@ repositories {
   mavenCentral()
 }
 
+
+val isExpoAutolinkingSettingsPluginAvailable = project
+  .rootProject
+  .gradle
+  .parent
+  ?.extensions
+  ?.extraProperties
+  ?.get("expoAutolinkingSettingsPlugin") as? Boolean == true
+
 dependencies {
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
   implementation("com.facebook.react:react-native-gradle-plugin")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+  if (isExpoAutolinkingSettingsPluginAvailable) {
+    implementation("expo.modules:expo-autolinking-plugin-shared")
+  }
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.2")
