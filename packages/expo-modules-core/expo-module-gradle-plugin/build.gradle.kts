@@ -43,6 +43,15 @@ dependencies {
 java {
   sourceCompatibility = JavaVersion.VERSION_11
   targetCompatibility = JavaVersion.VERSION_11
+
+  sourceSets {
+    val path = if (isExpoAutolinkingSettingsPluginAvailable) {
+      "withAutolinkingPlugin"
+    } else {
+      "withoutAutolinkingPlugin"
+    }
+    getByName("main").java.srcDirs("src/${path}/kotlin")
+  }
 }
 
 tasks.withType<KotlinCompile> {
