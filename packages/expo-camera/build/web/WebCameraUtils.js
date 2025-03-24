@@ -167,7 +167,7 @@ export function capture(video, settings, config) {
         base64,
         width: 0,
         height: 0,
-        ext: config.imageType ?? 'jpg',
+        format: config.imageType ?? 'jpg',
     };
     if (settings) {
         const { width = 0, height = 0 } = settings;
