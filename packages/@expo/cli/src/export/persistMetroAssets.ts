@@ -109,7 +109,7 @@ export async function persistMetroAssetsAsync(
   }
 }
 
-function createKeepFile(assets: AssetData[], outputDirectory: string): void {
+export async function createKeepFile(assets: AssetData[], outputDirectory: string): Promise<void> {
   if (!assets.length) {
     return;
   }
@@ -120,12 +120,8 @@ function createKeepFile(assets: AssetData[], outputDirectory: string): void {
   }
   const keepPath = path.join(outputDirectory, 'raw/keep.xml');
   const content = `<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="${assetsList.join(',')}" />`;
-  fs.mkdir(path.dirname(keepPath), { recursive: true }, (err) => {
-    if (err) {
-      return;
-    }
-    fs.writeFileSync(keepPath, content);
-  });
+  await fs.promises.mkdir(path.dirname(keepPath), { recursive: true });
+  await fs.promises.writeFile(keepPath, content);
 }
 
 export function getAssetIdForLogGrouping(
