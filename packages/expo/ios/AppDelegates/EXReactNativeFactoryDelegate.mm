@@ -1,4 +1,4 @@
-#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
+#import <Expo/EXReactNativeFactoryDelegate.h>
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -6,8 +6,7 @@
 #import <React/CoreModulesPlugins.h>
 #endif
 
-#import <React-RCTAppDelegate/RCTAppSetupUtils.h>
-#import <react/nativemodule/defaults/DefaultTurboModules.h>
+#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
 
 @implementation EXReactNativeFactoryDelegate
 
@@ -20,12 +19,6 @@
 #else
   return RCTCoreModulesClassProvider(name);
 #endif
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-{
-  return facebook::react::DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
