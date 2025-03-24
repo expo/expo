@@ -38,7 +38,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
   serializedRequest[@"content"] = [self serializedNotificationContent:request];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
+  serializedRequest[@"trigger"] = request.trigger ? [self serializedNotificationTrigger:request] : [NSNull null];
   return serializedRequest;
 }
 
