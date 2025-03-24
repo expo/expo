@@ -7,7 +7,7 @@ import { type ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { generateFontFamilyXml, resolveFontPaths } from './utils';
+import { generateFontFamilyXml, normalizeFilename, resolveFontPaths } from './utils';
 
 export type XmlFonts = {
   fontFiles: string[];
@@ -51,7 +51,7 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
 
     Promise.all(
       fonts.map(async ({ fontName, fontFiles }) => {
-        const xmlFileName = fontName.toLowerCase().replace(/ /g, '_')!;
+        const xmlFileName = normalizeFilename(fontName);
         const resolvedFonts = await resolveFontPaths(fontFiles, config.modRequest.projectRoot);
         const fontXml = generateFontFamilyXml(resolvedFonts);
         const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
