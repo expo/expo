@@ -3,6 +3,10 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
+expoModule {
+  canBePublished false
+}
+
 android {
   namespace "expo.modules.devclient"
   defaultConfig {

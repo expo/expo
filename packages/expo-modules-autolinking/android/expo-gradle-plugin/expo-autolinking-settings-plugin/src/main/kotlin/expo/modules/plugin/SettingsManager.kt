@@ -89,7 +89,11 @@ class SettingsManager(
    * Links all projects, plugins and aar projects.
    */
   private fun link() = with(config) {
-    allProjects.forEach(settings::linkProject)
+    allProjects.forEach { project ->
+      if (project.publication == null) {
+        settings.linkProject(project)
+      }
+    }
     allPlugins.forEach(settings::linkPlugin)
     allAarProjects.forEach(settings::linkAarProject)
   }

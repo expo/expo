@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '4.0.0'
 
+expoModule {
+  canBePublished false
+}
+
 android {
   namespace "expo.modules.structuredheaders"
   defaultConfig {
