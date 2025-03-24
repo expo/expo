@@ -10,7 +10,11 @@
     "*.fx.web.tsx",
     "./src/winter/*.ts"
   ],
-  "bin": "bin/cli",
+  "bin": {
+    "expo": "bin/cli",
+    "expo-modules-autolinking": "bin/autolinking",
+    "fingerprint": "bin/fingerprint"
+  },
   "files": [
     "android",
     "bin",
