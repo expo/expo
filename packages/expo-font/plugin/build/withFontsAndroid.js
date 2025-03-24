@@ -30,21 +30,22 @@ const withFontsAndroid = (config, fonts) => {
 exports.withFontsAndroid = withFontsAndroid;
 const withXmlFontsAndroid = (config, fonts) => {
     return (0, config_plugins_1.withMainApplication)(config, async (config) => {
-        for (const { fontName, fontFiles } of fonts) {
-            const xmlFileName = fontName?.toLowerCase().replace(/ /g, '_');
-            const fontXml = (0, utils_1.generateFontFamilyXml)(fontFiles);
-            const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
-            await promises_1.default.mkdir(fontsDir, { recursive: true });
+        const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
+        await promises_1.default.mkdir(fontsDir, { recursive: true });
+        const isJava = config.modResults.language === 'java';
+        config.modResults.contents = (0, codeMod_1.addImports)(config.modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], isJava);
+        Promise.all(fonts.map(async ({ fontName, fontFiles }) => {
+            const xmlFileName = (0, utils_1.normalizeFilename)(fontName);
+            const resolvedFonts = await (0, utils_1.resolveFontPaths)(fontFiles, config.modRequest.projectRoot);
+            const fontXml = (0, utils_1.generateFontFamilyXml)(resolvedFonts);
             const xmlPath = path_1.default.join(fontsDir, `${xmlFileName}.xml`);
             await promises_1.default.writeFile(xmlPath, fontXml);
-            await Promise.all(fontFiles.map(async (file) => {
+            await Promise.all(resolvedFonts.map(async (file) => {
                 const destPath = path_1.default.join(fontsDir, path_1.default.basename(file));
                 await promises_1.default.copyFile(path_1.default.resolve(__dirname, file), destPath);
             }));
-            const isJava = config.modResults.language === 'java';
-            config.modResults.contents = (0, codeMod_1.addImports)(config.modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], isJava);
             config.modResults.contents = (0, codeMod_1.appendContentsInsideDeclarationBlock)(config.modResults.contents, 'onCreate', `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `);
-        }
+        }));
         return config;
     });
 };

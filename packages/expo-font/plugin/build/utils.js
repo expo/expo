@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateFontFamilyXml = exports.getFontWeight = exports.resolveFontPaths = void 0;
+exports.generateFontFamilyXml = exports.normalizeFilename = exports.getFontWeight = exports.resolveFontPaths = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 async function resolveFontPaths(fonts, projectRoot) {
@@ -38,21 +38,31 @@ const weightMap = {
     black: 900,
     heavy: 900,
 };
+const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
 function getFontWeight(filename) {
-    for (const weight in weightMap) {
-        if (filename.toLowerCase().includes(weight)) {
+    for (const weight of weights) {
+        if (filename.replaceAll('_', '').includes(weight)) {
             return weightMap[weight];
         }
     }
     return 400;
 }
 exports.getFontWeight = getFontWeight;
+function normalizeFilename(filename) {
+    return filename
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '');
+}
+exports.normalizeFilename = normalizeFilename;
 function generateFontFamilyXml(files) {
     let xml = `<?xml version="1.0" encoding="utf-8"?>\n<font-family xmlns:app="http://schemas.android.com/apk/res-auto">\n`;
     files.forEach((file) => {
-        const filename = path_1.default.basename(file, path_1.default.extname(file));
+        const filename = normalizeFilename(path_1.default.basename(file, path_1.default.extname(file)));
         const fontWeight = getFontWeight(filename);
-        const fontStyle = filename.toLowerCase().includes('italic') ? 'italic' : 'normal';
+        const fontStyle = filename.includes('italic') ? 'italic' : 'normal';
         xml += `    <font app:fontStyle="${fontStyle}" app:fontWeight="${fontWeight}" app:font="@font/${filename}" />\n`;
     });
     xml += `</font-family>\n`;
