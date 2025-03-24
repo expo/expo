@@ -209,7 +209,7 @@ Separating your navigation states into distinct routes is meant to serve you and
 
 Thinking back to authentication, the protected route setup works great if the user should simply not be able to visit certain pages without logging in. But what about when unauthenticated users can browse an app in read-only mode? In that case, you might want to show a login modal over the app, rather than redirecting the user to a login page:
 
-```tsx /_layout.tsx
+```tsx app/(logged-in)/_layout.tsx
 import { SafeAreaView, Modal } from 'react-native';
 import { Stack } from 'expo-router';
 
