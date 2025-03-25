@@ -43,10 +43,11 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
       launchOptions: launchOptions
     ) {
       let frame = NSRect(x: 0, y: 0, width: 1280, height: 720)
-      let window = NSWindow(contentRect: NSZeroRect,
-                            styleMask: [.titled, .resizable, .closable, .miniaturizable],
-                            backing: .buffered,
-                            defer: false)
+      let window = NSWindow(
+        contentRect: NSRect.zero,
+        styleMask: [.titled, .resizable, .closable, .miniaturizable],
+        backing: .buffered,
+        defer: false)
 
       window.title = moduleName
       window.autorecalculatesKeyViewLoop = true
