@@ -2,7 +2,6 @@
 
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
-#import <EXNotifications/EXNotificationsDelegate.h>
 
 typedef NS_ENUM(NSUInteger, EXBackgroundNotificationResult) {
   EXBackgroundNotificationResultNoData = 1,

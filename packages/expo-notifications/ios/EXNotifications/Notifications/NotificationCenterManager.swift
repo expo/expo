@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import Foundation
+import UserNotifications
 
 /**
  Protocol that NotificationCenterManager delegates may implement
@@ -9,6 +10,7 @@ import Foundation
 public protocol NotificationDelegate: AnyObject {
   func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool
   func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool
+  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool
   func openSettings(_ notification: UNNotification?)
   func didRegister(_ deviceToken: String)
   func didFailRegistration(_ error: Error)
@@ -21,6 +23,9 @@ public extension NotificationDelegate {
   func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     return false
   }
+  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+    return false
+  }
   func openSettings(_ notification: UNNotification?) {}
   func didRegister(_ deviceToken: String) {}
   func didFailRegistration(_ error: Error) {}
@@ -30,44 +35,37 @@ public extension NotificationDelegate {
  Singleton that sets itself as the UserNotificationCenter delegate,
  and calls its own delegates in response to notification center calls.
  */
-@objc(EXNotificationCenterManager)
 public class NotificationCenterManager: NSObject,
   UNUserNotificationCenterDelegate,
   NotificationDelegate {
   @objc
   public static let shared = NotificationCenterManager()
 
+  var lastResponse: UNNotificationResponse?
   var delegates: [NotificationDelegate] = []
   var pendingResponses: [UNNotificationResponse] = []
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
 
-  // TODO: Once Swift conversion is complete, the old EXNotificationDelegate class will be removed, and
-  // we will need to add the initialization code below.
-  // For now, we allow EXNotificationDelegate to add itself as the user notification delegate, and call the
-  // shared instance of this class.
-  //
-  /*
   private override init() {
     super.init()
     if UNUserNotificationCenter.current().delegate != nil {
       NSLog(
-        "[expo-notifications] EXNotificationCenterDelegate encountered already present delegate of " +
-        "UNUserNotificationCenter. EXNotificationCenterDelegate will not overwrite the value not to break other " +
+        "[expo-notifications] NotificationCenterManager encountered already present delegate of " +
+        "UNUserNotificationCenter. NotificationCenterManager will not overwrite the value not to break other " +
         "features of your app.  In return, expo-notifications may not work properly.  To fix this problem either " +
-        "remove setting of the second delegate, or set the delegate to an instance of EXNotificationCenterDelegate " +
+        "remove setting of the second delegate, or set the delegate to an instance of NotificationCenterManager " +
         "manually afterwards."
       )
       return
     }
     UNUserNotificationCenter.current().delegate = self
   }
-   */
 
   public func addDelegate(_ delegate: NotificationDelegate) {
     delegates.append(delegate)
     var handled = false
     for pendingResponse in pendingResponses {
-      handled = delegate.didReceive(pendingResponse, completionHandler: {})
+      handled = delegate.didReceive(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
       pendingResponses.removeAll()
@@ -103,13 +101,10 @@ public class NotificationCenterManager: NSObject,
   ) {
     var handled = false
     for delegate in delegates {
-      handled = handled || delegate.willPresent(notification, completionHandler: completionHandler)
+      handled = delegate.willPresent(notification, completionHandler: completionHandler) || handled
     }
     if !handled {
-      // TODO: For now, until all code is converted to Swift,
-      // ensure notification is presented even if handlers are not registered
-      // Later revisit this
-      completionHandler([.badge, .banner, .sound])
+      completionHandler([])
     }
   }
 
@@ -120,7 +115,7 @@ public class NotificationCenterManager: NSObject,
   ) {
     var handled = false
     for delegate in delegates {
-      handled = handled || delegate.didReceive(response, completionHandler: completionHandler)
+      handled = delegate.didReceive(response, completionHandler: completionHandler) || handled
     }
     if !handled {
       pendingResponses.append(response)
@@ -131,6 +126,17 @@ public class NotificationCenterManager: NSObject,
   public func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
     for delegate in delegates {
       delegate.openSettings(notification)
+    }
+  }
+
+  // MARK: - Called from NotificationsAppDelegateSubscriber
+  public func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    var handled = false
+    for delegate in delegates {
+      handled = delegate.didReceive(notification, completionHandler: completionHandler) || handled
+    }
+    if !handled {
+      completionHandler(.noData)
     }
   }
 }
