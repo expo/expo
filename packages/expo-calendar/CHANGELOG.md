@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Updated `Event.location` type to allow a `null` value if not set. ([#33802](https://github.com/expo/expo/pull/33802) by [@rklomp](https://github.com/rklomp)
+- Allow more characters in url encoding ([#35034](https://github.com/expo/expo/pull/35034) by [@cederache](https://github.com/cederache))
 
 ### 💡 Others
 

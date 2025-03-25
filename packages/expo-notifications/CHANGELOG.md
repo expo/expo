@@ -8,12 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- restore `useLastNotificationResponse` return value behavior ([#35504](https://github.com/expo/expo/pull/35504) by [@vonovak](https://github.com/vonovak))
 - fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
 - [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] fix notification response listener emitting duplicate response events ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
 
 ### 💡 Others
 
+- simplify `nextTriggerDate` in `TimeIntervalTrigger` ([#35559](https://github.com/expo/expo/pull/35559) by [@vonovak](https://github.com/vonovak))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [iOS] Swift conversion 6: refactor Record classes. ([#34413](https://github.com/expo/expo/pull/34413) by [@douglowder](https://github.com/douglowder))
 

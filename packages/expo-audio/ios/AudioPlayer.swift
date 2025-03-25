@@ -13,9 +13,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+  var wasPlaying = false
   var isPaused: Bool {
     ref.rate != 0.0
   }
+  var samplingEnabled = false
 
   private var audioQueue: AudioQueue?
 
@@ -25,7 +27,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var endObserver: NSObjectProtocol?
 
   private var audioProcessor: AudioTapProcessor?
-  private var samplingEnabled = false
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
 
@@ -101,6 +102,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func setSamplingEnabled(enabled: Bool) {
+    if samplingEnabled == enabled {
+      return
+    }
     samplingEnabled = enabled
     if enabled {
       installTap()

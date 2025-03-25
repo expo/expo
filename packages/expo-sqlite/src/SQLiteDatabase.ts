@@ -23,7 +23,7 @@ export class SQLiteDatabase {
   constructor(
     public readonly databasePath: string,
     public readonly options: SQLiteOpenOptions,
-    private readonly nativeDatabase: NativeDatabase
+    public readonly nativeDatabase: NativeDatabase
   ) {}
 
   /**
@@ -566,6 +566,66 @@ export async function deleteDatabaseAsync(databaseName: string, directory?: stri
 export function deleteDatabaseSync(databaseName: string, directory?: string): void {
   const databasePath = createDatabasePath(databaseName, directory);
   return ExpoSQLite.deleteDatabaseSync(databasePath);
+}
+
+/**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export function backupDatabaseAsync({
+  sourceDatabase,
+  sourceDatabaseName,
+  destDatabase,
+  destDatabaseName,
+}: {
+  sourceDatabase: SQLiteDatabase;
+  sourceDatabaseName?: string;
+  destDatabase: SQLiteDatabase;
+  destDatabaseName?: string;
+}): Promise<void> {
+  return ExpoSQLite.backupDatabaseAsync(
+    destDatabase.nativeDatabase,
+    destDatabaseName ?? 'main',
+    sourceDatabase.nativeDatabase,
+    sourceDatabaseName ?? 'main'
+  );
+}
+
+/**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export function backupDatabaseSync({
+  sourceDatabase,
+  sourceDatabaseName,
+  destDatabase,
+  destDatabaseName,
+}: {
+  sourceDatabase: SQLiteDatabase;
+  sourceDatabaseName?: string;
+  destDatabase: SQLiteDatabase;
+  destDatabaseName?: string;
+}): void {
+  return ExpoSQLite.backupDatabaseSync(
+    destDatabase.nativeDatabase,
+    destDatabaseName ?? 'main',
+    sourceDatabase.nativeDatabase,
+    sourceDatabaseName ?? 'main'
+  );
 }
 
 /**

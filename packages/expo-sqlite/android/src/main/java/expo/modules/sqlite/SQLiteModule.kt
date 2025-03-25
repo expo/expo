@@ -3,8 +3,8 @@
 package expo.modules.sqlite
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -62,7 +62,7 @@ class SQLiteModule : Module() {
       if (dbFile.exists() && !forceOverwrite) {
         return@AsyncFunction
       }
-      val assetFile = Uri.parse(assetDatabasePath).toFile()
+      val assetFile = assetDatabasePath.toUri().toFile()
       if (!assetFile.isFile) {
         throw OpenDatabaseException(assetDatabasePath)
       }
@@ -74,6 +74,20 @@ class SQLiteModule : Module() {
     }
     Function("ensureDatabasePathExistsSync") { databasePath: String ->
       ensureDatabasePathExists(databasePath)
+    }
+
+    AsyncFunction("backupDatabaseAsync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+
+    AsyncFunction("deleteDatabaseAsync") { databasePath: String ->
+      deleteDatabase(databasePath)
+    }
+    Function("deleteDatabaseSync") { databasePath: String ->
+      deleteDatabase(databasePath)
     }
 
     // region NativeDatabase
@@ -295,7 +309,7 @@ class SQLiteModule : Module() {
     }
     try {
       val parsedPath =
-        Uri.parse(databasePath).path ?: throw IOException("Couldn't parse Uri - $databasePath")
+        databasePath.toUri().path ?: throw IOException("Couldn't parse Uri - $databasePath")
       val path = File(parsedPath)
       val parentPath =
         path.parentFile ?: throw IOException("Parent directory is null for path '$path'.")
@@ -486,6 +500,13 @@ class SQLiteModule : Module() {
     if (!dbFile.delete()) {
       throw DeleteDatabaseFileException(databasePath)
     }
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) {
+    maybeThrowForClosedDatabase(destDatabase)
+    maybeThrowForClosedDatabase(sourceDatabase)
+    NativeDatabaseBinding.sqlite3_backup(destDatabase.ref, destDatabaseName, sourceDatabase.ref, sourceDatabaseName)
   }
 
   @Throws(AccessClosedResourceException::class)

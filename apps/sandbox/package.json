@@ -15,7 +15,7 @@
     "expo-router": "^4.0.0",
     "expo-splash-screen": "~0.29.13",
     "react": "19.0.0",
-    "react-native": "0.79.0-rc.0",
+    "react-native": "0.79.0-rc.2",
     "react-native-safe-area-context": "5.2.0",
     "react-native-screens": "4.9.0"
   },

@@ -5,21 +5,13 @@ import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
 type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
-type ContentChildren = SubmenuElement | SubmenuElement[];
-/**
- * @hidden
- */
 export type ContextMenuContentProps = {
-    children: ContentChildren;
+    children: SubmenuElement | SubmenuElement[];
 };
 /**
  * @hidden
  */
-export type EventHandlers = {
-    [key: string]: {
-        [key: string]: (event: NativeSyntheticEvent<any>) => void;
-    };
-};
+export type EventHandlers = Record<string, Record<string, (event: NativeSyntheticEvent<any>) => void>>;
 /**
  * @hidden
  */
@@ -65,11 +57,11 @@ export type SubmenuProps = {
     /**
      * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
      */
-    button: React.ReactElement<ButtonProps>;
+    button: ReactElement<ButtonProps>;
     /**
      * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
      */
-    children: React.ReactNode;
+    children: ReactNode;
 };
 /**
  * @hidden

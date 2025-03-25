@@ -14,6 +14,9 @@
   "license": "MIT",
   "jest": {
     "preset": "jest-expo/ios",
+    "setupFiles": [
+      "<rootDir>/../../react-native-lab/react-native/packages/react-native/jest/setup.js"
+    ],
     "modulePathIgnorePatterns": [
       "./ios/Pods"
     ]
@@ -59,13 +62,12 @@
     "expo-web-browser": "~14.0.0",
     "graphql": "^15.3.0",
     "immutable": "^4.0.0",
-    "lodash": "^4.17.19",
     "lottie-react-native": "7.2.1",
     "path-to-regexp": "^1.9.0",
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "19.0.0",
-    "react-native": "0.79.0-rc.0",
+    "react-native": "0.79.0-rc.2",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-infinite-scroll-view": "^0.4.5",
@@ -94,7 +96,6 @@
     "@graphql-codegen/typescript-react-apollo": "^3.2.1",
     "@types/dedent": "^0.7.0",
     "@types/jest": "^29.2.1",
-    "@types/lodash": "^4.14.161",
     "@types/react": "~19.0.10",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^4.0.0"

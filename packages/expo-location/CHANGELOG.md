@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
 - [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
 
@@ -26,6 +27,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added guards to avoid task options to crash the app. ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added error handler to the streaming location/heading methods since these can fail while streaming ([#35004](https://github.com/expo/expo/pull/35004) by [@chrfalch](https://github.com/chrfalch))
 
 ## 18.0.6 - 2025-02-10

@@ -5,8 +5,8 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-def getRNVersion = {
-  return project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+expoModule {
+  canBePublished false
 }
 
 android {

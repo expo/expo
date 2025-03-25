@@ -15,14 +15,10 @@ export interface ConnectionInfo {
      * @hidden
      */
     wsStore?: WebSocketBackingStore;
-}
-/**
- * Parameters for the `handshake` message.
- * @hidden
- */
-export interface HandshakeMessageParams {
-    browserClientId: string;
-    pluginName: string;
+    /**
+     * The transport protocol version between the app and the webui.
+     */
+    protocolVersion: number;
 }
 /**
  * Options for the devtools plugin client.
@@ -32,5 +28,15 @@ export interface DevToolsPluginClientOptions {
      * The underlying WebSocket [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType).
      */
     websocketBinaryType?: 'arraybuffer' | 'blob';
+}
+/**
+ * The handshake messages for the devtools plugin client.
+ * @hidden
+ */
+export interface HandshakeMessageParams {
+    protocolVersion: number;
+    pluginName: string;
+    method: 'handshake' | 'terminateBrowserClient';
+    browserClientId: string;
 }
 //# sourceMappingURL=devtools.types.d.ts.map

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add bottom sheet. ([#35455](https://github.com/expo/expo/pull/35455) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add support for `pallete` and `inline` pickers. ([#35435](https://github.com/expo/expo/pull/35435) by [@aleqsio](https://github.com/aleqsio))
 - Add TextInput for Android. ([#35228](https://github.com/expo/expo/pull/35228) by [@aleqsio](https://github.com/aleqsio))
 - Add context menu previews. ([#35369](https://github.com/expo/expo/pull/35369) by [@aleqsio](https://github.com/aleqsio)).
 - Add TextInput for iOS. ([#35098](https://github.com/expo/expo/pull/35098) by [@aleqsio](https://github.com/aleqsio))
@@ -26,6 +28,7 @@
 
 - Drop section polyfill for Android ([#35305](https://github.com/expo/expo/pull/35305) by [@aleqsio](https://github.com/aleqsio))
 - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+- Dismiss context menu when a menu item is tapped on Android ([#35365](https://github.com/expo/expo/pull/35365) by [@fobos531](https://github.com/fobos531))
 
 ## 0.0.2 — 2025-02-11
 
