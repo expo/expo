@@ -58,7 +58,8 @@ class VideoModule : Module() {
         "onPictureInPictureStart",
         "onPictureInPictureStop",
         "onFullscreenEnter",
-        "onFullscreenExit"
+        "onFullscreenExit",
+        "onFirstFrameRender"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
