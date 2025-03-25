@@ -5,19 +5,6 @@ afterEach(() => {
   NETWORK_RESPONSE_STORAGE.clear();
 });
 
-it('is disabled when device capability includes `nativeNetworkInspection`', () => {
-  // @ts-expect-error There are more capabilities, but we only care about this one
-  const connection = mockConnection({ page: { capabilities: { nativeNetworkInspection: true } } });
-  const handler = new NetworkResponseHandler(connection);
-  expect(handler.isEnabled()).toBe(false);
-});
-
-it('is enabled when device capability is missing `nativeNetworkInspection`', () => {
-  const connection = mockConnection();
-  const handler = new NetworkResponseHandler(connection);
-  expect(handler.isEnabled()).toBe(true);
-});
-
 it('responds to response body from device and debugger', () => {
   const connection = mockConnection();
   const handler = new NetworkResponseHandler(connection);

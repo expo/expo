@@ -10,6 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Remove maxSdkVersion from MODIFY_AUDIO_SETTINGS permission ([#35541](https://github.com/expo/expo/pull/35541) by [@jakex7](https://github.com/jakex7))
+- Use the same prop name for "muted" on all platforms. Fix playing in background on iOS.([#35600](https://github.com/expo/expo/pull/35600) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Recording was not working when prepared due to wrong precondition check ([#35591](https://github.com/expo/expo/pull/35591) by [@pennersr](https://github.com/pennersr))
+- [Android] Correctly handle muting and volume. ([#35631](https://github.com/expo/expo/pull/35631) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))

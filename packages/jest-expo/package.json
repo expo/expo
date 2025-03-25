@@ -42,7 +42,6 @@
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",
-    "fbemitter": "^3.0.0",
     "find-up": "^5.0.0",
     "jest-environment-jsdom": "^29.2.1",
     "jest-snapshot": "^29.2.1",

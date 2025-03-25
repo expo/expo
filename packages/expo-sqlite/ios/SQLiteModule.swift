@@ -73,6 +73,16 @@ public final class SQLiteModule: Module {
       try ensureDatabasePathExists(path: databasePath)
     }
 
+    // swiftlint:disable:next line_length
+    AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+
+    // MARK: - NativeDatabase
+
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
       Constructor { (databasePath: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
@@ -142,7 +152,16 @@ public final class SQLiteModule: Module {
       Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
       }
+
+      AsyncFunction("createSessionAsync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
+        try sessionCreate(database: database, session: session, dbName: dbName)
+      }
+      Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
+        try sessionCreate(database: database, session: session, dbName: dbName)
+      }
     }
+
+    // MARK: - NativeStatement
 
     // swiftlint:disable:next closure_body_length
     Class(NativeStatement.self) {
@@ -194,6 +213,64 @@ public final class SQLiteModule: Module {
       }
       Function("finalizeSync") { (statement: NativeStatement, database: NativeDatabase) in
         try finalize(statement: statement, database: database)
+      }
+    }
+
+    // MARK: - NativeSession
+
+    // swiftlint:disable:next closure_body_length
+    Class(NativeSession.self) {
+      Constructor {
+        return NativeSession()
+      }
+
+      AsyncFunction("attachAsync") { (session: NativeSession, database: NativeDatabase, table: String?) in
+        try sessionAttach(database: database, session: session, table: table)
+      }
+      Function("attachSync") { (session: NativeSession, database: NativeDatabase, table: String?) in
+        try sessionAttach(database: database, session: session, table: table)
+      }
+
+      AsyncFunction("enableAsync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
+        try sessionEnable(database: database, session: session, enabled: enabled)
+      }
+      Function("enableSync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
+        try sessionEnable(database: database, session: session, enabled: enabled)
+      }
+
+      AsyncFunction("closeAsync") { (session: NativeSession, database: NativeDatabase) in
+        try sessionClose(database: database, session: session)
+      }
+      Function("closeSync") { (session: NativeSession, database: NativeDatabase) in
+        try sessionClose(database: database, session: session)
+      }
+
+      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateChangeset(database: database, session: session)
+      }
+      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateChangeset(database: database, session: session)
+      }
+
+      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateInvertedChangeset(database: database, session: session)
+      }
+      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateInvertedChangeset(database: database, session: session)
+      }
+
+      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
+      }
+      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
+      }
+
+      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
+      }
+      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
       }
     }
   }
@@ -338,7 +415,8 @@ public final class SQLiteModule: Module {
       if ret == SQLITE_ROW {
         columnValuesList.append(try getColumnValues(statement: statement))
         continue
-      } else if ret == SQLITE_DONE {
+      }
+      if ret == SQLITE_DONE {
         break
       }
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
@@ -416,6 +494,18 @@ public final class SQLiteModule: Module {
       try FileManager.default.removeItem(atPath: path)
     } catch {
       throw DeleteDatabaseFileException(path)
+    }
+  }
+
+  private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
+    try maybeThrowForClosedDatabase(destDatabase)
+    try maybeThrowForClosedDatabase(sourceDatabase)
+    guard let backup = exsqlite3_backup_init(destDatabase.pointer, destDatabaseName, sourceDatabase.pointer, sourceDatabaseName) else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
+    }
+    exsqlite3_backup_step(backup, -1)
+    if exsqlite3_backup_finish(backup) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
     }
   }
 
@@ -601,5 +691,98 @@ public final class SQLiteModule: Module {
     if result != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
+  }
+
+  // MARK: - Session Extension
+
+  private func sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) throws {
+    try maybeThrowForClosedDatabase(database)
+    let db = dbName.cString(using: .utf8)
+    if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+  }
+
+  private func sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) throws {
+    try maybeThrowForClosedDatabase(database)
+    let tableName = table?.cString(using: .utf8)
+    if exsqlite3session_attach(session.pointer, tableName) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+  }
+
+  private func sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Bool) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3session_enable(session.pointer, enabled ? 1 : 0)
+  }
+
+  private func sessionClose(database: NativeDatabase, session: NativeSession) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3session_delete(session.pointer)
+  }
+
+  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+    try maybeThrowForClosedDatabase(database)
+    var size: Int32 = 0
+    var buffer: UnsafeMutableRawPointer?
+    if exsqlite3session_changeset(session.pointer, &size, &buffer) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    guard let buffer else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    defer { exsqlite3_free(buffer) }
+    return Data(bytes: buffer, count: Int(size))
+  }
+
+  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+    do {
+      let changeset = try sessionCreateChangeset(database: database, session: session)
+      return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
+    } catch {
+      throw error
+    }
+  }
+
+  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws {
+    try maybeThrowForClosedDatabase(database)
+    try changeset.withUnsafeBytes {
+      let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
+      if exsqlite3changeset_apply(
+        database.pointer,
+        Int32(changeset.count),
+        buffer,
+        nil,
+        { _, _, _ -> Int32 in
+          return SQLITE_CHANGESET_REPLACE
+        },
+        nil
+      ) != SQLITE_OK {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+    }
+  }
+
+  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws -> Data {
+    try maybeThrowForClosedDatabase(database)
+    var result: Data?
+    try changeset.withUnsafeBytes {
+      let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
+      var outSize: Int32 = 0
+      var outBuffer: UnsafeMutableRawPointer?
+
+      if exsqlite3changeset_invert(Int32(changeset.count), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      guard let outBuffer else {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      defer { exsqlite3_free(outBuffer) }
+      result = Data(bytes: outBuffer, count: Int(outSize))
+    }
+    guard let result else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    return result
   }
 }

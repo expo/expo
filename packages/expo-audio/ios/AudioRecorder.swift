@@ -4,21 +4,20 @@ private let recordingStatus = "recordingStatusUpdate"
 
 class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   let id = UUID().uuidString
-  private lazy var recordingDelegate = {
-    RecordingDelegate(resultHandler: self)
-  }()
+  private var recordingDelegate: RecordingDelegate?
   private var startTimestamp = 0
   private var previousRecordingDuration = 0
   private var isPrepared = false
-  private lazy var recordingSession = AVAudioSession.sharedInstance()
+  private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = true
 
   override init(_ ref: AVAudioRecorder) {
     super.init(ref)
+    recordingDelegate = RecordingDelegate(resultHandler: self)
     ref.delegate = recordingDelegate
 
     do {
-      try recordingSession.setCategory(.playAndRecord, mode: .default)
+      try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
       try recordingSession.setActive(true)
     } catch {
       log.info("Failed to update the recording session")
@@ -42,7 +41,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   private var currentDuration: Int {
-    deviceCurrentTime - startTimestamp
+    guard startTimestamp > 0 else {
+      return 0
+    }
+    return deviceCurrentTime - startTimestamp
   }
 
   func prepare(options: RecordingOptions?) {

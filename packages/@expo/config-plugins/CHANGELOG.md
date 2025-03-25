@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))

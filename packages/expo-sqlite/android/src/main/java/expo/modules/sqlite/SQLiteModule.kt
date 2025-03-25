@@ -3,8 +3,8 @@
 package expo.modules.sqlite
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -62,7 +62,7 @@ class SQLiteModule : Module() {
       if (dbFile.exists() && !forceOverwrite) {
         return@AsyncFunction
       }
-      val assetFile = Uri.parse(assetDatabasePath).toFile()
+      val assetFile = assetDatabasePath.toUri().toFile()
       if (!assetFile.isFile) {
         throw OpenDatabaseException(assetDatabasePath)
       }
@@ -75,6 +75,22 @@ class SQLiteModule : Module() {
     Function("ensureDatabasePathExistsSync") { databasePath: String ->
       ensureDatabasePathExists(databasePath)
     }
+
+    AsyncFunction("backupDatabaseAsync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String ->
+      backupDatabase(destDatabase, destDatabaseName, sourceDatabase, sourceDatabaseName)
+    }
+
+    AsyncFunction("deleteDatabaseAsync") { databasePath: String ->
+      deleteDatabase(databasePath)
+    }
+    Function("deleteDatabaseSync") { databasePath: String ->
+      deleteDatabase(databasePath)
+    }
+
+    // region NativeDatabase
 
     Class(NativeDatabase::class) {
       Constructor { databasePath: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
@@ -155,6 +171,13 @@ class SQLiteModule : Module() {
         prepareStatement(database, statement, source)
       }
 
+      AsyncFunction("createSessionAsync") { database: NativeDatabase, session: NativeSession, dbName: String ->
+        sessionCreate(database, session, dbName)
+      }
+      Function("createSessionSync") { database: NativeDatabase, session: NativeSession, dbName: String ->
+        sessionCreate(database, session, dbName)
+      }
+
       AsyncFunction("syncLibSQL") { database: NativeDatabase ->
         maybeThrowForClosedDatabase(database)
         if (database.ref.libsql_sync() != NativeDatabaseBinding.SQLITE_OK) {
@@ -162,6 +185,10 @@ class SQLiteModule : Module() {
         }
       }
     }
+
+    // endregion NativeDatabase
+
+    // region NativeStatement
 
     Class(NativeStatement::class) {
       Constructor {
@@ -212,6 +239,67 @@ class SQLiteModule : Module() {
         return@Function finalize(statement, database)
       }
     }
+
+    // endregion NativeStatement
+
+    // region NativeSession
+
+    Class(NativeSession::class) {
+      Constructor {
+        return@Constructor NativeSession()
+      }
+
+      AsyncFunction("attachAsync") { session: NativeSession, database: NativeDatabase, table: String? ->
+        sessionAttach(database, session, table)
+      }
+      Function("attachSync") { session: NativeSession, database: NativeDatabase, table: String? ->
+        sessionAttach(database, session, table)
+      }
+
+      AsyncFunction("enableAsync") { session: NativeSession, database: NativeDatabase, enabled: Boolean ->
+        sessionEnable(database, session, enabled)
+      }
+      Function("enableSync") { session: NativeSession, database: NativeDatabase, enabled: Boolean ->
+        sessionEnable(database, session, enabled)
+      }
+
+      AsyncFunction("closeAsync") { session: NativeSession, database: NativeDatabase ->
+        sessionClose(database, session)
+      }
+      Function("closeSync") { session: NativeSession, database: NativeDatabase ->
+        sessionClose(database, session)
+      }
+
+      AsyncFunction("createChangesetAsync") { session: NativeSession, database: NativeDatabase ->
+        return@AsyncFunction sessionCreateChangeset(database, session)
+      }
+      Function("createChangesetSync") { session: NativeSession, database: NativeDatabase ->
+        return@Function sessionCreateChangeset(database, session)
+      }
+
+      AsyncFunction("createInvertedChangesetAsync") { session: NativeSession, database: NativeDatabase ->
+        return@AsyncFunction sessionCreateInvertedChangeset(database, session)
+      }
+      Function("createInvertedChangesetSync") { session: NativeSession, database: NativeDatabase ->
+        return@Function sessionCreateInvertedChangeset(database, session)
+      }
+
+      AsyncFunction("applyChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+        sessionApplyChangeset(database, session, changeset)
+      }
+      Function("applyChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+        sessionApplyChangeset(database, session, changeset)
+      }
+
+      AsyncFunction("invertChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+        return@AsyncFunction sessionInvertChangeset(database, session, changeset)
+      }
+      Function("invertChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+        return@Function sessionInvertChangeset(database, session, changeset)
+      }
+    }
+
+    // endregion NativeSession
   }
 
   @Throws(OpenDatabaseException::class)
@@ -221,7 +309,7 @@ class SQLiteModule : Module() {
     }
     try {
       val parsedPath =
-        Uri.parse(databasePath).path ?: throw IOException("Couldn't parse Uri - $databasePath")
+        databasePath.toUri().path ?: throw IOException("Couldn't parse Uri - $databasePath")
       val path = File(parsedPath)
       val parentPath =
         path.parentFile ?: throw IOException("Parent directory is null for path '$path'.")
@@ -414,6 +502,13 @@ class SQLiteModule : Module() {
     }
   }
 
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) {
+    maybeThrowForClosedDatabase(destDatabase)
+    maybeThrowForClosedDatabase(sourceDatabase)
+    NativeDatabaseBinding.sqlite3_backup(destDatabase.ref, destDatabaseName, sourceDatabase.ref, sourceDatabaseName)
+  }
+
   @Throws(AccessClosedResourceException::class)
   private fun maybeThrowForClosedDatabase(database: NativeDatabase) {
     if (database.isClosed) {
@@ -476,6 +571,67 @@ class SQLiteModule : Module() {
     if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+  }
+
+  // endregion
+
+  // region Session Extension
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) {
+    maybeThrowForClosedDatabase(database)
+    if (session.ref.sqlite3session_create(database.ref, dbName) != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) {
+    maybeThrowForClosedDatabase(database)
+    if (session.ref.sqlite3session_attach(table) != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class)
+  private fun sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Boolean) {
+    maybeThrowForClosedDatabase(database)
+    session.ref.sqlite3session_enable(enabled)
+  }
+
+  @Throws(AccessClosedResourceException::class)
+  private fun sessionClose(database: NativeDatabase, session: NativeSession) {
+    maybeThrowForClosedDatabase(database)
+    session.ref.sqlite3session_delete()
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionCreateChangeset(database: NativeDatabase, session: NativeSession): ByteArray {
+    maybeThrowForClosedDatabase(database)
+    return session.ref.sqlite3session_changeset()
+      ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession): ByteArray {
+    maybeThrowForClosedDatabase(database)
+    return session.ref.sqlite3session_changeset_inverted()
+      ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: ByteArray) {
+    maybeThrowForClosedDatabase(database)
+    if (session.ref.sqlite3changeset_apply(database.ref, changeset) != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: ByteArray): ByteArray {
+    maybeThrowForClosedDatabase(database)
+    return session.ref.sqlite3changeset_invert(changeset)
+      ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
   }
 
   // endregion

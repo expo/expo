@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '0.14.0'
 
+expoModule {
+  canBePublished false
+}
+
 android {
   namespace "expo.modules.jsonutils"
   defaultConfig {

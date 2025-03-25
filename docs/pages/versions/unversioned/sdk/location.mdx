@@ -130,7 +130,6 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
   <array>
     <string>location</string>
   </array>
-</key>
 ```
 
 </Collapsible>
@@ -210,6 +209,14 @@ If you call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundperm
 Remember that the user has the option of granting your app `When In Use` authorization instead. You must always be prepared to run with `When In Use` permission.
 
 </Collapsible>
+
+## Deferred locations
+
+When using background locations, you can configure the location manager to defer updates. This helps save battery by reducing update frequency. You can set updates to trigger only after the device has moved a certain distance or after a specified time interval.
+
+Deferred updates are configured through [`LocationTaskOptions`](#locationtaskoptions) using the [`deferredUpdatesDistance`](#locationtaskoptions), [`deferredUpdatesInterval`](#locationtaskoptions) and [`deferredTimeout`](#locationtaskoptions) properties.
+
+> Deferred locations apply only when the app is in the background.
 
 ## Usage
 

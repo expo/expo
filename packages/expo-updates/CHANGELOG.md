@@ -10,6 +10,8 @@
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
+- Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -28,6 +30,7 @@
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - Drop `fbemitter` in favor of custom emitter. ([#35317](https://github.com/expo/expo/pull/35317) by [@kitten](https://github.com/kitten))
+- E2E tests for custom init. ([#35569](https://github.com/expo/expo/pull/35569) by [@douglowder](https://github.com/douglowder))
 
 ## 0.27.3 - 2025-03-11
 

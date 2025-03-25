@@ -487,4 +487,11 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After merging EAS environment variables guides
   '/eas/using-environment-variables/': '/eas/environment-variables/',
+
+  // After Expo Router Getting Started Guide
+  '/router/reference/authentication/': '/router/advanced/authentication/',
+  '/router/advanced/root-layout/': '/router/basics/layout#root-layout/',
+  '/router/reference/not-found/': '/router/error-handling/',
+  '/router/navigating-pages/': '/router/basics/navigation/',
+  '/router/create-pages/': '/router/basics/core-concepts/',
 };

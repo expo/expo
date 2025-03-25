@@ -18,7 +18,6 @@
 #import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
-#import <EXDevMenu/EXAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -86,7 +85,7 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
-    self.dependencyProvider = [EXAppDependencyProvider new];
+    self.dependencyProvider = [RCTAppDependencyProvider new];
     self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
@@ -351,17 +350,15 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [_reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
+  rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
                                                                initialProperties:nil
                                                                    launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
+  UIViewController *rootViewController = [self createRootViewController];
+  [self setRootView:rootView toRootViewController:rootViewController];
   _window.rootViewController = rootViewController;
-
-
   [_window makeKeyAndVisible];
 }
 

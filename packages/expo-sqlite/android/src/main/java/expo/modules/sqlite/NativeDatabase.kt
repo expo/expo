@@ -17,8 +17,12 @@ internal class NativeDatabase(val databasePath: String, val openOptions: OpenDat
     return other is NativeDatabase && this.ref == other.ref
   }
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun hashCode(): Int {
+    return ref.hashCode()
+  }
+
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     val shouldClose = refCount.decrementAndGet() <= 0
     if (shouldClose) {
       this.ref.close()
