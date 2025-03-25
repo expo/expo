@@ -61,6 +61,12 @@ Pod::Spec.new do |s|
   s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = []
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # Transitive dependency of React-Core
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+    ])
+  end
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
