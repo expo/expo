@@ -23,7 +23,7 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("handleNotificationAsync") { (identifier: String, behavior: [String: Any], promise: Promise) in
+    AsyncFunction("handleNotificationAsync") { (identifier: String, behavior: [String: Bool], promise: Promise) in
       guard let task = tasksMap[identifier] else {
         promise.reject("ERR_NOTIFICATION_HANDLED", "Failed to handle notification \(identifier) because it has already been handled")
         return
