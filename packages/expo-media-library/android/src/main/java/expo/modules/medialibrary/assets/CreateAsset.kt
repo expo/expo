@@ -119,17 +119,14 @@ class CreateAssetWithAlbumFile(
    * Creates asset using filesystem. Legacy method - do not use above API 29
    */
   @Throws(IOException::class)
-  private fun createAssetFileLegacy(): File {
+  private fun createAssetFileLegacy(albumFile: File? = null): File {
     val localFile = File(mUri.path!!)
-
-    val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
-      MediaLibraryUtils.getMimeType(context.contentResolver, mUri),
-      true
-    ).ifNull {
+    val mimeType = MediaLibraryUtils.getMimeType(context.contentResolver, mUri).ifNull {
       throw AssetFileException("Could not guess file type.")
     }
-
+    var destDir = albumFile ?: MediaLibraryUtils.getEnvDirectoryForAssetType(mimeType, true)
     val destFile = MediaLibraryUtils.safeCopyFile(localFile, destDir)
+
     if (!destDir.exists() || !destFile.isFile) {
       throw AssetFileException("Could not create asset record. Related file does not exist.")
     }
@@ -146,7 +143,7 @@ class CreateAssetWithAlbumFile(
         return
       }
 
-      val asset = createAssetFileLegacy()
+      val asset = createAssetFileLegacy(albumFile)
       MediaScannerConnection.scanFile(
         context,
         arrayOf(asset.path),
