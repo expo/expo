@@ -61,11 +61,13 @@ Open **android/gradle.properties** file and add the following gradle variables a
 
 These variables contain information about your upload key:
 
-```groovy android/gradle.properties
-MYAPP_UPLOAD_STORE_FILE=my-upload-key.keystore
-MYAPP_UPLOAD_KEY_ALIAS=my-key-alias
-MYAPP_UPLOAD_STORE_PASSWORD=*****
-MYAPP_UPLOAD_KEY_PASSWORD=*****
+```ruby android/gradle.properties
+# If you've downloaded the credentials from `eas credentials` command, see comments below for each value.
+
+MYAPP_UPLOAD_STORE_FILE=my-upload-key.keystore     # Path to the "keystore.jks" file
+MYAPP_UPLOAD_KEY_ALIAS=my-key-alias                # Value of the `keystore.keyAlias` field in the credentials.json file
+MYAPP_UPLOAD_STORE_PASSWORD=*****                  # Value of the `keystore.password` field in the credentials.json file
+MYAPP_UPLOAD_KEY_PASSWORD=*****                    # Value of the `keystore.keyPassword` field in the credentials.json file
 ```
 
 > **warning** If you commit the **android** directory to a version control system like Git, don't commit the above information. Instead, create a **~/.gradle/gradle.properties** file on your computer and add the above variables to this file.
