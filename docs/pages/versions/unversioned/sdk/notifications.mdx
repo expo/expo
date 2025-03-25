@@ -536,6 +536,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'mySoundFile.wav', // Provide ONLY the base filename
   },
   trigger: {
+    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new_emails',
   },
@@ -567,6 +568,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'email_sound.wav', // <- for Android below 8.0
   },
   trigger: {
+    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new_emails', // <- for Android 8.0+, see definition above
   },
