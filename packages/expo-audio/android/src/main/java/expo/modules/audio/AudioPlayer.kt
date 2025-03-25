@@ -61,6 +61,8 @@ class AudioPlayer(
   init {
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     addPlayerListeners()
+    player.prepare()
+    startUpdating()
   }
 
   fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
