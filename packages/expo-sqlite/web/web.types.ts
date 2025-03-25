@@ -2,6 +2,7 @@
 
 import { type SQLAction } from './SQLAction';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
+import { type Changeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -26,6 +27,7 @@ export type BaseWorkerMessage = SyncWorkerMessage | AsyncWorkerMessage;
 //#region Request messages
 
 export interface MessageTypeMap {
+  backupDatabase: BackupDatabaseMessage;
   close: CloseMessage;
   deleteDatabase: DeleteDatabaseMessage;
   exec: ExecMessage;
@@ -40,11 +42,29 @@ export interface MessageTypeMap {
   run: RunMessage;
   serialize: SerializeMessage;
   step: StepMessage;
+  sessionCreate: SessionCreateMessage;
+  sessionAttach: SessionAttachMessage;
+  sessionEnable: SessionEnableMessage;
+  sessionClose: SessionCloseMessage;
+  sessionCreateChangeset: SessionCreateChangesetMessage;
+  sessionCreateInvertedChangeset: SessionCreateInvertedChangesetMessage;
+  sessionApplyChangeset: SessionApplyChangesetMessage;
+  sessionInvertChangeset: SessionInvertChangesetMessage;
 }
 
 export type SQLiteWorkerMessageType = keyof MessageTypeMap;
 
 export type SQLiteWorkerMessage = MessageTypeMap[SQLiteWorkerMessageType];
+
+type BackupDatabaseMessage = BaseWorkerMessage & {
+  type: 'backupDatabase';
+  data: {
+    destNativeDatabaseId: number;
+    destDatabaseName: string;
+    sourceNativeDatabaseId: number;
+    sourceDatabaseName: string;
+  };
+};
 
 type CloseMessage = BaseWorkerMessage & {
   type: 'close';
@@ -161,6 +181,75 @@ type StepMessage = BaseWorkerMessage & {
   };
 };
 
+type SessionCreateMessage = BaseWorkerMessage & {
+  type: 'sessionCreate';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+    dbName: string;
+  };
+};
+
+type SessionAttachMessage = BaseWorkerMessage & {
+  type: 'sessionAttach';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+    table: string | null;
+  };
+};
+
+type SessionEnableMessage = BaseWorkerMessage & {
+  type: 'sessionEnable';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+    enabled: boolean;
+  };
+};
+
+type SessionCloseMessage = BaseWorkerMessage & {
+  type: 'sessionClose';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+  };
+};
+
+type SessionCreateChangesetMessage = BaseWorkerMessage & {
+  type: 'sessionCreateChangeset';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+  };
+};
+
+type SessionCreateInvertedChangesetMessage = BaseWorkerMessage & {
+  type: 'sessionCreateInvertedChangeset';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+  };
+};
+
+type SessionApplyChangesetMessage = BaseWorkerMessage & {
+  type: 'sessionApplyChangeset';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+    changeset: Changeset;
+  };
+};
+
+type SessionInvertChangesetMessage = BaseWorkerMessage & {
+  type: 'sessionInvertChangeset';
+  data: {
+    nativeDatabaseId: number;
+    nativeSessionId: number;
+    changeset: Changeset;
+  };
+};
+
 //#endregion Request messages
 
 //#region Response messages
@@ -185,7 +274,16 @@ export interface ResultTypeMap {
   getColumnNames: SQLiteColumnNames;
   finalize: void;
   deleteDatabase: void;
+  backupDatabase: void;
   serialize: Uint8Array;
+  sessionCreate: void;
+  sessionAttach: void;
+  sessionEnable: void;
+  sessionClose: void;
+  sessionCreateChangeset: Changeset;
+  sessionCreateInvertedChangeset: Changeset;
+  sessionApplyChangeset: void;
+  sessionInvertChangeset: Changeset;
 }
 
 export type ResultType = ResultTypeMap[keyof ResultTypeMap];

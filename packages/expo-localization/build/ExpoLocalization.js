@@ -139,8 +139,8 @@ export default {
                 measurementSystem: null,
                 currencyCode: null,
                 currencySymbol: null,
-                langageCurrencyCode: null,
-                langageCurrencySymbol: null,
+                languageCurrencyCode: null,
+                languageCurrencySymbol: null,
                 // On web, we don't have a way to get the region code, except from the language tag. `regionCode` and `languageRegionCode` are the same.
                 regionCode: region || null,
                 languageRegionCode: region || null,

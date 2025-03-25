@@ -108,7 +108,7 @@ interface IUpdatesController {
       this["runtimeVersion"] = runtimeVersion ?: ""
       this["checkAutomatically"] = checkOnLaunch.toJSString()
       this["channel"] = requestHeaders["expo-channel-name"] ?: ""
-      this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
+      this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesPackage.isUsingNativeDebug
       this["initialContext"] = initialContext.bundle
 
       if (launchedUpdate != null) {

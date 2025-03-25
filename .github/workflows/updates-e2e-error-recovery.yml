@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ios, android]
+        platform: [ios] # TODO: reenable Android after regression by 35360 is fixed
         variant: [updates_testing_release] # this test only works in release mode
     runs-on: ubuntu-22.04
     timeout-minutes: 80

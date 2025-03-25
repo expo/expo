@@ -39,6 +39,9 @@ const nextConfig: NextConfig = {
     'prismjs',
   ],
   trailingSlash: true,
+  devIndicators: {
+    position: 'bottom-right',
+  },
   experimental: {
     optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,

@@ -20,7 +20,7 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("initHybrid", NativeDatabaseBinding::initHybrid),
       makeNativeMethod("sqlite3_changes",
                        NativeDatabaseBinding::sqlite3_changes),
-      makeNativeMethod("sqlite3_finalize_all_statement", 
+      makeNativeMethod("sqlite3_finalize_all_statement",
                        NativeDatabaseBinding::sqlite3_finalize_all_statement),
       makeNativeMethod("sqlite3_close", NativeDatabaseBinding::sqlite3_close),
       makeNativeMethod("sqlite3_db_filename",
@@ -43,6 +43,7 @@ void NativeDatabaseBinding::registerNatives() {
                        NativeDatabaseBinding::sqlite3_deserialize),
       makeNativeMethod("sqlite3_update_hook",
                        NativeDatabaseBinding::sqlite3_update_hook),
+      makeNativeMethod("sqlite3_backup", NativeDatabaseBinding::sqlite3_backup),
       makeNativeMethod("convertSqlLiteErrorToString",
                        NativeDatabaseBinding::convertSqlLiteErrorToString),
   });
@@ -51,8 +52,8 @@ void NativeDatabaseBinding::registerNatives() {
 int NativeDatabaseBinding::sqlite3_changes() { return ::exsqlite3_changes(db); }
 
 int NativeDatabaseBinding::sqlite3_finalize_all_statement() {
-  ::exsqlite3_stmt *stmt = ::exsqlite3_next_stmt(db, nullptr); 
-  int result = SQLITE_OK; 
+  ::exsqlite3_stmt *stmt = ::exsqlite3_next_stmt(db, nullptr);
+  int result = SQLITE_OK;
   while (stmt) {
     ::exsqlite3_stmt *nextStmt = ::exsqlite3_next_stmt(db, stmt);
     int ret = ::exsqlite3_finalize(stmt);
@@ -101,8 +102,8 @@ int64_t NativeDatabaseBinding::sqlite3_last_insert_rowid() {
 int NativeDatabaseBinding::sqlite3_load_extension(
     const std::string &libPath, const std::string &entryProc) {
   char *error;
-  int ret =
-      ::exsqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(), &error);
+  int ret = ::exsqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(),
+                                       &error);
   if (ret != SQLITE_OK && error) {
     std::string errorString(error);
     ::exsqlite3_free(error);
@@ -120,7 +121,7 @@ int NativeDatabaseBinding::sqlite3_prepare_v2(
     jni::alias_ref<NativeStatementBinding::javaobject> statement) {
   NativeStatementBinding *cStatement = cthis(statement);
   return ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
-                              &cStatement->stmt, nullptr);
+                                &cStatement->stmt, nullptr);
 }
 
 jni::local_ref<jni::JArrayByte>
@@ -151,8 +152,8 @@ int NativeDatabaseBinding::sqlite3_deserialize(
   serializedData->getRegion(0, size, reinterpret_cast<signed char *>(buffer));
   int flags = SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE;
   return ::exsqlite3_deserialize(db, databaseName.c_str(),
-                               reinterpret_cast<unsigned char *>(buffer), size,
-                               size, flags);
+                                 reinterpret_cast<unsigned char *>(buffer),
+                                 size, size, flags);
 }
 
 void NativeDatabaseBinding::sqlite3_update_hook(bool enabled) {
@@ -161,6 +162,33 @@ void NativeDatabaseBinding::sqlite3_update_hook(bool enabled) {
   } else {
     ::exsqlite3_update_hook(db, nullptr, nullptr);
   }
+}
+
+// static
+int NativeDatabaseBinding::sqlite3_backup(
+    jni::alias_ref<jni::JClass> clazz,
+    jni::alias_ref<NativeDatabaseBinding::jhybridobject> destDatabase,
+    const std::string &destDatabaseName,
+    jni::alias_ref<NativeDatabaseBinding::jhybridobject> sourceDatabase,
+    const std::string &sourceDatabaseName) {
+  ::exsqlite3_backup *backup = ::exsqlite3_backup_init(
+      destDatabase->cthis()->db, destDatabaseName.c_str(),
+      sourceDatabase->cthis()->db, sourceDatabaseName.c_str());
+  if (!backup) {
+    jni::throwNewJavaException(
+        SQLiteErrorException::create(
+            destDatabase->cthis()->convertSqlLiteErrorToString())
+            .get());
+  }
+  ::exsqlite3_backup_step(backup, -1);
+  int result = ::exsqlite3_backup_finish(backup);
+  if (result != SQLITE_OK) {
+    jni::throwNewJavaException(
+        SQLiteErrorException::create(
+            destDatabase->cthis()->convertSqlLiteErrorToString())
+            .get());
+  }
+  return result;
 }
 
 jni::local_ref<jni::JString>

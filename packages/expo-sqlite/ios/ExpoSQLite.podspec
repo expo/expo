@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
   end
 
   sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1'
+  sqlite_cflags << ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
   unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
     sqlite_cflags << ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   end
@@ -52,10 +53,14 @@ Pod::Spec.new do |s|
   end
   Pod::UI.message("SQLite build flags: #{sqlite_cflags}")
 
+  # Consistent SQLite build flags for Swift module exposing from the umbrella header
+  swift_flags = sqlite_cflags.split(' ').map { |flag| "-Xcc #{flag}" }.join(' ')
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
+    'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
 
   s.source_files = "**/*.{c,h,m,swift}"

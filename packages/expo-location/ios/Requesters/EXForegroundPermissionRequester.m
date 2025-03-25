@@ -54,7 +54,7 @@ static SEL whenInUseAuthorizationSelector;
     }
   }
   
-  return @{ @"status": @(status) };
+  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none") };
 }
 
 @end

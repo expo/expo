@@ -1,6 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { BlurView } from 'expo-blur';
-import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -114,6 +113,18 @@ function Hint({ children }: { children: string }) {
       <Text style={styles.headerText}>{children}</Text>
     </BlurView>
   );
+}
+
+function throttle<T extends (...args: any[]) => void>(func: T, delay: number): T {
+  let lastCall = 0;
+
+  return function (...args: Parameters<T>) {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  } as T;
 }
 
 const styles = StyleSheet.create({

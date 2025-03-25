@@ -26,13 +26,24 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
     project.logger.quiet("Using expo modules")
 
-    project.withSubprojects(config.allProjects) { subproject ->
+    val (prebuiltProjects, projects) = config.allProjects.partition { project ->
+      project.shouldUsePublication
+    }
+
+    project.withSubprojects(projects) { subproject ->
       // Ensures that dependencies are resolved before the project is evaluated.
       project.evaluationDependsOn(subproject.path)
       // Adds the subproject as a dependency to the current project (expo package).
       project.dependencies.add("api", subproject)
 
       project.logger.quiet("  - ${subproject.name.withColor(Colors.GREEN)} (${subproject.version})")
+    }
+
+    prebuiltProjects.forEach { prebuiltProject ->
+      val publication = requireNotNull(prebuiltProject.publication)
+      project.dependencies.add("api", "${publication.groupId}:${publication.artifactId}:${publication.version}")
+
+      project.logger.quiet("  - ${"[\uD83D\uDCE6]".withColor(Colors.YELLOW)} ${prebuiltProject.name.withColor(Colors.GREEN)} (${publication.version})")
     }
 
     project.logger.quiet("")

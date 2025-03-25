@@ -71,20 +71,18 @@ The path to each asset file must be relative to your project's root since the ap
 
 After embedding the asset with the config plugin, [create a new development build](/develop/development-builds/create-a-build/). Now, you can import and use the asset in your project without using a `require` or an `import` statement.
 
-For example, the **example.png** is linked by the above config plugin. You can directly import it into your component and use its resource name.
+For example, the **example.png** is linked by the above config plugin. You can directly import it into your component and use its resource name as the URI. Note that when rendering assets without using `require`, you need to explicitly provide a width / height.
 
 ```tsx app/index.tsx
 import { Image } from 'expo-image';
 /* @hide ... */ /* @end */
 
 export default function HomeScreen() {
-  return <Image source="example" />;
+  return <Image source={{ uri: 'example' }} style={{ width: 100, height: 100 }} />;
 }
 ```
 
 </Step>
-
-The above example is quite concise. However, when a native API expects a specific file and its resource name, this method makes it convenient to integrate with that API and use the resource name directly.
 
 > **info** Different file formats are supported with the `expo-asset` config plugin. For more information on these formats, see [Assets API reference](/versions/latest/sdk/asset/#configurable-properties). If you don't see a file format supported by the config plugin, you can use the [`useAssets`](#load-an-asset-at-runtime-with-useassets-hook) hook to load the asset at runtime.
 

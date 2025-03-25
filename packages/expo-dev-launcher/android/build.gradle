@@ -5,8 +5,8 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-def getRNVersion = {
-  return project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+expoModule {
+  canBePublished false
 }
 
 android {
@@ -19,30 +19,6 @@ android {
   buildTypes {
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
-    }
-  }
-
-  sourceSets {
-    def rnVersion = getRNVersion()
-    main {
-      java {
-        if (rnVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += "src/rn77/main"
-        } else if (rnVersion.isAtLeast(0, 74, 0)) {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += "src/rn74/main"
-        }
-      }
-    }
-    debug {
-      java {
-        if (rnVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += "src/rn77/debug"
-        } else if (rnVersion.isAtLeast(0, 74, 0)) {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += "src/rn74/debug"
-        }
-      }
     }
   }
 

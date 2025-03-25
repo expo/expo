@@ -5,7 +5,7 @@ const { installFormDataPatch } = jest.requireActual('../FormData');
 const jestFormDataPolyfill = FormData;
 
 beforeAll(() => {
-  FormData = installFormDataPatch(require('react-native/Libraries/Network/FormData'));
+  FormData = installFormDataPatch(require('react-native/Libraries/Network/FormData').default);
 });
 
 afterAll(() => {

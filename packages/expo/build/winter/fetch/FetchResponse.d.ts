@@ -2,6 +2,8 @@ import { ReadableStream } from 'web-streams-polyfill';
 import type { NativeResponse } from './NativeRequest';
 declare const ConcreteNativeResponse: typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;
+type RNFormData = Awaited<ReturnType<globalThis.Response['formData']>>;
+type UniversalFormData = globalThis.FormData & RNFormData;
 /**
  * A response implementation for the `fetch.Response` API.
  */
@@ -15,11 +17,11 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     get ok(): boolean;
     readonly type = "default";
     blob(): Promise<Blob>;
-    formData(): Promise<FormData>;
+    formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
     toString(): string;
     toJSON(): object;
-    clone(): FetchResponse;
+    clone(): Response;
     private finalize;
 }
 export {};

@@ -22,7 +22,10 @@ jest.mock('../../HMRClient', () => ({
   default: { registerBundle: jest.fn() },
 }));
 
-jest.mock('../../LoadingView');
+jest.mock('../../LoadingView', () => ({
+  __esModule: true,
+  default: { showMessage: jest.fn(), hide: jest.fn() },
+}));
 
 const originalEnv = process.env.NODE_ENV;
 

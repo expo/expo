@@ -3,9 +3,19 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
+if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
+  ENV['EX_UPDATES_NATIVE_DEBUG'] = podfile_properties['updatesNativeDebug'] == 'true' ? '1' : '0'
+end
+if ENV['EX_UPDATES_CUSTOM_INIT'] != '1'
+  ENV['EX_UPDATES_CUSTOM_INIT'] = podfile_properties['updatesCustomInit'] == 'true' ? '1' : '0'
+end
+
 use_dev_client = false
 begin
-  use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
+  # No dev client if we are using native debug
+  if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
+    use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
+  end
 rescue
   use_dev_client = false
 end
@@ -43,17 +53,26 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  other_c_flags = '$(inherited)'
-  other_swift_flags = '$(inherited)'
+  other_debug_c_flags = '$(inherited)'
+  other_debug_swift_flags = '$(inherited)'
+  other_release_c_flags = '$(inherited)'
+  other_release_swift_flags = '$(inherited)'
 
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+  ex_updates_custom_init = ENV['EX_UPDATES_CUSTOM_INIT'] == '1'
   if ex_updates_native_debug
-    other_c_flags << ' -DEX_UPDATES_NATIVE_DEBUG=1'
-    other_swift_flags << ' -DEX_UPDATES_NATIVE_DEBUG'
+    other_debug_c_flags << ' -DEX_UPDATES_NATIVE_DEBUG=1'
+    other_debug_swift_flags << ' -DEX_UPDATES_NATIVE_DEBUG'
+  end
+  if ex_updates_custom_init
+    other_debug_c_flags << ' -DEX_UPDATES_CUSTOM_INIT=1'
+    other_debug_swift_flags << ' -DEX_UPDATES_CUSTOM_INIT'
+    other_release_c_flags << ' -DEX_UPDATES_CUSTOM_INIT=1'
+    other_release_swift_flags << ' -DEX_UPDATES_CUSTOM_INIT'
   end
   if use_dev_client
-    other_c_flags << ' -DUSE_DEV_CLIENT=1'
-    other_swift_flags << ' -DUSE_DEV_CLIENT'
+    other_debug_c_flags << ' -DUSE_DEV_CLIENT=1'
+    other_debug_swift_flags << ' -DUSE_DEV_CLIENT'
   end
 
   s.pod_target_xcconfig = {
@@ -61,8 +80,10 @@ Pod::Spec.new do |s|
     'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
-    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags
+    'OTHER_CFLAGS[config=*Debug*]' => other_debug_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_debug_swift_flags,
+    'OTHER_CFLAGS[config=*Release*]' => other_release_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Release*]' => other_release_swift_flags
   }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header"',

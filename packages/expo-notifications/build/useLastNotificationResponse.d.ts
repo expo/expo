@@ -1,4 +1,4 @@
-import { MaybeNotificationResponse } from './Notifications.types';
+import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
 /**
  * A React hook which returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
@@ -38,4 +38,5 @@ import { MaybeNotificationResponse } from './Notifications.types';
  * @header listen
  */
 export default function useLastNotificationResponse(): MaybeNotificationResponse;
+export declare const determineNextResponse: (prevResponse: MaybeNotificationResponse, newResponse: NotificationResponse | null) => NotificationResponse | null;
 //# sourceMappingURL=useLastNotificationResponse.d.ts.map

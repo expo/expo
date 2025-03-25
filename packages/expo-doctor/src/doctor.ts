@@ -73,14 +73,14 @@ export async function printFailedCheckIssueAndAdvice(job: DoctorCheckRunnerJob) 
     return;
   }
 
-  Log.warn(chalk.red(`✖ [${job.check.description}]`));
+  Log.log(chalk.red(`✖ ${job.check.description}`));
 
   if (result.issues.length) {
     for (const issue of result.issues) {
-      Log.warn(chalk.yellow(`${issue}`));
+      Log.log(chalk.yellow(issue.replace(/^/gm, '  ')));
     }
     if (result.advice) {
-      Log.log(chalk.green(`Advice: ${result.advice}`));
+      Log.log(chalk.green(`Advice: ${result.advice}`.replace(/^/gm, '  ')));
     }
     Log.log();
   }
@@ -179,7 +179,9 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
         }
       }
       Log.exit(
-        `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
+        chalk.red(
+          `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
+        )
       );
     } else {
       Log.log(

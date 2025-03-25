@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ReactAppDependencyProvider
 
 @objc
 class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
@@ -13,12 +14,11 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   init(manager: DevMenuManager) {
     self.manager = manager
     super.init()
-    self.dependencyProvider = EXAppDependencyProvider()
+    self.dependencyProvider = RCTAppDependencyProvider()
     self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
   }
 
-  convenience init(manager: DevMenuManager, bridge: RCTBridge) {
-    self.init(manager: manager)
+  func setBridge(_ bridge: RCTBridge) {
     self.reactNativeFactory?.rootViewFactory.bridge = bridge
   }
 

@@ -60,7 +60,8 @@ const InnerTabs = ({
       <TabPanels
         className={mergeClasses(
           'px-5 py-4',
-          '[&_pre]:first-of-type:mt-1 [&_ul]:mb-3',
+          '[&_ul]:mb-3',
+          'first:[&_figure]:mt-1 first:[&_pre]:mt-1',
           'last:[&>div>*]:!mb-0'
         )}>
         {children}

@@ -22,6 +22,10 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return nil
+    }
+
     AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     if !controller.isActiveController {
@@ -59,6 +63,9 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   // MARK: AppControllerDelegate implementations
 
   public func appController(_ appController: AppControllerInterface, didStartWithSuccess success: Bool) {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return
+    }
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }

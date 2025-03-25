@@ -274,27 +274,15 @@ describe(printFailedCheckIssueAndAdvice, () => {
     expect(jest.mocked(Log.log)).not.toHaveBeenCalled();
   });
 
-  // these errors print in-line so they're easier to associate with the origianl check
-  it(`Does not print when check throws an error`, () => {
-    jest.mocked(Log.log).mockReset();
-    printFailedCheckIssueAndAdvice({
-      result: { isSuccessful: false, issues: [], advice: '' },
-      check: new MockUnexpectedThrowCheck(),
-      error: new Error('Some error'),
-      duration: 0,
-    });
-    expect(jest.mocked(Log.log)).not.toHaveBeenCalled();
-  });
-
   it(`Prints issues when check fails`, () => {
-    jest.mocked(Log.warn).mockReset();
+    jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
       result: { isSuccessful: false, issues: ['issue1', 'issue2'], advice: '' },
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(jest.mocked(Log.warn).mock.calls[1][0]).toContain('issue1');
-    expect(jest.mocked(Log.warn).mock.calls[2][0]).toContain('issue2');
+    expect(jest.mocked(Log.log).mock.calls[1][0]).toContain('issue1');
+    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('issue2');
   });
   it(`Prints advice when check fails if available`, () => {
     jest.mocked(Log.log).mockReset();
@@ -303,6 +291,6 @@ describe(printFailedCheckIssueAndAdvice, () => {
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(jest.mocked(Log.log).mock.calls[0][0]).toContain('advice');
+    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('advice');
   });
 });

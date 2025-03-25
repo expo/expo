@@ -74,7 +74,7 @@ const ImageWrapper = React.forwardRef(
           }}
           // @ts-ignore
           // eslint-disable-next-line react/no-unknown-property
-          fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
+          fetchPriority={getFetchPriorityFromImagePriority(priority || 'normal')}
           {...getImageWrapperEventHandler(events, sourceWithHeaders)}
           {...getImgPropsFromSource(source)}
           {...props}

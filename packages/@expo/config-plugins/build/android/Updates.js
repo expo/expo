@@ -9,6 +9,13 @@ exports.applyRuntimeVersionFromConfigForProjectRootAsync = applyRuntimeVersionFr
 exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
 exports.setVersionsConfigAsync = setVersionsConfigAsync;
 exports.withUpdates = void 0;
+function _BuildProperties() {
+  const data = require("./BuildProperties");
+  _BuildProperties = function () {
+    return data;
+  };
+  return data;
+}
 function _Manifest() {
   const data = require("./Manifest");
   _Manifest = function () {
@@ -73,9 +80,17 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 const withUpdates = config => {
-  return (0, _withPlugins().withPlugins)(config, [withUpdatesManifest, withRuntimeVersionResource]);
+  return (0, _withPlugins().withPlugins)(config, [withUpdatesManifest, withRuntimeVersionResource, withUpdatesNativeDebugGradleProps]);
 };
+
+/**
+ * A config-plugin to update `android/gradle.properties` from the `updates.useNativeDebug` in expo config
+ */
 exports.withUpdates = withUpdates;
+const withUpdatesNativeDebugGradleProps = (0, _BuildProperties().createBuildGradlePropsConfigPlugin)([{
+  propName: 'EX_UPDATES_NATIVE_DEBUG',
+  propValueGetter: config => config?.updates?.useNativeDebug === true ? 'true' : undefined
+}], 'withUpdatesNativeDebugGradleProps');
 const withUpdatesManifest = config => {
   return (0, _androidPlugins().withAndroidManifest)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;

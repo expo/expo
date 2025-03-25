@@ -1,6 +1,9 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
+import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
+// Flag to warn about running on Apple simulator
+let warnAboutRunningOniOSSimulator = false;
 // @needsAudit
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
@@ -49,6 +52,16 @@ export async function registerTaskAsync(taskName, options = {}) {
     }
     if (!TaskManager.isTaskDefined(taskName)) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
+    }
+    if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
+        if (!warnAboutRunningOniOSSimulator) {
+            const message = Platform.OS === 'ios'
+                ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
+                : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
+            console.warn(message);
+            warnAboutRunningOniOSSimulator = true;
+        }
+        return;
     }
     console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
     await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);

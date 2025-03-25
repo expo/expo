@@ -5,6 +5,10 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
+expoModule {
+  canBePublished false
+}
+
 String toPlatformIndependentPath(File path) {
   def result = path.toString()
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -24,6 +28,7 @@ if (ext.USE_SQLCIPHER) {
 
 def getSQLiteBuildFlags() {
   def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
+  buildFlags <<= ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
   if (findProperty('expo.sqlite.enableFTS') != 'false') {
     buildFlags <<= ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   }

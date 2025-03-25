@@ -31,6 +31,8 @@
                                            bridgelessEnabled:self.bridgelessEnabled];
 
   __weak __typeof(self) weakSelf = self;
+  
+  configuration.jsRuntimeConfiguratorDelegate = self.delegate;
 
   configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> bridge, NSDictionary *launchOptions)
   {

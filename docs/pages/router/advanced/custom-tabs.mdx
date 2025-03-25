@@ -164,13 +164,13 @@ If you need to change the structure of a component, you can override its underly
 
 The `TabList` is both the configuration and default appearance of the `Tabs`, but it is not the only way to render a tab bar. By hiding the `TabList`, you can construct custom tab bars using `TabTrigger`.
 
+{/* prettier-ignore */}
 ```tsx Multiple tab bars example
 <Tabs>
   <TabSlot />
   {/* A custom tab bar */}
   <View>
-    /* @info A custom tab bar. <CODE>TabTrigger</CODE>'s outside of TabList do not need the{' '}
-    <CODE>href</CODE> prop. */
+    /* @info A custom tab bar. <CODE>TabTrigger</CODE>'s outside of TabList do not need the <CODE>href</CODE> prop. */
     <View>
       <TabTrigger name="home">
         <Text>Home</Text>

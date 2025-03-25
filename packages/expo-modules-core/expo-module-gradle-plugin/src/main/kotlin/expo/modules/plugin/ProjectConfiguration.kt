@@ -34,7 +34,7 @@ internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
 }
 
 internal fun Project.applyDefaultDependencies() {
-  val modulesCore = project.project(":expo-modules-core")
+  val modulesCore = rootProject.project(":expo-modules-core")
   if (project != modulesCore) {
     project.dependencies.add("implementation", project.project(":expo-modules-core"))
   }

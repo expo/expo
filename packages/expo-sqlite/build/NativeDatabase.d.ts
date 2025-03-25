@@ -1,3 +1,4 @@
+import { NativeSession } from './NativeSession';
 import { NativeStatement } from './NativeStatement';
 /**
  * A class that represents an instance of the SQLite database.
@@ -10,12 +11,14 @@ export declare class NativeDatabase {
     execAsync(source: string): Promise<void>;
     serializeAsync(databaseName: string): Promise<Uint8Array>;
     prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
+    createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<NativeSession>;
     initSync(): void;
     isInTransactionSync(): boolean;
     closeSync(): void;
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+    createSessionSync(nativeSession: NativeSession, dbName: string): NativeSession;
     syncLibSQL(): void;
 }
 /**

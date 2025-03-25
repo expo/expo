@@ -959,6 +959,132 @@ export function Factory(Module) {
     return check('sqlite3_vfs_register', result);
   };
 
+  sqlite3.changeset_apply = (function () {
+    const fname = 'sqlite3changeset_apply';
+    const f = Module.cwrap(fname, ...decl('nnnnnn:n'));
+    return function (db, changeset) {
+      verifyDatabase(db);
+      const size = changeset.byteLength;
+      const buffer = Module._sqlite3_malloc(size);
+      Module.HEAPU8.subarray(buffer).set(changeset);
+      const onConflict = () => {
+        return SQLite.SQLITE_CHANGESET_REPLACE;
+      };
+      const result = f(db, size, buffer, null, onConflict, null);
+      Module._sqlite3_free(buffer);
+      return check(fname, result, db);
+    };
+  })();
+
+  sqlite3.changeset_invert = (function () {
+    const fname = 'sqlite3changeset_invert';
+    const f = Module.cwrap(fname, ...decl('nnnn:n'));
+    return function (changeset) {
+      const inSize = changeset.byteLength;
+      const inBuffer = Module._sqlite3_malloc(inSize);
+      Module.HEAPU8.subarray(inBuffer).set(changeset);
+      const outSize = tmpPtr[0];
+      const outBuffer = tmpPtr[1];
+      const result = f(inSize, inBuffer, outSize, outBuffer);
+      Module._sqlite3_free(inBuffer);
+      check(fname, result);
+      const bufferSize = Module.getValue(outSize, '*');
+      const bufferPtr = Module.getValue(outBuffer, '*');
+      const buffer = Module.HEAPU8.subarray(bufferPtr, bufferPtr + bufferSize);
+      const inverted = new Uint8Array(buffer);
+      Module._sqlite3_free(outBuffer);
+      return inverted;
+    };
+  })();
+
+  sqlite3.session_create = (function () {
+    const fname = 'sqlite3session_create';
+    const f = Module.cwrap(fname, ...decl('nsn:n'));
+    return function (db, dbName) {
+      verifyDatabase(db);
+      const ptrSession = tmpPtr[0];
+      const result = f(db, dbName, ptrSession);
+      check(fname, result, db);
+      const session = Module.getValue(ptrSession, '*');
+      return session;
+    };
+  })();
+
+  sqlite3.session_delete = (function () {
+    const fname = 'sqlite3session_delete';
+    const f = Module.cwrap(fname, ...decl('n:v'));
+    return function (session) {
+      f(session);
+    };
+  })();
+
+  sqlite3.session_enable = (function () {
+    const fname = 'sqlite3session_enable';
+    const f = Module.cwrap(fname, ...decl('nn:v'));
+    return function (session, enabled) {
+      f(session, enabled ? 1 : 0);
+    };
+  })();
+
+  sqlite3.session_attach = (function () {
+    const fname = 'sqlite3session_attach';
+    const f = Module.cwrap(fname, ...decl('ns:n'));
+    return function (session, tableName) {
+      const result = f(session, tableName);
+      return check(fname, result);
+    };
+  })();
+
+  sqlite3.session_changeset = (function () {
+    const fname = 'sqlite3session_changeset';
+    const f = Module.cwrap(fname, ...decl('nnn:n'));
+    return function (session) {
+      const bufferSize = tmpPtr[0];
+      const ptr = tmpPtr[1];
+      const result = f(session, bufferSize, ptr);
+      check(fname, result);
+      const size = Module.getValue(bufferSize, '*');
+      const bufferPtr = Module.getValue(ptr, '*');
+      const buffer = Module.HEAPU8.subarray(bufferPtr, bufferPtr + size);
+      const changeset = new Uint8Array(buffer);
+      Module._sqlite3_free(ptr);
+      return changeset;
+    };
+  })();
+
+  /**
+   * Shorthand for `session_changeset` and `changeset_invert` but
+   * in a single call without additional memory allocations.
+   */
+  sqlite3.session_changeset_inverted = (function () {
+    const fNameChangeset = 'sqlite3session_changeset';
+    const fNameInvert = 'sqlite3changeset_invert';
+    const fChangeset = Module.cwrap(fNameChangeset, ...decl('nnn:n'));
+    const fInvert = Module.cwrap(fNameInvert, ...decl('nnnn:n'));
+    return function (session) {
+      const bufferSize = tmpPtr[0];
+      const ptr = tmpPtr[1];
+      const changesetResult = fChangeset(session, bufferSize, ptr);
+      check(fNameChangeset, changesetResult);
+
+      const size = Module.getValue(bufferSize, '*');
+      const buffer = Module.getValue(ptr, '*');
+
+      const outSize = tmpPtr[0];
+      const outBuffer = tmpPtr[1];
+      const invertResult = fInvert(size, buffer, outSize, outBuffer);
+      Module._sqlite3_free(buffer);
+      check(fNameInvert, invertResult);
+
+      const outSizeValue = Module.getValue(outSize, '*');
+      const outBufferPtr = Module.getValue(outBuffer, '*');
+      const inverted = Module.HEAPU8.subarray(outBufferPtr, outBufferPtr + outSizeValue);
+      const invertedArray = new Uint8Array(inverted);
+      Module._sqlite3_free(outBuffer);
+      return invertedArray;
+    };
+  })();
+
   function check(fname, result, db = null, allowed = [SQLite.SQLITE_OK]) {
     if (allowed.includes(result)) return result;
     let message;

@@ -10,5 +10,6 @@ export declare class DevToolsPluginClientImplApp extends DevToolsPluginClient {
      */
     initAsync(): Promise<void>;
     private addHandshakeHandler;
+    private terminateBrowserClient;
 }
 //# sourceMappingURL=DevToolsPluginClientImplApp.d.ts.map

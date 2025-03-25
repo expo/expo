@@ -5,6 +5,7 @@ public class AudioModule: Module {
 
   // MARK: Properties
   private var recordingSettings = [String: Any]()
+  private var shouldPlayInBackground = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -53,6 +54,27 @@ public class AudioModule: Module {
       AudioComponentRegistry.shared.removeAll()
     }
 
+    OnAppEntersBackground {
+      if !shouldPlayInBackground {
+        AudioComponentRegistry.shared.players.values.forEach { player in
+          if player.isPlaying {
+            player.wasPlaying = true
+            player.ref.pause()
+          }
+        }
+      }
+    }
+
+    OnAppEntersForeground {
+      if !shouldPlayInBackground {
+        AudioComponentRegistry.shared.players.values.forEach { player in
+          if player.wasPlaying {
+            player.ref.play()
+          }
+        }
+      }
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
@@ -88,7 +110,7 @@ public class AudioModule: Module {
         player.isPlaying
       }
 
-      Property("mute") { player in
+      Property("muted") { player in
         player.ref.isMuted
       }.set { (player, isMuted: Bool) in
         player.ref.isMuted = isMuted
@@ -136,9 +158,7 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if player.isPlaying {
-          player.ref.rate = playerRate
-        }
+        player.ref.rate = playerRate
         player.currentRate = playerRate
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
@@ -159,7 +179,9 @@ public class AudioModule: Module {
       }
 
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
-        player.setSamplingEnabled(enabled: enabled)
+        if player.samplingEnabled != enabled {
+          player.setSamplingEnabled(enabled: enabled)
+        }
       }
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
@@ -272,8 +294,10 @@ public class AudioModule: Module {
 
   private func setAudioMode(mode: AudioMode) throws {
     try AudioUtils.validateAudioMode(mode: mode)
-    var category: AVAudioSession.Category = .soloAmbient
-    var options: AVAudioSession.CategoryOptions = []
+    let session = AVAudioSession.sharedInstance()
+    var category: AVAudioSession.Category = session.category
+    var options: AVAudioSession.CategoryOptions = session.categoryOptions
+    self.shouldPlayInBackground = mode.shouldPlayInBackground
 
     #if os(iOS)
     if !mode.allowsRecording {
@@ -302,9 +326,9 @@ public class AudioModule: Module {
       case .doNotMix:
         break
       case .duckOthers:
-        options = .duckOthers
+        options = [.duckOthers]
       case .mixWithOthers:
-        options = .mixWithOthers
+        options = [.mixWithOthers]
       }
     }
 

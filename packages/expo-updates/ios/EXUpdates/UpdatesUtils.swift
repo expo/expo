@@ -133,8 +133,16 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func isNativeDebuggingEnabled() -> Bool {
+  public static func isNativeDebuggingEnabled() -> Bool {
 #if EX_UPDATES_NATIVE_DEBUG
+    return true
+#else
+    return false
+#endif
+  }
+
+  internal static func isUsingCustomInitialization() -> Bool {
+#if EX_UPDATES_CUSTOM_INIT
     return true
 #else
     return false

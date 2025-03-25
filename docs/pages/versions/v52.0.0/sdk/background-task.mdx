@@ -14,7 +14,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 > **warning** This library is currently in beta and subject to breaking changes.
 
-`expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [expo-task-manager](task-manager.mdx) Native API to run JavaScript tasks.
+`expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
 
 ## Background tasks
 
@@ -71,10 +71,9 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 ```xml ios/project-name/Supporting/Info.plist
 <key>UIBackgroundModes</key>
-  <array>
-    <string>processing</string>
-  </array>
-</key>
+<array>
+  <string>processing</string>
+</array>
 ```
 
 </Collapsible>

@@ -20,7 +20,15 @@ class MailComposerModule : Module() {
     Name("ExpoMailComposer")
 
     AsyncFunction<Boolean>("isAvailableAsync") {
-      return@AsyncFunction true
+      try {
+        val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
+        val packageManager = context.packageManager
+        val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
+
+        return@AsyncFunction canOpen
+      } catch (e: Exception) {
+        throw ResolveActivityException(e)
+      }
     }
 
     Function("getClients") {

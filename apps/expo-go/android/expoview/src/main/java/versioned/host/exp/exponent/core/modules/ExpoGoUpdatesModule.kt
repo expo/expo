@@ -1,8 +1,8 @@
 package versioned.host.exp.exponent.core.modules
 
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -13,6 +13,10 @@ import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.statemachine.UpdatesStateContext
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.util.Date
 
 class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
@@ -22,6 +26,8 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
   val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val moduleScope = CoroutineScope(Dispatchers.IO)
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
@@ -83,8 +89,8 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     }
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Int, promise: Promise ->
-      AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
+      moduleScope.launch {
+        val reader = UpdatesLogReader(context.filesDir)
         val date = Date()
         val epoch = Date(date.time - maxAge)
         val results = reader.getLogEntries(epoch)
@@ -111,8 +117,8 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
-      AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
+      moduleScope.launch {
+        val reader = UpdatesLogReader(context.filesDir)
         reader.purgeLogEntries(
           olderThan = Date()
         ) { error ->
@@ -126,6 +132,14 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
             promise.resolve(null)
           }
         }
+      }
+    }
+
+    OnDestroy {
+      try {
+        moduleScope.cancel()
+      } catch (_: IllegalStateException) {
+        Log.e(ExpoGoUpdatesModule::class.java.simpleName, "The scope does not have a job in it")
       }
     }
   }

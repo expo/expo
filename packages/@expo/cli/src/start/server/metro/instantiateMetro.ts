@@ -139,13 +139,8 @@ export async function loadMetroConfigAsync(
 
   if (serverActionsEnabled) {
     Log.warn(
-      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
+      `React Server Functions (beta) are enabled. Route rendering mode: ${exp.experiments?.reactServerComponentRoutes ? 'server' : 'client'}`
     );
-    if (!exp.experiments?.reactServerComponentRoutes) {
-      Log.warn(
-        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
-      );
-    }
   }
 
   config = await withMetroMultiPlatformAsync(projectRoot, {

@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import React, { useState } from 'react';
 
 import { ImageProps, ImageSource } from '../Image.types';

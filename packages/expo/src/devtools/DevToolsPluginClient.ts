@@ -1,7 +1,11 @@
 import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
-import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
+import type {
+  ConnectionInfo,
+  DevToolsPluginClientOptions,
+  HandshakeMessageParams,
+} from './devtools.types';
 import * as logger from './logger';
 import { blobToArrayBufferAsync } from '../utils/blobUtils';
 
@@ -73,16 +77,18 @@ export abstract class DevToolsPluginClient {
       logger.warn('Unable to send message in a disconnected state.');
       return;
     }
-    this.sendMessageImpl(method, params);
-  }
-
-  private async sendMessageImpl(method: string, params: any) {
     const messageKey: MessageFramePackerMessageKey = {
       pluginName: this.connectionInfo.pluginName,
       method,
     };
-    const packedData = await this.messageFramePacker.pack({ messageKey, payload: params });
-    this.wsStore.ws?.send(packedData);
+    const packedData = this.messageFramePacker.pack({ messageKey, payload: params });
+    if (!(packedData instanceof Promise)) {
+      this.wsStore.ws?.send(packedData);
+      return;
+    }
+    packedData.then((data) => {
+      this.wsStore.ws?.send(data);
+    });
   }
 
   /**
@@ -111,6 +117,51 @@ export abstract class DevToolsPluginClient {
       this.listeners[method]?.delete(wrappedListenerOnce);
     };
     this.addMessageListener(method, wrappedListenerOnce);
+  }
+
+  /**
+   * Internal handshake message sender.
+   * @hidden
+   */
+  protected sendHandshakeMessage(params: HandshakeMessageParams) {
+    if (this.wsStore.ws?.readyState === WebSocket.CLOSED) {
+      logger.warn('Unable to send message in a disconnected state.');
+      return;
+    }
+    this.wsStore.ws?.send(JSON.stringify({ ...params, __isHandshakeMessages: true }));
+  }
+
+  /**
+   * Internal handshake message listener.
+   * @hidden
+   */
+  protected addHandskakeMessageListener(
+    listener: (params: HandshakeMessageParams) => void
+  ): EventSubscription {
+    const messageListener = (event: MessageEvent) => {
+      if (typeof event.data !== 'string') {
+        // binary data is not coming from the handshake messages.
+        return;
+      }
+
+      const data = JSON.parse(event.data);
+      if (!data.__isHandshakeMessages) {
+        return;
+      }
+      delete data.__isHandshakeMessages;
+      const params = data as HandshakeMessageParams;
+      if (params.pluginName && params.pluginName !== this.connectionInfo.pluginName) {
+        return;
+      }
+      listener(params);
+    };
+
+    this.wsStore.ws?.addEventListener('message', messageListener);
+    return {
+      remove: () => {
+        this.wsStore.ws?.removeEventListener('message', messageListener);
+      },
+    };
   }
 
   /**
@@ -148,23 +199,25 @@ export abstract class DevToolsPluginClient {
     });
   }
 
-  protected handleMessage = (event: WebSocketMessageEvent) => {
-    this.handleMessageImpl(event);
-  };
-
-  private handleMessageImpl = async (event: WebSocketMessageEvent) => {
-    let buffer: ArrayBuffer;
-    if (event.data instanceof ArrayBuffer) {
-      buffer = event.data;
+  protected handleMessage = async (event: WebSocketMessageEvent) => {
+    let data: ArrayBuffer | string;
+    if (typeof event.data === 'string') {
+      data = event.data;
+    } else if (event.data instanceof ArrayBuffer) {
+      data = event.data;
     } else if (ArrayBuffer.isView(event.data)) {
-      buffer = event.data.buffer;
+      data = event.data.buffer;
     } else if (event.data instanceof Blob) {
-      buffer = await blobToArrayBufferAsync(event.data);
+      data = await blobToArrayBufferAsync(event.data);
     } else {
       logger.warn('Unsupported received data type in handleMessageImpl');
       return;
     }
-    const { messageKey, payload } = await this.messageFramePacker.unpack(buffer);
+    const { messageKey, payload, ...rest } = this.messageFramePacker.unpack(data);
+    // @ts-expect-error: `__isHandshakeMessages` is a private field that is not part of the MessageFramePacker type.
+    if (rest?.__isHandshakeMessages === true) {
+      return;
+    }
     if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
       return;
     }

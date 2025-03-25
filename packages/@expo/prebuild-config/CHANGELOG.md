@@ -17,6 +17,10 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
+## 8.0.29 - 2025-03-11
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.28 - 2025-02-19
 
 _This version does not introduce any user-facing changes._

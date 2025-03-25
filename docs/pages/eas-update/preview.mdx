@@ -4,6 +4,9 @@ sidebar_title: Preview updates
 description: Learn how to preview updates in development, preview, and production builds.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
 Before deploying an update to production, you will often want to test it in a production-like environment. This guide will outline different approaches for previewing updates, and link out to more detailed guides for each approach.
@@ -16,18 +19,21 @@ Development builds are a great way to preview updates from pull requests, direct
   title="Preview updates in development builds"
   description="Learn how to preview updates in development builds."
   href="/eas-update/expo-dev-client/"
+  Icon={LayersTwo02Icon}
 />
 
 <BoxLink
   title="Use GitHub Actions to automate publishing updates"
   description="Learn how to use GitHub Actions to automate publishing updates with EAS Update"
   href="/eas-update/github-actions/"
+  Icon={LayersTwo02Icon}
 />
 
 <BoxLink
   title="Launch preview updates from the EAS dashboard using Orbit"
   description="Learn how to launch updates with the macOS, Windows, and Linux desktop app Expo Orbit"
   href="/review/with-orbit/"
+  Icon={BookOpen02Icon}
 />
 
 ## Previewing updates in preview builds
@@ -42,6 +48,7 @@ Alternatively, you can build a mechanism into your preview build that allows use
   title="Override update configuration at runtime"
   description="Learn how to override the update URL and channel at runtime."
   href="/eas-update/override/"
+  Icon={LayersTwo02Icon}
 />
 
 ## Previewing updates in production builds
@@ -54,4 +61,5 @@ Another approach is to use a deployment pattern like the [Persistent Staging Flo
   title="Persistent Staging Flow"
   description="Learn how to use the Persistent Staging Flow to always have a version of your production app that points to a staging channel."
   href="/eas-update/deployment-patterns/#persistent-staging-flow"
+  Icon={LayersTwo02Icon}
 />

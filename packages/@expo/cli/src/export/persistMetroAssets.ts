@@ -45,6 +45,12 @@ export async function persistMetroAssetsAsync(
     return;
   }
 
+  // For iOS, we need to ensure that the outputDirectory exists.
+  // The bundle code and images build phase script always tries to access this folder
+  if (platform === 'ios' && !fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, { recursive: true });
+  }
+
   let assetsToCopy: AssetData[] = [];
 
   // TODO: Use `files` as below to defer writing files

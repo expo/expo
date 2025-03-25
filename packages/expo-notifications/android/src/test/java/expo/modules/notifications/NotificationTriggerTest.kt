@@ -21,6 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 @SmallTest
 @RunWith(RobolectricTestRunner::class)
@@ -45,14 +46,33 @@ class NotificationTriggerTest {
 
   @Test
   fun testTimeIntervalTrigger() {
-    val timeIntervalTrigger = TimeIntervalTrigger(null, 2, true)
+    val interval = 30L
+    val timeIntervalTrigger = TimeIntervalTrigger(null, interval, true)
+    val expectedSeconds = (calendarNow.get(Calendar.SECOND) + interval) % 60
     val nextTriggerDate = timeIntervalTrigger.nextTriggerDate()
-    assertEquals(/* expected = */ calendarNow.get(Calendar.SECOND) + 2, /* actual = */ nextTriggerDate!!.seconds)
-    assertTrue(/* condition = */ timeIntervalTrigger.isRepeating)
+
+    val diff = abs(expectedSeconds - nextTriggerDate!!.seconds)
+    assertTrue(
+      "Expected seconds to be close to $expectedSeconds but was ${nextTriggerDate.seconds}.",
+      diff <= 1
+    )
+    assertTrue(timeIntervalTrigger.isRepeating)
 
     val timeIntervalTriggerWithChannel = TimeIntervalTrigger("myChannel", 5, false)
     assertEquals("myChannel", timeIntervalTriggerWithChannel.channelId)
-    assertFalse(/* condition = */ timeIntervalTriggerWithChannel.isRepeating)
+    assertFalse(timeIntervalTriggerWithChannel.isRepeating)
+  }
+
+  @Test
+  fun testRepeatingTimeIntervalTriggerFromPast() {
+    val now = System.currentTimeMillis()
+    val dayAgo = Date(now - TimeUnit.DAYS.toMillis(1))
+    val interval = 30L
+    val timeIntervalTrigger = TimeIntervalTrigger(null, interval, true, dayAgo)
+    val nextTriggerDate = timeIntervalTrigger.nextTriggerDate()
+
+    val diffSeconds = abs(nextTriggerDate!!.time - (now + interval * 1000)) / 1000
+    assertTrue("Expected diff to be below 1 second, was $diffSeconds.", diffSeconds < 1)
   }
 
   @Test

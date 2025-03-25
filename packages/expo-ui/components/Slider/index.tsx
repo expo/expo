@@ -26,12 +26,12 @@ export type SliderProps = {
    */
   value?: number;
   /**
-   * The number of steps between the minimum and maximum values. 0 signifies infinite steps.
+   * The number of steps between the minimum and maximum values, `0` signifies infinite steps.
    * @default 0
    */
   steps?: number;
   /**
-   * The mininum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
+   * The minimum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
    * @default 0
    */
   min?: number;
@@ -63,6 +63,9 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
+/**
+ * @hidden
+ */
 export function transformSliderProps(props: SliderProps): NativeSliderProps {
   return {
     ...props,

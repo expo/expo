@@ -35,12 +35,12 @@ describe('<Main />', () => {
     mockFns.forEach((fn) => fn.mockClear());
   });
 
-  test('renders', async () => {
+  it('renders', async () => {
     const { getByText } = render(<Main />, { initialAppProviderProps: {} });
     await waitFor(() => getByText(/go home/i));
   });
 
-  test('renders build info from dev menu', async () => {
+  it('renders build info from dev menu', async () => {
     const fakeAppInfo: AppInfo = {
       appName: 'testing',
       appVersion: '123',
@@ -62,7 +62,7 @@ describe('<Main />', () => {
     expect(queryByText(fakeAppInfo.runtimeVersion)).not.toBe(null);
   });
 
-  test('hooked up to devsettings fns', async () => {
+  it('hooked up to devsettings fns', async () => {
     const { getByText, getByTestId } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
 
@@ -79,7 +79,7 @@ describe('<Main />', () => {
     expect(toggleFastRefreshAsync).toHaveBeenCalledTimes(1);
   });
 
-  test('copy text functions', async () => {
+  it('copy text functions', async () => {
     const fakeAppInfo: AppInfo = {
       appName: 'testing',
       appVersion: '123',
@@ -114,7 +114,7 @@ describe('<Main />', () => {
     expect(copyToClipboardAsync).toHaveBeenLastCalledWith(fakeAppInfo.hostUrl);
   });
 
-  test('return to dev launcher and reload', async () => {
+  it('return to dev launcher and reload', async () => {
     const { getByText } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
 

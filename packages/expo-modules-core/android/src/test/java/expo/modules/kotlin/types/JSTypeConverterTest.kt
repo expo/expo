@@ -27,8 +27,10 @@ class JSTypeConverterTest {
   fun `should convert Bundle`() {
     val bundle = Bundle().apply {
       putInt("int", 123)
+      putLong("long", 789L)
       putString("string", "expo is awesome")
       putStringArray("stringArray", arrayOf("s1", "s2"))
+      putLongArray("longArray", longArrayOf(1, 2))
     }
 
     val converted = JSTypeConverter.legacyConvertToJSValue(bundle, TestContainerProvider)
@@ -37,10 +39,16 @@ class JSTypeConverterTest {
     val map = converted as WritableMap
 
     Truth.assertThat(map.getInt("int")).isEqualTo(123)
+    Truth.assertThat(map.getLong("long")).isEqualTo(789L)
     Truth.assertThat(map.getString("string")).isEqualTo("expo is awesome")
-    val innerArray = map.getArray("stringArray")
-    Truth.assertThat(innerArray?.getString(0)).isEqualTo("s1")
-    Truth.assertThat(innerArray?.getString(1)).isEqualTo("s2")
+    val stringArray = map.getArray("stringArray")
+    Truth.assertThat(stringArray?.size()).isEqualTo(2)
+    Truth.assertThat(stringArray?.getString(0)).isEqualTo("s1")
+    Truth.assertThat(stringArray?.getString(1)).isEqualTo("s2")
+    val longArray = map.getArray("longArray")
+    Truth.assertThat(longArray?.size()).isEqualTo(2)
+    Truth.assertThat(longArray?.getLong(0)).isEqualTo(1L)
+    Truth.assertThat(longArray?.getLong(1)).isEqualTo(2L)
   }
 
   @Test
@@ -104,7 +112,7 @@ class JSTypeConverterTest {
   fun `should convert Map`() {
     val map = mapOf(
       "k1" to "v1",
-      "k2" to "v2"
+      "k2" to 1L
     )
 
     val converted = JSTypeConverter.legacyConvertToJSValue(map, TestContainerProvider)
@@ -112,7 +120,7 @@ class JSTypeConverterTest {
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedMap = converted as WritableMap
     Truth.assertThat(convertedMap.getString("k1")).isEqualTo("v1")
-    Truth.assertThat(convertedMap.getString("k2")).isEqualTo("v2")
+    Truth.assertThat(convertedMap.getLong("k2")).isEqualTo(1L)
   }
 
   @Test

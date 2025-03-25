@@ -117,7 +117,7 @@ Pod::Spec.new do |s|
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
-    main.dependency "ReactCodegen"
+    main.dependency 'ReactAppDependencyProvider'
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|

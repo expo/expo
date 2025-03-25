@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.Locale
+import java.util.Properties
 
 abstract class ExpoUpdatesPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -26,7 +27,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     val entryFile = detectedEntryFile(reactExtension)
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
-    if (System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1") {
+    if (isNativeDebuggingEnabled(project)) {
       logger.warn("Disable all react.debuggableVariants because EX_UPDATES_NATIVE_DEBUG=1")
       reactExtension.debuggableVariants.set(listOf())
     }
@@ -125,4 +126,11 @@ private fun detectedEntryFile(config: ReactExtension): File {
     File(reactRoot, "index.android.js").exists() -> File(reactRoot, "index.android.js")
     else -> File(reactRoot, "index.js")
   }
+}
+
+private fun isNativeDebuggingEnabled(project: Project): Boolean {
+  if (System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1") {
+    return true
+  }
+  return project.findProperty("EX_UPDATES_NATIVE_DEBUG") == "true"
 }

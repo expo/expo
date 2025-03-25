@@ -11,11 +11,6 @@ internal object ExpoGoReactNativeFeatureFlags {
       object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
         override fun useFabricInterop(): Boolean = true
 
-        // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
-        // similar bugs related to pressable.
-        override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-          true
-
         override fun fuseboxEnabledRelease(): Boolean =
           true
       }

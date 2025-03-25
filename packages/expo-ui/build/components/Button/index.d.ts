@@ -48,7 +48,7 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
-     * Uses SF Symbols on iOS and Material Icons on Android.
+     * Uses Material Icons on Android and SF Symbols on iOS.
      */
     systemImage?: {
         ios?: string;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added guards to avoid crashing the app if we try to write task results that contains NSNull values ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))

@@ -34,8 +34,8 @@ export async function resolveBundlerPropsAsync(
   // Skip bundling if the port is null -- meaning skip the bundler if the port is already running the app.
   options.bundler = !!port;
   if (!port) {
-    // any random number
-    port = 8081;
+    // Use explicit user-provided port, or the default port
+    port = options.port ?? 8081;
   }
   Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
 

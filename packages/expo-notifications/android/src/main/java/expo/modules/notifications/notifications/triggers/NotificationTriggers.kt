@@ -114,7 +114,7 @@ class TimeIntervalTrigger(
   override val channelId: String?,
   val timeInterval: Long,
   val isRepeating: Boolean,
-  private var triggerDate: Date = Date(Date().time + timeInterval * 1000)
+  private var triggerDate: Date = Date(System.currentTimeMillis() + timeInterval * 1000)
 ) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
   override fun toBundle() = bundleWithChannelId(
     "type" to "timeInterval",
@@ -125,10 +125,12 @@ class TimeIntervalTrigger(
   override fun nextTriggerDate(): Date? {
     val now = Date()
 
-    if (isRepeating) {
-      while (triggerDate.before(now)) {
-        triggerDate.time += timeInterval * 1000
-      }
+    if (isRepeating && triggerDate.before(now)) {
+      val intervalMillis = timeInterval * 1000
+      val elapsedMillis = now.time - triggerDate.time
+
+      val remainingMillis = intervalMillis - (elapsedMillis % intervalMillis)
+      triggerDate.time = now.time + remainingMillis
     }
 
     if (triggerDate.before(now)) {

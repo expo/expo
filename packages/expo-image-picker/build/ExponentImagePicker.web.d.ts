@@ -6,10 +6,11 @@ declare const _default: {
         allowsMultipleSelection?: boolean | undefined;
         base64?: boolean | undefined;
     }): Promise<ImagePickerResult>;
-    launchCameraAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
+    launchCameraAsync({ mediaTypes, allowsMultipleSelection, base64, cameraType, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;
         base64?: boolean | undefined;
+        cameraType: any;
     }): Promise<ImagePickerResult>;
     getCameraPermissionsAsync(): Promise<PermissionResponse>;
     requestCameraPermissionsAsync(): Promise<PermissionResponse>;

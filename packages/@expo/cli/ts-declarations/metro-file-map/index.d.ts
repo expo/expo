@@ -4,7 +4,7 @@ declare module 'metro-file-map' {
   export { default } from 'metro-file-map/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/cache/DiskCacheManager.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/cache/DiskCacheManager.js
 declare module 'metro-file-map/src/cache/DiskCacheManager' {
   import type {
     BuildParameters,
@@ -35,7 +35,7 @@ declare module 'metro-file-map/src/cache/DiskCacheManager' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/constants.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/constants.js
 declare module 'metro-file-map/src/constants' {
   const constants: {
     DEPENDENCY_DELIM: '\0';
@@ -56,13 +56,13 @@ declare module 'metro-file-map/src/constants' {
   export default constants;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/node/hasNativeFindSupport.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/crawlers/node/hasNativeFindSupport.js
 declare module 'metro-file-map/src/crawlers/node/hasNativeFindSupport' {
   function hasNativeFindSupport(): Promise<boolean>;
   export default hasNativeFindSupport;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/node/index.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/crawlers/node/index.js
 declare module 'metro-file-map/src/crawlers/node/index' {
   import type { CanonicalPath, CrawlerOptions, FileData } from 'metro-file-map/src/flow-types';
   const $$EXPORT_DEFAULT_DECLARATION$$: (options: CrawlerOptions) => Promise<{
@@ -72,7 +72,7 @@ declare module 'metro-file-map/src/crawlers/node/index' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/watchman/index.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/crawlers/watchman/index.js
 declare module 'metro-file-map/src/crawlers/watchman/index' {
   import type {
     CanonicalPath,
@@ -88,7 +88,7 @@ declare module 'metro-file-map/src/crawlers/watchman/index' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/crawlers/watchman/planQuery.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/crawlers/watchman/planQuery.js
 declare module 'metro-file-map/src/crawlers/watchman/planQuery' {
   import type { WatchmanQuery, WatchmanQuerySince } from 'fb-watchman';
   export function planQuery(
@@ -105,7 +105,7 @@ declare module 'metro-file-map/src/crawlers/watchman/planQuery' {
   };
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/flow-types.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/flow-types.js
 declare module 'metro-file-map/src/flow-types' {
   import type { PerfLogger, PerfLoggerFactory, RootPerfLogger } from 'metro-config';
   export type { PerfLoggerFactory, PerfLogger };
@@ -241,7 +241,7 @@ declare module 'metro-file-map/src/flow-types' {
     files: FileSystemState;
     pluginState?: null | SerializableState;
   }>;
-  type V8Serializable = {};
+  type V8Serializable = object;
   export interface FileMapPlugin<SerializableState = V8Serializable> {
     readonly name: string;
     initialize(initOptions: FileMapPluginInitOptions<SerializableState>): Promise<void>;
@@ -472,7 +472,7 @@ declare module 'metro-file-map/src/flow-types' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/index.js
 declare module 'metro-file-map/src/index' {
   import type {
     BuildParameters,
@@ -705,7 +705,7 @@ declare module 'metro-file-map/src/index' {
   export default FileMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/checkWatchmanCapabilities.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/checkWatchmanCapabilities.js
 declare module 'metro-file-map/src/lib/checkWatchmanCapabilities' {
   function checkWatchmanCapabilities(requiredCapabilities: readonly string[]): Promise<{
     version: string;
@@ -713,35 +713,18 @@ declare module 'metro-file-map/src/lib/checkWatchmanCapabilities' {
   export default checkWatchmanCapabilities;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/dependencyExtractor.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/dependencyExtractor.js
 declare module 'metro-file-map/src/lib/dependencyExtractor' {
   export function extract(code: any): void;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/DuplicateHasteCandidatesError.js
-declare module 'metro-file-map/src/lib/DuplicateHasteCandidatesError' {
-  import type { DuplicatesSet } from 'metro-file-map/src/flow-types';
-  export class DuplicateHasteCandidatesError extends Error {
-    hasteName: string;
-    platform: string | null;
-    supportsNativePlatform: boolean;
-    duplicatesSet: DuplicatesSet;
-    constructor(
-      name: string,
-      platform: string,
-      supportsNativePlatform: boolean,
-      duplicatesSet: DuplicatesSet
-    );
-  }
-}
-
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/fast_path.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/fast_path.js
 declare module 'metro-file-map/src/lib/fast_path' {
   export function relative(rootDir: string, filename: string): string;
   export function resolve(rootDir: string, normalPath: string): string;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/FileProcessor.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/FileProcessor.js
 declare module 'metro-file-map/src/lib/FileProcessor' {
   import type { FileMetaData, PerfLogger } from 'metro-file-map/src/flow-types';
   type ProcessFileRequest = Readonly<{
@@ -797,19 +780,19 @@ declare module 'metro-file-map/src/lib/FileProcessor' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/normalizePathSeparatorsToPosix.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/normalizePathSeparatorsToPosix.js
 declare module 'metro-file-map/src/lib/normalizePathSeparatorsToPosix' {
   let normalizePathSeparatorsToPosix: (string: string) => string;
   export default normalizePathSeparatorsToPosix;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/normalizePathSeparatorsToSystem.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/normalizePathSeparatorsToSystem.js
 declare module 'metro-file-map/src/lib/normalizePathSeparatorsToSystem' {
   let normalizePathSeparatorsToSystem: (string: string) => string;
   export default normalizePathSeparatorsToSystem;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/RootPathUtils.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/RootPathUtils.js
 declare module 'metro-file-map/src/lib/RootPathUtils' {
   export class RootPathUtils {
     constructor(rootDir: string);
@@ -830,7 +813,7 @@ declare module 'metro-file-map/src/lib/RootPathUtils' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/rootRelativeCacheKeys.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/rootRelativeCacheKeys.js
 declare module 'metro-file-map/src/lib/rootRelativeCacheKeys' {
   import type { BuildParameters } from 'metro-file-map/src/flow-types';
   function rootRelativeCacheKeys(buildParameters: BuildParameters): {
@@ -840,7 +823,7 @@ declare module 'metro-file-map/src/lib/rootRelativeCacheKeys' {
   export default rootRelativeCacheKeys;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/sorting.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/sorting.js
 declare module 'metro-file-map/src/lib/sorting' {
   export function compareStrings(a: null | string, b: null | string): number;
   export function chainComparators<T>(
@@ -848,7 +831,7 @@ declare module 'metro-file-map/src/lib/sorting' {
   ): (a: T, b: T) => number;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/lib/TreeFS.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/lib/TreeFS.js
 declare module 'metro-file-map/src/lib/TreeFS' {
   import type {
     FileData,
@@ -1015,7 +998,7 @@ declare module 'metro-file-map/src/lib/TreeFS' {
   export default TreeFS;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/computeConflicts.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/haste/computeConflicts.js
 declare module 'metro-file-map/src/plugins/haste/computeConflicts' {
   import type { HasteMapItem } from 'metro-file-map/src/flow-types';
   type Conflict = {
@@ -1033,7 +1016,7 @@ declare module 'metro-file-map/src/plugins/haste/computeConflicts' {
   ): Conflict[];
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError.js
 declare module 'metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError' {
   import type { DuplicatesSet } from 'metro-file-map/src/flow-types';
   export class DuplicateHasteCandidatesError extends Error {
@@ -1050,7 +1033,7 @@ declare module 'metro-file-map/src/plugins/haste/DuplicateHasteCandidatesError' 
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/getPlatformExtension.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/haste/getPlatformExtension.js
 declare module 'metro-file-map/src/plugins/haste/getPlatformExtension' {
   function getPlatformExtension(
     file: string,
@@ -1059,7 +1042,7 @@ declare module 'metro-file-map/src/plugins/haste/getPlatformExtension' {
   export default getPlatformExtension;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/haste/HasteConflictsError.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/haste/HasteConflictsError.js
 declare module 'metro-file-map/src/plugins/haste/HasteConflictsError' {
   import type { HasteConflict } from 'metro-file-map/src/flow-types';
   export class HasteConflictsError extends Error {
@@ -1068,7 +1051,7 @@ declare module 'metro-file-map/src/plugins/haste/HasteConflictsError' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/HastePlugin.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/HastePlugin.js
 declare module 'metro-file-map/src/plugins/HastePlugin' {
   import type {
     Console,
@@ -1130,7 +1113,7 @@ declare module 'metro-file-map/src/plugins/HastePlugin' {
   export default HastePlugin;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/MockPlugin.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/MockPlugin.js
 declare module 'metro-file-map/src/plugins/MockPlugin' {
   import type {
     FileMapDelta,
@@ -1161,13 +1144,13 @@ declare module 'metro-file-map/src/plugins/MockPlugin' {
   export default MockPlugin;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/plugins/mocks/getMockName.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/plugins/mocks/getMockName.js
 declare module 'metro-file-map/src/plugins/mocks/getMockName' {
   const getMockName: (filePath: string) => string;
   export default getMockName;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/Watcher.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/Watcher.js
 declare module 'metro-file-map/src/Watcher' {
   import type {
     Console,
@@ -1238,7 +1221,7 @@ declare module 'metro-file-map/src/Watcher' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/AbstractWatcher.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/AbstractWatcher.js
 declare module 'metro-file-map/src/watchers/AbstractWatcher' {
   import type { WatcherBackend, WatcherBackendChangeEvent } from 'metro-file-map/src/flow-types';
   export type Listeners = Readonly<{
@@ -1269,7 +1252,7 @@ declare module 'metro-file-map/src/watchers/AbstractWatcher' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/common.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/common.js
 declare module 'metro-file-map/src/watchers/common' {
   import type { ChangeEventMetadata } from 'metro-file-map/src/flow-types';
   import type { Stats } from 'fs';
@@ -1310,13 +1293,13 @@ declare module 'metro-file-map/src/watchers/common' {
   export function typeFromStat(stat: Stats): null | undefined | ChangeEventMetadata['type'];
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/FallbackWatcher.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/FallbackWatcher.js
 declare module 'metro-file-map/src/watchers/FallbackWatcher' {
   const $$EXPORT_DEFAULT_DECLARATION$$: any;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/NativeWatcher.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/NativeWatcher.js
 declare module 'metro-file-map/src/watchers/NativeWatcher' {
   import { AbstractWatcher } from 'metro-file-map/src/watchers/AbstractWatcher';
   /**
@@ -1356,7 +1339,7 @@ declare module 'metro-file-map/src/watchers/NativeWatcher' {
   export default NativeWatcher;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/RecrawlWarning.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/RecrawlWarning.js
 declare module 'metro-file-map/src/watchers/RecrawlWarning' {
   class RecrawlWarning {
     static RECRAWL_WARNINGS: RecrawlWarning[];
@@ -1370,7 +1353,7 @@ declare module 'metro-file-map/src/watchers/RecrawlWarning' {
   export default RecrawlWarning;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/watchers/WatchmanWatcher.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/watchers/WatchmanWatcher.js
 declare module 'metro-file-map/src/watchers/WatchmanWatcher' {
   import type { WatcherOptions } from 'metro-file-map/src/watchers/common';
   import type { Client, WatchmanFileChange, WatchmanSubscriptionEvent } from 'fb-watchman';
@@ -1403,12 +1386,12 @@ declare module 'metro-file-map/src/watchers/WatchmanWatcher' {
   export default WatchmanWatcher;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/worker.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/worker.js
 declare module 'metro-file-map/src/worker' {
   export function worker(data: any): void;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-file-map/src/workerExclusionList.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-file-map/src/workerExclusionList.js
 declare module 'metro-file-map/src/workerExclusionList' {
   const extensions: any;
   export default extensions;

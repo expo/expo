@@ -161,6 +161,9 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
         SegmentedComposable()
       } else if (variant == "radio") {
         RadioComposable()
+      } else {
+        // Default to segmented picker
+        SegmentedComposable()
       }
     }
   }

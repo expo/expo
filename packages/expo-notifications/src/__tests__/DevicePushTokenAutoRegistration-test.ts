@@ -33,8 +33,8 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(DISABLED_REGISTRATION_FIXTURE)
     );
-    expect(getDevicePushTokenAsync).not.toBeCalled();
-    expect(updateDevicePushTokenAsync).not.toBeCalled();
+    expect(getDevicePushTokenAsync).not.toHaveBeenCalled();
+    expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
   });
 
   it(`does try to update registration if it's enabled`, async () => {
@@ -48,7 +48,7 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );
-    expect(updateDevicePushTokenAsync).toBeCalledWith(
+    expect(updateDevicePushTokenAsync).toHaveBeenCalledWith(
       expect.anything(),
       mockPendingDevicePushToken
     );
