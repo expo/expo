@@ -1,8 +1,11 @@
 package expo.modules.plugin.configuration
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @Serializable
 data class ExpoAutolinkingConfig(
@@ -92,7 +95,18 @@ data class GradleProject(
   val sourceDir: String,
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
-  val modules: List<String> = emptyList()
+  val modules: List<String> = emptyList(),
+  @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
+) {
+  /**
+   * Returns whether the publication was defined and should be used.
+   */
+  val shouldUsePublication: Boolean
+    get() = publication != null && configuration.shouldUsePublication
+}
+
+data class GradleProjectConfiguration(
+  var shouldUsePublication: Boolean = false
 )
 
 /**

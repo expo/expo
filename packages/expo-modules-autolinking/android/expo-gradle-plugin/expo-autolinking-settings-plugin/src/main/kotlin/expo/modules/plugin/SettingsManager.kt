@@ -45,7 +45,15 @@ class SettingsManager(
       env.commandLine(command)
     }.standardOutput.asText.get()
 
-    ExpoAutolinkingConfig.decodeFromString(result)
+    val decodedConfig = ExpoAutolinkingConfig.decodeFromString(result)
+
+    decodedConfig.allProjects.forEach { project ->
+      if (project.publication != null) {
+        project.configuration.shouldUsePublication = true
+      }
+    }
+
+    return@lazy decodedConfig
   }
 
   fun useExpoModules() {
@@ -90,7 +98,7 @@ class SettingsManager(
    */
   private fun link() = with(config) {
     allProjects.forEach { project ->
-      if (project.publication == null) {
+      if (!project.shouldUsePublication) {
         settings.linkProject(project)
       }
     }
