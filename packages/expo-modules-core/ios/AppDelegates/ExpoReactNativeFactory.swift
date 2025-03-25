@@ -31,7 +31,10 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
       return createRootView(bridge, moduleName, initProps)
     }
 
-    configuration.jsRuntimeConfiguratorDelegate = delegate
+    // TODO: Remove this check when react-native-macos releases v0.79
+    if configuration.responds(to: Selector("setJsRuntimeConfiguratorDelegate:")) {
+      configuration.setValue(delegate, forKey: "jsRuntimeConfiguratorDelegate")
+    }
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
       guard let createBridge = weakDelegate.createBridge else {
