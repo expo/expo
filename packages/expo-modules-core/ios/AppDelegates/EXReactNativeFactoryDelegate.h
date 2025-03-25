@@ -3,6 +3,7 @@
 #pragma once
 
 #import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
+#import <ExpoModulesCore/Platform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,17 +15,10 @@ NS_SWIFT_NAME(ExpoReactNativeFactoryDelegate)
  If any of these parameters is null, the method will use the original one from `RCTAppDelegate` or `RCTRootViewFactory`.
  This method should be used with `EXReactRootViewFactory` that to recreate a root view.
  */
-#if !TARGET_OS_OSX
 - (UIView *)recreateRootViewWithBundleURL:(nullable NSURL *)bundleURL
                                moduleName:(nullable NSString *)moduleName
                              initialProps:(nullable NSDictionary *)initialProps
                             launchOptions:(nullable NSDictionary *)launchOptions;
-#else
-- (NSView *)recreateRootViewWithBundleURL:(nullable NSURL *)bundleURL
-                               moduleName:(nullable NSString *)moduleName
-                             initialProps:(nullable NSDictionary *)initialProps
-                            launchOptions:(nullable NSDictionary *)launchOptions;
-#endif
 
 @end
 

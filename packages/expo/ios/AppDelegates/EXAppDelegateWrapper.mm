@@ -69,8 +69,7 @@
 }
 #else
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
-  [super applicationDidFinishLaunching:notification];
+{ 
   return [_expoAppDelegate applicationDidFinishLaunching:notification];
 }
 
