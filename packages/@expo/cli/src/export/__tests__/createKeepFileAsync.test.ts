@@ -1,11 +1,13 @@
 import { vol } from 'memfs';
 import type { AssetData } from 'metro';
 
-import { createKeepFile } from '../persistMetroAssets';
+import { createKeepFileAsync } from '../persistMetroAssets';
 
 jest.mock('fs');
 
-describe(createKeepFile, () => {
+describe(createKeepFileAsync, () => {
+  afterAll(() => vol.reset());
+
   const assets: AssetData[] = [
     {
       __packager_asset: true,
@@ -34,10 +36,10 @@ describe(createKeepFile, () => {
   ];
 
   it('creates a keep.xml file', async () => {
-    await createKeepFile(assets, '/output');
+    await createKeepFileAsync(assets, '/output');
 
-    expect(vol.readdirSync('/output/raw')).toEqual(['keep.xml']);
-    expect(vol.readFileSync('/output/raw/keep.xml', 'utf8')).toBe(
+    expect(vol.existsSync('/output/raw/keep.xml')).toBe(true);
+    expect(await vol.promises.readFile('/output/raw/keep.xml', 'utf8')).toBe(
       `<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@drawable/input_image,@raw/input_testfont" />`
     );
   });

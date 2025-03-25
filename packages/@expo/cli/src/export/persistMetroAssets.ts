@@ -78,7 +78,7 @@ export async function persistMetroAssetsAsync(
     assetsToCopy = [...assets];
   }
   if (platform === 'android') {
-    createKeepFile(assetsToCopy, outputDirectory);
+    await createKeepFileAsync(assetsToCopy, outputDirectory);
   }
 
   const batches: Record<string, string> = {};
@@ -109,7 +109,10 @@ export async function persistMetroAssetsAsync(
   }
 }
 
-export async function createKeepFile(assets: AssetData[], outputDirectory: string): Promise<void> {
+export async function createKeepFileAsync(
+  assets: AssetData[],
+  outputDirectory: string
+): Promise<void> {
   if (!assets.length) {
     return;
   }
