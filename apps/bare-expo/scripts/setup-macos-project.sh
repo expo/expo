@@ -18,7 +18,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-safe-area-context"
+remove_dependencies "react-native-reanimated" "react-native-svg" "lottie-react-native"
 
 RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
 if [[ "$RN_MACOS_VERSION" != "null" ]]; then
