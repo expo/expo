@@ -6,6 +6,7 @@ import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.core.utilities.ifNull
@@ -17,16 +18,23 @@ import expo.modules.medialibrary.ERROR_IO_EXCEPTION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE
 import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.albums.getAlbumFileOrNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 
-class CreateAsset @JvmOverloads constructor(
+/**
+ * Creates an asset entry in the provided albumFile.
+ * If no file has been provided the asset will be created in the default directory for the mimeType
+ * of the file under the `uri` parameter.
+ */
+class CreateAssetWithAlbumFile(
   private val context: Context,
   uri: String,
   private val promise: Promise,
-  private val resolveWithAdditionalData: Boolean = true
+  private val resolveWithAdditionalData: Boolean = true,
+  private val albumFile: File?
 ) {
   private val mUri = normalizeAssetUri(uri)
 
@@ -50,7 +58,8 @@ class CreateAsset @JvmOverloads constructor(
     val contentResolver = context.contentResolver
     val mimeType = MediaLibraryUtils.getMimeType(contentResolver, mUri)
     val filename = mUri.lastPathSegment
-    val path = MediaLibraryUtils.getRelativePathForAssetType(mimeType, true)
+    var path = albumFile?.relativeTo(Environment.getExternalStorageDirectory())?.path
+      ?: MediaLibraryUtils.getRelativePathForAssetType(mimeType, true)
 
     val contentUri = MediaLibraryUtils.mimeTypeToExternalUri(mimeType)
     val contentValues = ContentValues().apply {
@@ -165,5 +174,22 @@ class CreateAsset @JvmOverloads constructor(
     } catch (e: Exception) {
       promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
     }
+  }
+}
+
+class CreateAssetWithAlbumId @JvmOverloads constructor(
+  private val context: Context,
+  private val uri: String,
+  private val promise: Promise,
+  private val resolveWithAdditionalData: Boolean = true,
+  private val albumId: String? = null
+) {
+  private val album: File?
+    get() {
+      return albumId?.let { getAlbumFileOrNull(context, albumId) }
+    }
+
+  fun execute() {
+    CreateAssetWithAlbumFile(context, uri, promise, resolveWithAdditionalData, album).execute()
   }
 }
