@@ -1,29 +1,106 @@
----
-title: Next steps
-description: Develop, review, and submit your project.
-hideTOC: true
----
+import 'dart:math';
+import 'package:flutter/material.dart';
 
-import { Terminal } from '~/ui/components/Snippet';
+void main() {
+  runApp(MyApp());
+}
 
-Here are next steps to continue building your app:
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Здоровье и мотивация',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: HomeScreen(),
+    );
+  }
+}
 
-### Reset your project
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-You can remove the boilerplate code and start fresh with a new project. Run the following command to reset your project:
+class _HomeScreenState extends State<HomeScreen> {
+  final Map<String, List<String>> categories = {
+    "Общее здоровье": [
+      "Пейте больше воды каждый день!",
+      "Занимайтесь спортом хотя бы 30 минут в день.",
+      "Высыпайтесь! 7-9 часов сна – идеальный баланс.",
+      "Регулярные прогулки на свежем воздухе укрепляют иммунитет."
+    ],
+    "Физическая активность": [
+      "Разминайтесь перед тренировкой, чтобы избежать травм.",
+      "Кардио-тренировки укрепляют сердце и легкие.",
+      "Силовые упражнения помогают поддерживать мышцы в тонусе.",
+      "Йога помогает улучшить гибкость и расслабиться."
+    ],
+    "Питание": [
+      "Ешьте больше овощей и фруктов каждый день.",
+      "Ограничьте употребление сахара и фастфуда.",
+      "Пейте зеленый чай – он богат антиоксидантами.",
+      "Белки важны для роста мышц и восстановления организма."
+    ],
+    "Сон": [
+      "Ложитесь спать и просыпайтесь в одно и то же время.",
+      "Избегайте использования гаджетов за час до сна.",
+      "Спите в темной, прохладной комнате для лучшего отдыха.",
+      "Медитация перед сном помогает быстрее заснуть."
+    ],
+    "Мотивация": [
+      "Ты сильнее, чем думаешь!",
+      "Каждый день – это новый шанс изменить свою жизнь.",
+      "Не сдавайся, успех ближе, чем кажется.",
+      "Будущее зависит от того, что ты делаешь сейчас."
+    ]
+  };
 
-<Terminal cmd={['$ npm run reset-project']} />
+  String _selectedCategory = "Общее здоровье";
+  String _currentTip = "Выбери категорию и нажми кнопку!";
 
-This command will move the existing files in **app** to **app-example**, then create a new **app** directory with a new **index.tsx** file.
+  void _getRandomTip() {
+    setState(() {
+      _currentTip = categories[_selectedCategory]![Random().nextInt(categories[_selectedCategory]!.length)];
+    });
+  }
 
-### Develop, review, and deploy
-
-Learn how to develop by reading the docs in the Develop section. You'll learn how to create [UI elements](/develop/user-interface/splash-screen-and-app-icon/), add [unit tests](/develop/unit-testing/), include [native modules](/config-plugins/introduction/), and more.
-
-Once you've developed your app, you can share it with your teammates for [review](/review/overview).
-
-Finally, you can [build](/deploy/build-project/) and [submit](/deploy/submit-to-app-stores/) your project to the app stores.
-
-### Step-by-step guide
-
-For a guided, step-by-step walkthrough of building an app with Expo from start to finish, check out the [tutorial](/tutorial/introduction/).
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Советы по здоровью и мотивация")),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DropdownButton<String>(
+              value: _selectedCategory,
+              items: categories.keys.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCategory = newValue!;
+                  _currentTip = "Нажмите кнопку для нового совета";
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            Text(_currentTip, textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _getRandomTip,
+              child: Text("Получить совет"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
