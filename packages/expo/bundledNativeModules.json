@@ -1,4 +1,12 @@
 {
+  "@dev-plugins/apollo-client": "~0.2.0",
+  "@dev-plugins/async-storage": "~0.2.0",
+  "@dev-plugins/react-native-mmkv": "~0.2.0",
+  "@dev-plugins/react-navigation": "~0.2.0",
+  "@dev-plugins/react-query": "~0.2.0",
+  "@dev-plugins/redux": "~0.2.0",
+  "@dev-plugins/tinybase": "~0.2.0",
+  "@dev-plugins/vanilla-log-viewer": "~0.2.0",
   "@expo/metro-runtime": "~4.0.1",
   "@expo/vector-icons": "^14.0.2",
   "@react-native-async-storage/async-storage": "1.23.1",
