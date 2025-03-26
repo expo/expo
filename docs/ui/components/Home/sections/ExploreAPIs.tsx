@@ -5,16 +5,16 @@ import { NotificationMessageDuotoneIcon } from '@expo/styleguide-icons/duotone/N
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { type ReactNode } from 'react';
 
-import { HeaderDescription } from '~/ui/components/Home';
-import { RawH3, A, LABEL } from '~/ui/components/Text';
+import { Header } from '~/ui/components/Home/components';
+import { A, LABEL } from '~/ui/components/Text';
 
 export function ExploreAPIs() {
   return (
     <>
-      <RawH3>Explore APIs</RawH3>
-      <HeaderDescription>
-        Expo supplies a vast array of SDK modules. You can also create your own.
-      </HeaderDescription>
+      <Header
+        title="Explore APIs"
+        description="Expo supplies a vast array of SDK modules. You can also create your own."
+      />
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-4 gap-8',
