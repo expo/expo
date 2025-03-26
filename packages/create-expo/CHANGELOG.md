@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
+- Add support for aliasing and deprecating examples.
 
 ### 🐛 Bug fixes
 
