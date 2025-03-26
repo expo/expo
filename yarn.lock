@@ -3336,10 +3336,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@stripe/stripe-react-native@0.38.6":
-  version "0.38.6"
-  resolved "https://registry.yarnpkg.com/@stripe/stripe-react-native/-/stripe-react-native-0.38.6.tgz#a580c0e43aa3cde7ec0c707090f0d2ac40268bfa"
-  integrity sha512-U6yELoRr4h4x+p9an0MiDXZBbm/FYNayPXJP0PtsR3iFVAGpGQm6DzM+cye2PVlhbDK8htBA5ReZ1YEFxT/hJA==
+"@stripe/stripe-react-native@0.43.0":
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-react-native/-/stripe-react-native-0.43.0.tgz#b595919c4a28967632a363ece07e1a422bd04860"
+  integrity sha512-yY78EQQDiJMULx9/q1L2VBCSTska4D/d5fzS9A/rUh4klaOlKwYomJdQA0SBpF02XZalExEKs1CQebfhYTHrEQ==
 
 "@swc/core-darwin-arm64@1.11.11":
   version "1.11.11"
