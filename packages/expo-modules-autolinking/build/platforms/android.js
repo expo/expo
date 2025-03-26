@@ -66,10 +66,14 @@ async function resolveModuleAsync(packageName, revision) {
             };
         });
         const { publication } = project;
+        const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+            ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
+            : undefined;
         return {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
+            ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),
         };
