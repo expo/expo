@@ -1987,7 +1987,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider (4.5.5):
+  - react-native-slider (4.5.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2002,7 +2002,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 4.5.5)
+    - react-native-slider/common (= 4.5.6)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2012,7 +2012,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider/common (4.5.5):
+  - react-native-slider/common (4.5.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3472,7 +3472,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 197827f1ec648b53dcdc503d7a1b3a7644f9b4cb
+  hermes-engine: b2efca291af9785edd0128611dbc1b1fb4020a6a
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3524,7 +3524,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: fb22a3043ce75c3145da87a74254a2ec527267b0
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 76d98b23c05d77c39346bc094183d314bd7bdf5b
-  react-native-slider: c57011b1447edac8ddcc4d61cbd54172f378b7a0
+  react-native-slider: c4c1a975352113af59b59dc783abc111618ec37a
   react-native-view-shot: 105375eceab012a37db548637dd6fca795af977a
   react-native-webview: d3a6bde17001bc9cded1b2219b6cc2e60f27b74d
   React-NativeModulesApple: a5ed6f425abed68a61415527cf902b22eb661b32
