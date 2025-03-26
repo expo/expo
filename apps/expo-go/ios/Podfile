@@ -114,7 +114,7 @@ target 'Expo Go' do
 
       # Set `REACT_NATIVE_PATH` to react-native submodule
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", react_native_path)
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
       end
 
       # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
