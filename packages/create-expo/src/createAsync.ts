@@ -156,9 +156,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     resolvedExample = props.example;
   }
 
-  await ensureExampleExists(resolvedExample);
-
-  /** Handle remapping aliases and throwing for deprecated examples. */
+  // Handle remapping aliases and throwing for deprecated examples.
   const metadata = await fetchMetadataAsync();
 
   if (metadata.aliases[resolvedExample]) {
@@ -168,10 +166,18 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
       chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
     );
 
+    // Optional message to show when an example is aliased, in case additional context is required
+    if (typeof alias === 'object' && alias.message) {
+      console.log(chalk`{gray ${alias.message}}`);
+    }
+
     resolvedExample = destination;
   } else if (metadata.deprecated[resolvedExample]) {
     throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
   }
+
+  // Ensure the example exists after performing remapping and deprecation checks.
+  await ensureExampleExists(resolvedExample);
 
   // Log the status after aliases and deprecated examples are handled.
   console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
@@ -284,7 +290,7 @@ function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMet
   }
 
   if (outdatedExampleHref) {
-    output += `\n\n You can also refer to the outdated example code in examples git repository history, if it is useful: ${outdatedExampleHref}`;
+    output += `\n\nYou can also refer to the outdated example code in examples git repository history, if it is useful: ${outdatedExampleHref}`;
   }
 
   return output;
