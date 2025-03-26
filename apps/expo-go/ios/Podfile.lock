@@ -2080,7 +2080,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.12.5):
+  - react-native-webview (13.13.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3492,7 +3492,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b2efca291af9785edd0128611dbc1b1fb4020a6a
+  hermes-engine: b6e2faa5c002ab1ffa8f03712fbad34defd1a0c7
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3546,7 +3546,7 @@ SPEC CHECKSUMS:
   react-native-skia: 76d98b23c05d77c39346bc094183d314bd7bdf5b
   react-native-slider: c4c1a975352113af59b59dc783abc111618ec37a
   react-native-view-shot: 41c5c50c809f1fd61f91c99400b2222c9b80d13f
-  react-native-webview: d3a6bde17001bc9cded1b2219b6cc2e60f27b74d
+  react-native-webview: cde150463e7caa49b316b0ed1871e7ef8193bef4
   React-NativeModulesApple: a5ed6f425abed68a61415527cf902b22eb661b32
   React-oscompat: 481559f37d95c98fa39fa84674171a5f6646a932
   React-perflogger: bfa66d1709c975ed0bf7aa886882414a7497f7d6
