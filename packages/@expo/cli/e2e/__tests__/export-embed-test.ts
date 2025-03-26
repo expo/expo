@@ -328,6 +328,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     'output.js',
     'output.js.map',
     'raw/__e2e___staticrendering_sweet.ttf',
+    'raw/keep.xml',
   ]);
 });
 
