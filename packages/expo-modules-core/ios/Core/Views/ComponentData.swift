@@ -86,7 +86,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     // Let the base class `RCTComponentData` handle all remaining props.
     super.setProps(remainingProps, forView: view)
 
-    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: AppleView.uikit(view))
   }
 
   /**

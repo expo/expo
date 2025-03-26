@@ -13,7 +13,7 @@ extension ExpoSwiftUI {
     /**
      An array of views passed by React as children.
      */
-    @Field public var children: [Child]?
+    @Field public var children: [any AnyChild]?
 
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
       // Update the props just like the records

@@ -50,10 +50,15 @@ func allowMultiLine() -> Bool {
   #endif
 }
 
-struct TextInputView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: TextInputProps
+struct TextInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: TextInputProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var value: String = ""
+
+  init(props: TextInputProps) {
+    self.props = props
+  }
+
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
       if #available(iOS 16.0, tvOS 16.0, *) {
