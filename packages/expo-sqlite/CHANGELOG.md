@@ -23,6 +23,11 @@
 - Remove prebuilt worker on Web. ([#35311](https://github.com/expo/expo/pull/35311) by [@kudo](https://github.com/kudo))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 - Fixed build warnings. ([#35610](https://github.com/expo/expo/pull/35610) by [@kudo](https://github.com/kudo))
+
+## 15.1.3 - 2025-03-26
+
+### 💡 Others
+
 - Updated libsql libs. ([#35708](https://github.com/expo/expo/pull/35708) by [@kudo](https://github.com/kudo))
 
 ## 15.1.2 - 2025-02-05

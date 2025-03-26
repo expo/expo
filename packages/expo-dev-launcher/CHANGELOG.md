@@ -23,6 +23,10 @@
 - [android] Migrate DevLauncherInternalModule to Expo Modules API ([#35166](https://github.com/expo/expo/pull/35166) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
 
+## 5.0.31 - 2025-03-18
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.29 - 2025-02-10
 
 _This version does not introduce any user-facing changes._

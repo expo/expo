@@ -20,6 +20,10 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 
+## 18.0.12 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
+
 ## 18.0.11 - 2025-02-19
 
 _This version does not introduce any user-facing changes._
