@@ -10,7 +10,7 @@ import UserNotifications
 public protocol NotificationDelegate: AnyObject {
   func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool
   func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool
-  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool
+  func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool
   func openSettings(_ notification: UNNotification?)
   func didRegister(_ deviceToken: String)
   func didFailRegistration(_ error: Error)
@@ -23,7 +23,7 @@ public extension NotificationDelegate {
   func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     return false
   }
-  func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+  func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
     return false
   }
   func openSettings(_ notification: UNNotification?) {}
@@ -130,10 +130,10 @@ public class NotificationCenterManager: NSObject,
   }
 
   // MARK: - Called from NotificationsAppDelegateSubscriber
-  public func didReceiveNotification(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  public func didReceiveNotification(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     var handled = false
     for delegate in delegates {
-      handled = delegate.didReceive(notification, completionHandler: completionHandler) || handled
+      handled = delegate.didReceive(userInfo, completionHandler: completionHandler) || handled
     }
     if !handled {
       completionHandler(.noData)

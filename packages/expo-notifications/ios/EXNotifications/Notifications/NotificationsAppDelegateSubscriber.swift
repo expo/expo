@@ -23,7 +23,7 @@ public class NotificationsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
-  // TODO: implement this when converting Background module
+    notificationCenterManager.didReceive(userInfo, completionHandler: completionHandler)
   }
 }
 
