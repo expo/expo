@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed image be cropped with `contentPosition` on New Architecture mode. ([#35630](https://github.com/expo/expo/pull/35630) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 2.0.7 — 2025-03-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed image be cropped with `contentPosition` on New Architecture mode. ([#35630](https://github.com/expo/expo/pull/35630) by [@kudo](https://github.com/kudo))
 
 ## 2.0.6 — 2025-02-19
 

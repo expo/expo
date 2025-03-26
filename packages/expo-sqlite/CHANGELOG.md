@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.1.3 — 2025-03-26
+
+### 💡 Others
+
 - Updated libsql libs. ([#35708](https://github.com/expo/expo/pull/35708) by [@kudo](https://github.com/kudo))
 
 ## 15.1.2 — 2025-02-05
