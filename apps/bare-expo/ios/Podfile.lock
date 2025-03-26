@@ -2874,7 +2874,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.9.0):
+  - RNScreens (4.9.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2898,9 +2898,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.9.0)
+    - RNScreens/common (= 4.9.2)
     - Yoga
-  - RNScreens/common (4.9.0):
+  - RNScreens/common (4.9.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3762,7 +3762,7 @@ SPEC CHECKSUMS:
   RNFlashList: 180edc34e4f015749b56c7674bc0f54a40d3deff
   RNGestureHandler: ccf4105b125002bd88e39d2a1f2b7e6001bcdf34
   RNReanimated: fc1e35380ba37c5f28b83414be9850e4091efa76
-  RNScreens: e02f237d99e332f2d75092c7d7ba065110bcf1af
+  RNScreens: 7298b3526f6aca5cd6f215f7ff48381568943769
   RNSVG: ee32efbed652c5151fd3f98bed13c68af285bc38
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
@@ -3773,6 +3773,6 @@ SPEC CHECKSUMS:
   Yoga: 99c3ff1f0452d13c8774222903cef8dda229d5ce
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 567bb58fe91a07874d34e36dc2ed989b409d33cd
+PODFILE CHECKSUM: a753510e36243a886a2a518ddc4e25451e51625a
 
 COCOAPODS: 1.16.2

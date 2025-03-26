@@ -30,7 +30,7 @@
     "react-native": "0.79.0-rc.3",
     "react-native-reanimated": "~3.17.1",
     "react-native-safe-area-context": "~5.2.0",
-    "react-native-screens": "~4.9.1",
+    "react-native-screens": "~4.9.2",
     "react-native-web": "~0.19.13"
   },
   "overrides": {
