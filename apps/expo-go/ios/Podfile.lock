@@ -2786,42 +2786,42 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
-  - Stripe (23.28.3):
-    - StripeApplePay (= 23.28.3)
-    - StripeCore (= 23.28.3)
-    - StripePayments (= 23.28.3)
-    - StripePaymentsUI (= 23.28.3)
-    - StripeUICore (= 23.28.3)
-  - stripe-react-native (0.38.6):
+  - Stripe (24.7.0):
+    - StripeApplePay (= 24.7.0)
+    - StripeCore (= 24.7.0)
+    - StripePayments (= 24.7.0)
+    - StripePaymentsUI (= 24.7.0)
+    - StripeUICore (= 24.7.0)
+  - stripe-react-native (0.43.0):
     - React-Core
-    - Stripe (~> 23.28.0)
-    - StripeApplePay (~> 23.28.0)
-    - StripeFinancialConnections (~> 23.28.0)
-    - StripePayments (~> 23.28.0)
-    - StripePaymentSheet (~> 23.28.0)
-    - StripePaymentsUI (~> 23.28.0)
-  - StripeApplePay (23.28.3):
-    - StripeCore (= 23.28.3)
-  - StripeCore (23.28.3)
-  - StripeFinancialConnections (23.28.3):
-    - StripeCore (= 23.28.3)
-    - StripeUICore (= 23.28.3)
-  - StripePayments (23.28.3):
-    - StripeCore (= 23.28.3)
-    - StripePayments/Stripe3DS2 (= 23.28.3)
-  - StripePayments/Stripe3DS2 (23.28.3):
-    - StripeCore (= 23.28.3)
-  - StripePaymentSheet (23.28.3):
-    - StripeApplePay (= 23.28.3)
-    - StripeCore (= 23.28.3)
-    - StripePayments (= 23.28.3)
-    - StripePaymentsUI (= 23.28.3)
-  - StripePaymentsUI (23.28.3):
-    - StripeCore (= 23.28.3)
-    - StripePayments (= 23.28.3)
-    - StripeUICore (= 23.28.3)
-  - StripeUICore (23.28.3):
-    - StripeCore (= 23.28.3)
+    - Stripe (~> 24.7.0)
+    - StripeApplePay (~> 24.7.0)
+    - StripeFinancialConnections (~> 24.7.0)
+    - StripePayments (~> 24.7.0)
+    - StripePaymentSheet (~> 24.7.0)
+    - StripePaymentsUI (~> 24.7.0)
+  - StripeApplePay (24.7.0):
+    - StripeCore (= 24.7.0)
+  - StripeCore (24.7.0)
+  - StripeFinancialConnections (24.7.0):
+    - StripeCore (= 24.7.0)
+    - StripeUICore (= 24.7.0)
+  - StripePayments (24.7.0):
+    - StripeCore (= 24.7.0)
+    - StripePayments/Stripe3DS2 (= 24.7.0)
+  - StripePayments/Stripe3DS2 (24.7.0):
+    - StripeCore (= 24.7.0)
+  - StripePaymentSheet (24.7.0):
+    - StripeApplePay (= 24.7.0)
+    - StripeCore (= 24.7.0)
+    - StripePayments (= 24.7.0)
+    - StripePaymentsUI (= 24.7.0)
+  - StripePaymentsUI (24.7.0):
+    - StripeCore (= 24.7.0)
+    - StripePayments (= 24.7.0)
+    - StripeUICore (= 24.7.0)
+  - StripeUICore (24.7.0):
+    - StripeCore (= 24.7.0)
   - UMAppLoader (5.0.0)
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -3572,19 +3572,19 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Stripe: cdf416cf2efe286f532a6306de0fcaa0ecc8c71a
-  stripe-react-native: 55fbdae947bc2698d55193947fd17872d0eab786
-  StripeApplePay: efb62ffc08e6cd4f161d77ddb45de2451075c54e
-  StripeCore: 9731f05e327c3dcaf7d7abd116840ceaa9482bbe
-  StripeFinancialConnections: 46c0049aaab3a179193502bce4a8096eb7b73f55
-  StripePayments: dd1867a620b0b8b5e294e9ff2f1f7b7770765f47
-  StripePaymentSheet: d155dfde74e90784d054deffb4f561a1f6dd638f
-  StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
-  StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
+  Stripe: 8a03a78bfa16b197f9fac51e42670ac563b34388
+  stripe-react-native: 103ae16ea3d68a1825840fbcafcd7fab1a278c9c
+  StripeApplePay: 3c1b43d9b5130f6b714863bf8c9482c24168ab27
+  StripeCore: 4955c2af14446db04818ad043d19d8f97b73c5fa
+  StripeFinancialConnections: 8cf97b04c2f354879a2a5473126efac38f11f406
+  StripePayments: 91820845bece6117809bcfdcaef39c84c2b4cae5
+  StripePaymentSheet: 1810187cbdbc73410b8fb86cecafaaa41c1481fc
+  StripePaymentsUI: 326376e23caa369d1f58041bdb858c89c2b17ed4
+  StripeUICore: 17a4f3adb81ae05ab885e1b353022a430176eab1
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
   Yoga: 99c3ff1f0452d13c8774222903cef8dda229d5ce
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 7bf572a9e490bdde01cd39bf74a0ef2638865a2d
+PODFILE CHECKSUM: 8112cc88a3a8440db228565a43830c4330c5b785
 
 COCOAPODS: 1.16.2
