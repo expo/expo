@@ -2187,7 +2187,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.4):
     - React-Core
-  - react-native-slider (4.5.5):
+  - react-native-slider (4.5.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2202,7 +2202,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 4.5.5)
+    - react-native-slider/common (= 4.5.6)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2212,7 +2212,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider/common (4.5.5):
+  - react-native-slider/common (4.5.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3721,7 +3721,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: a1b4f854df102a127b38fa49ff9d25af20a3c550
   react-native-safe-area-context: fb22a3043ce75c3145da87a74254a2ec527267b0
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
-  react-native-slider: c57011b1447edac8ddcc4d61cbd54172f378b7a0
+  react-native-slider: c4c1a975352113af59b59dc783abc111618ec37a
   react-native-view-shot: 105375eceab012a37db548637dd6fca795af977a
   react-native-webview: 4203df130be3d3f03e0437cfe3f8ad5076044a56
   React-NativeModulesApple: a5ed6f425abed68a61415527cf902b22eb661b32
