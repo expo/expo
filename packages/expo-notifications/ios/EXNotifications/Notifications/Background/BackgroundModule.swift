@@ -26,9 +26,10 @@ public class BackgroundModule: Module {
       if !taskManager.hasBackgroundModeEnabled("remote-notification") {
         promise.reject(
           "E_BACKGROUND_REMOTE_NOTIFICATIONS_DISABLED",
-          "Background remote notifications have not been configured." +
-          "To enable it, add `remote-notification` to `UIBackgroundModes` " +
-          "in the application's Info.plist file."
+          "Background remote notifications have not been configured. " +
+          "To enable it, set the `enableBackgroundRemoteNotifications` parameter " +
+          "in the expo-notifications config plugin, or add `remote-notification` to " +
+          "`UIBackgroundModes` in the application's Info.plist file."
         )
         return
       }
