@@ -180,19 +180,29 @@ Be careful using `withDangerousMod` as it is subject to change in the future. Th
 
 ## Plugin module resolution
 
-The strings passed to the `plugins` array can be resolved in a few different ways.
+When implementing plugins, there are two fundamental approaches to consider:
+
+1. **Project-integrated plugins**: These plugins live locally within your project, making them easy to customize and maintain alongside your app's code. They are ideal for project-specific customizations.
+
+2. **Standalone package plugins**: These plugins exist as separate packages and are published to npm. This approach is ideal for reusable plugins that can be shared across multiple projects.
+
+Both approaches provide the same capabilities for modifying your native configuration, but differ in how they're structured and imported. The sections below explain how module resolution works for each approach.
 
 > Any resolution pattern that isn't specified below is unexpected behavior, and subject to breaking changes.
 
-### Project file
+### Project-integrated plugins
 
-You can quickly create a plugin in your project and use it in your config.
+With project-integrated plugins, you can implement plugins directly in your project in several ways:
+
+#### Project file
+
+You can quickly create a plugin in your project by creating a JavaScript/TypeScript and use it in your config like any other JS/TS file.
 
 <FileTree
   files={[
-    ['app.config.js', <code>import "./my-config-plugin"</code>],
+    ['app.config.ts', <code>import "./my-config-plugin"</code>],
     [
-      'my-config-plugin.js',
+      'my-config-plugin.ts',
       <>
         <YesIcon /> Imported from config
       </>,
@@ -200,64 +210,15 @@ You can quickly create a plugin in your project and use it in your config.
   ]}
 />
 
-In this example, the config plugin file contains a bare minimum function:
+In the above example, the config plugin file contains a bare minimum function:
 
-```js my-config-plugin.js
-module.exports = config => config;
+```ts my-config-plugin.ts
+module.exports = ({ config }: { config: ExpoConfig }) => {};
 ```
 
-### app.plugin.js
+#### Project directory
 
-Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
-If an **app.plugin.js** file is present in the root of a Node module's directory, it'll be used instead of the package's `main` file.
-
-<FileTree
-  files={[
-    ['app.config.js', <code>import "expo-splash-screen"</code>],
-    ['node_modules/expo-splash-screen', 'Node module'],
-    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
-    [
-      'node_modules/expo-splash-screen/app.plugin.js',
-      <>
-        <YesIcon /> Entry file for custom plugins
-      </>,
-    ],
-    [
-      'node_modules/expo-splash-screen/build/index.js',
-      <>
-        <NoIcon /> Skipped in favor of <code>app.plugin.js</code>
-      </>,
-    ],
-  ]}
-/>
-
-```js node_modules/expo-splash-screen/app.plugin.js
-module.exports = config => config;
-```
-
-### Node module default file
-
-A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
-
-<FileTree
-  files={[
-    ['app.config.js', <code>import "expo-splash-screen"</code>],
-
-    ['node_modules/expo-splash-screen', 'Node module'],
-    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
-    [
-      'node_modules/expo-splash-screen/build/index.js',
-      <>
-        <YesIcon /> Node resolve to this file
-      </>,
-    ],
-
-]}
-/>
-
-### Project directory
-
-This is different to how Config Plugins in Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
+This is different to how config plugins in Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
 <FileTree
   files={[
@@ -277,7 +238,87 @@ This is different to how Config Plugins in Node modules work because **app.plugi
   ]}
 />
 
-### Module internals
+#### Raw functions
+
+Expo config objects also support passing functions as-is to the `plugins` array. This is useful for testing, or if you want to use a plugin without creating a file.
+
+```js app.config.js
+const withCustom = (config, props) => config;
+
+const config = {
+  plugins: [
+    [
+      withCustom,
+      {
+        /* props */
+      },
+    ],
+    /* @info Without props */
+    withCustom,
+    /* @end */
+  ],
+};
+```
+
+One caveat to using functions instead of strings is that serialization will replace the function with the function's name. This keeps **manifests** (kind of like the **index.html** for your app) working as expected. Here is what the serialized config would look like:
+
+```json
+{
+  "plugins": [["withCustom", {}], "withCustom"]
+}
+```
+
+### Standalone package plugins
+
+Standalone package plugins are published to npm and can be shared across multiple projects, making them ideal for reusable functionality.
+
+> **info** See [Create a module with a config plugin](/config-plugin-and-native-module-tutorial/) for a step-by-step guide on how to create a standalone package plugin.
+
+#### app.plugin.js
+
+Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) could be different. If an **app.plugin.js** file is present in the root of a Node module's directory, it'll be used instead of the package's `main` file.
+
+<FileTree
+  files={[
+    ['app.config.ts', <code>import "expo-splash-screen"</code>],
+    ['node_modules/expo-splash-screen', 'Node module'],
+    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
+    [
+      'node_modules/expo-splash-screen/app.plugin.js',
+      <>
+        <YesIcon /> Entry file for custom plugins
+      </>,
+    ],
+    [
+      'node_modules/expo-splash-screen/build/index.js',
+      <>
+        <NoIcon /> Skipped in favor of <code>app.plugin.js</code>
+      </>,
+    ],
+  ]}
+/>
+
+#### Node module default file
+
+A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
+
+<FileTree
+  files={[
+    ['app.config.js', <code>import "expo-splash-screen"</code>],
+
+    ['node_modules/expo-splash-screen', 'Node module'],
+    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
+    [
+      'node_modules/expo-splash-screen/build/index.js',
+      <>
+        <YesIcon /> Node resolve to this file
+      </>,
+    ],
+
+]}
+/>
+
+#### Module internals
 
 > **error** Avoid importing module internals.
 
@@ -303,46 +344,11 @@ We support this to make testing, and plugin authoring easier, but we don't expec
   ]}
 />
 
-### Raw functions
-
-Expo config objects also support passing functions as-is to the `plugins` array. This is useful for testing, or if you want to use a plugin without creating a file.
-
-```js app.config.js
-const withCustom = (config, props) => config;
-
-const config = {
-  plugins: [
-    [
-      withCustom,
-      {
-        /* props */
-      },
-    ],
-    /* @info Without props */
-    withCustom,
-    /* @end */
-  ],
-};
-```
-
-One caveat to using functions instead of strings is that serialization will replace the function with the function's name. This keeps **manifests** (kinda like the **index.html** for your app) working as expected.
-
-Here is what the serialized config would look like:
-
-```json
-{
-  "plugins": [["withCustom", {}], "withCustom"]
-}
-```
-
 ## Why app.plugin.js for plugins
 
-Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
-This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
+Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin. This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
-Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
-Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
-if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
+Because of this reason, the root of a Node module is searched instead of right next to the **index.js**. Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**, if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
 
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
