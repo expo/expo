@@ -1,8 +1,8 @@
-/**
- Implements a subclass of EXReactNativeFactory. By having both an objective-c and a swift override we can utilise
- objective-c's mechanisms until the root RCTReactNativeFactory is swiftified.
- */
-public class ExpoReactNativeFactory: EXReactNativeFactory {
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import React_RCTAppDelegate
+
+public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private var reactDelegate: ExpoReactDelegate?
 
   @objc public init(delegate: ExpoReactNativeFactoryDelegate, reactDelegate: ExpoReactDelegate) {
@@ -10,7 +10,7 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
     super.init(delegate: delegate)
   }
 
-  @objc func internalCreateRCTRootViewFactory() -> RCTRootViewFactory {
+  @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
     guard let weakDelegate = self.delegate else {
       fatalError("ExpoReactNativeFactory: delegate is nil.")
     }
