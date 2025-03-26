@@ -354,6 +354,9 @@ redirects[router/reference/not-found]=router/error-handling
 redirects[router/navigating-pages]=router/basics/navigation
 redirects[router/create-pages]=router/basics/core-concepts
 
+# After updating config plugin section
+redirects[config-plugins/plugins-and-mods]=config-plugins/plugins
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
