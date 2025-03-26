@@ -237,6 +237,8 @@ export async function microBundle({
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,
+              // NOTE(cedric): exporting mode should always be provided explicitly, but we can't easily do that in the tests
+              isExporting: !dev,
             }
           : undefined,
 
