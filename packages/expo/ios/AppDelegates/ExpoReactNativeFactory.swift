@@ -2,10 +2,6 @@
 
 import React_RCTAppDelegate
 
-/**
- Implements a subclass of EXReactNativeFactory. By having both an objective-c and a swift override we can utilise
- objective-c's mechanisms until the root RCTReactNativeFactory is swiftified.
- */
 public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private var reactDelegate: ExpoReactDelegate?
 
