@@ -54,6 +54,22 @@ function withReactNativeLabPackages(config) {
   config.serializer.getPolyfills = () =>
     require(require.resolve('@react-native/js-polyfills', { paths: [reactNativeLabsPath] }))();
 
+  // Ensure the initialize code is being loaded from react-native-lab
+  const getMainModules = config.serializer.getModulesRunBeforeMainModule;
+  config.serializer.getModulesRunBeforeMainModule = () => {
+    // This module import should be loaded from `react-native-lab`
+    const initializeCore = 'react-native/Libraries/Core/InitializeCore.js';
+    const initializeCorePath = require.resolve(initializeCore, { paths: [reactNativeLabsPath] });
+    // Ensure the old initialize core path is replaced with the react-native-lab version
+    return getMainModules().map((filePath) => {
+      if (filePath.endsWith(initializeCore)) {
+        return initializeCorePath;
+      }
+
+      return filePath;
+    });
+  };
+
   // The import matcher that matches any of the list packages, e.g. `<packageName>` or `<packageName>/nested/file`
   const importMatcher = new RegExp(`^(?:(${linkedPackages.join('|')}))(?:(/|$))`);
 
