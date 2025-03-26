@@ -1956,7 +1956,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (1.12.0):
+  - react-native-skia (v2.0.0-next.2):
     - DoubleConversion
     - glog
     - hermes-engine
