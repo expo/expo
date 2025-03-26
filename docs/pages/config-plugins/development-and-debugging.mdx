@@ -6,7 +6,7 @@ sidebar_title: Development and debugging
 
 Developing a plugin is a great way to extend the Expo ecosystem. However, there are times you'll want to debug your plugin. This page provides some of the best practices for developing and debugging a plugin.
 
-## Develop a plugin
+## Best practices for developing a plugin
 
 > Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
 
@@ -377,7 +377,7 @@ By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:i
 
 As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
 
-## Debug config plugins
+## Debugging config plugins
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors. By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
