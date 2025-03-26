@@ -32,6 +32,10 @@ describe('given valid registration info', () => {
     global.fetch = jest.fn();
   });
 
+  beforeEach(() => {
+    global.fetch.mockClear();
+  });
+
   afterAll(() => {
     global.fetch = originalFetch;
   });
