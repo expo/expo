@@ -74,7 +74,7 @@ export type Router = {
    */
   reload: () => void;
   /**
-   * The prefetch a screen in the background before navigating to it
+   * Prefetch a screen in the background before navigating to it
    */
   prefetch: (name: Href) => void;
 };
