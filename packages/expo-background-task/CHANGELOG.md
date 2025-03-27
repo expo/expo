@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- added error handling when registering/unregistering invalid tasks with the TaskManager.
+
 ## 0.1.3 - 2025-03-14
 
 ### 💡 Others
