@@ -1,8 +1,9 @@
+import { Image, ImageErrorEventData } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'expo-modules-core';
 import { useRef, useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-view-shot';
 
 import Button from '../components/Button';
@@ -62,12 +63,19 @@ export default function ViewShotScreen() {
     }
   };
 
-  const imageSource = { uri: image };
+  const onError = ({ error }: ImageErrorEventData) => {
+    Alert.alert('Failed to load snapshot ', error);
+  };
+
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
       <View style={styles.snapshotContainer} collapsable={false} ref={view}>
         <LinearGradient colors={gradientColors} style={styles.gradient} start={[0, 0]} end={[0, 1]}>
-          <Image style={styles.snapshot} source={imageSource} />
+          <Image
+            style={styles.snapshot}
+            source={{ uri: image }}
+            onError={image ? onError : undefined}
+          />
           <Text style={styles.text}>Snapshot will show above</Text>
         </LinearGradient>
       </View>
@@ -85,6 +93,7 @@ export default function ViewShotScreen() {
           borderWidth: 10,
         }}
         source={{ uri: screenUri }}
+        onError={screenUri ? onError : undefined}
       />
       <Button
         style={styles.button}
