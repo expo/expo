@@ -80,7 +80,7 @@
     "react-native-screens": "4.9.2",
     "react-native-svg": "15.11.2",
     "react-native-view-shot": "4.0.3",
-    "react-native-webview": "13.13.0",
+    "react-native-webview": "13.13.5",
     "react-redux": "^7.2.0",
     "react-string-replace": "^0.4.4",
     "redux": "^4.0.5",
