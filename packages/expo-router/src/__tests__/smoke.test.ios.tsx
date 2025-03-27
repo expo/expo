@@ -1,13 +1,11 @@
-import { useEffect } from 'react';
 import React, { Text } from 'react-native';
 
-import { Slot, router, useFocusEffect, useGlobalSearchParams, usePathname } from '../exports';
+import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
 import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
 import { act, renderRouter, screen } from '../testing-library';
-import { store } from '../global-state/router-store';
 
 it('404', () => {
   renderRouter(
