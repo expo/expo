@@ -114,7 +114,9 @@ function ContextNavigator({
     ? `${serverContext.location.pathname}${serverContext.location.search}`
     : undefined;
 
-  const store = useInitializeExpoRouter(context, {
+  // Load the router store and initialize it with the context, navigation ref and options.
+  // The store is instantiated in the global scope and might not be initialized yet.
+  const [storeInitialized, store] = useInitializeExpoRouter(context, {
     ...linking,
     serverUrl,
   });
@@ -138,7 +140,8 @@ function ContextNavigator({
 
   const Component = store.rootComponent;
 
-  return (
+  // Render the navigation container once the store is initialized.
+  return storeInitialized ? (
     <UpstreamNavigationContainer
       ref={store.navigationRef}
       initialState={store.initialState}
@@ -153,7 +156,7 @@ function ContextNavigator({
         </WrapperComponent>
       </ServerContext.Provider>
     </UpstreamNavigationContainer>
-  );
+  ) : null;
 }
 
 let onUnhandledAction: (action: NavigationAction) => void;
