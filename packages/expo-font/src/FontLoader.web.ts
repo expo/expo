@@ -26,17 +26,30 @@ function displayFromFontSource(asset: FontSource): FontDisplay {
   return FontDisplay.AUTO;
 }
 
+function familyFromFontSource(asset: FontSource): string | undefined {
+  return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
+}
+
+function weightFromFontSource(asset: FontSource): string | number | undefined {
+  return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
+}
+
+function styleFromFontSource(asset: FontSource): 'normal' | 'italic' | undefined {
+  return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+}
+
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
-  const display = displayFromFontSource(source);
-
   if (!uri || typeof uri !== 'string') {
     throwInvalidSourceError(uri);
   }
 
   return {
     uri,
-    display,
+    family: familyFromFontSource(source),
+    weight: weightFromFontSource(source),
+    style: styleFromFontSource(source),
+    display: displayFromFontSource(source),
   };
 }
 
