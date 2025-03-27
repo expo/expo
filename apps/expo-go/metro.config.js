@@ -80,7 +80,13 @@ function withReactNativeLabPackages(config) {
     }
 
     return context.resolveRequest(
-      { ...context, originModulePath: reactNativeLabsPath },
+      {
+        ...context,
+        originModulePath: reactNativeLabsPath,
+        // Also list the react-native-lab node modules folder for Expo's fast resolver
+        // But only do it for the packages that are "linked" from react-native-lab
+        nodeModulesPaths: [reactNativeLabsPath, ...context.nodeModulesPaths],
+      },
       moduleImport,
       platform
     );

@@ -62,60 +62,121 @@ internal fun PublicationContainer.createReleasePublication(publicationInfo: Publ
       groupId = publicationInfo.groupId
       artifactId = publicationInfo.artifactId
       version = publicationInfo.version
+
+      mavenPublication.pom { pom ->
+        pom.name.set(publicationInfo.artifactId)
+        pom.url.set("https://github.com/expo/expo")
+
+        pom.licenses { licenses ->
+          licenses.license { license ->
+            license.name.set("MIT License")
+            license.url.set("https://github.com/expo/expo/blob/main/LICENSE")
+          }
+        }
+
+        pom.scm { scm ->
+          scm.connection.set("https://github.com/expo/expo.git")
+          scm.developerConnection.set("https://github.com/expo/expo.git")
+          scm.url.set("https://github.com/expo/expo")
+        }
+      }
     }
   }
+}
+
+internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo): TaskProvider<Task> {
+  val taskProvider = tasks.register("expoPublish") { task ->
+    task.doLast {
+      expoPublishBody(publicationInfo, isLocal = false)
+    }
+  }
+  taskProvider.configure { task ->
+    val publishTask = tasks.getByName("publish")
+
+    task.group = "publishing"
+    task.description = "Publishes the library to the GitHub Packages repository"
+    task.dependsOn(publishTask)
+  }
+
+  return taskProvider
+}
+
+internal fun Project.createExpoPublishTask(error: Throwable): TaskProvider<Task> {
+  val taskProvider = tasks.register("expoPublish") { task ->
+    task.doLast {
+      logger.error("Failed to publish the library to the GitHub Packages repository: ${error.message}", error)
+    }
+  }
+  taskProvider.configure { task ->
+    task.group = "publishing"
+    task.description = "Publishes the library to the GitHub Packages repository"
+  }
+
+  return taskProvider
 }
 
 internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: PublicationInfo): TaskProvider<Task> {
-  val publishToMavenLocalTask = tasks.getByName("publishToMavenLocal")
-  return project.tasks.register("expoPublishToMavenLocal") { task ->
-    task.group = "publishing"
-    task.description = "Publishes the library to the local Maven repository"
-
-    task.dependsOn(publishToMavenLocalTask)
-
+  val taskProvider = tasks.register("expoPublishToMavenLocal") { task ->
     task.doLast {
-      val mavenLocal = publishingExtension().repositories.mavenLocal()
-      val mavenLocalPath = mavenLocal.url.toPath()
-
-      val publicationPath = publicationInfo.resolvePath(mavenLocalPath)
-
-      if (!publicationPath.exists()) {
-        return@doLast
-      }
-
-      logger.quiet("$publicationInfo was published to $publicationPath")
-
-      val expoModuleConfig = layout.projectDirectory.file("../expo-module.config.json").asFile
-      val json = Json {
-        ignoreUnknownKeys = true
-        prettyPrint = true
-        prettyPrintIndent = "  "
-      }
-
-      val jsonElement = json.parseToJsonElement(expoModuleConfig.readText()).jsonObject
-      val newJsonElement = modifyModuleConfig(projectName = name, jsonElement, publicationInfo)
-
-      val newJsonString = json.encodeToString(JsonObject.serializer(), newJsonElement)
-
-      logger.quiet("Updating 'expo-module.config.json' in ${expoModuleConfig.parent}")
-
-      expoModuleConfig.writeText(newJsonString)
-      providers.exec { env ->
-        env.workingDir(layout.projectDirectory.file(".."))
-        // TODO(@lukmccall): support other package managers
-        env.commandLine("yarn", "prettier", "--write", "expo-module.config.json")
-      }.result.get()
+      expoPublishBody(publicationInfo, isLocal = true)
     }
   }
+  taskProvider.configure { task ->
+    val publishToMavenLocalTask = tasks.getByName("publishToMavenLocal")
+
+    task.group = "publishing"
+    task.description = "Publishes the library to the local Maven repository"
+    task.dependsOn(publishToMavenLocalTask)
+  }
+
+  return taskProvider
 }
 
-private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo): JsonObject {
+private fun Project.expoPublishBody(publicationInfo: PublicationInfo, isLocal: Boolean) {
+  if (isLocal) {
+    val mavenLocal = publishingExtension().repositories.mavenLocal()
+    val mavenLocalPath = mavenLocal.url.toPath()
+    val publicationPath = publicationInfo.resolvePath(mavenLocalPath)
+
+    if (!publicationPath.exists()) {
+      return
+    }
+
+    logger.quiet("$publicationInfo was published to $publicationPath")
+  }
+
+  val expoModuleConfig = layout.projectDirectory.file("../expo-module.config.json").asFile
+  val json = Json {
+    ignoreUnknownKeys = true
+    prettyPrint = true
+    prettyPrintIndent = "  "
+  }
+
+  val jsonElement = json.parseToJsonElement(expoModuleConfig.readText()).jsonObject
+  val newJsonElement = modifyModuleConfig(projectName = name, jsonElement, publicationInfo, isLocal)
+
+  val newJsonString = json.encodeToString(JsonObject.serializer(), newJsonElement)
+
+  logger.quiet("Updating 'expo-module.config.json' in ${expoModuleConfig.parent}")
+
+  expoModuleConfig.writeText(newJsonString)
+  providers.exec { env ->
+    env.workingDir(layout.projectDirectory.file(".."))
+    // TODO(@lukmccall): support other package managers
+    env.commandLine("yarn", "prettier", "--write", "expo-module.config.json")
+  }.result.get()
+}
+
+private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo, isLocal: Boolean): JsonObject {
   val publicationObject = JsonObject(mapOf(
     "groupId" to publicationInfo.groupId.toJsonElement(),
     "artifactId" to publicationInfo.artifactId.toJsonElement(),
     "version" to publicationInfo.version.toJsonElement(),
-    "repository" to "mavenLocal".toJsonElement(),
+    "repository" to if (isLocal) {
+      "mavenLocal"
+    } else {
+      "https://maven.pkg.github.com/expo/expo"
+    }.toJsonElement(),
   ))
 
   val androidObject = currentConfig.getOrDefault("android", JsonObject(emptyMap())).jsonObject.mutate {
