@@ -1,6 +1,6 @@
 {
   "name": "@react-native-async-storage/async-storage",
-  "version": "1.23.1",
+  "version": "2.1.2",
   "description": "Asynchronous, persistent, key-value storage system for React Native.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -18,11 +18,12 @@
     "src/",
     "windows/"
   ],
-  "author": "Krzysztof Borowy <hello@krizzu.dev>",
+  "author": "Krzysztof Borowy <contact@kborowy.com>",
   "contributors": [
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
     "Tommy Nguyen <4123478+tido64@users.noreply.github.com> (https://github.com/tido64)"
   ],
+  "source": "src/index",
   "homepage": "https://github.com/react-native-async-storage/async-storage#readme",
   "license": "MIT",
   "keywords": [
@@ -38,25 +39,11 @@
     "directory": "packages/default-storage-backend"
   },
   "scripts": {
-    "prepare": "bob build",
-    "start": "react-native start",
-    "start:android": "react-native run-android",
-    "start:ios": "react-native run-ios",
-    "start:macos": "react-native run-macos --project-path example/macos --scheme AsyncStorageExample",
-    "start:web": "expo start --web",
-    "start:windows": "install-windows-test-app -p example/windows && react-native run-windows --root example --logging --no-packager --no-telemetry",
-    "build:e2e:android": "scripts/android_e2e.sh 'build'",
-    "build:e2e:ios": "scripts/ios_e2e.sh 'build'",
-    "build:e2e:macos": "scripts/macos_e2e.sh 'build'",
-    "bundle:android": "scripts/android_e2e.sh 'bundle'",
-    "bundle:ios": "scripts/ios_e2e.sh 'bundle'",
-    "bundle:macos": "react-native bundle --entry-file index.ts --platform macos --dev false --bundle-output example/index.macos.jsbundle",
-    "test": "concurrently -n lint,ts yarn:test:lint yarn:test:ts",
+    "prepack": "yarn build",
+    "build": "bob build",
+    "start": "(cd example && react-native start)",
     "test:lint": "eslint $(git ls-files '*.js' '*.ts' '*.tsx')",
-    "test:ts": "tsc",
-    "test:e2e:android": "scripts/android_e2e.sh 'test'",
-    "test:e2e:ios": "scripts/ios_e2e.sh 'test'",
-    "test:e2e:macos": "scripts/macos_e2e.sh 'test'"
+    "test:ts": "tsc"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
@@ -65,13 +52,12 @@
     "merge-options": "^3.0.4"
   },
   "peerDependencies": {
-    "react-native": "^0.0.0-0 || >=0.60 <1.0"
+    "react-native": "^0.0.0-0 || >=0.65 <1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@semantic-release/changelog": "^6.0.0",
-    "@semantic-release/git": "^10.0.0",
+    "@babel/core": "^7.25.0",
+    "@babel/preset-env": "^7.25.0",
+    "@react-native/babel-preset": "^0.76.2",
     "@types/lodash": "^4.14.184",
     "@types/mocha": "^10.0.1",
     "@types/react": "^18.0.0",
@@ -88,17 +74,14 @@
     "expo": "^48.0.0",
     "lodash": "^4.17.21",
     "prettier": "2.8.8",
-    "react": "18.2.0",
-    "react-dom": "^18.2.0",
-    "react-native": "^0.71.0",
-    "react-native-builder-bob": "^0.18.0",
-    "react-native-codegen": "^0.71.5",
-    "react-native-macos": "^0.71.0",
-    "react-native-test-app": "^2.5.33",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-native": "^0.76.1",
+    "react-native-builder-bob": "^0.33.3",
+    "react-native-macos": "^0.76.1",
     "react-native-web": "~0.18.10",
-    "react-native-windows": "^0.71.0",
-    "react-test-renderer": "18.2.0",
-    "semantic-release": "^19.0.0",
+    "react-native-windows": "^0.76.1",
+    "react-test-renderer": "^18.2.0",
     "typescript": "^5.3.0",
     "webdriverio": "^8.24.0"
   },
@@ -116,34 +99,17 @@
       ]
     ]
   },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/github",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "CHANGELOG.md",
-            "package.json"
-          ],
-          "message": "chore(release): ${nextRelease.version} [skip ci]"
-        }
-      ]
-    ]
-  },
   "codegenConfig": {
     "name": "rnasyncstorage",
     "type": "modules",
     "jsSrcsDir": "./src",
     "android": {
       "javaPackageName": "com.reactnativecommunity.asyncstorage"
+    },
+    "windows": {
+      "namespace": "RNCAsyncStorage",
+      "outputDirectory": "windows/code/codegen",
+      "separateDataTypes": true
     }
   }
 }

@@ -2426,7 +2426,7 @@ PODS:
     - React-logger (= 0.79.0-rc.3)
     - React-perflogger (= 0.79.0-rc.3)
     - React-utils (= 0.79.0-rc.3)
-  - RNCAsyncStorage (1.23.1):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3492,7 +3492,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b2efca291af9785edd0128611dbc1b1fb4020a6a
+  hermes-engine: c75c0305485bcf52f89bd0a3aa41876d6e21e539
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3578,7 +3578,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 556c91ab2e8cf1389f8c07cbcadb04134923ead4
   ReactCodegen: d7f8d9c10a451391b891994ff1c3ce04e67503c7
   ReactCommon: 0b6cc8bfc9e59b9c652f83325881f271501e9b0e
-  RNCAsyncStorage: 3070bd18200c569f2ce2d1f43ac3bbf6d956d19b
+  RNCAsyncStorage: c1bbcf629d7206d1e19310827848b98d68a4cbaf
   RNCMaskedView: 3e8d6bf9764b519d077986413882959eafceffbc
   RNCPicker: 04b02770d871072243f4a95fa2523b9c3398a2f5
   RNDateTimePicker: dad505d754e617e94a6a465925e5b9b321358c14

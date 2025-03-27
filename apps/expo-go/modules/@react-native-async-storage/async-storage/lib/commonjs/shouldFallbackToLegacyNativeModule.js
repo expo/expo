@@ -6,8 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.shouldFallbackToLegacyNativeModule = shouldFallbackToLegacyNativeModule;
 var _reactNative = require("react-native");
 function shouldFallbackToLegacyNativeModule() {
-  var _NativeModules$Native;
-  const expoConstants = (_NativeModules$Native = _reactNative.NativeModules["NativeUnimoduleProxy"]) === null || _NativeModules$Native === void 0 || (_NativeModules$Native = _NativeModules$Native.modulesConstants) === null || _NativeModules$Native === void 0 ? void 0 : _NativeModules$Native.ExponentConstants;
+  const expoConstants = _reactNative.NativeModules["NativeUnimoduleProxy"]?.modulesConstants?.ExponentConstants;
   if (expoConstants) {
     /**
      * In SDK <= 39, appOwnership is defined in managed apps but executionEnvironment is not.
