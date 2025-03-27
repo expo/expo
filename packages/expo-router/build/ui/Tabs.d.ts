@@ -7,7 +7,6 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
-export { ExpoTabsResetValue } from './TabRouter';
 /**
  * Options to provide to the Tab Router.
  */
@@ -66,9 +65,6 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         }> | ((state: Readonly<Readonly<{
             key: string;
             index: number;
-            /**
-             * Options to provide to the Tab Router.
-             */
             routeNames: string[];
             history?: unknown[] | undefined;
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
