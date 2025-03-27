@@ -1,0 +1,26 @@
+name: Updates E2E enabled (iOS)
+defaults:
+  tools:
+    yarn: '1.22.22'
+
+on:
+  push:
+    branches: ['doug/workflow-testing']
+
+jobs:
+  setup:
+    runs_on: macos-large
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up Updates E2E enabled project
+        run: ./packages/expo-updates/e2e/setup/create-eas-project.ts; ls -la ../updates-e2e
+      - name: Build E2E project
+        working_directory: ../updates-e2e
+        run: yarn generate-test-update-bundles;
+             npx pod-install;
+             npx detox build -c ios.debug;
+
+
+
