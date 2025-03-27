@@ -42,7 +42,7 @@
     "@expo/config-types": "^52.0.5",
     "@expo/image-utils": "^0.6.5",
     "@expo/json-file": "^9.0.2",
-    "@react-native/normalize-colors": "0.76.7",
+    "@react-native/normalize-colors": "0.76.8",
     "debug": "^4.3.1",
     "fs-extra": "^9.0.0",
     "resolve-from": "^5.0.0",
