@@ -33,6 +33,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
+import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
 import expo.modules.medialibrary.albums.DeleteAlbums
 import expo.modules.medialibrary.albums.GetAlbum
 import expo.modules.medialibrary.albums.GetAlbums
@@ -180,15 +181,27 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
+    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri?, promise: Promise ->
       throwUnlessPermissionsGranted {
         val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
-            CreateAlbum(context, albumName, assetId, copyAsset, promise)
-              .execute()
+            assetId?.let {
+              CreateAlbum(context, albumName, assetId, copyAsset, promise)
+                .execute()
+            }
+
+            initialAssetUri?.let {
+              CreateAlbumWithInitialFileUri(context, albumName, it, promise)
+                .execute()
+            }
           }
         }
-        runActionWithPermissions(if (copyAsset) emptyList() else listOf(assetId), action)
+        val assetIdList = if (!copyAsset && assetId != null) {
+          listOf(assetId)
+        } else {
+          emptyList()
+        }
+        runActionWithPermissions(assetIdList, action)
       }
     }
 
