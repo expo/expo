@@ -4,10 +4,29 @@ PODS:
   - EXConstants (17.0.3):
     - ExpoModulesCore
   - Expo (52.0.11):
+    - DoubleConversion
     - ExpoModulesCore
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
     - ReactAppDependencyProvider
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - ExpoAsset (11.0.1):
     - ExpoModulesCore
   - ExpoCrypto (14.0.1):
@@ -39,7 +58,6 @@ PODS:
     - React-ImageManager
     - React-jsinspector
     - React-NativeModulesApple
-    - React-RCTAppDelegate
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
@@ -1982,7 +2000,7 @@ SPEC CHECKSUMS:
   boost: 7d49a506d1ac47358fea28558d184dd6431170ca
   DoubleConversion: 10f51d3e1238973c033faac2d84c0ea114942f53
   EXConstants: ce04ec1ab4b0b9e0f8a6c39211ce51e6ea61797a
-  Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
+  Expo: 8ac0326a6af85a52a0af94406204b42b1dc62098
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
   ExpoCrypto: a5c0a86f3e7a4cf3e99ab6c4bb9733fc13e2a747
   ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
@@ -1991,7 +2009,7 @@ SPEC CHECKSUMS:
   ExpoLinking: 5addac9b3a9c25b8032efc0d604162427c62912e
   ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoMeshGradient: 10206dfd6045700677d876bf58a27f065f4b9f70
-  ExpoModulesCore: aa12329104020250449b4310ffb9ec23b44abfce
+  ExpoModulesCore: cf7b8f45e323a3a56e12556764e78d0b2ee35967
   ExpoSQLite: d79d134aa51e09131a680d40449207681c258cfb
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: a29527fb904bdadfd186d3569a8b331182aba808
@@ -2064,6 +2082,6 @@ SPEC CHECKSUMS:
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: afc9fdda8cd72a3463a1a08e3f3e14aa67250add
 
-PODFILE CHECKSUM: 9d12e58e194fe3eee9636409586b64f4dde94819
+PODFILE CHECKSUM: f66840af6b3ce460ee9f7b193258e312f95d5854
 
 COCOAPODS: 1.16.2
