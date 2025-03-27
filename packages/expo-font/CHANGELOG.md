@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Web] `useFonts` allows multiple font files to define different font styles and weights.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

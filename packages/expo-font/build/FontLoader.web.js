@@ -29,17 +29,27 @@ function testStringFromFontSource(asset) {
     }
     return undefined;
 }
+function familyFromFontSource(asset) {
+    return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
+}
+function weightFromFontSource(asset) {
+    return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
+}
+function styleFromFontSource(asset) {
+    return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+}
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
-    const display = displayFromFontSource(source);
-    const testString = testStringFromFontSource(source);
     if (!uri || typeof uri !== 'string') {
         throwInvalidSourceError(uri);
     }
     return {
         uri,
-        display,
-        testString,
+        display: displayFromFontSource(source),
+        testString: testStringFromFontSource(source),
+        family: familyFromFontSource(source),
+        weight: weightFromFontSource(source),
+        style: styleFromFontSource(source),
     };
 }
 function throwInvalidSourceError(source) {
