@@ -1,12 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingConfig = exports.getNavigationConfig = void 0;
+exports.getLinkingConfig = exports.getNavigationConfig = exports.INTERNAL_SLOT_NAME = void 0;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
 const linking_1 = require("./link/linking");
+exports.INTERNAL_SLOT_NAME = '__root';
 function getNavigationConfig(routes, metaOnly = true) {
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
+    return {
+        screens: {
+            [exports.INTERNAL_SLOT_NAME]: {
+                path: '',
+                ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
+            },
+        },
+    };
 }
 exports.getNavigationConfig = getNavigationConfig;
 function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {

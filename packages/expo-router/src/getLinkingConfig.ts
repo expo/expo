@@ -13,8 +13,17 @@ import {
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
+export const INTERNAL_SLOT_NAME = '__root';
+
 export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
-  return getReactNavigationConfig(routes, metaOnly);
+  return {
+    screens: {
+      [INTERNAL_SLOT_NAME]: {
+        path: '',
+        ...getReactNavigationConfig(routes, metaOnly),
+      },
+    },
+  };
 }
 
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {

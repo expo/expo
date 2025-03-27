@@ -5,6 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
+import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
 import { RouterStore } from '../global-state/router-store';
 
 export type Options<ParamList extends object> = ExpoOptions & {
@@ -192,7 +193,6 @@ function getConfigResources<ParamList extends object>(
 ) {
   // START FORK - We need to disable this caching as our configs can change based upon the current state
   // if (cachedConfigResources[0] !== options) {
-  //   console.log(previousSegments);
   cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
   // }
   // END FORK FORK
@@ -500,9 +500,11 @@ const createNormalizedConfigs = (
           ? joinPaths(parentPattern || '', config.path || '')
           : config.path || '';
 
-      configs.push(
-        createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
-      );
+      if (screen !== INTERNAL_SLOT_NAME) {
+        configs.push(
+          createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
+        );
+      }
     }
 
     if (config.screens) {
