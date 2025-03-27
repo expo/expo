@@ -71,6 +71,10 @@ export type Router = {
      * @hidden
      */
     reload: () => void;
+    /**
+     * Prefetch a screen in the background before navigating to it
+     */
+    prefetch: (name: Href) => void;
 };
 /**
  * @hidden
