@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 export function getBundleUrl(): string | null {
-  let scriptURL: string | null = null;
+  let scriptURL: string | null | undefined = null;
 
   if (typeof window === 'undefined') {
     // For server runtime, we use the filename of the current script
