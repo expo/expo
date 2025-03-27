@@ -58,24 +58,20 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         source?: string | undefined;
         target?: string | undefined;
     }>)): void;
-    navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined, options?: {
-        merge?: boolean | undefined;
-        pop?: boolean | undefined;
-    } | undefined] : never): void;
-    navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-        name: RouteName_1;
+    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+    navigate<RouteName_1 extends string>(options: {
+        name: string;
         params: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
-        pop?: boolean | undefined;
-    } : never): void;
-    navigateDeprecated<RouteName_2 extends string>(...args: RouteName_2 extends unknown ? [screen: RouteName_2, params?: object | undefined] : never): void;
-    navigateDeprecated<RouteName_3 extends string>(options: RouteName_3 extends unknown ? {
-        name: RouteName_3;
+    }): void;
+    navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+    navigateDeprecated<RouteName_3 extends string>(options: {
+        name: string;
         params: object | undefined;
         merge?: boolean | undefined;
-    } : never): void;
-    preload<RouteName_4 extends string>(...args: RouteName_4 extends unknown ? [screen: RouteName_4, params?: object | undefined] : never): void;
+    }): void;
+    preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
     reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
     goBack(): void;
     isFocused(): boolean;
@@ -112,9 +108,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         routeNames: string[];
         history?: unknown[] | undefined;
         routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-        type: string; /**
-         * Event which fires on tapping on the tab in the tab bar.
-         */
+        type: string;
         stale: false;
     }>>) => Readonly<{
         type: string;
@@ -122,24 +116,20 @@ export declare const TabsNavigatorContext: import("react").Context<({
         source?: string | undefined;
         target?: string | undefined;
     }>)): void;
-    navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined, options?: {
-        merge?: boolean | undefined;
-        pop?: boolean | undefined;
-    } | undefined] : never): void;
-    navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-        name: RouteName_1;
+    navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+    navigate<RouteName_1 extends string>(options: {
+        name: string;
         params: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
-        pop?: boolean | undefined;
-    } : never): void;
-    navigateDeprecated<RouteName_2 extends string>(...args: RouteName_2 extends unknown ? [screen: RouteName_2, params?: object | undefined] : never): void;
-    navigateDeprecated<RouteName_3 extends string>(options: RouteName_3 extends unknown ? {
-        name: RouteName_3;
+    }): void;
+    navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+    navigateDeprecated<RouteName_3 extends string>(options: {
+        name: string;
         params: object | undefined;
         merge?: boolean | undefined;
-    } : never): void;
-    preload<RouteName_4 extends string>(...args: RouteName_4 extends unknown ? [screen: RouteName_4, params?: object | undefined] : never): void;
+    }): void;
+    preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
     reset(state: Readonly<{
         key: string;
         index: number;

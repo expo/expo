@@ -25,7 +25,6 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         params?: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
-        pop?: boolean | undefined;
     };
     source?: string | undefined;
     target?: string | undefined;

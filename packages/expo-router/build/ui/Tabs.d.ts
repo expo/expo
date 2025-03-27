@@ -66,6 +66,9 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         }> | ((state: Readonly<Readonly<{
             key: string;
             index: number;
+            /**
+             * Options to provide to the Tab Router.
+             */
             routeNames: string[];
             history?: unknown[] | undefined;
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
@@ -77,24 +80,20 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined, options?: {
-            merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } | undefined] : never): void;
-        navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-            name: RouteName_1;
+        navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName_1 extends string>(options: {
+            name: string;
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } : never): void;
-        navigateDeprecated<RouteName_2 extends string>(...args: RouteName_2 extends unknown ? [screen: RouteName_2, params?: object | undefined] : never): void;
-        navigateDeprecated<RouteName_3 extends string>(options: RouteName_3 extends unknown ? {
-            name: RouteName_3;
+        }): void;
+        navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigateDeprecated<RouteName_3 extends string>(options: {
+            name: string;
             params: object | undefined;
             merge?: boolean | undefined;
-        } : never): void;
-        preload<RouteName_4 extends string>(...args: RouteName_4 extends unknown ? [screen: RouteName_4, params?: object | undefined] : never): void;
+        }): void;
+        preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         reset(state: Readonly<{
             key: string;
             index: number;
@@ -158,24 +157,20 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName_6 extends string>(...args: RouteName_6 extends unknown ? [screen: RouteName_6, params?: object | undefined, options?: {
-            merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } | undefined] : never): void;
-        navigate<RouteName_7 extends string>(options: RouteName_7 extends unknown ? {
-            name: RouteName_7;
+        navigate<RouteName_6 extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName_7 extends string>(options: {
+            name: string;
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } : never): void;
-        navigateDeprecated<RouteName_8 extends string>(...args: RouteName_8 extends unknown ? [screen: RouteName_8, params?: object | undefined] : never): void;
-        navigateDeprecated<RouteName_9 extends string>(options: RouteName_9 extends unknown ? {
-            name: RouteName_9;
+        }): void;
+        navigateDeprecated<RouteName_8 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigateDeprecated<RouteName_9 extends string>(options: {
+            name: string;
             params: object | undefined;
             merge?: boolean | undefined;
-        } : never): void;
-        preload<RouteName_10 extends string>(...args: RouteName_10 extends unknown ? [screen: RouteName_10, params?: object | undefined] : never): void;
+        }): void;
+        preload<RouteName_10 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
         goBack(): void;
         isFocused(): boolean;
@@ -209,24 +204,20 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName_11 extends string>(...args: RouteName_11 extends unknown ? [screen: RouteName_11, params?: object | undefined, options?: {
-            merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } | undefined] : never): void;
-        navigate<RouteName_12 extends string>(options: RouteName_12 extends unknown ? {
-            name: RouteName_12;
+        navigate<RouteName_11 extends string>(...args: [screen: string] | [screen: string, params: object | undefined] | [screen: string, params: object | undefined, merge: boolean]): void;
+        navigate<RouteName_12 extends string>(options: {
+            name: string;
             params: object | undefined;
             path?: string | undefined;
             merge?: boolean | undefined;
-            pop?: boolean | undefined;
-        } : never): void;
-        navigateDeprecated<RouteName_13 extends string>(...args: RouteName_13 extends unknown ? [screen: RouteName_13, params?: object | undefined] : never): void;
-        navigateDeprecated<RouteName_14 extends string>(options: RouteName_14 extends unknown ? {
-            name: RouteName_14;
+        }): void;
+        navigateDeprecated<RouteName_13 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigateDeprecated<RouteName_14 extends string>(options: {
+            name: string;
             params: object | undefined;
             merge?: boolean | undefined;
-        } : never): void;
-        preload<RouteName_15 extends string>(...args: RouteName_15 extends unknown ? [screen: RouteName_15, params?: object | undefined] : never): void;
+        }): void;
+        preload<RouteName_15 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
         goBack(): void;
         isFocused(): boolean;

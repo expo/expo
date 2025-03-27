@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import { DrawerNavigationOptions, DrawerNavigationEventMap } from '@react-navigation/drawer';
 import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
-export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/drawer").DrawerNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/drawer").DrawerNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: DrawerNavigationState<ParamListBase>;
@@ -46,15 +46,26 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         theme: ReactNavigation.Theme;
         children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
     }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
-    UNSTABLE_router?: (<Action extends Readonly<{
+    UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
-        payload?: object | undefined;
-        source?: string | undefined;
-        target?: string | undefined;
-    }>>(original: import("@react-navigation/native").Router<DrawerNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<DrawerNavigationState<ParamListBase>, Action>>) | undefined;
+        stale: false;
+    }>) => import("@react-navigation/native").PartialState<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>> | undefined) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/drawer").DrawerNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/drawer").DrawerNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: DrawerNavigationState<ParamListBase>;
@@ -99,12 +110,23 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         theme: ReactNavigation.Theme;
         children: import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>;
     }) => import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>>) | undefined;
-    UNSTABLE_router?: (<Action extends Readonly<{
+    UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
-        payload?: object | undefined;
-        source?: string | undefined;
-        target?: string | undefined;
-    }>>(original: import("@react-navigation/native").Router<DrawerNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<DrawerNavigationState<ParamListBase>, Action>>) | undefined;
+        stale: false;
+    }>) => import("@react-navigation/native").PartialState<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>> | undefined) | undefined;
 } & {
     id?: undefined;
 }, "children">> & import("react").RefAttributes<unknown>> & {
