@@ -141,8 +141,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   fun applySurfaceViewVisibility() {
-    if (useExoShutter == false) {
-      playerView.videoSurfaceView?.alpha = if (shouldHideSurfaceView) 0f else 1f
+    if (useExoShutter == false && shouldHideSurfaceView) {
+      playerView.videoSurfaceView?.alpha = 0f
     } else {
       playerView.videoSurfaceView?.alpha = 1f
     }
