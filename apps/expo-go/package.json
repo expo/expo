@@ -63,7 +63,7 @@
     "graphql": "^15.3.0",
     "immutable": "^4.0.0",
     "lottie-react-native": "7.2.1",
-    "path-to-regexp": "^1.9.0",
+    "path-to-regexp": "^3.3.0",
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "19.0.0",
