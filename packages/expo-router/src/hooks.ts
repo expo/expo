@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { PreviewParamsContext } from './Preview';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
@@ -201,7 +202,9 @@ export function useGlobalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
-  return useStoreRouteInfo().params;
+  const previewParams = React.useContext(PreviewParamsContext);
+  const routeParams = useStoreRouteInfo().params;
+  return previewParams ?? routeParams;
 }
 
 /**
@@ -244,7 +247,11 @@ export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
-  const params = React.useContext(LocalRouteParamsContext) ?? {};
+  const previewParams = React.useContext(PreviewParamsContext);
+  const routeParams = React.useContext(LocalRouteParamsContext) ?? {};
+
+  const params = previewParams ?? routeParams;
+
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
       if (Array.isArray(value)) {

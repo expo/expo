@@ -6,6 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSearchParams = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
 const react_1 = __importDefault(require("react"));
+const Preview_1 = require("./Preview");
 const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
 /**
@@ -116,11 +117,15 @@ function usePathname() {
 }
 exports.usePathname = usePathname;
 function useGlobalSearchParams() {
-    return (0, router_store_1.useStoreRouteInfo)().params;
+    const previewParams = react_1.default.useContext(Preview_1.PreviewParamsContext);
+    const routeParams = (0, router_store_1.useStoreRouteInfo)().params;
+    return previewParams ?? routeParams;
 }
 exports.useGlobalSearchParams = useGlobalSearchParams;
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
+    const previewParams = react_1.default.useContext(Preview_1.PreviewParamsContext);
+    const routeParams = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
+    const params = previewParams ?? routeParams;
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [

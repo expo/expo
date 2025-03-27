@@ -63,6 +63,7 @@ class RouterStore {
     rootStateSubscribers = new Set();
     storeSubscribers = new Set();
     linkTo = routing_1.linkTo.bind(this);
+    getStateForHref = routing_1.getStateForHref.bind(this);
     getSortedRoutes = sort_routes_1.getSortedRoutes.bind(this);
     goBack = routing_1.goBack.bind(this);
     canGoBack = routing_1.canGoBack.bind(this);

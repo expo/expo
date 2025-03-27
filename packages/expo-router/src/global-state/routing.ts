@@ -135,6 +135,21 @@ export type LinkToOptions = {
   withAnchor?: boolean;
 };
 
+export function getStateForHref(this: RouterStore, href: Href, options: LinkToOptions = {}) {
+  href = resolveHref(href);
+
+  const navigationRef = this.navigationRef.current;
+
+  if (navigationRef == null) {
+    throw new Error(
+      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+    );
+  }
+
+  href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+  return this.linking?.getStateFromPath!(href, this.linking.config);
+}
+
 export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
   if (emitDomLinkEvent(href, options)) {
     return;

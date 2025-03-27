@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, ReactNode } from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
 /**
@@ -194,6 +194,11 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Replaces the initial screen with the current route.
      */
     withAnchor?: boolean;
+    /**
+     * Preview the route inside a context menu before navigating.
+     */
+    preview?: boolean;
+    previewItems?: ReactNode[];
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];

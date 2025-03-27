@@ -1,16 +1,31 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef, JSX } from 'react';
-import { Text, GestureResponderEvent, Platform } from 'react-native';
+import { ContextMenu, ContextMenuProps, Preview } from '@expo/ui/components/ContextMenu';
+import {
+  ReactNode,
+  ComponentType,
+  PropsWithChildren,
+  Fragment,
+  forwardRef,
+  useMemo,
+  MouseEvent,
+  ForwardedRef,
+  JSX,
+} from 'react';
+import { Text, GestureResponderEvent, StyleSheet, Platform, View } from 'react-native';
 
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
+import { PreviewParamsContext } from '../Preview';
+import { RouteNode } from '../Route';
+import { store } from '../global-state/router-store';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
 import { Slot } from '../ui/Slot';
+import { getQualifiedRouteComponent } from '../useScreens';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
@@ -131,6 +146,9 @@ function ExpoRouterLink(
     target,
     download,
     withAnchor,
+    preview,
+    previewItems,
+    children,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
@@ -167,24 +185,78 @@ function ExpoRouterLink(
     props.onPress(e);
   };
 
+  const onLongPress = (e: GestureResponderEvent) => {
+    if ('onLongPress' in rest) {
+      rest.onLongPress?.(e);
+    }
+  };
+
   const Element = asChild ? Slot : Text;
+
+  let Wrapper: ComponentType<any> = Fragment;
+  let wrapperProps = {};
+  let previewComponent: ReactNode = null;
+
+  if (preview) {
+    let state = store.getStateForHref(href);
+    let routeNode: RouteNode | undefined | null = store.routeNode;
+
+    const previewParams = {};
+
+    while (state && routeNode) {
+      const route = state.routes[state.index || state.routes.length - 1];
+      Object.assign(previewParams, route.params);
+      state = route.state;
+      routeNode = routeNode.children.find((child) => child.route === route.name);
+    }
+
+    if (routeNode) {
+      Wrapper = ContextMenu;
+      wrapperProps = {
+        activationMethod: 'longPress',
+      } satisfies Omit<ContextMenuProps, 'children'>;
+      const Component = getQualifiedRouteComponent(routeNode);
+      previewComponent = (
+        <PreviewParamsContext.Provider value={previewParams}>
+          <View style={styles.preview}>
+            <Component />
+          </View>
+        </PreviewParamsContext.Provider>
+      );
+    }
+  }
 
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   return (
-    <Element
-      ref={ref}
-      {...props}
-      {...hrefAttrs}
-      {...rest}
-      style={style}
-      {...Platform.select({
-        web: {
-          onClick: onPress,
-        } as any,
-        default: { onPress },
-      })}
-    />
+    <Wrapper {...wrapperProps}>
+      {previewComponent ? <Preview>{previewComponent}</Preview> : <></>}
+      {previewItems}
+      <Element
+        ref={ref}
+        {...props}
+        {...hrefAttrs}
+        {...rest}
+        style={style}
+        {...Platform.select({
+          web: {
+            onClick: onPress,
+          } as any,
+          default: { onPress, onLongPress },
+        })}>
+        {children}
+      </Element>
+    </Wrapper>
   );
 }
 
 export { LinkProps, WebAnchorProps };
+
+const styles = StyleSheet.create({
+  preview: {
+    backgroundColor: 'white',
+    height: '50%',
+    width: '50%',
+    margin: 'auto',
+    pointerEvents: 'none',
+  },
+});

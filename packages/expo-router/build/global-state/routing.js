@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
+exports.linkTo = exports.getStateForHref = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -121,6 +121,16 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
+function getStateForHref(href, options = {}) {
+    href = (0, href_1.resolveHref)(href);
+    const navigationRef = this.navigationRef.current;
+    if (navigationRef == null) {
+        throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");
+    }
+    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
+    return this.linking?.getStateFromPath(href, this.linking.config);
+}
+exports.getStateForHref = getStateForHref;
 function linkTo(href, options = {}) {
     if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
         return;
