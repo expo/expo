@@ -48,7 +48,7 @@ describe('baseUrl', () => {
     expect(getStateFromPath<object>(path, config)).toEqual({
       routes: [
         {
-          name: '___InternalSlot',
+          name: '__root',
           state: {
             routes: [
               {
@@ -74,7 +74,7 @@ describe('baseUrl', () => {
     expect(getStateFromPath<object>(path, config)).toEqual({
       routes: [
         {
-          name: '___InternalSlot',
+          name: '__root',
           state: {
             routes: [
               {
@@ -149,7 +149,7 @@ describe('hash', () => {
     expect(getStateFromPath('/hello#123', getMockConfig(['[hello]']))).toEqual({
       routes: [
         {
-          name: '___InternalSlot',
+          name: '__root',
           params: {
             hello: 'hello',
           },
@@ -174,7 +174,7 @@ describe('hash', () => {
     expect(getStateFromPath('/?#123', getMockConfig(['index']))).toEqual({
       routes: [
         {
-          name: '___InternalSlot',
+          name: '__root',
           state: {
             routes: [
               {
@@ -213,7 +213,7 @@ it(`supports spaces`, () => {
   expect(getStateFromPath('/hello%20world', getMockConfig(['[hello world]']))).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         params: {
           'hello world': 'hello world',
         },
@@ -260,7 +260,7 @@ it(`matches against dynamic groups`, () => {
   ).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         params: {
           user: '(explore)',
         },
@@ -316,7 +316,7 @@ it(`adds dynamic route params from all levels of the path`, () => {
   ).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         params: {
           baz: 'baz',
           foo: 'foo',
@@ -375,7 +375,7 @@ it(`handles not-found routes`, () => {
   expect(getStateFromPath('/missing-page', getMockConfig(['+not-found', 'index']))).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         params: {
           'not-found': ['missing-page'],
         },
@@ -401,7 +401,7 @@ it(`handles query params`, () => {
   ).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         state: {
           routes: [
             {
@@ -426,7 +426,7 @@ it(`handles query params`, () => {
   ).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         state: {
           routes: [
             {
@@ -451,7 +451,7 @@ it(`prioritizes hoisted index routes over dynamic groups`, () => {
   ).toEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         state: {
           routes: [
             {

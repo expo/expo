@@ -13,7 +13,7 @@ import {
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
-export const INTERNAL_SLOT_NAME = '___InternalSlot';
+export const INTERNAL_SLOT_NAME = '__root';
 
 export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
   return {

@@ -23,9 +23,7 @@ it('stacks should always push a new route', () => {
 
   // Initial stale state
   expect(store.rootStateSnapshot()).toStrictEqual({
-    routes: [
-      { name: '___InternalSlot', state: { routes: [{ name: 'index', path: '/' }], stale: true } },
-    ],
+    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }], stale: true } }],
     stale: true,
   });
 
@@ -43,11 +41,11 @@ it('stacks should always push a new route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 1,
@@ -244,11 +242,11 @@ it('works in a nested layout Stack->Tab->Stack', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 2,
@@ -387,11 +385,11 @@ it('targets the correct Stack when pushing to a nested layout', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 3,
@@ -500,7 +498,7 @@ it('push should also add anchor routes', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         state: {
           routes: [
             {
@@ -521,11 +519,11 @@ it('push should also add anchor routes', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 1,

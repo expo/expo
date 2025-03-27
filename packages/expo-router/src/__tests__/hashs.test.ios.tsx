@@ -24,11 +24,11 @@ it('can push a hash url', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 4,
@@ -123,7 +123,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: '___InternalSlot',
+        name: '__root',
         state: {
           routes: [
             {
@@ -144,11 +144,11 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['___InternalSlot'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '___InternalSlot',
+        name: '__root',
         params: undefined,
         state: {
           index: 0,

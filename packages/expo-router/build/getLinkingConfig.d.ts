@@ -3,9 +3,15 @@ import { RouteNode } from './Route';
 import { RouterStore } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
+export declare const INTERNAL_SLOT_NAME = "__root";
 export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
-    initialRouteName: undefined;
-    screens: Record<string, import("./getReactNavigationConfig").Screen>;
+    screens: {
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("./getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    };
 };
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
     getPathFromState?: typeof getPathFromState;

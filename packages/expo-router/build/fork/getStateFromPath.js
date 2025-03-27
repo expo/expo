@@ -31,6 +31,7 @@ const native_1 = require("@react-navigation/native");
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const expo = __importStar(require("./getStateFromPath-forks"));
+const getLinkingConfig_1 = require("../getLinkingConfig");
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -155,6 +156,7 @@ function prepareConfigResources(options, previousSegments) {
         (0, native_1.validatePathConfig)(options);
     }
     const initialRoutes = getInitialRoutes(options);
+    debugger;
     const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
     checkForDuplicatedConfigs(configs);
     const configWithRegexes = getConfigsWithRegexes(configs);
@@ -369,7 +371,9 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 config.exact !== true
                     ? joinPaths(parentPattern || '', config.path || '')
                     : config.path || '';
-            configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
+            if (screen !== getLinkingConfig_1.INTERNAL_SLOT_NAME) {
+                configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
+            }
         }
         if (config.screens) {
             // property `initialRouteName` without `screens` has no purpose
@@ -386,6 +390,7 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
         }
     }
     routeNames.pop();
+    console.log(JSON.stringify(configs, null, 2));
     return configs;
 };
 const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, config = {}) => {
