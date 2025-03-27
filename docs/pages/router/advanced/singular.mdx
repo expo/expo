@@ -22,24 +22,17 @@ The singular identifier function has the signature of `(routeName: string, param
 
 ## Assigning singular on the navigator
 
-<FileTree
-  files={[
-    'app/_layout.tsx',
-    'app/index.tsx',
-    'app/[profile].tsx',
-  ]}
-/>
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[profile].tsx']} />
 
 Using the example app above, we can create a singular constraint to ensure that each `[profile]` page is unique.
 
 ```tsx app/_layout.tsx
-
-export default function() {
+export default function () {
   return (
     <Stack>
       <Stack.Screen name="[profile]" dangerouslySingular={({ profile }) => profile} />
     </Stack>
-  )
+  );
 }
 ```
 
@@ -49,7 +42,7 @@ If we now navigate to `/profile-2` and our history is
 - `/profile-2`
 - `/profile-3`
 
-The new history will push the new route, but also remove any previous entries 
+The new history will push the new route, but also remove any previous entries
 
 - `/profile-1`
 - `/profile-3`
@@ -59,7 +52,7 @@ The new history will push the new route, but also remove any previous entries
 
 `dangerouslySingular` can also be added to the `<Link />` component to create links that enforce
 
-```tsx 
+```tsx
 <Link href="/unique-link" dangerouslySingular />
 <Link href="/unique-link" dangerouslySingular={(name) => name === 'unique-link' ? name : undefined} />
 ```
@@ -68,28 +61,26 @@ The new history will push the new route, but also remove any previous entries
 
 The imperative api also accepts a `dangerouslySingular` option
 
-```tsx 
-router.navigate('/unique-link', { dangerouslySingular: true })
-router.navigate('/unique-link', { dangerouslySingular: (name) => name === 'unique-link' ? name : undefined })
+```tsx
+router.navigate('/unique-link', { dangerouslySingular: true });
+router.navigate('/unique-link', {
+  dangerouslySingular: name => (name === 'unique-link' ? name : undefined),
+});
 
-router.push('/unique-link', { dangerouslySingular: true })
-router.push('/unique-link', { dangerouslySingular: (name) => name === 'unique-link' ? name : undefined })
+router.push('/unique-link', { dangerouslySingular: true });
+router.push('/unique-link', {
+  dangerouslySingular: name => (name === 'unique-link' ? name : undefined),
+});
 ```
 
 ## Push vs Navigate
 
 The `navigate` and `push` events apply the singular constraint differently.
 
-- *navigate*: Only applies the constraint if the current route is changed
-- *push*: Always applies the constraint
+- _navigate_: Only applies the constraint if the current route is changed
+- _push_: Always applies the constraint
 
-<FileTree
-  files={[
-    'app/_layout.tsx',
-    'app/index.tsx',
-    'app/[profile].tsx',
-  ]}
-/>
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[profile].tsx']} />
 
 Using the app structure above, if we have the history of
 
@@ -101,12 +92,12 @@ Using the app structure above, if we have the history of
 
 ```tsx
 // Will NOT apply the singular constraint as the current route is the target route
-router.navigate("/profile-2", { 
+router.navigate("/profile-2", {
   dangerouslySingular: (_, { profile } => profile === 'profile-2' ? profile : undefined )
 })
 
 // Will apply the singular constraint
-router.push("/profile-2", { 
+router.push("/profile-2", {
   dangerouslySingular: (_, { profile } => profile === 'profile-2' ? profile : undefined )
 })
 ```
