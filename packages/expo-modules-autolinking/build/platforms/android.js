@@ -3,12 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchGradlePropertyFirst = exports.convertPackageWithGradleToProjectName = exports.convertPackageToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.isAndroidProject = exports.generatePackageListAsync = void 0;
+exports.searchGradlePropertyFirst = exports.convertPackageWithGradleToProjectName = exports.convertPackageToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.isAndroidProject = exports.generatePackageListAsync = exports.getConfiguration = void 0;
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
+function getConfiguration(options) {
+    const buildFromSource = options.android?.buildFromSource;
+    if (buildFromSource) {
+        return { buildFromSource };
+    }
+    return undefined;
+}
+exports.getConfiguration = getConfiguration;
 /**
  * Generates Java file that contains all autolinked packages.
  */
