@@ -1,4 +1,6 @@
-def useSQLCipher = settings.providers.gradleProperty("expo.sqlite.useSQLCipher").getOrElse("false")
-def useLibSQL = settings.providers.gradleProperty("expo.sqlite.useLibSQL").getOrElse("false")
-
-useLibSQL == "false" && useSQLCipher == "false"
+[
+  "expo.sqlite.useSQLCipher",
+  "expo.sqlite.useLibSQL",
+  "expo.sqlite.enableFTS",
+  "expo.sqlite.customBuildFlags",
+].any { settings.providers.gradleProperty(it).isPresent() }
