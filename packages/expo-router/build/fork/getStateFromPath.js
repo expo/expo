@@ -145,7 +145,6 @@ previousSegments
 ) {
     // START FORK - We need to disable this caching as our configs can change based upon the current state
     // if (cachedConfigResources[0] !== options) {
-    //   console.log(previousSegments);
     cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
     // }
     // END FORK FORK
@@ -156,7 +155,6 @@ function prepareConfigResources(options, previousSegments) {
         (0, native_1.validatePathConfig)(options);
     }
     const initialRoutes = getInitialRoutes(options);
-    debugger;
     const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
     checkForDuplicatedConfigs(configs);
     const configWithRegexes = getConfigsWithRegexes(configs);
@@ -390,7 +388,6 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
         }
     }
     routeNames.pop();
-    console.log(JSON.stringify(configs, null, 2));
     return configs;
 };
 const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, config = {}) => {
