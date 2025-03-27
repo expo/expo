@@ -2056,7 +2056,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-view-shot (4.0.2):
+  - react-native-view-shot (4.0.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3545,7 +3545,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 76d98b23c05d77c39346bc094183d314bd7bdf5b
   react-native-slider: c4c1a975352113af59b59dc783abc111618ec37a
-  react-native-view-shot: 105375eceab012a37db548637dd6fca795af977a
+  react-native-view-shot: 41c5c50c809f1fd61f91c99400b2222c9b80d13f
   react-native-webview: d3a6bde17001bc9cded1b2219b6cc2e60f27b74d
   React-NativeModulesApple: a5ed6f425abed68a61415527cf902b22eb661b32
   React-oscompat: 481559f37d95c98fa39fa84674171a5f6646a932
