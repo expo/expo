@@ -37,7 +37,7 @@
     "@expo/styleguide-base": "^1.0.1",
     "@lottiefiles/dotlottie-react": "^0.10.1",
     "@lottiefiles/react-lottie-player": "^3.5.4",
-    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "4.5.6",

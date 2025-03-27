@@ -2626,7 +2626,7 @@ PODS:
     - React-logger (= 0.79.0-rc.3)
     - React-perflogger (= 0.79.0-rc.3)
     - React-utils (= 0.79.0-rc.3)
-  - RNCAsyncStorage (1.23.1):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3695,7 +3695,7 @@ SPEC CHECKSUMS:
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: a13cdda7bbe886d533908636117037b198014387
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 222573b97e0c0023ee02f5a8480d6aa3080ceb3f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3775,7 +3775,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 556c91ab2e8cf1389f8c07cbcadb04134923ead4
   ReactCodegen: daea2a288fc631ab7785e2008974e214c701b0fe
   ReactCommon: 0b6cc8bfc9e59b9c652f83325881f271501e9b0e
-  RNCAsyncStorage: 3070bd18200c569f2ce2d1f43ac3bbf6d956d19b
+  RNCAsyncStorage: c1bbcf629d7206d1e19310827848b98d68a4cbaf
   RNCMaskedView: 3e8d6bf9764b519d077986413882959eafceffbc
   RNCPicker: 04b02770d871072243f4a95fa2523b9c3398a2f5
   RNDateTimePicker: dad505d754e617e94a6a465925e5b9b321358c14
