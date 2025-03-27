@@ -4,8 +4,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 @Serializable
 data class ExpoAutolinkingConfig(
@@ -96,12 +94,13 @@ data class GradleProject(
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
   val modules: List<String> = emptyList(),
+  val shouldUsePublicationScriptPath: String? = null,
   @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
 ) {
   /**
    * Returns whether the publication was defined and should be used.
    */
-  val shouldUsePublication: Boolean
+  val usePublication: Boolean
     get() = publication != null && configuration.shouldUsePublication
 }
 

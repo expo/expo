@@ -12,7 +12,7 @@ class AutolinkingIntegrationImpl : AutolinkingIntegration {
       throw IllegalStateException("Couldn't find project with name $name in `expo-autolinking-settings` configuration.")
     }
 
-    if (dependency.shouldUsePublication) {
+    if (dependency.usePublication) {
       val publication = requireNotNull(dependency.publication)
       return "${publication.groupId}:${publication.artifactId}:${publication.version}"
     }
