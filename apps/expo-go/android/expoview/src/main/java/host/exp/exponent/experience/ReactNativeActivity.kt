@@ -521,19 +521,6 @@ abstract class ReactNativeActivity :
     }
   }
 
-  /**
-   * Emits events to `RCTNativeAppEventEmitter`
-   */
-  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
-    try {
-      val emitter =
-        reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
-      emitter?.emit(eventName, eventArgs)
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-  }
-
   // for getting global permission
   override fun checkSelfPermission(permission: String): Int {
     return super.checkPermission(permission, Process.myPid(), Process.myUid())
