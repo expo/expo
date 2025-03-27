@@ -267,7 +267,7 @@ describe('expo-router integration', () => {
 
     // Ensure `@react-navigation/native` was updated
     expect(pkg.read().dependencies).toMatchObject({
-      '@react-navigation/native': '^7.0.14',
+      '@react-navigation/native': '^7.0.17',
     });
   });
 });
