@@ -48,6 +48,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix default group when linking to route with ambiguous shared groups by using initialRouteName setting. ([#34541](https://github.com/expo/expo/pull/34541) by [@bryanmylee](https://github.com/bryanmylee))
 - Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
 
