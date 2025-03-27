@@ -12,8 +12,6 @@
 
 @implementation EXUserFacingNotificationsPermissionsRequester
 
-static NSDictionary *_requestedPermissions;
-
 + (NSString *)permissionType
 {
   return @"userFacingNotifications";
@@ -23,6 +21,7 @@ static NSDictionary *_requestedPermissions;
 {
   if (self = [super init]) {
     self.methodQueue = dispatch_queue_create("EXUserFacingNotificationsPermissionRequester", DISPATCH_QUEUE_SERIAL);
+    self.authorizationOptions = UNAuthorizationOptionNone;
   }
   return self;
 }
@@ -70,55 +69,7 @@ static NSDictionary *_requestedPermissions;
 
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  if (!_requestedPermissions || [_requestedPermissions count] == 0) {
-    _requestedPermissions = @{
-                              @"allowAlert": @(YES),
-                              @"allowBadge": @(YES),
-                              @"allowSound": @(YES)
-                            };
-  }
-  [self requestPermissions:_requestedPermissions withResolver:resolve rejecter:reject];
-}
-
-- (void)requestPermissions:(NSDictionary *)permissions withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
-{
-  UNAuthorizationOptions options = UNAuthorizationOptionNone;
-  if ([permissions.allKeys containsObject:@"allowAlert"] &&
-      permissions[@"allowAlert"] != [NSNull null] &&
-      [permissions[@"allowAlert"] boolValue]) {
-    options |= UNAuthorizationOptionAlert;
-  }
-  if ([permissions.allKeys containsObject:@"allowBadge"] &&
-      permissions[@"allowBadge"] != [NSNull null] &&
-      [permissions[@"allowBadge"] boolValue]) {
-    options |= UNAuthorizationOptionBadge;
-  }
-  if ([permissions.allKeys containsObject:@"allowSound"] &&
-      permissions[@"allowSound"] != [NSNull null] &&
-      [permissions[@"allowSound"] boolValue]) {
-    options |= UNAuthorizationOptionSound;
-  }
-  if ([permissions.allKeys containsObject:@"allowDisplayInCarPlay"] &&
-      permissions[@"allowDisplayInCarPlay"] != [NSNull null] &&
-      [permissions[@"allowDisplayInCarPlay"] boolValue]) {
-    options |= UNAuthorizationOptionCarPlay;
-  }
-  if ([permissions.allKeys containsObject:@"allowCriticalAlerts"] &&
-      permissions[@"allowCriticalAlerts"] != [NSNull null] &&
-      [permissions[@"allowCriticalAlerts"] boolValue]) {
-      options |= UNAuthorizationOptionCriticalAlert;
-  }
-  if ([permissions.allKeys containsObject:@"provideAppNotificationSettings"] &&
-      permissions[@"provideAppNotificationSettings"] != [NSNull null] &&
-      [permissions[@"provideAppNotificationSettings"] boolValue]) {
-      options |= UNAuthorizationOptionProvidesAppNotificationSettings;
-  }
-  if ([permissions.allKeys containsObject:@"allowProvisional"] &&
-      permissions[@"allowProvisional"] != [NSNull null] &&
-      [permissions[@"allowProvisional"] boolValue]) {
-      options |= UNAuthorizationOptionProvisional;
-  }
-  [self requestAuthorizationOptions:options withResolver:resolve rejecter:reject];
+  [self requestAuthorizationOptions:self.authorizationOptions withResolver:resolve rejecter:reject];
 }
 
 - (void)requestAuthorizationOptions:(UNAuthorizationOptions)options withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
@@ -190,11 +141,6 @@ static NSDictionary *_requestedPermissions;
     case UNNotificationSettingNotSupported:
       return nil;
   }
-}
-
-+ (void)setRequestedPermissions:(NSDictionary *)permissions
-{
-  _requestedPermissions = permissions;
 }
 
 @end
