@@ -35,7 +35,10 @@ afterAll(() => {
     router_store_1.store.cleanup();
 });
 function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
-    jest.useFakeTimers();
+    // Enable fake timers only if not already enabled by the user, to avoid overriding their configuration
+    if (!('isFake' in Date)) {
+        jest.useFakeTimers();
+    }
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
