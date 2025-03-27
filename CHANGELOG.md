@@ -7,7 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `@shopify/flash-list` from `1.7.1` to `1.7.6` ([#34635](https://github.com/expo/expo/pull/34635) by [@chrfalch](https://github.com/chrfalch), [#35699](https://github.com/expo/expo/pull/35699) by [@jakex7](https://github.com/jakex7))
+- Updated `@shopify/flash-list` from `1.7.1` to `1.7.6`. ([#34635](https://github.com/expo/expo/pull/34635) by [@chrfalch](https://github.com/chrfalch), [#35699](https://github.com/expo/expo/pull/35699) by [@jakex7](https://github.com/jakex7))
+- Updated `react-native-screens` from `4.9.0` to `4.9.2`. ([#35702](https://github.com/expo/expo/pull/35702) by [@jakex7](https://github.com/jakex7))
 
 ### 🛠 Breaking changes
 
