@@ -1,25 +1,31 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
+import { ContextMenu, ContextMenuProps, Preview } from '@expo/ui/components/ContextMenu';
 import {
+  ReactNode,
+  ComponentType,
   PropsWithChildren,
-  useState,
+  Fragment,
   forwardRef,
   useMemo,
   MouseEvent,
   ForwardedRef,
   JSX,
 } from 'react';
-import { Text, GestureResponderEvent, Platform } from 'react-native';
+import { Text, GestureResponderEvent, StyleSheet, Platform, View } from 'react-native';
 
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
-import { Preview } from '../Preview';
+import { PreviewParamsContext } from '../Preview';
+import { RouteNode } from '../Route';
+import { store } from '../global-state/router-store';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
 import { Slot } from '../ui/Slot';
+import { getQualifiedRouteComponent } from '../useScreens';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
@@ -141,6 +147,7 @@ function ExpoRouterLink(
     download,
     withAnchor,
     preview,
+    previewItems,
     children,
     ...rest
   }: LinkProps,
@@ -148,8 +155,6 @@ function ExpoRouterLink(
 ) {
   // Mutate the style prop to add the className on web.
   const style = useInteropClassName(rest);
-
-  const [showPreview, setShowPreview] = useState(false);
 
   // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
   const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
@@ -171,7 +176,6 @@ function ExpoRouterLink(
     event,
     relativeToDirectory,
     withAnchor,
-    setShowPreview: preview ? setShowPreview : undefined,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
@@ -185,14 +189,48 @@ function ExpoRouterLink(
     if ('onLongPress' in rest) {
       rest.onLongPress?.(e);
     }
-    props.onLongPress();
   };
 
   const Element = asChild ? Slot : Text;
 
+  let Wrapper: ComponentType<any> = Fragment;
+  let wrapperProps = {};
+  let previewComponent: ReactNode = null;
+
+  if (preview) {
+    let state = store.getStateForHref(href);
+    let routeNode: RouteNode | undefined | null = store.routeNode;
+
+    const previewParams = {};
+
+    while (state && routeNode) {
+      const route = state.routes[state.index || state.routes.length - 1];
+      Object.assign(previewParams, route.params);
+      state = route.state;
+      routeNode = routeNode.children.find((child) => child.route === route.name);
+    }
+
+    if (routeNode) {
+      Wrapper = ContextMenu;
+      wrapperProps = {
+        activationMethod: 'longPress',
+      } satisfies Omit<ContextMenuProps, 'children'>;
+      const Component = getQualifiedRouteComponent(routeNode);
+      previewComponent = (
+        <PreviewParamsContext.Provider value={previewParams}>
+          <View style={styles.preview}>
+            <Component />
+          </View>
+        </PreviewParamsContext.Provider>
+      );
+    }
+  }
+
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   return (
-    <>
+    <Wrapper {...wrapperProps}>
+      {previewComponent ? <Preview>{previewComponent}</Preview> : <></>}
+      {previewItems}
       <Element
         ref={ref}
         {...props}
@@ -207,9 +245,18 @@ function ExpoRouterLink(
         })}>
         {children}
       </Element>
-      {showPreview ? <Preview href={resolvedHref} onDismiss={() => setShowPreview(false)} /> : null}
-    </>
+    </Wrapper>
   );
 }
 
 export { LinkProps, WebAnchorProps };
+
+const styles = StyleSheet.create({
+  preview: {
+    backgroundColor: 'white',
+    height: '50%',
+    width: '50%',
+    margin: 'auto',
+    pointerEvents: 'none',
+  },
+});

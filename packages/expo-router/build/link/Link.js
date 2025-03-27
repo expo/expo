@@ -7,15 +7,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = exports.Redirect = void 0;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
+const ContextMenu_1 = require("@expo/ui/components/ContextMenu");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const Preview_1 = require("../Preview");
+const router_store_1 = require("../global-state/router-store");
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 const useLinkHooks_1 = require("./useLinkHooks");
 const Slot_1 = require("../ui/Slot");
+const useScreens_1 = require("../useScreens");
 /**
  * Redirects to the `href` as soon as the component is mounted.
  *
@@ -82,10 +85,9 @@ exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, withAnchor, preview, children, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, preview, previewItems, children, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
-    const [showPreview, setShowPreview] = (0, react_1.useState)(false);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
     const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
     const resolvedHref = (0, react_1.useMemo)(() => {
@@ -106,7 +108,6 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, preview, childr
         event,
         relativeToDirectory,
         withAnchor,
-        setShowPreview: preview ? setShowPreview : undefined,
     });
     const onPress = (e) => {
         if ('onPress' in rest) {
@@ -118,11 +119,38 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, preview, childr
         if ('onLongPress' in rest) {
             rest.onLongPress?.(e);
         }
-        props.onLongPress();
     };
     const Element = asChild ? Slot_1.Slot : react_native_1.Text;
+    let Wrapper = react_1.Fragment;
+    let wrapperProps = {};
+    let previewComponent = null;
+    if (preview) {
+        let state = router_store_1.store.getStateForHref(href);
+        let routeNode = router_store_1.store.routeNode;
+        const previewParams = {};
+        while (state && routeNode) {
+            const route = state.routes[state.index || state.routes.length - 1];
+            Object.assign(previewParams, route.params);
+            state = route.state;
+            routeNode = routeNode.children.find((child) => child.route === route.name);
+        }
+        if (routeNode) {
+            Wrapper = ContextMenu_1.ContextMenu;
+            wrapperProps = {
+                activationMethod: 'longPress',
+            };
+            const Component = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
+            previewComponent = (<Preview_1.PreviewParamsContext.Provider value={previewParams}>
+          <react_native_1.View style={styles.preview}>
+            <Component />
+          </react_native_1.View>
+        </Preview_1.PreviewParamsContext.Provider>);
+        }
+    }
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-    return (<>
+    return (<Wrapper {...wrapperProps}>
+      {previewComponent ? <ContextMenu_1.Preview>{previewComponent}</ContextMenu_1.Preview> : <></>}
+      {previewItems}
       <Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,
@@ -131,7 +159,15 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, preview, childr
     })}>
         {children}
       </Element>
-      {showPreview ? <Preview_1.Preview href={resolvedHref} onDismiss={() => setShowPreview(false)}/> : null}
-    </>);
+    </Wrapper>);
 }
+const styles = react_native_1.StyleSheet.create({
+    preview: {
+        backgroundColor: 'white',
+        height: '50%',
+        width: '50%',
+        margin: 'auto',
+        pointerEvents: 'none',
+    },
+});
 //# sourceMappingURL=Link.js.map

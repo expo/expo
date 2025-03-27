@@ -1,6 +1,6 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent } from 'react';
+import { useMemo, MouseEvent, ReactNode } from 'react';
 import { TextProps, GestureResponderEvent, Platform } from 'react-native';
 
 import { Href } from '../types';
@@ -215,6 +215,8 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    * Preview the route inside a context menu before navigating.
    */
   preview?: boolean;
+
+  previewItems?: ReactNode[];
 }
 
 // Mutate the style prop to add the className on web.

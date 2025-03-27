@@ -34,14 +34,9 @@ function eventShouldPreventDefault(
 
 type UseLinkToPathPropsOptions = LinkToOptions & {
   href: string;
-  setShowPreview?: (showPreview: boolean) => void;
 };
 
-export default function useLinkToPathProps({
-  href,
-  setShowPreview,
-  ...options
-}: UseLinkToPathPropsOptions) {
+export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const { linkTo } = useExpoRouter();
 
   const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
@@ -51,10 +46,6 @@ export default function useLinkToPathProps({
       }
       linkTo(href, options);
     }
-  };
-
-  const onLongPress = () => {
-    setShowPreview?.(true);
   };
 
   let strippedHref = stripGroupSegmentsFromPath(href) || '/';
@@ -68,7 +59,6 @@ export default function useLinkToPathProps({
     href: strippedHref,
     role: 'link' as const,
     onPress,
-    onLongPress,
   };
 }
 
