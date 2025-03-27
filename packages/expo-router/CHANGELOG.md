@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Wrap app in root `<Slot />` navigator ([#35613](https://github.com/expo/expo/pull/35613) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
