@@ -7,10 +7,11 @@ import { getBundleUrl } from '../utils/getBundleUrl';
  * Similar to how it works in the web, but adapted for the RN context
  * https://github.com/wintercg/import-meta-registry
  */
-class ImportMetaRegistryClass {
-  public readonly url = getBundleUrl();
-
-  public readonly env = process.env;
-}
-
-export const ImportMetaRegistry = new ImportMetaRegistryClass();
+export const ImportMetaRegistry = {
+  get url() {
+    return getBundleUrl();
+  },
+  get env() {
+    return process.env;
+  },
+};

@@ -1,5 +1,5 @@
-Object.defineProperty(globalThis, 'ExpoImportMetaRegistry', {
+Object.defineProperty(globalThis, '__ExpoImportMetaRegistry', {
   value: require('./ImportMetaRegistry').ImportMetaRegistry,
-  enumerable: true,
+  enumerable: false,
   writable: true,
 });

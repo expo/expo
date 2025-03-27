@@ -30,7 +30,7 @@ install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
 
-install('ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
+install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
 
 installFormDataPatch(FormData);
 

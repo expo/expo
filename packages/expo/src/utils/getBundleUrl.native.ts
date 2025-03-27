@@ -11,5 +11,5 @@ export function getBundleUrl(): string | null {
     scriptURL = `file://${scriptURL}`;
   }
   const url = new URL(scriptURL);
-  return `${url.protocol}//${url.host}${url.pathname}`;
+  return url.toString();
 }
