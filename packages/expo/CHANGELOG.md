@@ -27,9 +27,19 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [apple] Move `AppDelegate` integration from `expo-modules-core` to `expo` package. ([#34985](https://github.com/expo/expo/pull/34985) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Add EXAppDelegateWrapper import to Expo.h ([#35172](https://github.com/expo/expo/pull/35172) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+
+## 52.0.41 - 2025-03-26
+
+### 💡 Others
+
 - Improve devtools plugins transport performance. ([#35581](https://github.com/expo/expo/pull/35581) by [@kudo](https://github.com/kudo))
 - Improve warning for incompatible devtools plugins. ([#35587](https://github.com/expo/expo/pull/35587) by [@kudo](https://github.com/kudo))
 - Re-export bin for `expo-modules-autolinking` and `fingerprint`. ([#35660](https://github.com/expo/expo/pull/35660) by [@kudo](https://github.com/kudo))
+
+## 52.0.40 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.39 - 2025-03-14
 

@@ -21,6 +21,10 @@
 - Drop `invariant` and `md5-file` dependencies. ([#35328](https://github.com/expo/expo/pull/35328) by [@kitten](https://github.com/kitten))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 
+## 11.0.5 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.4 - 2025-02-19
 
 _This version does not introduce any user-facing changes._

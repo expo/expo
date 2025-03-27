@@ -3,6 +3,7 @@
 #import <EXDevMenu/DevMenuRCTBridge.h>
 
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
+#import <EXDevMenu/DevMenuRCTDevSettings.h>
 
 // The search path for the Swift generated headers are different
 // between use_frameworks and non_use_frameworks mode.
@@ -134,6 +135,23 @@
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
+  [modules addObject:[[DevClientNoOpLoadingView alloc] init]];
+  [modules addObject:[[DevMenuRCTDevSettings alloc] init]];
+
+  return modules;
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  // Overrides DevLoadingView ("Connect to Metro to develop JavaScript") as no-op for dev menu
+  if (strcmp(name, "DevLoadingView") == 0) {
+    return [DevClientNoOpLoadingView class];
+  }
+  return [super getModuleClassFromName:name];
 }
 
 @end
