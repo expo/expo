@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
-  private weak var expoAppDelegate: ReactNativeFactoryProvider?
+  private weak var reactNativeFactory: RCTReactNativeFactory?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -39,29 +39,29 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-    return self.expoAppDelegate?.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
+    return self.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
   }
 
   @objc
   public func destroyReactInstance() {
-    self.expoAppDelegate?.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
+    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let appDelegate = (UIApplication.shared.delegate as? ReactNativeFactoryProvider) ??
-      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ReactNativeFactoryProvider) else {
+    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
       fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
-    self.expoAppDelegate = appDelegate
+    self.reactNativeFactory = appDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if appDelegate.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
-      appDelegate.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
+      self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-      appDelegate.reactNativeFactory?.bridge = nil
-      appDelegate.reactNativeFactory?.rootViewFactory.bridge = nil
+      self.reactNativeFactory?.bridge = nil
+      self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
     let rootView = appDelegate.recreateRootView(

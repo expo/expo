@@ -77,12 +77,14 @@ target 'Expo Go' do
   ]
   config = use_native_modules!(config_command)
 
+  react_native_path = '../../../react-native-lab/react-native/packages/react-native'
+
   use_react_native!(
-    :path => '../../../react-native-lab/react-native/packages/react-native',
+    :path => react_native_path,
     :hermes_enabled => true,
   )
   setup_jsc!(
-    :react_native_path => '../../../react-native-lab/react-native/packages/react-native',
+    :react_native_path => react_native_path,
   )
 
   post_install do |installer|
@@ -90,7 +92,7 @@ target 'Expo Go' do
     if installer.pods_project
       react_native_post_install(
         installer,
-        config[:reactNativePath],
+        react_native_path,
         :mac_catalyst_enabled => false
       )
     end
@@ -112,7 +114,7 @@ target 'Expo Go' do
 
       # Set `REACT_NATIVE_PATH` to react-native submodule
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", '../../../react-native-lab/react-native/packages/react-native')
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
       end
 
       # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.

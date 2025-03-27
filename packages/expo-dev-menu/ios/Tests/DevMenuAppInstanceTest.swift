@@ -4,6 +4,12 @@ import React
 
 @testable import EXDevMenu
 
+@objc
+internal protocol RCTReactNativeFactoryInternal {
+  @objc
+  func extraModules(forBridge bridge: RCTBridge) -> [any RCTBridgeModule]
+}
+
 class DevMenuAppInstanceTest: QuickSpec {
   class MockedBridge: RCTBridge {
     var enqueueJSCallWasCalled = false
@@ -20,12 +26,12 @@ class DevMenuAppInstanceTest: QuickSpec {
     let appInstance = DevMenuAppInstance(
       manager: DevMenuManager.shared
     )
-    
+
     it("checks if `sendCloseEvent` sends correct event") {
       let bridgeDelegate = MockBridgeDelegate()
       let mockedBridge = MockedBridge(delegate: bridgeDelegate, launchOptions: nil)!
       waitBridgeReady(bridgeDelegate: bridgeDelegate)
-  
+
       appInstance.setBridge(mockedBridge)
       appInstance.sendCloseEvent()
 
@@ -36,7 +42,7 @@ class DevMenuAppInstanceTest: QuickSpec {
       let bridgeDelegate = MockBridgeDelegate()
       let mockedBridge = MockedBridge(delegate: bridgeDelegate, launchOptions: nil)!
       waitBridgeReady(bridgeDelegate: bridgeDelegate)
-      
+
       appInstance.setBridge(mockedBridge)
       let sourceURL = appInstance.sourceURL(for: mockedBridge)
 
@@ -49,7 +55,10 @@ class DevMenuAppInstanceTest: QuickSpec {
       waitBridgeReady(bridgeDelegate: bridgeDelegate)
       appInstance.setBridge(mockedBridge)
 
-      guard let extraModules = appInstance.reactNativeFactory?.rootViewFactory.extraModules(for: mockedBridge) else {
+      let result = appInstance.reactNativeFactory?
+        .perform(#selector(RCTReactNativeFactoryInternal.extraModules(forBridge:)), with: mockedBridge)
+        .takeUnretainedValue()
+      guard let extraModules = result as? [any RCTBridgeModule] else {
         XCTFail("Failed to call extraModules(for:)")
         return
       }

@@ -35,7 +35,7 @@ public class EmitterModule: Module, NotificationDelegate {
     }
   }
 
-  public func didReceive(_ notification: UNNotification, completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+  public func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
     completionHandler(.noData)
     return true
   }

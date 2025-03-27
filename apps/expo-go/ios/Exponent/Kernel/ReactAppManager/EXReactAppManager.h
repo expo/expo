@@ -1,7 +1,7 @@
 
 #import <UIKit/UIKit.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
 #import <React/RCTBridgeDelegate.h>
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
 #import <React/RCTReloadCommand.h>
 
 #import "EXAppFetcher.h"
