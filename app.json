@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "expo-workflow-testing",
+    "slug": "expo-workflow-testing",
+    "extra": {
+      "eas": {
+        "projectId": "495165b4-05b7-4812-91fe-21d838ac7391"
+      }
+    },
+    "owner": "expo-ci"
+  }
+}
