@@ -1,4 +1,3 @@
-import { NavigationState } from '@react-navigation/native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -526,11 +525,22 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       routes: [
         {
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: '/apple',
+          state: {
+            routes: [
+              {
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: true,
+          },
         },
       ],
       stale: true,
@@ -543,78 +553,129 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['[slug]', '_sitemap', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: '/apple',
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
 
     // Adding a new screen with different params should work
     act(() => router.push('/banana'));
     expect(screen).toHaveRouterState({
-      index: 1,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['[slug]', '_sitemap', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: '/apple',
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'banana',
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
           },
-          path: undefined,
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
 
     // Normally pushing would add a new route, but since we have singular set to true
     // It rearranges the Stack to move /apple to the current route
     act(() => router.push('/apple'));
     expect(screen).toHaveRouterState({
-      index: 1,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['[slug]', '_sitemap', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'banana',
-          },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: '/apple',
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
   });
 });

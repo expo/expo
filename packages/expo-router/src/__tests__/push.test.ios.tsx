@@ -1,4 +1,3 @@
-import { NavigationState } from '@react-navigation/native';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -591,69 +590,111 @@ describe('singular', () => {
     act(() => router.push('/banana'));
 
     expect(screen).toHaveRouterState({
-      index: 3,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple' },
-          path: '/apple',
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple' },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple' },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'banana' },
-          path: undefined,
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 3,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
 
     // Should push /apple and remove all previous instances of /apple
     act(() => router.push('/apple', { dangerouslySingular: true }));
 
     expect(screen).toHaveRouterState({
-      index: 1,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'banana',
-          },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: undefined,
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
   });
 
   test('can dynamically route using singular function', () => {
@@ -672,45 +713,75 @@ describe('singular', () => {
     act(() => router.push('/banana'));
 
     expect(screen).toHaveRouterState({
-      index: 4,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple' },
-          path: '/apple',
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple', id: '1' },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple', id: '1' },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'apple', id: '2' },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
-          params: { slug: 'banana' },
-          path: undefined,
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 4,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  id: '1',
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  id: '1',
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  id: '2',
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
 
     // Should push /apple and remove all previous instances of /apple
     act(() => {
@@ -718,30 +789,47 @@ describe('singular', () => {
     });
 
     expect(screen).toHaveRouterState({
-      index: 1,
+      index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['_sitemap', '[slug]', '+not-found'],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: '[slug]',
-          params: {
-            slug: 'banana',
-          },
-          path: undefined,
-        },
-        {
-          key: expect.any(String),
-          name: '[slug]',
+          name: '__root',
           params: {
             slug: 'apple',
           },
-          path: undefined,
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as NavigationState);
+    });
   });
 });
