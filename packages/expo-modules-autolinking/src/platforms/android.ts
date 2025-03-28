@@ -2,10 +2,23 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+import type {
+  ExtraDependencies,
+  ModuleDescriptorAndroid,
+  PackageRevision,
+  ResolveOptions,
+} from '../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
+
+export function getConfiguration(options: ResolveOptions): Record<string, any> | undefined {
+  const buildFromSource = options.android?.buildFromSource;
+  if (buildFromSource) {
+    return { buildFromSource };
+  }
+  return undefined;
+}
 
 /**
  * Generates Java file that contains all autolinked packages.

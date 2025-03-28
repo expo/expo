@@ -14,9 +14,19 @@ export type AutolinkingOptions = {
   ignorePaths?: string[] | null;
   exclude?: string[] | null;
   flags?: Record<string, any>;
-} & {
+};
+
+export type AndroidAutolinkingOptions = AutolinkingOptions & {
+  buildFromSource?: string[] | null;
+};
+
+export type BaseAutolinkingOptions = AutolinkingOptions & {
   [key in SupportedPlatform]?: AutolinkingOptions;
 };
+
+export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
+  android?: AndroidAutolinkingOptions;
+}
 
 export interface SearchOptions {
   // Available in the CLI
@@ -36,6 +46,10 @@ export interface SearchOptions {
 
   // Scratched from project's config
   flags?: Record<string, any>;
+
+  android?: {
+    buildFromSource?: string[] | null;
+  };
 }
 
 export interface ResolveOptions extends SearchOptions {
