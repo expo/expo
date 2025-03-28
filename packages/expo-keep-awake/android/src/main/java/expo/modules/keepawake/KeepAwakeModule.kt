@@ -25,7 +25,9 @@ class KeepAwakeModule : Module() {
     AsyncFunction("deactivate") { tag: String, promise: Promise ->
       try {
         keepAwakeManager.deactivate(tag) { promise.resolve() }
-      } catch { promise.resolve() }
+      } catch (e: Exception) {
+        promise.resolve()
+      }
     }
 
     AsyncFunction<Boolean>("isActivated") {
