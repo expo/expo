@@ -55,10 +55,10 @@ struct ListItemView: ExpoSwiftUI.View {
       }
     }
     .swipeActions(edge: .trailing, allowsFullSwipe: props.allowsFullSwipeTrailing) {
-      if (editMode?.wrappedValue == .inactive || !props.hideTrailingActionsInEditMode) {
-          ActionButtons(fromArray: props.trailingActions) { id in
-            props.onActionPressed(["id": id])
-          }
+      if editMode?.wrappedValue == .inactive || !props.hideTrailingActionsInEditMode {
+        ActionButtons(fromArray: props.trailingActions) { id in
+          props.onActionPressed(["id": id])
+        }
       }
     }
   }
