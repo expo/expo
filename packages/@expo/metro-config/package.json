@@ -48,7 +48,7 @@
     "glob": "^10.4.2",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.27.0",
-    "minimatch": "^3.0.4",
+    "minimatch": "^9.0.0",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0"
   },

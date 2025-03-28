@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "EXDevMenuViewController.h"

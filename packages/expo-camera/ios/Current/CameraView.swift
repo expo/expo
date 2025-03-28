@@ -493,6 +493,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
         return
       }
+
       let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
@@ -539,7 +540,11 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
         with: updatedMetadata,
         quality: Float(options.quality))
     } else {
-      processedImageData = takenImage.jpegData(compressionQuality: options.quality)
+      if options.imageType == .png {
+        processedImageData = takenImage.pngData()
+      } else {
+        processedImageData = takenImage.jpegData(compressionQuality: options.quality)
+      }
     }
 
     guard let processedImageData else {
@@ -557,12 +562,13 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     let path = FileSystemUtilities.generatePathInCache(
       appContext,
       in: "Camera",
-      extension: ".jpg"
+      extension: options.imageType.toExtension()
     )
 
     response["uri"] = ExpoCameraUtils.write(data: processedImageData, to: path)
     response["width"] = width
     response["height"] = height
+    response["format"] = options.imageType.rawValue
 
     if options.base64 {
       response["base64"] = processedImageData.base64EncodedString()

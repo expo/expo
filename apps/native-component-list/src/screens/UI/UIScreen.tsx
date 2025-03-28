@@ -92,6 +92,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ListScreen'));
     },
   },
+  {
+    name: 'BottomSheet component',
+    route: 'ui/bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetScreen'));
+    },
+  },
 ];
 if (Platform.OS === 'ios') {
   UIScreens.push({

@@ -50,7 +50,7 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   private val androidContext = InstrumentationRegistry.getInstrumentation().context
-  private val logger = UpdatesLogger(androidContext)
+  private val logger = UpdatesLogger(androidContext.filesDir)
 
   // Test classes
   class TestStateChangeEventManager : IUpdatesEventManager {

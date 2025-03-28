@@ -1,5 +1,16 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
+/**
+ * Colors for slider's core elements.
+ * @platform android
+ */
+export type SliderElementColors = {
+    thumbColor?: string;
+    activeTrackColor?: string;
+    inactiveTrackColor?: string;
+    activeTickColor?: string;
+    inactiveTickColor?: string;
+};
 export type SliderProps = {
     /**
      * Custom styles for the slider component.
@@ -11,12 +22,12 @@ export type SliderProps = {
      */
     value?: number;
     /**
-     * The number of steps between the minimum and maximum values. 0 signifies infinite steps.
+     * The number of steps between the minimum and maximum values, `0` signifies infinite steps.
      * @default 0
      */
     steps?: number;
     /**
-     * The mininum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
+     * The minimum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
      * @default 0
      */
     min?: number;
@@ -29,13 +40,7 @@ export type SliderProps = {
      * Colors for slider's core elements.
      * @platform android
      */
-    elementColors?: {
-        thumbColor?: string;
-        activeTrackColor?: string;
-        inactiveTrackColor?: string;
-        activeTickColor?: string;
-        inactiveTickColor?: string;
-    };
+    elementColors?: SliderElementColors;
     /**
      * Slider color.
      */
@@ -48,6 +53,9 @@ export type SliderProps = {
 type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
     value: number;
 }>;
+/**
+ * @hidden
+ */
 export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
 export declare function Slider(props: SliderProps): import("react").JSX.Element;
 export {};

@@ -84,11 +84,15 @@ export async function resolveModuleAsync(
     });
 
     const { publication } = project;
+    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+      : undefined;
 
     return {
       name: project.name,
       sourceDir: projectPath,
       modules: project.modules ?? [],
+      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
       ...(publication ? { publication } : {}),
       ...(aarProjects?.length > 0 ? { aarProjects } : {}),
     };

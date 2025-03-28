@@ -46,6 +46,8 @@ class AudioPlayer(
   val player = ref
   var preservesPitch = false
   var isPaused = false
+  var isMuted = false
+  var previousVolume = 1f
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
@@ -62,6 +64,18 @@ class AudioPlayer(
     addPlayerListeners()
     source?.let {
       setMediaSource(source)
+    }
+  }
+
+  fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
+    val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
+    if (isMuted) {
+      if (boundedVolume > 0f) {
+        previousVolume = boundedVolume
+      }
+      player.volume = 0f
+    } else {
+      player.volume = if (boundedVolume > 0) boundedVolume else previousVolume
     }
   }
 

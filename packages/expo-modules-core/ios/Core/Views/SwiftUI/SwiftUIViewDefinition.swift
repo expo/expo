@@ -28,43 +28,37 @@ public extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
    */
-  func UnwrappedChildren<T: View>(  // swiftlint:disable:this identifier_name
-    @ViewBuilder transform: @escaping (
-      _ child: AnyView, _ isHostingView: Bool
-    ) -> T = { child, _ in child }
-  ) -> ForEach<Range<Int>, Int, AnyView> { // Return ForEach to enable modifiers like `onDelete`
-    // Ensure there's a valid array of children, otherwise return a default empty view
-    guard let children = props.children else {
-      // Return empty ForEach to match return type's requirements
+  func UnwrappedChildren<T: View>(
+    // swiftlint:disable:this identifier_name
+    children: [ExpoSwiftUI.Child?]? = nil,
+    @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
+    -> T = { child, _ in  child }
+  ) -> ForEach<Range<Int>, Int, AnyView> {
+    guard let children = children ?? props.children else {
       return ForEach(0..<1) { _ in AnyView(EmptyView()) }
     }
     let childrenArray = Array(children)
+
     return ForEach(0..<childrenArray.count, id: \.self) { index in
       let child = childrenArray[index]
-      // Wrap if ... else in AnyView to match return type's requirements
       AnyView(
         Group {
-          if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
-            // If it's a hosting view, extract content and props to apply the transformation
+          if let hostingView = child?.view as? (any ExpoSwiftUI.AnyHostingView) {
             let content = hostingView.getContentView()
-            let propsObject =
-            hostingView.getProps() as any ObservableObject
+            let propsObject = hostingView.getProps() as any ObservableObject
             transform(
               AnyView(
                 content
                   .environmentObject(propsObject)
-                  .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)
-              ),
-              true
-            )
+                  .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)), true)
           } else {
-            // If it's not a hosting view, apply the transformation without changes
             transform(AnyView(child), false)
           }
         }
       )
     }
   }
+
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
     }

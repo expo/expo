@@ -20,7 +20,7 @@ type Props = {
 const cleanContent = (content: string) =>
   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 
-export function LogBoxMessage(props: Props): JSX.Element {
+export function LogBoxMessage(props: Props): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
   if (props.plaintext === true) {
@@ -29,7 +29,7 @@ export function LogBoxMessage(props: Props): JSX.Element {
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
   const substitutionStyle: StyleProp<TextStyle> = props.style;
-  const elements: JSX.Element[] = [];
+  const elements: React.ReactElement[] = [];
   let length = 0;
   const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
     let cleanMessage = cleanContent(message);

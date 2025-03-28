@@ -14,7 +14,10 @@
     "expo": "canary",
     "expo-status-bar": "~2.0.0",
     "react": "19.0.0",
-    "react-native": "0.78.0"
+    "react-native": "0.79.0-rc.3"
+  },
+  "overrides": {
+    "react": "19.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

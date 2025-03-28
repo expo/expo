@@ -1,5 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { SQLiteSession } from './SQLiteSession';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
 export { SQLiteOpenOptions };
 /**
@@ -8,7 +9,7 @@ export { SQLiteOpenOptions };
 export declare class SQLiteDatabase {
     readonly databasePath: string;
     readonly options: SQLiteOpenOptions;
-    private readonly nativeDatabase;
+    readonly nativeDatabase: NativeDatabase;
     constructor(databasePath: string, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
@@ -37,6 +38,12 @@ export declare class SQLiteDatabase {
      * @param source A string containing the SQL query.
      */
     prepareAsync(source: string): Promise<SQLiteStatement>;
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    createSessionAsync(dbName?: string): Promise<SQLiteSession>;
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
@@ -113,6 +120,15 @@ export declare class SQLiteDatabase {
      * @param source A string containing the SQL query.
      */
     prepareSync(source: string): SQLiteStatement;
+    /**
+     * Create a new session for the database.
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     *
+     * @param dbName The name of the database to create a session for. The default value is `main`.
+     */
+    createSessionSync(dbName?: string): SQLiteSession;
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
@@ -278,6 +294,40 @@ export declare function deleteDatabaseAsync(databaseName: string, directory?: st
  * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
 export declare function deleteDatabaseSync(databaseName: string, directory?: string): void;
+/**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export declare function backupDatabaseAsync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }: {
+    sourceDatabase: SQLiteDatabase;
+    sourceDatabaseName?: string;
+    destDatabase: SQLiteDatabase;
+    destDatabaseName?: string;
+}): Promise<void>;
+/**
+ * Backup a database to another database.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @param sourceDatabase The source database to backup from.
+ * @param sourceDatabaseName The name of the source database. The default value is `main`.
+ * @param destDatabase The destination database to backup to.
+ * @param destDatabaseName The name of the destination database. The default value is `main`.
+ */
+export declare function backupDatabaseSync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }: {
+    sourceDatabase: SQLiteDatabase;
+    sourceDatabaseName?: string;
+    destDatabase: SQLiteDatabase;
+    destDatabaseName?: string;
+}): void;
 /**
  * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
  */

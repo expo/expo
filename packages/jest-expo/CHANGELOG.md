@@ -10,7 +10,16 @@
 
 ### 🐛 Bug fixes
 
+- Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
+- Update mocks to for esm exports. ([#35574](https://github.com/expo/expo/pull/35574) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 52.0.6 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed jest error from `FormData`. ([#35162](https://github.com/expo/expo/pull/35162) by [@WoLewicki](https://github.com/WoLewicki))
 
 ## 52.0.5 - 2025-02-21
 

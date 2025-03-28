@@ -350,17 +350,15 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [_reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
+  rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
                                                                initialProperties:nil
                                                                    launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
+  UIViewController *rootViewController = [self createRootViewController];
+  [self setRootView:rootView toRootViewController:rootViewController];
   _window.rootViewController = rootViewController;
-
-
   [_window makeKeyAndVisible];
 }
 

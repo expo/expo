@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Allow `version` to be overridden on iOS and Android. ([#33637](https://github.com/expo/expo/pull/33637) by [@Titozzz](https://github.com/Titozzz))
+- Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -19,6 +19,13 @@
 - Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled. ([#32361](https://github.com/expo/expo/pull/32361) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Throw more descriptive error when string resource tag value is empty. ([#34212](https://github.com/expo/expo/pull/34212) by [@wschurman](https://github.com/wschurman))
+- Update test snapshot for template changes. ([#35661](https://github.com/expo/expo/pull/35661) by [@kudo](https://github.com/kudo))
+
+## 9.0.17 - 2025-03-11
+
+### 🎉 New features
+
+- Allow `version` to be overridden on iOS and Android. ([#33637](https://github.com/expo/expo/pull/33637) by [@Titozzz](https://github.com/Titozzz))
 
 ## 9.0.16 - 2025-02-21
 

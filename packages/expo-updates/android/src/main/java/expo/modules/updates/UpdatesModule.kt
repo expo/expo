@@ -2,11 +2,11 @@ package expo.modules.updates
 
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -18,6 +18,12 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -32,10 +38,12 @@ enum class UpdatesJSEvent(val eventName: String) : Enumerable {
  */
 class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   private val logger: UpdatesLogger
-    get() = UpdatesLogger(context)
+    get() = UpdatesLogger(context.filesDir)
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val moduleScope = CoroutineScope(Dispatchers.IO)
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
@@ -43,7 +51,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Events<UpdatesJSEvent>()
 
     Constants {
-      UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
+      UpdatesLogger(context.filesDir).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
@@ -81,6 +89,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
+
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -90,6 +99,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -98,6 +108,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
                 promise.resolve(
                   Bundle().apply {
@@ -128,6 +139,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               is IUpdatesController.FetchUpdateResult.ErrorResult -> {
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
               }
+
               is IUpdatesController.FetchUpdateResult.Failure -> {
                 promise.resolve(
                   Bundle().apply {
@@ -136,6 +148,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
                 promise.resolve(
                   Bundle().apply {
@@ -144,6 +157,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
                   }
                 )
               }
+
               is IUpdatesController.FetchUpdateResult.Success -> {
                 promise.resolve(
                   Bundle().apply {
@@ -193,15 +207,13 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       )
     }
 
-    AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
-      AsyncTask.execute {
-        promise.resolve(readLogEntries(context, maxAge))
-      }
+    AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
+      return@Coroutine readLogEntries(context.filesDir, maxAge)
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
-      AsyncTask.execute {
-        clearLogEntries(context) { error ->
+      moduleScope.launch {
+        clearLogEntries(context.filesDir) { error ->
           if (error != null) {
             promise.reject(
               "ERR_UPDATES_READ_LOGS",
@@ -218,16 +230,24 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
+
+    OnDestroy {
+      try {
+        moduleScope.cancel()
+      } catch (e: IllegalStateException) {
+        logger.error("The scope does not have a job in it", e)
+      }
+    }
   }
 
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
 
-    internal fun readLogEntries(context: Context, maxAge: Long): List<Bundle> {
-      val reader = UpdatesLogReader(context)
+    internal suspend fun readLogEntries(filesDirectory: File, maxAge: Long) = withContext(Dispatchers.IO) {
+      val reader = UpdatesLogReader(filesDirectory)
       val date = Date()
       val epoch = Date(date.time - maxAge)
-      return reader.getLogEntries(epoch)
+      reader.getLogEntries(epoch)
         .mapNotNull { UpdatesLogEntry.create(it) }
         .map { entry ->
           Bundle().apply {
@@ -248,8 +268,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
         }
     }
 
-    internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
-      val reader = UpdatesLogReader(context)
+    internal suspend fun clearLogEntries(filesDirectory: File, completionHandler: (_: Exception?) -> Unit) {
+      val reader = UpdatesLogReader(filesDirectory)
       reader.purgeLogEntries(
         olderThan = Date(),
         completionHandler

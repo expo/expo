@@ -14,7 +14,7 @@ private val lock = Any()
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
-    val kspVersion = getKSPVersion(project, kotlinVersion)
+    val kspVersion = getKSPVersion(project)
 
     // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
     val expoModuleExtension = project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
@@ -46,7 +46,7 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       ?: project.logger.warnIfNotDefined("kotlinVersion", "2.0.21")
   }
 
-  private fun getKSPVersion(project: Project, kotlinVersion: String): String {
+  private fun getKSPVersion(project: Project): String {
     return project.rootProject.extra.safeGet<String>("kspVersion")
       ?: project.logger.warnIfNotDefined("kspVersion", "2.0.21-1.0.28")
   }

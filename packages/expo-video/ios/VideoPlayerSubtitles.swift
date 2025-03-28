@@ -19,7 +19,7 @@ class VideoPlayerSubtitles {
   }
 
   func selectSubtitleTrack(subtitleTrack: SubtitleTrack?) {
-    guard let currentItem = self.owner?.pointer.currentItem else {
+    guard let currentItem = self.owner?.ref.currentItem else {
       return
     }
 

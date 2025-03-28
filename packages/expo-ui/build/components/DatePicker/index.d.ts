@@ -1,6 +1,5 @@
-import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
 type AndroidVariant = 'picker' | 'input';
 type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
@@ -9,12 +8,12 @@ type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
  */
 export type DatePickerProps = {
     /**
-     * The intial date to display on the picker.
+     * The initial date to display on the picker.
      */
     initialDate?: string | null;
     /**
      * A title displayed on the picker on iOS.
-     * @platform iOS
+     * @platform ios
      */
     title?: string;
     /**
@@ -23,7 +22,7 @@ export type DatePickerProps = {
     onDateSelected?: (date: Date) => void;
     /**
      * The variant of the picker, which determines its appearance and behavior.
-     * @platform iOS
+     * @platform ios
      * @default 'automatic'
      */
     iosVariant?: IOSVariant;
@@ -36,15 +35,15 @@ export type DatePickerProps = {
     /**
      * Show to button to toggle between variants on Android.
      * @platform android
-     * @default 'true'
+     * @default true
      */
     showVariantToggle?: boolean;
     /**
      * The components that the picker should display.
-     * On iOS, you can have a picker that selects both date and time.
      * On Android, you can have a picker that selects just the date or just the time.
      * `dateAndTime` is only available on iOS and will result in a date picker on Android.
-     * @default ['date']
+     * On iOS, you can have a picker that selects both date and time.
+     * @default 'date'
      */
     displayedComponents?: DisplayedComponents;
     /**
@@ -68,6 +67,6 @@ type NativeDatePickerProps = Omit<DatePickerProps, 'iosVariant' | 'androidVarian
     date: Date;
 }>;
 export declare function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps;
-export declare function DateTimePicker(props: DatePickerProps): React.JSX.Element;
+export declare function DateTimePicker(props: DatePickerProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

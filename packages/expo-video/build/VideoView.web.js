@@ -25,6 +25,7 @@ export const VideoView = forwardRef((props, ref) => {
     const mediaNodeRef = useRef(null);
     const hasToSetupAudioContext = useRef(false);
     const fullscreenChangeListener = useRef(null);
+    const isWaitingForFirstFrame = useRef(false);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
      * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -67,11 +68,24 @@ export const VideoView = forwardRef((props, ref) => {
         const onLeave = () => {
             props.onPictureInPictureStop?.();
         };
+        const onLoadStart = () => {
+            isWaitingForFirstFrame.current = true;
+        };
+        const onCanPlay = () => {
+            if (isWaitingForFirstFrame.current) {
+                props.onFirstFrameRender?.();
+            }
+            isWaitingForFirstFrame.current = false;
+        };
         videoRef.current?.addEventListener('enterpictureinpicture', onEnter);
         videoRef.current?.addEventListener('leavepictureinpicture', onLeave);
+        videoRef.current?.addEventListener('loadstart', onLoadStart);
+        videoRef.current?.addEventListener('loadeddata', onCanPlay);
         return () => {
             videoRef.current?.removeEventListener('enterpictureinpicture', onEnter);
             videoRef.current?.removeEventListener('leavepictureinpicture', onLeave);
+            videoRef.current?.removeEventListener('loadstart', onLoadStart);
+            videoRef.current?.removeEventListener('loadeddata', onCanPlay);
         };
     }, [videoRef, props.onPictureInPictureStop, props.onPictureInPictureStart]);
     // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
