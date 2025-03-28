@@ -20,6 +20,7 @@
 - Add Sitemap to exported views ([#34144](https://github.com/expo/expo/pull/34144) by [@davidavz](https://github.com/davidavz))
 - Fix tests after dependency update ([#35035](https://github.com/expo/expo/pull/35035) by [@marklawlor](https://github.com/marklawlor))
 - Update TypeScript for React 19 ([#35217](https://github.com/expo/expo/pull/35217) by [@marklawlor](https://github.com/marklawlor))
+- Removed vendored `react-helmet-async` package.json
 
 ### 🐛 Bug fixes
 
