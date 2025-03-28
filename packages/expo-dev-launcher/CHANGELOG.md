@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - support react-native 0.77 ([#33379](https://github.com/expo/expo/pull/33379) by [@vonovak](https://github.com/vonovak))
+- Bump version of React Navigation ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

@@ -5,7 +5,7 @@ import { Href } from '../types';
 type TabsProps = BottomTabNavigationOptions & {
     href?: Href | null;
 };
-export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -46,26 +46,15 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         theme: ReactNavigation.Theme;
         children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
     }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
-    UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+    UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
-        stale: false;
-    }>) => import("@react-navigation/native").PartialState<Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-        type: string;
-        stale: false;
-    }>> | undefined) | undefined;
+        payload?: object | undefined;
+        source?: string | undefined;
+        target?: string | undefined;
+    }>>(original: import("@react-navigation/native").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "initialRouteName" | "children" | "layout" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -106,23 +95,12 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         theme: ReactNavigation.Theme;
         children: React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
     }) => React.ReactElement<unknown, string | React.JSXElementConstructor<any>>) | undefined;
-    UNSTABLE_getStateForRouteNamesChange?: ((state: Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+    UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
-        stale: false;
-    }>) => import("@react-navigation/native").PartialState<Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-        type: string;
-        stale: false;
-    }>> | undefined) | undefined;
+        payload?: object | undefined;
+        source?: string | undefined;
+        target?: string | undefined;
+    }>>(original: import("@react-navigation/native").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("@react-navigation/native").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
 } & {
     id?: undefined;
 }, "children">> & React.RefAttributes<unknown>> & {

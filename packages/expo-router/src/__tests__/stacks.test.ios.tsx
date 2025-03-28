@@ -505,3 +505,177 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
 });
+
+describe('singular', () => {
+  test('singular should only allow one instance of a screen', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="[slug]" dangerouslySingular />
+          </Stack>
+        ),
+        '[slug]': () => <Text>slug</Text>,
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    expect(screen).toHaveRouterState({
+      routes: [
+        {
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            routes: [
+              {
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: true,
+    });
+
+    // Normally pushing would add a new route, but since we have singular set to true
+    // Nothing should happen, as the current route is already the same as the target route
+    act(() => router.push('/apple'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    // Adding a new screen with different params should work
+    act(() => router.push('/banana'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    // Normally pushing would add a new route, but since we have singular set to true
+    // It rearranges the Stack to move /apple to the current route
+    act(() => router.push('/apple'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+});
