@@ -16,11 +16,8 @@ struct LabelView: ExpoSwiftUI.View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
       Label(
         title: { Text(props.title ?? "") },
-        icon: { Image(systemName: props.systemImage ?? "") }
+        icon: { Image(systemName: props.systemImage ?? "").foregroundStyle(props.color ?? Color.accentColor) }
       )
-      .if(props.color != nil) {
-        $0.accentColor(props.color)
-      }
       .fixedSize()
     }
   }
