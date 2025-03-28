@@ -15,12 +15,18 @@ jobs:
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
       - name: Set up Updates E2E enabled project
+        id: setup
         run: ./packages/expo-updates/e2e/setup/create-eas-project.ts; ls -la ../updates-e2e
       - name: Build E2E project
+        id: build
         working_directory: ../updates-e2e
         run: yarn generate-test-update-bundles;
              npx pod-install;
              npx detox build -c ios.debug;
+      - name: Test E2E project
+        id: test
+        working_directory: ../updates-e2e
+        run: npx detox test -c ios.debug
 
 
 
