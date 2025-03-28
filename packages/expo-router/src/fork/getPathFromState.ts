@@ -112,6 +112,9 @@ export function getPathDataFromState<ParamList extends object>(
     let index = typeof current.index === 'number' ? current.index : 0;
     let route = current.routes[index] as Route<string> & {
       state?: State;
+      params?: {
+        params?: Route<string>['params'];
+      };
     };
 
     let pattern: string | undefined;
@@ -209,7 +212,7 @@ export function getPathDataFromState<ParamList extends object>(
           : undefined;
 
         if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-          route = { ...screens[screen], name: screen, key: screen };
+          route = { params: route.params?.params || {}, name: screen, key: screen };
           currentOptions = screens;
         } else {
           hasNext = false;
