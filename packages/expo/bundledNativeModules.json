@@ -62,7 +62,7 @@
   "expo-network": "~7.0.2",
   "expo-notifications": "~0.29.8",
   "expo-print": "~14.0.2",
-  "expo-router": "~4.0.9",
+  "expo-router": "~5.0.0-sdk-52-router-patches",
   "expo-screen-capture": "~7.0.0",
   "expo-screen-orientation": "~8.0.0",
   "expo-secure-store": "~14.0.0",

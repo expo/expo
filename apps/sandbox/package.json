@@ -12,7 +12,7 @@
     "@react-navigation/native": "^7.0.17",
     "expo": "~52.0.0",
     "expo-linking": "~7.0.3",
-    "expo-router": "^4.0.0",
+    "expo-router": "^5.0.0-sdk-52-router-patches",
     "expo-splash-screen": "~0.29.13",
     "react": "19.0.0",
     "react-native": "0.79.0-rc.3",
