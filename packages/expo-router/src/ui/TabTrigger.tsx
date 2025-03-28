@@ -4,7 +4,6 @@ import { ReactNode, useContext, ReactElement, ComponentProps, useCallback } from
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
 import { TabTriggerMapContext } from './TabContext';
-import { ExpoTabsResetValue } from './TabRouter';
 import type { TriggerMap } from './common';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
@@ -31,10 +30,6 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
    * Forward props to child component. Useful for custom wrappers.
    */
   asChild?: boolean;
-  /**
-   * Resets the route when switching to a tab.
-   */
-  reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 
 export type TabTriggerOptions = {
@@ -67,10 +62,9 @@ const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotPro
  * </Tabs>
  * ```
  */
-export function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }: TabTriggerProps) {
+export function TabTrigger({ asChild, name, href, ...props }: TabTriggerProps) {
   const { trigger, triggerProps } = useTabTrigger({
     name,
-    reset,
     ...props,
   });
 
@@ -106,16 +100,6 @@ export function isTabTrigger(
   return child.type === TabTrigger;
 }
 
-/**
- * Options for `switchTab` function.
- */
-export type SwitchToOptions = {
-  /**
-   * Navigate and reset the history.
-   */
-  reset?: ExpoTabsResetValue;
-};
-
 export type Trigger = TriggerMap[string] & {
   isFocused: boolean;
   resolvedHref: string;
@@ -123,7 +107,7 @@ export type Trigger = TriggerMap[string] & {
 };
 
 export type UseTabTriggerResult = {
-  switchTab: (name: string, options: SwitchToOptions) => void;
+  switchTab: (name: string) => void;
   getTrigger: (name: string) => Trigger | undefined;
   trigger?: Trigger;
   triggerProps: TriggerProps;
@@ -140,7 +124,7 @@ export type TriggerProps = {
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation } = useNavigatorContext();
-  const { name, reset, onPress, onLongPress } = options;
+  const { name, onPress, onLongPress } = options;
   const triggerMap = useContext(TabTriggerMapContext);
 
   const getTrigger = useCallback(
@@ -164,7 +148,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const trigger = name !== undefined ? getTrigger(name) : undefined;
 
   const switchTab = useCallback(
-    (name: string, options?: SwitchToOptions) => {
+    (name: string) => {
       const config = triggerMap[name];
 
       if (config) {
@@ -175,7 +159,6 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
             type: 'JUMP_TO',
             payload: {
               name,
-              ...options,
             },
           });
         }
@@ -205,9 +188,9 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+      switchTab(name);
     },
-    [onPress, name, reset, trigger]
+    [onPress, name, trigger]
   );
 
   const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
@@ -223,11 +206,9 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, {
-        reset: reset === 'onLongPress' ? 'always' : reset,
-      });
+      switchTab(name);
     },
-    [onLongPress, name, reset, trigger]
+    [onLongPress, name, trigger]
   );
 
   const triggerProps = {

@@ -15,8 +15,6 @@ export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
-export type ExpoTabsResetValue = 'always' | 'onFocus' | 'never';
-
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
@@ -26,7 +24,6 @@ export type ExpoTabActionType =
       target?: string;
       payload: {
         name: string;
-        reset?: ExpoTabsResetValue;
         params?: object;
       };
     };
@@ -62,39 +59,7 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
         return null;
       }
 
-      // We should reset if this is the first time visiting the route
-      let shouldReset = !state.history.some((item) => item.key === route?.key) && !route.state;
-
-      if (!shouldReset && 'reset' in action.payload && action.payload.reset) {
-        switch (action.payload.reset) {
-          case 'never': {
-            shouldReset = false;
-            break;
-          }
-          case 'always': {
-            shouldReset = true;
-            break;
-          }
-          case 'onFocus': {
-            shouldReset = state.routes[state.index].key === route.key;
-            break;
-          }
-          default: {
-            // TypeScript trick to ensure all use-cases are accounted for
-            action.payload.reset satisfies never;
-          }
-        }
-      }
-
-      if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
-          ...trigger.action.payload.params,
-        };
-        return rnTabRouter.getStateForAction(state, trigger.action, options);
-      } else {
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
-      }
+      return rnTabRouter.getStateForRouteFocus(state, route.key);
     },
   };
 

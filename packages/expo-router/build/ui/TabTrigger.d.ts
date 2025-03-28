@@ -1,7 +1,6 @@
 import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, ReactElement, ComponentProps } from 'react';
 import { View, PressableProps } from 'react-native';
-import { ExpoTabsResetValue } from './TabRouter';
 import type { TriggerMap } from './common';
 import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
@@ -21,10 +20,6 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
      * Forward props to child component. Useful for custom wrappers.
      */
     asChild?: boolean;
-    /**
-     * Resets the route when switching to a tab.
-     */
-    reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 export type TabTriggerOptions = {
     name: string;
@@ -51,27 +46,18 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
  * </Tabs>
  * ```
  */
-export declare function TabTrigger({ asChild, name, href, reset, ...props }: TabTriggerProps): import("react").JSX.Element;
+export declare function TabTrigger({ asChild, name, href, ...props }: TabTriggerProps): import("react").JSX.Element;
 /**
  * @hidden
  */
 export declare function isTabTrigger(child: ReactElement<any>): child is ReactElement<ComponentProps<typeof TabTrigger>>;
-/**
- * Options for `switchTab` function.
- */
-export type SwitchToOptions = {
-    /**
-     * Navigate and reset the history.
-     */
-    reset?: ExpoTabsResetValue;
-};
 export type Trigger = TriggerMap[string] & {
     isFocused: boolean;
     resolvedHref: string;
     route: TabNavigationState<any>['routes'][number];
 };
 export type UseTabTriggerResult = {
-    switchTab: (name: string, options: SwitchToOptions) => void;
+    switchTab: (name: string) => void;
     getTrigger: (name: string) => Trigger | undefined;
     trigger?: Trigger;
     triggerProps: TriggerProps;
