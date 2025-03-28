@@ -1,4 +1,7 @@
 import { openDatabaseSync } from './index';
+/**
+ * @hidden
+ */
 export function checkValidInput(...input) {
     const [key, value] = input;
     if (typeof key !== 'string') {
