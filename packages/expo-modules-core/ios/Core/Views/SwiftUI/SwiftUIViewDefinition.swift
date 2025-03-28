@@ -28,8 +28,7 @@ public extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
    */
-  func UnwrappedChildren<T: View>(
-    // swiftlint:disable:this identifier_name
+  func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
     children: [ExpoSwiftUI.Child?]? = nil,
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
     -> T = { child, _ in  child }
