@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(semver.gte(row['sqlite_version()'], '3.45.3')).toBe(true);
+      expect(semver.gte(row['sqlite_version()'], '3.49.1')).toBe(true);
       await db.closeAsync();
     });
 
