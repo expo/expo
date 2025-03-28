@@ -67,7 +67,11 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
   });
 }
 
-function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
+function getStatusFromMedia(
+  media: HTMLMediaElement,
+  id: number,
+  player: AudioPlayerWeb
+): AudioStatus {
   const isPlaying = !!(
     media.currentTime > 0 &&
     !media.paused &&
@@ -82,6 +86,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     currentTime: media.currentTime * 1000,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',
+    currentQueueIndex: player.currentQueueIndex, // todo: implement
     reasonForWaitingToPlay: '',
     playing: isPlaying,
     didJustFinish: media.ended,
@@ -99,11 +104,14 @@ export class AudioPlayerWeb
   extends globalThis.expo.SharedObject<AudioEvents>
   implements AudioPlayer
 {
-  constructor(source: AudioSource, interval: number) {
+  constructor(source: AudioSource | AudioSource[], interval: number) {
     super();
-    this.src = source;
+
+    const sourceArray = Array.isArray(source) ? source : [source];
     this.interval = interval;
     this.media = this._createMediaElement();
+
+    this.setQueue(sourceArray);
   }
 
   id: number = nextId();
@@ -116,6 +124,9 @@ export class AudioPlayerWeb
   private interval = 100;
   private isPlaying = false;
   private loaded = false;
+  private queue: AudioSource[] = [];
+
+  public currentQueueIndex: number = -1;
 
   get playing(): boolean {
     return this.isPlaying;
@@ -170,7 +181,7 @@ export class AudioPlayerWeb
   }
 
   get currentStatus(): AudioStatus {
-    return getStatusFromMedia(this.media, this.id);
+    return getStatusFromMedia(this.media, this.id, this);
   }
 
   play(): void {
@@ -185,11 +196,159 @@ export class AudioPlayerWeb
 
   replace(source: AudioSource): void {
     this.src = source;
-    this.media = this._createMediaElement();
+    this.setQueue([source]);
+  }
+
+  clearQueue(): void {
+    this.queue = [];
+    this.currentQueueIndex = -1;
+
+    this.remove();
+  }
+
+  setQueue(sources: AudioSource[]): void {
+    if (!sources || sources.length === 0) {
+      return;
+    }
+
+    this.clearQueue();
+
+    this.queue = sources.filter((source) => source);
+
+    this._loadTrackAtIndex(0);
+  }
+
+  getCurrentQueue(): AudioSource[] {
+    return [...this.queue];
+  }
+
+  getCurrentQueueIndex(): number | null {
+    if (this.currentQueueIndex >= 0) {
+      return this.currentQueueIndex;
+    }
+
+    return null;
+  }
+
+  addToQueue(sources: AudioSource[], insertBeforeIndex?: number): void {
+    if (!sources || sources.length === 0) {
+      return;
+    }
+
+    if (
+      insertBeforeIndex !== undefined &&
+      insertBeforeIndex >= 0 &&
+      insertBeforeIndex <= this.queue.length
+    ) {
+      this.queue.splice(insertBeforeIndex, 0, ...sources);
+
+      // Adjust queue index
+      if (this.currentQueueIndex >= 0 && insertBeforeIndex <= this.currentQueueIndex) {
+        this.currentQueueIndex += sources.length;
+      }
+    } else {
+      this.queue.push(...sources);
+    }
+
+    // set index to 0 if previously reset
+    if (this.currentQueueIndex === -1) {
+      this._loadTrackAtIndex(0);
+    }
+  }
+
+  removeFromQueue(sources: AudioSource[]): void {
+    if (!sources || sources.length === 0 || this.queue.length === 0) return;
+
+    const sourcesToRemove = sources.map((source) => {
+      const uri = typeof source === 'object' ? source?.uri || '' : `${source}`;
+      return { source, uri };
+    });
+
+    const indicesToRemove: number[] = [];
+    const remainingSources = [...sourcesToRemove];
+
+    this.queue.forEach((queueSource, index) => {
+      const queueUri = typeof queueSource === 'object' ? queueSource?.uri || '' : `${queueSource}`;
+
+      const matchIndex = remainingSources.findIndex((item) => item.uri === queueUri);
+      if (matchIndex !== -1) {
+        indicesToRemove.push(index);
+        remainingSources.splice(matchIndex, 1);
+      }
+    });
+
+    indicesToRemove.sort((a, b) => b - a);
+
+    for (const index of indicesToRemove) {
+      this.queue.splice(index, 1);
+    }
+
+    if (
+      indicesToRemove.includes(this.currentQueueIndex) ||
+      this.currentQueueIndex >= this.queue.length
+    ) {
+      if (this.queue.length === 0) {
+        this.clearQueue();
+
+        return;
+      }
+
+      const nextIndex = Math.min(this.currentQueueIndex, this.queue.length - 1);
+      this.currentQueueIndex = nextIndex;
+
+      this._loadTrackAtIndex(nextIndex);
+    }
+  }
+
+  skipToNext(): void {
+    if (this.queue.length === 0 || this.currentQueueIndex === -1) {
+      return;
+    }
+
+    const nextIndex = this.currentQueueIndex + 1;
+    if (nextIndex < this.queue.length) {
+      this._loadTrackAtIndex(nextIndex);
+    }
+  }
+
+  skipToPrevious(): void {
+    if (this.queue.length === 0 || this.currentQueueIndex === -1) {
+      return;
+    }
+
+    const prevIndex = this.currentQueueIndex - 1;
+    if (prevIndex >= 0) {
+      this._loadTrackAtIndex(prevIndex);
+    }
+  }
+
+  skipToQueueIndex(index: number): void {
+    if (index < 0 || index >= this.queue.length) {
+      return;
+    }
+
+    this._loadTrackAtIndex(index);
   }
 
   async seekTo(seconds: number): Promise<void> {
     this.media.currentTime = seconds / 1000;
+  }
+
+  private _loadTrackAtIndex(index: number): void {
+    if (index < 0 || index >= this.queue.length) return;
+
+    const wasPlaying = this.isPlaying;
+    this.currentQueueIndex = index;
+    this.src = this.queue[index];
+
+    // remove old track to avoid parallel playback
+    this.remove();
+
+    this.media = this._createMediaElement();
+
+    if (wasPlaying) {
+      this.play();
+    }
   }
 
   // Not supported on web
@@ -207,7 +366,7 @@ export class AudioPlayerWeb
     this.media.pause();
     this.media.removeAttribute('src');
     this.media.load();
-    getStatusFromMedia(this.media, this.id);
+    getStatusFromMedia(this.media, this.id, this);
   }
 
   _createMediaElement(): HTMLAudioElement {
@@ -215,15 +374,25 @@ export class AudioPlayerWeb
     const media = new Audio(newSource);
 
     media.ontimeupdate = () => {
-      this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+      this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id, this));
     };
 
     media.onloadeddata = () => {
       this.loaded = true;
       this.emit(PLAYBACK_STATUS_UPDATE, {
-        ...getStatusFromMedia(media, this.id),
+        ...getStatusFromMedia(media, this.id, this),
         isLoaded: this.loaded,
       });
+    };
+
+    media.onended = () => {
+      if (this.loop) {
+        this._loadTrackAtIndex(this.currentQueueIndex);
+
+        return;
+      }
+
+      this.skipToNext();
     };
 
     return media;

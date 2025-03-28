@@ -34,7 +34,6 @@ private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource?,
   private val updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
@@ -62,9 +61,8 @@ class AudioPlayer(
   init {
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     addPlayerListeners()
-    source?.let {
-      setMediaSource(source)
-    }
+    player.prepare()
+    startUpdating()
   }
 
   fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
@@ -77,12 +75,6 @@ class AudioPlayer(
     } else {
       player.volume = if (boundedVolume > 0) boundedVolume else previousVolume
     }
-  }
-
-  private fun setMediaSource(source: MediaSource) {
-    player.setMediaSource(source)
-    player.prepare()
-    startUpdating()
   }
 
   private fun startUpdating() {
@@ -140,6 +132,41 @@ class AudioPlayer(
     }
   }
 
+  fun getCurrentQueue(): List<MediaItem> {
+    val mediaItems = (0 until player.mediaItemCount).mapNotNull { index ->
+      player.getMediaItemAt(index)
+    }
+
+    return mediaItems
+  }
+
+  fun removeFromQueue(mediaItems: List<MediaItem>) {
+    val currentItems = getCurrentQueue()
+    val currentPosition = player.currentMediaItemIndex
+
+    val urisToRemove = mediaItems.mapNotNull {
+      it.localConfiguration?.uri?.toString()
+    }.toSet()
+
+    val indicesToRemove = mutableListOf<Int>()
+
+    for (i in 0 until player.mediaItemCount) {
+      val uri = player.getMediaItemAt(i).localConfiguration?.uri?.toString() ?: continue
+      if (uri in urisToRemove) {
+        indicesToRemove.add(i)
+      }
+    }
+
+    // Remove items from the end to avoid index shifting
+    for (index in indicesToRemove.sortedDescending()) {
+      player.removeMediaItem(index)
+    }
+
+    if (player.mediaItemCount == 0) {
+      player.stop()
+    }
+  }
+
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
     val unsignedByte = byte.toInt() and 0xFF
     ((unsignedByte - 128).toDouble() / 128.0).toFloat()
@@ -159,6 +186,7 @@ class AudioPlayer(
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
       "duration" to duration,
+      "currentQueueIndex" to player.currentMediaItemIndex,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "didJustFinish" to (player.playbackState == Player.STATE_ENDED),
