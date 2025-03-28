@@ -25,6 +25,7 @@
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 - Fixed build warnings. ([#35610](https://github.com/expo/expo/pull/35610) by [@kudo](https://github.com/kudo))
 - Added backup and session API stubs to LibSQL implementations. ([#35755](https://github.com/expo/expo/pull/35755) by [@kudo](https://github.com/kudo))
+- Updated function docs. ([#35761](https://github.com/expo/expo/pull/35761) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
