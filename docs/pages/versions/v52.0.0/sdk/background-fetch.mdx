@@ -18,8 +18,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 #### Known issues&ensp;<PlatformTags platforms={['ios']} />
 
-`BackgroundFetch` only works when the app is backgrounded, not if the app was terminated or upon device reboot.
-You can check out [the relevant GitHub issue](https://github.com/expo/expo/issues/3582) for more details.
+`BackgroundFetch` only works when the app is backgrounded, not if the app was terminated or upon device reboot. You can check out [the relevant GitHub issue](https://github.com/expo/expo/issues/3582) for more details.
 
 On iOS the `BackgroundFetch` library requires you to use a [development build](/develop/development-builds/introduction/) since Background Fetch is not enabled in the iOS Expo Go app.
 
@@ -35,7 +34,7 @@ To be able to run background fetch tasks on iOS, you need to add the `fetch` val
 
 <Collapsible summary="Configure UIBackgroundModes manually on iOS">
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **ios** project manually, then you'll need to add the following to your **Expo.plist** file:
 
 ```xml ios/project-name/Supporting/Expo.plist
 <key>UIBackgroundModes</key>

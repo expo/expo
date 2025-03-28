@@ -19,11 +19,13 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <APIInstallSection packageName="expo-auth-session expo-crypto" />
 
+## Configuration
+
 <ConfigReactNative>
 
-Use the [`uri-scheme` CLI][n-uri-scheme] to easily add, remove, list, and open your URIs.
+To use this library, you need to set up deep linking in your app by setting up a `scheme`. Use the [`uri-scheme` CLI][n-uri-scheme] utility to easily add, remove, list, and open your URIs.
 
-To make your native app handle `mycoolredirect://` simply run:
+For example, to make your native app handle `mycoolredirect://`, run:
 
 <Terminal cmd={['$ npx uri-scheme add mycoolredirect']} />
 
@@ -56,11 +58,11 @@ You can test it to ensure it works like this:
 }
 ```
 
-to be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete, but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a canceled event).
+To be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete, but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a canceled event).
 
 ## Guides
 
-> The guides have moved: [Authentication Guide](/guides/authentication.mdx).
+> The guides have moved: [Authentication Guide](/guides/authentication/).
 
 ## How web browser based authentication flows work
 
