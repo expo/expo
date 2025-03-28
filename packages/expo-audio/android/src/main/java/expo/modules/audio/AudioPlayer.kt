@@ -79,7 +79,7 @@ class AudioPlayer(
     }
   }
 
-  private fun setMediaSource(source: MediaSource) {
+  fun setMediaSource(source: MediaSource) {
     player.setMediaSource(source)
     player.prepare()
     startUpdating()
