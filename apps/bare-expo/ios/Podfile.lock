@@ -2205,7 +2205,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-segmented-control (2.5.4):
+  - react-native-segmented-control (2.5.7):
     - React-Core
   - react-native-slider (4.5.6):
     - DoubleConversion
@@ -3705,7 +3705,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: 2fa7e5950e440764f4a7c2731840d35b5e464383
   RCTRequired: e46164234affa609618ee854dc3f1648ef270d3c
   RCTTypeSafety: 0d5a0cf9e39231a471f38d74415845761b339273
@@ -3740,7 +3740,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: a1b4f854df102a127b38fa49ff9d25af20a3c550
   react-native-safe-area-context: 55dbcf556a51092ddf163b29febbc07dc7f14ebb
-  react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
+  react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
   react-native-slider: c4c1a975352113af59b59dc783abc111618ec37a
   react-native-view-shot: 41c5c50c809f1fd61f91c99400b2222c9b80d13f
   react-native-webview: cde150463e7caa49b316b0ed1871e7ef8193bef4
