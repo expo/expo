@@ -4,10 +4,7 @@ export type LocalAuthenticationResult =
   | { success: true }
   | {
       success: false;
-      /**
-       * One of the following values: `not_enrolled`, `user_cancel`, `app_cancel`, `not_available`, `lockout`, `no_space`, `timeout`, `unable_to_process`, `unknown`, `system_cancel`, `user_fallback`, `invalid_context`, `passcode_not_set`, `authentication_failed`.
-       */
-      error: string;
+      error: LocalAuthenticationError;
       warning?: string;
     };
 
@@ -121,3 +118,22 @@ export type LocalAuthenticationOptions = {
    */
   fallbackLabel?: string;
 };
+
+/**
+ * One of the error values returned by the [`LocalAuthenticationResult`](#localauthenticationresult) object.
+ */
+export type LocalAuthenticationError =
+  | 'not_enrolled'
+  | 'user_cancel'
+  | 'app_cancel'
+  | 'not_available'
+  | 'lockout'
+  | 'no_space'
+  | 'timeout'
+  | 'unable_to_process'
+  | 'unknown'
+  | 'system_cancel'
+  | 'user_fallback'
+  | 'invalid_context'
+  | 'passcode_not_set'
+  | 'authentication_failed';
