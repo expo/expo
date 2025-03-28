@@ -82,6 +82,6 @@ export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'o
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export declare function List(props: ListProps): import("react").JSX.Element | null;
+export declare function List({ children }: ListProps): import("react").ReactNode;
 export {};
 //# sourceMappingURL=index.d.ts.map
