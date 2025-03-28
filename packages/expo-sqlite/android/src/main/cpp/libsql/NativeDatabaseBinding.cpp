@@ -41,6 +41,7 @@ void NativeDatabaseBinding::registerNatives() {
                        NativeDatabaseBinding::sqlite3_deserialize),
       makeNativeMethod("sqlite3_update_hook",
                        NativeDatabaseBinding::sqlite3_update_hook),
+      makeNativeMethod("sqlite3_backup", NativeDatabaseBinding::sqlite3_backup),
       makeNativeMethod("libsql_open_remote",
                        NativeDatabaseBinding::libsql_open_remote),
       makeNativeMethod("libsql_open", NativeDatabaseBinding::libsql_open),
@@ -128,6 +129,17 @@ int NativeDatabaseBinding::sqlite3_deserialize(
 
 void NativeDatabaseBinding::sqlite3_update_hook(bool enabled) {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
+}
+
+// static
+int NativeDatabaseBinding::sqlite3_backup(
+    jni::alias_ref<jni::JClass> clazz,
+    jni::alias_ref<NativeDatabaseBinding::jhybridobject> destDatabase,
+    const std::string &destDatabaseName,
+    jni::alias_ref<NativeDatabaseBinding::jhybridobject> sourceDatabase,
+    const std::string &sourceDatabaseName) {
+  jni::throwNewJavaException(UnsupportedOperationException::create().get());
+  return -1;
 }
 
 int NativeDatabaseBinding::libsql_open_remote(const std::string &url,
