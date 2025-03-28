@@ -68,7 +68,11 @@ class SettingsManager(
   private fun configurePublication(config: ExpoAutolinkingConfig) {
     config.allProjects.forEach { project ->
       if (project.publication != null) {
-        project.configuration.shouldUsePublication = evaluateShouldUsePublicationScript(project)
+        val forceBuildFromSource = config.configuration.buildFromSourceRegex.any {
+          it.matches(project.name)
+        }
+
+        project.configuration.shouldUsePublication = !forceBuildFromSource && evaluateShouldUsePublicationScript(project)
       }
     }
   }

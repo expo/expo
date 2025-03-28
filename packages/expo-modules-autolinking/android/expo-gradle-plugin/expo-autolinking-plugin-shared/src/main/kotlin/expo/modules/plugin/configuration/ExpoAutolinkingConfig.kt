@@ -9,7 +9,8 @@ import kotlinx.serialization.modules.SerializersModule
 data class ExpoAutolinkingConfig(
   val modules: List<ExpoModule> = emptyList(),
   val extraDependencies: List<MavenRepo> = emptyList(),
-  val coreFeatures: List<String> = emptyList()
+  val coreFeatures: List<String> = emptyList(),
+  val configuration: Configuration = Configuration()
 ) {
   /**
    * Returns all gradle projects from all modules.
@@ -52,6 +53,15 @@ data class ExpoAutolinkingConfig(
     fun decodeFromString(input: String): ExpoAutolinkingConfig {
       return jsonDecoder.decodeFromString(input)
     }
+  }
+}
+
+@Serializable
+data class Configuration(
+  val buildFromSource: List<String> = emptyList<String>()
+) {
+  val buildFromSourceRegex by lazy {
+    buildFromSource.map { it.toRegex() }
   }
 }
 
