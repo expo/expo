@@ -29,6 +29,7 @@
 - [iOS] Swift conversion 6: refactor Record classes. ([#34413](https://github.com/expo/expo/pull/34413) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 7: Handler and Emitter. ([#35564](https://github.com/expo/expo/pull/35564) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 8: Background module. ([#35695](https://github.com/expo/expo/pull/35695) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 9: Permissions module. ([#35719](https://github.com/expo/expo/pull/35719) by [@douglowder](https://github.com/douglowder))
 
 ## 0.29.14 - 2025-03-11
 
