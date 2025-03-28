@@ -9,6 +9,7 @@ export declare class DevToolsPluginClientImplApp extends DevToolsPluginClient {
      * @hidden
      */
     initAsync(): Promise<void>;
+    sendMessage(method: string, params: any): void;
     private addHandshakeHandler;
     private terminateBrowserClient;
 }
