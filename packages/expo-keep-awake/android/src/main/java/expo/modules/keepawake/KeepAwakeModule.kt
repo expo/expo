@@ -16,7 +16,7 @@ class KeepAwakeModule : Module() {
 
     AsyncFunction("activate") { tag: String, promise: Promise ->
       try {
-        keepAwakeManager.activate(tag) { promise.resolve(true) }
+        keepAwakeManager.activate(tag) { promise.resolve() }
       } catch (ex: CurrentActivityNotFoundException) {
         promise.reject(ActivateKeepAwakeException())
       }
@@ -24,10 +24,8 @@ class KeepAwakeModule : Module() {
 
     AsyncFunction("deactivate") { tag: String, promise: Promise ->
       try {
-        keepAwakeManager.deactivate(tag) { promise.resolve(true) }
-      } catch (ex: CurrentActivityNotFoundException) {
-        promise.reject(DeactivateKeepAwakeException())
-      }
+        keepAwakeManager.deactivate(tag) { promise.resolve() }
+      } catch { promise.resolve() }
     }
 
     AsyncFunction<Boolean>("isActivated") {
