@@ -262,7 +262,7 @@ class AudioModule : Module() {
             val mediaSource = createMediaItem(source)
             val wasPlaying = ref.player.isPlaying
             mediaSource?.let {
-              ref.player.replaceMediaItem(0, it.mediaItem)
+              ref.setMediaSource(it)
               if (wasPlaying) {
                 ref.player.play()
               }
