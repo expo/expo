@@ -51,13 +51,13 @@ struct ListItemView: ExpoSwiftUI.View {
     }
     .swipeActions(edge: .leading, allowsFullSwipe: props.allowsFullSwipeLeading) {
       ActionButtons(fromArray: props.leadingActions) { id in
-        props.onActionPressed.callAsFunction(["id": id])
+        props.onActionPressed(["id": id])
       }
     }
     .swipeActions(edge: .trailing, allowsFullSwipe: props.allowsFullSwipeTrailing) {
       if (editMode?.wrappedValue == .inactive || !props.hideTrailingActionsInEditMode) {
           ActionButtons(fromArray: props.trailingActions) { id in
-            props.onActionPressed.callAsFunction(["id": id])
+            props.onActionPressed(["id": id])
           }
       }
     }
