@@ -88,13 +88,19 @@ struct ListStyleModifer: ViewModifier {
     case "grouped":
       content.listStyle(.grouped)
     case "insetGrouped":
+    #if !os(tvOS)
       content.listStyle(.insetGrouped)
+    #endif
     case "inset":
+    #if !os(tvOS)
       content.listStyle(.inset)
+    #endif
     case "plain":
       content.listStyle(.plain)
     case "sidebar":
+    #if !os(tvOS)
       content.listStyle(.sidebar)
+    #endif
     case "automatic":
       content.listStyle(.automatic)
     default:
@@ -107,7 +113,7 @@ struct ScrollDisabledModifier: ViewModifier {
   let scrollEnabled: Bool
 
   func body(content: Content) -> some View {
-    if #available(iOS 18.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       content.scrollDisabled(!scrollEnabled)
     } else {
       content
