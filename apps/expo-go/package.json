@@ -33,7 +33,7 @@
     "@react-native-community/slider": "4.5.6",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-picker/picker": "2.11.0",
-    "@react-native-segmented-control/segmented-control": "2.5.4",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/bottom-tabs": "^7.3.0",
     "@react-navigation/elements": "2.2.8",
     "@react-navigation/native": "^7.0.17",
