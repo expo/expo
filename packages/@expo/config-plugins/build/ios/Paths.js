@@ -13,6 +13,7 @@ exports.getAppDelegate = getAppDelegate;
 exports.getAppDelegateFilePath = getAppDelegateFilePath;
 exports.getAppDelegateHeaderFilePath = getAppDelegateHeaderFilePath;
 exports.getAppDelegateObjcHeaderFilePath = getAppDelegateObjcHeaderFilePath;
+exports.getBridgingHeaderFilePath = getBridgingHeaderFilePath;
 exports.getEntitlementsPath = getEntitlementsPath;
 exports.getExpoPlistPath = getExpoPlistPath;
 exports.getFileInfo = getFileInfo;
@@ -107,6 +108,26 @@ function getAppDelegateFilePath(projectRoot) {
     warnMultipleFiles({
       tag: 'app-delegate',
       fileName: 'AppDelegate',
+      projectRoot,
+      using,
+      extra
+    });
+  }
+  return using;
+}
+function getBridgingHeaderFilePath(projectRoot) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/*-Bridging-Header.h', {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths
+  }));
+  if (!using) {
+    throw new (_errors().UnexpectedError)(`Could not locate a valid BridgingHeader at root: "${projectRoot}"`);
+  }
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'bridging-header',
+      fileName: 'BridgingHeader',
       projectRoot,
       using,
       extra

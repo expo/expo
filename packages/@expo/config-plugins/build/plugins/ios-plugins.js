@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
-exports.withXcodeProject = exports.withPodfileProperties = exports.withPodfile = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+exports.withXcodeProject = exports.withPodfileProperties = exports.withPodfile = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withBridgingHeader = exports.withAppDelegate = void 0;
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -97,13 +97,28 @@ const withAppDelegate = (config, action) => {
 };
 
 /**
+ * Provides the BridgingHeader file for modification.
+ *
+ * @param config
+ * @param action
+ */
+exports.withAppDelegate = withAppDelegate;
+const withBridgingHeader = (config, action) => {
+  return (0, _withMod().withMod)(config, {
+    platform: 'ios',
+    mod: 'bridgingHeader',
+    action
+  });
+};
+
+/**
  * Provides the Info.plist file for modification.
  * Keeps the config's expo.ios.infoPlist object in sync with the data.
  *
  * @param config
  * @param action
  */
-exports.withAppDelegate = withAppDelegate;
+exports.withBridgingHeader = withBridgingHeader;
 const withInfoPlist = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',

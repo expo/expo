@@ -8,6 +8,7 @@ import {
   findSchemeNames,
   getAllInfoPlistPaths,
   getAppDelegate,
+  getBridgingHeaderFilePath,
   getXcodeProjectPath,
   getPodfilePath,
 } from '../Paths';
@@ -54,6 +55,30 @@ describe(getPodfilePath, () => {
   });
 
   it(`throws when no podfile is found`, () => {
+    expect(() => getPodfilePath('/none')).toThrow(UnexpectedError);
+  });
+});
+
+describe(getBridgingHeaderFilePath, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('returns bridging header path', () => {
+    vol.fromJSON(
+      {
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/testproject/testproject-Bridging-Header.h': 'content',
+      },
+      '/app'
+    );
+    expect(getBridgingHeaderFilePath('/app')).toBe(
+      '/app/ios/testproject/testproject-Bridging-Header.h'
+    );
+  });
+
+  it(`throws when no bridging header is found`, () => {
     expect(() => getPodfilePath('/none')).toThrow(UnexpectedError);
   });
 });

@@ -6,8 +6,10 @@ interface ProjectFile<L extends string = string> {
 type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
+export type BridgingHeaderProjectFile = ProjectFile<AppleLanguage>;
 export declare function getAppDelegateHeaderFilePath(projectRoot: string): string;
 export declare function getAppDelegateFilePath(projectRoot: string): string;
+export declare function getBridgingHeaderFilePath(projectRoot: string): string;
 export declare function getAppDelegateObjcHeaderFilePath(projectRoot: string): string;
 export declare function getPodfilePath(projectRoot: string): string;
 export declare function getFileInfo(filePath: string): {
