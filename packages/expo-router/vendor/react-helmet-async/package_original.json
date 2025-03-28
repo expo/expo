@@ -45,7 +45,5 @@
     "vite": "4.5.0",
     "vitest": "0.34.6"
   },
-  "peerDependencies": {
-    "react": "^16.6.0 || ^17.0.0 || ^18.0.0"
-  }
+  "peerDependencies": {}
 }
