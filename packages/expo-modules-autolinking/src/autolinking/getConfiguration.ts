@@ -1,4 +1,4 @@
-import { ResolveOptions } from '../types';
+import type { ResolveOptions } from '../types';
 import { getLinkingImplementationForPlatform } from './utils';
 
 export function getConfiguration(options: ResolveOptions) {

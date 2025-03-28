@@ -2,7 +2,7 @@ import findUp from 'find-up';
 import fs from 'fs';
 import path from 'path';
 
-import { PlatformAutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
+import type { PlatformAutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
 
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
