@@ -5,7 +5,7 @@ defaults:
 
 on:
   push:
-    branches: ['doug/workflow-testing']
+    branches: ['doug/sdk-52-workflow-testing']
 
 jobs:
   setup:
