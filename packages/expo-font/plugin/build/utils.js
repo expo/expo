@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveFontPaths = void 0;
+exports.generateFontFamilyXml = exports.normalizeFilename = exports.getFontWeight = exports.resolveFontPaths = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 async function resolveFontPaths(fonts, projectRoot) {
@@ -21,3 +21,51 @@ async function resolveFontPaths(fonts, projectRoot) {
         .filter((p) => p.endsWith('.ttf') || p.endsWith('.otf') || p.endsWith('.woff') || p.endsWith('.woff2'));
 }
 exports.resolveFontPaths = resolveFontPaths;
+const weightMap = {
+    thin: 100,
+    extralight: 200,
+    ultralight: 200,
+    light: 300,
+    regular: 400,
+    normal: 400,
+    book: 400,
+    medium: 500,
+    semibold: 600,
+    demibold: 600,
+    bold: 700,
+    extrabold: 800,
+    ultrabold: 800,
+    black: 900,
+    heavy: 900,
+};
+const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
+function getFontWeight(filename) {
+    for (const weight of weights) {
+        if (filename.replaceAll('_', '').includes(weight)) {
+            return weightMap[weight];
+        }
+    }
+    return 400;
+}
+exports.getFontWeight = getFontWeight;
+function normalizeFilename(filename) {
+    return filename
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '');
+}
+exports.normalizeFilename = normalizeFilename;
+function generateFontFamilyXml(files) {
+    let xml = `<?xml version="1.0" encoding="utf-8"?>\n<font-family xmlns:app="http://schemas.android.com/apk/res-auto">\n`;
+    files.forEach((file) => {
+        const filename = normalizeFilename(path_1.default.basename(file, path_1.default.extname(file)));
+        const fontWeight = getFontWeight(filename);
+        const fontStyle = filename.includes('italic') ? 'italic' : 'normal';
+        xml += `    <font app:fontStyle="${fontStyle}" app:fontWeight="${fontWeight}" app:font="@font/${filename}" />\n`;
+    });
+    xml += `</font-family>\n`;
+    return xml;
+}
+exports.generateFontFamilyXml = generateFontFamilyXml;
