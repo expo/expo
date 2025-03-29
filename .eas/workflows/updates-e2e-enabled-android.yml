@@ -14,18 +14,20 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E enabled project
-        id: setup
-        run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
-          ls -la ../updates-e2e
       - name: Set up Android simulator
         id: setupsimulator
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
+          sudo apt-get update --yes
+          sudo apt-get install openjdk-17-jdk openjdk-17-jre --yes
           sdkmanager --install "system-images;android-31;google_apis;x86_64"
           avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-31;google_apis;x86_64"
+      - name: Set up Updates E2E enabled project
+        id: setup
+        run: |
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          ls -la ../updates-e2e
       - name: Build E2E project
         id: build
         working_directory: ../updates-e2e
@@ -43,4 +45,5 @@ jobs:
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
+          adb reverse tcp:4747 tcp:4747
           npx detox test -c android.debug
