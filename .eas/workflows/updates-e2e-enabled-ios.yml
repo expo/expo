@@ -14,6 +14,13 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
+      - name: Install applesimutils
+        id: applesimutils
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          /opt/homebrew/bin/brew tap wix/brew
+          /opt/homebrew/bin/brew install applesimutils
       - name: Set up Updates E2E enabled project
         id: setup
         run: ./packages/expo-updates/e2e/setup/create-eas-project.ts; ls -la ../updates-e2e
