@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
+- [iOS] Added `withBridgingHeader` to be able to modify the project's bridging header content. ([#35752](https://github.com/expo/expo/pull/35752) by [@dcangulo](https://github.com/dcangulo))
 
 ### 🐛 Bug fixes
 
