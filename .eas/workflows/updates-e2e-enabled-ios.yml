@@ -21,8 +21,7 @@ jobs:
         run: |
           /opt/homebrew/bin/brew tap wix/brew
           /opt/homebrew/bin/brew install applesimutils
-          xcrun simctl create 'iPhone 16' 'iPhone 16' iOS18.2
-          xcrun boot 'iPhone 16'
+          xcrun simctl list
       - name: Set up Updates E2E enabled project
         id: setup
         run: ./packages/expo-updates/e2e/setup/create-eas-project.ts; ls -la ../updates-e2e

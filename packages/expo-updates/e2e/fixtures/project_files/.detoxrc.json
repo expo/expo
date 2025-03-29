@@ -36,7 +36,7 @@
       "type": "ios.simulator",
       "headless": true,
       "device": {
-        "type": "iPhone 16"
+        "type": "iPhone 15"
       }
     },
     "emulator": {
