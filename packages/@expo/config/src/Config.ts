@@ -39,7 +39,7 @@ function reduceExpoObject(config?: any): SplitConfigs {
   if (!config) return config === undefined ? null : config;
 
   if (config.expo && !hasWarnedAboutRootConfig) {
-    const keys = Object.keys(config).filter((key) => key !== 'expo');
+    const keys = Object.keys(config).filter((key) => key !== 'expo' && key !== '$schema');
     if (keys.length) {
       hasWarnedAboutRootConfig = true;
       const ansiYellow = (str: string) => `\u001B[33m${str}\u001B[0m`;
