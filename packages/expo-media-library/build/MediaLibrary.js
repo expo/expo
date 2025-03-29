@@ -168,16 +168,20 @@ export async function presentPermissionsPickerAsync(mediaTypes = ['photo', 'vide
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export async function createAssetAsync(localUri) {
+export async function createAssetAsync(localUri, album) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
     }
+    const albumId = getId(album);
     if (!localUri || typeof localUri !== 'string') {
         throw new Error('Invalid argument "localUri". It must be a string!');
     }
-    const asset = await MediaLibrary.createAssetAsync(localUri);
+    const asset = await MediaLibrary.createAssetAsync(localUri, albumId);
     if (Array.isArray(asset)) {
         // Android returns an array with asset, we need to pick the first item
         return asset[0];

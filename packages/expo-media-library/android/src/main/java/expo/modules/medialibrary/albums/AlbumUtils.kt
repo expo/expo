@@ -9,7 +9,9 @@ import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.MediaLibraryException
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
+import java.io.File
 
 /**
  * Queries for assets filtered by given `selection`.
@@ -82,4 +84,36 @@ fun getAssetsInAlbums(context: Context, vararg albumIds: String?): List<String> 
     }
   }
   return assetIds
+}
+
+internal fun getFileOrNullByContextResolver(context: Context, selection: String, selectionArgs: Array<String>): File? {
+  context.contentResolver.query(
+    EXTERNAL_CONTENT_URI,
+    arrayOf(MediaColumns.DATA),
+    selection,
+    selectionArgs,
+    null
+  ).use { fileCursor ->
+    if (fileCursor == null) {
+      throw AlbumException("Could not get album. Query returns null.")
+    } else if (fileCursor.count == 0) {
+      return null
+    }
+    fileCursor.moveToNext()
+    val filePathColumnIndex = fileCursor.getColumnIndex(MediaStore.Images.Media.DATA)
+    val fileInAlbum = File(fileCursor.getString(filePathColumnIndex))
+
+    // Media store table can be corrupted. Extra check won't harm anyone.
+    if (!fileInAlbum.isFile && !fileInAlbum.isDirectory) {
+      throw MediaLibraryException()
+    }
+    return File(fileInAlbum.parent!!)
+  }
+}
+
+internal fun getAlbumFileOrNull(context: Context, albumId: String): File? {
+  val selection = "${MediaColumns.BUCKET_ID}=?"
+  val selectionArgs = arrayOf(albumId)
+
+  return getFileOrNullByContextResolver(context, selection, selectionArgs)
 }

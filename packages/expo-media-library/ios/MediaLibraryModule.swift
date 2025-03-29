@@ -73,40 +73,28 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       #endif
     }.runOnQueue(.main)
 
-    AsyncFunction("createAssetAsync") { (uri: URL, promise: Promise) in
+    AsyncFunction("createAssetAsync") { (uri: URL, albumId: String?, promise: Promise) in
       if !checkPermissions(promise: promise) {
         return
       }
 
-      if uri.pathExtension.isEmpty {
-        promise.reject(EmptyFileExtensionException())
-        return
-      }
+      createAsset(uri: uri, appContext: appContext) { asset, error in
+        guard let asset else {
+          promise.reject(error ?? SaveAssetException(nil))
+          return
+        }
 
-      let assetType = assetType(for: uri)
-      if assetType == .unknown || assetType == .audio {
-        promise.reject(UnsupportedAssetTypeException(uri.absoluteString))
-        return
-      }
-
-      if !FileSystemUtilities.permissions(appContext, for: uri).contains(.read) {
-        promise.reject(UnreadableAssetException(uri.absoluteString))
-        return
-      }
-
-      var assetPlaceholder: PHObjectPlaceholder?
-      PHPhotoLibrary.shared().performChanges {
-        let changeRequest = assetType == .video
-          ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
-          : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
-
-        assetPlaceholder = changeRequest?.placeholderForCreatedAsset
-      } completionHandler: { success, error in
-        if success {
-          let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
+        guard let albumId else {
           promise.resolve(exportAsset(asset: asset))
-        } else {
-          promise.reject(SaveAssetException(error))
+          return
+        }
+
+        addAssets(ids: [asset.localIdentifier], to: albumId) { success, error in
+          if success {
+            promise.resolve(exportAsset(asset: asset))
+          } else {
+            promise.reject(error ?? SaveAssetException(nil))
+          }
         }
       }
     }
