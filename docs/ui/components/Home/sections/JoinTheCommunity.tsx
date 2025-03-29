@@ -10,16 +10,16 @@ import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIco
 import { Lightbulb02Icon } from '@expo/styleguide-icons/outline/Lightbulb02Icon';
 import { type ReactNode } from 'react';
 
-import { HeaderDescription } from '~/ui/components/Home';
-import { RawH3, P, A, CALLOUT } from '~/ui/components/Text';
+import { Header } from '~/ui/components/Home/components';
+import { P, A, CALLOUT } from '~/ui/components/Text';
 
 export function JoinTheCommunity() {
   return (
     <>
-      <RawH3>Join the community</RawH3>
-      <HeaderDescription>
-        See the source code, connect with others, and get connected.
-      </HeaderDescription>
+      <Header
+        title="Join the community"
+        description="See the source code, connect with others, and get connected."
+      />
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
