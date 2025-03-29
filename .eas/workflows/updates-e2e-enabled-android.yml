@@ -20,7 +20,7 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           sudo apt-get update --yes
-          sudo apt-get install openjdk-17-jdk openjdk-17-jre --yes
+          sudo apt-get --quiet install openjdk-17-jdk openjdk-17-jre libc6 libdbus-1-3 libfontconfig1 libgcc1 libpulse0 libtinfo5 libx11-6 libxcb1 libxdamage1 libnss3 libxcomposite1 libxcursor1 libxi6 libxext6 libxfixes3 zlib1g libgl1 pulseaudio socat --yes
           sdkmanager --install "system-images;android-31;google_apis;x86_64"
           avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-31;google_apis;x86_64"
       - name: Set up Updates E2E enabled project
@@ -45,5 +45,6 @@ jobs:
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
-          yarn start-android-emulator
+          (cd $ANDROID_HOME/tools; emulator -avd pixel_4 -no-audio -no-boot-anim &)
+          yarn check-android-emulator
           npx detox test -c android.debug
