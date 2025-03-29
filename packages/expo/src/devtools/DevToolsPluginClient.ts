@@ -70,6 +70,14 @@ export abstract class DevToolsPluginClient {
    * @param params any extra payload.
    */
   public sendMessage(method: string, params: any) {
+    this.sendMessageImpl(method, params, false);
+  }
+
+  protected sendMessageLegacy(method: string, params: any) {
+    this.sendMessageImpl(method, params, true);
+  }
+
+  private sendMessageImpl(method: string, params: any, useLegacyTransport: boolean) {
     if (this.wsStore.ws?.readyState === WebSocket.CLOSED) {
       logger.warn('Unable to send message in a disconnected state.');
       return;
@@ -78,7 +86,10 @@ export abstract class DevToolsPluginClient {
       pluginName: this.connectionInfo.pluginName,
       method,
     };
-    const packedData = this.messageFramePacker.pack({ messageKey, payload: params });
+    const packedData = this.messageFramePacker.pack(
+      { messageKey, payload: params },
+      useLegacyTransport
+    );
     if (!(packedData instanceof Promise)) {
       this.wsStore.ws?.send(packedData);
       return;

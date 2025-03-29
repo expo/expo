@@ -30,6 +30,8 @@ export declare abstract class DevToolsPluginClient {
      * @param params any extra payload.
      */
     sendMessage(method: string, params: any): void;
+    protected sendMessageLegacy(method: string, params: any): void;
+    private sendMessageImpl;
     /**
      * Subscribe to a message from the other end of DevTools.
      * @param method Subscribe to a message with a method name.

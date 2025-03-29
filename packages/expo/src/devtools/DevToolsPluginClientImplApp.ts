@@ -1,12 +1,17 @@
 import { DevToolsPluginClient } from './DevToolsPluginClient';
+import type { HandshakeMessageParams } from './devtools.types';
 import * as logger from './logger';
+
+interface BrowserClientMetadata {
+  browserClientId: string;
+  useLegacyTransport?: boolean;
+}
 
 /**
  * The DevToolsPluginClient for the app -> browser communication.
  */
 export class DevToolsPluginClientImplApp extends DevToolsPluginClient {
-  // Map of pluginName -> browserClientId
-  private browserClientMap: Record<string, string> = {};
+  private browserClientMap: Record<string, BrowserClientMetadata> = {};
 
   /**
    * Initialize the connection.
@@ -15,6 +20,16 @@ export class DevToolsPluginClientImplApp extends DevToolsPluginClient {
   override async initAsync(): Promise<void> {
     await super.initAsync();
     this.addHandshakeHandler();
+  }
+
+  override sendMessage(method: string, params: any) {
+    const pluginName = this.connectionInfo.pluginName;
+    const useLegacyTransport = this.browserClientMap[pluginName]?.useLegacyTransport ?? false;
+    if (useLegacyTransport) {
+      this.sendMessageLegacy(method, params);
+    } else {
+      super.sendMessage(method, params);
+    }
   }
 
   private addHandshakeHandler() {
@@ -33,15 +48,36 @@ export class DevToolsPluginClientImplApp extends DevToolsPluginClient {
         }
 
         // [1] Terminate duplicated browser clients for the same plugin
-        const previousBrowserClientId = this.browserClientMap[pluginName];
+        const previousBrowserClientMetadata = this.browserClientMap[pluginName];
+        const previousBrowserClientId = previousBrowserClientMetadata?.browserClientId;
         if (previousBrowserClientId != null && previousBrowserClientId !== params.browserClientId) {
           logger.info(
             `Terminate the previous browser client connection - previousBrowserClientId[${previousBrowserClientId}]`
           );
           this.terminateBrowserClient(pluginName, previousBrowserClientId);
         }
-        this.browserClientMap[pluginName] = params.browserClientId;
+        this.browserClientMap[pluginName] = {
+          browserClientId: params.browserClientId,
+        };
       }
+    });
+
+    // backward compatible handshaking
+    this.addMessageListener('handshake', (params: HandshakeMessageParams) => {
+      console.warn(`Received a legacy plugin handshake message - pluginName[${params.pluginName}]`);
+      const { pluginName } = params;
+      const previousBrowserClientMetadata = this.browserClientMap[pluginName];
+      const previousBrowserClientId = previousBrowserClientMetadata?.browserClientId;
+      if (previousBrowserClientId != null && previousBrowserClientId !== params.browserClientId) {
+        logger.info(
+          `Terminate the previous browser client connection - previousBrowserClientId[${previousBrowserClientId}]`
+        );
+        this.sendMessage('terminateBrowserClient', { browserClientId: previousBrowserClientId });
+      }
+      this.browserClientMap[pluginName] = {
+        browserClientId: params.browserClientId,
+        useLegacyTransport: true,
+      };
     });
   }
 

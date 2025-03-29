@@ -38,7 +38,7 @@ interface MessageFrame<T extends MessageKeyTypeBase> {
 export declare class MessageFramePacker<T extends MessageKeyTypeBase> {
     private textEncoder;
     private textDecoder;
-    pack({ messageKey, payload }: MessageFrame<T>): string | Uint8Array | Promise<Uint8Array>;
+    pack({ messageKey, payload }: MessageFrame<T>, useLegacyTransport?: boolean): string | Uint8Array | Promise<Uint8Array>;
     unpack(packedData: string | ArrayBuffer): MessageFrame<T>;
     private isFastPathPayload;
     private payloadToUint8Array;
