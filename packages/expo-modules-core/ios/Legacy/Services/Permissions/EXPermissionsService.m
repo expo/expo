@@ -155,6 +155,8 @@ EX_EXPORT_MODULE();
       return @"granted";
     case EXPermissionStatusDenied:
       return @"denied";
+    case EXPermissionStatusLimited:
+      return @"limited";
     default:
       return @"undetermined";
   }

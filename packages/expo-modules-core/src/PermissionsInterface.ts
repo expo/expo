@@ -4,6 +4,10 @@ export enum PermissionStatus {
    */
   GRANTED = 'granted',
   /**
+   * User has granted the permission with limited access.
+   */
+  LIMITED = 'limited',
+  /**
    * User hasn't granted or denied the permission yet.
    */
   UNDETERMINED = 'undetermined',

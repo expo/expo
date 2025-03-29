@@ -15,7 +15,7 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
       status = EXPermissionStatusGranted
     #if compiler(>=6)
     case .limited:
-      status = EXPermissionStatusGranted
+      status = EXPermissionStatusLimited
     #endif
     case .denied, .restricted:
       status = EXPermissionStatusDenied
