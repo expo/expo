@@ -3,7 +3,7 @@ import path from 'path';
 
 export const IMAGE_TYPES = ['.png', '.jpg', '.gif'];
 export const FONT_TYPES = ['.otf', '.ttf'];
-export const MEDIA_TYPES = ['.mp4', '.mp3', '.lottie'];
+export const MEDIA_TYPES = ['.mp4', '.mp3', '.lottie', '.riv'];
 export const ACCEPTED_TYPES = ['.json', '.db', ...IMAGE_TYPES, ...MEDIA_TYPES, ...FONT_TYPES];
 
 export async function resolveAssetPaths(assets: string[], projectRoot: string) {
