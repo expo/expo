@@ -12,7 +12,8 @@ const originalFs = jest.requireActual('fs') as typeof import('fs');
 describe('ProvisioningProfile module', () => {
   describe(setProvisioningProfileForPbxproj, () => {
     const projectRoot = '/testproject';
-    const pbxProjPath = 'ios/testproject.xcodeproj/project.pbxproj';
+    const platform = 'ios';
+    const pbxProjPath = `${platform}/testproject.xcodeproj/project.pbxproj`;
 
     afterEach(() => {
       vol.reset();
@@ -29,7 +30,7 @@ describe('ProvisioningProfile module', () => {
           },
           projectRoot
         );
-        setProvisioningProfileForPbxproj(projectRoot, {
+        setProvisioningProfileForPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
           profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
@@ -48,7 +49,7 @@ describe('ProvisioningProfile module', () => {
           },
           projectRoot
         );
-        setProvisioningProfileForPbxproj(projectRoot, {
+        setProvisioningProfileForPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
           profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
@@ -69,7 +70,7 @@ describe('ProvisioningProfile module', () => {
       });
 
       it('configures the project.pbxproj file with the profile name and apple team id', () => {
-        setProvisioningProfileForPbxproj(projectRoot, {
+        setProvisioningProfileForPbxproj(projectRoot, platform, {
           profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
         });
@@ -77,7 +78,7 @@ describe('ProvisioningProfile module', () => {
         expect(pbxprojContents).toMatchSnapshot();
       });
       it('configures the project.pbxproj file with the profile name and apple team id', () => {
-        setProvisioningProfileForPbxproj(projectRoot, {
+        setProvisioningProfileForPbxproj(projectRoot, platform, {
           profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'Something Spaced',
         });
@@ -86,7 +87,7 @@ describe('ProvisioningProfile module', () => {
       });
       it('throws descriptive error when target name does not exist', () => {
         expect(() =>
-          setProvisioningProfileForPbxproj(projectRoot, {
+          setProvisioningProfileForPbxproj(projectRoot, platform, {
             targetName: 'faketargetname',
             profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
             appleTeamId: 'J5FM626PE2',

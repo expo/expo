@@ -85,6 +85,7 @@ describe('iOS Icons', () => {
 });
 
 describe('e2e: iOS icons', () => {
+  const platform = 'ios';
   const iconPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
 
   const projectRoot = '/app';
@@ -111,7 +112,8 @@ describe('e2e: iOS icons', () => {
         // must use full path for mock fs
         icon: '/app/assets/icon.png',
       },
-      projectRoot
+      projectRoot,
+      platform
     );
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
@@ -135,6 +137,7 @@ describe('e2e: iOS icons', () => {
 });
 describe('e2e: iOS icons with fallback image', () => {
   const projectRoot = '/app';
+  const platform = 'ios';
   beforeAll(async () => {
     vol.fromJSON(rnFixture, projectRoot);
   });
@@ -152,7 +155,8 @@ describe('e2e: iOS icons with fallback image', () => {
         platforms: ['ios', 'android'],
         // No icon should be set
       },
-      projectRoot
+      projectRoot,
+      platform
     );
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);

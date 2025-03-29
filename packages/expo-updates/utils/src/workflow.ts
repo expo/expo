@@ -1,4 +1,4 @@
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,7 +8,7 @@ export type Workflow = 'managed' | 'generic';
 
 export async function resolveWorkflowAsync(
   projectDir: string,
-  platform: 'ios' | 'android'
+  platform: ModPlatform
 ): Promise<Workflow> {
   const vcsClient = await getVCSClientAsync(projectDir);
 
@@ -20,7 +20,7 @@ export async function resolveWorkflowAsync(
             path.join(projectDir, 'android/app/build.gradle'),
             await AndroidConfig.Paths.getAndroidManifestAsync(projectDir),
           ]
-        : [IOSConfig.Paths.getPBXProjectPath(projectDir)];
+        : [IOSConfig.Paths.getPBXProjectPath(projectDir, platform)];
   } catch {
     return 'managed';
   }

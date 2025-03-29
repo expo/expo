@@ -63,6 +63,8 @@ describe(getDefaultNativeScheme, () => {
 });
 
 describe(promptOrQueryNativeSchemeAsync, () => {
+  const platform = 'ios';
+
   it(`resolves xcworkspace with higher priority than xcodeproj`, async () => {
     jest
       .mocked(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)
@@ -70,7 +72,7 @@ describe(promptOrQueryNativeSchemeAsync, () => {
         { name: 'foobar', osType: 'iOS', type: 'com.apple.product-type.application' },
       ]);
 
-    expect(await promptOrQueryNativeSchemeAsync('/', { scheme: 'foobar' })).toEqual({
+    expect(await promptOrQueryNativeSchemeAsync('/', platform, { scheme: 'foobar' })).toEqual({
       name: 'foobar',
       osType: 'iOS',
       type: 'com.apple.product-type.application',
@@ -79,9 +81,9 @@ describe(promptOrQueryNativeSchemeAsync, () => {
   it(`asserts no schemes`, async () => {
     jest.mocked(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj).mockReturnValueOnce([]);
 
-    await expect(promptOrQueryNativeSchemeAsync('/', { scheme: 'foobar' })).rejects.toThrowError(
-      /No native iOS build schemes found/
-    );
+    await expect(
+      promptOrQueryNativeSchemeAsync('/', platform, { scheme: 'foobar' })
+    ).rejects.toThrowError(/No native iOS build schemes found/);
   });
   it(`prompts to select a scheme`, async () => {
     jest.mocked(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj).mockReturnValueOnce([
@@ -91,7 +93,7 @@ describe(promptOrQueryNativeSchemeAsync, () => {
 
     jest.mocked(selectAsync).mockResolvedValueOnce('foobar2');
 
-    expect(await promptOrQueryNativeSchemeAsync('/', { scheme: true })).toEqual({
+    expect(await promptOrQueryNativeSchemeAsync('/', platform, { scheme: true })).toEqual({
       name: 'foobar2',
       osType: 'watchOS',
       type: 'com.apple.product-type.application.watchapp',
@@ -104,6 +106,6 @@ describe(promptOrQueryNativeSchemeAsync, () => {
     ]);
 
     jest.mocked(selectAsync).mockResolvedValueOnce('bacon');
-    expect(await promptOrQueryNativeSchemeAsync('/', { scheme: true })).toEqual(null);
+    expect(await promptOrQueryNativeSchemeAsync('/', platform, { scheme: true })).toEqual(null);
   });
 });

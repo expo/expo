@@ -33,13 +33,13 @@ function _string() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-function setProvisioningProfileForPbxproj(projectRoot, {
+function setProvisioningProfileForPbxproj(projectRoot, platform, {
   targetName,
   profileName,
   appleTeamId,
   buildConfiguration = 'Release'
 }) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
+  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, platform);
   const nativeTargetEntry = targetName ? (0, _Target().findNativeTargetByName)(project, targetName) : (0, _Target().findFirstNativeTarget)(project);
   const [nativeTargetId, nativeTarget] = nativeTargetEntry;
   const quotedAppleTeamId = ensureQuotes(appleTeamId);
