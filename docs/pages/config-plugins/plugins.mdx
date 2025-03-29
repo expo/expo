@@ -1,0 +1,363 @@
+---
+title: Create and use config plugins
+description: Learn how to create and use a config plugins in your Expo project.
+sidebar_title: Plugins
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+A config plugin is made up of individual plugin functions that modify your app's configuration. These plugin functions have the following characteristics:
+
+- Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified `ExpoConfig`
+- Plugins should be named using the following convention: `with<Plugin Functionality>`, for example, `withFacebook`
+- Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added
+- Optionally, a second argument can be passed to the plugin to configure it
+- `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`. However, the `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
+
+In this guide, let's learn how to create and use a local config plugin.
+
+## Creating a config plugin
+
+In the following section, let's create a local config plugin that adds an arbitrary property `HelloWorldMessage` to the **AndroidManifest.xml** for Android and **Info.plist** for iOS.
+
+This example will create and modify the following files. To follow along, create a **plugins** directory in the root of your project, and inside it, create **withAndroidPlugin.ts**, **withIosPlugins.ts**, and **withPlugin.ts** file.
+
+<FileTree
+  files={[
+    'plugins',
+    ['plugins/withAndroidPlugin.ts', 'Contains Android-specific modifications'],
+    ['plugins/withIosPlugin.ts', 'Contains iOS-specific modifications'],
+    ['plugins/withPlugin.ts', 'Main plugin file that combines both Android and iOS plugins'],
+    ['app.config.ts', 'App config file that uses the plugin'],
+  ]}
+/>
+
+<Step label="1">
+
+### Create Android plugin
+
+In **withAndroidPlugin.ts**, add the following code:
+
+```ts withAndroidPlugin.ts
+import { ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+
+const withAndroidPlugin: ConfigPlugin = config => {
+  // Define a custom message
+  const message = 'Hello world, from Expo plugin!';
+
+  return withAndroidManifest(config, config => {
+    const mainApplication = config?.modResults?.manifest?.application?.[0];
+
+    if (mainApplication) {
+      // Ensure meta-data array exists
+      if (!mainApplication['meta-data']) {
+        mainApplication['meta-data'] = [];
+      }
+
+      // Add the custom message as a meta-data entry
+      mainApplication['meta-data'].push({
+        $: {
+          'android:name': 'HelloWorldMessage',
+          'android:value': message,
+        },
+      });
+    }
+
+    return config;
+  });
+};
+
+export default withAndroidPlugin;
+```
+
+The example code above adds a meta-data entry `HelloWorldMessage` to the **android/app/src/main/AndroidManifest.xml** file by importing `ConfigPlugin` and `withAndroidManifest` from `expo/config-plugins` package. The [`withAndroidManifest`](/config-plugins/plugins-and-mods/#what-are-mods) mod is an async function that accepts a config and a data object and modifies the value before returning an object.
+
+</Step>
+
+<Step label="2">
+
+### Create iOS plugin
+
+In **withIosPlugin.ts**, add the following code:
+
+```ts withIosPlugin.ts
+import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+
+const withIosPlugin: ConfigPlugin = config => {
+  // Define the custom message
+  const message = 'Hello world, from Expo plugin!';
+
+  return withInfoPlist(config, config => {
+    // Add the custom message to the Info.plist file
+    config.modResults.HelloWorldMessage = message;
+    return config;
+  });
+};
+
+export default withIosPlugin;
+```
+
+The example code above adds a custom key `HelloWorldMessage` with the custom message in **ios/\<your-project-name\>/Info.plist** file by importing the `ConfigPlugin` and `withInfoPlist` from `expo/config-plugins` package. The [`withInfoPlist`](/config-plugins/plugins-and-mods/#what-are-mods) mod is an async function that accepts a config and a data object and modifies the value before returning an object.
+
+</Step>
+
+<Step label="3">
+
+### Create a plugin wrapper
+
+Now you can create a combined plugin that applies both platform-specific plugins. This approach allows the maintenance of platform-specific code separately while providing a single entry point.
+
+In **withPlugin.ts**, add the following code:
+
+```ts withPlugin.ts
+import { ConfigPlugin } from 'expo/config-plugins';
+import withAndroidPlugin from './withAndroidPlugin';
+import withIosPlugin from './withIosPlugin';
+
+const withPlugin: ConfigPlugin = config => {
+  // Apply Android modifications first
+  config = withAndroidPlugin(config);
+  // Then apply iOS modifications and return
+  return withIosPlugin(config);
+};
+
+export default withPlugin;
+```
+
+</Step>
+
+<Step label="4">
+
+### Call the config plugin from your dynamic app config
+
+To use the config plugin, you need to add a parser for the TypeScript files and add the `withPlugin.tsx` file to the plugins array in your app config. This is done by:
+
+- Install `ts-node` library by running `npm install --dev ts-node`. This will allow you to use TypeScript when running the app config
+- Change static app config (**app.json**) to the [dynamic app config (**app.config.ts**)](/workflow/configuration/#dynamic-configuration) file
+
+```ts app.config.ts
+import "ts-node/register";
+
+import { ExpoConfig } from "expo/config";
+
+
+module.exports = ({ config }: { config: ExpoConfig }) => {
+// ... rest of your app config
+
+ plugins: [
+      // ... other config plugins
+      ["./plugins/withPlugin.ts"],
+    ],
+ // ... any other app config properties
+```
+
+To see the custom config applied in native projects, run the following command:
+
+<Terminal cmd={['$ npx expo prebuild --clean --no-install']} />
+
+To verify the custom config plugins applied, open **android/app/src/main/AndroidManifest.xml** and **ios/\<your-project-name\>/Info.plist** files:
+
+<CodeBlocksTable tabs={['AndroidManifest.xml', 'Info.plist']}>
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- ... rest of the configuration-->
+	<application ...>
+		<meta-data android:name="HelloWorldMessage" android:value="Hello world, from Expo plugin!"/>
+		<!-- ... -->
+	</application>
+</manifest>
+```
+
+```xml
+<plist version="1.0">
+  <dict>
+   <!-- ... -->
+    <key>HelloWorldMessage</key>
+    <string>Hello world, from Expo plugin!</string>
+	  <!-- ... -->
+	</dict>
+</plist>
+```
+
+</CodeBlocksTable>
+
+</Step>
+
+## Passing a parameter to a config plugin
+
+To use a value dynamically from your app config to the config plugin, you can pass a second value as a parameter to the plugin in your app config.
+
+<Step label="1">
+
+Considering the previous example, let's pass a custom message to the plugin. Add an `options` object in **withAndroidPlugin.ts** and update the `message` variable to use the `options.message` property:
+
+{/* prettier-ignore */}
+```ts withAndroidPlugin.ts
+/* @hide ...*/ /* @end */
+type AndroidProps = {
+  message?: string;
+};
+
+const withAndroidPlugin: ConfigPlugin<AndroidProps> = (
+  config,
+  /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */
+) => {
+  /* @info Use the provided message or fall back to a default */
+  const message = options.message || 'Hello world, from Expo plugin!';
+  /* @end */
+  return withAndroidManifest(config, config => {
+   /* @hide ... rest of the example remains unchanged*/ /* @end */
+  });
+};
+
+export default withAndroidPlugin;
+```
+
+</Step>
+<Step label="2">
+
+Similarly, add an `options` object in **withIosPlugin.ts** and update the `message` variable to use the `options.message` property:
+
+{/* prettier-ignore */}
+```ts withIosPlugin.ts
+/* @hide ...*/ /* @end */
+type IosProps = {
+  message?: string;
+};
+
+const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */) => {
+   /* @info Use the provided message or fall back to a default */
+  const message = options.message || 'Hello world, from Expo plugin!';
+  /* @end */
+  /* @hide ... rest of the example remains unchanged*/ /* @end */
+};
+
+export default withIosPlugin;
+```
+
+</Step>
+
+<Step label="3">
+
+Update the **withPlugin.ts** file to pass the `options` object to both plugins:
+
+{/* prettier-ignore */}
+```ts withPlugin.ts
+/* @hide ...*/ /* @end */
+const withPlugin: ConfigPlugin<{ message?: string }> = (config, /* @info */ options = {}/* @end */) => {
+  /* @info */
+  config = withAndroidPlugin(config, options);
+  return withIosPlugin(config, options);
+  /* @end */
+};
+```
+
+</Step>
+
+<Step label="4">
+
+To pass a value dynamically to the plugin, you can pass an object with the `message` property to the plugin in your app config:
+
+```ts app.config.ts
+{
+  /* @hide ...*/ /* @end */
+  plugins: [
+    [
+      "./plugins/withPlugin.ts",
+      { message: "Custom message from app.config.ts" },
+    ],
+  ],
+}
+```
+
+</Step>
+
+## Chaining config plugins
+
+Config plugins can be chained together to apply multiple modifications. Each plugin in the chain runs in the order it appears, with the output of one plugin becoming the input for the next. This sequential execution ensures that dependencies between plugins are respected and allows you to control the precise order of modifications to your native code.
+
+To chain config plugins, you can pass an array of plugins to the `plugins` array property in your app config. This is also supported in JSON app config file format (**app.json**).
+
+```ts app.config.ts
+module.exports = ({ config }: { config: ExpoConfig }) => {
+  name: 'my app',
+  plugins: [
+    [withFoo, 'input 1'],
+    [withBar, 'input 2'],
+    [withDelta, 'input 3'],
+  ],
+};
+```
+
+The `plugins` array uses `withPlugins` method under the hood to chain the plugins. In your dynamic app config, if it becomes difficult to read and manipulate, you can use the `withPlugins` method directly to chain plugins together and execute them in order.
+
+```ts app.config.ts
+import { withPlugins } from 'expo/config-plugins';
+
+// Create a base config object
+const baseConfig = {
+  name: 'my app',
+  // /* @hide ... rest of the config */ /* @end */
+};
+
+// ❌ Hard to read
+withDelta(withFoo(withBar(config, 'input 1'), 'input 2'), 'input 3');
+
+// ✅ Easy to read
+withPlugins(config, [
+  [withFoo, 'input 1'],
+  [withBar, 'input 2'],
+  // When no input is required, you can just pass the method
+  withDelta,
+]);
+
+// Export the base config with plugins applied
+module.exports = ({ config }: { config: ExpoConfig }) => {
+  return withPlugins(baseConfig, plugins);
+};
+```
+
+## Using a config plugin
+
+Expo config plugins mostly come from Node.js modules. You can install them just like other libraries in your project.
+
+For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
+
+<Terminal cmd={['$ npx expo install expo-camera']} />
+
+In your [app config](/versions/latest/config/app/), you can add `expo-camera` to the list of plugins:
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-camera"]
+  }
+}
+```
+
+Some config plugins offer flexibility by allowing you to pass options to customize their configuration. To do this, you can pass an array with the Expo library name as the first argument, and an object containing the options as the second argument. For example, the `expo-camera` plugin allows you to customize the camera permission message:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
+      ]
+    ]
+  }
+}
+```
+
+> **info** **Tip**: For every Expo library that has a config plugin, you'll find more information about that in the library's API reference. For example, the [`expo-camera` library has a config plugin section](/versions/latest/sdk/camera/#configuration-in-appjsonappconfigjs).
+
+On running the `npx expo prebuild`, the [`mods`](/config-plugins/plugins-and-mods/#how-mods-work) are compiled, and the native files change.
+
+The changes don't take effect until you rebuild the native project, for example, with Xcode. **If you're using config plugins in a managed app, they will be applied during the prebuild step in EAS Build**.
