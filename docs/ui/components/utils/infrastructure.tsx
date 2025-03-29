@@ -34,8 +34,8 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
 };
 
 const IosResourceClassToSpec: Record<(typeof ResourceClasses.ios)[number], JSX.Element> = {
-  medium: <>5 efficiency cores, 20 GiB RAM, 110 GB SSD</>,
-  large: <>10 efficiency cores, 40 GiB RAM, 110 GB SSD</>,
+  medium: <>5 performance cores, 20 GiB RAM, 110 GB SSD</>,
+  large: <>10 performance cores, 40 GiB RAM, 110 GB SSD</>,
 };
 
 function ResourceClassSpecLink({
