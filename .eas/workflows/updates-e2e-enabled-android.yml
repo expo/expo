@@ -1,27 +1,19 @@
-name: Updates E2E enabled (iOS)
+name: Updates E2E enabled (Android)
 defaults:
   tools:
     yarn: '1.22.22'
 
 on:
   push:
-    branches: []
+    branches: ['doug/sdk-52-workflow-testing']
 
 jobs:
   setup:
-    runs_on: macos-large
+    runs_on: linux-large-nested-virtualization
     steps:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Prepare iOS simulator
-        id: ios_simulator
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: "1"
-        run: |
-          /opt/homebrew/bin/brew tap wix/brew
-          /opt/homebrew/bin/brew install applesimutils
-          xcrun simctl list
       - name: Set up Updates E2E enabled project
         id: setup
         run: |
@@ -30,10 +22,10 @@ jobs:
       - name: Build E2E project
         id: build
         working_directory: ../updates-e2e
-        run: |
+        run: | 
           yarn generate-test-update-bundles
-          npx pod-install
-          npx detox build -c ios.debug
+          npx detox build -c android.debug
+          avdmanager list avd
       - name: Test E2E project
         id: test
         env:
@@ -41,7 +33,4 @@ jobs:
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
-          npx detox test -c ios.debug
-
-
-
+          npx detox test -c android.debug
