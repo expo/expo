@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/create-expo-app.yml
       - packages/create-expo/**
+      - package.json
       - yarn.lock
   pull_request:
     paths:
