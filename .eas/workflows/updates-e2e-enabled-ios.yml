@@ -33,6 +33,9 @@ jobs:
              npx detox build -c ios.debug;
       - name: Test E2E project
         id: test
+        env:
+          UPDATES_HOST: "localhost"
+          UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: npx detox test -c ios.debug
 
