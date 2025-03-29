@@ -25,7 +25,7 @@ jobs:
       - name: Set up Updates E2E enabled project
         id: setup
         run: |
-          ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e
       - name: Build E2E project
         id: build

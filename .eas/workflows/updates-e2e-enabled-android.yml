@@ -19,9 +19,18 @@ jobs:
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e
+      - name: Set up Android simulator
+        id: setupsimulator
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
+          sdkmanager --install "system-images;android-31;google_apis;x86_64"
+          avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-31;google_apis;x86_64"
       - name: Build E2E project
         id: build
         working_directory: ../updates-e2e
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: | 
           yarn generate-test-update-bundles
           npx detox build -c android.debug
@@ -29,6 +38,7 @@ jobs:
       - name: Test E2E project
         id: test
         env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           UPDATES_HOST: "localhost"
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
