@@ -53,6 +53,9 @@ export async function registerTaskAsync(taskName, options = {}) {
     if (!TaskManager.isTaskDefined(taskName)) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
     }
+    if (await TaskManager.isTaskRegisteredAsync(taskName)) {
+        throw new Error(`Task '${taskName}' is already registered.`);
+    }
     if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
         if (!warnAboutRunningOniOSSimulator) {
             const message = Platform.OS === 'ios'
@@ -63,7 +66,6 @@ export async function registerTaskAsync(taskName, options = {}) {
         }
         return;
     }
-    console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
     await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
 }
 // @needsAudit
@@ -76,7 +78,9 @@ export async function unregisterTaskAsync(taskName) {
     if (!ExpoBackgroundTaskModule.unregisterTaskAsync) {
         throw new UnavailabilityError('BackgroundTask', 'unregisterTaskAsync');
     }
-    console.log('Calling ExpoBackgroundTaskModule.unregisterTaskAsync', taskName);
+    if (!(await TaskManager.isTaskRegisteredAsync(taskName))) {
+        throw new Error(`Task '${taskName}' is not registered.`);
+    }
     await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
 }
 // @needsAudit
