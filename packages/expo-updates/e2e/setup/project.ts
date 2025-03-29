@@ -305,6 +305,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        'start-android-emulator': './scripts/start-android-emulator.sh',
         postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }

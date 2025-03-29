@@ -45,5 +45,5 @@ jobs:
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
-          adb reverse tcp:4747 tcp:4747
+          yarn start-android-emulator
           npx detox test -c android.debug
