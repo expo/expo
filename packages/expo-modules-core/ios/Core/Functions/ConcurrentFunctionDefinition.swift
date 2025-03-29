@@ -4,10 +4,12 @@
  Represents a concurrent function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  As opposed to `AsyncFunctionDefinition`, it can leverage the new Swift's concurrency model and take the async/await closure.
  */
-public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyFunctionDefinition {
+public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyFunctionDefinition {
   typealias ClosureType = (Args) async throws -> ReturnType
 
   let body: ClosureType
+  
+  var requiredPermissions: [String] = []
 
   init(
     _ name: String,

@@ -1,3 +1,4 @@
+import { Permission } from 'expo';
 import { PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
@@ -1154,7 +1155,7 @@ export async function getRemindersAsync(
   status: ReminderStatus | null,
   startDate: Date | null,
   endDate: Date | null
-): Promise<Reminder[]> {
+) {
   if (!ExpoCalendar.getRemindersAsync) {
     throw new UnavailabilityError('Calendar', 'getRemindersAsync');
   }
@@ -1184,6 +1185,10 @@ export async function getRemindersAsync(
     status || null
   );
 }
+
+export const permissions = ExpoCalendar.permissions as {
+  readReminders: Permission;
+};
 
 // @needsAudit
 /**

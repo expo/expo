@@ -17,6 +17,8 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder 
    */
   var dynamicArgumentTypes: [AnyDynamicType] { get }
 
+  var requiredPermissions: [String] { get }
+
   /**
    A number of arguments the function takes. If the function expects to receive an owner (`this`) as the first argument, it's not counted.
    Similarly, if the last argument is of type `Promise`, it is not counted.
