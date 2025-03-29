@@ -16,6 +16,16 @@ export type SharingOptions = {
      * @platform web
      */
     dialogTitle?: string;
+    /**
+     * set the anchor point for iPad
+     * @platform ios
+     */
+    anchor?: {
+        x?: number;
+        y?: number;
+        width?: number;
+        height?: number;
+    };
 };
 /**
  * Determine if the sharing API can be used in this app.
