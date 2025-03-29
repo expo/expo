@@ -6,6 +6,8 @@ import path from 'path';
 import {
   downloadAndExtractExampleAsync,
   ensureExampleExists,
+  ExamplesMetadata,
+  fetchMetadataAsync,
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
@@ -152,10 +154,33 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     resolvedExample = await promptExamplesAsync();
   } else if (props.example) {
     resolvedExample = props.example;
-    console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
   }
 
+  // Handle remapping aliases and throwing for deprecated examples.
+  const metadata = await fetchMetadataAsync();
+
+  if (metadata.aliases[resolvedExample]) {
+    const alias = metadata.aliases[resolvedExample];
+    const destination = typeof alias === 'string' ? alias : alias.destination;
+    console.log(
+      chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
+    );
+
+    // Optional message to show when an example is aliased, in case additional context is required
+    if (typeof alias === 'object' && alias.message) {
+      console.log(chalk`{gray ${alias.message}}`);
+    }
+
+    resolvedExample = destination;
+  } else if (metadata.deprecated[resolvedExample]) {
+    throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
+  }
+
+  // Ensure the example exists after performing remapping and deprecation checks.
   await ensureExampleExists(resolvedExample);
+
+  // Log the status after aliases and deprecated examples are handled.
+  console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
@@ -254,4 +279,19 @@ export function logNodeInstallWarning(
     console.log(`  npx pod-install`);
   }
   console.log();
+}
+
+function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMetadata) {
+  const { message, outdatedExampleHref } = metadata.deprecated[example];
+  let output = `${example} is no longer available.`;
+
+  if (message) {
+    output += ` ${message}`;
+  }
+
+  if (outdatedExampleHref) {
+    output += `\n\nYou can also refer to the outdated example code in examples git repository history, if it is useful: ${outdatedExampleHref}`;
+  }
+
+  return output;
 }
