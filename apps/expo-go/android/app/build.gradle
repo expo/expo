@@ -202,6 +202,10 @@ dependencies {
   // Our dependencies
   implementation ('androidx.appcompat:appcompat:1.6.1')
 
+  // Our dependencies for toggling edge-to-edge support
+  implementation 'androidx.activity:activity:1.10.1'
+  implementation 'androidx.activity:activity-ktx:1.10.1'
+
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   compileOnly 'org.glassfish:javax.annotation:3.1.1'

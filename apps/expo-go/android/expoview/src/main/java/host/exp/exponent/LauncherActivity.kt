@@ -8,11 +8,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.lifecycle.get
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
 import host.exp.expoview.BuildConfig
@@ -27,6 +27,7 @@ class LauncherActivity : AppCompatActivity() {
   lateinit var kernel: Kernel
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     if (BuildConfig.DEBUG) {
       // Need WRITE_EXTERNAL_STORAGE for method tracing
