@@ -3,8 +3,9 @@
 #import <CoreLocation/CLLocationManager.h>
 
 #import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <CoreLocation/CLLocationManagerDelegate.h>
 
-@interface EXBaseLocationRequester : NSObject<EXPermissionsRequester>
+@interface EXBaseLocationRequester : NSObject<EXPermissionsRequester, CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) EXPromiseResolveBlock resolve;
@@ -15,7 +16,5 @@
 
 - (void)requestLocationPermissions;
 - (NSDictionary *)parsePermissions:(CLAuthorizationStatus)systemStatus;
-
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 
 @end
