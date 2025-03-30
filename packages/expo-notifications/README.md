@@ -258,7 +258,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'mySoundFile.wav', // Provide ONLY the base filename
   },
   trigger: {
-    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new-emails',
   },
@@ -289,7 +289,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'email-sound.wav', // <- for Android below 8.0
   },
   trigger: {
-    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new-emails', // <- for Android 8.0+, see definition above
   },
@@ -982,7 +982,7 @@ Notifications.scheduleNotificationAsync({
     body: 'Change sides!',
   },
   trigger: {
-    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 60,
   },
 });
@@ -998,7 +998,7 @@ Notifications.scheduleNotificationAsync({
     title: 'Remember to drink water!,
   },
   trigger: {
-    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 60 * 20,
     repeats: true
   },
@@ -1019,7 +1019,7 @@ Notifications.scheduleNotificationAsync({
     title: 'Happy new hour!',
   },
   trigger: {
-    type: SchedulableTriggerInputTypes.DATE,
+    type: Notifications.SchedulableTriggerInputTypes.DATE,
     date: trigger,
   },
 });
@@ -1049,7 +1049,11 @@ async function scheduleAndCancel() {
     content: {
       title: 'Hey!',
     },
-    trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5, repeats: true },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 5,
+      repeats: true
+    },
   });
   await Notifications.cancelScheduledNotificationAsync(identifier);
 }
