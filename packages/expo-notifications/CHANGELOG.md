@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- improve usage and example SchedulableTriggerInputTypes docs ([#35781](https://github.com/expo/expo/pull/35781) by [@tamsanh](https://github.com/tamsanh))
+- correct broken doc references to SchedulableTriggerInputTypes ([#35781](https://github.com/expo/expo/pull/35781) by [@tamsanh](https://github.com/tamsanh))
 - update Push Notification deprecation message for Expo Go ([#35577](https://github.com/expo/expo/pull/35577) by [@vonovak](https://github.com/vonovak))
 - simplify `nextTriggerDate` in `TimeIntervalTrigger` ([#35559](https://github.com/expo/expo/pull/35559) by [@vonovak](https://github.com/vonovak))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
