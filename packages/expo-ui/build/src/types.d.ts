@@ -4,6 +4,8 @@ export type * from '../components/Picker';
 export type * from '../components/Section';
 export type * from '../components/Slider';
 export type * from '../components/Switch';
+export type * from '../components/Label';
+export type * from '../components/List';
 /**
  * @hidden
  */
