@@ -10,7 +10,7 @@
 
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
 - Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`.
+- [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`. ([#35789](https://github.com/expo/expo/pull/35789) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
