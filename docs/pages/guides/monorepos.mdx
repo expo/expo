@@ -92,6 +92,9 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+// If you are using named package exports, make sure to turn on unstable_enablePackageExports
+// config.resolver.unstable_enablePackageExports = true;
+
 module.exports = config;
 ```
 
