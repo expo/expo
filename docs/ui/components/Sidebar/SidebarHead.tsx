@@ -17,6 +17,8 @@ type SidebarHeadProps = {
 };
 
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
+  const isPreviewVisible = shouldShowFeaturePreviewLink();
+
   if (sidebarActiveGroup === 'archive') {
     return (
       <div className="flex flex-col gap-0.5 border-b border-default bg-default p-1.5">
@@ -38,7 +40,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           'short:pb-3'
         )}>
         <Search />
-        <div className={mergeClasses('contents', 'short:grid short:grid-cols-5 short:gap-1')}>
+        <div
+          className={mergeClasses(
+            'contents',
+            'short:grid short:grid-cols-5 short:gap-1',
+            isPreviewVisible && 'short:grid-cols-6'
+          )}>
           <SidebarSingleEntry
             href="/"
             title="Home"
@@ -69,7 +76,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={GraduationHat02DuotoneIcon}
             isActive={sidebarActiveGroup === 'learn'}
           />
-          {shouldShowFeaturePreviewLink() && (
+          {isPreviewVisible && (
             <SidebarSingleEntry
               href="/feature-preview/"
               title="Feature Preview"
