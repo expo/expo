@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add RSC support. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
+- Add .riv to accepted media types ([#35758](https://github.com/expo/expo/pull/35758) by [@alextoudic](https://github.com/alextoudic))
 
 ### 🐛 Bug fixes
 
