@@ -156,7 +156,7 @@ export function createRequestHandler(
         const url = getRedirectRewriteLocation(request, route);
 
         if (url) {
-          request = { ...request, url: new URL(url, new URL(request.url).origin).toString() };
+          request = new Request(new URL(url, new URL(request.url).origin), request);
         }
       }
     }
