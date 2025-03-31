@@ -143,7 +143,7 @@ export async function getPendingResultAsync(): Promise<
   (ImagePickerResult | ImagePickerErrorResult)[]
 > {
   if (ExponentImagePicker.getPendingResultAsync) {
-    return ExponentImagePicker.getPendingResultAsync();
+    return (await ExponentImagePicker.getPendingResultAsync()) ?? [];
   }
   return [];
 }

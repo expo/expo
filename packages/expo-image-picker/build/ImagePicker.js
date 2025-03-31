@@ -96,7 +96,7 @@ export const useCameraPermissions = createPermissionHook({
  */
 export async function getPendingResultAsync() {
     if (ExponentImagePicker.getPendingResultAsync) {
-        return ExponentImagePicker.getPendingResultAsync();
+        return await ExponentImagePicker.getPendingResultAsync() ?? [];
     }
     return [];
 }
