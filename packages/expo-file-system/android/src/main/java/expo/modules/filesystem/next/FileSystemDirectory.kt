@@ -2,6 +2,8 @@ package expo.modules.filesystem.next
 
 import android.net.Uri
 import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.types.Either
 import java.io.File
 
 class FileSystemDirectory(file: File) : FileSystemPath(file) {
@@ -42,9 +44,10 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.READ)
     return file.listFiles()?.map {
+      val uriString = Uri.fromFile(it).toString()
       mapOf(
         "isDirectory" to it.isDirectory,
-        "path" to it.path
+        "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
       )
     } ?: emptyList()
   }
