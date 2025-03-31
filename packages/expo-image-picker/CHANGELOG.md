@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
