@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `getPendingResultAsync` could return `null`, violating return type. ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+- [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
 
 ### 💡 Others
 
