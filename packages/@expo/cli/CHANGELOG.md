@@ -54,6 +54,10 @@
 - Bump Metro typescript declarations to `0.82.0`. ([#35522](https://github.com/expo/expo/pull/35522) by [@byCedric](https://github.com/byCedric))
 - Bump `swc` for `@expo/cli` build output. ([#35584](https://github.com/expo/expo/pull/35584) by [@kitten](https://github.com/kitten))
 
+## 0.22.23 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
 ## 0.22.22 - 2025-03-26
 
 ### 💡 Others

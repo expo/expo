@@ -26,6 +26,10 @@
 - Removed remote debugging dead code. ([#34977](https://github.com/expo/expo/pull/34977) by [@kudo](https://github.com/kudo))
 - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
 
+## 6.0.22 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.19 - 2025-02-06
 
 _This version does not introduce any user-facing changes._
