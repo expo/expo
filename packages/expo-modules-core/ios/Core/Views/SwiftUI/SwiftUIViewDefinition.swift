@@ -67,8 +67,8 @@ extension ExpoSwiftUI {
   public typealias View = ExpoSwiftUIView
 
   /**
-    A definition representing the native SwiftUI view to export to React.
-    */
+   A definition representing the native SwiftUI view to export to React.
+   */
   public final class ViewDefinition<Props: ViewProps, ViewType: View<Props>>: ExpoModulesCore.ViewDefinition<HostingView<Props, ViewType>> {
     // To obtain prop and event names from the props object we need to create a dummy instance first.
     // This is not ideal, but RN requires us to provide all names before the view is created
