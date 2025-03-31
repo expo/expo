@@ -127,7 +127,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 }
                 const url = getRedirectRewriteLocation(request, route);
                 if (url) {
-                    request = { ...request, url: new URL(url, new URL(request.url).origin).toString() };
+                    request = new Request(new URL(url, new URL(request.url).origin), request);
                 }
             }
         }
@@ -141,7 +141,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                     debug('Redirecting', Location);
                     // Get the params
                     return new Response(null, {
-                        status: route.permanent ? 301 : 307,
+                        status: route.permanent ? 308 : 307,
                         headers: {
                             Location,
                         },
