@@ -102,6 +102,14 @@ if (Platform.OS === 'ios') {
       return optionalRequire(() => require('./GaugeScreen'));
     },
   });
+  UIScreens.push({
+    name: 'List component',
+    route: 'ui/list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ListScreen'));
+    },
+  });
 }
 
 export default function UIScreen() {
