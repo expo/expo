@@ -28,7 +28,7 @@ export interface ListProps {
     deleteEnabled?: boolean;
     /**
      * Makes the list scrollable.
-     * @default false
+     * @default true
      * @platform ios 16.0+
      */
     scrollEnabled?: boolean;
