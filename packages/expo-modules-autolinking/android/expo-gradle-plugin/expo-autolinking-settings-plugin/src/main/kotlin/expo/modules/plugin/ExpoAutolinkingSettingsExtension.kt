@@ -11,8 +11,6 @@ open class ExpoAutolinkingSettingsExtension(
   val settings: Settings,
   @Inject val objects: ObjectFactory
 ) {
-
-
   /**
    * Command that should be provided to `react-native` to resolve the configuration.
    */
