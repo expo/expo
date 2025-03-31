@@ -15,7 +15,7 @@
 - [Android] Recording was not working when prepared due to wrong precondition check ([#35591](https://github.com/expo/expo/pull/35591) by [@pennersr](https://github.com/pennersr))
 - [Android] Correctly handle muting and volume. ([#35631](https://github.com/expo/expo/pull/35631) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix replacing item when `useAudioPlayer` is passed an empty source. ([#35749](https://github.com/expo/expo/pull/35749) by [@alanjhughes](https://github.com/alanjhughes))
-- Return `currentTime` and `duration` in seconds across all platforms.
+- Return `currentTime` and `duration` in seconds across all platforms. ([#35787](https://github.com/expo/expo/pull/35787) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
