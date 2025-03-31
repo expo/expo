@@ -99,10 +99,7 @@ async function generateAsync(
 
       const projectFilePath = path.resolve(projectRoot, template.destination(props));
       // copy the file from template
-      return copyAsync(template.file(projectRoot), projectFilePath, {
-        overwrite: true,
-        recursive: true,
-      });
+      return copyAsync(template.file(projectRoot), projectFilePath);
     })
   );
 

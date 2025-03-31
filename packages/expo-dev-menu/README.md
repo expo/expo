@@ -12,7 +12,7 @@ The `expo-dev-menu` repository consists of two different parts, the exported pac
 
 Local development is usually done through [`bare-expo`](/apps/bare-expo).
 
-First, make sure to `yarn` and `yarn start` in `expo-dev-menu` which will add the port for the dev menu packager to [`dev-menu-packager-host`](./assets/dev-menu-packager-host`). This is bundled into the native code in `bare-expo` so need to be done first. When done with local development, you need to reset the contents of `dev-menu-packager-host`!
+First, make sure to `yarn` and `yarn start` in `expo-dev-menu` which will add the port for the dev menu packager to [`dev-menu-packager-host`](./assets/dev-menu-packager-host). This is bundled into the native code in `bare-expo` so need to be done first. When done with local development, you need to reset the contents of `dev-menu-packager-host`!
 
 ### Making JavaScript changes inside the `app` folder
 

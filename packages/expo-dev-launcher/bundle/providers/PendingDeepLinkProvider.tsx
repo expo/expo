@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import { DeepLinkModal } from '../components/DeepLinkModal';
 import { addDeepLinkListener, getPendingDeepLink } from '../native-modules/DevLauncherInternal';
@@ -35,8 +34,7 @@ export function PendingDeepLinkProvider({
   }, []);
 
   React.useEffect(() => {
-    const listener = addDeepLinkListener((payload) => {
-      const url = Platform.OS === 'ios' ? payload.url : payload;
+    const listener = addDeepLinkListener(({ url }) => {
       if (url) {
         setPendingDeepLink(url);
         modalStack.push(() => <DeepLinkModal pendingDeepLink={url} />);

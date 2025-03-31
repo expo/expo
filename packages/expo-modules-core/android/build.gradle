@@ -60,6 +60,10 @@ def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
+expoModule {
+  canBePublished false
+}
+
 android {
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -73,6 +77,7 @@ android {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "2.0.6"
+    buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"

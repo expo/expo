@@ -5,7 +5,7 @@ import {
   compositeImagesAsync,
   generateImageBackgroundAsync,
 } from '@expo/image-utils';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -151,9 +151,10 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
     Object.values(DRAWABLES_CONFIGS).map(async ({ modes }) => {
       await Promise.all(
         Object.values(modes).map(async ({ path: filePath }) => {
-          if (await fs.pathExists(path.resolve(androidMainPath, filePath))) {
-            await fs.remove(path.resolve(androidMainPath, filePath));
-          }
+          await fs.promises.rm(path.resolve(androidMainPath, filePath), {
+            force: true,
+            recursive: true,
+          });
         })
       );
     })
@@ -221,8 +222,8 @@ export async function setSplashImageDrawablesForThemeAsync(
 
         const folder = path.dirname(outputPath);
         // Ensure directory exists.
-        await fs.ensureDir(folder);
-        await fs.writeFile(outputPath, composedImage);
+        await fs.promises.mkdir(folder, { recursive: true });
+        await fs.promises.writeFile(outputPath, composedImage);
       }
       return null;
     })
@@ -242,12 +243,12 @@ async function writeSplashScreenDrawablesAsync(
   const darkDrawablePath = path.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
 
   const lightFolder = path.dirname(lightDrawablePath);
-  await fs.ensureDir(lightFolder);
-  await fs.copyFile(path.join(projectRoot, drawable.icon), lightDrawablePath);
+  await fs.promises.mkdir(lightFolder, { recursive: true });
+  await fs.promises.copyFile(path.join(projectRoot, drawable.icon), lightDrawablePath);
 
   if (drawable.darkIcon) {
     const darkFolder = path.dirname(darkDrawablePath);
-    await fs.ensureDir(darkFolder);
-    await fs.copyFile(path.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+    await fs.promises.mkdir(darkFolder, { recursive: true });
+    await fs.promises.copyFile(path.join(projectRoot, drawable.darkIcon), darkDrawablePath);
   }
 }

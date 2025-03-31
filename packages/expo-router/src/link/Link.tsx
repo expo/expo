@@ -1,7 +1,7 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
+import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef, JSX } from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { resolveHref } from './href';
@@ -131,6 +131,7 @@ function ExpoRouterLink(
     target,
     download,
     withAnchor,
+    dangerouslySingular: singular,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
@@ -158,6 +159,7 @@ function ExpoRouterLink(
     event,
     relativeToDirectory,
     withAnchor,
+    dangerouslySingular: singular,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {

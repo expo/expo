@@ -80,7 +80,8 @@ function createConfig(screen, pattern, routeNames, config = {}) {
         hasChildren,
         parts,
         userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
-        expandedRouteNames: routeNames.flatMap((name) => {
+        // Don't include the __root route name
+        expandedRouteNames: routeNames.slice(1).flatMap((name) => {
             return name.split('/');
         }),
     };

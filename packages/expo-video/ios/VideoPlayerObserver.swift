@@ -70,7 +70,7 @@ final class WeakPlayerObserverDelegate: Hashable {
 class VideoPlayerObserver {
   private weak var owner: VideoPlayer?
   var player: AVPlayer? {
-    owner?.pointer
+    owner?.ref
   }
   var delegates = Set<WeakPlayerObserverDelegate>()
   private var currentItem: VideoPlayerItem?
@@ -146,6 +146,7 @@ class VideoPlayerObserver {
     delegates.removeAll()
     invalidatePlayerObservers()
     invalidateCurrentPlayerItemObservers()
+    stopTimeUpdates()
   }
 
   private func initializePlayerObservers() {
@@ -248,6 +249,7 @@ class VideoPlayerObserver {
     playerItemStatusObserver?.invalidate()
     tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
+    NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
   }
 
   func startOrUpdateTimeUpdates(forInterval interval: Double) {
@@ -335,7 +337,9 @@ class VideoPlayerObserver {
     case .unknown:
       status = .loading
     case .failed:
-      error = PlayerItemLoadException(playerItem.error?.localizedDescription)
+      // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
+      let playerItemError = (playerItem as? VideoPlayerItem)?.cachingError ?? error
+      error = PlayerItemLoadException(playerItemError?.description)
       status = .error
     case .readyToPlay:
       if playerItem.isPlaybackBufferEmpty {
@@ -343,6 +347,9 @@ class VideoPlayerObserver {
       } else {
         status = .readyToPlay
       }
+    @unknown default:
+      log.error("Unhandled `AVPlayerItem.Status` value: \(playerItem.status), returning `.loading` as fallback. Add the missing case as soon as possible.")
+      status = .loading
     }
 
     if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {

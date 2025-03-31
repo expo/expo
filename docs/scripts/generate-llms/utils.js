@@ -130,6 +130,7 @@ export function cleanContent(content) {
     }
 
     let processed = part
+      .replace(/<RedirectNotification[^>]*>[\S\s]*?<\/RedirectNotification>/g, '')
       .replace(/\/\*\s*@(?:info|hide)\s*\*\/(?:(?!\/\*\s*@end)[\S\s])*\/\*\s*@end\s*\*\//g, '')
       .replace(/{\s*\/\*\s*todo:\s*[\S\s]*?\*\/\s*}/gi, '')
       .replace(/\/\*\s*@tutinfo(?:\s*<CODE>.*?<\/CODE>)?.*?\*\//g, '')

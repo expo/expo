@@ -46,7 +46,6 @@
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "^4.0.0",
-    "fs-extra": "^11.2.0",
     "glob": "^10.3.10"
   }
 }

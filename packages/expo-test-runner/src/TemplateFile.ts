@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import { join } from 'path';
+import fs from 'fs';
+import { dirname, join } from 'path';
 
 import { SelfPath } from './Paths';
 import { Platform } from './Platform';
@@ -19,13 +19,16 @@ export class TemplateFile implements ProjectFile {
   ) {}
 
   async copy(projectPath: string, outputPath: string): Promise<void> {
-    return fs.copy(
-      join(SelfPath, 'templates', this.template, outputPath),
-      join(projectPath, outputPath),
-      {
-        recursive: true,
-      }
-    );
+    const src = join(SelfPath, 'templates', this.template, outputPath);
+    const dest = join(projectPath, outputPath);
+    const stat = await fs.promises.stat(src);
+    if (!stat.isFile()) {
+      // NOTE(@kitten): Explicit error was added when switching from fs-extra.copy, which defaults to recursive copying
+      // However, this should only be used on single files, so an explicit error was added
+      throw new TypeError(`Expected outputPath (${outputPath}) to be path to a single file`);
+    }
+    await fs.promises.mkdir(dirname(dest), { recursive: true });
+    return fs.promises.copyFile(src, dest);
   }
 
   async evaluate(
@@ -49,7 +52,7 @@ export class UserFile implements ProjectFile {
   ) {}
 
   copy(projectPath: string, outputPath: string): Promise<void> {
-    return fs.copy(this.userFilePath, join(projectPath, outputPath), {
+    return fs.promises.cp(this.userFilePath, join(projectPath, outputPath), {
       recursive: true,
     });
   }

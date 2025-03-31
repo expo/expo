@@ -20,6 +20,9 @@ struct TakePictureOptions: Record {
   var fastMode: Bool = false
 
   @Field
+  var imageType: PictureFormat = .jpg
+
+  @Field
   var additionalExif: [String: Any]?
 
   @Field
@@ -38,4 +41,27 @@ struct SavePictureOptions: Record {
 
   @Field
   var base64: Bool = false
+}
+
+enum PictureFormat: String, Enumerable {
+  case jpg
+  case png
+
+  func toExtension() -> String {
+    switch self {
+    case .jpg:
+      return ".jpg"
+    case .png:
+      return ".png"
+    }
+  }
+
+  func mimeType() -> String {
+    switch self {
+    case .jpg:
+      return "image/jpeg"
+    case .png:
+      return "image/png"
+    }
+  }
 }

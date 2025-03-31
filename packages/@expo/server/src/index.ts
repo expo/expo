@@ -1,4 +1,4 @@
-import '@expo/server/install';
+import './install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 import fs from 'node:fs';

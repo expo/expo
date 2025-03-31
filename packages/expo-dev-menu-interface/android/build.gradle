@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '1.9.2'
 
+expoModule {
+  canBePublished false
+}
+
 android {
   namespace "expo.interfaces.devmenu"
   defaultConfig {

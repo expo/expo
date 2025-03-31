@@ -2,7 +2,10 @@ import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
+import {
+  parsePathAndParamsFromExpoGoLink,
+  parsePathFromExpoGoLink,
+} from '../fork/extractPathFromURL';
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { getInitialURLWithTimeout } from '../fork/useLinking';
@@ -50,6 +53,9 @@ let _rootURL: string | undefined;
 export function getRootURL(): string {
   if (_rootURL === undefined) {
     _rootURL = Linking.createURL('/');
+    if (isExpoGo) {
+      _rootURL = parsePathFromExpoGoLink(_rootURL);
+    }
   }
   return _rootURL;
 }

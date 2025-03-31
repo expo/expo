@@ -66,7 +66,7 @@ function useNavigation(parent) {
     let navigation = (0, native_1.useNavigation)();
     const initialNavigation = navigation;
     const segments = (0, hooks_1.useSegments)();
-    const targetNavigatorContextKey = react_1.default.useMemo(() => {
+    let targetNavigatorContextKey = react_1.default.useMemo(() => {
         if (!parent) {
             return;
         }
@@ -109,6 +109,8 @@ function useNavigation(parent) {
         }
         return contextKey;
     }, [segments, parent]);
+    // Remove the root Slot to generate the correct context key
+    targetNavigatorContextKey = targetNavigatorContextKey?.replace('/__root', '');
     if (targetNavigatorContextKey !== undefined) {
         navigation = navigation.getParent(targetNavigatorContextKey);
     }

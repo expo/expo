@@ -17,7 +17,7 @@ export function normalizeColor(color, opacity = 1) {
         return color;
     }
     const colorInt = processColor(color);
-    if (colorInt != null) {
+    if (typeof colorInt === 'number') {
         const r = (colorInt >> 16) & 255;
         const g = (colorInt >> 8) & 255;
         const b = colorInt & 255;

@@ -19,7 +19,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {!sourceCodeUrl && !packageName && router?.pathname && (
         <Button
           theme="quaternary"
-          className="justify-center px-2"
+          className="justify-center pl-2.5 pr-2"
           openInNewTab
           href={githubUrl(router.pathname)}
           title="Edit content of this page on GitHub">

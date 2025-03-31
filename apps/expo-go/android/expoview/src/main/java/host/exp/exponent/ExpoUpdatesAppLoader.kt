@@ -159,7 +159,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       callback.onError(e)
       return
     }
-    val logger = UpdatesLogger(context)
+    val logger = UpdatesLogger(context.filesDir)
     val fileDownloader = FileDownloader(context, configuration, logger)
     startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
   }

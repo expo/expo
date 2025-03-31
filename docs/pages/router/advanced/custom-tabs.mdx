@@ -164,13 +164,13 @@ If you need to change the structure of a component, you can override its underly
 
 The `TabList` is both the configuration and default appearance of the `Tabs`, but it is not the only way to render a tab bar. By hiding the `TabList`, you can construct custom tab bars using `TabTrigger`.
 
+{/* prettier-ignore */}
 ```tsx Multiple tab bars example
 <Tabs>
   <TabSlot />
   {/* A custom tab bar */}
   <View>
-    /* @info A custom tab bar. <CODE>TabTrigger</CODE>'s outside of TabList do not need the{' '}
-    <CODE>href</CODE> prop. */
+    /* @info A custom tab bar. <CODE>TabTrigger</CODE>'s outside of TabList do not need the <CODE>href</CODE> prop. */
     <View>
       <TabTrigger name="home">
         <Text>Home</Text>
@@ -237,7 +237,11 @@ export const TabButton = forwardRef(
 
 ### Hooks
 
-All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+
+Using hooks is considered advanced usage of this library. For most use-cases, using the components with `asChild` should give you enough control over the render tree.
+
+If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router-ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
 
 ### Customizing how tab screens are rendered
 

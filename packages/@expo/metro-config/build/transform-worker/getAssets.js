@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUniversalAssetData = void 0;
 const Assets_1 = require("metro/src/Assets");
-const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
+const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -78,9 +78,9 @@ async function getAssets(dependencies, options) {
     const promises = [];
     const { processModuleFilter } = options;
     for (const module of dependencies.values()) {
-        if ((0, js_1.isJsModule)(module) &&
+        if ((0, js_js_1.isJsModule)(module) &&
             processModuleFilter(module) &&
-            (0, js_1.getJsOutput)(module).type === 'js/module/asset' &&
+            (0, js_js_1.getJsOutput)(module).type === 'js/module/asset' &&
             node_path_1.default.relative(options.projectRoot, module.path) !== 'package.json') {
             promises.push(getUniversalAssetData(module.path, node_path_1.default.relative(options.projectRoot, module.path), options.assetPlugins, options.platform, options.publicPath));
         }

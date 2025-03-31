@@ -20,6 +20,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers) {
+fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers, expanded: MutableState<Boolean>) {
   sectionTitle?.takeIf { !it.isEmpty() }?.let {
     SectionTitle(it)
   }
@@ -63,10 +64,12 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
           disabledLeadingIconColor = null.compose,
           disabledTrailingIconColor = null.compose
         ),
+        enabled = !it.disabled,
         modifier = Modifier.background(it.elementColors.containerColor.compose),
         text = { Text(it.text) },
         onClick = {
           dispatchers.buttonPressed(ContextMenuButtonPressedEvent(id))
+          expanded.value = false
         }
       )
     }
@@ -94,13 +97,14 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
           dispatchers.switchCheckedChanged(
             ContextMenuSwitchValueChangeEvent(!it.value, id)
           )
+          expanded.value = false
         }
       )
     }
 
     element.submenu?.let {
       HorizontalDivider()
-      FlatMenu(it.elements, it.button.text, dispatchers)
+      FlatMenu(it.elements, it.button.text, dispatchers, expanded)
     }
   }
 }
@@ -162,7 +166,8 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
               dispatchers = ContextMenuDispatchers(
                 buttonPressed = onContextMenuButtonPressed,
                 switchCheckedChanged = onContextMenuSwitchValueChanged
-              )
+              ),
+              expanded = expanded
             )
           }
         }

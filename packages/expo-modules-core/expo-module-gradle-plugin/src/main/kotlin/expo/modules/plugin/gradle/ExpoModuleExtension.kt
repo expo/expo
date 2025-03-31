@@ -1,5 +1,7 @@
 package expo.modules.plugin.gradle
 
+import expo.modules.plugin.AutolinkingIntegration
+import expo.modules.plugin.AutolinkingIntegrationImpl
 import org.gradle.api.Project
 import java.io.File
 import java.util.Properties
@@ -15,6 +17,10 @@ open class ExpoModuleExtension(val project: Project) {
     project.gradle.extensions.getByType(ExpoGradleHelperExtension::class.java)
   }
 
+  private val autolinking: AutolinkingIntegration by lazy {
+    AutolinkingIntegrationImpl()
+  }
+
   val reactNativeDir: File
     get() = gradleHelper.getReactNativeDir(project)
 
@@ -27,4 +33,10 @@ open class ExpoModuleExtension(val project: Project) {
   fun safeExtGet(name: String, default: Any): Any {
     return project.rootProject.extra.safeGet<Any>(name) ?: default
   }
+
+  fun getExpoDependency(name: String): Any {
+    return autolinking.getExpoDependency(project, name)
+  }
+
+  var canBePublished: Boolean = true
 }

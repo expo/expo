@@ -38,5 +38,11 @@ class ExpoUIModule : Module() {
         "onExpandedChanged"
       )
     }
+
+    View(ProgressView::class)
+
+    View(TextInputView::class)  {
+      Events("onValueChanged")
+    }
   }
 }

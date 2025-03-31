@@ -185,7 +185,7 @@ export async function startActivityAsync(
  * Opens an application by its package name.
  * @param packageName For example: `com.google.android.gm` for Gmail.
  */
-export function openApplication(packageName: string) {
+export function openApplication(packageName: string): void {
   if (!ExpoIntentLauncher.openApplication) {
     throw new UnavailabilityError('IntentLauncher', 'openApplication');
   }
@@ -194,8 +194,7 @@ export function openApplication(packageName: string) {
 
 /**
  * Returns the icon of the specified application as a base64-encoded PNG image string.
- * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
- * component's `source` prop.
+ * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image`'s [`Image.source`](./image/#source) prop.
  *
  * @param packageName The package name of the target application. For example, `com.google.android.gm` for Gmail.
  * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.

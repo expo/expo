@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -17,7 +17,7 @@ export async function setupExpoRepoAsync(
   nightlyVersion: string
 ): Promise<string> {
   let expoRepoPath: string;
-  const useExistingRepo = useExpoRepoPath && (await fs.pathExists(useExpoRepoPath));
+  const useExistingRepo = useExpoRepoPath && fs.existsSync(useExpoRepoPath);
   if (!useExistingRepo) {
     expoRepoPath = path.join(projectRoot, 'expo');
     console.log(`Cloning expo repository to ${expoRepoPath}`);
@@ -56,7 +56,7 @@ export async function packExpoBareTemplateTarballAsync(
   expoRepoPath: string,
   outputRoot: string
 ): Promise<string> {
-  await fs.ensureDir(outputRoot);
+  await fs.promises.mkdir(outputRoot, { recursive: true });
   const { stdout } = await runAsync('npm', ['pack', '--json', '--pack-destination', outputRoot], {
     cwd: path.join(expoRepoPath, 'templates', 'expo-template-bare-minimum'),
   });

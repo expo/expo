@@ -341,11 +341,9 @@ class RNCWebViewManagerImpl(private val newArch: Boolean = false) {
         }
         "injectJavaScript" -> webView.evaluateJavascriptWithFallback(args.getString(0))
         "loadUrl" -> {
-          if (args == null) {
-            throw RuntimeException("Arguments for loading an url are null!")
-          }
+          val url = args?.getString(0) ?: throw RuntimeException("Arguments for loading an url are null!")
           webView.progressChangedFilter.setWaitingForCommandLoadUrl(false)
-          webView.loadUrl(args.getString(0))
+          webView.loadUrl(url)
         }
         "requestFocus" -> webView.requestFocus()
         "clearFormData" -> webView.clearFormData()

@@ -74,6 +74,15 @@ public final class SQLiteModule: Module {
       try ensureDatabasePathExists(path: databasePath)
     }
 
+    AsyncFunction("backupDatabaseAsync") { (_: NativeDatabase, _: String, _: NativeDatabase, _: String) in
+      throw UnsupportedOperationException()
+    }
+    Function("backupDatabaseSync") { (_: NativeDatabase, _: String, _: NativeDatabase, _: String) in
+      throw UnsupportedOperationException()
+    }
+
+    // MARK: - NativeDatabase
+
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
       // swiftlint:disable:next closure_body_length
@@ -178,6 +187,13 @@ public final class SQLiteModule: Module {
         try prepareStatement(database: database, statement: statement, source: source)
       }
 
+      AsyncFunction("createSessionAsync") { (_: NativeDatabase, _: NativeSession, _: String) in
+        throw UnsupportedOperationException()
+      }
+      Function("createSessionSync") { (_: NativeDatabase, _: NativeSession, _: String) in
+        throw UnsupportedOperationException()
+      }
+
       AsyncFunction("syncLibSQL") { (database: NativeDatabase) in
         var errMsg: UnsafePointer<CChar>?
         if libsql_sync(database.pointer, &errMsg) != 0 {
@@ -186,6 +202,8 @@ public final class SQLiteModule: Module {
         }
       }
     }
+
+    // MARK: - NativeStatement
 
     // swiftlint:disable:next closure_body_length
     Class(NativeStatement.self) {
@@ -239,6 +257,64 @@ public final class SQLiteModule: Module {
         try finalize(statement: statement, database: database)
       }
     }
+
+    // MARK: - NativeSession
+
+    // swiftlint:disable:next closure_body_length
+    Class(NativeSession.self) {
+      Constructor {
+        return NativeSession()
+      }
+
+      AsyncFunction("attachAsync") { (_: NativeSession, _: NativeDatabase, _: String?) in
+        throw UnsupportedOperationException()
+      }
+      Function("attachSync") { (_: NativeSession, _: NativeDatabase, _: String?) in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("enableAsync") { (_: NativeSession, _: NativeDatabase, _: Bool) in
+        throw UnsupportedOperationException()
+      }
+      Function("enableSync") { (_: NativeSession, _: NativeDatabase, _: Bool) in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("closeAsync") { (_: NativeSession, _: NativeDatabase) in
+        throw UnsupportedOperationException()
+      }
+      Function("closeSync") { (_: NativeSession, _: NativeDatabase) in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("createChangesetAsync") { (_: NativeSession, _: NativeDatabase) -> Data in
+        throw UnsupportedOperationException()
+      }
+      Function("createChangesetSync") { (_: NativeSession, _: NativeDatabase) -> Data in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("createInvertedChangesetAsync") { (_: NativeSession, _: NativeDatabase) -> Data in
+        throw UnsupportedOperationException()
+      }
+      Function("createInvertedChangesetSync") { (_: NativeSession, _: NativeDatabase) -> Data in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("applyChangesetAsync") { (_: NativeSession, _: NativeDatabase, _: Data) in
+        throw UnsupportedOperationException()
+      }
+      Function("applyChangesetSync") { (_: NativeSession, _: NativeDatabase, _: Data) in
+        throw UnsupportedOperationException()
+      }
+
+      AsyncFunction("invertChangesetAsync") { (_: NativeSession, _: NativeDatabase, _: Data) -> Data in
+        throw UnsupportedOperationException()
+      }
+      Function("invertChangesetSync") { (_: NativeSession, _: NativeDatabase, _: Data) -> Data in
+        throw UnsupportedOperationException()
+      }
+    }
   }
 
   private func ensureDatabasePathExists(path: String) throws -> URL {
@@ -266,9 +342,6 @@ public final class SQLiteModule: Module {
 
   private func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
-    if database.openOptions.enableCRSQLite {
-      throw UnsupportedOperationException("enableCRSQLite is not supported in libSQL mode")
-    }
     if database.openOptions.enableChangeListener {
       throw UnsupportedOperationException("enableChangeListener is not supported in libSQL mode")
     }

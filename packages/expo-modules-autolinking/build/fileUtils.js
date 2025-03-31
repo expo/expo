@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.globMatchFunctorFirstAsync = exports.globMatchFunctorAllAsync = exports.fileExistsAsync = void 0;
-const fast_glob_1 = __importDefault(require("fast-glob"));
 const promises_1 = __importDefault(require("fs/promises"));
+const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 /**
  * Check if the file exists.
@@ -18,8 +18,8 @@ exports.fileExistsAsync = fileExistsAsync;
  * Search files that match the glob pattern and return all matches from the matchFunctor.
  */
 async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
-    const globStream = fast_glob_1.default.stream(globPattern, options);
-    const cwd = options?.cwd ?? process.cwd();
+    const globStream = glob_1.glob.stream(globPattern, { ...options, withFileTypes: false });
+    const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
     const results = [];
     for await (const file of globStream) {
         let filePath = file.toString();
@@ -39,8 +39,8 @@ exports.globMatchFunctorAllAsync = globMatchFunctorAllAsync;
  * Search files that match the glob pattern and return the first match from the matchFunctor.
  */
 async function globMatchFunctorFirstAsync(globPattern, matchFunctor, options) {
-    const globStream = fast_glob_1.default.stream(globPattern, options);
-    const cwd = options?.cwd ?? process.cwd();
+    const globStream = glob_1.glob.stream(globPattern, { ...options, withFileTypes: false });
+    const cwd = options?.cwd !== undefined ? `${options.cwd}` : process.cwd();
     for await (const file of globStream) {
         let filePath = file.toString();
         if (!path_1.default.isAbsolute(filePath)) {

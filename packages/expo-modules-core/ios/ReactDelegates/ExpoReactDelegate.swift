@@ -11,7 +11,6 @@ public class ExpoReactDelegate: NSObject {
     self.handlers = handlers
   }
 
-  #if os(iOS) || os(tvOS)
   @objc
   public func createReactRootView(
     moduleName: String,
@@ -22,10 +21,12 @@ public class ExpoReactDelegate: NSObject {
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
       ?? {
-        guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
-          fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+        guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+          ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
+          fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
         }
-        return rctAppDelegate.recreateRootView(
+
+        return appDelegate.recreateRootView(
           withBundleURL: nil,
           moduleName: moduleName,
           initialProps: initialProperties,
@@ -33,16 +34,6 @@ public class ExpoReactDelegate: NSObject {
         )
       }()
   }
-  #elseif os(macOS)
-  @objc
-  public func createReactRootView(
-    moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    launchOptions: [AnyHashable: Any]?
-  ) -> UIView {
-    return UIView()
-  }
-  #endif
 
   @objc
   public func bundleURL() -> URL? {

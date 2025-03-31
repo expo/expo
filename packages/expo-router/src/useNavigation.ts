@@ -72,7 +72,7 @@ export function useNavigation<
   const initialNavigation = navigation;
   const segments = useSegments();
 
-  const targetNavigatorContextKey = React.useMemo(() => {
+  let targetNavigatorContextKey = React.useMemo(() => {
     if (!parent) {
       return;
     }
@@ -127,6 +127,9 @@ export function useNavigation<
 
     return contextKey;
   }, [segments, parent]);
+
+  // Remove the root Slot to generate the correct context key
+  targetNavigatorContextKey = targetNavigatorContextKey?.replace('/__root', '');
 
   if (targetNavigatorContextKey !== undefined) {
     navigation = navigation.getParent(targetNavigatorContextKey as any);

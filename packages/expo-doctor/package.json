@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.12.7",
+  "version": "1.12.8",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -42,8 +42,8 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-module-scripts": "^4.0.0",
-    "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
+    "glob": "^10.4.2",
     "ignore": "^5.3.2",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",

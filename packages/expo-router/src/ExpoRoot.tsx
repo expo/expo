@@ -1,15 +1,21 @@
 'use client';
 
-import { LinkingOptions, NavigationAction } from '@react-navigation/native';
+import {
+  LinkingOptions,
+  NavigationAction,
+  StackRouter,
+  useNavigationBuilder,
+} from '@react-navigation/native';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
-import { ExpoLinkingOptions } from './getLinkingConfig';
+import { ExpoLinkingOptions, INTERNAL_SLOT_NAME } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { useDomComponentNavigation } from './link/useDomComponentNavigation';
+import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import * as SplashScreen from './views/Splash';
@@ -136,8 +142,6 @@ function ContextNavigator({
     }
   }
 
-  const Component = store.rootComponent;
-
   return (
     <UpstreamNavigationContainer
       ref={store.navigationRef}
@@ -149,11 +153,19 @@ function ContextNavigator({
       }}>
       <ServerContext.Provider value={serverContext}>
         <WrapperComponent>
-          <Component />
+          <Content component={store.rootComponent} />
         </WrapperComponent>
       </ServerContext.Provider>
     </UpstreamNavigationContainer>
   );
+}
+
+function Content({ component }: { component: ComponentType<any> }) {
+  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
+    children: <Screen name={INTERNAL_SLOT_NAME} component={component} />,
+  });
+
+  return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }
 
 let onUnhandledAction: (action: NavigationAction) => void;

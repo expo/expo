@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@swc/core": "^1.7.40",
+    "@swc/core": "^1.11.11",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",

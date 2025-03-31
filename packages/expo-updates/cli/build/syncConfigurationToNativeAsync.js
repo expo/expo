@@ -7,7 +7,7 @@ exports.syncConfigurationToNativeAsync = void 0;
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**
  * Synchronize updates configuration to native files. This needs to do essentially the same thing as `withUpdates`
@@ -32,13 +32,14 @@ async function syncConfigurationToNativeAndroidAsync(options) {
         isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     // sync AndroidManifest.xml
     const androidManifestPath = await config_plugins_1.AndroidConfig.Paths.getAndroidManifestAsync(options.projectRoot);
     if (!androidManifestPath) {
         throw new Error(`Could not find AndroidManifest.xml in project directory: "${options.projectRoot}"`);
     }
     const androidManifest = await config_plugins_1.AndroidConfig.Manifest.readAndroidManifestAsync(androidManifestPath);
-    const updatedAndroidManifest = await config_plugins_1.AndroidConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, androidManifest);
+    const updatedAndroidManifest = await config_plugins_1.AndroidConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, androidManifest, packageVersion);
     await config_plugins_1.AndroidConfig.Manifest.writeAndroidManifestAsync(androidManifestPath, updatedAndroidManifest);
     // sync strings.xml
     const stringsJSONPath = await config_plugins_1.AndroidConfig.Strings.getProjectStringsXMLPathAsync(options.projectRoot);
@@ -53,8 +54,9 @@ async function syncConfigurationToNativeIosAsync(options) {
         isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     const expoPlist = await readExpoPlistAsync(options.projectRoot);
-    const updatedExpoPlist = await config_plugins_1.IOSConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, expoPlist);
+    const updatedExpoPlist = await config_plugins_1.IOSConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, expoPlist, packageVersion);
     await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
 }
 async function readExpoPlistAsync(projectDir) {
@@ -66,8 +68,8 @@ async function writeExpoPlistAsync(projectDir, expoPlist) {
     await writePlistAsync(expoPlistPath, expoPlist);
 }
 async function readPlistAsync(plistPath) {
-    if (await fs_extra_1.default.pathExists(plistPath)) {
-        const expoPlistContent = await fs_extra_1.default.readFile(plistPath, 'utf8');
+    if (fs_1.default.existsSync(plistPath)) {
+        const expoPlistContent = await fs_1.default.promises.readFile(plistPath, 'utf8');
         try {
             return plist_1.default.parse(expoPlistContent);
         }
@@ -82,6 +84,6 @@ async function readPlistAsync(plistPath) {
 }
 async function writePlistAsync(plistPath, plistObject) {
     const contents = plist_1.default.build(plistObject);
-    await fs_extra_1.default.mkdirp(path_1.default.dirname(plistPath));
-    await fs_extra_1.default.writeFile(plistPath, contents);
+    await fs_1.default.promises.mkdir(path_1.default.dirname(plistPath), { recursive: true });
+    await fs_1.default.promises.writeFile(plistPath, contents, 'utf8');
 }

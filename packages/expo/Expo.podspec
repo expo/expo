@@ -64,6 +64,7 @@ Pod::Spec.new do |s|
   header_search_paths = [
     '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
     '"$(PODS_ROOT)/DoubleConversion"',
+    '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
   ]
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
@@ -72,6 +73,8 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
@@ -95,9 +98,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-RCTFabric'
-  if reactNativeTargetVersion >= 77
-    s.dependency 'ReactAppDependencyProvider'
-  end
+  s.dependency 'ReactAppDependencyProvider'
+
+  install_modules_dependencies(s)
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.compiler_flags = compiler_flags

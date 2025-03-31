@@ -514,3 +514,40 @@ struct NotificationRequestContentRecord: Record {
     return content
   }
 }
+
+// Notification permissions record
+
+struct NotificationPermissionRecord: Record {
+  @Field
+  var allowAlert: Bool?
+  @Field
+  var allowBadge: Bool?
+  @Field
+  var allowSound: Bool?
+  @Field
+  var allowDisplayInCarPlay: Bool?
+  @Field
+  var allowCriticalAlerts: Bool?
+  @Field
+  var provideAppNotificationSettings: Bool?
+  @Field
+  var allowProvisional: Bool?
+
+  func numberOfOptionsRequested() -> Int {
+    return self.toDictionary(appContext: nil)
+      .filter { $1 as? Bool ?? false == true }
+      .count
+  }
+
+  func authorizationOptionValue() -> UNAuthorizationOptions {
+    var options: UNAuthorizationOptions = []
+    if self.allowAlert ?? false { options.insert(.alert) }
+    if self.allowBadge ?? false { options.insert(.badge) }
+    if self.allowSound ?? false { options.insert(.sound) }
+    if self.allowDisplayInCarPlay ?? false { options.insert(.carPlay) }
+    if self.allowCriticalAlerts ?? false { options.insert(.criticalAlert) }
+    if self.provideAppNotificationSettings ?? false { options.insert(.providesAppNotificationSettings) }
+    if self.allowProvisional ?? false { options.insert(.provisional) }
+    return options
+  }
+}

@@ -3,7 +3,8 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-group = 'host.exp.exponent'
+group = "host.exp.exponent"
+version = "13.0.1"
 
 android {
   namespace "expo.modules.documentpicker"

@@ -18,7 +18,7 @@ export const withSdk52ReactNative78CompatAndroid: ConfigPlugin = (config) => {
 
 const withSdk52ReactNative78CompatAndroidAppGradle: ConfigPlugin = (config) => {
   return withAppBuildGradle(config, async (config) => {
-    if (!isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion)) {
+    if (!(await isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion))) {
       return config;
     }
     config.modResults.contents = config.modResults.contents.replace(
@@ -31,7 +31,7 @@ const withSdk52ReactNative78CompatAndroidAppGradle: ConfigPlugin = (config) => {
 
 const withSdk52ReactNative78CompatAndroidProjectGradle: ConfigPlugin = (config) => {
   return withProjectBuildGradle(config, async (config) => {
-    if (!isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion)) {
+    if (!(await isTargetSdkVersionAsync(config.modRequest.projectRoot, config.sdkVersion))) {
       return config;
     }
     config.modResults.contents = config.modResults.contents.replace(

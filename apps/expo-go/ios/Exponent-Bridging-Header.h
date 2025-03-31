@@ -4,6 +4,9 @@
 
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore-Swift.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
+#import <Expo/EXReactNativeFactoryDelegate.h>
+#import <Expo-Swift.h>
 #import <EXUpdatesInterface-Swift.h>
 #import <EXUpdates-Swift.h>
 #import <ExpoScreenOrientation-Swift.h>

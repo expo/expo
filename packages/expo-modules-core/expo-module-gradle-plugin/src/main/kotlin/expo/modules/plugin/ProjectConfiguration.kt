@@ -3,13 +3,18 @@
 package expo.modules.plugin
 
 import com.android.build.gradle.LibraryExtension
-import expo.modules.plugin.android.applyLinerOptions
+import expo.modules.plugin.android.PublicationInfo
+import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
 import expo.modules.plugin.android.applySDKVersions
+import expo.modules.plugin.android.createExpoPublishTask
+import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
+import java.net.URI
 
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
@@ -31,7 +36,7 @@ internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
 }
 
 internal fun Project.applyDefaultDependencies() {
-  val modulesCore = project.project(":expo-modules-core")
+  val modulesCore = rootProject.project(":expo-modules-core")
   if (project != modulesCore) {
     project.dependencies.add("implementation", project.project(":expo-modules-core"))
   }
@@ -47,20 +52,48 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
       targetSdk = rootProject.extra.safeGet("targetSdkVersion")
         ?: logger.warnIfNotDefined("targetSdkVersion", 34)
     )
-    applyLinerOptions()
+    applyLinterOptions()
   }
 }
 
-internal fun Project.applyPublishing() {
+/**
+ * Applies the necessary configuration for publishing to the local Maven repository.
+ * It need to be called when DSL is finalized.
+ */
+internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
+  if (!expoModulesExtension.canBePublished) {
+    return
+  }
+
   val libraryExtension = androidLibraryExtension()
 
   libraryExtension
     .applyPublishingVariant()
 
   afterEvaluate {
+    val publicationInfo = PublicationInfo(this)
+
     publishingExtension()
       .publications
-      .createReleasePublication(this)
+      .createReleasePublication(publicationInfo)
+
+    createExpoPublishToMavenLocalTask(publicationInfo)
+
+    val publicationToken = rootProject.findProperty("EXPO_GITHUB_PUBLISH_TOKEN") as? String
+    if (!publicationToken.isNullOrEmpty()) {
+      publishingExtension().repositories.maven { mavenRepo ->
+        mavenRepo.name = "GitHubPackages"
+        mavenRepo.url = URI("https://maven.pkg.github.com/expo/expo")
+
+        mavenRepo.credentials { pc ->
+          pc.username = "expo"
+          pc.password = publicationToken
+        }
+      }
+      createExpoPublishTask(publicationInfo)
+    } else {
+      createExpoPublishTask(IllegalStateException("EXPO_GITHUB_PUBLISH_TOKEN is not defined"))
+    }
   }
 }
 

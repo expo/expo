@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resize = exports.getJimpImageAsync = exports.createSquareAsync = exports.circleAsync = exports.isFolderAsync = exports.jimpAsync = exports.convertFormat = exports.resizeBufferAsync = void 0;
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
 const path = __importStar(require("path"));
@@ -79,10 +79,10 @@ async function jimpAsync(options, commands = []) {
     const imgBuffer = await image.getBufferAsync(mime);
     if (typeof options.output === 'string') {
         if (await isFolderAsync(options.output)) {
-            await fs_extra_1.default.writeFile(path.join(options.output, path.basename(options.originalInput)), imgBuffer);
+            await fs_1.default.promises.writeFile(path.join(options.output, path.basename(options.originalInput)), imgBuffer);
         }
         else {
-            await fs_extra_1.default.writeFile(options.output, imgBuffer);
+            await fs_1.default.promises.writeFile(options.output, imgBuffer);
         }
     }
     return imgBuffer;
@@ -90,7 +90,7 @@ async function jimpAsync(options, commands = []) {
 exports.jimpAsync = jimpAsync;
 async function isFolderAsync(path) {
     try {
-        return (await fs_extra_1.default.stat(path)).isDirectory();
+        return (await fs_1.default.promises.stat(path)).isDirectory();
     }
     catch {
         return false;

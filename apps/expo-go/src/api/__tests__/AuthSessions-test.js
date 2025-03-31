@@ -30,7 +30,6 @@ describe('User Authentication Flow', () => {
     originalFetch = null;
 
     jest.restoreAllMocks();
-    jest.resetModules();
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
