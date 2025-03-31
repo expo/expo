@@ -42,7 +42,7 @@ open class ExpoAutolinkingSettingsExtension(
     File(
       settings.providers.exec { env ->
         env.workingDir(settings.rootDir)
-        env.commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')")
+        env.commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
       }.standardOutput.asText.get().trim(),
     ).parentFile
   }
