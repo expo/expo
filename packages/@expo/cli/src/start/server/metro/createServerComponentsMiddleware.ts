@@ -8,7 +8,6 @@ import { getMetroServerRoot } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
-import Constants from 'expo-constants';
 import { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';
 import url from 'url';
@@ -52,6 +51,7 @@ export function createServerComponentsMiddleware(
     ssrLoadModuleArtifacts,
     useClientRouter,
     createModuleId,
+    routerOptions,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
@@ -62,6 +62,7 @@ export function createServerComponentsMiddleware(
       filePath: string,
       context: { platform: string; environment: string }
     ) => string | number;
+    routerOptions: Record<string, any>;
   }
 ) {
   const routerModule = useClientRouter
@@ -92,6 +93,7 @@ export function createServerComponentsMiddleware(
           ...args,
           headers: new Headers(args.headers),
           body: args.body!,
+          routerOptions,
         });
       } catch (error: any) {
         // If you get a codeFrame error during SSR like when using a Class component in React Server Components, then this
@@ -290,7 +292,13 @@ export function createServerComponentsMiddleware(
 
   const routerCache = new Map<string, EntriesDev>();
 
-  async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
+  async function getExpoRouterRscEntriesGetterAsync({
+    platform,
+    routerOptions,
+  }: {
+    platform: string;
+    routerOptions: Record<string, any>;
+  }) {
     await ensureMemo();
     // We can only cache this if we're using the client router since it doesn't change or use HMR
     if (routerCache.has(platform) && useClientRouter) {
@@ -312,8 +320,8 @@ export function createServerComponentsMiddleware(
     );
 
     const entries = router.default({
-      redirects: Constants.expoConfig?.extra?.router?.redirects,
-      rewrites: Constants.expoConfig?.extra?.router?.rewrites,
+      redirects: routerOptions?.redirects,
+      rewrites: routerOptions?.rewrites,
     });
 
     routerCache.set(platform, entries);
@@ -488,6 +496,7 @@ export function createServerComponentsMiddleware(
       contentType,
       ssrManifest,
       decodedBody,
+      routerOptions,
     }: {
       input: string;
       headers: Headers;
@@ -498,6 +507,7 @@ export function createServerComponentsMiddleware(
       contentType?: string;
       ssrManifest?: Map<string, string>;
       decodedBody?: unknown;
+      routerOptions: Record<string, any>;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -527,7 +537,7 @@ export function createServerComponentsMiddleware(
       },
       {
         isExporting,
-        entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
+        entries: await getExpoRouterRscEntriesGetterAsync({ platform, routerOptions }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
         async loadServerModuleRsc(urlFragment) {
           const serverRoot = getMetroServerRootMemo(projectRoot);
@@ -553,14 +563,18 @@ export function createServerComponentsMiddleware(
       {
         platform,
         ssrManifest,
+        routerOptions,
       }: {
         platform: string;
         ssrManifest: Map<string, string>;
+        routerOptions: Record<string, any>;
       },
       files: ExportAssetMap
     ) {
       // TODO: When we add web SSR support, we need to extract CSS Modules / Assets from the bundler process to prevent FLOUC.
-      const { getBuildConfig } = (await getExpoRouterRscEntriesGetterAsync({ platform })).default;
+      const { getBuildConfig } = (
+        await getExpoRouterRscEntriesGetterAsync({ platform, routerOptions })
+      ).default;
 
       // Get all the routes to render.
       const buildConfig = await getBuildConfig!(async () =>
@@ -584,6 +598,7 @@ export function createServerComponentsMiddleware(
                 platform,
                 headers: new Headers(),
                 ssrManifest,
+                routerOptions,
               },
               true
             );
