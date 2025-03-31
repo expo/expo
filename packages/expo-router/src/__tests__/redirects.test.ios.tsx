@@ -55,8 +55,16 @@ it('deep link to a redirect', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: 'bar',
-        path: 'bar',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'bar',
+              path: 'bar',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -84,11 +92,22 @@ it('deep link to a dynamic redirect', () => {
   expect(store.rootStateSnapshot()).toEqual({
     routes: [
       {
-        name: 'deeply/nested/route/[slug]',
+        name: '__root',
         params: {
           slug: 'bar',
         },
-        path: 'deeply/nested/route/bar',
+        state: {
+          routes: [
+            {
+              name: 'deeply/nested/route/[slug]',
+              params: {
+                slug: 'bar',
+              },
+              path: 'deeply/nested/route/bar',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -116,8 +135,16 @@ it('keeps extra params as query params', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: 'bar',
-        path: 'bar',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'bar',
+              path: 'bar',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -145,11 +172,22 @@ it('can redirect from single to catch all', () => {
   expect(store.rootStateSnapshot()).toEqual({
     routes: [
       {
-        name: 'bar/[...slug]',
+        name: '__root',
         params: {
           slug: ['bar'],
         },
-        path: 'bar/bar',
+        state: {
+          routes: [
+            {
+              name: 'bar/[...slug]',
+              params: {
+                slug: ['bar'],
+              },
+              path: 'bar/bar',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -172,8 +210,16 @@ it('can push to a redirect', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     routes: [
       {
-        name: 'index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -182,22 +228,37 @@ it('can push to a redirect', () => {
   act(() => router.push('/foo'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', 'bar', '_sitemap', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: 'bar',
-        params: {},
-        path: undefined,
+        state: {
+          index: 1,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['index', 'bar', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: 'bar',
+              params: {},
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
