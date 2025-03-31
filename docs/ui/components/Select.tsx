@@ -80,11 +80,15 @@ export function Select({
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
-          ref={ref =>
+          ref={ref => {
             ref?.addEventListener('touchend', event => {
-              event.preventDefault();
-            })
-          }
+              const target = event.target as HTMLElement;
+              const isSelectItem = target.closest('[role="option"]');
+              if (!isSelectItem) {
+                event.preventDefault();
+              }
+            });
+          }}
           // z-[605] to be above the dialogs (601)
           className={mergeClasses(
             'relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border border-default bg-overlay shadow-md',
