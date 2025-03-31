@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.42 — 2025-03-31
+
+### 💡 Others
+
 - Added backward compatibility for devtools plugins transport. ([#35748](https://github.com/expo/expo/pull/35748) by [@kudo](https://github.com/kudo))
 
 ## 52.0.41 — 2025-03-26
