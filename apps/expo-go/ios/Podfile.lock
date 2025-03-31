@@ -1855,32 +1855,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.5.1):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - react-native-pager-view/common (= 6.5.1)
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - react-native-pager-view/common (6.5.1):
+  - react-native-pager-view (6.7.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3540,7 +3515,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 9d28b4b9272b52dffabcd2d48a934a8d8177f1e6
   react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: a1b4f854df102a127b38fa49ff9d25af20a3c550
+  react-native-pager-view: b7f8cf921e19063a3528ee2aeae945bb42104dbd
   react-native-safe-area-context: 55dbcf556a51092ddf163b29febbc07dc7f14ebb
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 76d98b23c05d77c39346bc094183d314bd7bdf5b
