@@ -156,10 +156,22 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     resolvedExample = props.example;
   }
 
-  // Handle remapping aliases and throwing for deprecated examples.
-  const metadata = await fetchMetadataAsync();
+  // Handle remapping aliases and throwing for deprecated examples. If we are
+  // unable to fetch metadata, for any reason, just proceed without it. This protects
+  // against a broken metadata endpoint from bringing down the entire command.
+  let metadata: ExamplesMetadata | null = null;
+  try {
+    metadata = await fetchMetadataAsync();
 
-  if (metadata.aliases[resolvedExample]) {
+    if (!metadata || !metadata.aliases || !metadata.deprecated) {
+      throw new Error('No metadata found.');
+    }
+  } catch (error: any) {
+    debug(`Error fetching metadata: %O`, error);
+    Log.error(`Error fetching metadata, proceeding without alias or deprecation data.`);
+  }
+
+  if (metadata && metadata.aliases[resolvedExample]) {
     const alias = metadata.aliases[resolvedExample];
     const destination = typeof alias === 'string' ? alias : alias.destination;
     console.log(
@@ -172,7 +184,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     }
 
     resolvedExample = destination;
-  } else if (metadata.deprecated[resolvedExample]) {
+  } else if (metadata && metadata.deprecated[resolvedExample]) {
     throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
   }
 
