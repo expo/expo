@@ -8,6 +8,8 @@ import { getMetroServerRoot } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
+import Constants from 'expo-constants';
+import { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';
 import url from 'url';
 
@@ -286,10 +288,7 @@ export function createServerComponentsMiddleware(
     return { reactClientReferences, reactServerReferences, cssModules };
   }
 
-  const routerCache = new Map<
-    string,
-    typeof import('expo-router/build/rsc/router/expo-definedRouter')
-  >();
+  const routerCache = new Map<string, EntriesDev>();
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
     await ensureMemo();
@@ -312,8 +311,13 @@ export function createServerComponentsMiddleware(
       }
     );
 
-    routerCache.set(platform, router);
-    return router;
+    const entries = router.default({
+      redirects: Constants.expoConfig?.extra?.router?.redirects,
+      rewrites: Constants.expoConfig?.extra?.router?.rewrites,
+    });
+
+    routerCache.set(platform, entries);
+    return entries;
   }
 
   function getResolveClientEntry(context: {
