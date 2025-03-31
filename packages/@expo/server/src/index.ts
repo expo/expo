@@ -174,7 +174,7 @@ export function createRequestHandler(
 
           // Get the params
           return new Response(null, {
-            status: route.permanent ? 301 : 307,
+            status: route.permanent ? 308 : 307,
             headers: {
               Location,
             },
