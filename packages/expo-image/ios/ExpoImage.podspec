@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'SDWebImage', '~> 5.19.1'
+  s.dependency 'SDWebImage', '~> 5.21.0'
   s.dependency 'SDWebImageAVIFCoder', '~> 0.11.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.7.0'
   s.dependency 'libavif/libdav1d'

@@ -287,7 +287,7 @@ PODS:
   - ExpoImage (2.0.2):
     - ExpoModulesCore
     - libavif/libdav1d
-    - SDWebImage (~> 5.19.1)
+    - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
   - ExpoKeepAwake (14.0.1):
@@ -2015,9 +2015,9 @@ PODS:
     - React-logger (= 0.79.0-rc.3)
     - React-perflogger (= 0.79.0-rc.3)
     - React-utils (= 0.79.0-rc.3)
-  - SDWebImage (5.19.7):
-    - SDWebImage/Core (= 5.19.7)
-  - SDWebImage/Core (5.19.7)
+  - SDWebImage (5.21.0):
+    - SDWebImage/Core (= 5.21.0)
+  - SDWebImage/Core (5.21.0)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -2349,7 +2349,7 @@ SPEC CHECKSUMS:
   ExpoCamera: 0e504ac6907bddc915770c19f001dc361ce55f0b
   ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
   ExpoFont: 73d44c5cd85eab8034bc5165ca2230315097d728
-  ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
+  ExpoImage: 6e71dd4763980587f24b35d124807df80697c70b
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
   ExpoModulesCore: 1e8c3b29d86072503d23e5b1a18accc1b3d5244c
@@ -2428,7 +2428,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 556c91ab2e8cf1389f8c07cbcadb04134923ead4
   ReactCodegen: 0972ef43e68680314fe0fe053e3bd21937a2904b
   ReactCommon: 0b6cc8bfc9e59b9c652f83325881f271501e9b0e
-  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
+  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

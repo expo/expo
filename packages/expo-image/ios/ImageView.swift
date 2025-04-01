@@ -348,9 +348,15 @@ public final class ImageView: ExpoView {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
+    sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
     if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      if image.sd_isAnimated {
+        let size = idealSize * scale
+        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
+        return image
+      }
+      return resize(image: image, toSize: idealSize, scale: scale)
     }
     return image
   }
