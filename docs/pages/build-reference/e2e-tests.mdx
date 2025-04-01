@@ -80,9 +80,9 @@ The video below shows a successful run of the **.maestro/expand_test.yml** flow:
 <Step label="4">
 ## Build profile for E2E tests
 
-Running E2E tests requires a built application (**.apk** for Android or **.app** for iOS) that can be installed and tested on a device or simulator.
+E2E tests require a built app file—**.apk** for Android or **.app** for iOS—that EAS can install and test on a simulator.
 
-In your **eas.json** file, create a build profile for E2E tests. If you don't have a **eas.json** file, create one by running `eas build:configure`.
+In your **eas.json** file, create a build profile for E2E tests. If the file doesn't exist, run `eas build:configure` to generate it.
 
 ```json eas.json
 {
@@ -100,14 +100,14 @@ In your **eas.json** file, create a build profile for E2E tests. If you don't ha
 }
 ```
 
-The above build profile builds an **.apk** for Android and an **.app** for iOS. Our workflow will use this profile to build the app.
+The above build profile creates an **.apk** for Android and an **.app** for iOS. The workflow uses this profile to build the app on EAS servers.
 
 </Step>
 
 <Step label="5">
 ## Create an E2E test workflow
 
-Create a **.eas/workflows** directory at the root of your project. Then add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
+At the root of your project, create a **.eas/workflows** directory. Then add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
 
 ```yaml .eas/workflows/e2e-test-android.yml
 name: e2e-test-android
@@ -130,7 +130,7 @@ jobs:
       flow_path: ['.maestro/home.yml']
 ```
 
-The above workflow builds an **.apk** for Android using the **e2e-test** build profile we created in the previous step. Then, it runs the **.maestro/home.yml** flow on the built APK.
+This workflow builds an **.apk** for Android using the `e2e-test` build profile from the previous step. Then it runs the **.maestro/home.yml** flow on the built APK.
 
 Here's an example of the same test workflow for iOS:
 
@@ -163,17 +163,19 @@ Learn more about [Syntx for EAS Workflows](https://docs.eas.dev/workflows/syntax
 <Step label="6">
 ## Run the E2E test workflow
 
-There are two ways to run the E2E test workflow:
+You can run the E2E test workflow in two ways:
 
-1. Manually using the EAS CLI.
+1. **Manually using the EAS CLI**
 
 ```bash
 npx eas-cli@latest workflow:run .eas/workflows/e2e-test-android.yaml
 ```
 
-2. Automatically when you create a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
+2. **Automatically when you open a pull request**
 
-After triggering the workflow, you can see the workflow run in the EAS Dashboard. Here's a screenshot of the workflow after it has finished running:
+The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
+
+After the workflow starts, you can track its progress and view the results in the EAS Dashboard. Here's a screenshot of a completed workflow run:
 
 <ContentSpotlight src="/static/images/eas-build/tests/e2e-workflow.png" />
 
