@@ -1,9 +1,9 @@
-import { Button } from '@expo/ui/components/Button';
-import { ColorPicker } from '@expo/ui/components/ColorPicker';
-import { Label } from '@expo/ui/components/Label';
-import { List, ListStyle } from '@expo/ui/components/List';
-import { Picker } from '@expo/ui/components/Picker';
-import { Switch } from '@expo/ui/components/Switch';
+import { Button } from '@expo/ui/Button';
+import { ColorPicker } from '@expo/ui/ColorPicker';
+import { Label } from '@expo/ui/Label';
+import { List, ListStyle } from '@expo/ui/List';
+import { Picker } from '@expo/ui/Picker';
+import { Switch } from '@expo/ui/Switch';
 import * as React from 'react';
 
 export default function ListScreen() {
@@ -32,7 +32,7 @@ export default function ListScreen() {
 
   return (
     <>
-      <List listStyle="automatic" editModeEnabled={editModeEnabled}>
+      <List listStyle="automatic">
         <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
         <Switch
           value={selectEnabled}

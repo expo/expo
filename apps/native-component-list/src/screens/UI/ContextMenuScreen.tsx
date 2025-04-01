@@ -1,7 +1,7 @@
-import { Button } from '@expo/ui/components/Button';
-import { ContextMenu, Submenu } from '@expo/ui/components/ContextMenu';
-import { Picker } from '@expo/ui/components/Picker';
-import { Switch } from '@expo/ui/components/Switch';
+import { Button } from '@expo/ui/Button';
+import { ContextMenu, Submenu } from '@expo/ui/ContextMenu';
+import { Picker } from '@expo/ui/Picker';
+import { Switch } from '@expo/ui/Switch';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';

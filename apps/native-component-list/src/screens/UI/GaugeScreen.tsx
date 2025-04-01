@@ -1,4 +1,4 @@
-import { Gauge } from '@expo/ui/components/Gauge';
+import { Gauge } from '@expo/ui/Gauge';
 import * as React from 'react';
 import { PlatformColor } from 'react-native';
 
