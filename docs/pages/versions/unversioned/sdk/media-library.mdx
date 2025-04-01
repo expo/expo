@@ -202,15 +202,16 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Android Limitations
+## Known limitations
 
-### Empty Albums
-Due to system limitations, it is not possible to create empty albums on Android. It is necessary to either pass an existing asset to add to the album or a URI of a local resource, which will be used to create a new asset inside the album.
+### Empty albums
 
-### Moving Assets Between Albums
+Due to system limitations on Android, it is not possible to create empty albums. It is necessary to either pass an existing asset to add to the album or a URI of a local resource, which will be used to create a new asset inside the album.
+
+### Moving assets between albums
+
 Android 11 introduced permission changes that make the operation of moving assets between albums require confirmation from the user every time.
-Therefore, when creating a new asset, instead of creating the asset and then moving it to the album, it is recommended to pass the `album` parameter to the [`createAssetAsync`](#medialibrarycreateassetasynclocaluri-album) method,
-which will automatically add the asset to the album without the need for user confirmation.
+Therefore, when creating a new asset, instead of creating the asset and then moving it to the album, it is recommended to pass the `album` parameter to the [`createAssetAsync`](#medialibrarycreateassetasynclocaluri-album) method, which will automatically add the asset to the album without the need for user confirmation.
 
 ## API
 
