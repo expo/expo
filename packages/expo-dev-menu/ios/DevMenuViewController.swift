@@ -63,7 +63,11 @@ class DevMenuViewController: UIViewController {
   // MARK: private
 
   private func initialProps() -> [String: Any] {
-    let isSimulator = TARGET_IPHONE_SIMULATOR > 0
+#if targetEnvironment(simulator)
+    let isSimulator = true
+#else
+    let isSimulator = false
+#endif
 
     return [
       "showOnboardingView": manager.shouldShowOnboarding(),
