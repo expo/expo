@@ -637,7 +637,15 @@ const versionsReference = VERSIONS.reduce(
       }),
       makeSection(
         'Expo SDK',
-        shiftEntryToFront(pagesFromDir(`versions/${version}/sdk`), entry => entry.name === 'Expo'),
+        shiftEntryToFront(
+          pagesFromDir(`versions/${version}/sdk`).filter(entry => !entry.inExpoGo),
+          entry => entry.name === 'Expo'
+        ),
+        { expanded: true }
+      ),
+      makeSection(
+        'Included in Expo Go',
+        pagesFromDir(`versions/${version}/sdk`).filter(entry => entry.inExpoGo),
         { expanded: true }
       ),
       makeSection('Technical specs', [
@@ -694,6 +702,9 @@ export default {
 // --- MDX methods ---
 
 function makeSection(name, children = [], props = {}) {
+  if (children.length === 0) {
+    return null;
+  }
   return make('section', { name, expanded: false, ...props }, children);
 }
 
@@ -728,6 +739,7 @@ function makePage(file) {
     href: url,
     isNew: data.isNew ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
+    inExpoGo: data.inExpoGo ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
