@@ -10,6 +10,7 @@ platforms: ['android', 'ios', 'macos', 'web']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
@@ -76,27 +77,11 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
-Add the following configs to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
+Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
 
-```diff
- const config = getDefaultConfig(__dirname);
+<DiffBlock source="/static/diffs/sqlite-web-metro-config.diff" />
 
-+// Add wasm asset support
-+config.resolver.assetExts.push('wasm');
-+
-+// Add COEP and COOP headers to support SharedArrayBuffer
-+config.server.enhanceMiddleware = (middleware) => {
-+  return (req, res, next) => {
-+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
-+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-+    middleware(req, res, next);
-+  };
-+};
-+
- module.exports = config;
-```
-
-If you deploy your app to web hosting services, you will also need to add the `Cross-Origin-Embedder-Policy` and `Cross-Origin-Opener-Policy` headers to your web server. [Learn more about the `COEP`, `COOP` headers and `SharedArrayBuffer`](https://developer.chrome.com/blog/enabling-shared-array-buffer/).
+If you deploy your app to web hosting services, you will also need to add the `Cross-Origin-Embedder-Policy` and `Cross-Origin-Opener-Policy` headers to your web server. [Learn more about the `COEP`, `COOP` headers, and `SharedArrayBuffer`](https://developer.chrome.com/blog/enabling-shared-array-buffer/).
 
 ## Usage
 
