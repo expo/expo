@@ -10,6 +10,7 @@
 
 - Changed `export` to `export type` for TS type declarations. ([#33446](https://github.com/expo/expo/pull/33446) by [@j-piasecki](https://github.com/j-piasecki))
 - Fixed `saveAsync` not respecting the format and compression quality. ([#33690](https://github.com/expo/expo/pull/33690) by [@tsapeta](https://github.com/tsapeta))
+- [Web] Overwrite class `name` property in `ImageManipulator`. ([#35806](https://github.com/expo/expo/pull/35806) by [@alimek](https://github.com/alimek))
 
 ### 💡 Others
 
