@@ -142,12 +142,18 @@ class SQLiteModule : Module() {
       }
 
       AsyncFunction("closeAsync") { database: NativeDatabase ->
-        removeCachedDatabase(database)
-        closeDatabase(database)
+        maybeThrowForClosedDatabase(database)
+        val db = removeCachedDatabase(database)
+        if (db != null) {
+          closeDatabase(db)
+        }
       }
       Function("closeSync") { database: NativeDatabase ->
-        removeCachedDatabase(database)
-        closeDatabase(database)
+        maybeThrowForClosedDatabase(database)
+        val db = removeCachedDatabase(database)
+        if (db != null) {
+          closeDatabase(db)
+        }
       }
 
       AsyncFunction("execAsync") { database: NativeDatabase, source: String ->
@@ -476,7 +482,6 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
-    maybeThrowForClosedDatabase(database)
     maybeFinalizeAllStatements(database)
     val ret = database.ref.sqlite3_close()
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
@@ -540,11 +545,15 @@ class SQLiteModule : Module() {
 
   @Synchronized
   private fun removeCachedDatabase(database: NativeDatabase): NativeDatabase? {
-    return if (cachedDatabases.remove(database)) {
-      database
-    } else {
-      null
+    val index = cachedDatabases.indexOf(database)
+    if (index >= 0) {
+      val db = cachedDatabases[index]
+      if (db.release() == 0) {
+        cachedDatabases.removeAt(index)
+        return db
+      }
     }
+    return null
   }
 
   @Synchronized
