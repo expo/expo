@@ -191,7 +191,7 @@ describe(findDependencyRootsAsync, () => {
       '/app/node_modules/react-native-test/package.json': '',
       '/app/node_modules/@react-native/subtest/package.json': '',
     });
-    const results = await findDependencyRootsAsync('/app', ['/app/node_modules']);
+    const results = await findDependencyRootsAsync('/app', ['/app/node_modules'], 'apple');
     expect(results).toMatchInlineSnapshot(`
       {
         "@react-native/subtest": "/app/node_modules/@react-native/subtest",
@@ -282,10 +282,11 @@ describe(findDependencyRootsAsync, () => {
       '/project/node_modules/react-native-test/package.json': '',
       '/project/node_modules/@react-native/subtest/package.json': '',
     });
-    const results = await findDependencyRootsAsync('/project/apps/app', [
-      '/project/apps/app/node_modules',
-      '/project/node_modules',
-    ]);
+    const results = await findDependencyRootsAsync(
+      '/project/apps/app',
+      ['/project/apps/app/node_modules', '/project/node_modules'],
+      'apple'
+    );
     expect(results).toMatchInlineSnapshot(`
       {
         "@react-native/subtest": "/project/node_modules/@react-native/subtest",
