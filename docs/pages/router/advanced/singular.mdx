@@ -5,9 +5,9 @@ description: Learn how to enforce singular routes.
 
 import { FileTree } from '~/ui/components/FileTree';
 
-While a `Stack` normally operates with `push`/`pop` actions, in advanced scenarios you may wish to enforce a singular version of a screen in the stack. When enabled, every time a new screen is pushed the history will be scanned and any matching screens will be removed. Thus, ensuring only a singular version exists.
+> **warning** Singular routes are available from SDK 53 and above. They are currently flagged as `dangerouslySingular` due to an upstream issue with `react-native-screens`. Expo is working with Software Mansion to resolve the issue.
 
-> **warning** Singular routes are currently flagged as `dangerouslySingular` due to an upstream issue with `react-native-screens`. Expo is working with Software Mansion to resolve the issue.
+While a `Stack` normally operates with `push`/`pop` actions, in advanced scenarios you may wish to enforce a singular version of a screen in the stack. When enabled, any time a new screen is pushed the history will be scanned and any matching screens will be removed to ensure only a singular version exists.
 
 ## Options
 
