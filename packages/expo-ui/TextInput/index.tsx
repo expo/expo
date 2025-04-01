@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src/types';
+import { ViewEvent } from '../src/types';
 
 /**
  * @hidden Not used anywhere yet.
