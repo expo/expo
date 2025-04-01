@@ -516,11 +516,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "@expo/styleguide-search-ui@npm:2.3.2"
+"@expo/styleguide-search-ui@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@expo/styleguide-search-ui@npm:2.3.4"
   dependencies:
-    "@expo/styleguide": "npm:^9.1.0"
+    "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-icons": "npm:^2.2.0"
     "@sanity/client": "npm:^6.28.3"
     "@sanity/image-url": "npm:^1.1.0"
@@ -529,20 +529,20 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/59571f247c37831a7bc5693dc17d83ae7e7ab3d07608400d4bf6ae407a99654fd50392bbe9534d0b2c72baf688945f9ac87c5856fdf1fccd79c6786d32913e88
+  checksum: 10c0/a435b89a12e2c19f39164cb510cc06be82f0fb80930db05abc36a162877b28ee0dace1225ccce7ed4fff69ac9ac5a5fbe95590b45c89e9ecf698698dd5fe742f
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "@expo/styleguide@npm:9.1.0"
+"@expo/styleguide@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@expo/styleguide@npm:9.1.2"
   dependencies:
     "@expo/styleguide-base": "npm:^2.0.3"
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/8696b7c0d94377595da0902d9b06b7ecce5b11841a885cdc70aea061531ea2cda25c6da368c615012a6eb7b5d44057f2a4cd7ac0c7a62a0c77936bbcaee9910a
+  checksum: 10c0/003936dbf97ff5af74adc802726295267ac003c44140ba3b8a1ff3fbcfed09f48cf1d6ba74d8491a9867c90b2245b61bb655e2e9527092340f808e3e302534b5
   languageName: node
   linkType: hard
 
@@ -5660,10 +5660,10 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.7.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^9.1.0"
+    "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.0"
-    "@expo/styleguide-search-ui": "npm:^2.3.2"
+    "@expo/styleguide-search-ui": "npm:^2.3.4"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"

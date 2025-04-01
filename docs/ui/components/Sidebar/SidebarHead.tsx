@@ -37,14 +37,14 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <div
         className={mergeClasses(
           'flex flex-col gap-0.5 border-b border-default bg-default p-4',
-          'short:pb-3'
+          'compact-height:pb-3'
         )}>
         <Search />
         <div
           className={mergeClasses(
             'contents',
-            'short:grid short:grid-cols-5 short:gap-1',
-            isPreviewVisible && 'short:grid-cols-6'
+            'compact-height:grid compact-height:grid-cols-5 compact-height:gap-1',
+            isPreviewVisible && 'compact-height:grid-cols-6'
           )}>
           <SidebarSingleEntry
             href="/"
