@@ -13,6 +13,7 @@ export type HomeStackRoutes = {
   Account: undefined;
   Project: { id: string };
   FeedbackForm: undefined;
+  CustomLoader: undefined;
 };
 
 export type SettingsStackRoutes = {

@@ -13,6 +13,7 @@ import Themes from '../constants/Themes';
 import { AccountModal } from '../screens/AccountModal';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
+import { CustomLoaderScreen } from '../screens/CustomLoaderScreen';
 import { DiagnosticsStackScreen } from '../screens/DiagnosticsScreen';
 import { FeedbackFormScreen } from '../screens/FeedbackFormScreen';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -94,6 +95,13 @@ function HomeStackScreen() {
         component={FeedbackFormScreen}
         options={{
           title: 'Share your feedback',
+        }}
+      />
+      <HomeStack.Screen
+        name="CustomLoader"
+        component={CustomLoaderScreen}
+        options={{
+          title: 'Custom Loader',
         }}
       />
     </HomeStack.Navigator>
