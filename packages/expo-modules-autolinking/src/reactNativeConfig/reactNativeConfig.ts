@@ -90,6 +90,16 @@ export async function findDependencyRootsAsync(
     ...Object.keys(packageJson.dependencies ?? {}),
     ...Object.keys(packageJson.devDependencies ?? {}),
   ];
+  const shouldAutolinkEdgeToEdge =
+    platform === 'android' &&
+    getExpoVersion(packageJson) >= 53 &&
+    !dependencies.includes('react-native-edge-to-edge');
+
+  // Edge-to-egde is a dependency of expo for versions >= 53, so it's a transitive dependency for the project, but is a not an expo module,
+  // so it won't be autolinked. We will try to find it in the search paths and autolink it.
+  if (shouldAutolinkEdgeToEdge) {
+    dependencies.push('react-native-edge-to-edge');
+  }
 
   const results: Record<string, string> = {};
   // `searchPathSet` can be mutated to discover all "isolated modules groups", when using isolated modules
