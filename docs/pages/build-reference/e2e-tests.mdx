@@ -1,69 +1,32 @@
 ---
-title: Run E2E tests on EAS Build
+title: Run E2E tests on EAS Workflows
 sidebar_title: Run E2E tests
-description: Learn how to set up and run E2E tests on EAS Build with Maestro.
+description: Learn how to set up and run E2E tests on EAS Workflows with Maestro.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **info** This guide will evolve over time as support for E2E testing in EAS Build improves. If you are looking for an archived guide on how to run E2E tests on EAS Build using Detox, you can see it in the [archive section](/archive/e2e-tests/).
+Learn how to run end-to-end (E2E) tests on EAS Workflows using [Maestro](https://maestro.mobile.dev/).
 
-In this guide, you will learn how to create and run E2E tests on EAS Build using [Maestro](https://maestro.mobile.dev/), which is one of the most popular tools for running E2E tests in mobile apps.
-
-The example demonstrates how to configure your EAS Build Maestro E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you will need to adjust the flows to match your app's UI.
-
-<VideoBoxLink videoId="-o-bfIRrg9U" title="Watch: How to run E2E tests on EAS Build" />
+[EAS Workflows](https://expo.dev/eas/workflows) is a new React Native CI/CD service for Android, iOS, and Web. See the [EAS Workflows documentation](/eas/workflows/get-started) for more information.
 
 <Step label="1">
-## Initialize a new project
+## Set up your project
 
-You can skip this step if you already have an existing Expo project.
+If you haven't already, create a new project and sync it with EAS.
 
-Create a new project using the following commands:
+Follow the [Get started with EAS Workflows guide](/eas/workflows/get-started/#set-up-your-project) to create a new project and sync it with EAS. Then, [configure your project](/eas/workflows/get-started/#configure-your-project) and link your GitHub repository.
 
-<Terminal
-  cmd={[
-    '# Initialize a new project',
-    '$ npx create-expo-app@latest eas-tests-example',
-    '',
-    '# Move into the project directory',
-    '$ cd eas-tests-example',
-  ]}
-  cmdCopy="npx create-expo-app eas-tests-example && cd eas-tests-example"
-/>
 </Step>
 
 <Step label="2">
-## Configure EAS Build
 
-You can skip this step if you already have EAS Build configured for your project.
-
-The following command creates a new project on Expo servers for your app and creates [**eas.json**](/build/eas-json/) in the project's root directory:
-
-<Terminal
-  cmd={[
-    '$ eas init',
-    '',
-    '$ eas build:configure',
-  ]}
-  cmdCopy="eas init && eas build:configure"
-/>
-</Step>
-
-<Step label="3">
-
-## Disable New Android Builds Infrastructure
-
-Go to [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.
-
-Unfortunately, the new build infrastructure is incompatible with E2E tests due to the lack of virtualization support required to start Android Emulator. We are working on better solutions for running various tests on EAS.
-
-</Step>
-
-<Step label="4">
 ## Add example Maestro test cases
 
 This is what the UI of the app created from the default Expo template looks like:
@@ -77,7 +40,7 @@ Let's create two simple Maestro flows for the example app. Start by creating a d
 
 Inside, create a new file called **home.yml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
-```yaml maestro/home.yml
+```yaml .maestro/home.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
@@ -86,7 +49,7 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 
 Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens" is visible on the screen.
 
-```yaml maestro/expand_test.yml
+```yaml .maestro/expand_test.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
@@ -97,103 +60,144 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 
 </Step>
 
-<Step label="5">
-## Run Maestro tests locally
+<Step label="3">
+## Run Maestro tests locally (optional)
 
 To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://maestro.mobile.dev/getting-started/installing-maestro).
 
 [Install your app on a local Android Emulator or iOS Simulator](/more/expo-cli/#compiling). Open a terminal, navigate to the Maestro directory, and run the following commands to start the tests with the Maestro CLI:
 
-<Terminal cmd={['$ maestro test maestro/expand_test.yml', '', '$ maestro test maestro/home.yml']} />
+<Terminal
+  cmd={['$ maestro test .maestro/expand_test.yml', '', '$ maestro test .maestro/home.yml']}
+/>
 
-The video below shows a successful run of the **maestro/expand_test.yml** flow:
+The video below shows a successful run of the **.maestro/expand_test.yml** flow:
 
 <ContentSpotlight file="guides/local-e2e.mp4" />
 
 </Step>
 
-<Step label="6">
-## Create a custom build workflow for running Maestro E2E tests
+<Step label="4">
+## Build profile for E2E tests
 
-The easiest way to run Maestro E2E tests on EAS Build is to create a [custom build workflow](/custom-builds/get-started/). This workflow will build your app and run the Maestro tests on it.
+Running E2E tests requires a built application (**.apk** for Android or **.app** for iOS) that can be installed and tested on a device or simulator.
 
-Start by adding a custom build config file to your project. Create a directory **.eas/build** at the same level as **eas.json** in the project. The path and the name of both directories are important for EAS Build to identify that a project contains a custom build config.
-
-Inside, create a new config file called **build-and-maestro-test.yml**. This file defines the custom build workflow config that you want to run. Workflow contains steps that are executed during the custom build process. This custom build config will execute the [`eas/build`](/custom-builds/schema/#easbuild) custom function group to create a build and then the [`eas/maestro_test`](/custom-builds/schema/#easmaestro_test) which is an all-in-one custom function group that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator) and tests the app using flows specified by the `flow_path` input.
-
-```yaml .eas/build/build-and-maestro-test.yml
-build:
-  name: Create a build and run Maestro tests on it
-  steps:
-    - eas/build
-    - eas/maestro_test:
-        inputs:
-          flow_path: |
-            maestro/home.yml
-            maestro/expand_test.yml
-```
-
-Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#build-profiles) called `build-and-maestro-test`. It will be used to run the custom build config from the **build-and-maestro-test.yml** file. This configuration will build the emulator/simulator version of your app and run the Maestro tests on it.
-
-> **Warning** We have observed that Maestro tests often time out if run on images with Xcode 15.0 or 15.2. Use the [`latest` image](/build-reference/infrastructure/#configuring-build-environment) to avoid any issues.
+In your **eas.json** file, create a build profile for E2E tests. If you don't have a **eas.json** file, create one by running `eas build:configure`.
 
 ```json eas.json
 {
   "build": {
-    /* @hide ... */ /* @end */
-    "build-and-maestro-test": {
+    "e2e-test": {
       "withoutCredentials": true,
-      "config": "build-and-maestro-test.yml",
-      "android": {
-        "buildType": "apk",
-        "image": "latest"
-      },
       "ios": {
-        "simulator": true,
-        "image": "latest"
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
       }
     }
   }
-  /* @hide ... */ /* @end */
 }
 ```
 
+The above build profile builds an **.apk** for Android and an **.app** for iOS. Our workflow will use this profile to build the app.
+
 </Step>
 
-<Step label="7">
-## Build your app and run E2E tests on EAS Build
+<Step label="5">
+## Create an E2E test workflow
 
-To execute a custom build using the `build-and-maestro-test` profile that will build your app and run the Maestro E2E tests afterward, run the following command:
+Create a **.eas/workflows** directory at the root of your project. Then add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
 
-<Terminal cmd={['$ eas build --profile build-and-maestro-test']} />
+```yaml .eas/workflows/e2e-test-android.yml
+name: e2e-test-android
 
-<ContentSpotlight
-  alt="Logs of successful Maestro tests"
-  src="/static/images/eas-build/tests/03-logs.png"
-  className="max-w-[600px]"
-/>
+on:
+  pull_request:
+    branches: ['*'] # Run the E2E test workflow on every pull request.
+jobs:
+  build_android_for_e2e:
+    type: build
+    params:
+      platform: android
+      profile: e2e-test # your eas build profile for E2E test
 
-When the flow fails, any Maestro artifacts are automatically uploaded as build artifacts. This includes screenshots saved at `~/.maestro/tests` (the default destination). You can download them from the build page.
+  maestro_test:
+    needs: [build_android_for_e2e]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_android_for_e2e.outputs.build_id }}
+      flow_path: ['.maestro/home.yml']
+```
 
-<ContentSpotlight
-  alt="Failed Maestro tests artifacts"
-  src="/static/images/eas-build/tests/04-artifacts.png"
-  className="max-w-[600px]"
-/>
+The above workflow builds an **.apk** for Android using the **e2e-test** build profile we created in the previous step. Then, it runs the **.maestro/home.yml** flow on the built APK.
+
+Here's an example of the same test workflow for iOS:
+
+```yaml .eas/workflows/e2e-test.yml
+name: e2e-test-ios
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  build_ios_for_e2e:
+    type: build
+    params:
+      platform: ios
+      profile: e2e-test # your eas build profile for E2E test
+
+  maestro_test:
+    needs: [build_ios_for_e2e]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_ios_for_e2e.outputs.build_id }}
+      flow_path: ['.maestro/home.yml']
+```
+
+Learn more about [Syntx for EAS Workflows](https://docs.eas.dev/workflows/syntax).
+
+</Step>
+
+<Step label="6">
+## Run the E2E test workflow
+
+There are two ways to run the E2E test workflow:
+
+1. Manually using the EAS CLI.
+
+```bash
+npx eas-cli@latest workflow:run .eas/workflows/e2e-test-android.yaml
+```
+
+2. Automatically when you create a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
+
+After triggering the workflow, you can see the workflow run in the EAS Dashboard. Here's a screenshot of the workflow after it has finished running:
+
+<ContentSpotlight src="/static/images/eas-build/tests/e2e-workflow.png" />
+
 </Step>
 
 ## More
 
-If you want to build more advanced custom builds workflows, see the [custom build schema reference](/custom-builds/schema/) for more information.
+<BoxLink
+  title="Syntax for EAS Workflows"
+  description="Learn more about the syntax for EAS Workflows."
+  href="/eas/workflows/syntax/"
+  Icon={Grid01Icon}
+/>
 
-To learn more about Maestro flows and how to write them, see the [Maestro documentation](https://maestro.mobile.dev).
+<BoxLink
+  title="Example CI/CD workflows"
+  description="Learn more about example CI/CD workflows for EAS Workflows."
+  href="/eas/workflows/examples/"
+  Icon={Grid01Icon}
+/>
 
-## Troubleshooting
-
-If you encounter the following error message when starting an Android Emulator for E2E tests on EAS Build:
-
-```text
-Failed to configure emulator: emulator with required ID not found.
-```
-
-This is likely because the New Build Infrastructure is enabled for your project. Go to [**Project Settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.
+<BoxLink
+  title="Maestro documentation"
+  description="Learn more about Maestro flows and how to write them."
+  href="https://maestro.mobile.dev"
+  Icon={BookOpen02Icon}
+/>
