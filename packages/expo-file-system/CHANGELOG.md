@@ -30,6 +30,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [next] Fix inconsistent behavior when using special chars in filenames. ([#35801](https://github.com/expo/expo/pull/35801) by [@aleqsio](https://github.com/aleqsio))
 - Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
