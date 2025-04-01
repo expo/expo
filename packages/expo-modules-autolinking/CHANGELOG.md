@@ -39,6 +39,7 @@ _This version does not introduce any user-facing changes._
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - [Android] Added `publication` configuration. ([#35068](https://github.com/expo/expo/pull/35068) by [@lukmccall](https://github.com/lukmccall))
 - Removed legacy `modulesClassNames` field. ([#35095](https://github.com/expo/expo/pull/35095) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add a special case for autolinking `react-native-edge-to-edge` ([#35812](https://github.com/expo/expo/pull/35812) by [@behenate](https://github.com/behenate))
 
 ## 2.0.8 - 2025-02-19
 
