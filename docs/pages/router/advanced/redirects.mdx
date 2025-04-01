@@ -17,7 +17,7 @@ export default function Index() {
 }
 ```
 
-In this example, when the app user visits this page, they will be automatically redirected to `/home` route.
+In the above example, when the app user visits this page, they will be automatically redirected to `/home` route.
 
 You can use `<Redirect />` within a component that checks for conditions before navigating.
 
@@ -45,7 +45,7 @@ In this case, if the user is not authenticated, they will be redirected to the `
 
 ## Static redirects
 
-Static redirects allow you to specify a redirect configuration in your **app.json** using the `expo-router` config plugin. This allows you to specify redirects for routes that may no longer exist in your **app** directory. When you navigate to a screen, Expo Router simulates a `GET` request to a local server, which responds with the screen's content. This ensures that Expo Router behaves consistently on native, web, and when fetching React Server Components. As such, this configuration is based upon **server requests** and is based upon the request URL, not the screen name.
+Static redirects allow you to specify a redirect configuration in your [app config](/workflow/configuration/) using the `expo-router` config plugin. This allows you to specify redirects for routes that may no longer exist in your **app** directory. When you navigate to a screen, Expo Router simulates a `GET` request to a local server, which responds with the screen's content. This ensures that Expo Router behaves consistently on native, web, and when fetching React Server Components. As such, this configuration is based upon **server requests** and is based upon the request URL, not the screen name.
 
 ```json app.json
 {
@@ -63,8 +63,8 @@ Static redirects allow you to specify a redirect configuration in your **app.jso
 
 Each redirect configuration should have the following properties:
 
-- **source**: The incoming request path pattern.
-- **destination**: The path you want to route to.
+- **source**: The incoming request path pattern
+- **destination**: The path you want to route to
 
 Redirect configuration can have the following optional property:
 
