@@ -2,8 +2,6 @@ package expo.modules.filesystem.next
 
 import android.net.Uri
 import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.types.Either
 import java.io.File
 
 class FileSystemDirectory(file: File) : FileSystemPath(file) {
