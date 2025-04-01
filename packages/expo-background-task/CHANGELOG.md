@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 0.1.3 — 2025-03-14
+- added error handling when registering/unregistering invalid tasks with the TaskManager. ([#35734](https://github.com/expo/expo/pull/35734) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.1.3 - 2025-03-14
 
 ### 💡 Others
 
