@@ -173,6 +173,11 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   // which has better compatibility with the UIImage and fixes issues with the image duration.
   context[.animatedImageClass] = AnimatedImage.self
 
+  // Passing useAppleWebpCodec into WebPCoder
+  context[.imageDecodeOptions] = [
+    imageCoderOptionUseAppleWebpCodec: source.useAppleWebpCodec
+  ]
+
   // Assets from the bundler have `scale` prop which needs to be passed to the context,
   // otherwise they would be saved in cache with scale = 1.0 which may result in
   // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
