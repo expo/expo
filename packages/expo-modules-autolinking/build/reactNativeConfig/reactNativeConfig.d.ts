@@ -7,6 +7,6 @@ export declare function createReactNativeConfigAsync({ platform, projectRoot, se
 /**
  * Find all dependencies and their directories from the project.
  */
-export declare function findDependencyRootsAsync(projectRoot: string, searchPaths: string[]): Promise<Record<string, string>>;
+export declare function findDependencyRootsAsync(projectRoot: string, searchPaths: string[], platform: SupportedPlatform): Promise<Record<string, string>>;
 export declare function resolveDependencyConfigAsync(platform: SupportedPlatform, name: string, packageRoot: string, projectConfig: RNConfigReactNativeProjectConfig | null): Promise<RNConfigDependency | null>;
 export declare function resolveAppProjectConfigAsync(projectRoot: string, platform: SupportedPlatform): Promise<RNConfigReactNativeAppProjectConfig>;
