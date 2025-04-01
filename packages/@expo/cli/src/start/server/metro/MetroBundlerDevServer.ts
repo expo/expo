@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
@@ -255,7 +255,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // getBuiltTimeServerManifest
     const { exp } = getConfig(this.projectRoot);
     const manifest = await fetchManifest(this.projectRoot, {
-      ...exp.extra?.router?.platformRoutes,
+      ...exp.extra?.router,
+      preserveRedirectAndRewrites: true,
       asJson: true,
       appDir,
     });
@@ -274,6 +275,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     serverManifest: ExpoRouterServerManifestV1;
     htmlManifest: ExpoRouterRuntimeManifest;
   }> {
+    const { exp } = getConfig(this.projectRoot);
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
@@ -283,8 +285,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     return {
-      serverManifest: await getBuildTimeServerManifestAsync(),
-      htmlManifest: await getManifest(),
+      serverManifest: await getBuildTimeServerManifestAsync({ ...exp.extra?.router }),
+      htmlManifest: await getManifest({ ...exp.extra?.router }),
     };
   }
 
@@ -308,7 +310,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = getConfig(this.projectRoot);
 
     return {
-      serverManifest: await getBuildTimeServerManifestAsync(),
+      serverManifest: await getBuildTimeServerManifestAsync({
+        ...exp.extra?.router,
+      }),
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
@@ -626,6 +630,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async nativeExportBundleAsync(
+    exp: ExpoConfig,
     options: Omit<
       ExpoMetroOptions,
       'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
@@ -641,13 +646,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files?: ExportAssetMap;
   }> {
     if (this.isReactServerComponentsEnabled) {
-      return this.singlePageReactServerComponentExportAsync(options, files, extraOptions);
+      return this.singlePageReactServerComponentExportAsync(exp, options, files, extraOptions);
     }
 
     return this.legacySinglePageExportBundleAsync(options, extraOptions);
   }
 
   private async singlePageReactServerComponentExportAsync(
+    exp: ExpoConfig,
     options: Omit<
       ExpoMetroOptions,
       'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
@@ -795,11 +801,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
+    const routerOptions = exp.extra?.router;
+
     // Export the static RSC files
     await this.rscRenderer!.exportRoutesAsync(
       {
         platform: options.platform,
         ssrManifest,
+        routerOptions,
       },
       files
     );
@@ -920,6 +929,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
+
+    const routerOptions = exp.extra?.router;
 
     if (isReactServerComponentsEnabled && exp.web?.output === 'static') {
       throw new CommandError(
@@ -1070,6 +1081,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
+          routerOptions,
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1119,6 +1131,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
+          routerOptions,
         });
         this.rscRenderer = rscMiddleware;
       }

@@ -238,7 +238,7 @@ export declare class SQLiteDatabase {
      * Synchronize the local database with the remote libSQL server.
      * This method is only available from libSQL integration.
      */
-    syncLibSQL(): void;
+    syncLibSQL(): Promise<void>;
 }
 /**
  * The default directory for SQLite databases.

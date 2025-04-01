@@ -1,5 +1,6 @@
 import { LinkingOptions } from '@react-navigation/native';
 import { RouteNode } from './Route';
+import { type RedirectConfig } from './getRoutesCore';
 import { RouterStore } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
@@ -21,6 +22,7 @@ export type LinkingConfigOptions = {
     metaOnly?: boolean;
     serverUrl?: string;
     getInitialURL?: typeof getInitialURL;
+    redirects?: RedirectConfig[];
 };
-export declare function getLinkingConfig(store: RouterStore, routes: RouteNode, context: RequireContext, { metaOnly, serverUrl }?: LinkingConfigOptions): ExpoLinkingOptions;
+export declare function getLinkingConfig(store: RouterStore, routes: RouteNode, context: RequireContext, { metaOnly, serverUrl, redirects }?: LinkingConfigOptions): ExpoLinkingOptions;
 //# sourceMappingURL=getLinkingConfig.d.ts.map

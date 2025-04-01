@@ -9,10 +9,32 @@ PODS:
   - EXManifests (0.15.4):
     - ExpoModulesCore
   - Expo (52.0.11):
+    - DoubleConversion
     - ExpoModulesCore
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
     - ReactAppDependencyProvider
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - expo-dev-client (5.0.4):
     - EXManifests
     - expo-dev-launcher
@@ -289,7 +311,6 @@ PODS:
     - React-jsi
     - React-jsinspector
     - React-NativeModulesApple
-    - React-RCTAppDelegate
     - React-RCTFabric
     - React-renderercss
     - React-rendererdebug
@@ -2317,7 +2338,7 @@ SPEC CHECKSUMS:
   EXConstants: ce04ec1ab4b0b9e0f8a6c39211ce51e6ea61797a
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
-  Expo: 24ec4e242d7cb4bc0095beeb984ac1006a8782e1
+  Expo: 294e74eac709f9d3ff90d4aedde6909b463addee
   expo-dev-client: 8c99b4979086a27f19e773e96ef10219102a5c4f
   expo-dev-launcher: 7b1172e0103f74cfb242f27deb2e5c83aa37836e
   expo-dev-menu: b5156ba51a752969f91e089e85d7e1a4002ed7d8
@@ -2331,7 +2352,7 @@ SPEC CHECKSUMS:
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoKeepAwake: 5a84230d022094b50d2ef369fdcae76d0ea44913
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
-  ExpoModulesCore: ee9093339160a9f3b2a9bff460fc9ddacbb7219b
+  ExpoModulesCore: 1e8c3b29d86072503d23e5b1a18accc1b3d5244c
   ExpoSplashScreen: 47a5c337586329223b70b5ef777d34c1f9edf412
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
@@ -2414,6 +2435,6 @@ SPEC CHECKSUMS:
   Yoga: 99c3ff1f0452d13c8774222903cef8dda229d5ce
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 0dc2e90d9ec86faf0bb296e40ffef712f807f396
+PODFILE CHECKSUM: 007b6861e4041f01e6a00545c03c6e1336f87abb
 
 COCOAPODS: 1.16.2
