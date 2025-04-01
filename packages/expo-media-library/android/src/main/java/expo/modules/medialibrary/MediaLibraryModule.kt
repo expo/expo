@@ -40,7 +40,7 @@ import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 import expo.modules.medialibrary.albums.getAssetsInAlbums
 import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
 import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAsset
+import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
 import expo.modules.medialibrary.assets.DeleteAssets
 import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
@@ -104,16 +104,16 @@ class MediaLibraryModule : Module() {
     AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise, false)
+          CreateAssetWithAlbumId(context, localUri, promise, false)
             .execute()
         }
       }
     }
 
-    AsyncFunction("createAssetAsync") { localUri: String, promise: Promise ->
+    AsyncFunction("createAssetAsync") { localUri: String, albumId: String?, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise)
+          CreateAssetWithAlbumId(context, localUri, promise, true, albumId)
             .execute()
         }
       }
