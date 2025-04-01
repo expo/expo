@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 6.0.23 — 2025-04-01
+
+### 🐛 Bug fixes
+
+- [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
 
 ## 6.0.22 — 2025-03-31
 
