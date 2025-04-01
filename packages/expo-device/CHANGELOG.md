@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fixed build errors in XCode 16.3
+- [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
