@@ -120,7 +120,8 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, options = {}) {
+function linkTo(originalHref, options = {}) {
+    let href = originalHref;
     if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
         return;
     }
@@ -145,6 +146,11 @@ function linkTo(href, options = {}) {
     }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
+    href = this.applyRedirects(href);
+    // If the href is undefined, it means that the redirect has already been handled the navigation
+    if (!href) {
+        return;
+    }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);

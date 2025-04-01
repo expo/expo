@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expo Router static redirects ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

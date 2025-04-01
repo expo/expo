@@ -169,6 +169,7 @@ export async function exportAppAsync(
 
           // Run metro bundler and create the JS bundles/source maps.
           const bundle = await devServer.nativeExportBundleAsync(
+            exp,
             {
               platform,
               splitChunks:
