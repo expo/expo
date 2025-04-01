@@ -11,5 +11,6 @@ android {
   defaultConfig {
     versionCode 23
     versionName "13.0.3"
+    consumerProguardFiles("proguard-rules.pro")
   }
 }

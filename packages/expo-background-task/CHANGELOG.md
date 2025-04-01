@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] added proguard rules for background-task consumer
+
 ### 💡 Others
 
 ## 0.1.3 - 2025-03-14
