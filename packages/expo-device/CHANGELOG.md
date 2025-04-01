@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed build errors in XCode 16.3
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
