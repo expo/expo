@@ -163,6 +163,35 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     }
   }
 
+  function renderSubtitleTracks() {
+    if (
+      !props.player?.availableSubtitleTracks ||
+      props.player.availableSubtitleTracks.length === 0
+    ) {
+      return null;
+    }
+
+    return props.player.availableSubtitleTracks.map((track) => {
+      const trackSrc = track.uri || '';
+
+      if (!trackSrc) {
+        return null;
+      }
+
+      return (
+        <track
+          key={track.id}
+          id={track.id}
+          kind="subtitles"
+          src={trackSrc}
+          srcLang={track.language}
+          label={track.label}
+          default={props.player?.subtitleTrack?.id === track.id}
+        />
+      );
+    });
+  }
+
   useEffect(() => {
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
@@ -205,8 +234,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         }
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
-      src={getSourceUri(props.player?.src) ?? ''}
-    />
+      src={getSourceUri(props.player?.src) ?? ''}>
+      {renderSubtitleTracks()}
+    </video>
   );
 });
 

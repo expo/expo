@@ -12,6 +12,7 @@
 - [Android][iOS] Add caching functionality. ([#31781](https://github.com/expo/expo/pull/31781) by [@behenate](https://github.com/behenate))
 - Add `onFirstFrameRender` event to the `VideoView`. ([#35346](https://github.com/expo/expo/pull/35346) by [@behenate](https://github.com/behenate))
 - Add `useExoShutter` property to the `VideoView`. ([#35366](https://github.com/expo/expo/pull/35366) by [@behenate](https://github.com/behenate))
+- [Web] Add support for loading subtitle tracks from external source. ([#35808](https://github.com/expo/expo/pull/35808) by [@Fausto95](https://github.com/Fausto95))
 
 ### 🐛 Bug fixes
 
