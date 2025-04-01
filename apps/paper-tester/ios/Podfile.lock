@@ -2028,9 +2028,9 @@ PODS:
     - React-logger (= 0.79.0-rc.4)
     - React-perflogger (= 0.79.0-rc.4)
     - React-utils (= 0.79.0-rc.4)
-  - SDWebImage (5.19.7):
-    - SDWebImage/Core (= 5.19.7)
-  - SDWebImage/Core (5.19.7)
+  - SDWebImage (5.21.0):
+    - SDWebImage/Core (= 5.21.0)
+  - SDWebImage/Core (5.21.0)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -2447,7 +2447,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 07df9e1b869e66b448a983c14b6403c29d1da787
   ReactCodegen: ce1f77870209d0381dbb8d504e117459886a860a
   ReactCommon: c2ee8443c5351f2ae61800cb388d238d1c6e60e3
-  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
+  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
