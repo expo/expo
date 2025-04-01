@@ -26,10 +26,10 @@
   },
   "packageManager": "yarn@4.7.0",
   "dependencies": {
-    "@expo/styleguide": "^9.1.0",
+    "@expo/styleguide": "^9.1.2",
     "@expo/styleguide-base": "^2.0.3",
     "@expo/styleguide-icons": "^2.2.0",
-    "@expo/styleguide-search-ui": "^2.3.2",
+    "@expo/styleguide-search-ui": "^2.3.4",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/mdx": "^3.1.0",
     "@mdx-js/react": "^3.1.0",

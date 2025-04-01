@@ -32,7 +32,7 @@ export const SidebarSingleEntry = ({
             'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
-            'short:justify-center short:bg-subtle',
+            'compact-height:justify-center compact-height:bg-subtle',
             secondary && 'text-xs',
             isActive &&
               '!bg-palette-blue3 font-medium text-link hocus:!bg-palette-blue4 hocus:text-link'
@@ -45,11 +45,11 @@ export const SidebarSingleEntry = ({
               isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
             )}
           />
-          <span className="short:hidden">{title}</span>
+          <span className="compact-height:hidden">{title}</span>
           {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
         </LinkBase>
       </Tooltip.Trigger>
-      <Tooltip.Content side="bottom" className="z-50 hidden short:flex">
+      <Tooltip.Content side="bottom" className="z-50 hidden compact-height:flex">
         <span className="text-2xs text-secondary">{title}</span>
       </Tooltip.Content>
     </Tooltip.Root>
