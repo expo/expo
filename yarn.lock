@@ -3265,12 +3265,12 @@
     recyclerlistview "4.2.3"
     tslib "2.8.1"
 
-"@shopify/react-native-skia@v2.0.0-next.1":
-  version "2.0.0-next.1"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.0.0-next.1.tgz#57bafef20feea5269b3d087c4a6712f0b1684f9a"
-  integrity sha512-g4qTueyZlSrsUXQeatzPoLT28ncTUV96T90N0xbkbskQL0LyRt7LyzJhJleL/cRNMcYIrN5ndYtbIkpz1N7o2A==
+"@shopify/react-native-skia@v2.0.0-next.2":
+  version "2.0.0-next.2"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.0.0-next.2.tgz#4e749d268f18d548f89e912f9e47bc99e6b815e2"
+  integrity sha512-Ht62iLPqTd8ufctR85Jkvpb+KtVn+DGIdtzXOj+PsCY6NubxWtoOVINr2H2dzjroMFJ+WZyyJ6fEoyuHe0ObRg==
   dependencies:
-    canvaskit-wasm "0.39.1"
+    canvaskit-wasm "0.40.0"
     react-reconciler "0.31.0"
 
 "@sinclair/typebox@^0.27.8":
@@ -5665,10 +5665,10 @@ caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001688:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001690.tgz#f2d15e3aaf8e18f76b2b8c1481abde063b8104c8"
   integrity sha512-5ExiE3qQN6oF8Clf8ifIDcMRCRE/dMGcETG/XGMD8/XiXm6HXQgQTh1yZYLXXpSOsEUlJm1Xr7kGULZTuGtP/w==
 
-canvaskit-wasm@0.39.1:
-  version "0.39.1"
-  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.39.1.tgz#c3c8f3962cbabbedf246f7bcf90e859013c7eae9"
-  integrity sha512-Gy3lCmhUdKq+8bvDrs9t8+qf7RvcjuQn+we7vTVVyqgOVO1UVfHpsnBxkTZw+R4ApEJ3D5fKySl9TU11hmjl/A==
+canvaskit-wasm@0.40.0:
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.40.0.tgz#61a77657259fddfc0025ad1c3f57ac8d4d5850ff"
+  integrity sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==
   dependencies:
     "@webgpu/types" "0.1.21"
 
