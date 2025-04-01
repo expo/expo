@@ -439,7 +439,7 @@ export class SQLiteDatabase {
    * Synchronize the local database with the remote libSQL server.
    * This method is only available from libSQL integration.
    */
-  public syncLibSQL(): void {
+  public syncLibSQL(): Promise<void> {
     if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
       throw new Error('syncLibSQL is not supported in the current environment');
     }

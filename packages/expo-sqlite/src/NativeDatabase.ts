@@ -31,7 +31,7 @@ export declare class NativeDatabase {
 
   //#endregion
 
-  public syncLibSQL(): void;
+  public syncLibSQL(): Promise<void>;
 }
 
 /**

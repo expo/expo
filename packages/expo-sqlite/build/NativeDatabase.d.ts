@@ -19,7 +19,7 @@ export declare class NativeDatabase {
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
     createSessionSync(nativeSession: NativeSession, dbName: string): NativeSession;
-    syncLibSQL(): void;
+    syncLibSQL(): Promise<void>;
 }
 /**
  * Options for opening a database.
