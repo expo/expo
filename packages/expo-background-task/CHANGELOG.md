@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] added proguard rules for background-task consumer
+- [Android] added proguard rules for background-task consumer ([#35816](https://github.com/expo/expo/pull/35816) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
