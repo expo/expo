@@ -16,7 +16,7 @@ export declare class NativeDatabase {
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
-    syncLibSQL(): void;
+    syncLibSQL(): Promise<void>;
 }
 /**
  * Options for opening a database.
