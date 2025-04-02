@@ -53,7 +53,6 @@ public class EmitterModule: Module, NotificationDelegate {
     // TODO: convert serialization to Records
     let serializedNotification = EXNotificationSerializer.serializedNotification(notification)
     self.sendEvent(onDidReceiveNotification, serializedNotification as [String: Any])
-    completionHandler([])
-    return true
+    return false
   }
 }

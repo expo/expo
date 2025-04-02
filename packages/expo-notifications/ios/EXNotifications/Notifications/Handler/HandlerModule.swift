@@ -28,7 +28,7 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
         promise.reject("ERR_NOTIFICATION_HANDLED", "Failed to handle notification \(identifier) because it has already been handled")
         return
       }
-      if task.handleResponse(behavior) {
+      if task.processNotificationWithBehavior(behavior) {
         promise.resolve(nil)
       } else {
         promise.reject("ERR_NOTIFICATION_RESPONSE_TIMEOUT", "Notification has already been handled. Most probably the request has timed out.")
