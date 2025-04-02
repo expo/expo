@@ -16,7 +16,7 @@ internal extension NSItemProvider {
 
   func loadImageDataRepresentation() async throws -> Data {
     return try await withCheckedThrowingContinuation { continuation in
-      let preferredTypeIdentifier = self.registeredTypeIdentifiers().first ?? UTType.image.identifier
+      let preferredTypeIdentifier = self.registeredTypeIdentifiers().compactMap { UTType($0) }.first { $0.conforms(to: .image) }?.identifier ?? UTType.image.identifier
       loadDataRepresentation(forTypeIdentifier: preferredTypeIdentifier) { data, error in
         if let data {
           continuation.resume(returning: data)
