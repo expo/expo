@@ -9,7 +9,8 @@ open class CategoriesModule: Module {
     Name("ExpoNotificationCategoriesModule")
 
     AsyncFunction("getNotificationCategoriesAsync") { (promise: Promise) in
-      getNotificationCategoriesAsync(promise: promise)
+      let categories = await UNUserNotificationCenter.current().notificationCategories()
+      promise.resolve(filterAndSerializeCategories(Array(categories)))
     }
 
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) in
@@ -21,26 +22,8 @@ open class CategoriesModule: Module {
     }
   }
 
-  public func getNotificationCategories(
-    completion: @escaping (_ categoryRecords: [CategoryRecord]) -> Void,
-    filter: @escaping (_ category: UNNotificationCategory) -> Bool
-  ) {
-    UNUserNotificationCenter.current().getNotificationCategories { categories in
-      let existingCategories = categories
-        .filter(filter)
-        .map { category in
-          return CategoryRecord(category)
-        }
-      completion(existingCategories)
-    }
-  }
-
-  open func getNotificationCategoriesAsync(promise: Promise) {
-    getNotificationCategories { categoryRecords in
-      promise.resolve(categoryRecords)
-    } filter: { _ in
-      true
-    }
+  open func filterAndSerializeCategories(_ categories: [UNNotificationCategory]) -> [CategoryRecord] {
+    return categories.map { CategoryRecord($0) }
   }
 
   open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) {
