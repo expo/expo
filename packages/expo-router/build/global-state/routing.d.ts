@@ -31,5 +31,5 @@ export type LinkToOptions = {
      */
     dangerouslySingular?: SingularOptions;
 };
-export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, originalHref: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map

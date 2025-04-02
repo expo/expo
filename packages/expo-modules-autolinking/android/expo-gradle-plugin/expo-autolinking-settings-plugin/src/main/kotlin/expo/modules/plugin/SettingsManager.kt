@@ -2,6 +2,7 @@ package expo.modules.plugin
 
 import expo.modules.plugin.configuration.ExpoAutolinkingConfig
 import expo.modules.plugin.configuration.GradleProject
+import expo.modules.plugin.configuration.MavenRepo
 import expo.modules.plugin.gradle.afterAndroidApplicationProject
 import expo.modules.plugin.gradle.applyAarProject
 import expo.modules.plugin.gradle.applyPlugin
@@ -116,6 +117,19 @@ class SettingsManager(
         rootProject.logger.quiet("Adding extra maven repository: ${mavenConfig.url}")
         rootProject.linkMavenRepository(mavenConfig)
       }
+
+      // Adds maven repositories for all projects that are using the publication.
+      // It most likely means that we will add "https://maven.pkg.github.com/expo/expo" to the repositories.
+      config
+        .allProjects
+        .filter { it.usePublication && it.publication?.repository != "mavenLocal" }
+        .mapNotNull {
+          it.publication?.repository
+        }
+        .toSet()
+        .forEach { url ->
+          rootProject.linkMavenRepository(MavenRepo(url))
+        }
     }
 
     settings.gradle.afterAndroidApplicationProject { androidApplication ->

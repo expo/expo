@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 - Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
@@ -29,6 +31,16 @@
 
 - Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
 - Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
+
+## 4.0.20 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.20-rc.0 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fix `this.config` crash on startup. ([#35833](https://github.com/expo/expo/pull/35833) by [@marklawlor](https://github.com/marklawlor))
 
 ## 4.0.19 - 2025-03-14
 

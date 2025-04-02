@@ -7,6 +7,8 @@ import expo.modules.plugin.android.PublicationInfo
 import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
 import expo.modules.plugin.android.applySDKVersions
+import expo.modules.plugin.android.createEmptyExpoPublishTask
+import expo.modules.plugin.android.createEmptyExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
@@ -38,7 +40,10 @@ internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
 internal fun Project.applyDefaultDependencies() {
   val modulesCore = rootProject.project(":expo-modules-core")
   if (project != modulesCore) {
-    project.dependencies.add("implementation", project.project(":expo-modules-core"))
+    project.dependencies.add("compileOnly", modulesCore)
+
+    project.dependencies.add("testImplementation", modulesCore)
+    project.dependencies.add("androidTestImplementation", modulesCore)
   }
 }
 
@@ -62,6 +67,8 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
  */
 internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
   if (!expoModulesExtension.canBePublished) {
+    createEmptyExpoPublishTask()
+    createEmptyExpoPublishToMavenLocalTask()
     return
   }
 

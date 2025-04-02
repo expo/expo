@@ -1,5 +1,7 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { AlertTriangleIcon } from '@expo/styleguide-icons/outline/AlertTriangleIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
 
@@ -67,6 +69,12 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         )}
       />
       {children}
+      {info.isDeprecated && !isSelected && (
+        <AlertTriangleIcon className="icon-xs ml-1.5 !text-icon-warning" />
+      )}
+      {info.isDeprecated && isSelected && (
+        <AlertTriangleSolidIcon className="icon-xs ml-1.5 !text-icon-warning" />
+      )}
       {info.isNew && (
         <div
           className={mergeClasses(

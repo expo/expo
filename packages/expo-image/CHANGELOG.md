@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - type-compatibility with react-native 0.77 ([#34027](https://github.com/expo/expo/pull/34027) by [@vonovak](https://github.com/vonovak))
+- Added `ImageSource.useAppleWebpCodec` on iOS to allow using libwebp codec for better animation performance on some images. ([#35802](https://github.com/expo/expo/pull/35802) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +21,10 @@
 - Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+
+### 📚 3rd party library updates
+
+- Bumped `SDWebImage` to 5.21.0. ([#35795](https://github.com/expo/expo/pull/35795) by [@kudo](https://github.com/kudo))
 
 ## 2.0.7 - 2025-03-26
 

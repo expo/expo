@@ -1,8 +1,8 @@
-import { mergeClasses } from '@expo/styleguide';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
-import { A } from '../Text';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 type SidebarSingleEntryProps = {
   href: string;
@@ -24,25 +24,34 @@ export const SidebarSingleEntry = ({
   shouldLeakReferrer,
 }: SidebarSingleEntryProps) => {
   return (
-    <A
-      href={href}
-      className={mergeClasses(
-        'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary !opacity-100',
-        'hocus:bg-element',
-        'focus-visible:relative focus-visible:z-10',
-        secondary && 'text-xs',
-        isActive && 'bg-palette-blue3 font-medium text-link hocus:bg-palette-blue4 hocus:text-link'
-      )}
-      shouldLeakReferrer={shouldLeakReferrer}
-      isStyled>
-      <Icon
-        className={mergeClasses(
-          secondary ? 'icon-xs' : 'icon-sm',
-          isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
-        )}
-      />
-      {title}
-      {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
-    </A>
+    <Tooltip.Root delayDuration={500} disableHoverableContent>
+      <Tooltip.Trigger asChild>
+        <LinkBase
+          href={href}
+          className={mergeClasses(
+            'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary',
+            'hocus:bg-element',
+            'focus-visible:relative focus-visible:z-10',
+            'compact-height:justify-center compact-height:bg-subtle',
+            secondary && 'text-xs',
+            isActive &&
+              '!bg-palette-blue3 font-medium text-link hocus:!bg-palette-blue4 hocus:text-link'
+          )}
+          {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}>
+          <Icon
+            className={mergeClasses(
+              'shrink-0',
+              secondary ? 'icon-xs' : 'icon-sm',
+              isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
+            )}
+          />
+          <span className="compact-height:hidden">{title}</span>
+          {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
+        </LinkBase>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="bottom" className="z-50 hidden compact-height:flex">
+        <span className="text-2xs text-secondary">{title}</span>
+      </Tooltip.Content>
+    </Tooltip.Root>
   );
 };

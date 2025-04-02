@@ -17,7 +17,7 @@ function getNavigationConfig(routes, metaOnly = true) {
     };
 }
 exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
+function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -27,9 +27,11 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
     const nativeLinking = nativeLinkingKey
         ? context(nativeLinkingKey)
         : undefined;
+    const config = getNavigationConfig(routes, metaOnly);
+    const boundGetStateFromPath = linking_1.getStateFromPath.bind(store);
     return {
         prefixes: [],
-        config: getNavigationConfig(routes, metaOnly),
+        config,
         // A custom getInitialURL is used on native to ensure the app always starts at
         // the root path if it's launched from something other than a deep link.
         // This helps keep the native functionality working like the web functionality.
@@ -45,12 +47,14 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
-                        if (typeof nativeLinking?.redirectSystemPath === 'function') {
+                        initialUrl = store.applyRedirects(initialUrl);
+                        if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
+                            url = store.applyRedirects(url);
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }
@@ -62,13 +66,13 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking),
-        getStateFromPath: linking_1.getStateFromPath.bind(store),
+        subscribe: (0, linking_1.addEventListener)(nativeLinking, store),
+        getStateFromPath: boundGetStateFromPath,
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
-                screens: {},
-                ...this.config,
+                ...config,
                 ...options,
+                screens: config.screens ?? options?.screens ?? {},
             }) ?? '/');
         },
         // Add all functions to ensure the types never need to fallback.

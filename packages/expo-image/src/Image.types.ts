@@ -64,6 +64,19 @@ export type ImageSource = {
    * @platform ios
    */
   isAnimated?: boolean;
+
+  /**
+   * Whether to use the Apple system WebP codec.
+   *
+   * When set to `true`, use the Apple system WebP codec from `SDWebImageAWebPCoder`.
+   * When set to `false`, use the libwebp codec from `SDWebImageWebPCoder`.
+   * The Apple system WebP codec is faster and uses less memory, but it has some issues with animated WebP images.
+   * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+   *
+   * @default true
+   * @platform ios
+   */
+  useAppleWebpCodec?: boolean;
 };
 
 /**

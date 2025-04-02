@@ -505,23 +505,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "@expo/styleguide-icons@npm:2.1.3"
+"@expo/styleguide-icons@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@expo/styleguide-icons@npm:2.2.0"
   dependencies:
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/72eb1987b35aee6f50ed83135d4df35b6d58c752a1e317be354fdf2a7cd6cbe4c60d858c4acaf94863128588ae42f99955e5f5db9dc8261cecd674423298e6a4
+  checksum: 10c0/058085af3264149e1f842e003df3813f377f2b88b3b36b97d0e08c9f00bb76fc2a2b4274861a4bff88c1cf0277f556ecc3eb5b2a8953b8af0eb0bcbfaab94ce7
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@expo/styleguide-search-ui@npm:2.3.1"
+"@expo/styleguide-search-ui@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@expo/styleguide-search-ui@npm:2.3.4"
   dependencies:
-    "@expo/styleguide": "npm:^9.0.5"
-    "@expo/styleguide-icons": "npm:^2.1.3"
+    "@expo/styleguide": "npm:^9.1.2"
+    "@expo/styleguide-icons": "npm:^2.2.0"
     "@sanity/client": "npm:^6.28.3"
     "@sanity/image-url": "npm:^1.1.0"
     cmdk: "npm:^0.2.1"
@@ -529,20 +529,20 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/961caa6804d127ceb4c6edda43ca56d67ce915ae644ab25ef516c151f02c1815dcc257f6a2cff99ba39add6b255873cd4e9451248269349c9da74ef6b62a6cb3
+  checksum: 10c0/a435b89a12e2c19f39164cb510cc06be82f0fb80930db05abc36a162877b28ee0dace1225ccce7ed4fff69ac9ac5a5fbe95590b45c89e9ecf698698dd5fe742f
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^9.0.5":
-  version: 9.0.5
-  resolution: "@expo/styleguide@npm:9.0.5"
+"@expo/styleguide@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@expo/styleguide@npm:9.1.2"
   dependencies:
     "@expo/styleguide-base": "npm:^2.0.3"
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/be3a5735d30a5a0d28f560f85dbc37bd36fb4197ee6ef0a7916718b649ee8f346128203a88cb9a601e8b43c60b080e5073a8f2df34ae7cc478592a541a2dacac
+  checksum: 10c0/003936dbf97ff5af74adc802726295267ac003c44140ba3b8a1ff3fbcfed09f48cf1d6ba74d8491a9867c90b2245b61bb655e2e9527092340f808e3e302534b5
   languageName: node
   linkType: hard
 
@@ -5660,10 +5660,10 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.7.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^9.0.5"
+    "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-base": "npm:^2.0.3"
-    "@expo/styleguide-icons": "npm:^2.1.3"
-    "@expo/styleguide-search-ui": "npm:^2.3.1"
+    "@expo/styleguide-icons": "npm:^2.2.0"
+    "@expo/styleguide-search-ui": "npm:^2.3.4"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"

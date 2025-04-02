@@ -93,6 +93,7 @@ public final class SQLiteModule: Module {
         } else {
           // Try to find opened database for fast refresh
           if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
+            cachedDb.addRef()
             return cachedDb
           }
 
@@ -124,12 +125,16 @@ public final class SQLiteModule: Module {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
       }
       Function("closeSync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
       }
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
@@ -452,7 +457,6 @@ public final class SQLiteModule: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(db)
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
@@ -645,9 +649,11 @@ public final class SQLiteModule: Module {
   private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
     return Self.lockQueue.sync {
       if let index = cachedDatabases.firstIndex(of: database) {
-        let database = cachedDatabases[index]
-        cachedDatabases.remove(at: index)
-        return database
+        let db = cachedDatabases[index]
+        if db.release() == 0 {
+          cachedDatabases.remove(at: index)
+          return db
+        }
       }
       return nil
     }

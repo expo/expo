@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
+- Added reference counting for database closing functions. ([#35818](https://github.com/expo/expo/pull/35818) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -24,10 +25,17 @@
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 - Fixed build warnings. ([#35610](https://github.com/expo/expo/pull/35610) by [@kudo](https://github.com/kudo))
 - Added backup and session API stubs to LibSQL implementations. ([#35755](https://github.com/expo/expo/pull/35755) by [@kudo](https://github.com/kudo))
+- Updated function docs. ([#35761](https://github.com/expo/expo/pull/35761) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
 - Updated SQLite to 3.49.1 and SQLCipher to 4.7.0. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
+
+## 15.1.4 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
 
 ## 15.1.3 - 2025-03-26
 

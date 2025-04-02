@@ -6,6 +6,7 @@
 
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed react-devtools integration from CLI. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
@@ -14,6 +15,7 @@
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
 - Create `keep.xml` to prevent resource shrinking on Android. ([#35465](https://github.com/expo/expo/pull/35465) by [@jakex7](https://github.com/jakex7))
 - Bump version of React Navigation ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
+- Expo Router static redirects ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
@@ -53,6 +55,10 @@
 - Add requestId to API error ([#35442](https://github.com/expo/expo/pull/35442) by [@wschurman](https://github.com/wschurman))
 - Bump Metro typescript declarations to `0.82.0`. ([#35522](https://github.com/expo/expo/pull/35522) by [@byCedric](https://github.com/byCedric))
 - Bump `swc` for `@expo/cli` build output. ([#35584](https://github.com/expo/expo/pull/35584) by [@kitten](https://github.com/kitten))
+
+## 0.22.23 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 0.22.22 - 2025-03-26
 
@@ -159,6 +165,7 @@ _This version does not introduce any user-facing changes._
 - Add `--dev` to `npx expo install` to avoid complexity around `npx expo install -- --(save-)dev`. ([#34029](https://github.com/expo/expo/pull/34029) by [@byCedric](https://github.com/byCedric))
 - Add `EXPO_NO_DEPENDENCY_VALIDATION` flag to disable dependency validation for `npx expo install` and `npx expo start`. ([#34122](https://github.com/expo/expo/pull/34122) by [@byCedric](https://github.com/byCedric))
 - Add support for webcontainer compatible proxy and enable by default once wecontainer is detected. ([#34588](https://github.com/expo/expo/pull/34588) by [@byCedric](https://github.com/byCedric))
+- Support static API route redirects. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

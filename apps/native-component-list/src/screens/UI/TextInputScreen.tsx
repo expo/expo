@@ -1,4 +1,4 @@
-import { TextInput } from '@expo/ui/components/TextInput';
+import { TextInput } from '@expo/ui/TextInput';
 import * as React from 'react';
 import { Text } from 'react-native';
 

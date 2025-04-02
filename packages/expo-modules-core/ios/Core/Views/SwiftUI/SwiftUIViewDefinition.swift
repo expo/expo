@@ -32,15 +32,17 @@ public extension ExpoSwiftUIView {
     children: [ExpoSwiftUI.Child?]? = nil,
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
     -> T = { child, _ in  child }
-  ) -> some View {
+  ) -> ForEach<Range<Int>, Int, AnyView> {
     guard let children = children ?? props.children else {
-      return AnyView(EmptyView())
+      return ForEach(0..<1) { _ in AnyView(EmptyView()) }
     }
     let childrenArray = Array(children)
-    return AnyView(
-      ForEach(0..<childrenArray.count, id: \.self) { index in
-        if let child = childrenArray[index] {
-          if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
+
+    return ForEach(0..<childrenArray.count, id: \.self) { index in
+      let child = childrenArray[index]
+      AnyView(
+        Group {
+          if let hostingView = child?.view as? (any ExpoSwiftUI.AnyHostingView) {
             let content = hostingView.getContentView()
             let propsObject = hostingView.getProps() as any ObservableObject
             transform(
@@ -52,8 +54,8 @@ public extension ExpoSwiftUIView {
             transform(AnyView(child), false)
           }
         }
-      }
-    )
+      )
+    }
   }
 
   static func getDynamicType() -> AnyDynamicType {
