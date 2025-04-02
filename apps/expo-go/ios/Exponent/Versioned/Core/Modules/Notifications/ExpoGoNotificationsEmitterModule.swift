@@ -19,18 +19,16 @@ public final class ExpoGoNotificationsEmitterModule: EmitterModule {
   override public func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     if EXScopedNotificationsUtils.shouldNotification(response.notification, beHandledByExperience: scopeKey) {
       return super.didReceive(response, completionHandler: completionHandler)
-    } else {
-      completionHandler()
     }
+    completionHandler()
     return true
   }
 
   override public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     if EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: scopeKey) {
       return super.willPresent(notification, completionHandler: completionHandler)
-    } else {
-      completionHandler([])
     }
+    completionHandler([])
     return true
   }
 

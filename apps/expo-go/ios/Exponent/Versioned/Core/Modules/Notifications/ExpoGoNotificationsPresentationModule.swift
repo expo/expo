@@ -29,9 +29,8 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
   public override func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     if EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: scopeKey) {
       return super.willPresent(notification, completionHandler: completionHandler)
-    } else {
-      completionHandler([])
     }
+    completionHandler([])
     return true
   }
 

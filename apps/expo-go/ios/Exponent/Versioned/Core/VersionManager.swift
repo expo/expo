@@ -121,7 +121,7 @@ final class VersionManager: EXVersionManagerObjC {
       ExpoGoNotificationsServerRegistrationModule(appContext: appContext, scopeKey: manifest.scopeKey())
     ]
     for module in modules {
-      appContext.moduleRegistry.register(module: module, preventModuleOverriding:true)
+      appContext.moduleRegistry.register(module: module, preventModuleOverriding: true)
     }
   }
 

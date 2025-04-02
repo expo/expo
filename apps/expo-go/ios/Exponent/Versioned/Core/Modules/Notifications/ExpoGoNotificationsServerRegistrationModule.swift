@@ -3,6 +3,7 @@
 import ExpoModulesCore
 import EXNotifications
 
+// swiftlint:disable:next type_name
 public final class ExpoGoNotificationsServerRegistrationModule: ServerRegistrationModule {
   private let scopeKey: String
   // swiftlint:disable:next unavailable_function
