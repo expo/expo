@@ -14,6 +14,7 @@
 
 - Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
 - Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
+- Added reference counting for database closing functions. ([#35818](https://github.com/expo/expo/pull/35818) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
