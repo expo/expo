@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 15.1.4 — 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
 
 ## 15.1.3 — 2025-03-26
 
