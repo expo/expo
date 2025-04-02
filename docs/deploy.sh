@@ -321,6 +321,8 @@ redirects[eas-workflows/triggers]=eas/workflows/syntax/#on
 redirects[eas-workflows/jobs]=eas/workflows/syntax/#jobs
 redirects[eas-workflows/control-flow]=eas/workflows/syntax/#control-flow
 redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
+redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
+redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites
@@ -341,6 +343,16 @@ redirects[eas-update/known-issues]=eas-update/introduction
 
 # After consolidating the "Internal distribution" information
 redirects[guides/sharing-preview-releases]=build/internal-distribution
+
+# After merging EAS environment variables guides
+redirects[eas/using-environment-variables]=eas/environment-variables
+
+# After Expo Router Getting Started Guide
+redirects[router/reference/authentication]=router/advanced/authentication
+redirects[router/advanced/root-layout]=router/basics/layout/#root-layout
+redirects[router/reference/not-found]=router/error-handling
+redirects[router/navigating-pages]=router/basics/navigation
+redirects[router/create-pages]=router/basics/core-concepts
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

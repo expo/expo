@@ -1,4 +1,26 @@
-import { EventEmitter, EventSubscription } from 'fbemitter';
+interface EventSubscription {
+  listener: (payload: any) => void;
+  remove(): void;
+}
+
+class EventEmitter {
+  listeners: Record<string, undefined | Set<(payload: any) => void>> = Object.create(null);
+
+  addListener(event: string, listener: (payload: any) => void) {
+    (this.listeners[event] || (this.listeners[event] = new Set())).add(listener);
+    return {
+      listener,
+      remove: () => this.listeners[event]?.delete(listener),
+    };
+  }
+
+  emit(event: string, payload?: any) {
+    const listeners = this.listeners[event];
+    if (listeners) {
+      for (const listener of listeners) listener(payload);
+    }
+  }
+}
 
 export default class MockWebSocket {
   static readonly CONNECTING = 0;

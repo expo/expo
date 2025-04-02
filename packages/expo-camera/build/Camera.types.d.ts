@@ -63,6 +63,10 @@ export type CameraCapturedPicture = {
      */
     height: number;
     /**
+     * The format of the captured image.
+     */
+    format: 'jpg' | 'png';
+    /**
      * On web, the value of `uri` is the same as `base64` because file system URLs are not supported in the browser.
      */
     uri: string;

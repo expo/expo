@@ -3,6 +3,13 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
+expoModule {
+  canBePublished false
+}
+
+group = "host.exp.exponent"
+version = "5.0.4"
+
 android {
   namespace "expo.modules.devclient"
   defaultConfig {

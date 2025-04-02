@@ -475,7 +475,9 @@ public class CalendarModule: Module {
   }
 
   private func maybeSetUrl(_ url: String?) -> URL? {
-    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+    var allowedQueryParamAndKey = CharacterSet.urlHostAllowed
+    allowedQueryParamAndKey.insert(charactersIn: ":/")
+    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: allowedQueryParamAndKey), let url = URL(string: urlString) {
       return url
     }
     return nil

@@ -27,6 +27,9 @@
  *
  * Keys and values must always be strings or an error is returned.
  */
+
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RNCAsyncStorage : NSObject <
 #ifdef RCT_NEW_ARCH_ENABLED
                                  NativeAsyncStorageModuleSpec
@@ -60,3 +63,5 @@
 - (void)getAllKeys:(RCTResponseSenderBlock)callback;
 
 @end
+
+NS_ASSUME_NONNULL_END

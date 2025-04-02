@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/test-suite-macos.yml
+      - apps/bare-expo/macos/**
       - packages/expo/**
       - packages/expo-asset/**
       - packages/expo-constants/**
@@ -69,6 +70,7 @@ jobs:
         working-directory: apps/bare-expo/macos
       - name: 🏗️ Build macOS project
         run: |
+          set -o pipefail
           xcodebuild -workspace macos/BareExpo-macOS.xcworkspace -scheme ExpoMacOS-macOS -sdk macosx -derivedDataPath "macos/build" | xcpretty
         working-directory: apps/bare-expo
         timeout-minutes: 55

@@ -131,6 +131,7 @@ function ExpoRouterLink(
     target,
     download,
     withAnchor,
+    dangerouslySingular: singular,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
@@ -158,6 +159,7 @@ function ExpoRouterLink(
     event,
     relativeToDirectory,
     withAnchor,
+    dangerouslySingular: singular,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {

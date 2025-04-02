@@ -1,5 +1,5 @@
-import { createPages } from './create-pages';
+import { createExpoPages } from './create-expo-pages';
 
-export default createPages(async () => {
+export default createExpoPages(async () => {
   // noop the router for client-only mode. This ensures we skip loading the routes in react-server mode.
 });

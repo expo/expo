@@ -113,4 +113,20 @@ export interface VideoViewProps extends ViewProps {
    * A callback to call after the video player exits fullscreen mode.
    */
   onFullscreenExit?: () => void;
+
+  /**
+   * A callback to call after the mounted `VideoPlayer` has rendered the first frame into the `VideoView`.
+   * This event can be used to hide any cover images that conceal the initial loading of the player.
+   * > **Note:** This event may also be called during playback when the current video track changes (for example when the player switches video quality).
+   */
+  onFirstFrameRender?: () => void;
+
+  /**
+   * Determines whether the player should use the default ExoPlayer shutter that covers the `VideoView` before the first video frame is rendered.
+   * Setting this property to `false` makes the Android behavior the same as iOS.
+   *
+   * @platform android
+   * @default true
+   */
+  useExoShutter?: boolean;
 }

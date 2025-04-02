@@ -1,3 +1,6 @@
+/**
+ * @hidden
+ */
 export declare function checkValidInput(...input: unknown[]): void;
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.

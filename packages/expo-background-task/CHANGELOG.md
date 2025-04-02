@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+- added error handling when registering/unregistering invalid tasks with the TaskManager. ([#35734](https://github.com/expo/expo/pull/35734) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.1.3 - 2025-03-14
+
+### 💡 Others
+
+- added throwing an exception if registerTask is run on an iOS Simulator or a device without background modes enabled ([#35350](https://github.com/expo/expo/pull/35350) by [@chrfalch](https://github.com/chrfalch))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.1.2 - 2025-02-14

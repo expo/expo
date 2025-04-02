@@ -133,6 +133,14 @@ fun IntArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Wr
   }
 }
 
+fun LongArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+  return containerProvider.createArray().also {
+    for (value in this) {
+      it.pushLong(value)
+    }
+  }
+}
+
 fun FloatArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
@@ -209,6 +217,7 @@ internal fun WritableMap.putGeneric(key: String, value: Any?) {
     is ReadableMap -> putMap(key, value)
     is String -> putString(key, value)
     is Int -> putInt(key, value)
+    is Long -> putLong(key, value)
     is Number -> putDouble(key, value.toDouble())
     is Boolean -> putBoolean(key, value)
     else -> throw IllegalArgumentException("Could not put '${value.javaClass}' to WritableMap")
@@ -222,6 +231,7 @@ internal fun WritableArray.putGeneric(value: Any?) {
     is ReadableMap -> pushMap(value)
     is String -> pushString(value)
     is Int -> pushInt(value)
+    is Long -> pushLong(value)
     is Number -> pushDouble(value.toDouble())
     is Boolean -> pushBoolean(value)
     else -> throw IllegalArgumentException("Could not put '${value.javaClass}' to WritableArray")
