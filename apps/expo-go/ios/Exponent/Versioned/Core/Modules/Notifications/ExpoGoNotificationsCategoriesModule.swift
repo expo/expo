@@ -16,15 +16,16 @@ public final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
     super.init(appContext: appContext)
   }
 
-  public override func getNotificationCategoriesAsync(promise: Promise) {
-    return getNotificationCategories { categoryRecords in
-      categoryRecords.forEach { record in
-        record.identifier = EXScopedNotificationsUtils.getUnscopedIdentifier(fromScopedIdentifier: record.identifier)
+  public override func filterAndSerializeCategories(_ categories: [UNNotificationCategory]) -> [CategoryRecord] {
+    return categories
+      .filter {
+        EXScopedNotificationsUtils.isId($0.identifier, scopedByExperience: self.scopeKey)
       }
-      promise.resolve(categoryRecords)
-    } filter: { category in
-      return EXScopedNotificationsUtils.isId(category.identifier, scopedByExperience: self.scopeKey)
-    }
+      .map { category in
+        var record = CategoryRecord(category)
+        record.identifier = EXScopedNotificationsUtils.getUnscopedIdentifier(fromScopedIdentifier: record.identifier)
+        return record
+      }
   }
 
   public override func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) {
