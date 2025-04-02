@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.backgroundfetch"
   defaultConfig {
     versionCode 23
-    versionName "13.0.3"
+    versionName "13.0.5"
     consumerProguardFiles("proguard-rules.pro")
   }
 }
