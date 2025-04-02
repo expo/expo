@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import CustomUrlForm from '../components/CustomUrlForm';
+import CustomUrlForm from '../../components/CustomUrlForm';
 
 export const CustomLoaderScreen = () => {
   return (
