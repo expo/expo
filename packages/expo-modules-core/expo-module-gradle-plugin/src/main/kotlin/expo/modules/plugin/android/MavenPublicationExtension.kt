@@ -101,6 +101,20 @@ internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo): Ta
   return taskProvider
 }
 
+internal fun Project.createEmptyExpoPublishTask(): TaskProvider<Task> {
+  val taskProvider = tasks.register("expoPublish") { task ->
+    task.doLast {
+      logger.warn("Publishing is not configured for this project!")
+    }
+  }
+  taskProvider.configure { task ->
+    task.group = "publishing"
+    task.description = "Publishes the library to the GitHub Packages repository"
+  }
+
+  return taskProvider
+}
+
 internal fun Project.createExpoPublishTask(error: Throwable): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublish") { task ->
     task.doLast {
@@ -110,6 +124,20 @@ internal fun Project.createExpoPublishTask(error: Throwable): TaskProvider<Task>
   taskProvider.configure { task ->
     task.group = "publishing"
     task.description = "Publishes the library to the GitHub Packages repository"
+  }
+
+  return taskProvider
+}
+
+internal fun Project.createEmptyExpoPublishToMavenLocalTask(): TaskProvider<Task> {
+  val taskProvider = tasks.register("expoPublishToMavenLocal") { task ->
+    task.doLast {
+      logger.warn("Publishing is not configured for this project!")
+    }
+  }
+  taskProvider.configure { task ->
+    task.group = "publishing"
+    task.description = "Publishes the library to the local Maven repository"
   }
 
   return taskProvider
