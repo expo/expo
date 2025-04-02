@@ -42,7 +42,7 @@ class AppDelegate: ExpoAppDelegate {
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
 
     let window = UIWindow(frame: UIScreen.main.bounds)
-    if(self.window != nil) {
+    if self.window != nil {
       return
     }
     self.window = window
