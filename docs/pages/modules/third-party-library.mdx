@@ -8,6 +8,7 @@ import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -162,7 +163,7 @@ dependencies {
 
 <Collapsible summary={<>Are you trying to use an <CODE>.xcframework</CODE> or <CODE>.framework</CODE> dependency?</>}>
 
-On iOS, you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
+On iOS, you can also use dependencies bundled as a framework by using the `vendored_frameworks` config option.
 
 ```diff ios/ExpoRadialChart.podspec
     s.static_framework = true
@@ -170,6 +171,30 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 +   s.vendored_frameworks = 'Frameworks/MyFramework.framework'
     # Swift/Objective-C compatibility
 ```
+
+> **info** **Note**: The file pattern used to specify the path to the framework is relative to the podspec file,
+> and doesn't support traversing the parent directory (`..`), meaning you need to place the framework inside the **ios** directory
+> (or a subdirectory of **ios**).
+
+Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework.
+One easy way to achive this is to move your ios source swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`)
+into a **src** directory seperate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
+
+```diff ios/ExpoRadialChart.podspec
+- s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
++ s.source_files = 'src/**/*.{h,m,mm,swift,hpp,cpp}'
+```
+
+Your **ios** folder should end up with a file structure similar to this:
+
+<FileTree
+  files={[
+    'Frameworks/MyFramework.framework',
+    'src/ExpoRadialChartView.swift',
+    'src/ExpoRadialChartModule.swift',
+    'ExpoRadialChart.podspec',
+  ]}
+/>
 
 </Collapsible>
 
