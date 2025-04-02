@@ -34,6 +34,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'com.google.devtools.ksp'
 
+expoModule {
+  canBePublished false
+}
+
 group = 'host.exp.exponent'
 version = '0.26.9'
 
