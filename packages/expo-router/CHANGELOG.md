@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Improve route `displayName` for debugging component stacks.
 - Temporarily Remove RSC dependency. ([#34505](https://github.com/expo/expo/pull/34505) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `expo-linking` to synchronously get the initial URL. This fixes App Clips and improves RSC support. ([#34328](https://github.com/expo/expo/pull/34328) by [@EvanBacon](https://github.com/EvanBacon))
 - Polyfill relative fetch requests and `window.location` by default. ([#34169](https://github.com/expo/expo/pull/34169) by [@EvanBacon](https://github.com/EvanBacon))
