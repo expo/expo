@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Added guards to avoid crashing the app if we try to write task results that contains NSNull values ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 12.0.6 — 2025-04-02
+
+### 🐛 Bug fixes
+
+- [iOS] Added guards to avoid crashing the app if we try to write task results that contains NSNull values ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
 
 ## 12.0.5 — 2025-01-27
 

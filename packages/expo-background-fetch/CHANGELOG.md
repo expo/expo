@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] added proguard rules for background-fetch consumer ([#35816](https://github.com/expo/expo/pull/35816) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 13.0.6 — 2025-04-02
+
+### 🐛 Bug fixes
+
+- [Android] added proguard rules for background-fetch consumer ([#35816](https://github.com/expo/expo/pull/35816) by [@chrfalch](https://github.com/chrfalch))
 
 ## 13.0.5 — 2025-01-27
 
