@@ -4,45 +4,67 @@ import ExpoModulesCore
 import UIKit
 import MachO
 
-public class CategoriesModule: Module {
+open class CategoriesModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationCategoriesModule")
 
     AsyncFunction("getNotificationCategoriesAsync") { (promise: Promise) in
-      UNUserNotificationCenter.current().getNotificationCategories { categories in
-        let existingCategories = categories.map { category in
-          return CategoryRecord(category)
-        }
-        promise.resolve(existingCategories)
-      }
+      getNotificationCategoriesAsync(promise: promise)
     }
 
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) in
-      let categoryRecord = CategoryRecord(identifier, actions: actions, options: options)
-      let newNotificationCategory = categoryRecord.toUNNotificationCategory()
-      UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
-        let newCategories = Set(oldcategories.filter { oldCategory in
-          return oldCategory.identifier != newNotificationCategory.identifier
-        }
-        .union([newNotificationCategory]))
-        UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-        promise.resolve(CategoryRecord(newNotificationCategory))
-      }
+      setNotificationCategoryAsync(identifier: identifier, actions: actions, options: options, promise: promise)
     }
 
     AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String, promise: Promise) in
-      UNUserNotificationCenter.current().getNotificationCategories { oldCategories in
-        let didDelete = oldCategories.contains { oldCategory in
-          return oldCategory.identifier == identifier
+      deleteNotificationCategoryAsync(identifier: identifier, promise: promise)
+    }
+  }
+
+  public func getNotificationCategories(completion: @escaping (_ categoryRecords: [CategoryRecord]) -> Void, filter: @escaping (_ category: UNNotificationCategory) -> Bool) {
+    UNUserNotificationCenter.current().getNotificationCategories { categories in
+      let existingCategories = categories
+        .filter(filter)
+        .map { category in
+          return CategoryRecord(category)
         }
-        if didDelete {
-          let newCategories = Set(oldCategories.filter { oldCategory in
-            return oldCategory.identifier != identifier
-          })
-          UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-        }
-        promise.resolve(didDelete)
+      completion(existingCategories)
+    }
+  }
+
+  open func getNotificationCategoriesAsync(promise: Promise) {
+    getNotificationCategories { categoryRecords in
+      promise.resolve(categoryRecords)
+    } filter: { category in
+      true
+    }
+  }
+
+  open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) {
+    let categoryRecord = CategoryRecord(identifier, actions: actions, options: options)
+    let newNotificationCategory = categoryRecord.toUNNotificationCategory()
+    UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
+      let newCategories = Set(oldcategories.filter { oldCategory in
+        return oldCategory.identifier != newNotificationCategory.identifier
       }
+      .union([newNotificationCategory]))
+      UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+      promise.resolve(CategoryRecord(newNotificationCategory))
+    }
+  }
+
+  open func deleteNotificationCategoryAsync(identifier: String, promise: Promise) {
+    UNUserNotificationCenter.current().getNotificationCategories { oldCategories in
+      let didDelete = oldCategories.contains { oldCategory in
+        return oldCategory.identifier == identifier
+      }
+      if didDelete {
+        let newCategories = Set(oldCategories.filter { oldCategory in
+          return oldCategory.identifier != identifier
+        })
+        UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+      }
+      promise.resolve(didDelete)
     }
   }
 }

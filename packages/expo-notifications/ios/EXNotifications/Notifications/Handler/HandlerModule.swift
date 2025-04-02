@@ -7,7 +7,7 @@ import MachO
 let onHandleNotification = "onHandleNotification"
 let onHandleNotificationTimeout = "onHandleNotificationTimeout"
 
-public class HandlerModule: Module, NotificationDelegate, SingleNotificationHandlerTaskDelegate {
+open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandlerTaskDelegate {
   var tasksMap: [String: SingleNotificationHandlerTask] = [:]
 
   public func definition() -> ModuleDefinition {
@@ -38,7 +38,7 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
 
   // MARK: - NotificationDelegate
 
-  public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+  open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     let task = SingleNotificationHandlerTask(notification: notification, completionHandler: completionHandler, delegate: self)
     tasksMap[task.identifier] = task
     task.start()
