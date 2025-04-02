@@ -215,6 +215,7 @@ exceptions:
   - '.*Screen.*'
   - '.*Snack.*'
   - '.*SQLite.*'
+  - '.*SQLCipher.*'
   - '.*Static.*'
   - '.*Statically-typed.*'
   - '.*Storage Access Framework.*'
