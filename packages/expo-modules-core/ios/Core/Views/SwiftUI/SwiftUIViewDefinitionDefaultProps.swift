@@ -10,7 +10,7 @@ public class ExpoSwiftUIDefaultProps: ExpoSwiftUI.ViewProps {}
 /**
  Fallback to ExpoSwiftUIDefaultProps when Props are not declared.
  */
-public extension ExpoSwiftUIView where Props == ExpoSwiftUIDefaultProps {
+public extension ExpoSwiftUIView {
   var props: ExpoSwiftUIDefaultProps {
     ExpoSwiftUIDefaultProps()
   }
