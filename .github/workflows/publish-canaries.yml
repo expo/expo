@@ -42,6 +42,7 @@ jobs:
         run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
         env:
           FORCE_COLOR: '2'
+          EXPO_GITHUB_PUBLISH_TOKEN: ${{ secrets.EXPO_GITHUB_PUBLISH_TOKEN }}
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && github.event_name == 'schedule'

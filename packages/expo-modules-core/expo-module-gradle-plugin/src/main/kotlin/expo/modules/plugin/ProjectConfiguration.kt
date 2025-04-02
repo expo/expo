@@ -87,6 +87,8 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
     createExpoPublishToMavenLocalTask(publicationInfo)
 
     val publicationToken = rootProject.findProperty("EXPO_GITHUB_PUBLISH_TOKEN") as? String
+      ?: System.getenv("EXPO_GITHUB_PUBLISH_TOKEN")
+
     if (!publicationToken.isNullOrEmpty()) {
       publishingExtension().repositories.maven { mavenRepo ->
         mavenRepo.name = "GitHubPackages"
