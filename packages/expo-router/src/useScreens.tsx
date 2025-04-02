@@ -155,7 +155,12 @@ export function useSortedScreens(order: ScreenProps[]): React.ReactNode[] {
   );
 }
 
-function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
+function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRoute) {
+  // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
+  if (component?.default && __DEV__) {
+    component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
+  }
+
   if (ErrorBoundary) {
     return {
       default: React.forwardRef((props: any, ref: any) => {
@@ -180,12 +185,12 @@ function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
   return { default: component.default };
 }
 
-function fromLoadedRoute(res: LoadedRoute) {
+function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
   if (!(res instanceof Promise)) {
-    return fromImport(res);
+    return fromImport(value, res);
   }
 
-  return res.then(fromImport);
+  return res.then(fromImport.bind(null, value));
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -204,13 +209,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy(async () => {
       const res = value.loadRoute();
-      return fromLoadedRoute(res) as Promise<{
+      return fromLoadedRoute(value, res) as Promise<{
         default: React.ComponentType<any>;
       }>;
     });
   } else {
     const res = value.loadRoute();
-    const Component = fromImport(res).default as React.ComponentType<any>;
+    const Component = fromImport(value, res).default as React.ComponentType<any>;
+
     ScreenComponent = React.forwardRef((props, ref) => {
       return <Component {...props} ref={ref} />;
     });

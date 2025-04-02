@@ -64,10 +64,9 @@ export function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = chalk.bold`${platform}`;
+    const modePrefix = platform === '' ? '' : chalk.bold`${platform} `;
     originalLogFunction(
       modePrefix +
-        ' ' +
         color.bold(` ${logFunction.toUpperCase()} `) +
         ''.padEnd(groupStack.length * 2, ' '),
       ...data
@@ -79,6 +78,25 @@ const escapedPathSep = path.sep === '\\' ? '\\\\' : path.sep;
 const SERVER_STACK_MATCHER = new RegExp(
   `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
 );
+
+/** Attempt to parse an error message string to an unsymbolicated stack.  */
+export function parseErrorStringToObject(errorString: string) {
+  // Find the first line of the possible stack trace
+  const stackStartIndex = errorString.indexOf('\n    at ');
+  if (stackStartIndex === -1) {
+    // No stack trace found, return the original error string
+    return null;
+  }
+  const message = errorString.slice(0, stackStartIndex).trim();
+  const stack = errorString.slice(stackStartIndex + 1);
+
+  const parsedStack = parseErrorStack(stack);
+
+  return {
+    message,
+    stack: parsedStack,
+  };
+}
 
 function augmentLogsInternal(projectRoot: string) {
   const augmentLog = (name: string, fn: typeof console.log) => {

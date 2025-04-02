@@ -81,7 +81,11 @@ function useSortedScreens(order) {
     return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
 }
 exports.useSortedScreens = useSortedScreens;
-function fromImport({ ErrorBoundary, ...component }) {
+function fromImport(value, { ErrorBoundary, ...component }) {
+    // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
+    if (component?.default && __DEV__) {
+        component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
+    }
     if (ErrorBoundary) {
         return {
             default: react_1.default.forwardRef((props, ref) => {
@@ -102,11 +106,11 @@ function fromImport({ ErrorBoundary, ...component }) {
     }
     return { default: component.default };
 }
-function fromLoadedRoute(res) {
+function fromLoadedRoute(value, res) {
     if (!(res instanceof Promise)) {
-        return fromImport(res);
+        return fromImport(value, res);
     }
-    return res.then(fromImport);
+    return res.then(fromImport.bind(null, value));
 }
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
@@ -121,12 +125,12 @@ function getQualifiedRouteComponent(value) {
     if (import_mode_1.default === 'lazy') {
         ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
-            return fromLoadedRoute(res);
+            return fromLoadedRoute(value, res);
         });
     }
     else {
         const res = value.loadRoute();
-        const Component = fromImport(res).default;
+        const Component = fromImport(value, res).default;
         ScreenComponent = react_1.default.forwardRef((props, ref) => {
             return <Component {...props} ref={ref}/>;
         });

@@ -59,8 +59,24 @@ export async function logMetroErrorWithStack(
     return;
   }
 
+  Log.log(getStackAsFormattedLog(projectRoot, { stack, codeFrame, error }));
+}
+
+export function getStackAsFormattedLog(
+  projectRoot: string,
+  {
+    stack,
+    codeFrame,
+    error,
+  }: {
+    stack: MetroStackFrame[];
+    codeFrame?: CodeFrame;
+    error?: Error;
+  }
+): string {
+  const logs: string[] = [];
   if (codeFrame) {
-    const maxWarningLineLength = Math.max(200, process.stdout.columns);
+    const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
     const isPreviewTooLong = codeFrame.content
@@ -103,12 +119,10 @@ export async function logMetroErrorWithStack(
         // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
         cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
 
-        Log.log(
-          [formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)')].join('\n')
-        );
+        logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
       }
     } else {
-      Log.log(codeFrame.content);
+      logs.push(codeFrame.content);
     }
   }
 
@@ -137,16 +151,18 @@ export async function logMetroErrorWithStack(
       }
     });
 
-    Log.log();
-    Log.log(chalk.bold`Call Stack`);
+    logs.push('');
+    logs.push(chalk.bold`Call Stack`);
+
     if (!stackLines.length) {
-      Log.log(chalk.gray('  No stack trace available.'));
+      logs.push(chalk.gray('  No stack trace available.'));
     } else {
-      Log.log(stackLines.join('\n'));
+      logs.push(stackLines.join('\n'));
     }
-  } else {
-    Log.log(chalk.gray(`  ${error.stack}`));
+  } else if (error) {
+    logs.push(chalk.gray(`  ${error.stack}`));
   }
+  return logs.join('\n');
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');
