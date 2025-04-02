@@ -7,7 +7,9 @@ exports.MATCH_INIT = void 0;
 exports.addGoogleMapsAppDelegateImport = addGoogleMapsAppDelegateImport;
 exports.addGoogleMapsAppDelegateInit = addGoogleMapsAppDelegateInit;
 exports.addMapsCocoaPods = addMapsCocoaPods;
+exports.addMapsCocoaPodsNewArch = addMapsCocoaPodsNewArch;
 exports.getGoogleMapsApiKey = getGoogleMapsApiKey;
+exports.getReactNativeMapsVersion = getReactNativeMapsVersion;
 exports.removeGoogleMapsAppDelegateImport = removeGoogleMapsAppDelegateImport;
 exports.removeGoogleMapsAppDelegateInit = removeGoogleMapsAppDelegateInit;
 exports.removeMapsCocoaPods = removeMapsCocoaPods;
@@ -23,6 +25,13 @@ function _path() {
 function _resolveFrom() {
   const data = _interopRequireDefault(require("resolve-from"));
   _resolveFrom = function () {
+    return data;
+  };
+  return data;
+}
+function _semver() {
+  const data = _interopRequireDefault(require("semver"));
+  _semver = function () {
     return data;
   };
   return data;
@@ -115,13 +124,33 @@ function removeGoogleMapsAppDelegateInit(src) {
 
 /**
  * @param src The contents of the Podfile.
- * @returns Podfile with Google Maps added.
+ * @returns Podfile with react-native-maps' Google Maps integration configured.
  */
 function addMapsCocoaPods(src) {
   return (0, _generateCode().mergeContents)({
     tag: 'react-native-maps',
     src,
     newSrc: `  pod 'react-native-google-maps', path: File.dirname(\`node --print "require.resolve('react-native-maps/package.json')"\`)`,
+    anchor: /use_native_modules/,
+    offset: 0,
+    comment: '#'
+  });
+}
+
+/**
+ * @param src The contents of the Podfile.
+ * @returns Podfile with react-native-maps integration configured.
+ */
+function addMapsCocoaPodsNewArch(src, useGoogleMaps) {
+  let newSrc = `  rn_maps_path = File.dirname(\`node --print "require.resolve('react-native-maps/package.json')"\`) \n`;
+  if (useGoogleMaps) {
+    newSrc += `  pod 'react-native-google-maps', :path => rn_maps_path \n`;
+  }
+  newSrc += `  pod 'react-native-maps-generated', :path => rn_maps_path \n`;
+  return (0, _generateCode().mergeContents)({
+    tag: 'react-native-maps',
+    src,
+    newSrc,
     anchor: /use_native_modules/,
     offset: 0,
     comment: '#'
@@ -136,6 +165,17 @@ function removeMapsCocoaPods(src) {
 function isReactNativeMapsInstalled(projectRoot) {
   const resolved = _resolveFrom().default.silent(projectRoot, 'react-native-maps/package.json');
   return resolved ? _path().default.dirname(resolved) : null;
+}
+function getReactNativeMapsVersion(projectRoot) {
+  const resolved = _resolveFrom().default.silent(projectRoot, 'react-native-maps/package.json');
+  if (!resolved) return null;
+  try {
+    const packageJson = require(resolved);
+    return packageJson.version;
+  } catch (error) {
+    debug('Failed to read react-native-maps version:', error);
+    return null;
+  }
 }
 function isReactNativeMapsAutolinked(config) {
   // Only add the native code changes if we know that the package is going to be linked natively.
@@ -157,19 +197,31 @@ const withMapsCocoaPods = (config, {
   return (0, _iosPlugins().withPodfile)(config, async config => {
     // Only add the block if react-native-maps is installed in the project (best effort).
     // Generally prebuild runs after a yarn install so this should always work as expected.
-    const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
+    const reactNativeMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
     const isLinked = isReactNativeMapsAutolinked(config);
     debug('Is Expo Autolinked:', isLinked);
-    debug('react-native-maps path:', googleMapsPath);
+    debug('react-native-maps path:', reactNativeMapsPath);
     let results;
-    if (isLinked && googleMapsPath && useGoogleMaps) {
-      try {
-        results = addMapsCocoaPods(config.modResults.contents);
-      } catch (error) {
-        if (error.code === 'ERR_NO_MATCH') {
-          throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`);
+    if (isLinked && reactNativeMapsPath) {
+      const version = getReactNativeMapsVersion(config.modRequest.projectRoot);
+      if (version && _semver().default.lt(version, '1.21.0') && useGoogleMaps) {
+        try {
+          results = addMapsCocoaPods(config.modResults.contents);
+        } catch (error) {
+          if (error.code === 'ERR_NO_MATCH') {
+            throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`);
+          }
+          throw error;
         }
-        throw error;
+      } else {
+        try {
+          results = addMapsCocoaPodsNewArch(config.modResults.contents, useGoogleMaps);
+        } catch (error) {
+          if (error.code === 'ERR_NO_MATCH') {
+            throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`);
+          }
+          throw error;
+        }
       }
     } else {
       // If the package is no longer installed, then remove the block.

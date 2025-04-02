@@ -11,7 +11,13 @@ export declare function addGoogleMapsAppDelegateInit(src: string, apiKey: string
 export declare function removeGoogleMapsAppDelegateInit(src: string): MergeResults;
 /**
  * @param src The contents of the Podfile.
- * @returns Podfile with Google Maps added.
+ * @returns Podfile with react-native-maps' Google Maps integration configured.
  */
 export declare function addMapsCocoaPods(src: string): MergeResults;
+/**
+ * @param src The contents of the Podfile.
+ * @returns Podfile with react-native-maps integration configured.
+ */
+export declare function addMapsCocoaPodsNewArch(src: string, useGoogleMaps: boolean): MergeResults;
 export declare function removeMapsCocoaPods(src: string): MergeResults;
+export declare function getReactNativeMapsVersion(projectRoot: string): string | null;

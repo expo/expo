@@ -42,7 +42,7 @@
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.4",
+    "semver": "^7.7.1",
     "slash": "^3.0.0",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/find-up": "^4.0.0",
+    "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "^4.0.0"
   },
