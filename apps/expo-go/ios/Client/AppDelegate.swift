@@ -40,11 +40,10 @@ class AppDelegate: ExpoAppDelegate {
   private func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
     ExpoKit.sharedInstance().registerRootViewControllerClass(EXRootViewController.self)
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
-
-    let window = UIWindow(frame: UIScreen.main.bounds)
     if self.window != nil {
       return
     }
+    let window = UIWindow(frame: UIScreen.main.bounds)
     self.window = window
     window.backgroundColor = UIColor.white
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
