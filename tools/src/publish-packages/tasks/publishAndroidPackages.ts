@@ -50,14 +50,8 @@ export const publishAndroidArtifacts = new Task(
     const batch = logger.batch();
     batch.log('  ', 'Collecting publication Gradle tasks...');
     // Collect all Gradle tasks to publish Android artifacts.
-    // We need to use `expoPublishToMavenLocal` for dry run.
-    // Otherwise, we use `expoPublish`.
     const gradleTasks = androidPackages.flatMap((pkg) => {
-      const publicationCommands = getPublicationCommands(
-        pkg.packageName,
-        pkg.expoModuleConfig!,
-        options
-      );
+      const publicationCommands = getPublicationCommands(pkg.packageName, pkg.expoModuleConfig!);
 
       if (publicationCommands.length === 1) {
         const publicationCommand = publicationCommands[0];
@@ -83,11 +77,7 @@ export const publishAndroidArtifacts = new Task(
   }
 );
 
-function getPublicationCommands(
-  packageName: string,
-  moduleConfig: ExpoModuleConfig,
-  options: CommandOptions
-): string[] {
+function getPublicationCommands(packageName: string, moduleConfig: ExpoModuleConfig): string[] {
   const androidProjectsName = new Set<string>();
   androidProjectsName.add(moduleConfig.android?.name ?? convertPackageToProjectName(packageName));
 
@@ -98,9 +88,7 @@ function getPublicationCommands(
     }
   }
 
-  const gradleTask = options.dry ? 'expoPublishToMavenLocal' : 'expoPublish';
-
-  return [...androidProjectsName].map((projectName) => `:${projectName}:${gradleTask}`);
+  return [...androidProjectsName].map((projectName) => `:${projectName}:expoPublish`);
 }
 
 async function removeExistingPublications(pkg: Package) {
