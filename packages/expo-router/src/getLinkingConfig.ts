@@ -56,9 +56,12 @@ export function getLinkingConfig(
     ? context(nativeLinkingKey)
     : undefined;
 
+  const config = getNavigationConfig(routes, metaOnly);
+  const boundGetStateFromPath = getStateFromPath.bind(store);
+
   return {
     prefixes: [],
-    config: getNavigationConfig(routes, metaOnly),
+    config,
     // A custom getInitialURL is used on native to ensure the app always starts at
     // the root path if it's launched from something other than a deep link.
     // This helps keep the native functionality working like the web functionality.
@@ -93,13 +96,13 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: addEventListener(nativeLinking, store),
-    getStateFromPath: getStateFromPath.bind(store),
+    getStateFromPath: boundGetStateFromPath,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
-          screens: {},
-          ...this.config,
+          ...config,
           ...options,
+          screens: config.screens ?? options?.screens ?? {},
         }) ?? '/'
       );
     },
