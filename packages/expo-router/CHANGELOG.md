@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.20 — 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.20-rc.0 — 2025-04-02
 
 ### 🐛 Bug fixes
