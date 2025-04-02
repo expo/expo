@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `this.config` crash on startup. ([#35833](https://github.com/expo/expo/pull/35833) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 4.0.19 — 2025-03-14
