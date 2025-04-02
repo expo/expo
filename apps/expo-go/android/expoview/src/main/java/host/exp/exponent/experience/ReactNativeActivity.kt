@@ -30,7 +30,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.ReactNativeHostWrapper
@@ -516,19 +515,6 @@ abstract class ReactNativeActivity :
           existingEmitter.emit(eventName, eventPayload)
         }
       }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-  }
-
-  /**
-   * Emits events to `RCTNativeAppEventEmitter`
-   */
-  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
-    try {
-      val emitter =
-        reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
-      emitter?.emit(eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }

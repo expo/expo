@@ -64,7 +64,6 @@ import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
-import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
@@ -997,7 +996,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           scheme: options.location.scheme ?? null,
         }).getHandler()
       );
-      middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
       middleware.use(
         new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
       );
