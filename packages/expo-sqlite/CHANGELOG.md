@@ -13,7 +13,6 @@
 ### 🐛 Bug fixes
 
 - Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
-- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
 - Added reference counting for database closing functions. ([#35818](https://github.com/expo/expo/pull/35818) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
@@ -31,6 +30,12 @@
 ### 📚 3rd party library updates
 
 - Updated SQLite to 3.49.1 and SQLCipher to 4.7.0. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
+
+## 15.1.4 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
 
 ## 15.1.3 - 2025-03-26
 

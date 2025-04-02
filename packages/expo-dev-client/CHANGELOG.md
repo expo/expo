@@ -14,6 +14,14 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
 
+## 5.0.18 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.17 - 2025-04-01
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.16 - 2025-03-31
 
 _This version does not introduce any user-facing changes._

@@ -25,6 +25,10 @@
 - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
 - [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
 
+## 5.0.33 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.32 - 2025-03-31
 
 _This version does not introduce any user-facing changes._
