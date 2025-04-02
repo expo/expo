@@ -188,6 +188,25 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           },
         ],
       },
+      {
+        name: 'preferredAssetRepresentationMode',
+        type: 'enum',
+        platforms: ['ios'],
+        values: [
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Automatic',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic,
+          },
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Current',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
+          },
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Compatible',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
+          },
+        ],
+      },
     ],
   },
 ];
