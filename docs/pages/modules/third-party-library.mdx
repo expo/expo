@@ -177,8 +177,8 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 > (or a subdirectory of **ios**).
 
 Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework.
-One easy way to achive this is to move your ios source swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`)
-into a **src** directory seperate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
+One easy way to achieve this is to move your ios source swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`)
+into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
 
 ```diff ios/ExpoRadialChart.podspec
 - s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
