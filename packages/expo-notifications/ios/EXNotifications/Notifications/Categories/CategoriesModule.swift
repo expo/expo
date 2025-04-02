@@ -21,7 +21,10 @@ open class CategoriesModule: Module {
     }
   }
 
-  public func getNotificationCategories(completion: @escaping (_ categoryRecords: [CategoryRecord]) -> Void, filter: @escaping (_ category: UNNotificationCategory) -> Bool) {
+  public func getNotificationCategories(
+    completion: @escaping (_ categoryRecords: [CategoryRecord]) -> Void,
+    filter: @escaping (_ category: UNNotificationCategory) -> Bool
+  ) {
     UNUserNotificationCenter.current().getNotificationCategories { categories in
       let existingCategories = categories
         .filter(filter)
@@ -35,7 +38,7 @@ open class CategoriesModule: Module {
   open func getNotificationCategoriesAsync(promise: Promise) {
     getNotificationCategories { categoryRecords in
       promise.resolve(categoryRecords)
-    } filter: { category in
+    } filter: { _ in
       true
     }
   }
