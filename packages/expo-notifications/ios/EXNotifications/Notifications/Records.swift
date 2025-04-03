@@ -4,11 +4,11 @@ import ExpoModulesCore
 
 // MARK: - NotificationBuilder record definitions
 
-protocol TriggerRecord: Record {
+public protocol TriggerRecord: Record {
   func toUNNotificationTrigger() throws -> UNNotificationTrigger?
 }
 
-struct CalendarTriggerRecord: TriggerRecord {
+public struct CalendarTriggerRecord: TriggerRecord {
   @Field
   var year: Int?
   @Field
@@ -47,6 +47,8 @@ struct CalendarTriggerRecord: TriggerRecord {
     "weekdayOrdinal": .weekdayOrdinal
   ]
 
+  public init() {}
+
   func dateComponentsFrom(_ calendarTrigger: CalendarTriggerRecord) -> DateComponents {
     var dateComponents = DateComponents()
     // TODO: Verify that DoW matches JS getDay()
@@ -63,7 +65,7 @@ struct CalendarTriggerRecord: TriggerRecord {
     return dateComponents
   }
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
       let dateComponents: DateComponents = dateComponentsFrom(self)
@@ -74,13 +76,15 @@ struct CalendarTriggerRecord: TriggerRecord {
   }
 }
 
-struct TimeIntervalTriggerRecord: TriggerRecord {
+public struct TimeIntervalTriggerRecord: TriggerRecord {
   @Field
   var seconds: TimeInterval
   @Field
   var repeats: Bool
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
       trigger = UNTimeIntervalNotificationTrigger(timeInterval: self.seconds, repeats: self.repeats)
@@ -89,11 +93,13 @@ struct TimeIntervalTriggerRecord: TriggerRecord {
   }
 }
 
-struct DateTriggerRecord: TriggerRecord {
+public struct DateTriggerRecord: TriggerRecord {
   @Field
   var timestamp: TimeInterval
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let timestamp: Int = Int(self.timestamp / 1000)
     let date: Date = Date(timeIntervalSince1970: TimeInterval(timestamp))
     var trigger: UNNotificationTrigger?
@@ -104,13 +110,15 @@ struct DateTriggerRecord: TriggerRecord {
   }
 }
 
-struct DailyTriggerRecord: TriggerRecord {
+public struct DailyTriggerRecord: TriggerRecord {
   @Field
   var hour: Int
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(hour: self.hour, minute: self.minute)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -120,7 +128,7 @@ struct DailyTriggerRecord: TriggerRecord {
   }
 }
 
-struct WeeklyTriggerRecord: TriggerRecord {
+public struct WeeklyTriggerRecord: TriggerRecord {
   @Field
   var weekday: Int
   @Field
@@ -128,7 +136,9 @@ struct WeeklyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(hour: self.hour, minute: self.minute, weekday: self.weekday)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -137,7 +147,7 @@ struct WeeklyTriggerRecord: TriggerRecord {
     return trigger  }
 }
 
-struct MonthlyTriggerRecord: TriggerRecord {
+public struct MonthlyTriggerRecord: TriggerRecord {
   @Field
   var day: Int
   @Field
@@ -145,7 +155,9 @@ struct MonthlyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(day: self.day, hour: self.hour, minute: self.minute)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -155,7 +167,7 @@ struct MonthlyTriggerRecord: TriggerRecord {
   }
 }
 
-struct YearlyTriggerRecord: TriggerRecord {
+public struct YearlyTriggerRecord: TriggerRecord {
   @Field
   var month: Int
   @Field
@@ -165,7 +177,9 @@ struct YearlyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(
       month: self.month,
       day: self.day,
@@ -225,8 +239,8 @@ struct CategoryActionOptionsRecord: Record {
   }
 }
 
-struct CategoryActionRecord: Record {
-  init() {}
+public struct CategoryActionRecord: Record {
+  public init() {}
 
   @Field
   var identifier: String?
@@ -270,8 +284,8 @@ struct CategoryActionRecord: Record {
   }
 }
 
-struct CategoryOptionsRecord: Record {
-  init() {}
+public struct CategoryOptionsRecord: Record {
+  public init() {}
 
   // allowAnnouncement deprecated in iOS 15 and later
   /*
@@ -329,17 +343,17 @@ struct CategoryOptionsRecord: Record {
   }
 }
 
-struct CategoryRecord: Record {
-  init() {}
+public struct CategoryRecord: Record {
+  public init() {}
 
   @Field
-  var identifier: String
+  public var identifier: String
   @Field
   var actions: [CategoryActionRecord]?
   @Field
   var options: CategoryOptionsRecord?
 
-  init(_ category: UNNotificationCategory) {
+  public init(_ category: UNNotificationCategory) {
     self.identifier = category.identifier
     self.actions = category.actions.map { action in
       return CategoryActionRecord(action)
@@ -347,7 +361,7 @@ struct CategoryRecord: Record {
     self.options = CategoryOptionsRecord(category)
   }
 
-  init(_ identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) {
+  public init(_ identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) {
     self.identifier = identifier
     self.actions = actions
     self.options = options
