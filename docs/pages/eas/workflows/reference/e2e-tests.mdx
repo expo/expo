@@ -4,8 +4,8 @@ sidebar_title: Run E2E tests
 description: Learn how to set up and run E2E tests on EAS Workflows with Maestro.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
-import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -34,7 +34,7 @@ This is what the UI of the app created from the default Expo template looks like
   <ContentSpotlight src="/static/images/eas-build/tests/02-explore.png" className="max-w-[360px]" />
 </div>
 
-Let's create two simple Maestro flows for the example app. Start by creating a directory called **.maestro** in the root of your project directory. This directory will contain the flows that you will configure and should be at the same level as **eas.json**.
+Let's create two simple Maestro flows for the example app. Start by creating a directory called **.maestro** in the root of your project directory. This directory will contain the flows you'll configure and should be at the same level as **eas.json**.
 
 Inside, create a new file called **home.yml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
@@ -45,7 +45,7 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 - assertVisible: 'Welcome!'
 ```
 
-Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens" is visible on the screen.
+Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens." is visible on the screen.
 
 ```yml .maestro/expand_test.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
@@ -105,7 +105,7 @@ The above build profile creates an **.apk** for Android and an **.app** for iOS.
 <Step label="5">
 ## Create an E2E test workflow
 
-At the root of your project, create an **.eas/workflows** directory. Then add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
+At the root of your project, create an **.eas/workflows** directory. Then, add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
 
 ```yml .eas/workflows/e2e-test-android.yml
 name: e2e-test-android
@@ -183,7 +183,7 @@ After the workflow starts, you can track its progress and view the results in th
   title="Syntax for EAS Workflows"
   description="Learn more about the syntax for EAS Workflows."
   href="/eas/workflows/syntax/"
-  Icon={Grid01Icon}
+  Icon={Dataflow01Icon}
 />
 
 <BoxLink
@@ -197,5 +197,5 @@ After the workflow starts, you can track its progress and view the results in th
   title="Maestro documentation"
   description="Learn more about Maestro flows and how to write them."
   href="https://maestro.mobile.dev"
-  Icon={Dataflow01Icon}
+  Icon={BookOpen02Icon}
 />
