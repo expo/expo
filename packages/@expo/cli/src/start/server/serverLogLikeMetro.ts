@@ -64,10 +64,9 @@ export function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = chalk.bold`${platform}`;
+    const modePrefix = platform === '' ? '' : chalk.bold`${platform} `;
     originalLogFunction(
       modePrefix +
-        ' ' +
         color.bold(` ${logFunction.toUpperCase()} `) +
         ''.padEnd(groupStack.length * 2, ' '),
       ...data

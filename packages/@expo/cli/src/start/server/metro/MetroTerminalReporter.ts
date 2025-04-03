@@ -12,6 +12,7 @@ import {
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
+import { logLikeMetro } from '../serverLogLikeMetro';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -26,6 +27,29 @@ export class MetroTerminalReporter extends TerminalReporter {
     terminal: Terminal
   ) {
     super(terminal);
+  }
+
+  _log(event: TerminalReportableEvent): void {
+    switch (event.type) {
+      case 'client_log':
+        {
+          if (this.shouldFilterClientLog(event)) {
+            return;
+          }
+
+          const { level } = event;
+
+          const mode = event.mode === 'NOBRIDGE' ? '' : (event.mode ?? '');
+
+          if (level) {
+            // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+            logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+            return;
+          }
+        }
+        break;
+    }
+    return super._log(event);
   }
 
   // Used for testing
@@ -118,11 +142,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
-  shouldFilterClientLog(event: {
-    type: 'client_log';
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
-    data: unknown[];
-  }): boolean {
+  shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
     return isAppRegistryStartupMessage(event.data);
   }
 
