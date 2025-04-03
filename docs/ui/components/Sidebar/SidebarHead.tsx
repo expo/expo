@@ -51,30 +51,35 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             title="Home"
             Icon={Home02DuotoneIcon}
             isActive={sidebarActiveGroup === 'home'}
+            allowCompactDisplay
           />
           <SidebarSingleEntry
             href="/guides/overview/"
             title="Guides"
             Icon={BookOpen02DuotoneIcon}
             isActive={sidebarActiveGroup === 'general'}
+            allowCompactDisplay
           />
           <SidebarSingleEntry
             href="/eas/"
             title="EAS"
             Icon={PlanEnterpriseIcon}
             isActive={sidebarActiveGroup === 'eas'}
+            allowCompactDisplay
           />
           <SidebarSingleEntry
             href="/versions/latest/"
             title="Reference"
             Icon={DocsLogo}
             isActive={sidebarActiveGroup === 'reference'}
+            allowCompactDisplay
           />
           <SidebarSingleEntry
             href="/tutorial/overview/"
             title="Learn"
             Icon={GraduationHat02DuotoneIcon}
             isActive={sidebarActiveGroup === 'learn'}
+            allowCompactDisplay
           />
           {isPreviewVisible && (
             <SidebarSingleEntry
@@ -82,6 +87,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
               title="Feature Preview"
               Icon={Stars02DuotoneIcon}
               isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
+              allowCompactDisplay
             />
           )}
         </div>
