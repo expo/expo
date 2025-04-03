@@ -9,9 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~52.0.43",
+    "expo": "~52.0.44",
     "expo-camera": "~16.0.18",
-    "expo-dev-client": "~5.0.19",
+    "expo-dev-client": "~5.0.20",
     "expo-face-detector": "~13.0.2",
     "expo-image": "~2.0.7",
     "expo-notifications": "~0.29.14",
