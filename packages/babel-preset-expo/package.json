@@ -45,7 +45,7 @@
     "@babel/plugin-proposal-decorators": "^7.12.9",
     "@babel/plugin-syntax-export-default-from": "^7.24.7",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
-    "@babel/plugin-transform-export-namespace-from": "^7.22.11",
+    "@babel/plugin-transform-export-namespace-from": "^7.25.9",
     "@babel/plugin-transform-flow-strip-types": "^7.25.2",
     "@babel/plugin-transform-private-methods": "^7.24.7",
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",

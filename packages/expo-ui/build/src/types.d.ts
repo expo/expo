@@ -1,11 +1,11 @@
-export type * from '../components/Button';
-export type * from '../components/ContextMenu';
-export type * from '../components/Picker';
-export type * from '../components/Section';
-export type * from '../components/Slider';
-export type * from '../components/Switch';
-export type * from '../components/Label';
-export type * from '../components/List';
+export type * from '../Button';
+export type * from '../ContextMenu';
+export type * from '../Picker';
+export type * from '../Section';
+export type * from '../Slider';
+export type * from '../Switch';
+export type * from '../Label';
+export type * from '../List';
 /**
  * @hidden
  */

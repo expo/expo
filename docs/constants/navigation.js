@@ -593,7 +593,11 @@ export const learn = [
 ];
 
 const preview = [
-  makeSection('Preview', [makePage('preview/introduction.mdx'), { expanded: true }]),
+  makeSection('Preview', [
+    makePage('preview/introduction.mdx'),
+    makePage('preview/singular.mdx'),
+    { expanded: true },
+  ]),
 ];
 
 const archive = [

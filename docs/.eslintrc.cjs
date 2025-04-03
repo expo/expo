@@ -142,16 +142,7 @@ module.exports = {
             ignoreMixedLogicalExpressions: true,
           },
         ],
-        '@typescript-eslint/no-restricted-types': [
-          'warn',
-          {
-            types: {
-              CurrentUserDataFragment: {
-                suggest: ["LoggedInProps['currentUser']", "PageProps['currentUser']"],
-              },
-            },
-          },
-        ],
+        '@typescript-eslint/no-restricted-types': 'warn',
         'react/no-this-in-sfc': 'off',
         'react/no-unknown-property': ['error', { ignore: ['css', 'mask-type'] }],
         'react/no-unescaped-entities': 'off',

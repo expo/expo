@@ -495,4 +495,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/navigating-pages/': '/router/basics/navigation/',
   '/router/create-pages/': '/router/basics/core-concepts/',
   '/router/layouts/': '/router/basics/layout/',
+
+  // Temporary redirects
+  '/router/advanced/singular/': '/preview/singular/',
 };
