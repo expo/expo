@@ -55,6 +55,7 @@
     "expo-linear-gradient": "~14.0.0",
     "expo-linking": "^7.0.0",
     "expo-location": "~18.0.0",
+    "expo-notifications": "~0.29.8",
     "expo-splash-screen": "~0.29.13",
     "expo-store-review": "~8.0.0",
     "expo-task-manager": "~13.0.0",

@@ -1,15 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-// TODO: rework the new Swift Notification code for ExpoGo
+#import <UserNotifications/UserNotifications.h>
 
-/*
-#import <EXNotifications/EXNotificationsDelegate.h>
-#import <EXNotifications/EXNotificationCategoriesModule.h>
-
-@interface EXScopedNotificationCategoryMigrator : NSObject <EXNotificationsDelegate>
+@interface EXScopedNotificationCategoryMigrator : NSObject
 
 + (void)unscopeLegacyCategoryIdentifiersForProjectWithScopeKey:(NSString *)scopeKey;
 + (void)migrateLegacyScopedCategoryIdentifiersForProjectWithScopeKey:(NSString *)scopeKey;
 
 @end
- */

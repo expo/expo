@@ -26,3 +26,7 @@
 #import "EXKernelDevKeyCommands.h"
 #import "EXClientReleaseType.h"
 #import "EXGoReactNativeFeatureFlags.h"
+
+#import "EXScopedNotificationsUtils.h"
+#import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationCategoryMigrator.h"

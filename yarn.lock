@@ -3167,11 +3167,11 @@
     nullthrows "^1.1.1"
 
 "@react-navigation/bottom-tabs@^7.3.0", "@react-navigation/bottom-tabs@^7.3.1":
-  version "7.3.3"
-  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.3.tgz#f6b1fae9b24c150e9fe32a3e53bf1e634a2b4d81"
-  integrity sha512-194WSK3nhmU4M4MK6H2A+FFMk23xAcYZjDukcg0BDkx6+ybHHMaYT73vBTXXUfn5U72cKh+u26g5lkHe78YvFw==
+  version "7.3.6"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.6.tgz#793aa988e2bb14d817434e2320922a41bc75a8ce"
+  integrity sha512-BL7nwjmQhmh4vH+skA5/4xic0NTLh7Mg78ngrvJ+FagdGILX6zQb4fMI3yN5SrCBpZNvhDQvD9prkwdUUR9OBw==
   dependencies:
-    "@react-navigation/elements" "^2.3.1"
+    "@react-navigation/elements" "^2.3.4"
     color "^4.2.3"
 
 "@react-navigation/core@7.6.0", "@react-navigation/core@^7.6.0":
@@ -3197,7 +3197,7 @@
     react-native-drawer-layout "^4.1.2"
     use-latest-callback "^0.2.1"
 
-"@react-navigation/elements@2.2.8", "@react-navigation/elements@^2.2.5", "@react-navigation/elements@^2.2.8", "@react-navigation/elements@^2.3.1":
+"@react-navigation/elements@2.2.8", "@react-navigation/elements@^2.2.5", "@react-navigation/elements@^2.2.8", "@react-navigation/elements@^2.3.4":
   version "2.2.8"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.2.8.tgz#b63fb2128940744c927f9931faa88e433de10eb2"
   integrity sha512-wJoeywG/hHIml4+ycFiQKofYczkLNbHw0s5i8tSXJYzhZ0B1P3s945Tuuf0OreZtnK5XX4K3p3VQ66RtBWA88w==
