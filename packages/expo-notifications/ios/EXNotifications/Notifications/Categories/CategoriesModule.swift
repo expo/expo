@@ -10,7 +10,7 @@ open class CategoriesModule: Module {
 
     AsyncFunction("getNotificationCategoriesAsync") {
       let categories = await UNUserNotificationCenter.current().notificationCategories()
-      return filterAndSerializeCategories(Array(categories))
+      return filterAndSerializeCategories(categories)
     }
 
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) in
@@ -22,7 +22,7 @@ open class CategoriesModule: Module {
     }
   }
 
-  open func filterAndSerializeCategories(_ categories: [UNNotificationCategory]) -> [CategoryRecord] {
+  open func filterAndSerializeCategories(_ categories: Set<UNNotificationCategory>) -> [CategoryRecord] {
     return categories.map { CategoryRecord($0) }
   }
 
