@@ -62,7 +62,10 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition {
     if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
       return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
     }
-    return AppleView.from(UIView(frame: .zero))
+    if let UIViewType = ViewType.self as? UIView.Type {
+      return AppleView.from(UIViewType.init(frame: .zero))
+    }
+    return nil
   }
 
   public func propsDict() -> [String: AnyViewProp] {
