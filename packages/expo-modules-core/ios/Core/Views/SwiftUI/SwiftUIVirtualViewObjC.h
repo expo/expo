@@ -2,6 +2,8 @@
 
 #pragma once
 
+#import <ExpoModulesCore/Platform.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
