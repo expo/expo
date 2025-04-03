@@ -1,5 +1,4 @@
 {
-  "name": "expo-navigation-bar",
   "platforms": ["android"],
   "android": {
     "modules": ["expo.modules.navigationbar.NavigationBarModule"]

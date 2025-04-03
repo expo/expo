@@ -21,6 +21,9 @@ func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   case .memory, .all:
     // `all` doesn't make much sense, so we treat it as `memory`.
     return "memory"
+  @unknown default:
+    log.error("Unhandled `SDImageCacheType` value: \(cacheType), returning `none` as fallback. Add the missing case as soon as possible.")
+    return "none"
   }
 }
 
@@ -100,24 +103,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
 }
 
 /**
- Resizes the animated image to fit in the given size and scale.
- */
-func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
-  if image.sd_isAnimated,
-    let animatedImage = image as? AnimatedImage,
-    let actualCoder = animatedImage.animatedCoder {
-    let animatedCoder = ResizedAnimatedCoder(actualCoder: actualCoder, size: size, scale: scale)
-    if let result = AnimatedImage(animatedCoder: animatedCoder, scale: scale) {
-      return result
-    }
-  }
-
-  // fallback to a resized static image
-  return resize(image: image, toSize: size, scale: scale)
-}
-
-/**
- Resizes a still image to fit in the given size and scale.
+ Resizes a static image to fit in the given size and scale.
  */
 func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
   let format = UIGraphicsImageRendererFormat()
@@ -186,6 +172,11 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   // Tell SDWebImage to use our own class for animated formats,
   // which has better compatibility with the UIImage and fixes issues with the image duration.
   context[.animatedImageClass] = AnimatedImage.self
+
+  // Passing useAppleWebpCodec into WebPCoder
+  context[.imageDecodeOptions] = [
+    imageCoderOptionUseAppleWebpCodec: source.useAppleWebpCodec
+  ]
 
   // Assets from the bundler have `scale` prop which needs to be passed to the context,
   // otherwise they would be saved in cache with scale = 1.0 which may result in

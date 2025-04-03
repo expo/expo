@@ -3,7 +3,7 @@ import AVFoundation
 
 let BARCODE_TYPES_KEY = "barcodeTypes"
 
-actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
+class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   private var onBarcodeScanned: (([String: Any]?) -> Void)?
   var isScanningBarcodes = false
 
@@ -41,9 +41,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
         settings[BARCODE_TYPES_KEY] = value
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
-        Task {
-          await maybeStartBarcodeScanning()
-        }
+        maybeStartBarcodeScanning()
       }
     }
   }
@@ -52,7 +50,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     self.previewLayer = layer
   }
 
-  func setIsEnabled(_ enabled: Bool) async {
+  func setIsEnabled(_ enabled: Bool) {
     guard isScanningBarcodes != enabled else {
       return
     }
@@ -62,11 +60,11 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       if metadataOutput != nil {
         setConnection(enabled: true)
       } else {
-        await maybeStartBarcodeScanning()
+        maybeStartBarcodeScanning()
       }
     } else {
       setConnection(enabled: false)
-      await stopBarcodeScanning()
+      stopBarcodeScanning()
     }
   }
 
@@ -80,13 +78,13 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     self.onBarcodeScanned = onBarcodeScanned
   }
 
-  func maybeStartBarcodeScanning() async {
+  func maybeStartBarcodeScanning() {
     guard isScanningBarcodes else {
       return
     }
 
     if metadataOutput == nil || videoDataOutput == nil {
-      await addOutputs()
+      addOutputs()
       if metadataOutput == nil {
         return
       }
@@ -100,17 +98,14 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     metadataOutput?.metadataObjectTypes = requestedTypes
   }
 
-  func stopBarcodeScanning() async {
-    await removeOutputs()
+  func stopBarcodeScanning() {
+    removeOutputs()
     if isScanningBarcodes {
       onBarcodeScanned?(nil)
     }
   }
 
-  private func addOutputs() async {
-    session.beginConfiguration()
-    defer { session.commitConfiguration() }
-
+  private func addOutputs() {
     delegate = MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
@@ -118,6 +113,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       zxingEnabled: zxingEnabled,
       metadataResultHandler: self)
 
+    session.beginConfiguration()
     if metadataOutput == nil {
       let output = AVCaptureMetadataOutput()
       output.setMetadataObjectsDelegate(delegate, queue: sessionQueue)
@@ -137,9 +133,10 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
         videoDataOutput = output
       }
     }
+    session.commitConfiguration()
   }
 
-  private func removeOutputs() async {
+  private func removeOutputs() {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
 

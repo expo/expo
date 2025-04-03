@@ -22,6 +22,7 @@ export class ApiV2Error extends Error {
   readonly expoApiV2ErrorDetails?: JSONValue;
   readonly expoApiV2ErrorServerStack?: string;
   readonly expoApiV2ErrorMetadata?: object;
+  readonly expoApiV2RequestId?: string;
 
   constructor(response: {
     message: string;
@@ -29,6 +30,7 @@ export class ApiV2Error extends Error {
     stack?: string;
     details?: JSONValue;
     metadata?: object;
+    requestId: string;
   }) {
     super(response.message);
     this.code = response.code;
@@ -36,6 +38,11 @@ export class ApiV2Error extends Error {
     this.expoApiV2ErrorDetails = response.details;
     this.expoApiV2ErrorServerStack = response.stack;
     this.expoApiV2ErrorMetadata = response.metadata;
+    this.expoApiV2RequestId = response.requestId;
+  }
+
+  toString() {
+    return `${super.toString()}${env.EXPO_DEBUG && this.expoApiV2RequestId ? ` (Request Id: ${this.expoApiV2RequestId})` : ''}`;
   }
 }
 
@@ -134,6 +141,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  * Determine if the provided error is related to a network issue.
  * When this returns true, offline mode should be enabled.
  *   - `ENOTFOUND` is thrown when the DNS lookup failed
+ *   - `EAI_AGAIN` is thrown when DNS lookup failed due to a server-side error
  *   - `UND_ERR_CONNECT_TIMEOUT` is thrown after DNS is resolved, but server can't be reached
  *
  * @see https://nodejs.org/api/errors.html
@@ -141,7 +149,9 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  */
 function isNetworkError(error: Error & { code?: string }) {
   return (
-    'code' in error && error.code && ['ENOTFOUND', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
+    'code' in error &&
+    error.code &&
+    ['ENOTFOUND', 'EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
   );
 }
 

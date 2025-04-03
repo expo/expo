@@ -31,6 +31,7 @@ export function getUserDefinedFile(projectRoot: string, possiblePaths: string[])
  */
 export async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
   if (fs.existsSync(publicFolder)) {
+    await fs.promises.mkdir(outputFolder, { recursive: true });
     await copyAsync(publicFolder, outputFolder);
   }
 }

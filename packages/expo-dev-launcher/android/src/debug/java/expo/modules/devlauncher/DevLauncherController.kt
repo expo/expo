@@ -148,7 +148,7 @@ class DevLauncherController private constructor() :
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
-      internalUpdatesInterface?.reset()
+      DevLauncherKoinContext.app.koin.getOrNull<UpdatesInterface>()?.reset()
 
       val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
       val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)

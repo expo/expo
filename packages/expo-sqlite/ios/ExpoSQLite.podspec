@@ -17,7 +17,6 @@ Pod::Spec.new do |s|
     :osx => '11.0'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
   s.dependency 'ExpoModulesCore'
 
   # Copy SQLite vendored sources to the ios directory,
@@ -35,7 +34,8 @@ Pod::Spec.new do |s|
     end
   end
 
-  sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1'
+  sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
+  sqlite_cflags << ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
   unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
     sqlite_cflags << ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   end
@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   if podfile_properties['expo.sqlite.useSQLCipher'] === 'true'
     s.vendor_sqlite_src!(true)
     # SQLCipher will have build error in sqlite3.c on debug build without the `-DNDEBUG`
-    sqlite_cflags << ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_CC -DNDEBUG'
+    sqlite_cflags << ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_CC -DSQLITE_EXTRA_INIT=sqlcipher_extra_init -DSQLITE_EXTRA_SHUTDOWN=sqlcipher_extra_shutdown -DNDEBUG'
   else
     s.vendor_sqlite_src!(false)
   end
@@ -53,12 +53,29 @@ Pod::Spec.new do |s|
   end
   Pod::UI.message("SQLite build flags: #{sqlite_cflags}")
 
+  # Consistent SQLite build flags for Swift module exposing from the umbrella header
+  swift_flags = sqlite_cflags.split(' ').map { |flag| "-Xcc #{flag}" }.join(' ')
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
+    'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
 
   s.source_files = "**/*.{c,h,m,swift}"
-  s.ios.vendored_frameworks = 'crsqlite.xcframework'
+
+  vendored_frameworks = []
+  if podfile_properties['expo.sqlite.useLibSQL'] === 'true'
+    vendored_frameworks << 'libsql.xcframework'
+    s.private_header_files = [
+      'libsql.xcframework/**/*.h',
+    ]
+    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h']
+    Pod::UI.message('SQLite: use libSQL integration')
+  else
+    s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']
+  end
+
+  s.ios.vendored_frameworks = vendored_frameworks
 end

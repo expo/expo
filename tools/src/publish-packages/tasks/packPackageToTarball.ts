@@ -32,7 +32,7 @@ export const packPackageToTarball = new Task<TaskArgs>(
         } catch (error) {
           step.fail();
           logger.error(error.stderr);
-          return Task.STOP;
+          throw error;
         }
       },
       `Packed all packages to tarballs`

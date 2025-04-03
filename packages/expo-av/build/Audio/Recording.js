@@ -397,9 +397,7 @@ export class Recording {
         if (this._uri == null || !this._isDoneRecording) {
             throw new Error('Cannot create sound when the Recording has not finished!');
         }
-        return Sound.createAsync(
-        // $FlowFixMe: Flow can't distinguish between this literal and Asset
-        { uri: this._uri }, initialStatus, onPlaybackStatusUpdate, false);
+        return Sound.createAsync({ uri: this._uri }, initialStatus, onPlaybackStatusUpdate, false);
     }
 }
 export { PermissionStatus };

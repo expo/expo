@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
+- Expo Router static redirects ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.5.2 - 2025-03-11
+
+### 💡 Others
+
+- Replace `@remix-run/node` with `undici` / Node.js native Fetch polyfills. ([#34589](https://github.com/expo/expo/pull/34589) by [@kitten](https://github.com/kitten))
+
+## 0.5.1 - 2025-01-19
+
+### 🐛 Bug fixes
+
+- Handle server 404 better. ([#34211](https://github.com/expo/expo/pull/34211) by [@EvanBacon](https://github.com/EvanBacon))
+- Throw server function errors in production. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.5.0 — 2024-11-11
 

@@ -4,5 +4,6 @@ declare const _default: ConfigPlugin<void | {
     photosPermission?: string | false | undefined;
     savePhotosPermission?: string | false | undefined;
     isAccessMediaLocationEnabled?: boolean | undefined;
+    preventAutomaticLimitedAccessAlert?: boolean | undefined;
 }>;
 export default _default;

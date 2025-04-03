@@ -1,44 +1,15 @@
 # babel-preset-expo
 
-This preset extends the default React Native preset (`@react-native/babel-preset`) and adds support for decorators, tree-shaking web packages, and loading font icons with optional native dependencies if they're installed.
+This preset extends the default React Native preset (`@react-native/babel-preset`) and adds support for tree shaking, bundle splitting, React Server Components, Hermes compilation, advanced dead-code elimination, reanimated, Expo DOM components, server-side rendering, and more...
 
-You can use this preset in any React Native project as a drop-in replacement for `@react-native/babel-preset`. If your project isn't using native font loading or web support then this preset will only add support for decorators with `@babel/plugin-proposal-decorators` - this is mostly used for supporting legacy community libraries.
-
-If you start your **web** project with `@expo/webpack-config` or `npx expo start` and your project doesn't contain a `babel.config.js` or a `.babelrc` then it will default to using `babel-preset-expo` for loading.
+You can use this preset in any React Native project as a drop-in replacement for `@react-native/babel-preset`.
 
 If you have problems with the code in this repository, please file issues & bug reports
-at https://github.com/expo/expo. Thanks!
+at https://github.com/expo/expo.
 
 ## Expo Bundler Spec Compliance
 
 A bundler must follow these requirements if they are to be considered spec compliant for use with a **universal React** (Expo) project.
-
-### Babel Loader
-
-The babel loading mechanism must include the following properties on its `caller`.
-
-#### platform
-
-A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
-
-| Value     | Description             |
-| --------- | ----------------------- |
-| `ios`     | Runs on iOS devices     |
-| `android` | Runs on Android devices |
-| `web`     | Runs in web browsers    |
-
-#### bundler
-
-A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
-If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
-
-| Value     | Description                      |
-| --------- | -------------------------------- |
-| `metro`   | Bundling with [Metro][metro]     |
-| `webpack` | Bundling with [Webpack][webpack] |
-
-[metro]: https://facebook.github.io/metro/
-[webpack]: https://webpack.js.org/
 
 ## Options
 
@@ -205,3 +176,30 @@ All options can be passed in the platform-specific objects `native` and `web` to
 ```
 
 Platform-specific options have higher priority over top-level options.
+
+### Babel Loader
+
+The Babel loading mechanism must include the following properties on its `caller`.
+
+#### platform
+
+A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
+
+| Value     | Description             |
+| --------- | ----------------------- |
+| `ios`     | Runs on iOS devices     |
+| `android` | Runs on Android devices |
+| `web`     | Runs in web browsers    |
+
+#### bundler
+
+A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
+If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
+
+| Value     | Description                      |
+| --------- | -------------------------------- |
+| `metro`   | Bundling with [Metro][metro]     |
+| `webpack` | Bundling with [Webpack][webpack] |
+
+[metro]: https://facebook.github.io/metro/
+[webpack]: https://webpack.js.org/

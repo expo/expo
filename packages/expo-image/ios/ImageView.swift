@@ -139,13 +139,10 @@ public final class ImageView: ExpoView {
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     if imageTintColor != nil {
-      context[.imageDecodeOptions] = [
-        SDImageCoderOption.webImageContext: [
-          "svgPrefersBitmap": true,
-          "svgImageSize": sdImageView.bounds.size,
-          "svgImagePreserveAspectRatio": true
-        ]
-      ]
+      var decodeOptions = context[.imageDecodeOptions] as? [SDImageCoderOption: Any] ?? [:]
+      decodeOptions[.decodeThumbnailPixelSize] = sdImageView.bounds.size
+      decodeOptions[.decodePreserveAspectRatio] = true
+      context[.imageDecodeOptions] = decodeOptions
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -348,9 +345,15 @@ public final class ImageView: ExpoView {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
+    sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
     if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      if image.sd_isAnimated {
+        let size = idealSize * scale
+        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
+        return image
+      }
+      return resize(image: image, toSize: idealSize, scale: scale)
     }
     return image
   }
@@ -362,7 +365,20 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
-    sdImageView.layer.frame.origin = offset
+    if sdImageView.layer.mask != nil {
+      // In New Architecture mode, React Native adds a mask layer to image subviews.
+      // When moving the layer frame, we must move the mask layer with a compensation value.
+      // This prevents the layer from being cropped.
+      // See https://github.com/expo/expo/issues/34201
+      // and https://github.com/facebook/react-native/blob/c72d4c5ee97/packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm#L1066-L1076
+      CATransaction.begin()
+      CATransaction.setDisableActions(true)
+      sdImageView.layer.frame.origin = offset
+      sdImageView.layer.mask?.frame.origin = CGPoint(x: -offset.x, y: -offset.y)
+      CATransaction.commit()
+    } else {
+      sdImageView.layer.frame.origin = offset
+    }
   }
 
   internal func renderSourceImage(_ image: UIImage?) {

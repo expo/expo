@@ -1,13 +1,13 @@
 import ReactMarkdown from 'react-markdown';
 
-import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
-import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2 } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { getTagData, mdComponents, getCommentContent } from './APISectionUtils';
+import { getTagData, mdComponents, getCommentContent, getAllTagData } from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APIBoxSectionHeader } from './components/APIBoxSectionHeader';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { STYLES_APIBOX } from './styles';
 
@@ -34,6 +34,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
 
   const methods = getValidMethods(children);
   const returnComment = getTagData('returns', comment);
+  const namespacePlatforms = getAllTagData('platform', comment);
 
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
@@ -48,12 +49,19 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
           </ReactMarkdown>
         </>
       )}
-      {methods?.length ? (
+      {methods?.length > 0 && (
         <>
           <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
-          {methods.map(method => renderMethod(method, { sdkVersion, baseNestingLevel: 4 }))}
+          {methods.map(method =>
+            renderMethod(method, {
+              sdkVersion,
+              nested: true,
+              parentPlatforms: namespacePlatforms,
+              baseNestingLevel: 4,
+            })
+          )}
         </>
-      ) : undefined}
+      )}
     </div>
   );
 };

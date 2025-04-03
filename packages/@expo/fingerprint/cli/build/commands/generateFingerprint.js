@@ -38,7 +38,11 @@ const generateFingerprintAsync = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
         '--help': Boolean,
-        '--platform': String,
+        '--platform': [String],
+        '--concurrent-io-limit': Number,
+        '--hash-algorithm': String,
+        '--ignore-path': [String],
+        '--source-skips': Number,
         '--debug': Boolean,
         // Aliases
         '-h': '--help',
@@ -52,22 +56,56 @@ Generate fingerprint for a project
   {dim $} npx @expo/fingerprint fingerprint:generate
 
   Options
-  --platform <string>                  Platform to generate a fingerprint for
+  --platform <string[]>                Limit native files to those for specified platforms. Default is ['android', 'ios'].
+  --concurrent-io-limit <number>       I/O concurrent limit. Default is the number of CPU cores.
+  --hash-algorithm <string>            The algorithm to use for crypto.createHash(). Default is 'sha1'.
+  --ignore-path <string[]>             Ignore files and directories from hashing. The supported pattern is the same as glob().
+  --source-skips <number>              Skips some sources from fingerprint. Value is the result of bitwise-OR'ing desired values of SourceSkips. Default is DEFAULT_SOURCE_SKIPS.
   --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `, 0);
     }
-    const platform = args['--platform'];
-    if (platform && !['ios', 'android'].includes(platform)) {
-        throw new errors_1.CommandError(`Invalid platform argument: ${platform}`);
+    const platforms = args['--platform'];
+    if (platforms) {
+        if (!Array.isArray(platforms)) {
+            throw new errors_1.CommandError(`Invalid value for --platform`);
+        }
+        if (!platforms.every((elem) => ['ios', 'android'].includes(elem))) {
+            throw new errors_1.CommandError(`Invalid value for --platform: ${platforms}`);
+        }
+    }
+    const concurrentIoLimit = args['--concurrent-io-limit'];
+    if (concurrentIoLimit && !Number.isInteger(concurrentIoLimit)) {
+        throw new errors_1.CommandError(`Invalid value for --concurrent-io-limit argument: ${concurrentIoLimit}`);
+    }
+    const hashAlgorithm = args['--hash-algorithm'];
+    if (hashAlgorithm && typeof hashAlgorithm !== 'string') {
+        throw new errors_1.CommandError(`Invalid value for --hash-algorithm: ${hashAlgorithm}`);
+    }
+    const ignorePaths = args['--ignore-path'];
+    if (ignorePaths) {
+        if (!Array.isArray(ignorePaths)) {
+            throw new errors_1.CommandError(`Invalid value for --ignore-path`);
+        }
+        if (!ignorePaths.every((elem) => typeof elem === 'string')) {
+            throw new errors_1.CommandError(`Invalid value for --ignore-path: ${ignorePaths}`);
+        }
+    }
+    const sourceSkips = args['--source-skips'];
+    if (sourceSkips && !Number.isInteger(sourceSkips)) {
+        throw new errors_1.CommandError(`Invalid value for --source-skips argument: ${sourceSkips}`);
     }
     const options = {
         debug: !!process.env.DEBUG || args['--debug'],
+        silent: true,
         useRNCoreAutolinkingFromExpo: process.env['USE_RNCORE_AUTOLINKING_FROM_EXPO']
             ? (0, getenv_1.boolish)('USE_RNCORE_AUTOLINKING_FROM_EXPO')
             : undefined,
-        ...(platform ? { platforms: [platform] } : null),
-        silent: true,
+        ...(platforms ? { platforms } : null),
+        ...(concurrentIoLimit ? { concurrentIoLimit } : null),
+        ...(hashAlgorithm ? { hashAlgorithm } : null),
+        ...(ignorePaths ? { ignorePaths } : null),
+        ...(sourceSkips ? { sourceSkips } : null),
     };
     const projectRoot = (0, args_1.getProjectRoot)(args);
     const result = await (0, withConsoleDisabledAsync_1.withConsoleDisabledAsync)(async () => {

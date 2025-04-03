@@ -50,4 +50,16 @@ internal struct TimeUpdate: Record {
   @Field var bufferedPosition: Double = -1
 }
 
+internal struct  VideoTrackChangedEventPayload: Record {
+  @Field var videoTrack: VideoTrack? = nil
+  @Field var oldVideoTrack: VideoTrack? = nil
+}
+
+internal struct VideoSourceLoadedEventPayload: Record {
+  @Field var videoSource: VideoSource? = nil
+  @Field var duration: Double? = nil
+  @Field var availableVideoTracks: [VideoTrack]? = nil
+  @Field var availableSubtitleTracks: [SubtitleTrack]? = nil
+}
+
 // swiftlint:enable redundant_optional_initialization

@@ -3,6 +3,7 @@ package expo.modules.video
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.player.VideoPlayer
 import java.lang.ref.WeakReference
 
@@ -19,9 +20,17 @@ object VideoManager {
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
   private lateinit var audioFocusManager: AudioFocusManager
+  lateinit var cache: VideoCache
 
   fun onModuleCreated(appContext: AppContext) {
-    audioFocusManager = AudioFocusManager(appContext)
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+    if (!this::audioFocusManager.isInitialized) {
+      audioFocusManager = AudioFocusManager(appContext)
+    }
+    if (!this::cache.isInitialized) {
+      cache = VideoCache(context)
+    }
   }
 
   fun registerVideoView(videoView: VideoView) {
@@ -78,6 +87,10 @@ object VideoManager {
 
   fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
+  }
+
+  fun hasRegisteredPlayers(): Boolean {
+    return videoPlayersToVideoViews.isNotEmpty()
   }
 
   fun onAppForegrounded() {

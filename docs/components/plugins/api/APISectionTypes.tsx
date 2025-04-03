@@ -109,16 +109,21 @@ const renderTypeMethodEntry = (
   return null;
 };
 
-const renderTypePropertyRow = (
-  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
-  sdkVersion: string
-): JSX.Element => {
+const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => {
+  const { name, flags, type, comment, defaultValue, signatures, kind } = x;
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
   );
-  const commentData = getCommentOrSignatureComment(comment, signatures);
+  const commentData = getCommentOrSignatureComment(
+    comment,
+    type?.declaration?.signatures ?? signatures
+  );
   const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
+  const params = type?.declaration?.signatures?.length
+    ? type.declaration.signatures[0].parameters
+    : undefined;
+
   return (
     <Row key={name}>
       <Cell>
@@ -142,6 +147,16 @@ const renderTypePropertyRow = (
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
+        {params?.map(param => (
+          <div
+            className="mt-2 flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5"
+            key={param.name}>
+            <MONOSPACE>
+              {param.name}: {resolveTypeName(param.type, sdkVersion)}
+            </MONOSPACE>
+            <APICommentTextBlock comment={param.comment} />
+          </div>
+        ))}
       </Cell>
     </Row>
   );

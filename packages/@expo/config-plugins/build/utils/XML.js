@@ -67,6 +67,9 @@ function _processAndroidXML(manifest) {
       if (string.$.translatable === 'false' || string.$.translatable === false) {
         continue;
       }
+      if (!('_' in string)) {
+        throw new Error(`Empty string resource not supported: ${JSON.stringify(string)}`);
+      }
       string._ = unescapeAndroidString(string._);
     }
   }

@@ -7,6 +7,7 @@
  */
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
 import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
+import Constants from 'expo-constants';
 import { asyncServerImport } from 'expo-router/_async-server-import';
 import path from 'node:path';
 
@@ -88,15 +89,19 @@ export async function renderRscWithImportsAsync(
   imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType, headers }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
+  globalThis.__expo_platform_header = platform;
   if (method === 'POST' && !body) {
     throw new Error('Server request must be provided when method is POST (server actions)');
   }
 
   const context = getRscRenderContext(platform);
-
   context['__expo_requestHeaders'] = headers;
 
-  const entries = await imports.router();
+  const router = await imports.router();
+  const entries = router.default({
+    redirects: Constants.expoConfig?.extra?.router?.redirects,
+    rewrites: Constants.expoConfig?.extra?.router?.rewrites,
+  });
 
   const ssrManifest = await getSSRManifest(distFolder, platform);
   const actionManifest = await getServerActionManifest(distFolder, platform);

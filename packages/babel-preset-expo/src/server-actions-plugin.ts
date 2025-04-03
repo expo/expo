@@ -21,8 +21,7 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import url from 'url';
+import url, { pathToFileURL } from 'node:url';
 
 import { getPossibleProjectRoot } from './common';
 
@@ -510,13 +509,16 @@ export function reactServerActionsPlugin(
         if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
           return;
         }
+        // Skip type-only exports (`export type { Foo } from '...'` or `export { type Foo }`)
+        if (path.node.exportKind === 'type') {
+          return;
+        }
 
         // This can happen with `export {};` and TypeScript types.
         if (!path.node.declaration && !path.node.specifiers.length) {
           return;
         }
 
-        const registerServerReferenceId = addReactImport();
         const actionModuleId = getActionModuleId();
 
         const createRegisterCall = (
@@ -524,7 +526,7 @@ export function reactServerActionsPlugin(
           exported: t.Identifier | t.StringLiteral = identifier
         ) => {
           const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-          const call = t.callExpression(registerServerReferenceId, [
+          const call = t.callExpression(addReactImport(), [
             identifier,
             t.stringLiteral(actionModuleId),
             t.stringLiteral(exportedName),
@@ -548,6 +550,11 @@ export function reactServerActionsPlugin(
                 'Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)'
               );
             } else if (t.isExportSpecifier(specifier)) {
+              // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
+              if (specifier.exportKind === 'type') {
+                continue;
+              }
+
               // `export { foo };`
               // `export { foo as [bar|default] };`
               const localName = specifier.local.name;

@@ -10,7 +10,7 @@ import {
 } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
 import type { ExpoConfig } from '@expo/config-types';
-import * as fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 

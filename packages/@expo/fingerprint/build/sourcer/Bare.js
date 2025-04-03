@@ -64,6 +64,9 @@ async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
 }
 exports.getPackageJsonScriptSourcesAsync = getPackageJsonScriptSourcesAsync;
 async function getGitIgnoreSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.GitIgnore) {
+        return [];
+    }
     const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, '.gitignore', 'bareGitIgnore');
     if (result != null) {
         debug(`Adding file - ${chalk_1.default.dim('.gitignore')}`);

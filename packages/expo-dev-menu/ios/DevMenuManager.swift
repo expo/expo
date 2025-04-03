@@ -324,11 +324,6 @@ open class DevMenuManager: NSObject {
     devToolsDelegate?.toggleElementInsector()
   }
 
-  func toggleRemoteDebug() {
-    let devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.toggleRemoteDebugging()
-  }
-
   func openJSInspector() {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.openJSInspector()

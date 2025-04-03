@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
+import { glob } from 'glob';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -11,8 +11,14 @@ import {
   resolveModuleAsync,
 } from '../apple';
 
-jest.mock('fast-glob');
-jest.mock('fs-extra');
+jest.mock('glob');
+jest.mock('fs');
+
+const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -134,6 +140,40 @@ describe(resolveModuleAsync, () => {
     });
   });
 
+  it('should contain coreFeature field', async () => {
+    const name = 'react-native-third-party';
+    const podName = 'RNThirdParty';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'], coreFeatures: ['swiftui'] }),
+      },
+      { searchPaths: [expoRoot], platform: 'ios' }
+    );
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      pods: [
+        {
+          podName: 'RNThirdParty',
+          podspecDir: 'node_modules/react-native-third-party/ios',
+        },
+      ],
+      swiftModuleNames: ['RNThirdParty'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+      coreFeatures: ['swiftui'],
+    });
+  });
+
   it('should resolve multiple podspecs', async () => {
     const name = 'react-native-third-party';
     const podName = 'RNThirdParty';
@@ -174,13 +214,6 @@ describe(resolveModuleAsync, () => {
 });
 
 describe(resolveExtraBuildDependenciesAsync, () => {
-  let mockFsReadFile;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
-  });
-
   it('should resolve extra build dependencies from Podfile.properties.json', async () => {
     mockFsReadFile.mockResolvedValueOnce(`{
 "apple.extraPods": "[{\\"name\\":\\"test\\"}]"

@@ -2,9 +2,9 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template, types } from '@babel/core';
-import crypto from 'crypto';
-import { basename } from 'path';
-import url from 'url';
+import crypto from 'node:crypto';
+import { basename } from 'node:path';
+import url from 'node:url';
 
 import { getIsProd, getPossibleProjectRoot } from './common';
 
@@ -126,7 +126,7 @@ export function expoUseDomDirectivePlugin(
           import { WebView } from 'expo/dom/internal';
           ${
             isProduction
-              ? `const filePath = "${crypto.createHash('sha1').update(outputKey).digest('hex')}.html";`
+              ? `const filePath = "${crypto.createHash('md5').update(outputKey).digest('hex')}.html";`
               : `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`
           }
           const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {

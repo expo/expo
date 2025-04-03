@@ -3,15 +3,17 @@ import * as path from 'path';
 import { getPngInfo, getMimeType } from '../Image';
 
 describe(getMimeType, () => {
-  [
-    ['https://example.com/image.png?query=1', 'image/png'],
-    ['../foo.jpg', 'image/jpeg'],
-    ['more.ios.jpeg', 'image/jpeg'],
-    // Invalid
-    ['more.ios.jpeg?foo', null],
-    // Unsupported
-    ['more.ios.avif', null],
-  ].forEach(([url, mimeType]) => {
+  (
+    [
+      ['https://example.com/image.png?query=1', 'image/png'],
+      ['../foo.jpg', 'image/jpeg'],
+      ['more.ios.jpeg', 'image/jpeg'],
+      // Invalid
+      ['more.ios.jpeg?foo', null],
+      // Unsupported
+      ['more.ios.avif', null],
+    ] as const
+  ).forEach(([url, mimeType]) => {
     it(`returns mime type for URL: ${url}`, () => {
       expect(getMimeType(url)).toBe(mimeType);
     });

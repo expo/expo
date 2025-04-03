@@ -24,9 +24,9 @@ internal final class CameraImageCaptureException: Exception {
   }
 }
 
-internal final class CameraSavingImageException: Exception {
+internal final class CameraSavingImageException: GenericException<String> {
   override var reason: String {
-    "Could not save the image"
+    "Failed to save image: \(param)"
   }
 }
 
@@ -51,5 +51,11 @@ internal final class CameraMetadataDecodingException: Exception {
 internal final class CameraInvalidPhotoData: Exception {
   override var reason: String {
     "An error occured while generating photo data"
+  }
+}
+
+internal final class CameraToggleRecordingException: Exception {
+  override var reason: String {
+    "`toggleRecording()` is only supported on iOS 18.0 or later"
   }
 }

@@ -26,9 +26,9 @@ function _debug() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -48,8 +48,6 @@ function _AssetContents() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// @ts-ignore
-
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
@@ -93,7 +91,10 @@ async function configureImageAssets({
 }) {
   const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
   // ensure old SplashScreen imageSet is removed
-  await _fsExtra().default.remove(imageSetPath);
+  await _fs().default.promises.rm(imageSetPath, {
+    force: true,
+    recursive: true
+  });
   if (!image) {
     return;
   }
@@ -155,7 +156,7 @@ async function copyImageFiles({
         });
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-        await _fsExtra().default.writeFile(_path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`), source);
+        await _fs().default.promises.writeFile(_path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`), source);
       });
     },
     anyItem: image,

@@ -79,7 +79,9 @@ export const pathStartsWith = (name: string, path: string) => {
 
 export const chunkArray = (array: any[], chunkSize: number) => {
   return array.reduce((acc, _, i) => {
-    if (i % chunkSize === 0) acc.push(array.slice(i, i + chunkSize));
+    if (i % chunkSize === 0) {
+      acc.push(array.slice(i, i + chunkSize));
+    }
     return acc;
   }, []);
 };

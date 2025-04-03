@@ -61,7 +61,7 @@ export function pathToFileURL(filepath: string) {
   return new URL(pathToFileURLString(filepath));
 }
 
-function getPathFromURLPosix(url) {
+function getPathFromURLPosix(url: { hostname: string; pathname: string }) {
   if (url.hostname !== '') {
     throw new Error(
       'URL host must be localhost or empty – are you sure your url starts with `file:///`?'
@@ -70,7 +70,7 @@ function getPathFromURLPosix(url) {
   const pathname = url.pathname;
   for (let n = 0; n < pathname.length; n++) {
     if (pathname[n] === '%') {
-      const third = pathname.charAt(pathname, n + 2) | 0x20;
+      const third = +pathname.charAt(n + 2) | 0x20;
       if (pathname[n + 1] === '2' && third === 102) {
         throw new Error('pathname must not include encoded / characters');
       }

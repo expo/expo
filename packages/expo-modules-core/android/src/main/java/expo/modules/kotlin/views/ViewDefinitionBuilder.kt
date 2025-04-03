@@ -31,6 +31,9 @@ class ViewDefinitionBuilder<T : View>(
   @PublishedApi internal val viewType: KType
 ) {
   @PublishedApi
+  internal var name = viewClass.simpleName
+
+  @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
 
   @PublishedApi
@@ -60,12 +63,20 @@ class ViewDefinitionBuilder<T : View>(
       viewFactory = createViewFactory(),
       viewType = viewClass.java,
       props = props,
+      name = name,
       onViewDestroys = onViewDestroys,
       callbacksDefinition = callbacksDefinition,
       viewGroupDefinition = viewGroupDefinition,
       onViewDidUpdateProps = onViewDidUpdateProps,
       asyncFunctions = asyncFunctions.values.toList()
     )
+  }
+
+  /**
+   * Sets the name of the view that is exported to the JavaScript world.
+   */
+  fun Name(viewName: String) {
+    name = viewName
   }
 
   /**

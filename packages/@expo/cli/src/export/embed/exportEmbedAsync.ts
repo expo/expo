@@ -50,7 +50,10 @@ type ExtendedMetroServerBuildResult =
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
-  if (!bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//)) {
+  if (
+    !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
+    !bundleOutput.match(/\/CoreSimulator\/Devices\/.*\/data\/Containers\/Bundle\/Application\//)
+  ) {
     debug('Bundling to non-standard location:', bundleOutput);
     return false;
   }
@@ -201,6 +204,7 @@ export async function exportEmbedBundleAndAssetsAsync(
 
   try {
     const bundles = await devServer.nativeExportBundleAsync(
+      exp,
       {
         // TODO: Re-enable when we get bytecode chunk splitting working again.
         splitChunks: false, //devServer.isReactServerComponentsEnabled,

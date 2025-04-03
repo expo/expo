@@ -59,8 +59,11 @@ type ContactAccessButtonModule = {
   isAvailable: boolean;
 };
 
-const NativeContactAccessButton =
-  requireNativeView<ContactAccessButtonProps>('ExpoContactAccessButton');
+let NativeContactAccessButton: React.ComponentType<ContactAccessButtonProps> | null = null;
+
+if (Platform.OS === 'ios') {
+  NativeContactAccessButton = requireNativeView('ExpoContactAccessButton');
+}
 
 /**
  * Creates a contact access button to quickly add contacts under limited-access authorization.
@@ -84,7 +87,7 @@ export default class ContactAccessButton extends React.PureComponent<ContactAcce
   }
 
   render() {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== 'ios' || !NativeContactAccessButton) {
       return null;
     }
     return <NativeContactAccessButton {...this.props} />;

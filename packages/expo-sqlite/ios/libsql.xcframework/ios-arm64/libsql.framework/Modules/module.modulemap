@@ -1,0 +1,5 @@
+framework module libsql {
+  umbrella header "libsql-umbrella.h"
+  export *
+  module * { export * }
+}

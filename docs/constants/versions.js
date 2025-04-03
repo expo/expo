@@ -38,11 +38,23 @@ export const VERSIONS = versionDirectories
     return true;
   })
   .sort((a, b) => {
-    if (a === 'unversioned') return -1;
-    if (b === 'unversioned') return 1;
-    if (a === BETA_VERSION) return -1;
-    if (b === BETA_VERSION) return 1;
-    if (a === 'latest') return -1;
-    if (b === 'latest') return 1;
+    if (a === 'unversioned') {
+      return -1;
+    }
+    if (b === 'unversioned') {
+      return 1;
+    }
+    if (a === BETA_VERSION) {
+      return -1;
+    }
+    if (b === BETA_VERSION) {
+      return 1;
+    }
+    if (a === 'latest') {
+      return -1;
+    }
+    if (b === 'latest') {
+      return 1;
+    }
     return semver.major(b) - semver.major(a);
   });

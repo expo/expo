@@ -8,7 +8,7 @@ yarn run schema-sync unversioned -> updates the schema that versions/unversioned
 const parser = require('@apidevtools/json-schema-ref-parser');
 const axios = require('axios');
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 
 const version = process.argv[2];
 

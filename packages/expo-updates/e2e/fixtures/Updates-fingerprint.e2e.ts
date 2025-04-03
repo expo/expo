@@ -70,42 +70,4 @@ describe('Basic tests', () => {
 
     await device.terminateApp();
   });
-
-  it('does not download new update when it takes longer than timeout', async () => {
-    const bundleFilename = 'bundle1.js';
-    const newNotifyString = 'test-update-1';
-    const hash = await Update.copyBundleToStaticFolder(
-      projectRoot,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const manifest =
-      await Update.getUpdateManifestForBundleFilenameWithFingerprintRuntimeVersionAsync(
-        new Date(),
-        hash,
-        'test-update-1-key',
-        bundleFilename,
-        [],
-        projectRoot,
-        platform
-      );
-
-    Server.start(Update.serverPort, protocolVersion, 7000);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
-    const message = await testElementValueAsync('updateString');
-
-    if (message !== 'test') {
-      console.log(debugInstructions);
-    }
-
-    jestExpect(message).toBe('test');
-
-    await device.terminateApp();
-  });
 });

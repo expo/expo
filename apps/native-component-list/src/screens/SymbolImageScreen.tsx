@@ -1,5 +1,5 @@
 import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { PlatformColor, Text, View, StyleSheet, ScrollView } from 'react-native';
 
 import { Symbols } from '../constants';
 
@@ -99,7 +99,11 @@ export default function SymbolImageScreen() {
       <Text style={styles.title}>Use component directly</Text>
       <SymbolView name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
       <SymbolRow title="Monochrome (default)" type="monochrome" />
-      <SymbolRow title="Hierarchical" type="hierarchical" tintColor="magenta" />
+      <SymbolRow
+        title="Hierarchical"
+        type="hierarchical"
+        tintColor={PlatformColor('systemPurple')}
+      />
       <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
       <SymbolRow title="Multicolor" type="multicolor" />
       <SymbolWeights title="Weights" tintColor="yellow" />

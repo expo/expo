@@ -24,6 +24,15 @@ export default Unmatched;
 
 This will render the default `Unmatched`. You can export any component you want to render instead. We recommend having a link to `/` so users can navigate back to the home screen.
 
+### Route priority
+
+On web, files are served in the following order:
+
+1. Static files in the **public** directory.
+2. Standard and dynamic routes in the app directory.
+3. [API routes](/router/reference/api-routes) in the app directory.
+4. Not-found routes will be served last with a 404 status code.
+
 ## Error handling
 
 Expo Router enables fine-tuned error handling to enable a more opinionated data-loading strategy in the future.

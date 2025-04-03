@@ -8,14 +8,14 @@ exports.expoRouterBabelPlugin = void 0;
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
-const path_1 = __importDefault(require("path"));
+const node_path_1 = __importDefault(require("node:path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:router');
 function getExpoRouterAppRoot(projectRoot, appFolder) {
     // TODO: We should have cache invalidation if the expo-router/entry file location changes.
     const routerEntry = (0, resolve_from_1.default)(projectRoot, 'expo-router/entry');
-    const appRoot = path_1.default.relative(path_1.default.dirname(routerEntry), appFolder);
+    const appRoot = node_path_1.default.relative(node_path_1.default.dirname(routerEntry), appFolder);
     debug('routerEntry', routerEntry, appFolder, appRoot);
     return appRoot;
 }

@@ -53,7 +53,7 @@ describe('APISection', () => {
       <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(11);
     expect(screen.getAllByRole('table')).toHaveLength(6);
 

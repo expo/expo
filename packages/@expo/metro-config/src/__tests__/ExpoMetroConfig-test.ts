@@ -12,7 +12,6 @@ function mockProject() {
         name: 'hello-world',
         private: true,
       }),
-      'node_modules/expo-asset/tools/hashAssetFiles.js': '',
       'node_modules/react-native/package.json': '',
       'node_modules/react-native/node_modules/metro-runtime/package.json': '',
       'node_modules/react-native/node_modules/metro-runtime/src/modules/asyncRequire.js': '',

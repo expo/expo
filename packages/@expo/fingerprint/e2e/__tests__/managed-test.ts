@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
+import getFingerprintHashFromCLIAsync from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
@@ -56,27 +57,40 @@ describe('managed project test', () => {
 
   it('should have same hash after updating js code', async () => {
     const hash = await createProjectHashAsync(projectRoot);
+    const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash).toEqual(hashCLI);
 
     const jsPath = path.join(projectRoot, 'App.js');
     const js = await fs.readFile(jsPath, 'utf8');
     await fs.writeFile(jsPath, `${js}\n// adding comments`);
 
     const hash2 = await createProjectHashAsync(projectRoot);
+    const hash2CLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash2).toEqual(hash2CLI);
+
     expect(hash).toBe(hash2);
   });
 
   it('should have different hash after adding native library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
+    const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash).toEqual(hashCLI);
+
     await spawnAsync('npx', ['expo', 'install', 'expo-updates'], {
       stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
+    const hash2CLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash2).toEqual(hash2CLI);
+
     expect(hash).not.toBe(hash2);
   });
 
   it('should have different hash after updating `jsEngine`', async () => {
     const hash = await createProjectHashAsync(projectRoot);
+    const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash).toEqual(hashCLI);
 
     const configPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
@@ -84,26 +98,40 @@ describe('managed project test', () => {
     await fs.writeFile(configPath, JSON.stringify(config, null, 2));
 
     const hash2 = await createProjectHashAsync(projectRoot);
+    const hash2CLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash2).toEqual(hash2CLI);
+
     expect(hash).not.toBe(hash2);
   });
 
   it('should have different hash after updating icon file', async () => {
     const hash = await createProjectHashAsync(projectRoot);
+    const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash).toEqual(hashCLI);
 
     const iconPath = path.join(projectRoot, 'assets', 'icon.png');
     await fs.writeFile(iconPath, '');
 
     const hash2 = await createProjectHashAsync(projectRoot);
+    const hash2CLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash2).toEqual(hash2CLI);
+
     expect(hash).not.toBe(hash2);
   });
 
   it('should have different hash after adding js only config-plugin', async () => {
     const hash = await createProjectHashAsync(projectRoot);
+    const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash).toEqual(hashCLI);
+
     await spawnAsync('npx', ['expo', 'install', 'expo-build-properties'], {
       stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
+    const hash2CLI = await getFingerprintHashFromCLIAsync(projectRoot);
+    expect(hash2).toEqual(hash2CLI);
+
     expect(hash).not.toBe(hash2);
   });
 

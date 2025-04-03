@@ -13,9 +13,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+  var wasPlaying = false
   var isPaused: Bool {
     ref.rate != 0.0
   }
+  var samplingEnabled = false
 
   // MARK: Observers
   private var timeToken: Any?
@@ -23,7 +25,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var endObserver: NSObjectProtocol?
 
   private var audioProcessor: AudioTapProcessor?
-  private var samplingEnabled = false
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
 
@@ -61,6 +62,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func setSamplingEnabled(enabled: Bool) {
+    if samplingEnabled == enabled {
+      return
+    }
     samplingEnabled = enabled
     if enabled {
       installTap()
@@ -81,6 +85,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "duration": currentDuration,
       "playing": isPlaying,
       "loop": isLooping,
+      "didJustFinish": false,
       "isLoaded": isLoaded,
       "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
@@ -200,7 +205,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       } else {
         self.updateStatus(with: [
           "isPlaying": false,
-          "currentTime": self.duration
+          "currentTime": self.duration,
+          "didJustFinish": true
         ])
       }
     }

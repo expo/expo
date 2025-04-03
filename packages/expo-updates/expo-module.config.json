@@ -5,9 +5,7 @@
     "reactDelegateHandlers": ["ExpoUpdatesReactDelegateHandler"]
   },
   "android": {
-    "modules": [
-      "expo.modules.updates.UpdatesModule"
-    ],
+    "modules": ["expo.modules.updates.UpdatesModule"],
     "gradlePlugins": [
       {
         "id": "expo-updates-gradle-plugin",

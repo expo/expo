@@ -6,6 +6,7 @@ export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
+export { Sitemap } from './views/Sitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export type { ScreenProps } from './useScreens';
@@ -16,5 +17,6 @@ export * as SplashScreen from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
+export type { RedirectConfig } from './getRoutesCore';
 export type * from './types';
 //# sourceMappingURL=exports.d.ts.map

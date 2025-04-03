@@ -310,8 +310,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return _appRegistry.homeAppRecord.appManager.reactHost;
 }
 
-- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.reactAppInstance;
+- (nullable RCTReactNativeFactory *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
+  return _appRegistry.homeAppRecord.appManager.expoAppInstance.reactNativeFactory;
 }
 
 - (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility

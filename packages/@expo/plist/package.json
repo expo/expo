@@ -30,9 +30,9 @@
     "build"
   ],
   "dependencies": {
-    "@xmldom/xmldom": "~0.7.7",
+    "@xmldom/xmldom": "^0.8.8",
     "base64-js": "^1.2.3",
-    "xmlbuilder": "^14.0.0"
+    "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",

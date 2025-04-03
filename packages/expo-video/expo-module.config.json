@@ -1,6 +1,6 @@
 {
   "platforms": ["apple", "android"],
-  "ios": {
+  "apple": {
     "modules": ["VideoModule"]
   },
   "android": {

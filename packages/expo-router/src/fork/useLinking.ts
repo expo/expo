@@ -74,7 +74,7 @@ const linkingHandlers: symbol[] = [];
 type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
+  ref: React.RefObject<NavigationContainerRef<ParamListBase> | null>,
   {
     enabled = true,
     config,
@@ -447,4 +447,8 @@ export function useLinking(
   return {
     getInitialState,
   };
+}
+
+export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
+  return typeof window === 'undefined' ? '' : window.location.href;
 }

@@ -1,6 +1,6 @@
 import React, { Text } from 'react-native';
 
-import { Slot, router, useGlobalSearchParams } from '../exports';
+import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
 import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -193,8 +193,8 @@ it('nested layouts', async () => {
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
   expect(AppLayout).toHaveBeenCalledTimes(1);
-  expect(TabsLayout).toHaveBeenCalledTimes(1);
-  expect(StackLayout).toHaveBeenCalledTimes(1);
+  expect(TabsLayout).toHaveBeenCalledTimes(2);
+  expect(StackLayout).toHaveBeenCalledTimes(2);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
@@ -288,4 +288,25 @@ it.skip('can navigate across the drawer navigator', () => {
   act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
+});
+
+it('can redirect during the initial render', () => {
+  renderRouter({
+    _layout: function Layout() {
+      const pathName = usePathname();
+
+      if (pathName === '/') {
+        return <Redirect href="/test" />;
+      }
+
+      return <Stack />;
+    },
+    '/test/_layout': function TestLayout() {
+      return <Stack />;
+    },
+    '/test/index': () => <Text testID="test">test</Text>,
+  });
+
+  expect(screen).toHavePathname('/test');
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
 });

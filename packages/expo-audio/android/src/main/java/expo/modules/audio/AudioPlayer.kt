@@ -10,7 +10,6 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -18,9 +17,12 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -33,74 +35,102 @@ class AudioPlayer(
   context: Context,
   appContext: AppContext,
   source: MediaSource?,
-  updateInterval: Double
+  private val updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
-    .build()
-    .apply {
-      source?.let {
-        setMediaSource(it)
-      }
-      setAudioAttributes(AudioAttributes.DEFAULT, true)
-      prepare()
-    },
+    .build(),
   appContext
 ) {
   val id = UUID.randomUUID().toString()
   val player = ref
   var preservesPitch = false
   var isPaused = false
+  var isMuted = false
+  var previousVolume = 1f
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
+  private var playing = false
 
-  val currentTime get() = player.currentPosition / 1000
-  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
+  private var updateJob: Job? = null
+
+  val currentTime get() = player.currentPosition / 1000f
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000f else 0f
 
   init {
-    addPlayerListeners()
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-    playerScope.launch {
-      while (isActive) {
-        sendPlayerUpdate()
-        delay(updateInterval.toLong())
-      }
+    addPlayerListeners()
+    source?.let {
+      setMediaSource(source)
     }
   }
 
-  private fun addPlayerListeners() {
-    player.addListener(object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("playing" to isPlaying))
-        }
+  fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
+    val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
+    if (isMuted) {
+      if (boundedVolume > 0f) {
+        previousVolume = boundedVolume
       }
-
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("isLoaded" to isLoading))
-        }
-      }
-
-      override fun onPlaybackStateChanged(playbackState: Int) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
-        }
-      }
-
-      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
-          playerScope.launch {
-            sendPlayerUpdate()
-          }
-        }
-      }
-    })
+      player.volume = 0f
+    } else {
+      player.volume = if (boundedVolume > 0) boundedVolume else previousVolume
+    }
   }
 
+  fun setMediaSource(source: MediaSource) {
+    player.setMediaSource(source)
+    player.prepare()
+    startUpdating()
+  }
+
+  private fun startUpdating() {
+    updateJob = flow {
+      while (true) {
+        emit(Unit)
+        delay(updateInterval.toLong())
+      }
+    }
+      .onEach { sendPlayerUpdate() }
+      .launchIn(playerScope)
+  }
+
+  private fun addPlayerListeners() = player.addListener(object : Player.Listener {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      playing = isPlaying
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("playing" to isPlaying))
+      }
+    }
+
+    override fun onIsLoadingChanged(isLoading: Boolean) {
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("isLoaded" to isLoading))
+      }
+    }
+
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("playbackState" to playbackStateToString(playbackState)))
+      }
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      playerScope.launch {
+        sendPlayerUpdate()
+      }
+    }
+  })
+
   fun setSamplingEnabled(enabled: Boolean) {
+    appContext?.reactContext?.let {
+      if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "\'android.permission.RECORD_AUDIO\' is required to use audio sampling. Please request this permission and try again.")
+        return
+      }
+    }
+
     samplingEnabled = enabled
     if (enabled) {
       createVisualizer()
@@ -131,6 +161,7 @@ class AudioPlayer(
       "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
+      "didJustFinish" to (player.playbackState == Player.STATE_ENDED),
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to player.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
@@ -166,13 +197,6 @@ class AudioPlayer(
   }
 
   private fun createVisualizer() {
-    appContext?.reactContext?.let {
-      if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-        Log.d(TAG, "\'android.permission.RECORD_AUDIO\' is required to use audio sampling. Please request this permission and try again.")
-        return
-      }
-    }
-
     // It must only be created once, otherwise the app will crash
     if (visualizer == null) {
       visualizer = Visualizer(player.audioSessionId).apply {

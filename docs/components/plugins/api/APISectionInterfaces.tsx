@@ -125,7 +125,7 @@ const renderInterface = (
       <APISectionDeprecationNote comment={comment} sticky />
       <APIBoxHeader name={name} comment={comment} />
       {extendedTypes?.length ? (
-        <CALLOUT className={ELEMENT_SPACING}>
+        <CALLOUT className={mergeClasses(ELEMENT_SPACING, 'px-4')}>
           <span className={STYLES_SECONDARY}>Extends: </span>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>
@@ -135,14 +135,6 @@ const renderInterface = (
         </CALLOUT>
       ) : null}
       <APICommentTextBlock comment={comment} includePlatforms={false} />
-      {interfaceMethods.length > 0 && (
-        <>
-          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
-          {interfaceMethods.map(method =>
-            renderMethod(method, { exposeInSidebar: false, sdkVersion })
-          )}
-        </>
-      )}
       {interfaceFields.length > 0 && (
         <>
           <Table containerClassName="rounded-none border-0 border-t">
@@ -151,6 +143,14 @@ const renderInterface = (
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
             </tbody>
           </Table>
+        </>
+      )}
+      {interfaceMethods.length > 0 && (
+        <>
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
+          {interfaceMethods.map(method =>
+            renderMethod(method, { exposeInSidebar: false, sdkVersion, nested: true })
+          )}
         </>
       )}
     </div>

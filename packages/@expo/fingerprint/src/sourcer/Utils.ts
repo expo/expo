@@ -30,6 +30,27 @@ export function stringifyJsonSorted(target: any, space?: string | number | undef
   return JSON.stringify(target, (_, value) => sortJson(value), space);
 }
 
+/**
+ * Transform absolute paths in JSON to relative paths based on the project root.
+ */
+export function relativizeJsonPaths(value: any, projectRoot: string): any {
+  if (typeof value === 'string' && value.startsWith(projectRoot)) {
+    return toPosixPath(path.relative(projectRoot, value));
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => relativizeJsonPaths(item, projectRoot));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, val]) => [key, relativizeJsonPaths(val, projectRoot)])
+    );
+  }
+
+  return value;
+}
+
 function sortJson(json: any): any {
   if (Array.isArray(json)) {
     return json.sort((a, b) => {

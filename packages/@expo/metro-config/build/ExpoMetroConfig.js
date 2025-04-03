@@ -50,17 +50,6 @@ const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
 const filePath_1 = require("./utils/filePath");
 const debug = require('debug')('expo:metro:config');
-function getAssetPlugins(projectRoot) {
-    const hashAssetFilesPath = resolve_from_1.default.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
-    if (!hashAssetFilesPath) {
-        throw new Error(`The required package \`expo-asset\` cannot be found`);
-    }
-    return [
-        // Use relative path to ensure maximum cache hits.
-        // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
-        'expo-asset/tools/hashAssetFiles',
-    ];
-}
 let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -215,7 +204,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 // This is removed for server platforms.
                 web: ['browser'],
             },
-            unstable_conditionNames: ['require', 'import'],
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
             assetExts: metroDefaultValues.resolver.assetExts
@@ -310,11 +298,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
-            // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
-            // TODO: The absolute path breaks invalidates caching across devices.
-            asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
+            // TODO: The absolute path invalidates caching across devices.
+            asyncRequireModulePath: require.resolve('./async-require'),
             assetRegistryPath: '@react-native/assets-registry/registry',
-            assetPlugins: getAssetPlugins(projectRoot),
             // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {

@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable identifier_name
+// swiftlint:disable function_parameter_count
 
 // sqlite db opening OpaquePointer doesn't work well with nullability
 // swiftlint:disable force_unwrapping
@@ -92,20 +93,26 @@ internal final class UpdatesDatabaseInitialization {
     CREATE INDEX "index_json_data_scope_key" ON "json_data" ("scope_key");
   """
 
-  static func initializeDatabaseWithLatestSchema(inDirectory directory: URL) throws -> OpaquePointer {
+  static func initializeDatabaseWithLatestSchema(inDirectory directory: URL, logger: UpdatesLogger) throws -> OpaquePointer {
     return try initializeDatabaseWithLatestSchema(
       inDirectory: directory,
-      migrations: UpdatesDatabaseMigrationRegistry.migrations()
+      migrations: UpdatesDatabaseMigrationRegistry.migrations(),
+      logger: logger
     )
   }
 
-  static func initializeDatabaseWithLatestSchema(inDirectory directory: URL, migrations: [UpdatesDatabaseMigration]) throws -> OpaquePointer {
+  static func initializeDatabaseWithLatestSchema(
+    inDirectory directory: URL,
+    migrations: [UpdatesDatabaseMigration],
+    logger: UpdatesLogger
+  ) throws -> OpaquePointer {
     return try initializeDatabase(
       withSchema: LatestSchema,
       filename: LatestFilename,
       inDirectory: directory,
       shouldMigrate: true,
-      migrations: migrations
+      migrations: migrations,
+      logger: logger
     )
   }
 
@@ -114,9 +121,9 @@ internal final class UpdatesDatabaseInitialization {
     filename: String,
     inDirectory directory: URL,
     shouldMigrate: Bool,
-    migrations: [UpdatesDatabaseMigration]
+    migrations: [UpdatesDatabaseMigration],
+    logger: UpdatesLogger
   ) throws -> OpaquePointer {
-    let logger = UpdatesLogger()
     let dbUrl = directory.appendingPathComponent(filename)
     var shouldInitializeDatabaseSchema = !FileManager.default.fileExists(atPath: dbUrl.path)
 
@@ -248,4 +255,5 @@ internal final class UpdatesDatabaseInitialization {
 }
 
 // swiftlint:enable force_unwrapping
+// swiftlint:enable function_parameter_count
 // swiftlint:enable identifier_name

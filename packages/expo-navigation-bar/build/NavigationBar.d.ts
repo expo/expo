@@ -1,5 +1,4 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { type ColorValue } from 'react-native';
 import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**
  * Observe changes to the system navigation bar.
@@ -22,7 +21,7 @@ export declare function addVisibilityListener(listener: (event: NavigationBarVis
  * ```
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
-export declare function setBackgroundColorAsync(color: ColorValue): Promise<void>;
+export declare function setBackgroundColorAsync(color: string): Promise<void>;
 /**
  * Gets the navigation bar's background color.
  *
@@ -32,7 +31,7 @@ export declare function setBackgroundColorAsync(color: ColorValue): Promise<void
  * ```
  * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
-export declare function getBackgroundColorAsync(): Promise<ColorValue>;
+export declare function getBackgroundColorAsync(): Promise<string>;
 /**
  * Changes the navigation bar's border color.
  *
@@ -42,7 +41,7 @@ export declare function getBackgroundColorAsync(): Promise<ColorValue>;
  * ```
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
-export declare function setBorderColorAsync(color: ColorValue): Promise<void>;
+export declare function setBorderColorAsync(color: string): Promise<void>;
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
  *
@@ -52,7 +51,7 @@ export declare function setBorderColorAsync(color: ColorValue): Promise<void>;
  * ```
  * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
-export declare function getBorderColorAsync(): Promise<ColorValue>;
+export declare function getBorderColorAsync(): Promise<string>;
 /**
  * Set the navigation bar's visibility.
  *

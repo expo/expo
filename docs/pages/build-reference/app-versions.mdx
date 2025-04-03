@@ -149,5 +149,4 @@ In the case of [existing React Native projects](/bare/overview/), the values in 
 ### Limitations
 
 - With `autoIncrement`, you need to commit your changes on every build if you want the version change to persist. This can be difficult to coordinate when building on CI.
-- `autoIncrement` is not supported if you are using a dynamic config file (such as **app.config.js**).
 - For existing React Native projects with Gradle configuration that supports multiple flavors, EAS CLI is not able to read or modify the version, so `autoIncrement` option is not supported, and versions will not be listed in the build details page on [expo.dev](https://expo.dev).

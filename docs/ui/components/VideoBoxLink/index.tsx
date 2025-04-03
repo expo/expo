@@ -9,14 +9,15 @@ type VideoBoxLinkProps = {
   title: string;
   description: ReactNode;
   videoId: string;
+  time?: number;
   className?: string;
 };
 
-export function VideoBoxLink({ title, description, videoId, className }: VideoBoxLinkProps) {
+export function VideoBoxLink({ title, description, videoId, time, className }: VideoBoxLinkProps) {
   return (
     <A
       openInNewTab
-      href={`https://www.youtube.com/watch?v=${videoId}`}
+      href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
       className={mergeClasses(
         'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
         'hocus:shadow-sm',
@@ -24,7 +25,8 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
         '[&+hr]:!mt-6',
         className
       )}
-      isStyled>
+      isStyled
+      aria-label={`Watch video: ${title} (opens in new tab)`}>
       <div
         className={mergeClasses(
           'relative flex max-w-[200px] items-center justify-center border-r border-secondary bg-element',
@@ -34,8 +36,12 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
           src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
           className="aspect-video"
           alt={title}
+          aria-label={`Video thumbnail for ${title}`}
         />
-        <div className="absolute right-[calc(50%-22px)] top-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]">
+        <div
+          className="absolute right-[calc(50%-22px)] top-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]"
+          role="presentation"
+          aria-hidden="true">
           <PlaySolidIcon className="icon-lg ml-0.5 text-palette-white" />
         </div>
       </div>
@@ -47,7 +53,10 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
           </CALLOUT>
         )}
       </div>
-      <ArrowUpRightIcon className="icon-md my-auto ml-auto mr-4 shrink-0 text-icon-secondary max-sm-gutters:hidden" />
+      <ArrowUpRightIcon
+        className="icon-md my-auto ml-auto mr-4 shrink-0 text-icon-secondary max-sm-gutters:hidden"
+        aria-hidden="true"
+      />
     </A>
   );
 }

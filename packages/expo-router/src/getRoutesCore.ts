@@ -5,9 +5,13 @@ import {
   matchDynamicName,
   matchGroupName,
   matchLastGroupName,
+  removeFileSystemDots,
+  removeFileSystemExtensions,
   removeSupportedExtensions,
+  stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
+import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
   ignore?: RegExp[];
@@ -24,15 +28,33 @@ export type Options = {
   platformRoutes?: boolean;
   sitemap?: boolean;
   platform?: string;
+  redirects?: RedirectConfig[];
+  rewrites?: RewriteConfig[];
+  /* Keep redirects as valid routes within the RouteConfig tree */
+  preserveRedirectAndRewrites?: boolean;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-  getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>) => RouteNode;
+  getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
 };
 
 type DirectoryNode = {
   layout?: RouteNode[];
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
+};
+
+export type RedirectConfig = {
+  source: string;
+  destination: string;
+  permanent?: boolean;
+  methods?: string[];
+  external?: boolean;
+};
+
+export type RewriteConfig = {
+  source: string;
+  destination: string;
+  methods?: string[];
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -78,7 +100,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     ignoreList.push(...options.ignore);
   }
   if (!options.preserveApiRoutes) {
-    ignoreList.push(/\+api\.[tj]sx?$/);
+    ignoreList.push(/\+api$/, /\+api\.[tj]sx?$/);
   }
 
   const rootDirectory: DirectoryNode = {
@@ -89,14 +111,130 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasRoutes = false;
   let isValid = false;
 
-  for (const filePath of contextModule.keys()) {
+  const contextKeys = contextModule.keys();
+  const redirects: Record<string, RedirectConfig> = {};
+  const rewrites: Record<string, RewriteConfig> = {};
+
+  let validRedirectDestinations: [string, string][] | undefined;
+
+  // If we are keeping redirects as valid routes, then we need to add them to the contextKeys
+  // This is useful for generating a sitemap with redirects, or static site generation that includes redirects
+  if (options.preserveRedirectAndRewrites) {
+    if (options.redirects) {
+      for (const redirect of options.redirects) {
+        // Remove the leading `./` or `/`
+        const source = redirect.source.replace(/^\.?\//, '');
+
+        const isExternalRedirect = shouldLinkExternally(redirect.destination);
+
+        const targetDestination = isExternalRedirect
+          ? redirect.destination
+          : stripInvisibleSegmentsFromPath(
+              removeFileSystemDots(
+                removeFileSystemExtensions(redirect.destination.replace(/^\.?\/?/, ''))
+              )
+            );
+
+        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
+
+        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+          continue;
+        }
+
+        // Loop over this once and cache the valid destinations
+        validRedirectDestinations ??= contextKeys.map((key) => {
+          return [
+            stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
+            key,
+          ];
+        });
+
+        const destination = isExternalRedirect
+          ? targetDestination
+          : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+
+        if (!destination) {
+          /*
+           * Only throw the error when we are preserving the api routes
+           * When doing a static export, API routes will not exist so the redirect destination may not exist.
+           * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+           * `expo export` swallows this error.
+           */
+          if (options.preserveApiRoutes) {
+            throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+          }
+
+          continue;
+        }
+
+        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(source));
+        contextKeys.push(fakeContextKey);
+        redirects[fakeContextKey] = {
+          source,
+          destination,
+          permanent: Boolean(redirect.permanent),
+          external: isExternalRedirect,
+          methods: redirect.methods,
+        };
+      }
+    }
+
+    if (options.rewrites) {
+      for (const rewrite of options.rewrites) {
+        // Remove the leading `./` or `/`
+        const source = rewrite.source.replace(/^\.?\//, '');
+        const targetDestination = stripInvisibleSegmentsFromPath(
+          removeFileSystemDots(removeSupportedExtensions(rewrite.destination))
+        );
+
+        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
+
+        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+          continue;
+        }
+
+        // Loop over this once and cache the valid destinations
+        validRedirectDestinations ??= contextKeys.map((key) => {
+          return [
+            stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
+            key,
+          ];
+        });
+
+        const destination = validRedirectDestinations.find(
+          (key) => key[0] === targetDestination
+        )?.[1];
+
+        if (!destination) {
+          /*
+           * Only throw the error when we are preserving the api routes
+           * When doing a static export, API routes will not exist so the redirect destination may not exist.
+           * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
+           * `expo export` swallows this error.
+           */
+          if (options.preserveApiRoutes) {
+            throw new Error(`Redirect destination "${rewrite.destination}" does not exist.`);
+          }
+
+          continue;
+        }
+
+        // Add a fake context key
+        const fakeContextKey = `./${source}.tsx`;
+        contextKeys.push(fakeContextKey);
+        rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
+      }
+    }
+  }
+
+  for (const filePath of contextKeys) {
     if (ignoreList.some((regex) => regex.test(filePath))) {
       continue;
     }
 
     isValid = true;
 
-    const meta = getFileMeta(filePath, options);
+    const meta = getFileMeta(filePath, options, redirects, rewrites);
 
     // This is a file that should be ignored. e.g maybe it has an invalid platform?
     if (meta.specificity < 0) {
@@ -152,6 +290,43 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       dynamic: null,
       children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
+
+    if (meta.isRedirect) {
+      node.destinationContextKey = redirects[filePath].destination;
+      node.permanent = redirects[filePath].permanent;
+      node.generated = true;
+      if (node.type === 'route') {
+        node = options.getSystemRoute(
+          {
+            type: 'redirect',
+            route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
+          },
+          node
+        );
+      }
+      if (redirects[filePath].methods) {
+        node.methods = redirects[filePath].methods;
+      }
+      node.type = 'redirect';
+    }
+
+    if (meta.isRewrite) {
+      node.destinationContextKey = rewrites[filePath].destination;
+      node.generated = true;
+      if (node.type === 'route') {
+        node = options.getSystemRoute(
+          {
+            type: 'rewrite',
+            route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
+          },
+          node
+        );
+      }
+      if (redirects[filePath].methods) {
+        node.methods = redirects[filePath].methods;
+      }
+      node.type = 'rewrite';
+    }
 
     if (process.env.NODE_ENV === 'development') {
       // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
@@ -361,27 +536,33 @@ function flattenDirectoryTreeToRoutes(
   return layout;
 }
 
-function getFileMeta(key: string, options: Options) {
+function getFileMeta(
+  originalKey: string,
+  options: Options,
+  redirects: Record<string, RedirectConfig>,
+  rewrites: Record<string, RedirectConfig>
+) {
   // Remove the leading `./`
-  key = key.replace(/^\.\//, '');
+  const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
+  let route = key;
 
-  const parts = key.split('/');
-  let route = removeSupportedExtensions(key);
+  const parts = removeFileSystemDots(originalKey).split('/');
   const filename = parts[parts.length - 1];
   const [filenameWithoutExtensions, platformExtension] =
     removeSupportedExtensions(filename).split('.');
+
   const isLayout = filenameWithoutExtensions === '_layout';
-  const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
+  const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
   if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
-    throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
+    throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
   }
 
   // Nested routes cannot start with the '+' character, except for the '+not-found' route
   if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
     const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
     throw new Error(
-      `Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
+      `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
     );
   }
   let specificity = 0;
@@ -411,7 +592,7 @@ function getFileMeta(key: string, options: Options) {
 
     if (isApi && specificity !== 0) {
       throw new Error(
-        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`
+        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`
       );
     }
 
@@ -423,6 +604,8 @@ function getFileMeta(key: string, options: Options) {
     specificity,
     isLayout,
     isApi,
+    isRedirect: key in redirects,
+    isRewrite: key in rewrites,
   };
 }
 
@@ -513,19 +696,20 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
 function getLayoutNode(node: RouteNode, options: Options) {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-   * Each of these layouts will have a different initialRouteName based upon the first group name.
+   * Each of these layouts will have a different anchor based upon the first group name.
    */
   // We may strip loadRoute during testing
   const groupName = matchLastGroupName(node.route);
   const childMatchingGroup = node.children.find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });
-  let initialRouteName = childMatchingGroup?.route;
+  let anchor = childMatchingGroup?.route;
   const loaded = node.loadRoute();
   if (loaded?.unstable_settings) {
     try {
       // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-      initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+      anchor =
+        loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
     } catch (error: any) {
       if (error instanceof Error) {
         if (!error.message.match(/You cannot dot into a client module/)) {
@@ -536,9 +720,11 @@ function getLayoutNode(node: RouteNode, options: Options) {
 
     if (groupName) {
       // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
-      const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
+      const groupSpecificInitialRouteName =
+        loaded.unstable_settings?.[groupName]?.anchor ??
+        loaded.unstable_settings?.[groupName]?.initialRouteName;
 
-      initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+      anchor = groupSpecificInitialRouteName ?? anchor;
     }
   }
 
@@ -546,7 +732,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
     ...node,
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
-    initialRouteName,
+    initialRouteName: anchor,
   };
 }
 
@@ -557,6 +743,8 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
 ) {
   if (node.type === 'route') {
     node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
+  } else if (node.type === 'redirect') {
+    node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey!])];
   } else if (node.type === 'layout') {
     if (!node.children) {
       throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
@@ -569,20 +757,21 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
      * Calculate the initialRouteNode
      *
      * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-     * Each of these layouts will have a different initialRouteName based upon the first group.
+     * Each of these layouts will have a different anchor based upon the first group.
      */
     const groupName = matchGroupName(node.route);
     const childMatchingGroup = node.children.find((child) => {
       return child.route.replace(/\/index$/, '') === groupName;
     });
-    let initialRouteName = childMatchingGroup?.route;
+    let anchor = childMatchingGroup?.route;
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
       if (loaded?.unstable_settings) {
         try {
           // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-          initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+          anchor =
+            loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
         } catch (error: any) {
           if (error instanceof Error) {
             if (!error.message.match(/You cannot dot into a client module/)) {
@@ -594,35 +783,36 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
         if (groupName) {
           // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
           const groupSpecificInitialRouteName =
+            loaded.unstable_settings?.[groupName]?.anchor ??
             loaded.unstable_settings?.[groupName]?.initialRouteName;
 
-          initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+          anchor = groupSpecificInitialRouteName ?? anchor;
         }
       }
     }
 
-    if (initialRouteName) {
-      const initialRoute = node.children.find((child) => child.route === initialRouteName);
-      if (!initialRoute) {
-        const validInitialRoutes = node.children
+    if (anchor) {
+      const anchorRoute = node.children.find((child) => child.route === anchor);
+      if (!anchorRoute) {
+        const validAnchorRoutes = node.children
           .filter((child) => !child.generated)
           .map((child) => `'${child.route}'`)
           .join(', ');
 
         if (groupName) {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}' for group '(${groupName})'. Valid options are: ${validInitialRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
           );
         } else {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}'. Valid options are: ${validInitialRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
           );
         }
       }
 
       // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
-      node.initialRouteName = initialRouteName;
-      entryPoints.push(initialRoute.contextKey);
+      node.initialRouteName = anchor;
+      entryPoints.push(anchorRoute.contextKey);
     }
 
     for (const child of node.children) {

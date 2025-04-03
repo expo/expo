@@ -17,6 +17,8 @@ import {
 } from '~/ui/components/ConfigSection';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
+> **warning** The `Video` and `Audio` APIs from `expo-av` are being replaced by improved versions in [expo-video](video.mdx) and [expo-audio](audio.mdx). We recommend using those libraries instead, `expo-av` is not receiving patches and will be removed in an upcoming release.
+
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of the operations are also available via props on the component. However, we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
@@ -85,7 +87,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 ## Usage
 
-On this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
+On this page, we reference operations on `playbackObject`. Here is an example of obtaining access to the reference for both sound and video:
 
 ### Example: `Audio.Sound`
 
@@ -100,7 +102,7 @@ const { sound: playbackObject } = await Audio.Sound.createAsync(
 );
 ```
 
-See the [audio documentation](audio.mdx) for further information on `Audio.Sound.createAsync()`.
+See the [audio documentation](audio-av.mdx) for further information on `Audio.Sound.createAsync()`.
 
 ### Example: `Video`
 
@@ -199,7 +201,7 @@ import { Audio, Video } from 'expo-av';
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['RECORD_AUDIO']} />
 

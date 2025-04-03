@@ -1,8 +1,8 @@
 import { mergeClasses, SnackLogo } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
-import { useEffect, useRef, useState, PropsWithChildren, ReactElement } from 'react';
+import { useEffect, useRef, useState, PropsWithChildren } from 'react';
 
-import { cleanCopyValue, findPropInChildren } from '~/common/code-utilities';
+import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-utilities';
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -69,13 +69,7 @@ export const SnackInline = ({
     return `${document.location.origin}/static/examples/${getSelectedDocsVersion()}`;
   };
 
-  const getCode = () => {
-    const code = contentRef.current ? (contentRef.current.textContent ?? '') : '';
-    return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
-  };
-
-  const prismBlockClassName = findPropInChildren(children as ReactElement, 'className');
-  const codeLanguage = prismBlockClassName ? prismBlockClassName.split('-')[1] : 'jsx';
+  const { language, value } = getCodeBlockDataFromChildren(children);
 
   return (
     <Snippet className="mb-3 flex flex-col prose-pre:!m-0 prose-pre:!border-0">
@@ -95,15 +89,15 @@ export const SnackInline = ({
               value={JSON.stringify(
                 getSnackFiles({
                   templateId,
-                  code: getCode(),
+                  code: value,
                   files,
                   baseURL: getExamplesPath(),
-                  codeLanguage,
+                  codeLanguage: language,
                 })
               )}
             />
           )}
-          <CopyAction text={cleanCopyValue(getCode())} />
+          <CopyAction text={cleanCopyValue(value)} />
           <SnippetAction
             disabled={!isReady}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}

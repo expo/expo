@@ -304,3 +304,27 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     return converters
   }
 }
+
+class MergedTypeConverterProvider(
+  private val providers: List<TypeConverterProvider>
+) : TypeConverterProvider {
+  override fun obtainTypeConverter(type: KType): TypeConverter<*> {
+    for (provider in providers) {
+      try {
+        return provider.obtainTypeConverter(type)
+      } catch (_: MissingTypeConverter) {
+        // Ignore and try next provider
+      }
+    }
+
+    throw MissingTypeConverter(type)
+  }
+}
+
+fun TypeConverterProvider.mergeWith(otherProvider: TypeConverterProvider): TypeConverterProvider {
+  return MergedTypeConverterProvider(listOf(this, otherProvider))
+}
+
+fun TypeConverterProvider?.mergeWithDefault(): TypeConverterProvider {
+  return this?.mergeWith(TypeConverterProviderImpl) ?: TypeConverterProviderImpl
+}

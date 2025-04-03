@@ -1,10 +1,10 @@
-import React from 'react';
+import { createRef, type RefObject } from 'react';
 
 /**
  * Create a React ref object that is friendly for snapshots.
  * It will be represented as `[React.ref]` in snapshots.
- * @returns a React ref object.
+ * @returns A React ref object.
  */
-export function createSnapshotFriendlyRef<T>(): React.RefObject<T> {
-  return React.createRef<T>();
+export function createSnapshotFriendlyRef<T>(): RefObject<T | null> {
+  return createRef<T>();
 }

@@ -18,6 +18,14 @@ export type RecurringEventOptions = {
      */
     instanceStartDate?: string | Date;
 };
+type Organizer = {
+    isCurrentUser: boolean;
+    name?: string;
+    role: string;
+    status: string;
+    type: string;
+    url?: string;
+};
 /**
  * A calendar record upon which events (or, on iOS, reminders) can be stored. Settings here apply to
  * the calendar as a whole and how its events are displayed in the OS calendar app.
@@ -155,7 +163,7 @@ export type Event = {
     /**
      * Location field of the event.
      */
-    location: string;
+    location: string | null;
     /**
      * Date when the event record was created.
      * @platform ios
@@ -224,9 +232,12 @@ export type Event = {
     status: EventStatus;
     /**
      * Organizer of the event.
+     * This property is only available on events associated with calendars that are managed by a service ie. Google Calendar or iCloud.
+     * The organizer is read-only and cannot be set.
+     *
      * @platform ios
      */
-    organizer?: string;
+    organizer?: Organizer;
     /**
      * Email address of the organizer of the event.
      * @platform android
@@ -701,7 +712,7 @@ export declare function getEventAsync(id: string, recurringEventOptions?: Recurr
  * @param eventData A map of details for the event to be created.
  * @return A promise which fulfils with a string representing the ID of the newly created event.
  */
-export declare function createEventAsync(calendarId: string, eventData?: Omit<Partial<Event>, 'id'>): Promise<string>;
+export declare function createEventAsync(calendarId: string, eventData?: Omit<Partial<Event>, 'id' | 'organizer'>): Promise<string>;
 /**
  * Updates the provided details of an existing calendar stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
@@ -763,7 +774,7 @@ export declare function deleteAttendeeAsync(id: string): Promise<void>;
  * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
  * @platform ios
  */
-export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date | null, endDate: Date | null): Promise<Reminder[]>;
 /**
  * Returns a specific reminder selected by ID.
  * @param id ID of the reminder to return.

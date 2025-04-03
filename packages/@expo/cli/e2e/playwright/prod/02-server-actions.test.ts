@@ -13,6 +13,9 @@ const testName = '02-server-actions';
 const inputDir = 'dist-' + testName;
 
 test.describe(inputDir, () => {
+  // Configure this describe block to run serially on a single worker so we don't bundle multiple times to the same on-disk location.
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -27,7 +30,7 @@ test.describe(inputDir, () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'single',
         E2E_ROUTER_SRC: testName,
-        EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
+        E2E_SERVER_FUNCTIONS: '1',
         E2E_ROUTER_JS_ENGINE: 'hermes',
         EXPO_USE_METRO_REQUIRE: '1',
         E2E_CANARY_ENABLED: '1',

@@ -1,5 +1,6 @@
 import { type RouterStore } from './router-store';
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function reload(this: RouterStore): void;
@@ -20,9 +21,15 @@ export type LinkToOptions = {
      */
     relativeToDirectory?: boolean;
     /**
-     *
+     * Include the anchor when navigating to a new navigator
      */
     withAnchor?: boolean;
+    /**
+     * When navigating in a Stack, remove all screen from the history that match the singular condition
+     *
+     * If used with `push`, the history will be filtered even if no navigation occurs.
+     */
+    dangerouslySingular?: SingularOptions;
 };
-export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, originalHref: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map

@@ -69,7 +69,7 @@ const unaryExpressionComparator = (nodePath, value) => {
 };
 const isLeftHandSideOfAssignmentExpression = (node, parent) => t.isAssignmentExpression(parent) && parent.left === node;
 const TYPEOF_PREFIX = 'typeof ';
-const plugin = ({ types }) => {
+const plugin = (_) => {
     const processNode = (replacements, nodePath, comparator) => {
         const replacementKey = Object.keys(replacements).find((value) => comparator(nodePath, value));
         if (typeof replacementKey === 'string' &&

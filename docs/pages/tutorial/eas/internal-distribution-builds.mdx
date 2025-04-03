@@ -11,8 +11,16 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution).
+In this chapter, we'll learn how to set up [internal distribution builds](/build/internal-distribution/#internal-distribution).
+
+<VideoBoxLink
+  videoId="1fQuGLHxWks"
+  title="Watch: How to create and share an internal distribution build"
+/>
+
+---
 
 ## Internal distribution build
 
@@ -63,6 +71,12 @@ As discussed in the previous chapters, for non-app store builds, Android require
 
 ### Create
 
+Creating an internal distribution build requires [app signing credentials](/app-signing/app-credentials/).
+
+Android app signing is non-restrictive and allows installing any compatible **.apk** file. When a development build was created, a new Android Keystore was generated for it. Hence, there is no need to generate a new keystore for preview builds.
+
+On the other hand, Apple has stricter rules for app distribution on iOS devices. We need an ad hoc provisioning profile that explicitly lists the devices allowed to run the app. Some organizations whose apps meet specific requirements may be able to use the [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/) to distribute apps internally to a larger audience.
+
 <Tabs>
 
 <Tab label="Android">
@@ -79,19 +93,13 @@ As discussed in the previous chapters, for non-app store builds, Android require
   className="max-w-[800px]"
 />
 
-<Collapsible summary="No Android app signing credentials required for internal distribution">
-
-Android app signing is non-restrictive. A new Android Keystore was generated for development builds, but since Android allows installing any compatible **.apk**, there's no need for a new keystore for preview builds.
-
-</Collapsible>
-
 </Tab>
 
 <Tab label="iOS">
 
-Apple has stricter rules for app distribution on iOS devices. We need an ad hoc provisioning profile, which allows explicitly listing the devices allowed to run the app.
+Apps signed with an ad hoc provisioning profile can be installed by an iOS device whose UDID is registered with the provisioning profile.
 
-- To add more devices, use `eas device:create`. This command registers an iOS device and gives us a URL or QR code to share for device registration:
+- To register more devices, use `eas device:create`. This command registers an iOS device and gives us a URL or QR code to share for device registration:
 
 <Terminal cmd={['$ eas device:create']} />
 
@@ -114,6 +122,25 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 <Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE></>}>
 
 [`eas build:resign`](/app-signing/app-credentials/#re-signing-new-credentials) command can be used to re-sign an existing iOS **.ipa** with a new ad hoc provisioning profile, eliminating the need for a full rebuild.
+
+</Collapsible>
+
+<Collapsible summary="Are you setting up enterprise provisioning?">
+
+Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple Developer account.
+
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID. They just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
+
+If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
+
+- In projects generated with Expo CLI, use [**app.config.js** to dynamically switch identifiers](/tutorial/eas/multiple-app-variants/).
+- In [existing React Native projects](/bare/overview/), create a separate `scheme` for each bundle identifier and specify the scheme name in separate build profiles.
+
+</Collapsible>
+
+<Collapsible summary="Are you using manual local credentials?">
+
+If so, make sure to point your **credentials.json** to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer Portal (either update an existing **credentials.json** used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials).
 
 </Collapsible>
 

@@ -14,10 +14,11 @@ export class MetroConfigCheck implements DoctorCheck {
     // https://github.com/expo/eas-cli/blob/main/packages/eas-cli/src/project/metroConfig.ts
     if (await configExistsAsync(projectRoot)) {
       const metroConfig = await loadConfigAsync(projectRoot);
-      const hasHashAssetFilesPlugin = metroConfig.transformer?.assetPlugins?.find(
-        (plugin: string) => plugin.match(/expo-asset[/|\\]tools[/|\\]hashAssetFiles/)
-      );
-      if (!hasHashAssetFilesPlugin) {
+
+      if (
+        // This is a custom property that we inject to ensure cache invalidation between projects.
+        !metroConfig.transformer.hasOwnProperty('_expoRelativeProjectRoot')
+      ) {
         issues.push(
           'It looks like that you are using a custom metro.config.js that does not extend @expo/metro-config. This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/')

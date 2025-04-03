@@ -14,6 +14,7 @@ import {
   resolveTypeName,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
+  getAllTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -29,6 +30,7 @@ const CLASS_NAMES_MAP: Record<string, string> = {
   DeviceMotionSensor: 'DeviceMotion',
   GyroscopeSensor: 'Gyroscope',
   MagnetometerSensor: 'Magnetometer',
+  LightSensor: 'LightSensor',
 } as const;
 
 const CLASSES_TO_IGNORE_INHERITED_PROPS = [
@@ -61,10 +63,10 @@ const isInheritedFromCommonClass = (child: PropData) =>
   );
 
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = !!CLASS_NAMES_MAP[clx.name] || Object.values(CLASS_NAMES_MAP).includes(clx.name);
+  clx.allowOverwrites = true;
   clx.name = CLASS_NAMES_MAP[clx.name] ?? clx.name;
 
-  if (clx.isSensor && clx.extendedTypes) {
+  if (clx.allowOverwrites && clx.extendedTypes) {
     clx.extendedTypes = clx.extendedTypes.map(type => ({
       ...type,
       name: type.name === 'default' ? 'DeviceSensor' : type.name,
@@ -75,12 +77,20 @@ const remapClass = (clx: ClassDefinitionData) => {
 };
 
 const renderClass = (
-  { name, comment, type, extendedTypes, children, implementedTypes, isSensor }: ClassDefinitionData,
+  {
+    name,
+    comment,
+    type,
+    extendedTypes,
+    children,
+    implementedTypes,
+    allowOverwrites,
+  }: ClassDefinitionData,
   sdkVersion: string
 ): JSX.Element => {
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(child => isMethod(child, isSensor) && !isInheritedFromCommonClass(child))
+    ?.filter(child => isMethod(child, allowOverwrites) && !isInheritedFromCommonClass(child))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
 
@@ -151,6 +161,7 @@ const renderClass = (
                 property,
                 sdkVersion,
                 extractDefaultPropValue(property) ?? property?.defaultValue,
+                getAllTagData('platform', comment),
                 {
                   exposeInSidebar: true,
                   baseNestingLevel: linksNestingLevel,

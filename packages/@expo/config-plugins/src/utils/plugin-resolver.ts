@@ -50,7 +50,7 @@ export function resolvePluginForModule(
   }
 
   throw new PluginError(
-    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`,
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
     'PLUGIN_NOT_FOUND'
   );
 }

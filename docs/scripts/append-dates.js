@@ -30,6 +30,7 @@ async function appendModificationDate(dir = './pages') {
       }
     }
 
+    console.log(` \x1b[1m\x1b[32m✓\x1b[0m Apended modification dates to doc files`);
     process.exit();
   } catch (error) {
     console.error(error);

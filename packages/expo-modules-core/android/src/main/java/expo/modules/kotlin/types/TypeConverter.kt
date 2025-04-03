@@ -64,13 +64,13 @@ abstract class NullAwareTypeConverter<Type : Any>(
 abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : NullAwareTypeConverter<T>(isOptional) {
   override fun convertNonOptional(value: Any, context: AppContext?): T =
     if (value is Dynamic) {
-      convertFromDynamic(value)
+      convertFromDynamic(value, context)
     } else {
-      convertFromAny(value)
+      convertFromAny(value, context)
     }
 
-  abstract fun convertFromDynamic(value: Dynamic): T
-  abstract fun convertFromAny(value: Any): T
+  abstract fun convertFromDynamic(value: Dynamic, context: AppContext?): T
+  abstract fun convertFromAny(value: Any, context: AppContext?): T
 }
 
 inline fun <reified T : Any> createTrivialTypeConverter(
@@ -79,8 +79,14 @@ inline fun <reified T : Any> createTrivialTypeConverter(
   crossinline dynamicFallback: (Dynamic) -> T = { throw UnsupportedClass(T::class) }
 ): TypeConverter<T> {
   return object : DynamicAwareTypeConverters<T>(isOptional) {
-    override fun convertFromDynamic(value: Dynamic): T = dynamicFallback(value)
+    override fun convertFromDynamic(value: Dynamic, context: AppContext?): T {
+      return dynamicFallback(value)
+    }
+
+    override fun convertFromAny(value: Any, context: AppContext?): T {
+      return value as T
+    }
+
     override fun getCppRequiredTypes(): ExpectedType = cppRequireType
-    override fun convertFromAny(value: Any): T = value as T
   }
 }

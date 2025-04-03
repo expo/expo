@@ -1,9 +1,24 @@
+// NOTE(Jan 17, 2025): This file is now deprecated in favor of `@expo/metro-config`. It should probably be removed for SDK 53.
+
 'use strict';
 
-const md5File = require('md5-file/promise');
+const crypto = require('crypto');
+const fs = require('fs');
+
+// NOTE(Mar 5, 2025): Copied over from #34208 in case we won't be able to remove this file by the time SDK 53 is finalized.
+function getMD5ForFilePathAsync(path) {
+  return new Promise((resolve, reject) => {
+    const output = crypto.createHash('md5');
+    const input = fs.createReadStream(path);
+    input.on('error', (err) => reject(err));
+    output.on('error', (err) => reject(err));
+    output.once('readable', () => resolve(output.read().toString('hex')));
+    input.pipe(output);
+  });
+}
 
 module.exports = function hashAssetFiles(asset) {
-  return Promise.all(asset.files.map(md5File)).then((hashes) => {
+  return Promise.all(asset.files.map(getMD5ForFilePathAsync)).then((hashes) => {
     asset.fileHashes = hashes;
 
     // Convert the `../` segments of the server URL to `_` to support monorepos.

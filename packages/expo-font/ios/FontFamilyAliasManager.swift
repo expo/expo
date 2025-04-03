@@ -34,7 +34,7 @@ internal struct FontFamilyAliasManager {
    */
   internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
     maybeSwizzleUIFont()
-    queue.sync {
+    queue.sync(flags: .barrier) {
       fontFamilyAliases[familyNameAlias] = font
     }
   }

@@ -1,3 +1,4 @@
+import { NativeSession } from './NativeSession';
 import { NativeStatement } from './NativeStatement';
 /**
  * A class that represents an instance of the SQLite database.
@@ -10,23 +11,20 @@ export declare class NativeDatabase {
     execAsync(source: string): Promise<void>;
     serializeAsync(databaseName: string): Promise<Uint8Array>;
     prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
+    createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<NativeSession>;
     initSync(): void;
     isInTransactionSync(): boolean;
     closeSync(): void;
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+    createSessionSync(nativeSession: NativeSession, dbName: string): NativeSession;
+    syncLibSQL(): Promise<void>;
 }
 /**
  * Options for opening a database.
  */
 export interface SQLiteOpenOptions {
-    /**
-     * Whether to enable the CR-SQLite extension.
-     * @default false
-     * @deprecated CR-SQLite is no longer actively maintained. Its support is deprecated in SDK 52, and the option will be removed in SDK 53.
-     */
-    enableCRSQLite?: boolean;
     /**
      * Whether to call the [`sqlite3_update_hook()`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
      * @default false
@@ -43,5 +41,29 @@ export interface SQLiteOpenOptions {
      * @hidden
      */
     finalizeUnusedStatementsBeforeClosing?: boolean;
+    /**
+     * Options for libSQL integration.
+     */
+    libSQLOptions?: {
+        /** The URL of the libSQL server. */
+        url: string;
+        /** The auth token for the libSQL server. */
+        authToken: string;
+        /**
+         * Whether to use remote-only without syncing to local database.
+         * @default false
+         */
+        remoteOnly?: boolean;
+    };
 }
+type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
+    libSQLUrl?: string;
+    libSQLAuthToken?: string;
+    libSQLRemoteOnly?: boolean;
+};
+/**
+ * Flattens the SQLiteOpenOptions that are passed to the native module.
+ */
+export declare function flattenOpenOptions(options: SQLiteOpenOptions): FlattenedOpenOptions;
+export {};
 //# sourceMappingURL=NativeDatabase.d.ts.map

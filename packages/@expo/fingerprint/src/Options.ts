@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import type { IMinimatch } from 'minimatch';
+import type { Minimatch } from 'minimatch';
 import os from 'os';
 import path from 'path';
 
@@ -53,33 +53,6 @@ export const DEFAULT_IGNORE_PATHS = [
 
   // Ignore nested node_modules
   '**/node_modules/**/node_modules/**',
-
-  // Ignore default javascript files when calling `getConfig()`
-  '**/node_modules/@babel/**/*',
-  '**/node_modules/@expo/**/*',
-  '**/node_modules/@jridgewell/**/*',
-  '**/node_modules/expo/config.js',
-  '**/node_modules/expo/config-plugins.js',
-  `**/node_modules/{${[
-    'chalk',
-    'debug',
-    'escape-string-regexp',
-    'getenv',
-    'graceful-fs',
-    'has-flag',
-    'imurmurhash',
-    'js-tokens',
-    'json5',
-    'picocolors',
-    'lines-and-columns',
-    'require-from-string',
-    'resolve-from',
-    'signal-exit',
-    'sucrase',
-    'supports-color',
-    'ts-interface-checker',
-    'write-file-atomic',
-  ].join(',')}}/**/*`,
 ];
 
 export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
@@ -103,7 +76,7 @@ export async function normalizeOptionsAsync(
     // Options from config
     ...config,
     // Explicit options
-    ...options,
+    ...Object.fromEntries(Object.entries(options ?? {}).filter(([_, v]) => v != null)),
     // These options are computed by both default and explicit options, so we put them last.
     enableReactImportsPatcher:
       options?.enableReactImportsPatcher ??
@@ -119,7 +92,7 @@ async function collectIgnorePathsAsync(
   projectRoot: string,
   pathsFromConfig: Config['ignorePaths'],
   options: Options | undefined
-): Promise<IMinimatch[]> {
+): Promise<Minimatch[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
     ...(pathsFromConfig ?? []),

@@ -23,3 +23,10 @@ out
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# generated file(s) for llms
+public/llms.txt
+public/llms-full.txt
+public/llms-eas.txt
+public/llms-sdk.txt
+scripts/generate-llms/talks.js

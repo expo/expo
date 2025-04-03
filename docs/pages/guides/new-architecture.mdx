@@ -77,6 +77,8 @@ You can configure the React Native Directory check in your **package.json** file
 
 ## Enable the New Architecture in an existing project
 
+**As of SDK 53**, the New Architecture is enabled by default in all new projects. In older projects, you can enable it by setting the `newArchEnabled` property to `true` in app config.
+
 <Step label="1">
 
 Set `newArchEnabled` on target platforms:
@@ -158,6 +160,8 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
+If you are using Expo SDK 53 or higher, it will be enabled by default. The following instructions apply to older projects.
+
 - **Android**: Set `newArchEnabled=true` in the **gradle.properties** file.
 - **iOS**: If your project has a **Podfile.properties.json** file (which is created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"true"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
 
@@ -167,7 +171,22 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 Starting SDK 52, Expo Go only supports the New Architecture since all Expo libraries and third-party libraries included in Expo Go support the New Architecture. Note that [the Go app is not intended to be used as a development environment for real-world apps](https://expo.fyi/expo-go-usage).
 
-If you want to opt out of using the New Architecture, whether you are using Expo Go or a development build, remove the `newArchEnabled` property from app config and create a [development build](/develop/development-builds/introduction/).
+If you want to opt out of using the New Architecture, whether you are using Expo Go or a development build, set the `newArchEnabled` property to `false` in app config and create a [development build](/develop/development-builds/introduction/).
+
+```json app.json
+{
+  "expo": {
+    "newArchEnabled": false
+  }
+}
+```
+
+<Collapsible summary="Are you disabling the New Architecture in a bare React Native app?">
+
+- **Android**: Set `newArchEnabled=false` in the **gradle.properties** file.
+- **iOS**: If your project has a **Podfile.properties.json** file (which is created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"false"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
+
+</Collapsible>
 
 ## Troubleshooting
 
@@ -179,11 +198,9 @@ You may be able to try the New Architecture in your app even if some of the libr
 
 </Collapsible>
 
-<Collapsible summary="Known issues in Expo SDK libraries">
+<Collapsible summary="Known issues in Expo SDK and recommended libraries">
 
-As of SDK 52, the following are the known issues with the New Architecture in the Expo SDK:
-
-- **expo-location**: background location is not yet supported.
+- **react-native-maps**: does not yet support the New Architecture. [Follow along with progress](https://github.com/react-native-maps/react-native-maps/discussions/5355). If your app can force a minimium version of iOS 17, or does not need to support maps on iOS, then consider [expo-maps](versions/latest/sdk/maps/).
 
 You may encounter other issues in older SDK releases. We recommend upgrading to the latest SDK version.
 

@@ -37,6 +37,13 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       return false
     }
 
+    Property("toggleRecordingAsyncAvailable") { () -> Bool in
+      if #available(iOS 18.0, *) {
+        return true
+      }
+      return false
+    }
+
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
       guard let imageLoader = appContext?.imageLoader else {
         throw ImageLoaderNotFound()
@@ -76,27 +83,48 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if let type, view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
+        // the prop has been removed, reset to default
+        if type == nil && view.presetCamera != .back {
+          view.presetCamera = .back
+        }
       }
 
       Prop("flashMode") { (view, flashMode: FlashMode?) in
         if let flashMode, view.flashMode != flashMode {
           view.flashMode = flashMode
         }
+        if flashMode == nil && view.flashMode != .auto {
+          view.flashMode = .auto
+        }
       }
 
       Prop("enableTorch") { (view, enabled: Bool?) in
-        view.torchEnabled = enabled ?? false
+        if let enabled, view.torchEnabled != enabled {
+          view.torchEnabled = enabled
+          return
+        }
+        if enabled == nil && view.torchEnabled {
+          view.torchEnabled = false
+        }
       }
 
       Prop("pictureSize") { (view, pictureSize: PictureSize?) in
         if let pictureSize, view.pictureSize != pictureSize {
           view.pictureSize = pictureSize
+          return
+        }
+        if pictureSize == nil && view.pictureSize != .high {
+          view.pictureSize = .high
         }
       }
 
       Prop("zoom") { (view, zoom: Double?) in
         if let zoom, fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
+          return
+        }
+        if zoom == nil && view.zoom != 0 {
+          view.zoom = 0
         }
       }
 
@@ -104,11 +132,18 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if let mode, view.mode != mode {
           view.mode = mode
         }
+        if mode == nil && view.mode != .picture {
+          view.mode = .picture
+        }
       }
 
       Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
         if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
           view.isScanningBarcodes = scanBarcodes
+          return
+        }
+        if scanBarcodes == nil && view.isScanningBarcodes != false {
+          view.isScanningBarcodes = false
         }
       }
 
@@ -119,58 +154,71 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("mute") { (view, muted: Bool?) in
-        view.isMuted = muted ?? false
+        if let muted, view.isMuted != muted {
+          view.isMuted = muted
+          return
+        }
+        if muted == nil && view.isMuted != false {
+          view.isMuted = false
+        }
       }
 
       Prop("animateShutter") { (view, animate: Bool?) in
+        // Does not call anything that immediately causes any configuration changes
+        // so it's fine to just set it
         view.animateShutter = animate ?? true
       }
 
       Prop("videoQuality") { (view, quality: VideoQuality?) in
         if let quality, view.videoQuality != quality {
           view.videoQuality = quality
+          return
+        }
+        if quality == nil && view.videoQuality != .video1080p {
+          view.videoQuality = .video1080p
         }
       }
 
       Prop("autoFocus") { (view, focusMode: FocusMode?) in
-        view.autoFocus = focusMode?.toAVCaptureFocusMode() ?? .continuousAutoFocus
+        if let focusMode, view.autoFocus != focusMode.toAVCaptureFocusMode() {
+          view.autoFocus = focusMode.toAVCaptureFocusMode()
+          return
+        }
+        if focusMode == nil && view.autoFocus != .continuousAutoFocus {
+          view.autoFocus = .continuousAutoFocus
+        }
       }
 
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool?) in
         if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
+          return
+        }
+        if responsiveOrientation == nil && view.responsiveWhenOrientationLocked != false {
+          view.responsiveWhenOrientationLocked = false
         }
       }
 
       Prop("mirror") { (view, mirror: Bool?) in
-        if let mirror {
-          view.mirror = mirror
-          return
-        }
-        view.mirror = false
+        // Does not call anything that immediately causes any configuration changes
+        // so it's fine to just set it
+        view.mirror = mirror ?? false
       }
 
       Prop("active") { (view, active: Bool?) in
-        if let active {
+        if let active, view.active != active {
           view.active = active
           return
+        }
+        if active == nil && view.active != true {
+          view.active = true
         }
       }
 
       Prop("videoBitrate") { (view, bitrate: Int?) in
-        if let bitrate {
-          view.videoBitrate = bitrate
-          return
-        }
-        if view.videoBitrate != nil {
-          view.videoBitrate = nil
-        }
-      }
-
-      OnViewDidUpdateProps { view in
-        Task {
-          await view.initCamera()
-        }
+        // Does not call anything that immediately causes any configuration changes
+        // so it's fine to just set it
+        view.videoBitrate = bitrate
       }
 
       AsyncFunction("resumePreview") { view in
@@ -207,12 +255,38 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #endif
       }
 
+      AsyncFunction("toggleRecording") { view in
+        if #available(iOS 18.0, *) {
+          view.toggleRecording()
+        } else {
+          throw CameraToggleRecordingException()
+        }
+      }
+
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
         #else
         view.stopRecording()
         #endif
+      }
+    }
+
+    Class("Picture", PictureRef.self) {
+      Property("width") { (image: PictureRef) -> Int in
+        return image.ref.cgImage?.width ?? 0
+      }
+
+      Property("height") { (image: PictureRef) -> Int in
+        return image.ref.cgImage?.height ?? 0
+      }
+
+      AsyncFunction("savePictureAsync") { (image: PictureRef, options: SavePictureOptions?) -> [String: Any?] in
+        guard let appContext else {
+          throw Exceptions.AppContextLost()
+        }
+        let options = options ?? SavePictureOptions()
+        return try ExpoCameraUtils.saveImage(image.ref, options: options, appContext: appContext)
       }
     }
 

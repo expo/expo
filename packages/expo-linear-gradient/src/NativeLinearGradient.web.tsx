@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { View } from 'react-native';
+import { ColorValue, View } from 'react-native';
 
 import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
 import { normalizeColor } from './normalizeColor';
@@ -55,7 +55,7 @@ export default function NativeLinearGradient({
  * Extracted to a separate function in order to be able to test logic independently.
  */
 export function getLinearGradientBackgroundImage(
-  colors: readonly number[] | string[],
+  colors: readonly ColorValue[],
   locations?: readonly number[] | null,
   startPoint?: NativeLinearGradientPoint | null,
   endPoint?: NativeLinearGradientPoint | null,
@@ -103,10 +103,10 @@ function calculatePseudoAngle(
 }
 
 function calculateGradientColors(
-  colors: readonly number[] | string[],
+  colors: readonly ColorValue[],
   locations?: readonly number[] | null
 ) {
-  return colors.map((color: number | string, index: number): string | void => {
+  return colors.map((color: ColorValue, index: number): string | void => {
     const output = normalizeColor(color);
     if (locations && locations[index]) {
       const location = Math.max(0, Math.min(1, locations[index]));

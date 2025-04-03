@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { SitemapStream } from 'sitemap';
 
 const IGNORED_PAGES = [
@@ -12,9 +12,15 @@ const IGNORED_PAGES = [
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
  */
 export default function createSitemap({ pathMap, domain, output, pathsPriority, pathsHidden }) {
-  if (!pathMap) throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
-  if (!domain) throw new Error(`⚠️ Couldn't generate sitemap, no 'domain' provided`);
-  if (!output) throw new Error(`⚠️ Couldn't generate sitemap, no 'output' provided`);
+  if (!pathMap) {
+    throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
+  }
+  if (!domain) {
+    throw new Error(`⚠️ Couldn't generate sitemap, no 'domain' provided`);
+  }
+  if (!output) {
+    throw new Error(`⚠️ Couldn't generate sitemap, no 'output' provided`);
+  }
 
   // Make sure both hidden and prioritized paths are prefixed with slash
   pathsPriority = pathsPriority.map(pathWithStartingSlash);
@@ -23,7 +29,7 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
   // Get a list of URLs from the pathMap that we can use in the sitemap
   const urls = Object.keys(pathMap)
     .filter(
-      url => !IGNORED_PAGES.includes(url) && !pathsHidden.find(hidden => url.startsWith(hidden))
+      url => !IGNORED_PAGES.includes(url) && !pathsHidden.some(hidden => url.startsWith(hidden))
     )
     .map(pathWithTrailingSlash)
     .sort((a, b) => pathSortedByPriority(a, b, pathsPriority));
@@ -61,8 +67,12 @@ function pathWithStartingSlash(url) {
  *   - Matches the order of prioritized paths using "startsWith" check
  */
 function pathSortedByPriority(a, b, priorities = []) {
-  if (a === '/') return -1;
-  if (b === '/') return 1;
+  if (a === '/') {
+    return -1;
+  }
+  if (b === '/') {
+    return 1;
+  }
 
   const aPriority = priorities.findIndex(prio => a.startsWith(prio));
   const bPriority = priorities.findIndex(prio => b.startsWith(prio));

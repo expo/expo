@@ -1,6 +1,6 @@
-import path from 'path';
+import path from 'node:path';
+import { URL } from 'node:url';
 import { visit } from 'unist-util-visit';
-import { URL } from 'url';
 
 /**
  * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root

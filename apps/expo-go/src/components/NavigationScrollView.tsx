@@ -17,6 +17,7 @@ type StyledScrollViewProps = PropsWithChildren<
 export default function NavigationScrollView({ style, ...otherProps }: StyledScrollViewProps) {
   const ref = useRef(null);
 
+  // @ts-expect-error: TS2345: null is not assignable to type ScrollableWrapper
   useScrollToTop(ref);
 
   const ScrollView = Platform.OS === 'android' ? RNScrollView : RNGHScrollView;

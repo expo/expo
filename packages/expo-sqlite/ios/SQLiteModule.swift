@@ -14,7 +14,6 @@ public final class SQLiteModule: Module {
 
   private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var cachedStatements = [NativeDatabase: [NativeStatement]]()
   private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
@@ -74,6 +73,16 @@ public final class SQLiteModule: Module {
       try ensureDatabasePathExists(path: databasePath)
     }
 
+    // swiftlint:disable:next line_length
+    AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+    Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
+      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
+    }
+
+    // MARK: - NativeDatabase
+
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
       Constructor { (databasePath: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
@@ -84,6 +93,7 @@ public final class SQLiteModule: Module {
         } else {
           // Try to find opened database for fast refresh
           if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
+            cachedDb.addRef()
             return cachedDb
           }
 
@@ -115,12 +125,16 @@ public final class SQLiteModule: Module {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
       }
       Function("closeSync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
       }
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
@@ -143,7 +157,16 @@ public final class SQLiteModule: Module {
       Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
       }
+
+      AsyncFunction("createSessionAsync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
+        try sessionCreate(database: database, session: session, dbName: dbName)
+      }
+      Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
+        try sessionCreate(database: database, session: session, dbName: dbName)
+      }
     }
+
+    // MARK: - NativeStatement
 
     // swiftlint:disable:next closure_body_length
     Class(NativeStatement.self) {
@@ -197,6 +220,64 @@ public final class SQLiteModule: Module {
         try finalize(statement: statement, database: database)
       }
     }
+
+    // MARK: - NativeSession
+
+    // swiftlint:disable:next closure_body_length
+    Class(NativeSession.self) {
+      Constructor {
+        return NativeSession()
+      }
+
+      AsyncFunction("attachAsync") { (session: NativeSession, database: NativeDatabase, table: String?) in
+        try sessionAttach(database: database, session: session, table: table)
+      }
+      Function("attachSync") { (session: NativeSession, database: NativeDatabase, table: String?) in
+        try sessionAttach(database: database, session: session, table: table)
+      }
+
+      AsyncFunction("enableAsync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
+        try sessionEnable(database: database, session: session, enabled: enabled)
+      }
+      Function("enableSync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
+        try sessionEnable(database: database, session: session, enabled: enabled)
+      }
+
+      AsyncFunction("closeAsync") { (session: NativeSession, database: NativeDatabase) in
+        try sessionClose(database: database, session: session)
+      }
+      Function("closeSync") { (session: NativeSession, database: NativeDatabase) in
+        try sessionClose(database: database, session: session)
+      }
+
+      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateChangeset(database: database, session: session)
+      }
+      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateChangeset(database: database, session: session)
+      }
+
+      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateInvertedChangeset(database: database, session: session)
+      }
+      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+        return try sessionCreateInvertedChangeset(database: database, session: session)
+      }
+
+      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
+      }
+      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
+      }
+
+      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
+      }
+      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
+      }
+    }
   }
 
   private func ensureDatabasePathExists(path: String) throws -> URL {
@@ -244,9 +325,6 @@ public final class SQLiteModule: Module {
 
   private func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
-    if database.openOptions.enableCRSQLite {
-      crsqlite_init_from_swift(database.pointer)
-    }
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
     }
@@ -283,7 +361,6 @@ public final class SQLiteModule: Module {
     if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    maybeAddCachedStatement(database: database, statement: statement)
   }
 
   // swiftlint:disable line_length
@@ -343,7 +420,8 @@ public final class SQLiteModule: Module {
       if ret == SQLITE_ROW {
         columnValuesList.append(try getColumnValues(statement: statement))
         continue
-      } else if ret == SQLITE_DONE {
+      }
+      if ret == SQLITE_DONE {
         break
       }
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
@@ -362,7 +440,6 @@ public final class SQLiteModule: Module {
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    maybeRemoveCachedStatement(database: database, statement: statement)
     if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
@@ -380,14 +457,8 @@ public final class SQLiteModule: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(db)
-    for removedStatement in maybeRemoveAllCachedStatements(database: db) {
-      exsqlite3_finalize(removedStatement.pointer)
-    }
+    try maybeFinalizeAllStatements(db)
 
-    if db.openOptions.enableCRSQLite {
-      exsqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
-    }
     let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
 
@@ -427,6 +498,18 @@ public final class SQLiteModule: Module {
       try FileManager.default.removeItem(atPath: path)
     } catch {
       throw DeleteDatabaseFileException(path)
+    }
+  }
+
+  private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
+    try maybeThrowForClosedDatabase(destDatabase)
+    try maybeThrowForClosedDatabase(sourceDatabase)
+    guard let backup = exsqlite3_backup_init(destDatabase.pointer, destDatabaseName, sourceDatabase.pointer, sourceDatabaseName) else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
+    }
+    exsqlite3_backup_step(backup, -1)
+    if exsqlite3_backup_finish(backup) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(destDatabase))
     }
   }
 
@@ -566,9 +649,11 @@ public final class SQLiteModule: Module {
   private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
     return Self.lockQueue.sync {
       if let index = cachedDatabases.firstIndex(of: database) {
-        let database = cachedDatabases[index]
-        cachedDatabases.remove(at: index)
-        return database
+        let db = cachedDatabases[index]
+        if db.release() == 0 {
+          cachedDatabases.remove(at: index)
+          return db
+        }
       }
       return nil
     }
@@ -591,42 +676,119 @@ public final class SQLiteModule: Module {
     }
   }
 
-  // MARK: - cachedStatements managements
-
-  private func maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+  // MARK: - statements managements
+  private func maybeFinalizeAllStatements(_ database: NativeDatabase) throws {
+    guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
-    Self.lockQueue.sync {
-      if cachedStatements[database] != nil {
-        cachedStatements[database]?.append(statement)
-      } else {
-        cachedStatements[database] = [statement]
+    var stmt: OpaquePointer? = exsqlite3_next_stmt(database.pointer, nil)
+    if stmt == nil {
+      return
+    }
+    var result = SQLITE_OK
+    while let currentStmt = stmt {
+      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
+      let ret = exsqlite3_finalize(currentStmt)
+      if ret != SQLITE_OK {
+        result = ret
+      }
+      stmt = nextStmt
+    }
+    if result != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+  }
+
+  // MARK: - Session Extension
+
+  private func sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) throws {
+    try maybeThrowForClosedDatabase(database)
+    let db = dbName.cString(using: .utf8)
+    if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+  }
+
+  private func sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) throws {
+    try maybeThrowForClosedDatabase(database)
+    let tableName = table?.cString(using: .utf8)
+    if exsqlite3session_attach(session.pointer, tableName) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+  }
+
+  private func sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Bool) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3session_enable(session.pointer, enabled ? 1 : 0)
+  }
+
+  private func sessionClose(database: NativeDatabase, session: NativeSession) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3session_delete(session.pointer)
+  }
+
+  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+    try maybeThrowForClosedDatabase(database)
+    var size: Int32 = 0
+    var buffer: UnsafeMutableRawPointer?
+    if exsqlite3session_changeset(session.pointer, &size, &buffer) != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    guard let buffer else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    defer { exsqlite3_free(buffer) }
+    return Data(bytes: buffer, count: Int(size))
+  }
+
+  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+    do {
+      let changeset = try sessionCreateChangeset(database: database, session: session)
+      return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
+    } catch {
+      throw error
+    }
+  }
+
+  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws {
+    try maybeThrowForClosedDatabase(database)
+    try changeset.withUnsafeBytes {
+      let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
+      if exsqlite3changeset_apply(
+        database.pointer,
+        Int32(changeset.count),
+        buffer,
+        nil,
+        { _, _, _ -> Int32 in
+          return SQLITE_CHANGESET_REPLACE
+        },
+        nil
+      ) != SQLITE_OK {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
     }
   }
 
-  private func maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
-      return
-    }
-    Self.lockQueue.sync {
-      if let index = cachedStatements[database]?.firstIndex(of: statement) {
-        cachedStatements[database]?.remove(at: index)
-      }
-    }
-  }
+  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws -> Data {
+    try maybeThrowForClosedDatabase(database)
+    var result: Data?
+    try changeset.withUnsafeBytes {
+      let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
+      var outSize: Int32 = 0
+      var outBuffer: UnsafeMutableRawPointer?
 
-  private func maybeRemoveAllCachedStatements(database: NativeDatabase) -> [NativeStatement] {
-    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
-      return []
-    }
-    return Self.lockQueue.sync {
-      if let statements = cachedStatements[database] {
-        cachedStatements.removeValue(forKey: database)
-        return statements
+      if exsqlite3changeset_invert(Int32(changeset.count), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
-      return []
+      guard let outBuffer else {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      defer { exsqlite3_free(outBuffer) }
+      result = Data(bytes: outBuffer, count: Int(outSize))
     }
+    guard let result else {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+    }
+    return result
   }
 }

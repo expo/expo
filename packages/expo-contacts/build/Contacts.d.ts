@@ -588,7 +588,6 @@ export declare function getContactByIdAsync(id: string, fields?: FieldType[]): P
 export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 /**
  * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
- * > **info** On Android, you can use [`presentFormAsync`](#contactspresentformasynccontactid-contact-formoptions) to make edits to contacts.
  * @param contact A contact object including the wanted changes.
  * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
  * @example
@@ -600,7 +599,6 @@ export declare function addContactAsync(contact: Contact, containerId?: string):
  * };
  * await Contacts.updateContactAsync(contact);
  * ```
- * @platform ios
  */
 export declare function updateContactAsync(contact: Contact): Promise<string>;
 /**

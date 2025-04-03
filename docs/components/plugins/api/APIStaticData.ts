@@ -172,18 +172,21 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
     BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/v52.0.0/sdk/maps/#cameraposition-2',
   },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
     SharedObject: '/versions/v53.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
+    CameraPosition: '/versions/v53.0.0/sdk/maps/#cameraposition-2',
   },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
     NativeModule: '/versions/latest/sdk/expo/#nativemodule',
     SharedObject: '/versions/latest/sdk/expo/#sharedobject',
     SharedRef: '/versions/latest/sdk/expo/#sharedref',
+    CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   },
   unversioned: {
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemitter',
@@ -192,6 +195,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
     Href: '/versions/unversioned/sdk/router/#href-1',
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
   },
 };
 

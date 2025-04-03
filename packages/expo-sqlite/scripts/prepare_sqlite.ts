@@ -10,8 +10,8 @@ import tar from 'tar';
 
 const SQLITE_DOWNLOAD_URL = 'https://github.com/sqlite/sqlite/archive';
 const SQLCIPHER_DOWNLOAD_URL = 'https://github.com/sqlcipher/sqlcipher/archive';
-const DEFAULT_SQLITE_VERSION = '3.45.3';
-const DEFAULT_SQLCIPHER_VERSION = '4.6.0';
+const DEFAULT_SQLITE_VERSION = '3.49.1';
+const DEFAULT_SQLCIPHER_VERSION = '4.7.0';
 
 async function runAsync() {
   const tarballOutputPath = 'sqlite.tar.gz';
@@ -72,9 +72,7 @@ function getCommandArgs(): {
   let configureFlags: string[];
   let downloadUrl: string;
   if (isSqlCipher) {
-    // When configuring on macOS, use the commoncrypto library for encryption.
-    // For Android, this could be overridden with `-DSQLCIPHER_CRYPTO_OPENSSL`.
-    configureFlags = ['--with-crypto-lib=commoncrypto'];
+    configureFlags = [];
     const version = args[1] || DEFAULT_SQLCIPHER_VERSION;
     const tag = `v${version}`;
     downloadUrl = `${SQLCIPHER_DOWNLOAD_URL}/${tag}/${tag}.tar.gz`;

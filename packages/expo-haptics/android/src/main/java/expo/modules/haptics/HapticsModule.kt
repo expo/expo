@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.View
 import expo.modules.haptics.arguments.HapticsImpactType
 import expo.modules.haptics.arguments.HapticsNotificationType
 import expo.modules.haptics.arguments.HapticsSelectionType
@@ -37,6 +38,11 @@ class HapticsModule : Module() {
 
     AsyncFunction("impactAsync") { style: String ->
       vibrate(HapticsImpactType.fromString(style))
+    }
+
+    AsyncFunction("performHapticsAsync") { type: HapticType ->
+      val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
+      view?.performHapticFeedback(type.toHapticFeedbackType())
     }
   }
 

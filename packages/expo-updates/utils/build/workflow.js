@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateWorkflow = exports.resolveWorkflowAsync = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const vcs_1 = __importDefault(require("./vcs"));
 async function resolveWorkflowAsync(projectDir, platform) {
@@ -25,7 +25,7 @@ async function resolveWorkflowAsync(projectDir, platform) {
     }
     const vcsRootPath = path_1.default.normalize(await vcsClient.getRootPathAsync());
     for (const marker of platformWorkflowMarkers) {
-        if ((await fs_extra_1.default.pathExists(marker)) &&
+        if (fs_1.default.existsSync(marker) &&
             !(await vcsClient.isFileIgnoredAsync(path_1.default.relative(vcsRootPath, marker)))) {
             return 'generic';
         }

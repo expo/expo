@@ -1,21 +1,17 @@
 import 'react-native';
-
-import React from 'react';
-import renderer, { act } from 'react-test-renderer';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 
 import { LI, UL } from '../Lists';
 
-it(`renders UL nested in LI`, () => {
-  let tree;
-  act(() => {
-    tree = renderer.create(
-      <LI>
+it('renders UL nested in LI', () => {
+  const { toJSON } = render(
+    <LI>
+      <LI>item</LI>
+      <UL>
         <LI>item</LI>
-        <UL>
-          <LI>item</LI>
-        </UL>
-      </LI>
-    );
-  });
-  expect(tree).toMatchSnapshot();
+      </UL>
+    </LI>
+  );
+  expect(toJSON()).toMatchSnapshot();
 });

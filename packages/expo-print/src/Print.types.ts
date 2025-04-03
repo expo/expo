@@ -113,6 +113,11 @@ export type FilePrintOptions = {
    * Whether to include base64 encoded string of the file in the returned object.
    */
   base64?: boolean;
+  /**
+   * The text zoom of the page in percent. The default is 100.
+   * @platform android
+   */
+  textZoom?: number;
 };
 
 // @needsAudit

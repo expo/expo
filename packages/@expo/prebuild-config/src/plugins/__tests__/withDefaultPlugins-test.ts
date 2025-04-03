@@ -8,7 +8,7 @@ import {
 } from '@expo/config-plugins';
 import JsonFile from '@expo/json-file';
 import plist from '@expo/plist';
-import fs from 'fs-extra';
+import fsMock from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 import xcode from 'xcode';
@@ -24,7 +24,7 @@ import {
 const { withOrientation } = IOSConfig.Orientation;
 
 const { readXMLAsync } = XML;
-const fsReal = jest.requireActual('fs') as typeof fs;
+const fsReal = jest.requireActual<typeof import('fs')>('fs');
 
 jest.setTimeout(30 * 1000);
 
@@ -363,8 +363,6 @@ describe('built-in plugins', () => {
         'ios/HelloWorld.xcodeproj/project.xcworkspace/contents.xcworkspacedata',
         'ios/HelloWorld.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
         'ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-        'ios/HelloWorld.xcworkspace/contents.xcworkspacedata',
-        'ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
         'ios/Podfile',
         'ios/Podfile.properties.json',
         'ios/gitignore',
@@ -438,12 +436,12 @@ describe('built-in plugins', () => {
 
     // Ensure the infoPlist object is merged correctly
     const infoPlist = await plist.parse(
-      fs.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
+      fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
     );
     expect(infoPlist.bar).toStrictEqual({ val: ['foo'] });
     // Ensure the entitlements object is merged correctly
     const entitlements = await plist.parse(
-      fs.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
+      fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
     );
     expect(entitlements.foo).toStrictEqual('bar');
 
@@ -526,8 +524,6 @@ describe('built-in plugins', () => {
       'ios/HelloWorld.xcodeproj/project.xcworkspace/contents.xcworkspacedata',
       'ios/HelloWorld.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
       'ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-      'ios/HelloWorld.xcworkspace/contents.xcworkspacedata',
-      'ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
       'ios/Podfile',
       'ios/Podfile.properties.json',
       'ios/gitignore',

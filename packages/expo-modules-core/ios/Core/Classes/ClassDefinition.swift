@@ -76,7 +76,7 @@ public final class ClassDefinition: ObjectDefinition {
     // Properties are intentionally skipped here — they have to decorate an instance instead of the prototype.
     let prototype = object.getProperty("prototype").getObject()
 
-    decorateWithConstants(object: prototype)
+    try decorateWithConstants(object: prototype, appContext: appContext)
     try decorateWithFunctions(object: prototype, appContext: appContext)
     try decorateWithClasses(object: prototype, appContext: appContext)
     try decorateWithProperties(object: prototype, appContext: appContext)

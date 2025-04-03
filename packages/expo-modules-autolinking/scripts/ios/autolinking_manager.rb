@@ -1,5 +1,6 @@
 require_relative 'constants'
 require_relative 'package'
+require_relative 'packages_config'
 
 # Require extensions to CocoaPods' classes
 require_relative 'cocoapods/sandbox'
@@ -18,6 +19,8 @@ module Expo
 
       validate_target_definition()
       resolve_result = resolve()
+
+      Expo::PackagesConfig.instance.coreFeatures = resolve_result['coreFeatures']
 
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']

@@ -31,7 +31,7 @@
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
     "@expo/npm-proofread": "^1.0.1",
-    "@testing-library/react-native": "^12.5.2",
+    "@testing-library/react-native": "^13.1.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",

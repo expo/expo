@@ -3,7 +3,6 @@ import ExpoModulesCore
 struct CameraRecordingOptions: Record {
   @Field var maxDuration: Double?
   @Field var maxFileSize: Double?
-  @Field var quality: VideoQuality?
   @Field var mirror: Bool = false
   @Field var codec: VideoCodec?
 }

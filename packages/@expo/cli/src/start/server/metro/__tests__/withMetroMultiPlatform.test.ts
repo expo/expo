@@ -67,6 +67,7 @@ function getResolverContext(
     sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
     customResolverOptions: {},
     originModulePath: '/index.js',
+    getPackage: () => null,
     ...context,
   } as any;
 }
@@ -120,8 +121,8 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         extraNodeModules: {},
         mainFields: ['react-native', 'browser', 'main'],
@@ -130,6 +131,7 @@ describe(withExtendedResolver, () => {
         sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
+        getPackage: expect.any(Function),
       }),
       'react-native',
       platform
@@ -148,7 +150,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
     expect(getResolveFunc()).toHaveBeenNthCalledWith(
       1,
@@ -174,7 +176,7 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
     expect(getResolveFunc()).toHaveBeenNthCalledWith(
       1,
@@ -200,8 +202,8 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -223,8 +225,8 @@ describe(withExtendedResolver, () => {
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -250,8 +252,8 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -357,7 +359,11 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
+      expect(getResolveFunc()).toHaveBeenCalledWith(
+        expect.anything(),
+        '@expo/vector-icons',
+        platform
+      );
     });
   });
 
@@ -382,7 +388,7 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         '@expo/vector-icons/FontAwesome',
         platform
@@ -410,7 +416,7 @@ describe(withExtendedResolver, () => {
         platform
       );
 
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         'react-native-vector-icons',
         platform
@@ -433,7 +439,11 @@ describe(withExtendedResolver, () => {
     });
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
-    expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
+      expect.anything(),
+      '@expo/vector-icons',
+      platform
+    );
   });
 
   it(`resolves a node.js built-in as a shim on web`, async () => {
@@ -457,8 +467,8 @@ describe(withExtendedResolver, () => {
       type: 'empty',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
@@ -493,8 +503,8 @@ describe(withExtendedResolver, () => {
       type: 'sourceFile',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
         mainFields: ['browser', 'module', 'main'],
@@ -526,8 +536,8 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         mainFields: ['main', 'module'],
         preferNativePlatform: false,
@@ -561,8 +571,8 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
         dev: true,
@@ -572,9 +582,10 @@ describe(withExtendedResolver, () => {
         originModulePath: '/index.js',
         preferNativePlatform: true,
         sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
-        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
+        unstable_conditionNames: ['node', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -602,8 +613,8 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
         dev: true,
@@ -613,9 +624,10 @@ describe(withExtendedResolver, () => {
         originModulePath: '/index.js',
         preferNativePlatform: false,
         sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
-        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
+        unstable_conditionNames: ['node', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -643,8 +655,8 @@ describe(withExtendedResolver, () => {
       platform
     );
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       {
         customResolverOptions: { environment: 'node' },
         dev: true,
@@ -654,9 +666,10 @@ describe(withExtendedResolver, () => {
         originModulePath: '/index.js',
         preferNativePlatform: false,
         sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
-        unstable_conditionNames: ['node', 'require'],
+        unstable_conditionNames: ['node'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -710,8 +723,8 @@ describe(withExtendedResolver, () => {
       type: 'sourceFile',
     });
 
-    expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.anything(),
       '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
       'web'
@@ -746,7 +759,7 @@ describe(withExtendedResolver, () => {
               );
 
               expect(result.type).toBe('empty');
-              expect(getResolveFunc()).toBeCalledTimes(1);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(1);
             });
           });
 
@@ -754,7 +767,6 @@ describe(withExtendedResolver, () => {
             'source-map-support',
             'source-map-support/register.js',
             'react',
-            'react-native-helmet-async',
             '@radix-ui/accordion',
             '@babel/runtime/helpers/interopRequireDefault',
             'react-dom/server',
@@ -800,7 +812,7 @@ describe(withExtendedResolver, () => {
                 `\0node:${name}`
               );
 
-              expect(getResolveFunc()).toBeCalledTimes(0);
+              expect(getResolveFunc()).toHaveBeenCalledTimes(0);
             });
           });
 
@@ -817,10 +829,36 @@ describe(withExtendedResolver, () => {
               '\0node:@babel/runtime/xxx/foo.js'
             );
 
-            expect(getResolveFunc()).toBeCalledTimes(0);
+            expect(getResolveFunc()).toHaveBeenCalledTimes(0);
           });
         });
       });
+    });
+
+    it(`does not apply virtual externals to imports originating in CSS files`, () => {
+      vol.fromJSON(
+        {
+          'node_modules/@radix-ui/colors/green-dark.css': '',
+          mock: '',
+        },
+        '/'
+      );
+
+      const config = getModifiedConfig();
+
+      const result = config.resolver.resolveRequest!(
+        getNodeResolverContext({
+          originModulePath: '/index.css',
+        }),
+        '@radix-ui/colors/green-dark.css',
+        'web'
+      );
+
+      expect(result).toEqual({
+        type: 'empty',
+      });
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
     it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
@@ -838,7 +876,7 @@ describe(withExtendedResolver, () => {
         type: 'empty',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
     it(`does not extern source-map-support in client environment`, async () => {
@@ -852,7 +890,7 @@ describe(withExtendedResolver, () => {
         type: 'empty',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -906,10 +944,261 @@ describe(withExtendedResolver, () => {
         type: 'sourceFile',
       });
 
-      expect(getResolveFunc()).toBeCalledTimes(1);
-      expect(getResolveFunc()).toBeCalledWith(
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+      expect(getResolveFunc()).toHaveBeenCalledWith(
         expect.anything(),
         '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        platform
+      );
+    });
+  });
+
+  describe('with fallback module resolver', () => {
+    function getModifiedConfig() {
+      return withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+        getMetroBundler: getMetroBundlerGetter() as any,
+      });
+    }
+
+    it('resolves `@babel/runtime/helpers/interopRequireDefault` as a fallback module', () => {
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        if (
+          context.originModulePath === '/index.js' &&
+          moduleName === '@babel/runtime/helpers/interopRequireDefault'
+        ) {
+          throw new FailedToResolveNameError();
+        } else if (moduleName === 'expo/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else if (moduleName === 'expo-router/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else {
+          return { type: 'empty' };
+        }
+      });
+
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          getPackage(name) {
+            if (name.endsWith('expo/package.json')) {
+              return {
+                name: 'expo',
+                dependencies: {
+                  // Needs to define that it depends on `@babel/runtime`
+                  '@babel/runtime': '*',
+                },
+              };
+            } else {
+              return null;
+            }
+          },
+        }),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // 1: Fails to resolve the dependency by `expo` (@babel/runtime)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 3: After finding that `expo` has a dependency on `@babel/runtime`, resolves the dependency via `expo` insteaad
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          originModulePath: '/node_modules/expo',
+          nodeModulesPaths: ['/node_modules/expo'],
+        }),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+    });
+
+    it('resolves fallback modules for `expo-router` dependencies', () => {
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        if (context.originModulePath === '/index.js' && moduleName === 'example') {
+          throw new FailedToResolveNameError();
+        } else if (moduleName === 'expo/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else if (moduleName === 'expo-router/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else {
+          return { type: 'empty' };
+        }
+      });
+
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          getPackage(name) {
+            if (name.endsWith('expo/package.json')) {
+              return {
+                name: 'expo',
+                dependencies: {},
+              };
+            } else if (name.endsWith('expo-router/package.json')) {
+              return {
+                name: 'expo-router',
+                dependencies: {
+                  example: '*',
+                },
+              };
+            } else {
+              return null;
+            }
+          },
+        }),
+        'example',
+        platform
+      );
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(4);
+
+      // 1: Fails to resolve the dependency by `expo` (example)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        'example',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 3: Resolves the origin root module path for `expo-router`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        'expo-router/package.json',
+        platform
+      );
+
+      // 4: After finding that `expor-router` has a dependency on `example`, resolves the dependency via `expo-router` insteaad
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        4,
+        expect.objectContaining({
+          originModulePath: '/node_modules/expo-router',
+          nodeModulesPaths: ['/node_modules/expo-router'],
+        }),
+        'example',
+        platform
+      );
+    });
+
+    it('resolves no fallback modules if no origin modules were found', () => {
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation(() => {
+        throw new FailedToResolveNameError();
+      });
+
+      expect(() => {
+        modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
+      }).toThrow();
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // 1: Fails to resolve the dependency by `expo` (@babel/runtime)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        'example',
+        platform
+      );
+
+      // 2: Fails to resolve origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 3: Fails to resolve origin root module path for `expo-router`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        'expo-router/package.json',
+        platform
+      );
+    });
+
+    it('resolves no fallback modules if origin module dependencies mismatch', () => {
+      // Empty dependencies should cause no modules to match
+      vol.fromJSON(
+        {
+          'node_modules/expo/package.json': JSON.stringify({
+            name: 'expo',
+            dependencies: {},
+          }),
+          'node_modules/expo-router/package.json': JSON.stringify({
+            name: 'expo-router',
+            dependencies: {},
+          }),
+        },
+        '/'
+      );
+
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation(() => {
+        throw new FailedToResolveNameError();
+      });
+
+      expect(() => {
+        modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
+      }).toThrow();
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // 1: Fails to resolve the dependency (example)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        'example',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo-router`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        'expo-router/package.json',
         platform
       );
     });

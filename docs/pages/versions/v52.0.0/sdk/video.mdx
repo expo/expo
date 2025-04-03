@@ -53,7 +53,7 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
     {
       name: 'supportsPictureInPicture',
       description:
-        'A boolean value to enable Picture-in-Picture on Android and iOS. Configures the `android:supportsPictureInPicture` property on Android and the `UIBackgroundModes` array in the **Info.plist** file on iOS. When `undefined`, the configuration is not modified.',
+        'A boolean value to enable Picture-in-Picture on Android and iOS. If `true`, enables the `android:supportsPictureInPicture` property on Android and adds the `audio` key to the `UIBackgroundModes` array in the **Info.plist** file on iOS. If `false`, the key is removed. When `undefined`, the configuration is not modified.',
       default: 'undefined',
     },
   ]}
@@ -293,6 +293,8 @@ In those cases, the `VideoPlayer` can be created using the [`createVideoPlayer`]
 import { createVideoPlayer } from 'expo-video';
 const player = createVideoPlayer(videoSource);
 ```
+
+> **warning** On Android, mounting multiple `VideoView` components at the same time with the same `VideoPlayer` instance will not work due to a [platform limitation](https://github.com/expo/expo/issues/35012).
 
 ## API
 

@@ -73,13 +73,13 @@
     "sharp": "^0.33.5",
     "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
-    "typedoc": "0.26.11",
+    "typedoc": "0.27.6",
     "uuid": "^9.0.0",
     "xcode": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@swc/core": "^1.7.40",
+    "@swc/core": "^1.11.11",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",
@@ -101,5 +101,8 @@
     "prettier": "^3.3.3",
     "taskr": "1.1.0",
     "typescript": "^5.6.3"
+  },
+  "volta": {
+    "node": "22.13.1"
   }
 }

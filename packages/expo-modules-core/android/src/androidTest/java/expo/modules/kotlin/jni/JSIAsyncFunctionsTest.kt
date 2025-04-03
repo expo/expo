@@ -11,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import org.junit.Assert
 import org.junit.Test
 
@@ -289,5 +290,32 @@ class JSIAsyncFunctionsTest {
     callAsync("createRef").getObject()
     val value = call("getRef", "global.promiseResult").getInt()
     Truth.assertThat(value).isEqualTo(123)
+  }
+
+  @Test
+  fun use_custom_queue() {
+    val testScope = TestScope()
+    var wasCalled = false
+    withSingleModule({
+      AsyncFunction("customQueue") {
+        wasCalled = true
+        "customQueue"
+      }.runOnQueue(testScope)
+    }) {
+      callAsync("customQueue", shouldBeResolved = false)
+
+      Truth
+        .assertWithMessage("Method was called on the wrong queue")
+        .that(wasCalled)
+        .isFalse()
+
+      testScope.testScheduler.advanceUntilIdle()
+      jsiInterop.drainJSEventLoop()
+
+      Truth.assertThat(wasCalled).isTrue()
+      val result = getLastPromiseResult()
+
+      Truth.assertThat(result.getString()).isEqualTo("customQueue")
+    }
   }
 }

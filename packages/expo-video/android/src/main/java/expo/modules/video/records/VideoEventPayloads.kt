@@ -50,7 +50,19 @@ class SubtitleTrackChangedEventPayload(
   @Field val oldSubtitleTrack: SubtitleTrack?
 ) : VideoEventPayload
 
+class VideoTrackChangedEventPayload(
+  @Field val videoTrack: VideoTrack?,
+  @Field val oldVideoTrack: VideoTrack?
+) : VideoEventPayload
+
 class AvailableSubtitleTracksChangedEventPayload(
   @Field val availableSubtitleTracks: List<SubtitleTrack>,
   @Field val oldAvailableSubtitleTracks: List<SubtitleTrack>
+) : VideoEventPayload
+
+class VideoSourceLoadedEventPayload(
+  @Field val videoSource: VideoSource?,
+  @Field val duration: Double,
+  @Field val availableVideoTracks: List<VideoTrack>,
+  @Field val availableSubtitleTracks: List<SubtitleTrack>
 ) : VideoEventPayload

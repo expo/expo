@@ -8,6 +8,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "types": "./build/Constants.d.ts",
       "react-server": "./build/Constants.server.js",
       "default": "./build/Constants.js"
     }
@@ -43,7 +44,7 @@
   },
   "dependencies": {
     "@expo/config": "~10.0.4",
-    "@expo/env": "~0.4.0"
+    "@expo/env": "~1.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.0.0"

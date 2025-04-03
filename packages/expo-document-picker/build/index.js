@@ -11,7 +11,7 @@ import ExpoDocumentPicker from './ExpoDocumentPicker';
  *
  * If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
  */
-export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = true, multiple = false, } = {}) {
+export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = true, multiple = false, base64 = true, } = {}) {
     if (typeof type === 'string') {
         type = [type];
     }
@@ -19,6 +19,7 @@ export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = tr
         type,
         copyToCacheDirectory,
         multiple,
+        base64,
     });
 }
 export * from './types';

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as t from '@babel/types';
-declare const plugin: ({ types }: {
+declare const plugin: (_: {
     types: typeof t;
 }) => babel.PluginObj;
 export default plugin;

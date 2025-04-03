@@ -3,17 +3,17 @@ import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 
-import { GridContainer, GridCell, HeaderDescription, HomeButton } from '~/ui/components/Home';
+import { GridContainer, GridCell, Header, HomeButton } from '~/ui/components/Home/components';
 import { OfficeHoursImage, SnackImage, WhyImage } from '~/ui/components/Home/resources';
 import { P, RawH3 } from '~/ui/components/Text';
 
 export function DiscoverMore() {
   return (
     <>
-      <RawH3>Discover more</RawH3>
-      <HeaderDescription>
-        Try out Expo in minutes and learn how to get the most out of Expo.
-      </HeaderDescription>
+      <Header
+        title="Discover more"
+        description="Try out Expo in minutes and learn how to get the most out of Expo."
+      />
       <GridContainer>
         <GridCell
           className={mergeClasses(
@@ -72,7 +72,7 @@ export function DiscoverMore() {
           </div>
           <RawH3 className="!font-bold !text-palette-blue11">Chat with the community</RawH3>
           <P className="max-w-[32ch] !text-xs !text-palette-blue11">
-            Join over 40,000 other developers
+            Join over 50,000 other developers
             <br />
             on the Expo Community Discord.
           </P>

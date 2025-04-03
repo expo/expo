@@ -50,32 +50,4 @@ private:
   exsqlite3_stmt *stmt;
 };
 
-/**
- * A convenient wrapper for the Kotlin CodedException.
- * TODO: Add prefabPublishing from expo-modules-core and remove the duplicated
- * definition.
- */
-class CodedException : public jni::JavaClass<CodedException, jni::JThrowable> {
-public:
-  static auto constexpr kJavaDescriptor =
-      "Lexpo/modules/kotlin/exception/CodedException;";
-
-  static jni::local_ref<CodedException> create(const std::string &message);
-};
-
-/**
- * A convenient wrapper for the Kotlin InvalidConvertibleException.
- */
-class InvalidConvertibleException
-    : public jni::JavaClass<InvalidConvertibleException, CodedException> {
-public:
-  static auto constexpr kJavaDescriptor =
-      "Lexpo/modules/sqlite/InvalidConvertibleException;";
-
-  static jni::local_ref<InvalidConvertibleException>
-  create(const std::string &message) {
-    return InvalidConvertibleException::newInstance(jni::make_jstring(message));
-  }
-};
-
 } // namespace expo

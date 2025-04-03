@@ -44,9 +44,14 @@ export function getContextKey(name: string): string {
   return normal.replace(/\/?_layout$/, '');
 }
 
-/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx`, and the +api suffix */
 export function removeSupportedExtensions(name: string): string {
   return name.replace(/(\+api)?\.[jt]sx?$/g, '');
+}
+
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+export function removeFileSystemExtensions(name: string): string {
+  return name.replace(/\.[jt]sx?$/g, '');
 }
 
 // Remove any amount of `./` and `../` from the start of the string

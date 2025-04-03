@@ -31,9 +31,11 @@ describe('useUpdates()', () => {
     const mockError = { name: 'UpdatesError', code: 'ERR_TEST', message: 'test message' };
     const isCheckingEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: true,
         isDownloading: false,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
@@ -42,9 +44,11 @@ describe('useUpdates()', () => {
     };
     const updateAvailableEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: true,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         latestManifest: mockManifest,
@@ -54,9 +58,11 @@ describe('useUpdates()', () => {
     };
     const updateUnavailableEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
@@ -65,9 +71,11 @@ describe('useUpdates()', () => {
     };
     const checkErrorEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         checkError: mockError,
@@ -77,9 +85,11 @@ describe('useUpdates()', () => {
     };
     const isDownloadingEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: true,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
@@ -88,9 +98,11 @@ describe('useUpdates()', () => {
     };
     const updateDownloadedEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: true,
         isUpdatePending: true,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         latestManifest: mockManifest,
@@ -101,9 +113,11 @@ describe('useUpdates()', () => {
     };
     const downloadErrorEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         downloadError: mockError,
@@ -113,9 +127,11 @@ describe('useUpdates()', () => {
     };
     const updateAvailableWithRollbackEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: true,
         isUpdatePending: false,
         isRestarting: false,
+        restartCount: 0,
         isChecking: false,
         isDownloading: false,
         rollback: {

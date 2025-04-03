@@ -1,3 +1,2 @@
-import LivePhotoView from './LivePhotoView';
-export { LivePhotoView };
+export { default as LivePhotoView } from './LivePhotoView';
 export * from './LivePhoto.types';

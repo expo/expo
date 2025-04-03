@@ -27,7 +27,9 @@ export class ReactServerError extends Error {
   constructor(
     message: string,
     public url: string,
-    public statusCode: number
+    public statusCode: number,
+    /** Response headers from the server. */
+    public headers: Headers
   ) {
     super(message);
     this.name = 'ReactServerError';

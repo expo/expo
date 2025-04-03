@@ -16,7 +16,7 @@ class RecreateReactContextProcedure(
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-recreate-react-context"
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     val reactApplication = context.applicationContext as? ReactApplication ?: run inner@{
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
       return
@@ -27,7 +27,7 @@ class RecreateReactContextProcedure(
     Handler(Looper.getMainLooper()).post {
       reactApplication.restart(weakActivity?.get(), "Restart from RecreateReactContextProcedure")
     }
-    procedureContext.resetState()
+    procedureContext.resetStateAfterRestart()
     procedureContext.onComplete()
   }
 }

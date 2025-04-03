@@ -17,10 +17,7 @@ export const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, '
   ]);
 };
 
-export async function setSplashDrawableAsync(
-  { resizeMode }: Pick<SplashScreenConfig, 'resizeMode'>,
-  projectRoot: string
-) {
+export async function setSplashDrawableAsync({ image }: SplashScreenConfig, projectRoot: string) {
   const filePath = (await AndroidConfig.Paths.getResourceXMLPathAsync(projectRoot, {
     name: 'ic_launcher_background',
     kind: 'drawable',
@@ -39,7 +36,7 @@ export async function setSplashDrawableAsync(
             'android:drawable': '@color/splashscreen_background',
           },
         },
-        {
+        image && {
           bitmap: [
             {
               $: {

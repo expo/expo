@@ -1,12 +1,13 @@
 package expo.interfaces.devmenu
 
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.lang.reflect.Field
@@ -64,19 +65,16 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -
 
   val isBridgelessMode = ReactNativeFeatureFlags.enableBridgelessArchitecture
 
+  @OptIn(UnstableReactNativeAPI::class)
   val jsExecutorName: String
     get() {
       if (isBridgelessMode) {
-        // Access private field using reflection
-        val jsEngineResolutionAlgorithmField: Field = reactHost::class.java.getDeclaredField("mJSEngineResolutionAlgorithm")
-        jsEngineResolutionAlgorithmField.isAccessible = true
-        val jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithmField.get(reactHost) as? JSEngineResolutionAlgorithm
-
-        return if (jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
-          "JSC"
-        } else {
-          "Hermes"
-        }
+        val reactHostDelegateField: Field =
+          ReactHostImpl::class.java.getDeclaredField("mReactHostDelegate")
+        reactHostDelegateField.isAccessible = true
+        val reactHostDelegate = reactHostDelegateField.get(reactHost) as ReactHostDelegate
+        val className = reactHostDelegate.jsRuntimeFactory::class.simpleName.toString()
+        return className.removeSuffix("Instance").removeSuffix("Runtime")
       }
 
       return reactNativeHost.reactInstanceManager.jsExecutorName

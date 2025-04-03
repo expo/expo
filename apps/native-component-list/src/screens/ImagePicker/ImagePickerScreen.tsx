@@ -138,7 +138,15 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'orderedSelection',
         type: 'boolean',
         initial: false,
-        platforms: ['ios'],
+        platforms: ['ios', 'android'],
+      },
+      {
+        name: 'defaultTab',
+        type: 'enum',
+        values: [
+          { name: 'photos', value: 'photos' },
+          { name: 'albums', value: 'albums' },
+        ],
       },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {
@@ -177,6 +185,25 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           {
             name: 'UIImagePickerPresentationStyle.AUTOMATIC',
             value: ImagePicker.UIImagePickerPresentationStyle.AUTOMATIC,
+          },
+        ],
+      },
+      {
+        name: 'preferredAssetRepresentationMode',
+        type: 'enum',
+        platforms: ['ios'],
+        values: [
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Automatic',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic,
+          },
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Current',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
+          },
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Compatible',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
           },
         ],
       },

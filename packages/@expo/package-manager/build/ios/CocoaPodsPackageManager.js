@@ -9,7 +9,6 @@ const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = require("fs");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
-const spawn_1 = require("../utils/spawn");
 class CocoaPodsError extends Error {
     code;
     cause;
@@ -59,7 +58,8 @@ class CocoaPodsPackageManager {
                 throw new CocoaPodsError('Failed to install CocoaPods CLI with gem (recommended)', 'COMMAND_FAILED', error);
             }
             // If the user doesn't have permission then we can prompt them to use sudo.
-            await (0, spawn_1.spawnSudoAsync)(['gem', ...options], spawnOptions);
+            console.log('Your password might be needed to install CocoaPods CLI: https://guides.cocoapods.org/using/getting-started.html#installation');
+            await (0, spawn_async_1.default)('sudo', ['gem', ...options], spawnOptions);
         }
     }
     static async brewLinkCLIAsync(spawnOptions = { stdio: 'inherit' }) {

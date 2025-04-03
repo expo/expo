@@ -83,6 +83,7 @@ export async function serializeShakingAsync(
     treeshake?: boolean;
     optimize?: boolean;
     splitChunks?: boolean;
+    mockRuntime?: boolean;
     minify?: boolean;
   } = {}
 ) {
@@ -98,6 +99,7 @@ export async function serializeOptimizeAsync(
     splitChunks?: boolean;
     minify?: boolean;
     dev?: boolean;
+    mockRuntime?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(
@@ -114,6 +116,11 @@ export async function serializeOptimizeAsync(
         inlineRequires: true,
         ...options,
       },
+      preModulesFs: options.mockRuntime
+        ? {
+            'mock-runtime': `{ /* "runtime" */ }`,
+          }
+        : undefined,
     },
     [treeShakeSerializer, reconcileTransformSerializerPlugin]
   );

@@ -3,6 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import * as Log from '../log';
+import type { Options } from './resolveOptions';
 import { getRunningProcess } from '../utils/getRunningProcess';
 
 /**
@@ -16,7 +17,8 @@ export async function installExpoPackageAsync(
     packageManagerArguments,
     expoPackageToInstall,
     followUpCommandArgs,
-  }: {
+    dev,
+  }: Pick<Options, 'dev'> & {
     /** Package manager to use when installing the versioned packages. */
     packageManager: PackageManager.NodePackageManager;
     /**
@@ -40,7 +42,11 @@ export async function installExpoPackageAsync(
 
   // Safe to use current process to upgrade Expo package- doesn't affect current process
   try {
-    await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
+    if (dev) {
+      await packageManager.addDevAsync([...packageManagerArguments, expoPackageToInstall]);
+    } else {
+      await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
+    }
   } catch (error) {
     Log.error(
       chalk`Cannot install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`
@@ -50,7 +56,9 @@ export async function installExpoPackageAsync(
 
   // Spawn a new process to install the rest of the packages if there are any, as only then will the latest Expo package be used
   if (followUpCommandArgs.length) {
-    let commandSegments = ['expo', 'install', ...followUpCommandArgs];
+    let commandSegments = ['expo', 'install', dev ? '--dev' : '', ...followUpCommandArgs].filter(
+      Boolean
+    );
     if (packageManagerArguments.length) {
       commandSegments = [...commandSegments, '--', ...packageManagerArguments];
     }

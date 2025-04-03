@@ -14,20 +14,3 @@ func asyncMap<ItemsType: Sequence, ResultType>(
   }
   return values
 }
-
-/**
- Concurrently maps the given sequence.
- */
-func concurrentMap<ItemsType: Sequence, ResultType>(
-  _ items: ItemsType,
-  _ transform: @escaping (ItemsType.Element) async throws -> ResultType
-) async rethrows -> [ResultType] {
-  let tasks = items.map { item in
-    Task {
-      try await transform(item)
-    }
-  }
-  return try await asyncMap(tasks) { task in
-    try await task.value
-  }
-}

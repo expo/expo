@@ -42,7 +42,7 @@
  @ReactModule(name = AsyncStorageModule.NAME)
 -public final class AsyncStorageModule
 +public class AsyncStorageModule
-     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable {
  
    // changed name to not conflict with AsyncStorage from RN repo
 @@ -43,7 +43,7 @@
@@ -127,7 +127,7 @@
  static NSString *const RCTOldStorageDirectory = @"RNCAsyncLocalStorage_V1";
  static NSString *const RCTExpoStorageDirectory = @"RCTAsyncLocalStorage";
  static NSString *const RCTManifestFileName = @"manifest.json";
-@@ -150,35 +152,11 @@
+@@ -150,35 +152,12 @@ static NSString *RCTCreateStorageDirectoryPath(NSString *storageDir)
      return storageDirectoryPath;
  }
  
@@ -144,7 +144,7 @@
 -    });
 -    return storageDirectory;
 -}
--
+ 
  static NSString *RCTCreateManifestFilePath(NSString *storageDirectory)
  {
      return [storageDirectory stringByAppendingPathComponent:RCTManifestFileName];
@@ -163,7 +163,7 @@
  // Only merges objects - all other types are just clobbered (including arrays)
  static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
  {
-@@ -207,55 +185,30 @@
+@@ -207,60 +186,24 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
      return modified;
  }
  
@@ -179,7 +179,7 @@
 -    });
 -    return queue;
 -}
- 
+-
 -static NSCache *RCTGetCache()
 -{
 -    // We want all instances to share the same cache since they will be reading/writing the same
@@ -189,8 +189,7 @@
 -    dispatch_once(&onceToken, ^{
 -      cache = [NSCache new];
 -      cache.totalCostLimit = 2 * 1024 * 1024;  // 2MB
-+static BOOL RCTHasCreatedStorageDirectory = NO;
- 
+-
 -#if !TARGET_OS_OSX
 -      // Clear cache in the event of a memory warning
 -      [[NSNotificationCenter defaultCenter]
@@ -204,20 +203,13 @@
 -    });
 -    return cache;
 -}
-+// NOTE(nikki93): We replace with scoped implementations of:
-+//   RCTGetStorageDirectory()
-+//   RCTGetManifestFilePath()
-+//   RCTGetMethodQueue()
-+//   RCTGetCache()
-+//   RCTDeleteStorageDirectory()
- 
--static BOOL RCTHasCreatedStorageDirectory = NO;
--static NSDictionary *RCTDeleteStorageDirectory()
 +#define RCTGetStorageDirectory() _storageDirectory
 +#define RCTGetManifestFilePath() _manifestFilePath
 +#define RCTGetMethodQueue() self.methodQueue
 +#define RCTGetCache() self.cache
-+
+ 
+ static BOOL RCTHasCreatedStorageDirectory = NO;
+-static NSDictionary *RCTDeleteStorageDirectory()
 +static NSDictionary *RCTDeleteStorageDirectory(NSString *storageDirectory)
  {
 -    NSError *error;
@@ -236,8 +228,14 @@
 +
  static NSDate *RCTManifestModificationDate(NSString *manifestFilePath)
  {
-     NSDictionary *attributes =
-@@ -292,35 +245,7 @@
+-    NSDictionary *attributes =
+-        [[NSFileManager defaultManager] attributesOfItemAtPath:manifestFilePath error:nil];
+-    return [attributes fileModificationDate];
++  assert(false);
+ }
+ 
+ /**
+@@ -292,35 +235,6 @@ static void RCTStorageDirectoryMigrate(NSString *oldDirectoryPath,
                                         NSString *newDirectoryPath,
                                         BOOL shouldCleanupOldDirectory)
  {
@@ -251,7 +249,7 @@
 -        // this folder and attempt folder copying again
 -        if (error != nil && error.code == 4 &&
 -            [newDirectoryPath isEqualToString:RCTGetStorageDirectory()]) {
--            NSError *error = nil;
+-            error = nil;
 -            _createStorageDirectory(RCTCreateStorageDirectoryPath(@""), &error);
 -            if (error == nil) {
 -                RCTStorageDirectoryMigrate(
@@ -270,11 +268,10 @@
 -        // If copying succeeds, remove old storage directory
 -        RCTStorageDirectoryCleanupOld(oldDirectoryPath);
 -    }
-+  assert(false);
  }
  
  /**
-@@ -413,14 +338,51 @@
+@@ -413,13 +327,50 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
  
  #pragma mark - RNCAsyncStorage
  
@@ -293,40 +290,39 @@
      NSMutableDictionary<NSString *, NSString *> *_manifest;
 +    NSCache *_cache;
 +    dispatch_once_t _cacheOnceToken;
- }
- 
++}
++
 +// NOTE(nikki93): Prevents the module from being auto-initialized and allows us to pass our own `storageDirectory`
 ++ (NSString *)moduleName { return @"RCTAsyncLocalStorage"; }
 +- (instancetype)initWithStorageDirectory:(NSString *)storageDirectory
 +{
-+  if ((self = [super init])) {
-+    _storageDirectory = storageDirectory;
-+    _manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
-+  }
-+  return self;
-+}
-+
++    if ((self = [super init])) {
++      _storageDirectory = storageDirectory;
++      _manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
++    }
++    return self;
+ }
 +// NOTE(nikki93): Use the default `methodQueue` since instances have different storage directories
 +@synthesize methodQueue = _methodQueue;
 +
 +- (NSCache *)cache
 +{
-+  dispatch_once(&_cacheOnceToken, ^{
-+    _cache = [NSCache new];
-+    _cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
-+    
-+    // Clear cache in the event of a memory warning
-+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
-+      [_cache removeAllObjects];
-+    }];
-+  });
-+  return _cache;
++    dispatch_once(&_cacheOnceToken, ^{
++      _cache = [NSCache new];
++      _cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
++      
++      // Clear cache in the event of a memory warning
++      [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
++        [self->_cache removeAllObjects];
++      }];
++    });
++    return _cache;
 +}
 +
+ 
  + (BOOL)requiresMainQueueSetup
  {
-     return NO;
-@@ -428,6 +390,7 @@
+@@ -428,6 +379,7 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
  
  - (instancetype)init
  {
@@ -334,12 +330,12 @@
      if (!(self = [super init])) {
          return nil;
      }
-@@ -451,13 +414,7 @@
+@@ -451,13 +403,6 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
      return self;
  }
  
 -RCT_EXPORT_MODULE()
- 
+-
 -- (dispatch_queue_t)methodQueue
 -{
 -    return RCTGetMethodQueue();
@@ -348,7 +344,7 @@
  - (void)clearAllData
  {
      dispatch_async(RCTGetMethodQueue(), ^{
-@@ -467,13 +424,6 @@
+@@ -467,14 +412,6 @@ RCT_EXPORT_MODULE()
      });
  }
  
@@ -359,10 +355,11 @@
 -      RCTDeleteStorageDirectory();
 -    });
 -}
- 
+-
  - (void)invalidate
  {
-@@ -507,12 +457,13 @@
+     if (_clearOnInvalidate) {
+@@ -507,12 +444,13 @@ RCT_EXPORT_MODULE()
      RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
  
      NSError *error = nil;
@@ -375,21 +372,21 @@
 +    // NOTE(nikki93): `withIntermediateDirectories:YES` makes this idempotent
 +    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
 +                              withIntermediateDirectories:YES
-+                                             attributes:nil
-+                                                error:&error];
++                                               attributes:nil
++                                                    error:&error];
 +    if (error) {
 +      return RCTMakeError(@"Failed to create storage directory.", error, nil);
      }
  
      if (!_haveSetup) {
-@@ -523,11 +474,13 @@
+@@ -523,11 +461,13 @@ RCT_EXPORT_MODULE()
              // by default, we want to exclude AsyncStorage data from backup
              isExcludedFromBackup = @YES;
          }
 -        RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
 -                                             isExcludedFromBackup);
-+      // RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
-+      //                                             isExcludedFromBackup);
++//        RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
++//                                             isExcludedFromBackup);
  
          NSDictionary *errorOut = nil;
 -        NSString *serialized = RCTReadFile(RCTCreateStorageDirectoryPath(RCTGetManifestFilePath()),
@@ -399,18 +396,13 @@
                                             RCTManifestFileName,
                                             &errorOut);
          if (!serialized) {
-@@ -563,10 +516,10 @@
+@@ -563,7 +503,7 @@ RCT_EXPORT_MODULE()
  {
      NSError *error;
      NSString *serialized = RCTJSONStringify(_manifest, &error);
 -    [serialized writeToFile:RCTCreateStorageDirectoryPath(RCTGetManifestFilePath())
--                 atomically:YES
--                   encoding:NSUTF8StringEncoding
--                      error:&error];
 +    [serialized writeToFile:RCTGetManifestFilePath()
-+                   atomically:YES
-+                     encoding:NSUTF8StringEncoding
-+                        error:&error];
-     NSDictionary *errorOut;
-     if (error) {
-         errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
+                  atomically:YES
+                    encoding:NSUTF8StringEncoding
+                       error:&error];
+

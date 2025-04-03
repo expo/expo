@@ -17,9 +17,11 @@ const dirName = __dirname; /* eslint-disable-line */
 function getExpoDependencyChunks({
   includeDevClient,
   includeTV,
+  includeSplashScreen,
 }: {
   includeDevClient: boolean;
   includeTV: boolean;
+  includeSplashScreen: boolean;
 }) {
   return [
     ['@expo/config-types', '@expo/env', '@expo/json-file'],
@@ -39,12 +41,12 @@ function getExpoDependencyChunks({
       'expo-font',
       'expo-json-utils',
       'expo-keep-awake',
-      'expo-splash-screen',
       'expo-status-bar',
       'expo-structured-headers',
       'expo-updates',
       'expo-updates-interface',
     ],
+    ...(includeSplashScreen ? [['expo-splash-screen']] : []),
     ...(includeDevClient
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
@@ -54,13 +56,17 @@ function getExpoDependencyChunks({
             'expo-audio',
             'expo-av',
             'expo-blur',
+            'expo-crypto',
             'expo-image',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
-            'expo-crypto',
+            'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-symbols',
+            'expo-system-ui',
+            'expo-ui',
             'expo-video',
           ],
         ]
@@ -248,13 +254,18 @@ async function preparePackageJson(
   configureE2E: boolean,
   isTV: boolean,
   shouldGenerateTestUpdateBundles: boolean,
-  includeDevClient: boolean
+  includeDevClient: boolean,
+  useCustomInit: boolean
 ) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
-  const allDependencyChunks = getExpoDependencyChunks({ includeDevClient, includeTV: isTV });
+  const allDependencyChunks = getExpoDependencyChunks({
+    includeDevClient,
+    includeTV: isTV,
+    includeSplashScreen: !useCustomInit,
+  });
 
   console.time('Done packing dependencies');
   for (const dependencyChunk of allDependencyChunks) {
@@ -312,10 +323,10 @@ async function preparePackageJson(
 
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^5.0.1',
+        '@config-plugins/detox': '^9.0.0',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
-        detox: '^20.4.0',
+        detox: '^20.33.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
         jest: '^29.3.1',
@@ -345,8 +356,7 @@ async function preparePackageJson(
       ...packageJson.dependencies,
     },
     devDependencies: {
-      '@types/react': '~18.0.14',
-      '@types/react-native': '~0.70.6',
+      '@types/react': '~19.0.10',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
       'ts-node': '10.9.1',
@@ -365,8 +375,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.76.1-0',
-        '@react-native-tvos/config-tv': '^0.0.13',
+        'react-native': 'npm:react-native-tvos@0.79.0-0rc2',
+        '@react-native-tvos/config-tv': '^0.1.1',
       },
       expo: {
         install: {
@@ -458,7 +468,15 @@ function transformAppJsonForE2E(
   runtimeVersion: string,
   isTV: boolean
 ) {
-  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   if (isTV) {
     plugins.push([
       '@react-native-tvos/config-tv',
@@ -484,12 +502,29 @@ function transformAppJsonForE2E(
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
+        useNativeDebug: true,
       },
       extra: {
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
       },
+    },
+  };
+}
+
+export function transformAppJsonForE2EWithCustomInit(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV);
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      newArchEnabled: true,
     },
   };
 }
@@ -515,6 +550,30 @@ export function transformAppJsonForE2EWithFingerprint(
       ...transformedForE2E.expo,
       runtimeVersion: {
         policy: 'fingerprint',
+      },
+    },
+  };
+}
+
+export function transformAppJsonForE2EWithBrickingMeasuresDisabled(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      updates: {
+        ...transformedForE2E.expo.updates,
+        disableAntiBrickingMeasures: true,
       },
     },
   };
@@ -550,7 +609,15 @@ export function transformAppJsonForUpdatesDisabledE2E(
   projectName: string,
   runtimeVersion: string
 ) {
-  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   return {
     ...appJson,
     expo: {
@@ -562,6 +629,10 @@ export function transformAppJsonForUpdatesDisabledE2E(
       newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
+      updates: {
+        enabled: false,
+        useNativeDebug: true,
+      },
       extra: {
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
@@ -621,6 +692,7 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles = true,
     shouldConfigureCodeSigning = true,
     includeDevClient = false,
+    useCustomInit = false,
   }: {
     repoRoot: string;
     runtimeVersion: string;
@@ -636,6 +708,7 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles?: boolean;
     shouldConfigureCodeSigning?: boolean;
     includeDevClient?: boolean;
+    useCustomInit?: boolean;
   }
 ) {
   console.log('Creating expo app');
@@ -687,7 +760,8 @@ export async function initAsync(
     configureE2E,
     isTV,
     shouldGenerateTestUpdateBundles,
-    includeDevClient
+    includeDevClient,
+    useCustomInit
   );
 
   // configure app.json
@@ -717,7 +791,6 @@ export async function initAsync(
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
-      EX_UPDATES_NATIVE_DEBUG: '1',
       EXPO_DEBUG: '1',
       CI: '1',
     },
@@ -741,10 +814,10 @@ export async function initAsync(
     stdio: 'inherit',
   });
 
-  // enable proguard on Android
+  // enable proguard on Android, and custom init if needed
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.8.20\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    `\nandroid.enableProguardInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
     'utf-8'
   );
 
@@ -764,6 +837,71 @@ export async function initAsync(
     ].join('\n'),
     'utf-8'
   );
+
+  // Add custom init to iOS Podfile.properties.json if needed
+  if (useCustomInit) {
+    const podfilePropertiesJsonPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
+    const podfilePropertiesJsonString = await fs.readFile(podfilePropertiesJsonPath, {
+      encoding: 'utf-8',
+    });
+    const podfilePropertiesJson: any = JSON.parse(podfilePropertiesJsonString);
+    podfilePropertiesJson.updatesCustomInit = 'true';
+    await fs.writeFile(podfilePropertiesJsonPath, JSON.stringify(podfilePropertiesJson, null, 2), {
+      encoding: 'utf-8',
+    });
+  }
+
+  const customInitSourcesDirectory = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'e2e',
+    'fixtures',
+    'custom_init'
+  );
+  // If custom init, copy native source files
+  if (useCustomInit) {
+    const filesToCopyForCustomInit = [
+      {
+        sourcePath: path.join(customInitSourcesDirectory, 'AppDelegate.swift'),
+        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
+      },
+      {
+        sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),
+        destPath: path.join(
+          projectRoot,
+          'android',
+          'app',
+          'src',
+          'main',
+          'java',
+          'dev',
+          'expo',
+          'updatese2e',
+          'MainApplication.kt'
+        ),
+      },
+      {
+        sourcePath: path.join(customInitSourcesDirectory, 'MainActivity.kt'),
+        destPath: path.join(
+          projectRoot,
+          'android',
+          'app',
+          'src',
+          'main',
+          'java',
+          'dev',
+          'expo',
+          'updatese2e',
+          'MainActivity.kt'
+        ),
+      },
+    ];
+    for (const fileToCopy of filesToCopyForCustomInit) {
+      await fs.copyFile(fileToCopy.sourcePath, fileToCopy.destPath);
+    }
+  }
+
   await fs.appendFile(
     path.join(projectRoot, 'android', 'app', 'build.gradle'),
     [
@@ -937,6 +1075,29 @@ export async function setupUpdatesStartupE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-startup.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-bricking-measures-disabled.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

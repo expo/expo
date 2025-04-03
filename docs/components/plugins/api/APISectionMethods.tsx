@@ -4,7 +4,12 @@ import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRi
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { H2 } from '~/ui/components/Text';
 
-import { AccessorDefinitionData, MethodDefinitionData, PropData } from './APIDataTypes';
+import {
+  AccessorDefinitionData,
+  CommentTagData,
+  MethodDefinitionData,
+  PropData,
+} from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   getMethodName,
@@ -32,6 +37,7 @@ export type RenderMethodOptions = {
   nested?: boolean;
   exposeInSidebar?: boolean;
   baseNestingLevel?: number;
+  parentPlatforms?: CommentTagData[];
 };
 
 function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
@@ -57,13 +63,21 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true, nested = false, sdkVersion, ...options }: RenderMethodOptions
+  {
+    apiName,
+    exposeInSidebar = true,
+    nested = false,
+    sdkVersion,
+    parentPlatforms,
+    ...options
+  }: RenderMethodOptions
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
 
   return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
     const returnComment = getTagData('returns', comment);
+    const platforms = getAllTagData('platform', comment);
     return (
       <div
         key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
@@ -81,7 +95,7 @@ export const renderMethod = (
             parameters,
             typeParameter
           )}
-          comment={comment}
+          platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
         />
         {parameters && parameters.length > 0 && (

@@ -138,16 +138,22 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     moduleName = `${moduleName}/${segments.shift()}`;
   }
 
-  // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
-  if (moduleName === '@babel/runtime') {
-    return path;
-  }
-
   // self-reference
   const closestPackageJson = findClosestPackageJson(options.basedir, options);
   if (closestPackageJson) {
     const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
     assert(pkg, 'package.json should be read by `readPackageSync`');
+
+    // Added support for the package.json "imports" field (#-prefixed paths)
+    if (path.startsWith('#')) {
+      const resolved = resolve.imports(pkg, path, createResolveOptions(options.conditions));
+      if (resolved) {
+        // TODO: Should we attempt to resolve every path in the array?
+        return pathResolve(dirname(closestPackageJson), resolved[0]);
+      }
+      // NOTE: resolve.imports would have thrown by this point.
+      return path;
+    }
 
     if (pkg.name === moduleName) {
       const resolved = resolve.exports(

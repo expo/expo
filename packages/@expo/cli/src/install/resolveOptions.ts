@@ -32,7 +32,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--check', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
+    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -42,6 +42,7 @@ export async function resolveArgsAsync(
     variadic,
     options: resolveOptions({
       fix: !!flags['--fix'],
+      dev: !!flags['--dev'],
       check: !!flags['--check'],
       yarn: !!flags['--yarn'],
       npm: !!flags['--npm'],
