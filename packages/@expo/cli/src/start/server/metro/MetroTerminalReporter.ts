@@ -197,11 +197,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
-  shouldFilterClientLog(event: {
-    type: 'client_log';
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
-    data: unknown[];
-  }): boolean {
+  shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
     return isAppRegistryStartupMessage(event.data);
   }
 
