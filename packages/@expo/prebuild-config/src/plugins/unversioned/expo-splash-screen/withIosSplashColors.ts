@@ -1,4 +1,4 @@
-import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig, withDangerousMod, WarningAggregator } from '@expo/config-plugins';
 import Debug from 'debug';
 import fs from 'fs';
 import path, { join } from 'path';
@@ -18,6 +18,15 @@ export const withIosSplashColors: ConfigPlugin<IOSSplashConfig> = (config, splas
   return withDangerousMod(config, [
     'ios',
     async (config) => {
+      if (config.modRequest.platform !== 'ios') {
+        WarningAggregator.addWarningForPlatform(
+          config.modRequest.platform,
+          'splash',
+          `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashColors" for platform ${config.modRequest.platform}.`
+        );
+        return config;
+      }
+
       const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(
         config.modRequest.projectRoot,
         config.modRequest.platform

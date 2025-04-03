@@ -5,6 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.applySplashScreenStoryboard = applySplashScreenStoryboard;
 exports.withIosSplashScreenImage = void 0;
+function _configPlugins() {
+  const data = require("@expo/config-plugins");
+  _configPlugins = function () {
+    return data;
+  };
+  return data;
+}
 function _InterfaceBuilder() {
   const data = require("./InterfaceBuilder");
   _InterfaceBuilder = function () {
@@ -21,6 +28,10 @@ function _withIosSplashScreenStoryboard() {
 }
 const withIosSplashScreenImage = (config, props) => {
   return (0, _withIosSplashScreenStoryboard().withIosSplashScreenStoryboard)(config, config => {
+    if (config.modRequest.platform !== 'ios') {
+      _configPlugins().WarningAggregator.addWarningForPlatform(config.modRequest.platform, 'splash', `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashScreenStoryboard" for platform ${config.modRequest.platform}.`);
+      return config;
+    }
     config.modResults = applySplashScreenStoryboard(config.modResults, props);
     return config;
   });

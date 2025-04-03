@@ -1,4 +1,10 @@
-import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from '@expo/config-plugins';
+import {
+  ConfigPlugin,
+  IOSConfig,
+  withXcodeProject,
+  type XcodeProject,
+  WarningAggregator,
+} from '@expo/config-plugins';
 import path from 'path';
 
 import { STORYBOARD_FILE_PATH } from './withIosSplashScreenStoryboard';
@@ -9,6 +15,15 @@ const debug = require('debug')(
 
 export const withIosSplashXcodeProject: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
+    if (config.modRequest.platform !== 'ios') {
+      WarningAggregator.addWarningForPlatform(
+        config.modRequest.platform,
+        'splash',
+        `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashScreenStoryboard" for platform ${config.modRequest.platform}.`
+      );
+      return config;
+    }
+
     config.modResults = await setSplashStoryboardAsync({
       projectName: config.modRequest.projectName!,
       project: config.modResults,
