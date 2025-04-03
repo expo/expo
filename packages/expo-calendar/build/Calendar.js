@@ -465,6 +465,7 @@ export async function getRemindersAsync(calendarIds, status, startDate, endDate)
     const formattedEndDate = endDate ? stringifyIfDate(endDate) : null;
     return ExpoCalendar.getRemindersAsync(formattedStartDate, formattedEndDate, calendarIds, status || null);
 }
+export const permissions = ExpoCalendar.permissions;
 // @needsAudit
 /**
  * Returns a specific reminder selected by ID.

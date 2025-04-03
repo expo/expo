@@ -1,0 +1,1 @@
+{"version":3,"file":"usePermissions.d.ts","sourceRoot":"","sources":["../../src/hooks/usePermissions.ts"],"names":[],"mappings":"AAEA,MAAM,MAAM,UAAU,GAAG;IACvB,KAAK,EAAE,MAAM,OAAO,CAAC;IACrB,OAAO,EAAE,MAAM,OAAO,CAAC;CACxB,CAAC;AAEF,wBAAgB,cAAc,CAAC,WAAW,EAAE,UAAU,EAAE,GAAG,UAAU;;;;EAUpE"}
