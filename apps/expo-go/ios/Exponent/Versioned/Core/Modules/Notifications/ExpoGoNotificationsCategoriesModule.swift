@@ -16,7 +16,7 @@ public final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
     super.init(appContext: appContext)
   }
 
-  public override func filterAndSerializeCategories(_ categories: [UNNotificationCategory]) -> [CategoryRecord] {
+  public override func filterAndSerializeCategories(_ categories: Set<UNNotificationCategory>) -> [CategoryRecord] {
     return categories
       .filter {
         EXScopedNotificationsUtils.isId($0.identifier, scopedByExperience: self.scopeKey)
