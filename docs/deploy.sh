@@ -324,6 +324,9 @@ redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
+# After moving e2e-tests to eas/workflows/reference
+redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
+
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites
 

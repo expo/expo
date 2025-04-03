@@ -485,6 +485,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
   '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
 
+  // After moving e2e-tests to eas/workflows/reference
+  '/build-reference/e2e-tests/': '/eas/workflows/reference/e2e-tests/',
+
   // After merging EAS environment variables guides
   '/eas/using-environment-variables/': '/eas/environment-variables/',
 
