@@ -16,9 +16,9 @@ import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxS
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
+import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-import { env } from '../../../utils/env';
 
 function fill(width: number): string {
   return Array(width).join(' ');

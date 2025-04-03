@@ -12,9 +12,11 @@ import {
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
-import { logLikeMetro, parseErrorStringToObject } from '../serverLogLikeMetro';
-import { LogBoxLog } from './log-box/LogBoxLog';
-import { getStackAsFormattedLog } from './metroErrorInterface';
+import {
+  logLikeMetro,
+  maybeSymbolicateAndFormatReactErrorLogAsync,
+  parseErrorStringToObject,
+} from '../serverLogLikeMetro';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
@@ -35,74 +37,46 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
-      case 'client_log':
-        {
-          if (this.shouldFilterClientLog(event)) {
-            return;
-          }
+      case 'client_log': {
+        if (this.shouldFilterClientLog(event)) {
+          return;
+        }
+        const { level } = event;
 
-          const { level } = event;
+        if (!level) {
+          break;
+        }
 
-          const mode = event.mode === 'NOBRIDGE' ? '' : (event.mode ?? '');
+        const mode = event.mode === 'NOBRIDGE' ? '' : (event.mode ?? '');
+        // @ts-expect-error
+        if (level === 'warn' || level === 'error') {
+          // Quick check to see if an unsymbolicated stack is being logged.
+          const msg = event.data.join('\n');
+          if (msg.includes('.bundle//&platform=')) {
+            const parsed = parseErrorStringToObject(msg);
+            if (parsed) {
+              maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, parsed)
+                .then((res) => {
+                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, res);
+                })
+                .catch((e) => {
+                  // Fallback on the original error message if we can't symbolicate the stack.
+                  debug('Error formatting stack', e);
 
-          if (level) {
-            // console.log(JSON.stringify(event));
-            if (['error', 'warn'].includes(level)) {
-              // Quick check to see if an unsymbolicated stack is being logged.
-              const msg = event.data.join('\n');
-              if (msg.includes('.bundle//&platform=')) {
-                const parsed = parseErrorStringToObject(msg);
-                if (parsed) {
-                  const log = new LogBoxLog({
-                    level: level as 'error' | 'warn',
-                    message: {
-                      content: parsed.message,
-                      substitutions: [],
-                    },
-                    isComponentError: false,
-                    stack: parsed.stack,
-                    category: 'static',
-                    componentStack: [],
-                  });
+                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+                });
 
-                  (async () => {
-                    await new Promise((res) => log.symbolicate('stack', res));
-
-                    // TODO: Match `Text strings must be rendered within a <Text> component.` and append a useful link for the user. This will be improved with ownerStack in React 19.1
-                    const symbolicatedErrorMessageAndStackLog = [
-                      log.message.content,
-                      getStackAsFormattedLog(this.projectRoot, {
-                        stack: log.symbolicated?.stack?.stack ?? [],
-                        codeFrame: log.codeFrame,
-                      }),
-                    ].join('\n\n');
-
-                    // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                    logLikeMetro(
-                      this.terminal.log.bind(this.terminal),
-                      level,
-                      mode,
-                      symbolicatedErrorMessageAndStackLog
-                    );
-                  })().catch((e) => {
-                    // Fallback on the original error message if we can't symbolicate the stack.
-                    debug('Error formatting stack', e);
-
-                    // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                    logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
-                  });
-
-                  return;
-                }
-              }
+              return;
             }
-
-            // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-            logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
-            return;
           }
         }
-        break;
+
+        // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+        return;
+      }
     }
     return super._log(event);
   }

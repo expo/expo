@@ -11,9 +11,13 @@ import path from 'path';
 import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
-import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
+import { parseErrorStack, StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
+import { LogBoxLog } from './metro/log-box/LogBoxLog';
+import { getStackAsFormattedLog } from './metro/metroErrorInterface';
+
+const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 const groupStack: any = [];
 let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
@@ -78,6 +82,39 @@ const escapedPathSep = path.sep === '\\' ? '\\\\' : path.sep;
 const SERVER_STACK_MATCHER = new RegExp(
   `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
 );
+
+export async function maybeSymbolicateAndFormatReactErrorLogAsync(
+  projectRoot: string,
+  level: 'error' | 'warn',
+  error: {
+    message: string;
+    stack: StackFrame[];
+  }
+): Promise<string> {
+  const log = new LogBoxLog({
+    level: level as 'error' | 'warn',
+    message: {
+      content: error.message,
+      substitutions: [],
+    },
+    isComponentError: false,
+    stack: error.stack,
+    category: 'static',
+    componentStack: [],
+  });
+
+  await new Promise((res) => log.symbolicate('stack', res));
+
+  const symbolicatedErrorMessageAndStackLog = [
+    log.message.content,
+    getStackAsFormattedLog(projectRoot, {
+      stack: log.symbolicated?.stack?.stack ?? [],
+      codeFrame: log.codeFrame,
+    }),
+  ].join('\n\n');
+
+  return symbolicatedErrorMessageAndStackLog;
+}
 
 /** Attempt to parse an error message string to an unsymbolicated stack.  */
 export function parseErrorStringToObject(errorString: string) {
