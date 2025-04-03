@@ -39,20 +39,16 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [scopedIdentifier])
   }
 
-  public override func removeAllDeliveredNotifications() {
-    UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
-      var identifiers: Set<String> = []
-      notifications.forEach {
-        if EXScopedNotificationsUtils.shouldNotification($0, beHandledByExperience: self.scopeKey) {
-          identifiers.insert($0.request.identifier)
-        }
-      }
-      UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: Array(identifiers))
-    }
+  public override func removeAllDeliveredNotifications() async {
+    let notifications = await UNUserNotificationCenter.current().deliveredNotifications()
+    let identifiers = notifications
+      .filter { EXScopedNotificationsUtils.shouldNotification($0, beHandledByExperience: self.scopeKey) }
+      .compactMap(\.request.identifier)
+    UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: Array(identifiers))
   }
 
   public override func presentNotificationAsync(identifier: String, notificationSpec: [String: Any]) async throws {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    try await super.presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec)
+    try await super.presentNotificationAsync(identifier: scopedIdentifier, notificationSpec: notificationSpec)
   }
 }

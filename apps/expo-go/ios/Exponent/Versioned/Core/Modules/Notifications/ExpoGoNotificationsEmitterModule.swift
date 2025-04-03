@@ -28,8 +28,7 @@ public final class ExpoGoNotificationsEmitterModule: EmitterModule {
     if EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: scopeKey) {
       return super.willPresent(notification, completionHandler: completionHandler)
     }
-    completionHandler([])
-    return true
+    return false
   }
 
   override public func serializedNotification(_ notification: UNNotification) -> [String: Any] {
