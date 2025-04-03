@@ -8,6 +8,7 @@ import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
+import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
@@ -177,12 +178,6 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
     },
     name: 'Contacts',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
-    },
-    name: 'ContactDetail',
   },
   {
     getComponent() {
@@ -427,7 +422,12 @@ export const ScreensList: ScreenConfig[] = [
   },
 ];
 
-export const Screens: ScreenConfig[] = [...ScreensList, ...ModulesCoreScreens, ...AudioScreens];
+export const Screens: ScreenConfig[] = [
+  ...ScreensList,
+  ...ModulesCoreScreens,
+  ...AudioScreens,
+  ...ContactsScreens,
+];
 
 export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
   name,
