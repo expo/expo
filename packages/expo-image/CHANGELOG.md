@@ -21,7 +21,7 @@
 - Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
-- Fix `Image` prop types resolving to `any`. by ([#35880])(https://github.com/expo/expo/pull/35880) [@Brentlok](https://github.com/Brentlok)
+- Fix `Image` prop types resolving to `any`. ([#35880])(https://github.com/expo/expo/pull/35880) by [@Brentlok](https://github.com/Brentlok)
 
 ### 📚 3rd party library updates
 
