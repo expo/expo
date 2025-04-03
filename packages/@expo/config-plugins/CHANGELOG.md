@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
+- Updated iOS Maps config plugin for new arch compatibility. ([#35848](https://github.com/expo/expo/pull/35848) by [@fobos531](https://github.com/fobos531)
 
 ### 🐛 Bug fixes
 
