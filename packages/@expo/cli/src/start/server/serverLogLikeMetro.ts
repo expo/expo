@@ -127,12 +127,18 @@ export function parseErrorStringToObject(errorString: string) {
   const message = errorString.slice(0, stackStartIndex).trim();
   const stack = errorString.slice(stackStartIndex + 1);
 
-  const parsedStack = parseErrorStack(stack);
+  try {
+    const parsedStack = parseErrorStack(stack);
 
-  return {
-    message,
-    stack: parsedStack,
-  };
+    return {
+      message,
+      stack: parsedStack,
+    };
+  } catch (e) {
+    // If parsing fails, return the original error string
+    debug('Failed to parse error stack:', e);
+    return null;
+  }
 }
 
 function augmentLogsInternal(projectRoot: string) {
