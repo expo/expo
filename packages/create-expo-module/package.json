@@ -55,6 +55,6 @@
     "@types/ejs": "^3.1.5",
     "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.4.9",
-    "expo-module-scripts": "^4.0.4"
+    "expo-module-scripts": "^4.0.5"
   }
 }

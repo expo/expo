@@ -33,7 +33,7 @@
     "node-forge": "^1.2.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.4"
+    "expo-module-scripts": "^4.0.5"
   },
   "publishConfig": {
     "access": "public"

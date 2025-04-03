@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.22.23",
+  "version": "0.22.24",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -52,7 +52,7 @@
     "@expo/osascript": "^2.1.6",
     "@expo/package-manager": "^1.7.2",
     "@expo/plist": "^0.2.2",
-    "@expo/prebuild-config": "^8.0.30",
+    "@expo/prebuild-config": "^8.0.31",
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",
@@ -155,7 +155,7 @@
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expo-atlas": "^0.4.0",
-    "expo-module-scripts": "^4.0.4",
+    "expo-module-scripts": "^4.0.5",
     "find-process": "^1.4.7",
     "jest-runner-tsd": "^6.0.0",
     "klaw-sync": "^6.0.0",
