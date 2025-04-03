@@ -51,8 +51,8 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
     }
   }
 
-  public override func presentNotificationAsync(identifier: String, notificationSpec: [String: Any], promise: Promise) {
+  public override func presentNotificationAsync(identifier: String, notificationSpec: [String: Any]) async throws {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    super.presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec, promise: promise)
+    try await super.presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec)
   }
 }

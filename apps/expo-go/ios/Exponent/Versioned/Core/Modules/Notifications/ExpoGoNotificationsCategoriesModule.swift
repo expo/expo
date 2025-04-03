@@ -22,19 +22,23 @@ public final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
         EXScopedNotificationsUtils.isId($0.identifier, scopedByExperience: self.scopeKey)
       }
       .map { category in
-        var record = CategoryRecord(category)
+        let record = CategoryRecord(category)
         record.identifier = EXScopedNotificationsUtils.getUnscopedIdentifier(fromScopedIdentifier: record.identifier)
         return record
       }
   }
 
-  public override func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) {
+  public override func setNotificationCategoryAsync(
+    identifier: String,
+    actions: [CategoryActionRecord],
+    options: CategoryOptionsRecord?
+  ) async -> CategoryRecord {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    super.setNotificationCategoryAsync(identifier: scopedIdentifier, actions: actions, options: options, promise: promise)
+    return await super.setNotificationCategoryAsync(identifier: scopedIdentifier, actions: actions, options: options)
   }
 
-  public override func deleteNotificationCategoryAsync(identifier: String, promise: Promise) {
+  public override func deleteNotificationCategoryAsync(identifier: String) async -> Bool {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    super.deleteNotificationCategoryAsync(identifier: scopedIdentifier, promise: promise)
+    return await super.deleteNotificationCategoryAsync(identifier: scopedIdentifier)
   }
 }
