@@ -3,7 +3,7 @@ import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSour
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
     containerViewRef: any;
-    constructor(props: any);
+    constructor(props: ImageProps);
     getAnimatableRef: () => any;
     /**
      * @hidden

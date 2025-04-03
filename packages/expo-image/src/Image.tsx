@@ -22,7 +22,7 @@ let loggedRenderingChildrenWarning = false;
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
   containerViewRef;
-  constructor(props) {
+  constructor(props: ImageProps) {
     super(props);
     this.nativeViewRef = createSnapshotFriendlyRef();
     this.containerViewRef = createSnapshotFriendlyRef();
