@@ -3,6 +3,18 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import examples from './examples';
+import { optionalRequire } from '../../navigation/routeBuilder';
+
+export const SVGScreens = [
+  {
+    name: 'SVGExample',
+    route: 'svg/example',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SVGExampleScreen'));
+    },
+  },
+];
 
 type StackParams = {
   SVGExample: { title: string; key: string };
