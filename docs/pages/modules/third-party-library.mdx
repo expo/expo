@@ -176,16 +176,14 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 > and doesn't support traversing the parent directory (`..`), meaning you need to place the framework inside the **ios** directory
 > (or a subdirectory of **ios**).
 
-Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework.
-One easy way to achieve this is to move your ios source swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`)
-into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
+Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework. One way to achieve this is to move your iOS source Swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`) into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
 
 ```diff ios/ExpoRadialChart.podspec
 - s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
 + s.source_files = 'src/**/*.{h,m,mm,swift,hpp,cpp}'
 ```
 
-Your **ios** folder should end up with a file structure similar to this:
+Your **ios** directory should end up with a file structure similar to this:
 
 <FileTree
   files={[
