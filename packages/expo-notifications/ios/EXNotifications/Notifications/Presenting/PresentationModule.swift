@@ -32,7 +32,7 @@ open class PresentationModule: Module, NotificationDelegate {
     }
 
     AsyncFunction("dismissAllNotificationsAsync") {
-      removeAllDeliveredNotifications()
+      await removeAllDeliveredNotifications()
     }
   }
 
@@ -57,7 +57,7 @@ open class PresentationModule: Module, NotificationDelegate {
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
   }
 
-  open func removeAllDeliveredNotifications() {
+  open func removeAllDeliveredNotifications() async {
     UNUserNotificationCenter.current().removeAllDeliveredNotifications()
   }
 
