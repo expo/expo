@@ -55,7 +55,7 @@ jobs:
           NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
-        uses: errata-ai/vale-action@v2.1.1
+        uses: errata-ai/vale-action@reviewdog
         with:
           version: 3.9.6
           reporter: github-pr-check
