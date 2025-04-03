@@ -1,4 +1,3 @@
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';

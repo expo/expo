@@ -1,4 +1,3 @@
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
 import { router } from '../imperative-api';

@@ -9,7 +9,7 @@ const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
  */
 function Prefetch(props) {
     const navigation = (0, useLoadedNavigation_1.useOptionalNavigation)();
-    (0, react_1.useEffect)(() => {
+    (0, react_1.useLayoutEffect)(() => {
         if (navigation?.isFocused()) {
             imperative_api_1.router.prefetch(props.href);
         }

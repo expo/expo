@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 import { router } from './imperative-api';
 import { useOptionalNavigation } from './link/useLoadedNavigation';
@@ -14,7 +14,7 @@ export type PreloadProps = {
 export function Prefetch(props: PreloadProps) {
   const navigation = useOptionalNavigation();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (navigation?.isFocused()) {
       router.prefetch(props.href);
     }
