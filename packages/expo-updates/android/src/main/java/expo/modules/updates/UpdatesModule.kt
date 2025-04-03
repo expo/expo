@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -19,7 +18,6 @@ import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
@@ -63,148 +61,99 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       UpdatesController.removeUpdatesEventManagerObserver()
     }
 
-    AsyncFunction("reload") { promise: Promise ->
-      appContext.modulesQueue.launch {
-        runCatching {
-          UpdatesController.instance.relaunchReactApplicationForModule()
-          promise.resolve()
-        }.onFailure {
-          promise.reject(it as CodedException)
-        }
-      }
+    AsyncFunction("reload") Coroutine { ->
+      UpdatesController.instance.relaunchReactApplicationForModule()
     }
 
-    AsyncFunction("checkForUpdateAsync") { promise: Promise ->
-      appContext.modulesQueue.launch {
-        runCatching {
-          when (val result = UpdatesController.instance.checkForUpdate()) {
-            is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-              promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
-            }
+    AsyncFunction("checkForUpdateAsync") Coroutine { ->
+      when (val result = UpdatesController.instance.checkForUpdate()) {
+        is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
+          throw CodedException("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
+        }
 
-            is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isAvailable", false)
-                  putString("reason", result.reason.value)
-                }
-              )
-            }
-
-            is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", true)
-                  putBoolean("isAvailable", false)
-                }
-              )
-            }
-
-            is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isAvailable", true)
-                  putString(
-                    "manifestString",
-                    result.update.manifest.toString()
-                  )
-                }
-              )
-            }
+        is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", false)
+            putString("reason", result.reason.value)
           }
-        }.onFailure {
-          promise.reject(it as CodedException)
         }
-      }
-    }
 
-    AsyncFunction("fetchUpdateAsync") { promise: Promise ->
-      appContext.modulesQueue.launch {
-        runCatching {
-          when (val result = UpdatesController.instance.fetchUpdate()) {
-            is IUpdatesController.FetchUpdateResult.ErrorResult -> {
-              promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
-            }
-
-            is IUpdatesController.FetchUpdateResult.Failure -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isNew", false)
-                }
-              )
-            }
-
-            is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", true)
-                  putBoolean("isNew", false)
-                }
-              )
-            }
-
-            is IUpdatesController.FetchUpdateResult.Success -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isNew", true)
-                  putString("manifestString", result.update.manifest.toString())
-                }
-              )
-            }
+        is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isAvailable", false)
           }
-        }.onFailure {
-          promise.reject(it as CodedException)
+        }
+
+        is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", true)
+            putString(
+              "manifestString",
+              result.update.manifest.toString()
+            )
+          }
         }
       }
     }
 
-    AsyncFunction("getExtraParamsAsync") { promise: Promise ->
+    AsyncFunction("fetchUpdateAsync") Coroutine { ->
+      when (val result = UpdatesController.instance.fetchUpdate()) {
+        is IUpdatesController.FetchUpdateResult.ErrorResult -> {
+          throw CodedException("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+        }
+
+        is IUpdatesController.FetchUpdateResult.Failure -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isNew", false)
+          }
+        }
+
+        is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isNew", false)
+          }
+        }
+
+        is IUpdatesController.FetchUpdateResult.Success -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isNew", true)
+            putString("manifestString", result.update.manifest.toString())
+          }
+        }
+      }
+    }
+
+    AsyncFunction("getExtraParamsAsync") Coroutine { ->
       logger.debug("Called getExtraParamsAsync")
-      appContext.modulesQueue.launch {
-        runCatching {
-          val result = UpdatesController.instance.getExtraParams()
-          promise.resolve(result)
-        }.onFailure {
-          promise.reject(it as CodedException)
-        }
-      }
+      return@Coroutine UpdatesController.instance.getExtraParams()
     }
 
-    AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
+    AsyncFunction("setExtraParamAsync") Coroutine { key: String, value: String? ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
-      appContext.modulesQueue.launch {
-        runCatching {
-          UpdatesController.instance.setExtraParam(
-            key,
-            value
-          )
-          promise.resolve()
-        }.onFailure {
-          promise.reject(it as CodedException)
-        }
-      }
+      UpdatesController.instance.setExtraParam(
+        key,
+        value
+      )
     }
 
     AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
       return@Coroutine readLogEntries(context.filesDir, maxAge)
     }
 
-    AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
-      appContext.modulesQueue.launch {
-        clearLogEntries(context.filesDir) { error ->
-          if (error != null) {
-            promise.reject(
-              "ERR_UPDATES_READ_LOGS",
-              "There was an error when clearing the expo-updates log file",
-              error
-            )
-          } else {
-            promise.resolve(null)
-          }
+    AsyncFunction("clearLogEntriesAsync") Coroutine { ->
+      clearLogEntries(context.filesDir) { error ->
+        if (error != null) {
+          throw CodedException(
+            "ERR_UPDATES_READ_LOGS",
+            "There was an error when clearing the expo-updates log file",
+            error
+          )
         }
       }
     }
