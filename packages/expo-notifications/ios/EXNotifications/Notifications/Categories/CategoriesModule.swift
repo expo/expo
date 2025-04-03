@@ -17,7 +17,7 @@ open class CategoriesModule: Module {
       return await setNotificationCategoryAsync(identifier: identifier, actions: actions, options: options)
     }
 
-    AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String, _: Promise) in
+    AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String) in
       return await deleteNotificationCategoryAsync(identifier: identifier)
     }
   }
