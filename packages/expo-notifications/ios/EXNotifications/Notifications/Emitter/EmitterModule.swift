@@ -22,16 +22,15 @@ open class EmitterModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("getLastNotificationResponseAsync") {(promise: Promise) in
+    AsyncFunction("getLastNotificationResponseAsync") {() -> [String: Any]? in
       if let lastResponse: UNNotificationResponse = NotificationCenterManager.shared.lastResponse {
-        promise.resolve(EXNotificationSerializer.serializedNotificationResponse(lastResponse))
+        return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
       }
-      promise.resolve(nil)
+      return nil
     }
 
-    AsyncFunction("clearLastNotificationResponseAsync") {(promise: Promise) in
+    AsyncFunction("clearLastNotificationResponseAsync") {
       NotificationCenterManager.shared.lastResponse = nil
-      promise.resolve(nil)
     }
   }
 

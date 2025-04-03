@@ -24,14 +24,10 @@ open class SchedulerModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationScheduler")
 
-    AsyncFunction("getAllScheduledNotificationsAsync") { (promise: Promise) in
-AsyncFunction("getAllScheduledNotificationsAsync") { 
-     let request = await UNUserNotificationCenter.current().pendingNotificationRequests()
-     return serializedNotificationRequests(requests)
-        promise.resolve(self.serializedNotificationRequests(requests))
-      }
+    AsyncFunction("getAllScheduledNotificationsAsync") {
+      let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+      return serializedNotificationRequests(requests)
     }
-    .runOnQueue(.main)
 
     AsyncFunction("cancelScheduledNotificationAsync") { (identifier: String) in
       cancelScheduledNotification(identifier)

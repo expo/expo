@@ -18,16 +18,13 @@ open class PresentationModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-  AsyncFunction("presentNotificationAsync") { (identifier: String, notificationSpec: [String: Any]) in
+    AsyncFunction("presentNotificationAsync") { (identifier: String, notificationSpec: [String: Any]) in
       try await presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec)
     }
-      presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec, promise: promise)
-    }
 
-    AsyncFunction("getPresentedNotificationsAsync") { (promise: Promise) in
-      UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
-        promise.resolve(self.serializeNotifications(notifications))
-      }
+    AsyncFunction("getPresentedNotificationsAsync") {
+      let notifications = await UNUserNotificationCenter.current().deliveredNotifications()
+      return self.serializeNotifications(notifications)
     }
 
     AsyncFunction("dismissNotificationAsync") { (identifier: String) in
