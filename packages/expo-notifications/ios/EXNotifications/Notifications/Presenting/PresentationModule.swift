@@ -18,10 +18,11 @@ open class PresentationModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("presentNotificationAsync") { (identifier: String, notificationSpec: [String: Any], promise: Promise) in
+  AsyncFunction("presentNotificationAsync") { (identifier: String, notificationSpec: [String: Any]) in
+      try await presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec)
+    }
       presentNotificationAsync(identifier: identifier, notificationSpec: notificationSpec, promise: promise)
     }
-    .runOnQueue(.main)
 
     AsyncFunction("getPresentedNotificationsAsync") { (promise: Promise) in
       UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
@@ -63,33 +64,25 @@ open class PresentationModule: Module, NotificationDelegate {
     UNUserNotificationCenter.current().removeAllDeliveredNotifications()
   }
 
-  open func presentNotificationAsync(identifier: String, notificationSpec: [String: Any], promise: Promise) {
+  open func presentNotificationAsync(identifier: String, notificationSpec: [String: Any]) async throws {
+    guard let appContext else {
+      let error = NSError(domain: "ExpoNotificationPresenter", code: 0, userInfo: nil)
+      throw Exception(name: "ERR_NOTIF_PRESENT", description: error.localizedDescription)
+    }
+    let requestContentRecord = try NotificationRequestContentRecord(from: notificationSpec, appContext: appContext)
+    let content = requestContentRecord.toUNMutableNotificationContent()
+    var request: UNNotificationRequest?
+    try EXUtilities.catchException {
+      request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+    }
+    guard let request else {
+      throw Exception(name: "ERR_NOTIF_PRESENT", description: "Notification could not be presented")
+    }
+    presentedNotifications.insert(identifier)
     do {
-      guard let appContext = appContext else {
-        let error = NSError(domain: "ExpoNotificationPresenter", code: 0, userInfo: nil)
-        promise.reject("ERR_NOTIF_PRESENT", error.localizedDescription)
-        return
-      }
-      let requestContentRecord = try NotificationRequestContentRecord(from: notificationSpec, appContext: appContext)
-      let content = requestContentRecord.toUNMutableNotificationContent()
-      var request: UNNotificationRequest?
-      try EXUtilities.catchException {
-        request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
-      }
-      guard let request = request else {
-        promise.reject("ERR_NOTIF_PRESENT", "Notification could not be presented")
-        return
-      }
-      presentedNotifications.insert(identifier)
-      UNUserNotificationCenter.current().add(request) { error in
-        if let error {
-          promise.reject("ERR_NOTIF_PRESENT", error.localizedDescription)
-        } else {
-          promise.resolve()
-        }
-      }
+      try await UNUserNotificationCenter.current().add(request)
     } catch {
-      promise.reject("ERR_NOTIF_PRESENT", error.localizedDescription)
+      throw Exception(name: "ERR_NOTIF_PRESENT", description: error.localizedDescription)
     }
   }
 }

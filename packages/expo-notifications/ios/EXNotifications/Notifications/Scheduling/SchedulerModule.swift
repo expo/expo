@@ -25,7 +25,9 @@ open class SchedulerModule: Module {
     Name("ExpoNotificationScheduler")
 
     AsyncFunction("getAllScheduledNotificationsAsync") { (promise: Promise) in
-      UNUserNotificationCenter.current().getPendingNotificationRequests { (requests: [UNNotificationRequest]) in
+AsyncFunction("getAllScheduledNotificationsAsync") { 
+     let request = await UNUserNotificationCenter.current().pendingNotificationRequests()
+     return serializedNotificationRequests(requests)
         promise.resolve(self.serializedNotificationRequests(requests))
       }
     }
