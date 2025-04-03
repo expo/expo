@@ -503,24 +503,39 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [
-        {
-          key: expect.any(String),
-          name: 'test',
-          params: {},
-        },
-      ],
-      routeNames: ['index', 'test', '_sitemap', '+not-found'],
+      preloadedRoutes: [],
+      routeNames: ['__root'],
       routes: [
         {
           key: expect.any(String),
-          name: 'index',
+          name: '__root',
           params: undefined,
-          path: '/',
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
         },
       ],
       stale: false,
       type: 'stack',
-    } as StackNavigationState<ParamListBase>);
+    });
   });
 });

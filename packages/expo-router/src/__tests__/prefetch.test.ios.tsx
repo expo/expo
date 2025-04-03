@@ -18,8 +18,16 @@ it('prefetch a sibling route', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -32,25 +40,40 @@ it('prefetch a sibling route', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {},
-      },
-    ],
-    routeNames: ['index', 'test', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {},
+            },
+          ],
+          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('will prefetch the correct route within a group', () => {
@@ -64,8 +87,16 @@ it('will prefetch the correct route within a group', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: '(a)/index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: '(a)/index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -78,25 +109,40 @@ it('will prefetch the correct route within a group', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: '(a)/test',
-        params: {},
-      },
-    ],
-    routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '(a)/index',
+        name: '__root',
         params: undefined,
-        path: '/',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [
+            {
+              key: expect.any(String),
+              name: '(a)/test',
+              params: {},
+            },
+          ],
+          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '(a)/index',
+              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('will prefetch the correct route within nested groups', () => {
@@ -110,8 +156,16 @@ it('will prefetch the correct route within nested groups', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: '(a)/index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: '(a)/index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -124,25 +178,47 @@ it('will prefetch the correct route within nested groups', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: '(a)/(c)/test',
-        params: {},
-      },
-    ],
-    routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '(a)/index',
+        name: '__root',
         params: undefined,
-        path: '/',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [
+            {
+              key: expect.any(String),
+              name: '(a)/(c)/test',
+              params: {},
+            },
+          ],
+          routeNames: [
+            '(b)/test',
+            '(a)/index',
+            '(b)/index',
+            '(a)/(c)/test',
+            '_sitemap',
+            '+not-found',
+          ],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '(a)/index',
+              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('works with relative Href', () => {
@@ -154,8 +230,16 @@ it('works with relative Href', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -168,25 +252,40 @@ it('works with relative Href', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {},
-      },
-    ],
-    routeNames: ['index', 'test', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {},
+            },
+          ],
+          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('works with params', () => {
@@ -198,8 +297,16 @@ it('works with params', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'index',
-        path: '/',
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
       },
     ],
     stale: true,
@@ -212,27 +319,42 @@ it('works with params', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {
-          foo: 'bar',
-        },
-      },
-    ],
-    routeNames: ['index', 'test', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          preloadedRoutes: [
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {
+                foo: 'bar',
+              },
+            },
+          ],
+          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('ignores the current route', () => {
@@ -251,9 +373,22 @@ it('ignores the current route', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'directory',
+        name: '__root',
         state: {
-          routes: [{ name: 'index', path: '/directory' }],
+          routes: [
+            {
+              name: 'directory',
+              state: {
+                routes: [
+                  {
+                    name: 'index',
+                    path: '/directory',
+                  },
+                ],
+                stale: true,
+              },
+            },
+          ],
           stale: true,
         },
       },
@@ -269,33 +404,54 @@ it('ignores the current route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'directory',
+        name: '__root',
         params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index'],
+          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'index',
-              params: {},
-              path: '/directory',
+              name: 'directory',
+              params: undefined,
+              state: {
+                index: 0,
+                key: expect.any(String),
+                preloadedRoutes: [
+                  {
+                    key: expect.any(String),
+                    name: 'index',
+                    params: {},
+                  },
+                ],
+                routeNames: ['index'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'index',
+                    params: undefined,
+                    path: '/directory',
+                  },
+                ],
+                stale: false,
+                type: 'stack',
+              },
             },
           ],
           stale: false,
           type: 'stack',
-        } as StackNavigationState<ParamListBase>,
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('can prefetch a deeply nested route', () => {
@@ -328,9 +484,22 @@ it('can prefetch a deeply nested route', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'directory',
+        name: '__root',
         state: {
-          routes: [{ name: 'index', path: '/directory' }],
+          routes: [
+            {
+              name: 'directory',
+              state: {
+                routes: [
+                  {
+                    name: 'index',
+                    path: '/directory',
+                  },
+                ],
+                stale: true,
+              },
+            },
+          ],
           stale: true,
         },
       },
@@ -349,45 +518,60 @@ it('can prefetch a deeply nested route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'directory',
+        name: '__root',
         params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [
-            {
-              key: expect.any(String),
-              name: 'apple',
-              params: {
-                screen: 'banana',
-                params: {
-                  params: {},
-                  screen: 'index',
-                },
-              },
-            },
-          ],
-          routeNames: ['index', 'apple'],
+          preloadedRoutes: [],
+          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'index',
+              name: 'directory',
               params: undefined,
-              path: '/directory',
+              state: {
+                index: 0,
+                key: expect.any(String),
+                preloadedRoutes: [
+                  {
+                    key: expect.any(String),
+                    name: 'apple',
+                    params: {
+                      params: {
+                        params: {},
+                        screen: 'index',
+                      },
+                      screen: 'banana',
+                    },
+                  },
+                ],
+                routeNames: ['index', 'apple'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'index',
+                    params: undefined,
+                    path: '/directory',
+                  },
+                ],
+                stale: false,
+                type: 'stack',
+              },
             },
           ],
           stale: false,
           type: 'stack',
-        } as StackNavigationState<ParamListBase>,
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
 
 it('can prefetch a parent route', () => {
@@ -415,20 +599,28 @@ it('can prefetch a parent route', () => {
   expect(screen).toHaveRouterState({
     routes: [
       {
-        name: 'directory',
+        name: '__root',
         state: {
           routes: [
             {
-              name: 'apple',
+              name: 'directory',
               state: {
                 routes: [
                   {
-                    name: 'banana',
+                    name: 'apple',
                     state: {
                       routes: [
                         {
-                          name: 'index',
-                          path: '/directory/apple/banana',
+                          name: 'banana',
+                          state: {
+                            routes: [
+                              {
+                                name: 'index',
+                                path: '/directory/apple/banana',
+                              },
+                            ],
+                            stale: true,
+                          },
                         },
                       ],
                       stale: true,
@@ -456,53 +648,68 @@ it('can prefetch a parent route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'directory',
+        name: '__root',
         params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [
-            {
-              key: expect.any(String),
-              name: 'test',
-              params: {},
-            },
-          ],
-          routeNames: ['test', 'apple'],
+          preloadedRoutes: [],
+          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'apple',
+              name: 'directory',
               params: undefined,
               state: {
+                index: 0,
+                key: expect.any(String),
+                preloadedRoutes: [
+                  {
+                    key: expect.any(String),
+                    name: 'test',
+                    params: {},
+                  },
+                ],
+                routeNames: ['test', 'apple'],
                 routes: [
                   {
-                    name: 'banana',
+                    key: expect.any(String),
+                    name: 'apple',
+                    params: undefined,
                     state: {
                       routes: [
                         {
-                          name: 'index',
-                          path: '/directory/apple/banana',
+                          name: 'banana',
+                          state: {
+                            routes: [
+                              {
+                                name: 'index',
+                                path: '/directory/apple/banana',
+                              },
+                            ],
+                            stale: true,
+                          },
                         },
                       ],
                       stale: true,
                     },
                   },
                 ],
-                stale: true,
+                stale: false,
+                type: 'stack',
               },
             },
           ],
           stale: false,
           type: 'stack',
-        } as StackNavigationState<ParamListBase>,
+        },
       },
     ],
     stale: false,
     type: 'stack',
-  } as StackNavigationState<ParamListBase>);
+  });
 });
