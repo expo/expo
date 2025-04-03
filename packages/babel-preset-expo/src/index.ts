@@ -99,6 +99,15 @@ type BabelPresetExpoPlatformOptions = {
 
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
   minifyTypeofWindow?: boolean;
+
+  /**
+   * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
+   *
+   * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+   *
+   * @default `false`
+   */
+  unstable_transformImportMeta?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -318,6 +327,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (platformOptions.disableImportExportTransform) {
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
+  }
+  if (platformOptions.unstable_transformImportMeta === true) {
+    extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
   }
 
   return {
