@@ -18,6 +18,7 @@ import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+import { env } from '../../../utils/env';
 
 function fill(width: number): string {
   return Array(width).join(' ');
@@ -59,7 +60,9 @@ export async function logMetroErrorWithStack(
     return;
   }
 
-  Log.log(getStackAsFormattedLog(projectRoot, { stack, codeFrame, error }));
+  Log.log(
+    getStackAsFormattedLog(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true })
+  );
 }
 
 export function getStackAsFormattedLog(
@@ -68,10 +71,12 @@ export function getStackAsFormattedLog(
     stack,
     codeFrame,
     error,
+    showCollapsedFrames = env.EXPO_DEBUG,
   }: {
     stack: MetroStackFrame[];
     codeFrame?: CodeFrame;
     error?: Error;
+    showCollapsedFrames?: boolean;
   }
 ): string {
   const logs: string[] = [];
@@ -138,10 +143,15 @@ export function getStackAsFormattedLog(
     const stackLines: string[] = [];
 
     stackProps.forEach((frame) => {
+      if (frame.collapse && !showCollapsedFrames) {
+        return;
+      }
+
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
         : frame.subtitle;
       let lineItem = chalk.gray(`  ${frame.title} (${position})`);
+
       if (frame.collapse) {
         lineItem = chalk.dim(lineItem);
       }
