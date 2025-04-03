@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
-    "@expo/react-native-action-sheet": "^3.8.0",
+    "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/ui": "~0.0.2",
     "@lottiefiles/dotlottie-react": "^0.10.1",
