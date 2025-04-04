@@ -31,23 +31,27 @@ private struct ReadHeightModifier: ViewModifier {
   }
 }
 
-struct BottomSheetView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: BottomSheetProps
+struct BottomSheetView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: BottomSheetProps
 
   @State private var isOpened = true
   @State var height: CGFloat = 0
 
+  init(props: BottomSheetProps) {
+    self.props = props
+  }
+
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       Rectangle().hidden()
+        .modifier(ReadHeightModifier())
+        .onPreferenceChange(HeightPreferenceKey.self) { height in
+          if let height {
+            self.height = height
+          }
+        }
         .sheet(isPresented: $isOpened) {
           Children()
-            .modifier(ReadHeightModifier())
-            .onPreferenceChange(HeightPreferenceKey.self) { height in
-              if let height {
-                self.height = height
-              }
-            }
             .presentationDetents([.height(self.height)])
         }
         .onChange(of: isOpened, perform: { newIsOpened in
