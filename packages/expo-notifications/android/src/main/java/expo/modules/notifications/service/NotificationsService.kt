@@ -459,7 +459,7 @@ open class NotificationsService : BroadcastReceiver() {
       // we should use the dedicated Activity pendingIntent.
       if (action.opensAppToForeground() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val notificationResponse = getNotificationResponseFromBroadcastIntent(intent)
-        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent, notificationResponse)
+        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent)
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability

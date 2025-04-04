@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications;
 
 import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
 import static expo.modules.notifications.UtilsKt.isValidJSONString;
+import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 
 import android.os.Bundle;
 
@@ -26,28 +27,11 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
-import expo.modules.notifications.notifications.triggers.DailyTrigger;
-import expo.modules.notifications.notifications.triggers.DateTrigger;
-import expo.modules.notifications.notifications.triggers.MonthlyTrigger;
-import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
-import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
-import expo.modules.notifications.notifications.triggers.YearlyTrigger;
 
 public class NotificationSerializer {
-  public static Bundle toBundle(NotificationResponse response) {
-    Bundle serializedResponse = new Bundle();
-    serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
-    serializedResponse.putBundle("notification", toBundle(response.getNotification()));
-    if (response instanceof TextInputNotificationResponse) {
-      serializedResponse.putString("userText", ((TextInputNotificationResponse) response).getUserText());
-    }
-    return serializedResponse;
-  }
 
   public static Bundle toBundle(Notification notification) {
     Bundle serializedNotification = new Bundle();
@@ -222,7 +206,7 @@ public class NotificationSerializer {
     serializedNotification.putBundle("request", serializedRequest);
 
     Bundle serializedResponse = new Bundle();
-    serializedResponse.putString("actionIdentifier", "expo.modules.notifications.actions.DEFAULT");
+    serializedResponse.putString("actionIdentifier", DEFAULT_ACTION_IDENTIFIER);
     serializedResponse.putBundle("notification", serializedNotification);
 
     return serializedResponse;
