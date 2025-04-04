@@ -176,10 +176,14 @@ async function promptToPublishParcel(
           name: "Don't publish",
           value: null,
         },
-        ...(index > 0 ? [{
-          name: 'Go back to previous package',
-          value: 'back',
-        }] : []),
+        ...(index > 0
+          ? [
+              {
+                name: 'Go back to previous package',
+                value: 'back',
+              },
+            ]
+          : []),
         {
           name: 'Skip to next package',
           value: 'skip',
@@ -236,7 +240,10 @@ async function selectParcelsToPublish(
     const packageName = parcel.pkg.packageName;
 
     // --- Skip Check ---
-    if ((parcel.state.releaseVersion !== null && parcel.state.releaseVersion !== undefined) || skipped.has(packageName)) {
+    if (
+      (parcel.state.releaseVersion !== null && parcel.state.releaseVersion !== undefined) ||
+      skipped.has(packageName)
+    ) {
       currentIndex++;
       continue;
     }
@@ -270,18 +277,20 @@ async function selectParcelsToPublish(
           currentIndex = prevPromptableIndex; // Jump to the target index
           continue; // Re-process the target package
         } else {
-           currentIndex++; // Prevent getting stuck if no previous target
+          currentIndex++; // Prevent getting stuck if no previous target
         }
       } else if (result === 'skip') {
         skipped.add(packageName);
         parcel.state.releaseVersion = null;
         selectedParcels.delete(parcel);
         currentIndex++;
-      } else if (result === true) { // Selected 'Yes'
+      } else if (result === true) {
+        // Selected 'Yes'
         selectedParcels.add(parcel);
         skipped.delete(packageName);
         currentIndex++;
-      } else { // Selected 'No / Dont Publish' or null
+      } else {
+        // Selected 'No / Dont Publish' or null
         parcel.state.releaseVersion = null;
         selectedParcels.delete(parcel);
         skipped.delete(packageName);
