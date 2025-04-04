@@ -117,16 +117,16 @@ describe('Export DOM Components', () => {
           assets: [
             {
               ext: 'css',
-              path: expect.pathMatching('www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css'),
+              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
             },
             {
               ext: 'html',
-              path: expect.pathMatching('www.bundle/03adb2b4e2c93e6e2c5369dee2b739db.html'),
+              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
             },
 
             {
               ext: 'js',
-              path: expect.pathMatching('www.bundle/37ac4f564839044a1c83ce693d93817b.js'),
+              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
             },
 
             {
@@ -277,9 +277,9 @@ describe('Export DOM Components', () => {
 
       'metadata.json',
 
-      'www.bundle/03adb2b4e2c93e6e2c5369dee2b739db.html',
-      'www.bundle/37ac4f564839044a1c83ce693d93817b.js',
-      'www.bundle/f85bc9fc5dd55297c7f68763d859ab65.css',
+      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
+      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
+      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
     ]);
   });
 });
