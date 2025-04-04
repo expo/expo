@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Remove unused log.
+
 ## 4.0.1 - 2025-01-19
 
 ### 🐛 Bug fixes
