@@ -1,6 +1,6 @@
 import { type ViewProps } from 'react-native';
 import { type DOMProps, type WebViewProps } from '../dom.types';
-type UseDebugZeroHeightType = (dom: DOMProps) => {
+type UseDebugZeroHeightType = (dom?: DOMProps) => {
     debugZeroHeightStyle: WebViewProps['containerStyle'] | undefined;
     debugOnLayout: ViewProps['onLayout'];
 };

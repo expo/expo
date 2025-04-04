@@ -78,6 +78,12 @@ export type Locale = {
      */
     languageCode: string | null;
     /**
+     * An [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) 4-letter script code. On Android and Web, it may be `null` if none is defined.
+     * @example
+     * `'Latn'`, `'Hans'`, `'Hebr'`.
+     */
+    languageScriptCode: string | null;
+    /**
      * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on Android and is parsed from locale on Web (can be `null` on Web).
      * @example
      * `'US'`.
@@ -114,14 +120,14 @@ export type Locale = {
      * @example
      * `'USD'`, `'EUR'`, `'PLN'`.
      */
-    langageCurrencyCode: string | null;
+    languageCurrencyCode: string | null;
     /**
-     * Currency symbol for the currency specified by `langageCurrencyCode`.
+     * Currency symbol for the currency specified by `languageCurrencyCode`.
      * Prefer using `currencySymbol` for any internalization purposes.
      * @example
      * `'$'`, `'€'`, `'zł'`.
      */
-    langageCurrencySymbol: string | null;
+    languageCurrencySymbol: string | null;
     /**
      * Decimal separator used for formatting numbers with fractional parts.
      * @example

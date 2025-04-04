@@ -2,10 +2,13 @@ package expo.modules.ui.button
 
 import android.content.Context
 import android.graphics.Color
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
@@ -14,6 +17,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -22,6 +28,7 @@ import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.compose
+import expo.modules.ui.getImageVector
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -50,15 +57,17 @@ class ButtonColors : Record {
 data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
-  val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors())
-
+  val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
+  val systemImage: MutableState<String?> = mutableStateOf(null),
+  val disabled: MutableState<Boolean> = mutableStateOf(false)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.filledTonalButtonColors(
         containerColor = colors.containerColor.compose,
@@ -70,6 +79,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.BORDERLESS -> TextButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.textButtonColors(
         containerColor = colors.containerColor.compose,
@@ -81,6 +91,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.OUTLINED -> OutlinedButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.outlinedButtonColors(
         containerColor = colors.containerColor.compose,
@@ -92,6 +103,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     ButtonVariant.ELEVATED -> ElevatedButton(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.elevatedButtonColors(
         containerColor = colors.containerColor.compose,
@@ -103,6 +115,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
     else -> androidx.compose.material3.Button(
       onPress,
+      enabled = !disabled,
       content = content,
       colors = ButtonDefaults.buttonColors(
         containerColor = colors.containerColor.compose,
@@ -126,13 +139,29 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
       val (variant) = props.variant
       val (text) = props.text
       val (colors) = props.elementColors
+      val (systemImage) = props.systemImage
+      val (disabled) = props.disabled
       DynamicTheme {
         StyledButton(
           variant ?: ButtonVariant.DEFAULT,
           colors,
+          disabled,
           { onButtonPressed.invoke(ButtonPressedEvent()) }
         ) {
-          Text(text)
+          if (systemImage != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              getImageVector(systemImage)?.let {
+                Icon(
+                  it,
+                  contentDescription = systemImage,
+                  modifier = Modifier.padding(end = 8.dp)
+                )
+              }
+              Text(text)
+            }
+          } else {
+            Text(text)
+          }
         }
       }
     }

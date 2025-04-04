@@ -33,6 +33,8 @@ export type ExpoMetroOptions = {
   isExporting: boolean;
   /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
   domRoot?: string;
+  /** Exporting MD5 filename based on file contents, for EAS Update.  */
+  useMd5Filename?: boolean;
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
@@ -68,7 +70,7 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   // to support async imports. If it's not installed, we can't support async imports.
   // If it is installed, the user MUST import it somewhere in their project.
   // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime/package.json') != null;
 }
 
 function withDefaults({
@@ -165,6 +167,7 @@ export function getMetroDirectBundleOptions(
     clientBoundaries,
     runModule,
     modulesOnly,
+    useMd5Filename,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -203,6 +206,7 @@ export function getMetroDirectBundleOptions(
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
+    useMd5Filename: useMd5Filename || undefined,
   };
 
   // Iterate and delete undefined values

@@ -1,3 +1,6 @@
+import { ExpoConfig } from '@expo/config-types';
+
+import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -44,8 +47,25 @@ export enum Config {
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin = (config) => {
-  return withPlugins(config, [withUpdatesManifest, withRuntimeVersionResource]);
+  return withPlugins(config, [
+    withUpdatesManifest,
+    withRuntimeVersionResource,
+    withUpdatesNativeDebugGradleProps,
+  ]);
 };
+
+/**
+ * A config-plugin to update `android/gradle.properties` from the `updates.useNativeDebug` in expo config
+ */
+const withUpdatesNativeDebugGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'EX_UPDATES_NATIVE_DEBUG',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug === true ? 'true' : undefined),
+    },
+  ],
+  'withUpdatesNativeDebugGradleProps'
+);
 
 const withUpdatesManifest: ConfigPlugin = (config) => {
   return withAndroidManifest(config, async (config) => {

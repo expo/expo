@@ -1,3 +1,5 @@
+"use strict";
+
 import { NativeModules, TurboModuleRegistry } from "react-native";
 import { shouldFallbackToLegacyNativeModule } from "./shouldFallbackToLegacyNativeModule";
 

@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -31,21 +33,21 @@ function createPromise(getValue, callback) {
   return new Promise((resolve, reject) => {
     try {
       const value = getValue();
-      callback === null || callback === void 0 ? void 0 : callback(null, value);
+      callback?.(null, value);
       resolve(value);
     } catch (err) {
-      callback === null || callback === void 0 ? void 0 : callback(err);
+      callback?.(err);
       reject(err);
     }
   });
 }
 function createPromiseAll(promises, callback, processResult) {
   return Promise.all(promises).then(result => {
-    const value = (processResult === null || processResult === void 0 ? void 0 : processResult(result)) ?? null;
-    callback === null || callback === void 0 ? void 0 : callback(null, value);
+    const value = processResult?.(result) ?? null;
+    callback?.(null, value);
     return Promise.resolve(value);
   }, errors => {
-    callback === null || callback === void 0 ? void 0 : callback(errors);
+    callback?.(errors);
     return Promise.reject(errors);
   });
 }

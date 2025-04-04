@@ -12,6 +12,22 @@ export type Coordinates = {
   longitude?: number;
 };
 
+export type CameraPosition = {
+  /**
+   * The middle point of the camera.
+   */
+  coordinates?: Coordinates;
+
+  /**
+   * The zoom level of the camera.
+   * For some view sizes, lower zoom levels might not be available.
+   */
+  zoom?: number;
+};
+
+/**
+ * @hidden
+ */
 export type MapsModule = {
   /**
    * Asks the user to grant permissions for location.

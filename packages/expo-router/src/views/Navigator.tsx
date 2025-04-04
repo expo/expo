@@ -1,12 +1,13 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { RouterFactory, StackRouter, useNavigationBuilder } from '@react-navigation/native';
+import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Screen } from './Screen';
 import { useContextKey } from '../Route';
+import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import { useSortedScreens } from '../useScreens';
 

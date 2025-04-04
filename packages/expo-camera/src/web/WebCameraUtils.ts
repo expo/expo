@@ -254,6 +254,7 @@ export function capture(
     base64,
     width: 0,
     height: 0,
+    format: config.imageType ?? 'jpg',
   };
 
   if (settings) {

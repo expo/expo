@@ -17,12 +17,15 @@ open class ImageLoadTask(
     val context =
       this@ImageLoadTask.appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+    val sourceToLoad = source.createGlideModelProvider(context)
+    val model = sourceToLoad?.getGlideModel()
+
     try {
       val bitmap = withContext(Dispatchers.IO) {
         Glide
           .with(context)
           .asDrawable()
-          .load(source.uri)
+          .load(model)
           .centerInside()
           .submit(options.maxWidth, options.maxHeight)
           .get()

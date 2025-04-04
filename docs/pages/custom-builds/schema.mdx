@@ -1554,7 +1554,7 @@ build:
 
 Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the EAS servers.
 
-```yaml example.yml
+```yaml example.yml|collapseHeight=440
 build:
   name: Build iOS app
   steps:
@@ -1872,7 +1872,7 @@ Using the built-in EAS functions you can recreate the default EAS Build process 
 
 For example, to trigger a build that creates internal distribution build for Android and a simulator build for iOS you can use the following configuration:
 
-```json eas.json
+```json eas.json|collapseHeight=420
 {
   /* @hide ... */ /* @end */
   "build": {
@@ -1910,7 +1910,7 @@ build:
     - eas/find_and_upload_build_artifacts
 ```
 
-```yaml .eas/build/development-build-ios.yml
+```yaml .eas/build/development-build-ios.yml|collapseHeight=440
 build:
   name: Simple simulator iOS build
   steps:

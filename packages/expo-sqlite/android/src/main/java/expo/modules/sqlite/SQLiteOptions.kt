@@ -7,9 +7,6 @@ import expo.modules.kotlin.records.Record
 
 internal data class OpenDatabaseOptions(
   @Field
-  val enableCRSQLite: Boolean = false,
-
-  @Field
   val enableChangeListener: Boolean = false,
 
   @Field

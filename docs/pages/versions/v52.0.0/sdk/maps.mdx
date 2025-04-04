@@ -5,6 +5,7 @@ description: A library that provides access to Google Maps on Android and Apple 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-maps'
 packageName: 'expo-maps'
 platforms: ['ios', 'android']
+iconUrl: '/static/images/packages/expo-maps.png'
 isNew: true
 ---
 
@@ -15,6 +16,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 > **warning** **Expo Maps is currently in alpha and subject to breaking changes. It is not available in the Expo Go app.**
 
@@ -26,8 +28,10 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Expo Maps provides access to the platform native map APIs on Android and iOS.
 
-- **Apple Maps is available on iOS only**. No additional configuration is required to use it after installing this package.
-- **Google Maps is available on Android only**. While Google provides a Google Maps SDK for iOS, Expo Maps supports it exclusively on Android. If you want to use Google Maps on iOS, you can look into using an [alternative library](https://reactnative.directory/) or [writing your own](/modules/overview/).
+- **Apple Maps (available on <PlatformTag platform="ios" /> only)**. No additional configuration is required to use it after installing this package.
+- **Google Maps (available on <PlatformTag platform="android" /> only)**. While Google provides a Google Maps SDK for iOS, Expo Maps supports it exclusively on Android. If you want to use Google Maps on iOS, you can look into using an [alternative library](https://reactnative.directory/) or [writing your own](/modules/overview/).
+
+### Google Cloud API setup
 
 **Before you can use Google Maps on Android**, you need to register a Google Cloud API project, enable the Maps SDK for Android, and add the associated configuration to your Expo project.
 
@@ -89,6 +93,8 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 </Step>
 
 </Collapsible>
+
+## Permissions
 
 To display the user's location on the map, you need to declare and request location permission beforehand. You can configure this using the built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 

@@ -74,7 +74,7 @@ export function EASHostingShoutoutBanner() {
           <Cloud01Icon className="icon-lg relative z-10 text-palette-white" />
         </div>
         <div className="relative grid grid-cols-1">
-          <p className="font-medium text-success heading-base">EAS Hosting</p>
+          <p className="text-base font-medium text-success">EAS Hosting</p>
           <p className="text-sm text-success">
             Try the first end-to-end deployment solution for universal app development.
           </p>

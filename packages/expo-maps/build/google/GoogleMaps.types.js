@@ -1,29 +1,33 @@
 /**
  * The type of map to display.
+ * @platform android
  */
-export var MapType;
-(function (MapType) {
+export var GoogleMapsMapType;
+(function (GoogleMapsMapType) {
     /**
      * Satellite imagery with roads and points of interest overlayed.
      */
-    MapType["HYBRID"] = "HYBRID";
+    GoogleMapsMapType["HYBRID"] = "HYBRID";
     /**
      * Standard road map.
      */
-    MapType["NORMAL"] = "NORMAL";
+    GoogleMapsMapType["NORMAL"] = "NORMAL";
     /**
      * Satellite imagery.
      */
-    MapType["SATELLITE"] = "SATELLITE";
+    GoogleMapsMapType["SATELLITE"] = "SATELLITE";
     /**
      * Topographic data.
      */
-    MapType["TERRAIN"] = "TERRAIN";
-})(MapType || (MapType = {}));
-export var MapColorScheme;
-(function (MapColorScheme) {
-    MapColorScheme["LIGHT"] = "LIGHT";
-    MapColorScheme["DARK"] = "DARK";
-    MapColorScheme["FOLLOW_SYSTEM"] = "FOLLOW_SYSTEM";
-})(MapColorScheme || (MapColorScheme = {}));
+    GoogleMapsMapType["TERRAIN"] = "TERRAIN";
+})(GoogleMapsMapType || (GoogleMapsMapType = {}));
+/**
+ * @platform android
+ */
+export var GoogleMapsColorScheme;
+(function (GoogleMapsColorScheme) {
+    GoogleMapsColorScheme["LIGHT"] = "LIGHT";
+    GoogleMapsColorScheme["DARK"] = "DARK";
+    GoogleMapsColorScheme["FOLLOW_SYSTEM"] = "FOLLOW_SYSTEM";
+})(GoogleMapsColorScheme || (GoogleMapsColorScheme = {}));
 //# sourceMappingURL=GoogleMaps.types.js.map

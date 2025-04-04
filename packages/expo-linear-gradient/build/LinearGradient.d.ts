@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { ViewProps } from 'react-native';
+import { ColorValue, ViewProps } from 'react-native';
 import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 /**
  * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
@@ -23,7 +23,7 @@ export type LinearGradientProps = ViewProps & {
      *
      * For TypeScript to know the provided array has 2 or more values, it should be provided "inline" or typed `as const`.
      */
-    colors: readonly [string, string, ...string[]];
+    colors: readonly [ColorValue, ColorValue, ...ColorValue[]];
     /**
      * A readonly array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
      * Each number indicates a color-stop location where each respective color should be located.

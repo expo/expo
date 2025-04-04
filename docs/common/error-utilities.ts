@@ -211,7 +211,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/installation/': '/router/installation/',
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
-  '/routing/layouts/': '/router/layouts/',
+  '/routing/layouts/': '/router/basics/layout/',
   '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
@@ -361,9 +361,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
   '/eas-update/build-locally/': '/eas-update/standalone-service/',
   '/eas-update/updating-your-app/': '/eas-update/getting-started/',
+  '/eas-update/develop-faster/': '/eas-update/preview/',
 
   // Expo Router Advanced guides
-  '/router/advance/root-layout': '/router/advanced/root-layout/',
+  '/router/advance/root-layout': '/router/basics/layout/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
   '/router/advance/drawer': '/router/advanced/drawer/',
@@ -481,4 +482,20 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
   '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
   '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
+  '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+  '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+
+  // After merging EAS environment variables guides
+  '/eas/using-environment-variables/': '/eas/environment-variables/',
+
+  // After Expo Router Getting Started Guide
+  '/router/reference/authentication/': '/router/advanced/authentication/',
+  '/router/advanced/root-layout/': '/router/basics/layout/#root-layout/',
+  '/router/reference/not-found/': '/router/error-handling/',
+  '/router/navigating-pages/': '/router/basics/navigation/',
+  '/router/create-pages/': '/router/basics/core-concepts/',
+  '/router/layouts/': '/router/basics/layout/',
+
+  // Temporary redirects
+  '/router/advanced/singular/': '/preview/singular/',
 };

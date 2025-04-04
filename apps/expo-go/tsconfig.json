@@ -7,10 +7,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitAny": true,
-    "paths": {
-      "react-native": ["../../node_modules/react-native"]
-    }
+    "noImplicitAny": true
   },
   "include": ["App.tsx", "src/**/*", "ts-declarations"],
   "exclude": ["**/__mocks__/*"]

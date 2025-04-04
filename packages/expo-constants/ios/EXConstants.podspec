@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms       = {
     :ios => '15.1',
-    :osx => '10.15',
+    :osx => '11.0',
     :tvos => '15.1'
   }
   s.swift_version  = '5.4'
@@ -34,13 +34,17 @@ Pod::Spec.new do |s|
     s.source_files = "**/*.{h,m,swift}"
   end
 
-  s.script_phase = {
+  script_phase = {
     :name => 'Generate app.config for prebuilt Constants.manifest',
     :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"',
-    :execution_position => :before_compile,
-    # always run the script without warning
-    :always_out_of_date => "1"
+    :execution_position => :before_compile
   }
+  # :always_out_of_date is only available in CocoaPods 1.13.0 and later
+  if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
+    # always run the script without warning
+    script_phase[:always_out_of_date] = "1"
+  end
+  s.script_phase = script_phase
 
   # Generate EXConstants.bundle without existing resources
   # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle

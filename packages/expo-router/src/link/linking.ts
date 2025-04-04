@@ -2,10 +2,14 @@ import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
+import {
+  parsePathAndParamsFromExpoGoLink,
+  parsePathFromExpoGoLink,
+} from '../fork/extractPathFromURL';
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { getInitialURLWithTimeout } from '../fork/useLinking';
+import { RouterStore } from '../global-state/router-store';
 import { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -50,6 +54,9 @@ let _rootURL: string | undefined;
 export function getRootURL(): string {
   if (_rootURL === undefined) {
     _rootURL = Linking.createURL('/');
+    if (isExpoGo) {
+      _rootURL = parsePathFromExpoGoLink(_rootURL);
+    }
   }
   return _rootURL;
 }
@@ -68,7 +75,7 @@ function parseExpoGoUrlFromListener<T extends string | null>(url: T): T {
   return url;
 }
 
-export function addEventListener(nativeLinking?: NativeIntent) {
+export function addEventListener(nativeLinking: NativeIntent | undefined, store: RouterStore) {
   return (listener: (url: string) => void) => {
     let callback: (({ url }: { url: string }) => void) | undefined;
 
@@ -77,20 +84,26 @@ export function addEventListener(nativeLinking?: NativeIntent) {
     if (isExpoGo) {
       // This extra work is only done in the Expo Go app.
       callback = async ({ url }) => {
-        url = parseExpoGoUrlFromListener(url);
-
-        if (url && nativeLinking?.redirectSystemPath) {
-          url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+        let href: string | undefined = parseExpoGoUrlFromListener(url);
+        href = store.applyRedirects(href);
+        if (href && nativeLinking?.redirectSystemPath) {
+          href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
         }
 
-        listener(url);
+        if (href) {
+          listener(href);
+        }
       };
     } else {
       callback = async ({ url }) => {
-        if (url && nativeLinking?.redirectSystemPath) {
-          url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+        let href = store.applyRedirects(url);
+        if (href && nativeLinking?.redirectSystemPath) {
+          href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
         }
-        listener(url);
+
+        if (href) {
+          listener(href);
+        }
       };
     }
 

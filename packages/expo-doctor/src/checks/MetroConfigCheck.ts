@@ -16,8 +16,8 @@ export class MetroConfigCheck implements DoctorCheck {
       const metroConfig = await loadConfigAsync(projectRoot);
 
       if (
-        // @ts-expect-error: This is a custom property that we inject to ensure cache invalidation between projects.
-        !metroConfig.transformer._expoRelativeProjectRoot
+        // This is a custom property that we inject to ensure cache invalidation between projects.
+        !metroConfig.transformer.hasOwnProperty('_expoRelativeProjectRoot')
       ) {
         issues.push(
           'It looks like that you are using a custom metro.config.js that does not extend @expo/metro-config. This can lead to unexpected and hard to debug issues. ' +

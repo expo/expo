@@ -3,12 +3,12 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct MeshGradientView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: MeshGradientProps
+struct MeshGradientView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: MeshGradientProps
 
   var body: some View {
     ZStack(alignment: .topLeading) {
-      let gradient = if #available(iOS 18.0, *) {
+      let gradient = if #available(iOS 18.0, macOS 15.0, *) {
         AnyView(
           MeshGradient(
             width: props.columns,
@@ -24,8 +24,10 @@ struct MeshGradientView: ExpoSwiftUI.View {
       }
 
       if props.mask {
-        gradient.mask(alignment: .topLeading) {
-          Children()
+        if #available(macOS 12.0, *) {
+          gradient.mask(alignment: .topLeading) {
+            Children()
+          }
         }
       } else {
         Group {

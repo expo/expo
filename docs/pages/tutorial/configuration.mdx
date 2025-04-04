@@ -91,7 +91,7 @@ A splash screen is visible before the app's content is loaded. It uses a smaller
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) plugin already comes pre-installed in every project created using `create-expo-app`. This library provides a config plugin to configure the splash screen.
 
-In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image with the following snippet so we don't have to change anything:
+In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image (provided in the [downloadable assets](/tutorial/create-your-first-app/#download-assets)) with the following snippet so we don't have to change anything:
 
 ```json app.json
 {
@@ -100,7 +100,7 @@ In **app.json**, the `expo-splash-screen` plugin is already configured to use th
     [
       "expo-splash-screen",
       {
-        "image": "./assets/images/icon.png"
+        "image": "./assets/images/splash-icon.png"
         /* @hide ... */ /* @end */
       }
     ]

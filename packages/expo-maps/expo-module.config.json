@@ -1,13 +1,13 @@
 {
   "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["MapsModule", "AppleMapsModule"]
+  },
   "android": {
     "modules": [
       "expo.modules.maps.MapsModule",
       "expo.modules.maps.GoogleMapsModule",
       "expo.modules.maps.StreetViewModule"
     ]
-  },
-  "apple": {
-    "modules": ["MapsModule", "AppleMapsModule"]
   }
 }

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = exports.getRoutesManifest = void 0;
-require("@expo/server/install");
+require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const debug = process.env.NODE_ENV === 'development'
@@ -28,6 +28,18 @@ function getProcessedManifest(path) {
             };
         }),
         htmlRoutes: routesManifest.htmlRoutes.map((value) => {
+            return {
+                ...value,
+                namedRegex: new RegExp(value.namedRegex),
+            };
+        }),
+        redirects: routesManifest.redirects?.map((value) => {
+            return {
+                ...value,
+                namedRegex: new RegExp(value.namedRegex),
+            };
+        }),
+        rewrites: routesManifest.rewrites?.map((value) => {
             return {
                 ...value,
                 namedRegex: new RegExp(value.namedRegex),
@@ -86,18 +98,6 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     });
 }, } = {}) {
     let routesManifest;
-    function updateRequestWithConfig(request, config) {
-        const params = {};
-        const url = new URL(request.url);
-        const match = config.namedRegex.exec(url.pathname);
-        if (match?.groups) {
-            for (const [key, value] of Object.entries(match.groups)) {
-                const namedKey = config.routeKeys[key];
-                params[namedKey] = value;
-            }
-        }
-        return params;
-    }
     return async function handler(request) {
         if (getInternalRoutesManifest) {
             const manifest = await getInternalRoutesManifest(distFolder);
@@ -120,6 +120,35 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         const url = new URL(request.url, 'http://expo.dev');
         const sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
+        if (routesManifest.rewrites) {
+            for (const route of routesManifest.rewrites) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                const url = getRedirectRewriteLocation(request, route);
+                if (url) {
+                    request = new Request(new URL(url, new URL(request.url).origin), request);
+                }
+            }
+        }
+        if (routesManifest.redirects) {
+            for (const route of routesManifest.redirects) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                const Location = getRedirectRewriteLocation(request, route);
+                if (Location) {
+                    debug('Redirecting', Location);
+                    // Get the params
+                    return new Response(null, {
+                        status: route.permanent ? 308 : 307,
+                        headers: {
+                            Location,
+                        },
+                    });
+                }
+            }
+        }
         if (request.method === 'GET' || request.method === 'HEAD') {
             // First test static routes
             for (const route of routesManifest.htmlRoutes) {
@@ -220,4 +249,65 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     };
 }
 exports.createRequestHandler = createRequestHandler;
+/** Match `[page]` -> `page` */
+// Ported from `expo-router/src/matchers.tsx`
+function matchDynamicName(name) {
+    // Don't match `...` or `[` or `]` inside the brackets
+    // eslint-disable-next-line no-useless-escape
+    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+}
+/** Match `[...page]` -> `page` */
+// Ported from `expo-router/src/matchers.tsx`
+function matchDeepDynamicRouteName(name) {
+    return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+}
+function updateRequestWithConfig(request, config) {
+    const params = {};
+    const url = new URL(request.url);
+    const match = config.namedRegex.exec(url.pathname);
+    if (match?.groups) {
+        for (const [key, value] of Object.entries(match.groups)) {
+            const namedKey = config.routeKeys[key];
+            params[namedKey] = value;
+        }
+    }
+    return params;
+}
+function getRedirectRewriteLocation(request, route) {
+    if (route.methods) {
+        if (!route.methods.includes(request.method)) {
+            return;
+        }
+    }
+    const params = updateRequestWithConfig(request, route);
+    const urlSearchParams = new URL(request.url).searchParams;
+    let location = route.page
+        .split('/')
+        .map((segment) => {
+        let match = matchDynamicName(segment);
+        if (match) {
+            const value = params[match];
+            delete params[match];
+            // If we are redirecting from a catch-all route, we need to remove the extra segments
+            return value?.split('/')[0];
+        }
+        match = matchDeepDynamicRouteName(segment);
+        if (match) {
+            const value = params[match];
+            delete params[match];
+            return value;
+        }
+        return segment;
+    })
+        .join('/');
+    if (Object.keys(params).length > 0 || urlSearchParams.size > 0) {
+        location +=
+            '?' +
+                new URLSearchParams({
+                    ...params,
+                    ...Object.fromEntries(urlSearchParams.entries()),
+                }).toString();
+    }
+    return location;
+}
 //# sourceMappingURL=index.js.map

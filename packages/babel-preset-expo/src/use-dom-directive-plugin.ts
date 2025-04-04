@@ -126,7 +126,7 @@ export function expoUseDomDirectivePlugin(
           import { WebView } from 'expo/dom/internal';
           ${
             isProduction
-              ? `const filePath = "${crypto.createHash('sha1').update(outputKey).digest('hex')}.html";`
+              ? `const filePath = "${crypto.createHash('md5').update(outputKey).digest('hex')}.html";`
               : `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`
           }
           const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {

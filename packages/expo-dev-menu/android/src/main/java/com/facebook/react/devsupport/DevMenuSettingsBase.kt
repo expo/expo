@@ -47,6 +47,8 @@ abstract class DevMenuSettingsBase(
 
   override var isDeviceDebugEnabled: Boolean = ReactBuildConfig.DEBUG
 
+  // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support
+  @Suppress("NOTHING_TO_OVERRIDE")
   override var isRemoteJSDebugEnabled: Boolean
     get() = mPreferences.getBoolean("remote_js_debug", false)
     set(remoteJSDebugEnabled) {

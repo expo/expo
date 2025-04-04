@@ -5,6 +5,7 @@ import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
+let loggedRenderingChildrenWarning = false;
 let _GLOBAL_PICTURE_ID = 1;
 function ensurePictureOptions(options) {
     if (!options || typeof options !== 'object') {
@@ -230,6 +231,11 @@ export default class CameraView extends Component {
         const onBarcodeScanned = this.props.onBarcodeScanned
             ? this._onObjectDetected(this.props.onBarcodeScanned)
             : undefined;
+        // @ts-expect-error
+        if (nativeProps.children && !loggedRenderingChildrenWarning) {
+            console.warn('The <CameraView> component does not support children. This may lead to inconsistent behaviour or crashes. If you want to render content on top of the Camera, consider using absolute positioning.');
+            loggedRenderingChildrenWarning = true;
+        }
         return (<ExpoCamera {...nativeProps} ref={this._cameraRef} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarcodeScanned={onBarcodeScanned} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
     }
 }

@@ -21,7 +21,7 @@ Here are some **important rules** that apply to all authentication providers:
 
 Most providers in this guide use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
 
-Since [your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a context (for example, your server). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+Since [your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a server such as with [API routes](/router/reference/api-routes) or [React Server Components](/guides/server-components). This will allow you to securely store and use a client secret to access the provider's token endpoint.
 
 ## Guides
 
@@ -846,7 +846,7 @@ function useAutoExchange(code?: string): State {
       /* @end */
       {
         clientId: CLIENT_ID,
-        /* @info <b>Never</b> store your client secret in the application code! */
+        /* @info <b>Never</b> store your client secret in the application code! Use an API Route or React Server Function to exchange the code. */
         clientSecret: "CLIENT_SECRET",
         /* @end */
         code,

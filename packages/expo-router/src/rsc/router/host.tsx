@@ -19,7 +19,6 @@ import {
   useCallback,
   useState,
   startTransition,
-  // @ts-expect-error
   use,
   useEffect,
 } from 'react';
@@ -331,11 +330,11 @@ export const prefetchRSC = (input: string, params?: unknown): void => {
   }
 };
 
-const RefetchContext = createContext<(input: string, searchParams?: URLSearchParams) => void>(
-  () => {
-    throw new Error('Missing Root component');
-  }
-);
+const RefetchContext = createContext<
+  (input: string, searchParams?: URLSearchParams | string) => void
+>(() => {
+  throw new Error('Missing Root component');
+});
 const ElementsContext = createContext<Elements | null>(null);
 
 export const Root = ({

@@ -45,9 +45,10 @@ class DevLauncherBridgeDevSupportManager(
     injectDevServerHelper(applicationContext, this, controller)
   }
 
-  @Suppress("INAPPLICABLE_JVM_NAME")
+  // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support
+  @Suppress("INAPPLICABLE_JVM_NAME", "NOTHING_TO_OVERRIDE")
   @get:JvmName("getjSBundleURLForRemoteDebugging")
-  override val jSBundleURLForRemoteDebugging: String? = super.getJSBundleURLForRemoteDebugging()
+  override val jSBundleURLForRemoteDebugging: String? = null
 
   override fun showNewJavaError(message: String?, e: Throwable?) {
     Log.e("DevLauncher", "$message", e)

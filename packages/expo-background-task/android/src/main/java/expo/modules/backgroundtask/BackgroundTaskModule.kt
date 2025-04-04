@@ -50,7 +50,7 @@ class BackgroundTaskModule : Module() {
       appContext.reactContext?.let {
         runBlocking {
           val appScopeKey = it.packageName
-          BackgroundTaskScheduler.startWorker(it, appScopeKey)
+          BackgroundTaskScheduler.scheduleWorker(it, appScopeKey)
         }
       } ?: throw MissingContextException()
     }

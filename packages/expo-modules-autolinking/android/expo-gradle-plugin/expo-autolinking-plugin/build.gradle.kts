@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  implementation(project(":shared"))
+  implementation(project(":expo-autolinking-plugin-shared"))
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
 }
@@ -34,6 +34,10 @@ gradlePlugin {
     create("expoAutolinkingPlugin") {
       id = "expo-autolinking"
       implementationClass = "expo.modules.plugin.ExpoAutolinkingPlugin"
+    }
+    create("expoRootProjectPlugin") {
+      id = "expo-root-project"
+      implementationClass = "expo.modules.plugin.ExpoRootProjectPlugin"
     }
   }
 }

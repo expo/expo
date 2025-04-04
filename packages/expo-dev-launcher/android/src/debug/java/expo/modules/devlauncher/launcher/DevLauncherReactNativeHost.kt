@@ -12,6 +12,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.injectDebugServerHost
+import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
 import expo.modules.kotlin.ModulesProvider
@@ -42,6 +43,7 @@ class DevLauncherReactNativeHost(
         object : ModulesProvider {
           override fun getModulesList() =
             listOf(
+              DevLauncherInternalModule::class.java,
               DevMenuPreferences::class.java,
               SafeAreaProviderManager::class.java
             )

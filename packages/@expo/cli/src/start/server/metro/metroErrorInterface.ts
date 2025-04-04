@@ -16,6 +16,7 @@ import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxS
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
+import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
 
@@ -59,8 +60,28 @@ export async function logMetroErrorWithStack(
     return;
   }
 
+  Log.log(
+    getStackAsFormattedLog(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true })
+  );
+}
+
+export function getStackAsFormattedLog(
+  projectRoot: string,
+  {
+    stack,
+    codeFrame,
+    error,
+    showCollapsedFrames = env.EXPO_DEBUG,
+  }: {
+    stack: MetroStackFrame[];
+    codeFrame?: CodeFrame;
+    error?: Error;
+    showCollapsedFrames?: boolean;
+  }
+): string {
+  const logs: string[] = [];
   if (codeFrame) {
-    const maxWarningLineLength = Math.max(200, process.stdout.columns);
+    const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
     const isPreviewTooLong = codeFrame.content
@@ -103,12 +124,10 @@ export async function logMetroErrorWithStack(
         // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
         cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
 
-        Log.log(
-          [formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)')].join('\n')
-        );
+        logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
       }
     } else {
-      Log.log(codeFrame.content);
+      logs.push(codeFrame.content);
     }
   }
 
@@ -124,10 +143,15 @@ export async function logMetroErrorWithStack(
     const stackLines: string[] = [];
 
     stackProps.forEach((frame) => {
+      if (frame.collapse && !showCollapsedFrames) {
+        return;
+      }
+
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
         : frame.subtitle;
       let lineItem = chalk.gray(`  ${frame.title} (${position})`);
+
       if (frame.collapse) {
         lineItem = chalk.dim(lineItem);
       }
@@ -137,16 +161,18 @@ export async function logMetroErrorWithStack(
       }
     });
 
-    Log.log();
-    Log.log(chalk.bold`Call Stack`);
+    logs.push('');
+    logs.push(chalk.bold`Call Stack`);
+
     if (!stackLines.length) {
-      Log.log(chalk.gray('  No stack trace available.'));
+      logs.push(chalk.gray('  No stack trace available.'));
     } else {
-      Log.log(stackLines.join('\n'));
+      logs.push(stackLines.join('\n'));
     }
-  } else {
-    Log.log(chalk.gray(`  ${error.stack}`));
+  } else if (error) {
+    logs.push(chalk.gray(`  ${error.stack}`));
   }
+  return logs.join('\n');
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');

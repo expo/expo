@@ -204,7 +204,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 // This is removed for server platforms.
                 web: ['browser'],
             },
-            unstable_conditionNames: ['require', 'import'],
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
             assetExts: metroDefaultValues.resolver.assetExts
@@ -299,9 +298,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
-            // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
-            // TODO: The absolute path breaks invalidates caching across devices.
-            asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
+            // TODO: The absolute path invalidates caching across devices.
+            asyncRequireModulePath: require.resolve('./async-require'),
             assetRegistryPath: '@react-native/assets-registry/registry',
             // hermesParser: true,
             getTransformOptions: async () => ({

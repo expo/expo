@@ -10,7 +10,13 @@
 
 ### 🐛 Bug fixes
 
+- Fixed generating falsy properties to overwrite existing props. ([#35771](https://github.com/expo/expo/pull/35771) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.13.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 0.13.1 — 2024-10-24
 

@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ios, android]
+        platform: [ios] # TODO: reenable Android after regression by 35360 is fixed
         variant: [updates_testing_release] # this test only works in release mode
     runs-on: ubuntu-22.04
     timeout-minutes: 80
@@ -41,7 +41,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches

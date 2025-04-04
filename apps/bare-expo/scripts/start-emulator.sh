@@ -37,18 +37,16 @@ fi
 
 if [ "${CURRENT_ENV}" = "test" ]; then
 
-    if [ -f "android/app/build/outputs/apk/release/app-release.apk" && -f "android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" ]; then
+    if [ -f "android/app/build/outputs/apk/release/app-release.apk" ]; then
         echo " ✅ Project is built for Android"
     else
         echo " ⚠️  Building the project..."
-        pushd android
-        ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest
-        popd
+        "${DIR}/start-android-e2e-test.ts --build"
     fi
 
     echo " ☛  Starting E2E tests"
     # Run our default E2E tests
-    "${DIR}/start-android-e2e-test.sh"
+    "${DIR}/start-android-e2e-test.ts --test"
 else
     echo " ☛  Running the Android project..."
     npx expo run:android --port "${port}"

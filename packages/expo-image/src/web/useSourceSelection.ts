@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import React, { useState } from 'react';
 
 import { ImageProps, ImageSource } from '../Image.types';
@@ -98,7 +98,7 @@ function selectSource(
 export default function useSourceSelection(
   sources: ImageSource[] | SharedRefType<'image'> | undefined,
   responsivePolicy: ImageProps['responsivePolicy'] = 'static',
-  containerRef: React.MutableRefObject<HTMLDivElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
   measurementCallback: ((target: HTMLElement, size: DOMRect) => void) | null = null
 ): ImageSource | SrcSetSource | SharedRefType<'image'> | null {
   const hasMoreThanOneSource = (Array.isArray(sources) ? sources.length : 0) > 1;

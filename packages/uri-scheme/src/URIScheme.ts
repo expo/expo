@@ -154,15 +154,20 @@ export async function removeAsync(options: Options): Promise<string[]> {
 }
 
 export async function openAsync(
-  options: Pick<Options, 'uri' | 'ios' | 'android' | 'projectRoot'> & { androidPackage?: string }
+  options: Pick<Options, 'uri' | 'ios' | 'android' | 'projectRoot'> & {
+    androidPackage?: string;
+    escapeUri?: boolean;
+  }
 ): Promise<void> {
   options.uri = ensureUriString(options.uri);
 
   if (options.ios) {
+    if (options.escapeUri) options.uri = Ios.escapeUri(options.uri);
     logPlatformMessage('iOS', `Opening URI "${options.uri}" in simulator`);
     await Ios.openAsync(options);
   }
   if (options.android) {
+    if (options.escapeUri) options.uri = Android.escapeUri(options.uri);
     logPlatformMessage('Android', `Opening URI "${options.uri}" in emulator`);
     await Android.openAsync(options);
   }

@@ -1,4 +1,4 @@
-import minimatch, { type IMinimatch } from 'minimatch';
+import { Minimatch, type MinimatchOptions } from 'minimatch';
 import process from 'node:process';
 import path from 'path';
 
@@ -8,7 +8,7 @@ import path from 'path';
 export function isIgnoredPath(
   filePath: string,
   ignorePaths: string[],
-  minimatchOptions: minimatch.IOptions = { dot: true }
+  minimatchOptions: MinimatchOptions = { dot: true }
 ): boolean {
   const matchObjects = buildPathMatchObjects(ignorePaths, minimatchOptions);
   return isIgnoredPathWithMatchObjects(filePath, matchObjects);
@@ -19,18 +19,18 @@ export function isIgnoredPath(
  */
 export function buildPathMatchObjects(
   paths: string[],
-  minimatchOptions: minimatch.IOptions = { dot: true }
-): IMinimatch[] {
-  return paths.map((filePath) => new minimatch.Minimatch(filePath, minimatchOptions));
+  minimatchOptions: MinimatchOptions = { dot: true }
+): Minimatch[] {
+  return paths.map((filePath) => new Minimatch(filePath, minimatchOptions));
 }
 
 /**
  * Build an ignore match objects for directories based on the given `ignorePathMatchObjects`.
  */
 export function buildDirMatchObjects(
-  ignorePathMatchObjects: IMinimatch[],
-  minimatchOptions: minimatch.IOptions = { dot: true }
-): IMinimatch[] {
+  ignorePathMatchObjects: Minimatch[],
+  minimatchOptions: MinimatchOptions = { dot: true }
+): Minimatch[] {
   const dirIgnorePatterns: string[] = [];
   const ignorePaths = ignorePathMatchObjects.filter((obj) => !obj.negate).map((obj) => obj.pattern);
   const negatedIgnorePaths = ignorePathMatchObjects
@@ -61,7 +61,7 @@ export function buildDirMatchObjects(
     }
   }
 
-  return dirIgnorePatterns.map((pattern) => new minimatch.Minimatch(pattern, minimatchOptions));
+  return dirIgnorePatterns.map((pattern) => new Minimatch(pattern, minimatchOptions));
 }
 
 /**
@@ -69,7 +69,7 @@ export function buildDirMatchObjects(
  */
 export function isIgnoredPathWithMatchObjects(
   filePath: string,
-  matchObjects: IMinimatch[]
+  matchObjects: Minimatch[]
 ): boolean {
   let result = false;
   for (const minimatchObj of matchObjects) {

@@ -160,7 +160,11 @@ We have to tell Metro to look in these two directories. The order is important h
 
 In monorepos, we can't hardcode paths to packages anymore since we can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** directory. If you are using a managed project, we have to change our default entry point that looks like `node_modules/expo/AppEntry.js`.
 
-Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
+> This new entry point already exists for existing React Native (bare) projects. You only need to add this if you have a project generated with `npx create-expo-app`.
+
+If you are using [Expo Router](/router/introduction/), do not change the entrypoint. By default [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) is activated, which enables the auto server root detection for Metro. You can skip this step.
+
+Otherwise, open your app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
 
 ```js index.js
 import { registerRootComponent } from 'expo';
@@ -172,14 +176,6 @@ import App from './App';
 // the environment is set up appropriately
 registerRootComponent(App);
 ```
-
-> This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
-
-If you are using [Expo Router](/router/introduction/), do not change the default entrypoint. When running `npx expo start` command, use the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables). It enables the auto server root detection for Metro.
-
-<Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
-
-This variable can also be defined inside a **.env** file.
 
 ### Create a package
 

@@ -4,11 +4,34 @@
 
 ### 🛠 Breaking changes
 
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
+- Update mocks to for esm exports. ([#35574](https://github.com/expo/expo/pull/35574) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 52.0.6 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed jest error from `FormData`. ([#35162](https://github.com/expo/expo/pull/35162) by [@WoLewicki](https://github.com/WoLewicki))
+
+## 52.0.5 - 2025-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.4 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.3 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.2 — 2024-11-15
 

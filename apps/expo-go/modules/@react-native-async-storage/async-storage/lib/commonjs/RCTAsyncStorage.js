@@ -21,6 +21,5 @@ if (!RCTAsyncStorage && (0, _shouldFallbackToLegacyNativeModule.shouldFallbackTo
     RCTAsyncStorage = _reactNative.NativeModules["AsyncSQLiteDBStorage"] || _reactNative.NativeModules["AsyncLocalStorage"];
   }
 }
-var _default = RCTAsyncStorage;
-exports.default = _default;
+var _default = exports.default = RCTAsyncStorage;
 //# sourceMappingURL=RCTAsyncStorage.js.map

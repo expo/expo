@@ -56,7 +56,7 @@ export function redirectSystemPath({ path, initial }) {
 }
 ```
 
-## Rewrite incoming web deep-links
+## Rewrite incoming web deep links
 
 Handling deep links on the web differs from native platforms, as the initial routing process occurs differently. Expo Router cannot provide a direct counterpart to `+native-intent` for web, as web routing is resolved before the website's JavaScript is executed and will differ based upon deployment output and your chosen provider.
 
@@ -72,7 +72,7 @@ Choose the pattern that aligns with your deployment strategy and technical requi
 While your app is open, you can react to URL changes within your `_layout` files using the `usePathname()` hook. The location of the `_layout` dictates the scope of the subscription.
 
 - **global**: Add the logic to your root `_layout` file
-- **localized**: Add a `_layout` file to an existing directory (or create a new [group directory](/router/layouts/#groups))
+- **localized**: Add a `_layout` file to an existing directory (or create a new [group directory](/router/basics/notation/#parentheses))
 
 ```tsx app/_layout.tsx
 import { Slot, Redirect } from 'expo-router';

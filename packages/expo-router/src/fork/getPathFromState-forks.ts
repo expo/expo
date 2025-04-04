@@ -103,7 +103,6 @@ export function getPathWithConventionsCollapsed({
 }) {
   const segments = pattern.split('/');
 
-  // console.log({ segments, params });
   return segments
     .map((p, i) => {
       const name = getParamName(p);

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.useAsyncStorage = useAsyncStorage;
 var _AsyncStorage = _interopRequireDefault(require("./AsyncStorage"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function useAsyncStorage(key) {
   return {
     getItem: (...args) => _AsyncStorage.default.getItem(key, ...args),

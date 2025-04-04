@@ -20,27 +20,21 @@ let calendarNotificationTriggerComponentsKey = "value"
 let calendarNotificationTriggerTimezoneKey = "timezone"
 // swiftlint:enable identifier_name
 
-public class SchedulerModule: Module {
+open class SchedulerModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationScheduler")
 
-    AsyncFunction("getAllScheduledNotificationsAsync") { (promise: Promise) in
-      UNUserNotificationCenter.current().getPendingNotificationRequests { (requests: [UNNotificationRequest]) in
-        var serializedRequests: [Any] = []
-        requests.forEach {request in
-          serializedRequests.append(EXNotificationSerializer.serializedNotificationRequest(request))
-        }
-        promise.resolve(serializedRequests)
-      }
+    AsyncFunction("getAllScheduledNotificationsAsync") {
+      let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+      return serializedNotificationRequests(requests)
     }
-    .runOnQueue(.main)
 
     AsyncFunction("cancelScheduledNotificationAsync") { (identifier: String) in
-      UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+      cancelScheduledNotification(identifier)
     }
 
     AsyncFunction("cancelAllScheduledNotificationsAsync") { () in
-      UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+      cancelAllScheduledNotifications()
     }
 
     AsyncFunction("scheduleNotificationAsync") { (identifier: String, notificationSpec: [String: Any], triggerSpec: [String: Any]?, promise: Promise) in
@@ -53,14 +47,7 @@ public class SchedulerModule: Module {
           if let error = error {
             promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule notification, \(error)")
           } else {
-            promise.resolve()
-          }
-          UNUserNotificationCenter.current().add(request) {error in
-            if let error = error {
-              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule notification, \(error)")
-            } else {
-              promise.resolve(identifier)
-            }
+            promise.resolve(identifier)
           }
         }
       } catch {
@@ -132,15 +119,13 @@ public class SchedulerModule: Module {
     }
   }
 
-  func serializeNotificationRequests(_ requests: [UNNotificationRequest]) -> [Any] {
-    var serializedRequests: [[AnyHashable: Any]] = []
-    requests.forEach {request in
-      serializedRequests.append(EXNotificationSerializer .serializedNotificationRequest(request))
+  open func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [[String: Any]] {
+    return requests.map {
+      EXNotificationSerializer.serializedNotificationRequest($0)
     }
-    return serializedRequests
   }
 
-  func buildNotificationRequest(
+  open func buildNotificationRequest(
     identifier: String,
     contentInput: [String: Any],
     triggerInput: [String: Any]?
@@ -154,5 +139,13 @@ public class SchedulerModule: Module {
       content: requestContentRecord.toUNMutableNotificationContent(),
       trigger: triggerFromParams(triggerInput, appContext: appContext)
     )
+  }
+
+  open func cancelScheduledNotification(_ identifier: String) {
+    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+  }
+
+  open func cancelAllScheduledNotifications() {
+    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
   }
 }

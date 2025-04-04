@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/tvos-compile-test.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
       - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
       - packages/expo-updates/e2e/setup/project.ts
   push:
@@ -34,12 +36,14 @@ on:
       - packages/expo-linking/**
       - packages/expo-localization/**
       - packages/expo-manifests/**
+      - packages/expo-media-library/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
       - packages/expo-network/**
       - packages/expo-secure-store/**
       - packages/expo-splash-screen/**
       - packages/expo-symbols/**
+      - packages/expo-system-ui/**
       - packages/expo-structured-headers/**
       - packages/expo-ui/**
       - packages/expo-updates-interface/**
@@ -65,7 +69,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches

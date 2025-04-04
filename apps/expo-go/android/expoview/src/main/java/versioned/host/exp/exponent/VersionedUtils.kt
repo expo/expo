@@ -106,39 +106,6 @@ object VersionedUtils {
     }
   }
 
-  private fun toggleRemoteJSDebugging() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to toggle remote JS debugging because the current activity could not be found."
-      )
-    }
-    val devSupportManager = currentActivity.devSupportManager ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to get the DevSupportManager from current activity."
-      )
-    }
-
-    val devSettings = devSupportManager.devSettings
-    if (devSettings != null) {
-      val isRemoteJSDebugEnabled = devSettings.isRemoteJSDebugEnabled
-      devSettings.isRemoteJSDebugEnabled = !isRemoteJSDebugEnabled
-    }
-  }
-
-  private fun reconnectReactDevTools() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to get the current activity."
-      )
-    }
-    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
-    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-    currentActivity.emitRCTNativeAppEvent("RCTDevMenuShown", null)
-  }
-
   fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
     // Attach listeners to the bundler's dev server web socket connection.
     // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
@@ -151,14 +118,8 @@ object VersionedUtils {
           when (params.getNullable<String>("name")) {
             "reload" -> reloadExpoApp()
             "toggleDevMenu" -> toggleExpoDevMenu()
-            "toggleRemoteDebugging" -> {
-              toggleRemoteJSDebugging()
-              // Reload the app after toggling debugging, this is based on what we do in DevSupportManagerBase.
-              reloadExpoApp()
-            }
             "toggleElementInspector" -> toggleElementInspector()
             "togglePerformanceMonitor" -> togglePerformanceMonitor()
-            "reconnectReactDevTools" -> reconnectReactDevTools()
           }
         }
       }

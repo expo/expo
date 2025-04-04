@@ -42,7 +42,6 @@
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",
-    "fbemitter": "^3.0.0",
     "find-up": "^5.0.0",
     "jest-environment-jsdom": "^29.2.1",
     "jest-snapshot": "^29.2.1",
@@ -51,7 +50,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
-    "react-test-renderer": "18.3.1",
+    "react-test-renderer": "19.0.0",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
   },

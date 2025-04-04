@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import { XML, AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { Workflow } from '../../utils/build/workflow';
@@ -41,6 +41,8 @@ async function syncConfigurationToNativeAndroidAsync(
     skipSDKVersionRequirement: true,
   });
 
+  const packageVersion = require('../../package.json').version;
+
   // sync AndroidManifest.xml
   const androidManifestPath = await AndroidConfig.Paths.getAndroidManifestAsync(
     options.projectRoot
@@ -56,7 +58,8 @@ async function syncConfigurationToNativeAndroidAsync(
   const updatedAndroidManifest = await AndroidConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
-    androidManifest
+    androidManifest,
+    packageVersion
   );
   await AndroidConfig.Manifest.writeAndroidManifestAsync(
     androidManifestPath,
@@ -88,11 +91,14 @@ async function syncConfigurationToNativeIosAsync(
     skipSDKVersionRequirement: true,
   });
 
+  const packageVersion = require('../../package.json').version;
+
   const expoPlist = await readExpoPlistAsync(options.projectRoot);
   const updatedExpoPlist = await IOSConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
-    expoPlist
+    expoPlist,
+    packageVersion
   );
   await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
 }
@@ -111,8 +117,8 @@ async function writeExpoPlistAsync(
 }
 
 async function readPlistAsync(plistPath: string): Promise<object | null> {
-  if (await fs.pathExists(plistPath)) {
-    const expoPlistContent = await fs.readFile(plistPath, 'utf8');
+  if (fs.existsSync(plistPath)) {
+    const expoPlistContent = await fs.promises.readFile(plistPath, 'utf8');
     try {
       return plist.parse(expoPlistContent);
     } catch (err: any) {
@@ -129,6 +135,6 @@ async function writePlistAsync(
   plistObject: IOSConfig.ExpoPlist | IOSConfig.InfoPlist
 ): Promise<void> {
   const contents = plist.build(plistObject);
-  await fs.mkdirp(path.dirname(plistPath));
-  await fs.writeFile(plistPath, contents);
+  await fs.promises.mkdir(path.dirname(plistPath), { recursive: true });
+  await fs.promises.writeFile(plistPath, contents, 'utf8');
 }

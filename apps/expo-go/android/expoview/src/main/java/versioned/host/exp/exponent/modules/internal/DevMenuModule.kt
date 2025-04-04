@@ -88,7 +88,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     }
     items.putBundle("dev-inspector", inspectorMap)
 
-    if (devSettings != null && devSupportManager.devSupportEnabled && isJsExecutorInspectable) {
+    if (devSettings != null && devSupportManager.devSupportEnabled) {
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
@@ -130,12 +130,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     UiThreadUtil.runOnUiThread {
       when (itemKey) {
         "dev-remote-debug" -> {
-          if (isJsExecutorInspectable) {
-            openJsInspector()
-          } else {
-            devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-            devSupportManager.handleReloadJS()
-          }
+          openJsInspector()
         }
         "dev-hmr" -> {
           val nextEnabled = !devSettings.isHotModuleReplacementEnabled
@@ -221,15 +216,6 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   private fun getString(ref: Int): String {
     return reactApplicationContext.resources.getString(ref)
-  }
-
-  /**
-   * Indicates whether the underlying js executor supports inspecting.
-   * NOTE: because current react-native doesn't pass jsi runtime `isInspectable` to java,
-   * workaround to determine the state by executor name.
-   */
-  private val isJsExecutorInspectable: Boolean by lazy {
-    true
   }
 
   /**

@@ -47,7 +47,7 @@ export default class CameraView extends Component<CameraViewProps> {
     };
     static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
-    _cameraRef: import("react").RefObject<CameraViewRef>;
+    _cameraRef: import("react").RefObject<CameraViewRef | null>;
     _lastEvents: {
         [eventName: string]: string;
     };

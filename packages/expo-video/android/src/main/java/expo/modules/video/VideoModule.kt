@@ -38,7 +38,19 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+      VideoView.isPictureInPictureSupported(appContext.throwingActivity)
+    }
+
+    Function("getCurrentVideoCacheSize") {
+      VideoManager.cache.getCurrentCacheSize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size: Long ->
+      VideoManager.cache.setMaxCacheSize(size)
+    }
+
+    AsyncFunction("clearVideoCacheAsync") {
+      VideoManager.cache.clear()
     }
 
     View(VideoView::class) {
@@ -46,7 +58,8 @@ class VideoModule : Module() {
         "onPictureInPictureStart",
         "onPictureInPictureStop",
         "onFullscreenEnter",
-        "onFullscreenExit"
+        "onFullscreenExit",
+        "onFirstFrameRender"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
@@ -75,6 +88,10 @@ class VideoModule : Module() {
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
 
+      Prop("useExoShutter") { view: VideoView, useExoShutter: Boolean? ->
+        view.useExoShutter = useExoShutter ?: true
+      }
+
       AsyncFunction("enterFullscreen") { view: VideoView ->
         view.enterFullscreen()
       }
@@ -95,9 +112,14 @@ class VideoModule : Module() {
 
       OnViewDestroys {
         VideoManager.unregisterVideoView(it)
+        // Remove relations with mounted players
+        it.videoPlayer = null
       }
 
       OnViewDidUpdateProps { view ->
+        view.useExoShutter = view.useExoShutter ?: true
+        view.applySurfaceViewVisibility()
+
         if (view.playerView.useController != view.useNativeControls) {
           view.playerView.useController = view.useNativeControls
         }
@@ -159,6 +181,16 @@ class VideoModule : Module() {
           runBlocking(appContext.mainQueue.coroutineContext) {
             ref.currentLiveTimestamp
           }
+        }
+
+      Property("availableVideoTracks")
+        .get { ref: VideoPlayer ->
+          ref.availableVideoTracks
+        }
+
+      Property("videoTrack")
+        .get { ref: VideoPlayer ->
+          ref.currentVideoTrack
         }
 
       Property("availableSubtitleTracks")

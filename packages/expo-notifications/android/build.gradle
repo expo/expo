@@ -1,23 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-parcelize'
-
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-  useExpoPublishing()
-}
-
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  useLegacyExpoModulesCorePlugin()
+plugins {
+  id 'com.android.library'
+  id 'kotlin-parcelize'
+  id 'expo-module-gradle-plugin'
 }
 
 group = 'host.exp.exponent'

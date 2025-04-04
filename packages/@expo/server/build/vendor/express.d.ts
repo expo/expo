@@ -1,5 +1,5 @@
 import type * as express from 'express';
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 export type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
 /**
  * Returns a request handler for Express that serves the response using Remix.

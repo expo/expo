@@ -228,11 +228,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleRefreshCommand];
                              }];
-  [self registerKeyCommandWithInput:@"n"
-                      modifierFlags:UIKeyModifierCommand
-                             action:^(__unused UIKeyCommand *_) {
-                               [weakSelf _handleDisableDebuggingCommand];
-                             }];
   [self registerKeyCommandWithInput:@"i"
                       modifierFlags:UIKeyModifierCommand
                              action:^(__unused UIKeyCommand *_) {
@@ -256,18 +251,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // This reloads only JS
   //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
 
-  // This reloads manifest and JS
-  [[EXKernel sharedInstance] reloadVisibleApp];
-}
-
-- (void)_handleDisableDebuggingCommand
-{
-  [[EXKernel sharedInstance].visibleApp.appManager disableRemoteDebugging];
-}
-
-- (void)_handleToggleRemoteDebuggingCommand
-{
-  [[EXKernel sharedInstance].visibleApp.appManager toggleRemoteDebugging];
   // This reloads manifest and JS
   [[EXKernel sharedInstance] reloadVisibleApp];
 }

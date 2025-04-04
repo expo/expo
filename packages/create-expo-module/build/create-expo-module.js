@@ -9,7 +9,7 @@ const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
 const find_up_1 = __importDefault(require("find-up"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
@@ -66,7 +66,7 @@ async function main(target, options) {
     if (!targetDir) {
         return;
     }
-    await fs_extra_1.default.ensureDir(targetDir);
+    await fs_1.default.promises.mkdir(targetDir, { recursive: true });
     await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
     const data = await askForSubstitutionDataAsync(slug, options.local);
@@ -97,14 +97,14 @@ async function main(target, options) {
     if (!options.source) {
         // Files in the downloaded tarball are wrapped in `package` dir.
         // We should remove it after all.
-        await fs_extra_1.default.remove(packagePath);
+        await fs_1.default.promises.rm(packagePath, { recursive: true, force: true });
     }
     if (!options.local && data.type !== 'local') {
         if (!options.withReadme) {
-            await fs_extra_1.default.remove(path_1.default.join(targetDir, 'README.md'));
+            await fs_1.default.promises.rm(path_1.default.join(targetDir, 'README.md'), { force: true });
         }
         if (!options.withChangelog) {
-            await fs_extra_1.default.remove(path_1.default.join(targetDir, 'CHANGELOG.md'));
+            await fs_1.default.promises.rm(path_1.default.join(targetDir, 'CHANGELOG.md'), { force: true });
         }
         if (options.example) {
             // Create "example" folder
@@ -144,13 +144,13 @@ async function main(target, options) {
 async function getFilesAsync(root, dir = null) {
     const files = [];
     const baseDir = dir ? path_1.default.join(root, dir) : root;
-    for (const file of await fs_extra_1.default.readdir(baseDir)) {
+    for (const file of await fs_1.default.promises.readdir(baseDir)) {
         const relativePath = dir ? path_1.default.join(dir, file) : file;
         if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
             continue;
         }
         const fullPath = path_1.default.join(baseDir, file);
-        const stat = await fs_extra_1.default.lstat(fullPath);
+        const stat = await fs_1.default.promises.lstat(fullPath);
         if (stat.isDirectory()) {
             files.push(...(await getFilesAsync(root, relativePath)));
         }
@@ -242,9 +242,12 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
         });
         const fromPath = path_1.default.join(templatePath, file);
         const toPath = path_1.default.join(targetPath, renderedRelativePath);
-        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
+        const template = await fs_1.default.promises.readFile(fromPath, 'utf8');
         const renderedContent = ejs_1.default.render(template, data);
-        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+        if (!fs_1.default.existsSync(path_1.default.dirname(toPath))) {
+            await fs_1.default.promises.mkdir(path_1.default.dirname(toPath), { recursive: true });
+        }
+        await fs_1.default.promises.writeFile(toPath, renderedContent, 'utf8');
     }
 }
 async function createGitRepositoryAsync(targetDir) {
@@ -326,7 +329,7 @@ async function askForSubstitutionDataAsync(slug, isLocal = false) {
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
  */
 async function confirmTargetDirAsync(targetDir) {
-    const files = await fs_extra_1.default.readdir(targetDir);
+    const files = await fs_1.default.promises.readdir(targetDir);
     if (files.length === 0) {
         return;
     }

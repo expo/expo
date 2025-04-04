@@ -1,40 +1,17 @@
-apply plugin: 'com.android.library'
-
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-  useExpoPublishing()
-}
-
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  useLegacyExpoModulesCorePlugin()
-}
-
 buildscript {
-  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
 
-  if (KOTLIN_MAJOR_VERSION >= 2) {
-    repositories {
-      mavenCentral()
-    }
-    dependencies {
-      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-    }
+  repositories {
+    mavenCentral()
   }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+
 }
 
-if (KOTLIN_MAJOR_VERSION >= 2) {
-  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-}
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
 version = '0.6.1'
@@ -47,11 +24,6 @@ android {
   }
   buildFeatures {
     compose true
-  }
-  if (KOTLIN_MAJOR_VERSION < 2) {
-    composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.14"
-    }
   }
   lintOptions {
     abortOnError false

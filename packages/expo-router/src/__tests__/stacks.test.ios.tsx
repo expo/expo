@@ -129,78 +129,52 @@ test('dismissAll nested', () => {
   // It will have three routes  (/one/index, /one/page, /one/two)
   // The last route should include a sub-state for /one/two/_layout
   expect(store.rootStateSnapshot()).toStrictEqual({
-    history: [
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-    ],
-    index: 2,
+    index: 0,
     key: expect.any(String),
-    preloadedRouteKeys: [],
-    routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'a',
+        name: '__root',
         params: undefined,
-        path: '/a',
-      },
-      {
-        key: expect.any(String),
-        name: 'b',
-        params: {},
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
-        path: undefined,
         state: {
-          index: 3,
+          history: [
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+          ],
+          index: 2,
           key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['index', 'two', 'page'],
+          preloadedRouteKeys: [],
+          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'index',
+              name: 'a',
+              params: undefined,
+              path: '/a',
+            },
+            {
+              key: expect.any(String),
+              name: 'b',
               params: {},
               path: undefined,
             },
             {
               key: expect.any(String),
-              name: 'page',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'page',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'two',
-              params: {
-                params: {},
-                screen: 'index',
-              },
+              name: 'one',
               path: undefined,
               state: {
-                index: 2,
+                index: 3,
                 key: expect.any(String),
                 preloadedRoutes: [],
-                routeNames: ['index', 'page'],
+                routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
@@ -220,107 +194,229 @@ test('dismissAll nested', () => {
                     params: {},
                     path: undefined,
                   },
+                  {
+                    key: expect.any(String),
+                    name: 'two',
+                    path: undefined,
+                    state: {
+                      index: 2,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index', 'page'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {},
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'page',
+                          params: {},
+                          path: undefined,
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'page',
+                          params: {},
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
+                  },
                 ],
                 stale: false,
                 type: 'stack',
               },
             },
+            {
+              key: expect.any(String),
+              name: '_sitemap',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '+not-found',
+              params: undefined,
+            },
           ],
           stale: false,
-          type: 'stack',
+          type: 'tab',
         },
-      },
-      {
-        key: expect.any(String),
-        name: '_sitemap',
-        params: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: '+not-found',
-        params: undefined,
       },
     ],
     stale: false,
-    type: 'tab',
+    type: 'stack',
   });
 
   // This should only dismissing the sub-state for /one/two/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
   expect(store.rootStateSnapshot()).toStrictEqual({
-    history: [
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-    ],
-    index: 2,
+    index: 0,
     key: expect.any(String),
-    preloadedRouteKeys: [],
-    routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'a',
+        name: '__root',
         params: undefined,
-        path: '/a',
-      },
-      {
-        key: expect.any(String),
-        name: 'b',
-        params: {},
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
-        path: undefined,
         state: {
-          index: 3,
+          history: [
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+          ],
+          index: 2,
           key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['index', 'two', 'page'],
+          preloadedRouteKeys: [],
+          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'index',
+              name: 'a',
+              params: undefined,
+              path: '/a',
+            },
+            {
+              key: expect.any(String),
+              name: 'b',
               params: {},
               path: undefined,
             },
             {
               key: expect.any(String),
-              name: 'page',
-              params: {},
+              name: 'one',
               path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'page',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'two',
-              params: {
-                params: {},
-                screen: 'index',
+              state: {
+                index: 3,
+                key: expect.any(String),
+                preloadedRoutes: [],
+                routeNames: ['index', 'two', 'page'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'index',
+                    params: {},
+                    path: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'page',
+                    params: {},
+                    path: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'page',
+                    params: {},
+                    path: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'two',
+                    path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index', 'page'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {},
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
+                  },
+                ],
+                stale: false,
+                type: 'stack',
               },
+            },
+            {
+              key: expect.any(String),
+              name: '_sitemap',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '+not-found',
+              params: undefined,
+            },
+          ],
+          stale: false,
+          type: 'tab',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+
+  // This should only dismissing the sub-state for /one/_layout
+  testRouter.dismissAll();
+  expect(screen).toHavePathname('/one');
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['__root'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        params: undefined,
+        state: {
+          history: [
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+            {
+              key: expect.any(String),
+              type: 'route',
+            },
+          ],
+          index: 2,
+          key: expect.any(String),
+          preloadedRouteKeys: [],
+          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'a',
+              params: undefined,
+              path: '/a',
+            },
+            {
+              key: expect.any(String),
+              name: 'b',
+              params: {},
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'one',
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
                 preloadedRoutes: [],
-                routeNames: ['index', 'page'],
+                routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
@@ -333,95 +429,24 @@ test('dismissAll nested', () => {
                 type: 'stack',
               },
             },
-          ],
-          stale: false,
-          type: 'stack',
-        },
-      },
-      {
-        key: expect.any(String),
-        name: '_sitemap',
-        params: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: '+not-found',
-        params: undefined,
-      },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-
-  // This should only dismissing the sub-state for /one/_layout
-  testRouter.dismissAll();
-  expect(screen).toHavePathname('/one');
-  expect(store.rootStateSnapshot()).toStrictEqual({
-    history: [
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-      {
-        key: expect.any(String),
-        type: 'route',
-      },
-    ],
-    index: 2,
-    key: expect.any(String),
-    preloadedRouteKeys: [],
-    routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: 'a',
-        params: undefined,
-        path: '/a',
-      },
-      {
-        key: expect.any(String),
-        name: 'b',
-        params: {},
-        path: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: 'one',
-        params: {
-          params: {},
-          screen: 'index',
-        },
-        path: undefined,
-        state: {
-          index: 0,
-          key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['index', 'two', 'page'],
-          routes: [
             {
               key: expect.any(String),
-              name: 'index',
-              params: {},
-              path: undefined,
+              name: '_sitemap',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '+not-found',
+              params: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
+          type: 'tab',
         },
-      },
-      {
-        key: expect.any(String),
-        name: '_sitemap',
-        params: undefined,
-      },
-      {
-        key: expect.any(String),
-        name: '+not-found',
-        params: undefined,
       },
     ],
     stale: false,
-    type: 'tab',
+    type: 'stack',
   });
 
   // Cannot dismiss again as we are at the root Tabs layout
@@ -479,4 +504,178 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('apple')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+});
+
+describe('singular', () => {
+  test('singular should only allow one instance of a screen', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="[slug]" dangerouslySingular />
+          </Stack>
+        ),
+        '[slug]': () => <Text>slug</Text>,
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    expect(screen).toHaveRouterState({
+      routes: [
+        {
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            routes: [
+              {
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: true,
+    });
+
+    // Normally pushing would add a new route, but since we have singular set to true
+    // Nothing should happen, as the current route is already the same as the target route
+    act(() => router.push('/apple'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    // Adding a new screen with different params should work
+    act(() => router.push('/banana'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    // Normally pushing would add a new route, but since we have singular set to true
+    // It rearranges the Stack to move /apple to the current route
+    act(() => router.push('/apple'));
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
 });

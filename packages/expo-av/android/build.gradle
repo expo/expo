@@ -1,39 +1,12 @@
-apply plugin: 'com.android.library'
+import expo.modules.plugin.gradle.ExpoModuleExtension
 
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-  useExpoPublishing()
-}
-
-def usesModernPlugin = true
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  usesModernPlugin = false
-  useLegacyExpoModulesCorePlugin()
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
 }
 
 def getReactNativeDir = {
-  if (usesModernPlugin) {
-    return project.extensions.getByType(expo.modules.plugin.gradle.ExpoModuleExtension).reactNativeDir
-  } else {
-    // TODO(@lukmccall): Remove when we drop support for the legacy core plugin
-    def buildFromSource = findProject(":ReactAndroid") != null
-    return buildFromSource
-        ? findProject(":ReactAndroid").getProjectDir().parent
-        : file(providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('react-native/package.json')")
-    }.standardOutput.asText.get().trim()).parent
-  }
+  return project.extensions.getByType(ExpoModuleExtension).reactNativeDir
 }
 
 def REACT_NATIVE_DIR = getReactNativeDir()

@@ -7,7 +7,7 @@ import {
 import { ResourceXML } from '@expo/config-plugins/build/android/Resources';
 import { ExpoConfig } from '@expo/config-types';
 import { compositeImagesAsync, generateImageAsync } from '@expo/image-utils';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { withAndroidManifestIcons } from './withAndroidManifestIcons';
@@ -253,21 +253,19 @@ async function createAdaptiveIconXmlFiles(
   add: boolean
 ) {
   const anyDpiV26Directory = path.resolve(projectRoot, ANDROID_RES_PATH, MIPMAP_ANYDPI_V26);
-  await fs.ensureDir(anyDpiV26Directory);
+  await fs.promises.mkdir(anyDpiV26Directory, { recursive: true });
   const launcherPath = path.resolve(anyDpiV26Directory, IC_LAUNCHER_XML);
   const launcherRoundPath = path.resolve(anyDpiV26Directory, IC_LAUNCHER_ROUND_XML);
   if (add) {
     await Promise.all([
-      fs.writeFile(launcherPath, icLauncherXmlString),
-      fs.writeFile(launcherRoundPath, icLauncherXmlString),
+      fs.promises.writeFile(launcherPath, icLauncherXmlString, 'utf8'),
+      fs.promises.writeFile(launcherRoundPath, icLauncherXmlString, 'utf8'),
     ]);
   } else {
     // Remove the xml if the icon switches from adaptive to standard.
     await Promise.all(
       [launcherPath, launcherRoundPath].map(async (path) => {
-        if (fs.existsSync(path)) {
-          return fs.remove(path);
-        }
+        return fs.promises.rm(path, { force: true });
       })
     );
   }
@@ -319,7 +317,10 @@ async function generateMultiLayerImageAsync(
       });
 
       if (backgroundImageFileName) {
-        await fs.writeFile(path.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
+        await fs.promises.writeFile(
+          path.resolve(dpiFolder, backgroundImageFileName),
+          backgroundLayer
+        );
       } else {
         iconLayer = await compositeImagesAsync({
           foreground: iconLayer,
@@ -331,8 +332,8 @@ async function generateMultiLayerImageAsync(
       await deleteIconNamedAsync(projectRoot, backgroundImageFileName);
     }
 
-    await fs.ensureDir(dpiFolder);
-    await fs.writeFile(path.resolve(dpiFolder, outputImageFileName), iconLayer);
+    await fs.promises.mkdir(dpiFolder, { recursive: true });
+    await fs.promises.writeFile(path.resolve(dpiFolder, outputImageFileName), iconLayer);
   });
 }
 
@@ -352,8 +353,8 @@ async function generateMonochromeImageAsync(
       backgroundColor: 'transparent',
       isAdaptive: true,
     });
-    await fs.ensureDir(dpiFolder);
-    await fs.writeFile(path.resolve(dpiFolder, outputImageFileName), monochromeIcon);
+    await fs.promises.mkdir(dpiFolder, { recursive: true });
+    await fs.promises.writeFile(path.resolve(dpiFolder, outputImageFileName), monochromeIcon);
   });
 }
 
@@ -373,7 +374,7 @@ function iterateDpiValues(
 
 async function deleteIconNamedAsync(projectRoot: string, name: string) {
   return iterateDpiValues(projectRoot, ({ dpiFolder }) => {
-    return fs.remove(path.resolve(dpiFolder, name));
+    return fs.promises.rm(path.resolve(dpiFolder, name), { force: true });
   });
 }
 

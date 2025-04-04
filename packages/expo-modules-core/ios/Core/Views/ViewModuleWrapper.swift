@@ -52,6 +52,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       return
     }
     self.moduleHolder = module.moduleHolder
+    self.viewDefinition = moduleHolder?.definition.views[DEFAULT_MODULE_VIEW]
   }
 
   /**
@@ -121,7 +122,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let appContext = moduleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = viewDefinition?.createView(appContext: appContext) else {
+    guard let view = try? viewDefinition?.createView(appContext: appContext)?.toUIView() else {
       fatalError("Cannot create a view '\(String(describing: viewDefinition?.name))' from module '\(String(describing: self.name))'")
     }
     return view

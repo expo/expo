@@ -4,36 +4,39 @@ import SwiftUI
 import ExpoModulesCore
 
 class SwitchProps: ExpoSwiftUI.ViewProps {
-  @Field var checked: Bool
+  @Field var value: Bool
   @Field var variant: String?
   @Field var label: String?
   @Field var color: Color?
-  var onCheckedChanged = EventDispatcher()
+  var onValueChange = EventDispatcher()
 }
 
-struct SwitchView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: SwitchProps
+struct SwitchView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: SwitchProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
+
+  init(props: SwitchProps) {
+    self.props = props
+  }
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
       Toggle(isOn: $checked, label: { props.label != nil ? Text(props.label ?? "") : nil })
       .onChange(of: checked, perform: { newValue in
-        if props.checked == newValue {
+        if props.value == newValue {
           return
         }
-        let payload = [
-          "checked": newValue
-        ]
-        props.onCheckedChanged(payload)
+        props.onValueChange([
+          "value": newValue
+        ])
       })
       .tint(props.color)
       .onReceive(props.objectWillChange, perform: {
-        checked = props.checked
+        checked = props.value
       })
       .onAppear {
-        checked = props.checked
+        checked = props.value
       }
       #if !os(tvOS)
       .if(props.variant == "button") {
@@ -43,7 +46,6 @@ struct SwitchView: ExpoSwiftUI.View {
       .if(props.variant == "checkbox") {
         $0.toggleStyle(IOSCheckboxToggleStyle())
       }
-      .fixedSize()
     }
   }
 }

@@ -102,49 +102,72 @@ it('push should include (group)/index as an anchor route when using withAnchor',
 
   // Initial stale state
   expect(store.rootStateSnapshot()).toStrictEqual({
-    routes: [{ name: 'index', path: '/' }],
+    routes: [
+      {
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
+      },
+    ],
     stale: true,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: '(group)',
-        params: {
-          initial: false,
-          params: {},
-          screen: 'orange',
-        },
-        path: undefined,
         state: {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['test', 'orange'],
+          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
-              name: 'test',
+              name: 'index',
               params: undefined,
+              path: '/',
             },
             {
               key: expect.any(String),
-              name: 'orange',
-              params: {},
+              name: '(group)',
               path: undefined,
+              state: {
+                index: 1,
+                key: expect.any(String),
+                preloadedRoutes: [],
+                routeNames: ['test', 'orange'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'test',
+                    params: undefined,
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'orange',
+                    params: {},
+                    path: undefined,
+                  },
+                ],
+                stale: false,
+                type: 'stack',
+              },
             },
           ],
           stale: false,
@@ -169,32 +192,60 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
 
   // Initial stale state
   expect(store.rootStateSnapshot()).toStrictEqual({
-    routes: [{ name: 'index', path: '/' }],
+    routes: [
+      {
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'index',
+              path: '/',
+            },
+          ],
+          stale: true,
+        },
+      },
+    ],
     stale: true,
   });
 
   act(() => router.push('/orange'));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 1,
+    index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: 'index',
+        name: '__root',
         params: undefined,
-        path: '/',
-      },
-      {
-        key: expect.any(String),
-        name: '(group)',
-        params: {
-          params: {},
-          screen: 'orange',
+        state: {
+          index: 1,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: '(group)',
+              params: {
+                params: {},
+                screen: 'orange',
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
         },
-        path: undefined,
       },
     ],
     stale: false,

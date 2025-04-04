@@ -599,7 +599,7 @@ describe('anchor', () => {
     });
   });
 
-  it.only(`throws if anchor does not match a route`, () => {
+  it(`throws if anchor does not match a route`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
@@ -1009,6 +1009,113 @@ describe('group expansion', () => {
       generated: true,
       type: 'layout',
       route: '',
+    });
+  });
+});
+
+describe('redirects', () => {
+  it('can add redirects', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+        }),
+        {
+          internal_stripLoadRoute: true,
+          skipGenerated: true,
+          redirects: [{ source: '/old', destination: '/(app)/index' }],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: 'old',
+          destinationContextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          generated: true,
+          type: 'redirect',
+          route: 'old',
+          permanent: false,
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it('can add dynamic redirects', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './(app)/[slug]': () => null,
+        }),
+        {
+          internal_stripLoadRoute: true,
+          skipGenerated: true,
+          redirects: [{ source: '/old/[slug]', destination: '/(app)/[slug]' }],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(app)/[slug].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'slug',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
+          route: '(app)/[slug]',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: 'old/[slug]',
+          destinationContextKey: './(app)/[slug].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'slug',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
+          generated: true,
+          permanent: false,
+          route: 'old/[slug]',
+          type: 'redirect',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
     });
   });
 });

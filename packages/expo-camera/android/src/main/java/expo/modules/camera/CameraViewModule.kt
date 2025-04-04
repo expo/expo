@@ -199,20 +199,38 @@ class CameraViewModule : Module() {
 
       Prop("facing") { view, facing: CameraType? ->
         facing?.let {
-          if (view.lensFacing != facing) {
+          if (view.lensFacing != it) {
             view.lensFacing = it
+          }
+        } ?: run {
+          if (view.lensFacing != CameraType.BACK) {
+            view.lensFacing = CameraType.BACK
           }
         }
       }
 
       Prop("flashMode") { view, flashMode: FlashMode? ->
         flashMode?.let {
-          view.setCameraFlashMode(it)
+          if (view.flashMode != it) {
+            view.flashMode = it
+          }
+        } ?: run {
+          if (view.flashMode != FlashMode.OFF) {
+            view.flashMode = FlashMode.OFF
+          }
         }
       }
 
       Prop("enableTorch") { view, enabled: Boolean? ->
-        view.enableTorch = enabled ?: false
+        enabled?.let {
+          if (view.enableTorch != it) {
+            view.enableTorch = it
+          }
+        } ?: run {
+          if (view.enableTorch) {
+            view.enableTorch = false
+          }
+        }
       }
 
       Prop("animateShutter") { view, animate: Boolean? ->
@@ -220,42 +238,49 @@ class CameraViewModule : Module() {
       }
 
       Prop("zoom") { view, zoom: Float? ->
-        view.zoom = zoom ?: 0f
+        zoom?.let {
+          if (view.zoom != it) {
+            view.zoom = it
+          }
+        } ?: run {
+          if (view.zoom != 0f) {
+            view.zoom = 0f
+          }
+        }
       }
 
       Prop("mode") { view, mode: CameraMode? ->
         mode?.let {
-          if (view.cameraMode != mode) {
+          if (view.cameraMode != it) {
             view.cameraMode = it
+          }
+        } ?: run {
+          if (view.cameraMode != CameraMode.PICTURE) {
+            view.cameraMode = CameraMode.PICTURE
           }
         }
       }
 
       Prop("mute") { view, muted: Boolean? ->
-        muted?.let {
-          if (it != view.mute) {
-            view.mute = it
-          }
-        }
+        view.mute = muted ?: false
       }
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
         quality?.let {
-          if (view.videoQuality != quality) {
+          if (view.videoQuality != it) {
             view.videoQuality = it
           }
-          return@Prop
-        }
-        if (view.videoQuality != VideoQuality.VIDEO1080P) {
-          view.videoQuality = VideoQuality.VIDEO1080P
+        } ?: run {
+          if (view.videoQuality != VideoQuality.VIDEO1080P) {
+            view.videoQuality = VideoQuality.VIDEO1080P
+          }
         }
       }
 
       Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
-        if (settings == null) {
-          return@Prop
+        settings?.let {
+          view.setBarcodeScannerSettings(it)
         }
-        view.setBarcodeScannerSettings(settings)
       }
 
       Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
@@ -266,45 +291,61 @@ class CameraViewModule : Module() {
 
       Prop("pictureSize") { view, pictureSize: String? ->
         pictureSize?.let {
-          if (view.pictureSize != pictureSize) {
+          if (view.pictureSize != it) {
             view.pictureSize = it
           }
-          return@Prop
-        }
-        if (view.pictureSize.isNotEmpty()) {
-          view.pictureSize = ""
+        } ?: run {
+          if (view.pictureSize.isNotEmpty()) {
+            view.pictureSize = ""
+          }
         }
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
-        view.autoFocus = autoFocus ?: FocusMode.OFF
+        autoFocus?.let {
+          if (view.autoFocus != it) {
+            view.autoFocus = it
+          }
+        } ?: run {
+          if (view.autoFocus != FocusMode.OFF) {
+            view.autoFocus = FocusMode.OFF
+          }
+        }
       }
 
       Prop("ratio") { view, ratio: CameraRatio? ->
-        if (view.ratio != ratio) {
-          view.ratio = ratio
+        ratio?.let {
+          if (view.ratio != it) {
+            view.ratio = it
+          }
+        } ?: run {
+          if (view.ratio != null) {
+            view.ratio = null
+          }
         }
       }
 
       Prop("mirror") { view, mirror: Boolean? ->
         mirror?.let {
-          if (view.mirror != mirror) {
+          if (view.mirror != it) {
             view.mirror = it
-            return@Prop
           }
-        }
-        if (view.mirror != false) {
-          view.mirror = false
+        } ?: run {
+          if (view.mirror) {
+            view.mirror = false
+          }
         }
       }
 
       Prop("videoBitrate") { view, bitrate: Int? ->
         bitrate?.let {
-          view.videoEncodingBitrate = it
-          return@Prop
-        }
-        if (view.videoEncodingBitrate != null) {
-          view.videoEncodingBitrate = null
+          if (view.videoEncodingBitrate != it) {
+            view.videoEncodingBitrate = it
+          }
+        } ?: run {
+          if (view.videoEncodingBitrate != null) {
+            view.videoEncodingBitrate = null
+          }
         }
       }
 

@@ -137,7 +137,7 @@ async function schedulePushNotification() {
       data: { data: 'goes here', test: { test1: 'more data' } },
     },
     trigger: {
-      type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 2,
     },
   });
@@ -227,7 +227,7 @@ If you'd like to deep link to a specific screen in your app when you receive a p
 
 <Tab label="Expo Router">
 
-You can use Expo Router's [built-in deep linking](/router/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
+You can use Expo Router's [built-in deep linking](/router/basics/core-concepts/#2-all-pages-have-a-url) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
 
 ```tsx app/_layout.tsx
 import { useEffect } from 'react';
@@ -430,7 +430,7 @@ Learn how to configure the native projects in the [installation instructions in 
 ### Android
 
 - On Android, this module requires permission to subscribe to the device boot. It's used to set up scheduled notifications when the device (re)starts.
-  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+  The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library's **AndroidManifest.xml**.
 
 - Starting from Android 12 (API level 31), to schedule a notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
@@ -495,7 +495,6 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 <array>
   <string>remote-notification</string>
 </array>
-</key>
 ```
 
 </Collapsible>
@@ -537,6 +536,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'mySoundFile.wav', // Provide ONLY the base filename
   },
   trigger: {
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new_emails',
   },
@@ -568,6 +568,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'email_sound.wav', // <- for Android below 8.0
   },
   trigger: {
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 2,
     channelId: 'new_emails', // <- for Android 8.0+, see definition above
   },
