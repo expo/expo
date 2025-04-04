@@ -713,6 +713,13 @@ export function withExtendedResolver(
         ];
       }
 
+      // HACK:
+      if (moduleName.match(/^@react-navigation\//)) {
+        // Force to use the ESM versions of react-navigation to prevent Metro behavior where it changes the
+        // resolution based on if a module is `import`ing or `require`ing it.
+        context.unstable_conditionNames = ['import', 'require'];
+      }
+
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
@@ -836,6 +843,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+    );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
