@@ -17,7 +17,7 @@ const iosResolver_1 = require("./iosResolver");
 async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, }) {
     const projectConfig = await (0, config_1.loadConfigAsync)(projectRoot);
     const dependencyRoots = {
-        ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
+        ...(await findDependencyRootsAsync(projectRoot, searchPaths, platform)),
         ...findProjectLocalDependencyRoots(projectConfig),
     };
     // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
@@ -47,12 +47,20 @@ exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 /**
  * Find all dependencies and their directories from the project.
  */
-async function findDependencyRootsAsync(projectRoot, searchPaths) {
+async function findDependencyRootsAsync(projectRoot, searchPaths, platform) {
     const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(projectRoot, 'package.json'), 'utf8'));
     const dependencies = [
         ...Object.keys(packageJson.dependencies ?? {}),
         ...Object.keys(packageJson.devDependencies ?? {}),
     ];
+    const shouldAutolinkEdgeToEdge = platform === 'android' &&
+        getExpoVersion(packageJson) >= 53 &&
+        !dependencies.includes('react-native-edge-to-edge');
+    // Edge-to-egde is a dependency of expo for versions >= 53, so it's a transitive dependency for the project, but is a not an expo module,
+    // so it won't be autolinked. We will try to find it in the search paths and autolink it.
+    if (shouldAutolinkEdgeToEdge) {
+        dependencies.push('react-native-edge-to-edge');
+    }
     const results = {};
     // `searchPathSet` can be mutated to discover all "isolated modules groups", when using isolated modules
     const searchPathSet = new Set(searchPaths);
@@ -149,4 +157,12 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
     return {};
 }
 exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
+/**
+ * Extracts the major version number from the 'expo' dependency string.
+ *
+ * @returns The major version number or 0.
+ */
+function getExpoVersion(packageJson) {
+    return +(packageJson?.dependencies?.expo?.match(/\d+/)?.[0] ?? '0');
+}
 //# sourceMappingURL=reactNativeConfig.js.map
