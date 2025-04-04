@@ -239,70 +239,67 @@ async function selectParcelsToPublish(
     const parcel = parcelsArray[currentIndex];
     const packageName = parcel.pkg.packageName;
 
-    // --- Skip Check ---
     if (
-      (parcel.state.releaseVersion !== null && parcel.state.releaseVersion !== undefined) ||
-      skipped.has(packageName)
+      !(parcel.state.releaseVersion === null || parcel.state.releaseVersion === undefined) ||
+      skipped.has(packageName) ||
+      !isParcelUnpublished(parcel)
     ) {
+      // Skip prompting if a release version is already set (chosen version or explicitly null)
+      // or if the user previously chose to skip this package.
+      // Also skip if all changes to the package have already been published previously.
       currentIndex++;
       continue;
     }
 
-    // --- Prompt Check ---
-    const isUnpublished = isParcelUnpublished(parcel);
-    if (isUnpublished) {
-      printPackageParcel(parcel);
-      const result = await promptToPublishParcel(parcel, options, currentIndex);
+    printPackageParcel(parcel);
+    const result = await promptToPublishParcel(parcel, options, currentIndex);
 
-      // --- Action Handling ---
-      if (result === 'back') {
-        let prevPromptableIndex = -1;
-        // Search backwards for the first unpublished package
-        for (let j = currentIndex - 1; j >= 0; j--) {
-          if (isParcelUnpublished(parcelsArray[j])) {
-            prevPromptableIndex = j;
-            break;
-          }
+    if (result === 'back') {
+      let prevPromptableIndex = -1;
+      // Search backwards for the first unpublished package
+      for (let j = currentIndex - 1; j >= 0; j--) {
+        if (isParcelUnpublished(parcelsArray[j])) {
+          prevPromptableIndex = j;
+          break;
         }
-
-        if (prevPromptableIndex !== -1) {
-          // Reset state for ALL packages from target up to current (inclusive)
-          for (let k = prevPromptableIndex; k <= currentIndex; k++) {
-            const p = parcelsArray[k];
-            p.state.releaseVersion = null;
-            selectedParcels.delete(p);
-            skipped.delete(p.pkg.packageName);
-          }
-
-          currentIndex = prevPromptableIndex; // Jump to the target index
-          continue; // Re-process the target package
-        } else {
-          currentIndex++; // Prevent getting stuck if no previous target
-        }
-      } else if (result === 'skip') {
-        skipped.add(packageName);
-        parcel.state.releaseVersion = null;
-        selectedParcels.delete(parcel);
-        currentIndex++;
-      } else if (result === true) {
-        // Selected 'Yes'
-        selectedParcels.add(parcel);
-        skipped.delete(packageName);
-        currentIndex++;
-      } else {
-        // Selected 'No / Dont Publish' or null
-        parcel.state.releaseVersion = null;
-        selectedParcels.delete(parcel);
-        skipped.delete(packageName);
-        currentIndex++;
       }
+
+      if (prevPromptableIndex !== -1) {
+        // Reset state for ALL packages from target up to current (inclusive)
+        for (let k = prevPromptableIndex; k <= currentIndex; k++) {
+          const p = parcelsArray[k];
+          p.state.releaseVersion = null;
+          selectedParcels.delete(p);
+          skipped.delete(p.pkg.packageName);
+        }
+
+        currentIndex = prevPromptableIndex; // Jump to the target index
+        continue; // Re-process the target package
+      } else {
+        currentIndex++; // Prevent getting stuck if no previous target
+      }
+    } else if (result === 'skip') {
+      skipped.add(packageName);
+      parcel.state.releaseVersion = null;
+      selectedParcels.delete(parcel);
+      currentIndex++;
+    } else if (result === true) {
+      // Selected "Yes"
+      selectedParcels.add(parcel);
+      skipped.delete(packageName);
+      currentIndex++;
     } else {
-      // Not unpublished, auto-skip
+      // Selected "Don't Publish" or null
+      parcel.state.releaseVersion = null;
+      selectedParcels.delete(parcel);
+      skipped.delete(packageName);
       currentIndex++;
     }
   }
 
-  // Final cleanup...
+  // Final cleanup: If a parcel wasn't selected for publishing, remove it from the
+  // dependency lists of other packages considered in this run. This ensures that
+  // subsequent steps operate only on dependencies that are being published together.
   for (const parcel of parcelsArray) {
     if (!selectedParcels.has(parcel)) {
       parcel.dependents.forEach((dependent) => {
