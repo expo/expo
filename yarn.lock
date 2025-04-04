@@ -1541,6 +1541,16 @@
   resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
+"@expo/server@^0.5.0":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@expo/server/-/server-0.5.3.tgz#7e2c268699aa962035bfb95c7e0d46515940709c"
+  integrity sha512-WXsWzeBs5v/h0PUfHyNLLz07rwwO5myQ1A5DGYewyyGLmsyl61yVCe8AgAlp1wkiMsqhj2hZqI2u3K10QnCMrQ==
+  dependencies:
+    abort-controller "^3.0.0"
+    debug "^4.3.4"
+    source-map-support "~0.5.21"
+    undici "^6.18.2"
+
 "@expo/spawn-async@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.7.2.tgz#fcfe66c3e387245e72154b1a7eae8cada6a47f58"
