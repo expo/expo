@@ -5,12 +5,16 @@ import { Platform, View, StyleSheet } from 'react-native';
 
 const cameraCoordinates = [
   {
-    latitude: 40.9971,
-    longitude: 29.1007,
+    latitude: 50.0620543,
+    longitude: 19.9388222,
   },
   {
     latitude: 37.78825,
     longitude: -122.4324,
+  },
+  {
+    latitude: 50.0494075,
+    longitude: 19.9655114,
   },
 ];
 

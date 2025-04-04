@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] fix updating cameraPosition prop ([#35883](https://github.com/expo/expo/pull/35883) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
