@@ -87,7 +87,6 @@ it('runs `npx expo lint` to install lint in a project', async () => {
 it('runs `npx expo customize eslint.config.js to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
     reuseExisting: false,
-    linkExpoPackages: ['eslint-config-expo'],
   });
 
   // `npx expo customize eslint.config.js`
@@ -107,10 +106,10 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
   expect(pkg.scripts).toHaveProperty('lint');
 
   expect(findProjectFiles(projectRoot)).toStrictEqual([
-    'eslint.config.js',
     'App.js',
     'app.json',
     'bun.lock',
+    'eslint.config.js',
     'metro.config.js',
     'package.json',
   ]);
