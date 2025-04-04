@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Remove unused log.
+- Remove unused log. ([#35894](https://github.com/expo/expo/pull/35894) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.1 - 2025-01-19
 
