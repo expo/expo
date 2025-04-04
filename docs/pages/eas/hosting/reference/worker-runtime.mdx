@@ -20,7 +20,7 @@ Cloudflare is part of [Winter CG](https://wintercg.org/), is more similar to the
 
 This means, many Node.js APIs that you might be used to or some dependencies you utilize, aren't directly available in the EAS Hosting runtime. To ease this transition, as not all dependencies will have first-class support for Web APIs yet, Node.js compatibility modules exist and can be used in your API routes.
 
-| Node.js built-in module    | Supported     | Implementation Notes                                                        |
+| Node.js built-in module    | Supported     | Implementation notes                                                        |
 | -------------------------- | ------------- | --------------------------------------------------------------------------- |
 | `node:assert`              | <YesIcon />   |                                                                             |
 | `node:async_hooks`         | <YesIcon />   |                                                                             |
@@ -29,14 +29,14 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 | `node:console`             | <AlertIcon /> | Provided as partially functional JS shims                                   |
 | `node:constants`           | <YesIcon />   |                                                                             |
 | `node:diagnostics_channel` | <YesIcon />   | Select deprecated algorithms are not implemented                            |
-| `node:dns`                 | <YesIcon />   | `Resolver` is unimplemented, All DNS requests are sent to Cloudflare        |
+| `node:dns`                 | <YesIcon />   | `Resolver` is unimplemented, all DNS requests are sent to Cloudflare        |
 | `node:dns/promises`        | <YesIcon />   | All DNS requests are sent to Cloudflare                                     |
 | `node:events`              | <YesIcon />   |                                                                             |
 | `node:fs`                  | <NoIcon />    | Provided as JS stubs, but workers have no file system                       |
 | `node:fs/promises`         | <NoIcon />    | Provided as JS stubs, but workers have no file system                       |
 | `node:http`                | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                  |
 | `node:https`               | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                  |
-| `node:module`              | <AlertIcon /> | `SourceMap` is unimplemented, Implemented partially with JS stubs           |
+| `node:module`              | <AlertIcon /> | `SourceMap` is unimplemented, implemented partially with JS stubs           |
 | `node:net`                 | <AlertIcon /> | `Server` and `BlockList` are unimplemented, sockets are partially supported |
 | `node:os`                  | <YesIcon />   | Provided as JS stubs                                                        |
 | `node:path`                | <YesIcon />   |                                                                             |
@@ -74,7 +74,7 @@ Any modules that aren't mentioned here are unavailable or unsupported, and your 
 
 ## Globals
 
-| JavaScript runtime globals | Supported     | Implementation Notes                                                                                                          |
+| JavaScript runtime globals | Supported     | Implementation notes                                                                                                          |
 | -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `process`                  | <YesIcon />   |                                                                                                                               |
 | `process.env`              | <YesIcon />   | Populated with EAS Hosting environment variables                                                                              |
