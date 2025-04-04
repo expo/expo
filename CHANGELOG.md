@@ -649,6 +649,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
   - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-contacts`**
+  - Disambiguate Contacts permissions between granted and limited access on iOS 18+ ([#35772](https://github.com/expo/expo/pull/35772) by [@clarkg](https://github.com/clarkg))
   - Handle new permission status on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
 - **`expo-constants`**
   - Deprecate `Constants.appOwnership`. ([#30021](https://github.com/expo/expo/pull/30021) by [@amandeepmittal](https://github.com/amandeepmittal))
