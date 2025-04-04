@@ -8,7 +8,10 @@
     "sdkVersion": "53.0.0",
     "version": "53.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "primaryColor": "#cccccc",
     "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
     "updates": {
