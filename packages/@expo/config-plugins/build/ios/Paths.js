@@ -74,8 +74,8 @@ function _warnings() {
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
-function getAppDelegateHeaderFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.h', {
+function getAppDelegateHeaderFilePath(projectRoot, platform) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/*/AppDelegate.h`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -94,8 +94,8 @@ function getAppDelegateHeaderFilePath(projectRoot) {
   }
   return using;
 }
-function getAppDelegateFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.@(m|mm|swift)', {
+function getAppDelegateFilePath(projectRoot, platform) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/*/AppDelegate.@(m|mm|swift)`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -114,8 +114,8 @@ function getAppDelegateFilePath(projectRoot) {
   }
   return using;
 }
-function getAppDelegateObjcHeaderFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.h', {
+function getAppDelegateObjcHeaderFilePath(projectRoot, platform) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/*/AppDelegate.h`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -134,8 +134,8 @@ function getAppDelegateObjcHeaderFilePath(projectRoot) {
   }
   return using;
 }
-function getPodfilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/Podfile', {
+function getPodfilePath(projectRoot, platform) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/Podfile`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -178,43 +178,42 @@ function getFileInfo(filePath) {
     language: getLanguage(filePath)
   };
 }
-function getAppDelegate(projectRoot) {
-  const filePath = getAppDelegateFilePath(projectRoot);
+function getAppDelegate(projectRoot, platform) {
+  const filePath = getAppDelegateFilePath(projectRoot, platform);
   return getFileInfo(filePath);
 }
-function getSourceRoot(projectRoot) {
-  const appDelegate = getAppDelegate(projectRoot);
+function getSourceRoot(projectRoot, platform) {
+  const appDelegate = getAppDelegate(projectRoot, platform);
   return path().dirname(appDelegate.path);
 }
-function findSchemePaths(projectRoot) {
-  return (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', {
+function findSchemePaths(projectRoot, platform) {
+  return (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
   }));
 }
-function findSchemeNames(projectRoot) {
-  const schemePaths = findSchemePaths(projectRoot);
+function findSchemeNames(projectRoot, platform) {
+  const schemePaths = findSchemePaths(projectRoot, platform);
   return schemePaths.map(schemePath => path().parse(schemePath).name);
 }
-function getAllXcodeProjectPaths(projectRoot) {
-  const iosFolder = 'ios';
-  const pbxprojPaths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/**/*.xcodeproj', {
+function getAllXcodeProjectPaths(projectRoot, platform) {
+  const pbxprojPaths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/**/*.xcodeproj`, {
     cwd: projectRoot,
     ignore: ignoredPaths
   })
   // Drop leading `/` from glob results to mimick glob@<9 behavior
-  .map(filePath => filePath.replace(/^\//, '')).filter(project => !/test|example|sample/i.test(project) || path().dirname(project) === iosFolder)).sort((a, b) => {
-    const isAInIos = path().dirname(a) === iosFolder;
-    const isBInIos = path().dirname(b) === iosFolder;
+  .map(filePath => filePath.replace(/^\//, '')).filter(project => !/test|example|sample/i.test(project) || path().dirname(project) === platform)).sort((a, b) => {
+    const isAInPlatform = path().dirname(a) === platform;
+    const isBInPlatform = path().dirname(b) === platform;
     // preserve previous sort order
-    if (isAInIos && isBInIos || !isAInIos && !isBInIos) {
+    if (isAInPlatform && isBInPlatform || !isAInPlatform && !isBInPlatform) {
       return 0;
     }
-    return isAInIos ? -1 : 1;
+    return isAInPlatform ? -1 : 1;
   });
   if (!pbxprojPaths.length) {
-    throw new (_errors().UnexpectedError)(`Failed to locate the ios/*.xcodeproj files relative to path "${projectRoot}".`);
+    throw new (_errors().UnexpectedError)(`Failed to locate the ${platform}/*.xcodeproj files relative to path "${projectRoot}".`);
   }
   return pbxprojPaths.map(value => path().join(projectRoot, value));
 }
@@ -222,8 +221,8 @@ function getAllXcodeProjectPaths(projectRoot) {
 /**
  * Get the pbxproj for the given path
  */
-function getXcodeProjectPath(projectRoot) {
-  const [using, ...extra] = getAllXcodeProjectPaths(projectRoot);
+function getXcodeProjectPath(projectRoot, platform) {
+  const [using, ...extra] = getAllXcodeProjectPaths(projectRoot, platform);
   if (extra.length) {
     warnMultipleFiles({
       tag: 'xcodeproj',
@@ -235,16 +234,16 @@ function getXcodeProjectPath(projectRoot) {
   }
   return using;
 }
-function getAllPBXProjectPaths(projectRoot) {
-  const projectPaths = getAllXcodeProjectPaths(projectRoot);
+function getAllPBXProjectPaths(projectRoot, platform) {
+  const projectPaths = getAllXcodeProjectPaths(projectRoot, platform);
   const paths = projectPaths.map(value => path().join(value, 'project.pbxproj')).filter(value => (0, _fs().existsSync)(value));
   if (!paths.length) {
-    throw new (_errors().UnexpectedError)(`Failed to locate the ios/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`);
+    throw new (_errors().UnexpectedError)(`Failed to locate the ${platform}/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`);
   }
   return paths;
 }
-function getPBXProjectPath(projectRoot) {
-  const [using, ...extra] = getAllPBXProjectPaths(projectRoot);
+function getPBXProjectPath(projectRoot, platform) {
+  const [using, ...extra] = getAllPBXProjectPaths(projectRoot, platform);
   if (extra.length) {
     warnMultipleFiles({
       tag: 'project-pbxproj',
@@ -256,8 +255,8 @@ function getPBXProjectPath(projectRoot) {
   }
   return using;
 }
-function getAllInfoPlistPaths(projectRoot) {
-  const paths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/Info.plist', {
+function getAllInfoPlistPaths(projectRoot, platform) {
+  const paths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)(`${platform}/*/Info.plist`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -269,8 +268,8 @@ function getAllInfoPlistPaths(projectRoot) {
   }
   return paths;
 }
-function getInfoPlistPath(projectRoot) {
-  const [using, ...extra] = getAllInfoPlistPaths(projectRoot);
+function getInfoPlistPath(projectRoot, platform) {
+  const [using, ...extra] = getAllInfoPlistPaths(projectRoot, platform);
   if (extra.length) {
     warnMultipleFiles({
       tag: 'info-plist',
@@ -282,8 +281,8 @@ function getInfoPlistPath(projectRoot) {
   }
   return using;
 }
-function getAllEntitlementsPaths(projectRoot) {
-  const paths = (0, _glob().globSync)('ios/*/*.entitlements', {
+function getAllEntitlementsPaths(projectRoot, platform) {
+  const paths = (0, _glob().globSync)(`${platform}/*/*.entitlements`, {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
@@ -294,14 +293,14 @@ function getAllEntitlementsPaths(projectRoot) {
 /**
  * @deprecated: use Entitlements.getEntitlementsPath instead
  */
-function getEntitlementsPath(projectRoot) {
-  return Entitlements().getEntitlementsPath(projectRoot);
+function getEntitlementsPath(projectRoot, platform) {
+  return Entitlements().getEntitlementsPath(projectRoot, platform);
 }
-function getSupportingPath(projectRoot) {
-  return path().resolve(projectRoot, 'ios', path().basename(getSourceRoot(projectRoot)), 'Supporting');
+function getSupportingPath(projectRoot, platform) {
+  return path().resolve(projectRoot, platform, path().basename(getSourceRoot(projectRoot, platform)), 'Supporting');
 }
-function getExpoPlistPath(projectRoot) {
-  const supportingPath = getSupportingPath(projectRoot);
+function getExpoPlistPath(projectRoot, platform) {
+  const supportingPath = getSupportingPath(projectRoot, platform);
   return path().join(supportingPath, 'Expo.plist');
 }
 function warnMultipleFiles({

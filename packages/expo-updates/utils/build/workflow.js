@@ -18,7 +18,7 @@ async function resolveWorkflowAsync(projectDir, platform) {
                     path_1.default.join(projectDir, 'android/app/build.gradle'),
                     await config_plugins_1.AndroidConfig.Paths.getAndroidManifestAsync(projectDir),
                 ]
-                : [config_plugins_1.IOSConfig.Paths.getPBXProjectPath(projectDir)];
+                : [config_plugins_1.IOSConfig.Paths.getPBXProjectPath(projectDir, platform)];
     }
     catch {
         return 'managed';

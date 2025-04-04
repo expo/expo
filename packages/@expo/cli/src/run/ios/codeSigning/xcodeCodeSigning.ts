@@ -1,4 +1,4 @@
-import { IOSConfig, XcodeProject } from '@expo/config-plugins';
+import { IOSConfig, ModPlatform, XcodeProject } from '@expo/config-plugins';
 import fs from 'fs';
 
 export type CodeSigningInfo = Record<
@@ -10,8 +10,11 @@ export type CodeSigningInfo = Record<
 >;
 
 /** Find the development team and provisioning profile that's currently in use by the Xcode project. */
-export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningInfo {
-  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
+export function getCodeSigningInfoForPbxproj(
+  projectRoot: string,
+  platform: ModPlatform
+): CodeSigningInfo {
+  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot, platform);
   const targets = IOSConfig.Target.findSignableTargets(project);
 
   const signingInfo: CodeSigningInfo = {};
@@ -108,9 +111,10 @@ export function mutateXcodeProjectWithAutoCodeSigningInfo({
  */
 export function setAutoCodeSigningInfoForPbxproj(
   projectRoot: string,
+  platform: ModPlatform,
   { appleTeamId }: { appleTeamId: string }
 ): void {
-  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
+  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot, platform);
   mutateXcodeProjectWithAutoCodeSigningInfo({ project, appleTeamId });
 
   fs.writeFileSync(project.filepath, project.writeSync());

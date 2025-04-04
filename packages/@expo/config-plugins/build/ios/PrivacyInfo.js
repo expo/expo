@@ -54,9 +54,10 @@ function withPrivacyInfo(config) {
 function setPrivacyInfo(projectConfig, privacyManifests) {
   const {
     projectRoot,
-    platformProjectRoot
+    platformProjectRoot,
+    platform
   } = projectConfig.modRequest;
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, platform);
   const privacyFilePath = _path().default.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
   const existingFileContent = getFileContents(privacyFilePath);
   const parsedContent = existingFileContent ? _plist().default.parse(existingFileContent) : {};

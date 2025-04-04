@@ -30,6 +30,10 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:xcodeproj');
 const withIosSplashXcodeProject = config => {
   return (0, _configPlugins().withXcodeProject)(config, async config => {
+    if (config.modRequest.platform !== 'ios') {
+      _configPlugins().WarningAggregator.addWarningForPlatform(config.modRequest.platform, 'splash', `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashScreenStoryboard" for platform ${config.modRequest.platform}.`);
+      return config;
+    }
     config.modResults = await setSplashStoryboardAsync({
       projectName: config.modRequest.projectName,
       project: config.modResults

@@ -35,13 +35,13 @@ function _XML() {
   };
   return data;
 }
-function getSchemesFromXcodeproj(projectRoot) {
-  return (0, _Paths().findSchemeNames)(projectRoot);
+function getSchemesFromXcodeproj(projectRoot, platform) {
+  return (0, _Paths().findSchemeNames)(projectRoot, platform);
 }
-function getRunnableSchemesFromXcodeproj(projectRoot, {
+function getRunnableSchemesFromXcodeproj(projectRoot, platform, {
   configuration = 'Debug'
 } = {}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
+  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, platform);
   return (0, _Target().findSignableTargets)(project).map(([, target]) => {
     let osType = 'iOS';
     const type = (0, _Xcodeproj().unquote)(target.productType);
@@ -75,8 +75,8 @@ function getRunnableSchemesFromXcodeproj(projectRoot, {
     };
   });
 }
-async function readSchemeAsync(projectRoot, scheme) {
-  const allSchemePaths = (0, _Paths().findSchemePaths)(projectRoot);
+async function readSchemeAsync(projectRoot, platform, scheme) {
+  const allSchemePaths = (0, _Paths().findSchemePaths)(projectRoot, platform);
   // NOTE(cedric): test on POSIX or UNIX separators, where UNIX needs to be double-escaped in the template literal and regex
   const re = new RegExp(`[\\\\/]${scheme}.xcscheme`, 'i');
   const schemePath = allSchemePaths.find(i => re.exec(i));
@@ -88,8 +88,8 @@ async function readSchemeAsync(projectRoot, scheme) {
     throw new Error(`scheme '${scheme}' does not exist, make sure it's marked as shared`);
   }
 }
-async function getApplicationTargetNameForSchemeAsync(projectRoot, scheme) {
-  const schemeXML = await readSchemeAsync(projectRoot, scheme);
+async function getApplicationTargetNameForSchemeAsync(projectRoot, platform, scheme) {
+  const schemeXML = await readSchemeAsync(projectRoot, platform, scheme);
   const buildActionEntry = schemeXML?.Scheme?.BuildAction?.[0]?.BuildActionEntries?.[0]?.BuildActionEntry;
   const targetName = buildActionEntry?.length === 1 ? getBlueprintName(buildActionEntry[0]) : getBlueprintName(buildActionEntry?.find(entry => {
     return entry.BuildableReference?.[0]?.['$']?.BuildableName?.endsWith('.app');
@@ -99,8 +99,8 @@ async function getApplicationTargetNameForSchemeAsync(projectRoot, scheme) {
   }
   return targetName;
 }
-async function getArchiveBuildConfigurationForSchemeAsync(projectRoot, scheme) {
-  const schemeXML = await readSchemeAsync(projectRoot, scheme);
+async function getArchiveBuildConfigurationForSchemeAsync(projectRoot, platform, scheme) {
+  const schemeXML = await readSchemeAsync(projectRoot, platform, scheme);
   const buildConfiguration = schemeXML?.Scheme?.ArchiveAction?.[0]?.['$']?.buildConfiguration;
   if (!buildConfiguration) {
     throw new Error(`${scheme}.xcscheme seems to be corrupted`);

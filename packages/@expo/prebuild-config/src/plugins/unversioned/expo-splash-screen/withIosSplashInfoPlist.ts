@@ -8,6 +8,15 @@ const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:infoPlist');
 
 export const withIosSplashInfoPlist: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   return withInfoPlist(config, (config) => {
+    if (config.modRequest.platform !== 'ios') {
+      WarningAggregator.addWarningForPlatform(
+        config.modRequest.platform,
+        'splash',
+        `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashInfoPlist" for platform ${config.modRequest.platform}.`
+      );
+      return config;
+    }
+
     config.modResults = setSplashInfoPlist(config, config.modResults, splash);
     return config;
   });

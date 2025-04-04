@@ -1,3 +1,5 @@
+import { ModPlatform } from '@expo/config-plugins';
+
 import { OSType } from '../../start/platforms/ios/simctl';
 import { BundlerProps } from '../resolveBundlerProps';
 
@@ -31,6 +33,8 @@ export type ProjectInfo = {
 };
 
 export type BuildProps = {
+  /** The platform being built (e.g. 'ios'). */
+  platform: ModPlatform;
   /** Root to the iOS native project. */
   projectRoot: string;
   /** Is the target a simulator. */

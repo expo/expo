@@ -53,9 +53,9 @@ function getXCBuildConfigurationFromPbxproj(project, {
   });
   return xcBuildConfiguration ?? null;
 }
-async function findApplicationTargetWithDependenciesAsync(projectRoot, scheme) {
-  const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(projectRoot, scheme);
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
+async function findApplicationTargetWithDependenciesAsync(projectRoot, platform, scheme) {
+  const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(projectRoot, platform, scheme);
+  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, platform);
   const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
   const dependencies = getTargetDependencies(project, applicationTarget);
   return {

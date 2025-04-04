@@ -6,6 +6,7 @@ import slash from 'slash';
 import { XCBuildConfiguration } from 'xcode';
 
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
+import { ModPlatform } from '../Plugin.types';
 import {
   getBuildConfigurationsForListId,
   getPbxproj,
@@ -36,12 +37,13 @@ export function setAssociatedDomains(
 
 export function getEntitlementsPath(
   projectRoot: string,
+  platform: ModPlatform,
   {
     targetName,
     buildConfiguration = 'Release',
   }: { targetName?: string; buildConfiguration?: string } = {}
 ): string | null {
-  const project = getPbxproj(projectRoot);
+  const project = getPbxproj(projectRoot, platform);
   const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
     targetName,
     buildConfiguration,
@@ -51,6 +53,7 @@ export function getEntitlementsPath(
   }
   const entitlementsPath = getEntitlementsPathFromBuildConfiguration(
     projectRoot,
+    platform,
     xcBuildConfiguration
   );
   return entitlementsPath && fs.existsSync(entitlementsPath) ? entitlementsPath : null;
@@ -58,21 +61,25 @@ export function getEntitlementsPath(
 
 function getEntitlementsPathFromBuildConfiguration(
   projectRoot: string,
+  platform: ModPlatform,
   xcBuildConfiguration: XCBuildConfiguration
 ): string | null {
   const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS as
     | string
     | undefined;
   if (entitlementsPathRaw) {
-    return path.normalize(path.join(projectRoot, 'ios', trimQuotes(entitlementsPathRaw)));
+    return path.normalize(path.join(projectRoot, platform, trimQuotes(entitlementsPathRaw)));
   } else {
     return null;
   }
 }
 
-export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: string): void {
-  const project = getPbxproj(projectRoot);
-  const projectName = getProjectName(projectRoot);
+export function ensureApplicationTargetEntitlementsFileConfigured(
+  projectRoot: string,
+  platform: ModPlatform
+): void {
+  const project = getPbxproj(projectRoot, platform);
+  const projectName = getProjectName(projectRoot, platform);
   const productName = getProductName(project);
 
   const [, applicationTarget] = findFirstNativeTarget(project);
@@ -84,6 +91,7 @@ export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: s
   for (const [, xcBuildConfiguration] of buildConfigurations) {
     const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(
       projectRoot,
+      platform,
       xcBuildConfiguration
     );
     if (oldEntitlementPath && fs.existsSync(oldEntitlementPath)) {
@@ -93,7 +101,7 @@ export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: s
     // Use posix formatted path, even on Windows
     const entitlementsRelativePath = slash(path.join(projectName, `${productName}.entitlements`));
     const entitlementsPath = path.normalize(
-      path.join(projectRoot, 'ios', entitlementsRelativePath)
+      path.join(projectRoot, platform, entitlementsRelativePath)
     );
     fs.mkdirSync(path.dirname(entitlementsPath), { recursive: true });
     if (!fs.existsSync(entitlementsPath)) {

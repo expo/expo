@@ -108,11 +108,12 @@ function updateDevelopmentTeamForPbxproj(project, appleTeamId) {
  * Updates the Apple development team ID for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {[string]} appleTeamId Desired Apple development team ID
  */
-function setDevelopmentTeamForPbxproj(projectRoot, appleTeamId) {
-  // Get all pbx projects in the ${projectRoot}/ios directory
-  const pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot);
+function setDevelopmentTeamForPbxproj(projectRoot, platform, appleTeamId) {
+  // Get all pbx projects in the ${projectRoot}/${platform} directory
+  const pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot, platform);
   for (const pbxprojPath of pbxprojPaths) {
     let project = _xcode().default.project(pbxprojPath);
     project.parseSync();

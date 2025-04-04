@@ -130,6 +130,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Pass `platform` value through to the various Xcode utils that now expect it. Will allow CLI commands such as `run` to be adapted for use with `react-native-macos` in future. ([#34379](https://github.com/expo/expo/pull/34379) by [@shirakaba](https://github.com/shirakaba))
 - Add basic support for API routes with React Server Components enabled. ([#34211](https://github.com/expo/expo/pull/34211) by [@EvanBacon](https://github.com/EvanBacon))
 - Add placeholder HTML for web exports with React Server Components enabled. ([#34093](https://github.com/expo/expo/pull/34093) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for ESM package imports support and `import` condition in `react-server` resolution. ([#34091](https://github.com/expo/expo/pull/34091) by [@EvanBacon](https://github.com/EvanBacon))

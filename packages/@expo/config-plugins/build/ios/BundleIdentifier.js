@@ -117,17 +117,18 @@ function setBundleIdentifier(config, infoPlist) {
  * Defaults to 'Release'.
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {string} targetName Target name
  * @param {string} buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-function getBundleIdentifierFromPbxproj(projectRoot, {
+function getBundleIdentifierFromPbxproj(projectRoot, platform, {
   targetName,
   buildConfiguration = 'Release'
 } = {}) {
   let pbxprojPath;
   try {
-    pbxprojPath = (0, _Paths().getPBXProjectPath)(projectRoot);
+    pbxprojPath = (0, _Paths().getPBXProjectPath)(projectRoot, platform);
   } catch {
     return null;
   }
@@ -193,14 +194,15 @@ function updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updat
  * Updates the bundle identifier for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {string} platform Platform name, e.g. 'ios'
  * @param {string} bundleIdentifier Desired bundle identifier
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-function setBundleIdentifierForPbxproj(projectRoot, bundleIdentifier, updateProductName = true) {
+function setBundleIdentifierForPbxproj(projectRoot, platform, bundleIdentifier, updateProductName = true) {
   // Get all pbx projects in the ${projectRoot}/ios directory
   let pbxprojPaths = [];
   try {
-    pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot);
+    pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot, platform);
   } catch {}
   for (const pbxprojPath of pbxprojPaths) {
     updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateProductName);
@@ -212,8 +214,8 @@ function setBundleIdentifierForPbxproj(projectRoot, bundleIdentifier, updateProd
  */
 
 const defaultBundleId = '$(PRODUCT_BUNDLE_IDENTIFIER)';
-function resetAllPlistBundleIdentifiers(projectRoot) {
-  const infoPlistPaths = (0, _Paths().getAllInfoPlistPaths)(projectRoot);
+function resetAllPlistBundleIdentifiers(projectRoot, platform) {
+  const infoPlistPaths = (0, _Paths().getAllInfoPlistPaths)(projectRoot, platform);
   for (const plistPath of infoPlistPaths) {
     resetPlistBundleIdentifier(plistPath);
   }

@@ -1,4 +1,4 @@
-import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig, withDangerousMod, WarningAggregator } from '@expo/config-plugins';
 import { generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
 import fs from 'fs';
@@ -28,7 +28,19 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
+      if (config.modRequest.platform !== 'ios') {
+        WarningAggregator.addWarningForPlatform(
+          config.modRequest.platform,
+          'splash',
+          `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashAssets" for platform ${config.modRequest.platform}.`
+        );
+        return config;
+      }
+
+      const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(
+        config.modRequest.projectRoot,
+        config.modRequest.platform
+      );
 
       await configureImageAssets({
         projectRoot: config.modRequest.projectRoot,

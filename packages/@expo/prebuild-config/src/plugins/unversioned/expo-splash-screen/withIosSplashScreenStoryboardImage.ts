@@ -1,4 +1,4 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import { ConfigPlugin, WarningAggregator } from '@expo/config-plugins';
 
 import {
   applyImageToSplashScreenXML,
@@ -11,6 +11,15 @@ import { withIosSplashScreenStoryboard } from './withIosSplashScreenStoryboard';
 
 export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, props) => {
   return withIosSplashScreenStoryboard(config, (config) => {
+    if (config.modRequest.platform !== 'ios') {
+      WarningAggregator.addWarningForPlatform(
+        config.modRequest.platform,
+        'splash',
+        `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashScreenStoryboard" for platform ${config.modRequest.platform}.`
+      );
+      return config;
+    }
+
     config.modResults = applySplashScreenStoryboard(config.modResults, props);
     return config;
   });

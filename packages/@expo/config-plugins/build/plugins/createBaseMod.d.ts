@@ -19,7 +19,7 @@ export type CreateBaseModProps<ModType, Props extends ForwardedBaseModOptions = 
     modName: string;
 } & BaseModProviderMethods<ModType, Props>;
 export declare function createBaseMod<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions>({ methodName, platform, modName, getFilePath, read, write, isIntrospective, }: CreateBaseModProps<ModType, Props>): ConfigPlugin<Props | void>;
-export declare function assertModResults(results: any, platformName: string, modName: string): any;
+export declare function assertModResults(results: any, platformName: ModPlatform, modName: string): any;
 export declare function createPlatformBaseMod<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions>({ modName, ...props }: Omit<CreateBaseModProps<ModType, Props>, 'methodName'>): ConfigPlugin<void | Props>;
 /** A TS wrapper for creating provides */
 export declare function provider<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions>(props: BaseModProviderMethods<ModType, Props>): BaseModProviderMethods<ModType, Props>;

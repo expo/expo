@@ -60,7 +60,11 @@ const withIosSplashAssets = (config, splash) => {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
+    if (config.modRequest.platform !== 'ios') {
+      _configPlugins().WarningAggregator.addWarningForPlatform(config.modRequest.platform, 'splash', `The \`splash\` property is only supported on iOS and Android. Skipping mod "withIosSplashAssets" for platform ${config.modRequest.platform}.`);
+      return config;
+    }
+    const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot, config.modRequest.platform);
     await configureImageAssets({
       projectRoot: config.modRequest.projectRoot,
       iosNamedProjectRoot,

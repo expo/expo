@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Pass `platform` to allow iOS config plugins to be adapted for use with `react-native-macos` in future. ([#34379](https://github.com/expo/expo/pull/34379) by [@shirakaba](https://github.com/shirakaba))
 - Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes

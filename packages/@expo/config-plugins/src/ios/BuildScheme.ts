@@ -1,5 +1,6 @@
 import { findSchemeNames, findSchemePaths } from './Paths';
 import { findSignableTargets, TargetType } from './Target';
+import { ModPlatform } from '../Plugin.types';
 import { getPbxproj, unquote } from './utils/Xcodeproj';
 import { readXMLAsync } from '../utils/XML';
 
@@ -27,15 +28,16 @@ interface BuildActionEntryType {
   }[];
 }
 
-export function getSchemesFromXcodeproj(projectRoot: string): string[] {
-  return findSchemeNames(projectRoot);
+export function getSchemesFromXcodeproj(projectRoot: string, platform: ModPlatform): string[] {
+  return findSchemeNames(projectRoot, platform);
 }
 
 export function getRunnableSchemesFromXcodeproj(
   projectRoot: string,
+  platform: ModPlatform,
   { configuration = 'Debug' }: { configuration?: 'Debug' | 'Release' } = {}
 ): { name: string; osType: string; type: string }[] {
-  const project = getPbxproj(projectRoot);
+  const project = getPbxproj(projectRoot, platform);
 
   return findSignableTargets(project).map(([, target]) => {
     let osType = 'iOS';
@@ -86,9 +88,10 @@ export function getRunnableSchemesFromXcodeproj(
 
 async function readSchemeAsync(
   projectRoot: string,
+  platform: ModPlatform,
   scheme: string
 ): Promise<SchemeXML | undefined> {
-  const allSchemePaths = findSchemePaths(projectRoot);
+  const allSchemePaths = findSchemePaths(projectRoot, platform);
   // NOTE(cedric): test on POSIX or UNIX separators, where UNIX needs to be double-escaped in the template literal and regex
   const re = new RegExp(`[\\\\/]${scheme}.xcscheme`, 'i');
   const schemePath = allSchemePaths.find((i) => re.exec(i));
@@ -101,9 +104,10 @@ async function readSchemeAsync(
 
 export async function getApplicationTargetNameForSchemeAsync(
   projectRoot: string,
+  platform: ModPlatform,
   scheme: string
 ): Promise<string> {
-  const schemeXML = await readSchemeAsync(projectRoot, scheme);
+  const schemeXML = await readSchemeAsync(projectRoot, platform, scheme);
   const buildActionEntry =
     schemeXML?.Scheme?.BuildAction?.[0]?.BuildActionEntries?.[0]?.BuildActionEntry;
   const targetName =
@@ -122,9 +126,10 @@ export async function getApplicationTargetNameForSchemeAsync(
 
 export async function getArchiveBuildConfigurationForSchemeAsync(
   projectRoot: string,
+  platform: ModPlatform,
   scheme: string
 ): Promise<string> {
-  const schemeXML = await readSchemeAsync(projectRoot, scheme);
+  const schemeXML = await readSchemeAsync(projectRoot, platform, scheme);
   const buildConfiguration = schemeXML?.Scheme?.ArchiveAction?.[0]?.['$']?.buildConfiguration;
   if (!buildConfiguration) {
     throw new Error(`${scheme}.xcscheme seems to be corrupted`);
