@@ -11,13 +11,22 @@ import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -34,6 +43,7 @@ class DisabledUpdatesController(
 ) : IUpdatesController {
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
+  private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
@@ -55,18 +65,14 @@ class DisabledUpdatesController(
     }
 
   private var launcher: Launcher? = null
-  private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
+  private val loaderTaskFinishedDeferred = CompletableDeferred<Unit>()
+  private val loaderTaskFinishedMutex = Mutex()
 
-  @get:Synchronized
   override val launchAssetFile: String?
     get() {
-      while (!isLoaderTaskFinished) {
-        try {
-          (this as java.lang.Object).wait()
-        } catch (e: InterruptedException) {
-          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
-        }
+      runBlocking {
+        loaderTaskFinishedDeferred.await()
       }
       return launcher?.launchAssetFile
     }
@@ -121,45 +127,40 @@ class DisabledUpdatesController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
+  override suspend fun relaunchReactApplicationForModule() = suspendCancellableCoroutine { continuation ->
     val procedure = RecreateReactContextProcedure(
       context,
       weakActivity,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
-          callback.onFailure(e.toCodedException())
+          continuation.resumeWithException(e.toCodedException())
         }
 
         override fun onSuccess() {
-          callback.onSuccess(Unit)
+          continuation.resume(Unit)
         }
       }
     )
     stateMachine.queueExecution(procedure)
   }
 
-  override fun checkForUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
-  ) {
-    callback.onFailure(UpdatesDisabledException("Updates.checkForUpdateAsync() is not supported when expo-updates is not enabled."))
+  override suspend fun checkForUpdate(): IUpdatesController.CheckForUpdateResult {
+    throw UpdatesDisabledException("Updates.checkForUpdateAsync() is not supported when expo-updates is not enabled.")
   }
 
-  override fun fetchUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
-  ) {
-    callback.onFailure(UpdatesDisabledException("Updates.fetchUpdateAsync() is not supported when expo-updates is not enabled."))
+  override suspend fun fetchUpdate(): IUpdatesController.FetchUpdateResult {
+    throw UpdatesDisabledException("Updates.fetchUpdateAsync() is not supported when expo-updates is not enabled.")
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(UpdatesDisabledException("Updates.getExtraParamsAsync() is not supported when expo-updates is not enabled."))
+  override suspend fun getExtraParams(): Bundle {
+    throw UpdatesDisabledException("Updates.getExtraParamsAsync() is not supported when expo-updates is not enabled.")
   }
 
-  override fun setExtraParam(
+  override suspend fun setExtraParam(
     key: String,
-    value: String?,
-    callback: IUpdatesController.ModuleCallback<Unit>
+    value: String?
   ) {
-    callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled."))
+    throw UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled.")
   }
 
   override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
@@ -168,11 +169,16 @@ class DisabledUpdatesController(
 
   @Synchronized
   private fun notifyController() {
-    if (launcher == null) {
-      throw AssertionError("UpdatesController.notifyController was called with a null launcher, which is an error. This method should only be called when an update is ready to launch.")
+    controllerScope.launch {
+      loaderTaskFinishedMutex.withLock {
+        if (!loaderTaskFinishedDeferred.isCompleted) {
+          if (launcher == null) {
+            throw AssertionError("UpdatesController.notifyController was called with a null launcher, which is an error. This method should only be called when an update is ready to launch.")
+          }
+          loaderTaskFinishedDeferred.complete(Unit)
+        }
+      }
     }
-    isLoaderTaskFinished = true
-    (this as java.lang.Object).notify()
   }
 
   companion object {

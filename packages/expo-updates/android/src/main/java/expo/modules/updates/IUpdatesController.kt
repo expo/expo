@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
@@ -62,11 +61,6 @@ interface IUpdatesController {
    * the application's lifecycle.
    */
   fun start()
-
-  interface ModuleCallback<T> {
-    fun onSuccess(result: T)
-    fun onFailure(exception: CodedException)
-  }
 
   data class UpdatesModuleConstants(
     val launchedUpdate: UpdateEntity?,
@@ -130,8 +124,6 @@ interface IUpdatesController {
   }
   fun getConstantsForModule(): UpdatesModuleConstants
 
-  fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)
-
   sealed class CheckForUpdateResult(private val status: Status) {
     private enum class Status {
       NO_UPDATE_AVAILABLE,
@@ -145,7 +137,6 @@ interface IUpdatesController {
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception) : CheckForUpdateResult(Status.ERROR)
   }
-  fun checkForUpdate(callback: ModuleCallback<CheckForUpdateResult>)
 
   sealed class FetchUpdateResult(private val status: Status) {
     private enum class Status {
@@ -160,11 +151,16 @@ interface IUpdatesController {
     class RollBackToEmbedded : FetchUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception) : FetchUpdateResult(Status.ERROR)
   }
-  fun fetchUpdate(callback: ModuleCallback<FetchUpdateResult>)
 
-  fun getExtraParams(callback: ModuleCallback<Bundle>)
+  suspend fun relaunchReactApplicationForModule()
 
-  fun setExtraParam(key: String, value: String?, callback: ModuleCallback<Unit>)
+  suspend fun checkForUpdate(): CheckForUpdateResult
+
+  suspend fun fetchUpdate(): FetchUpdateResult
+
+  suspend fun getExtraParams(): Bundle
+
+  suspend fun setExtraParam(key: String, value: String?)
 
   fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
 }
