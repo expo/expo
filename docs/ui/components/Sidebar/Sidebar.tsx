@@ -28,6 +28,10 @@ export const Sidebar = ({ routes = [] }: SidebarProps) => {
         )}
       />
       {routes.map(route => {
+        if (!route) {
+          return null;
+        }
+
         const Component = renderTypes[route.type];
         return !!Component && <Component key={`${route.type}-${route.name}`} route={route} />;
       })}

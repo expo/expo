@@ -45,7 +45,7 @@ function processGroup(group) {
 }
 
 export function processSection(node) {
-  if (node.type !== 'section') {
+  if (!node || node.type !== 'section') {
     return null;
   }
 

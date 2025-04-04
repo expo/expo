@@ -46,6 +46,7 @@ export type NavigationRoute = {
   weight?: number;
   isNew?: boolean;
   isDeprecated?: boolean;
+  inExpoGo?: boolean;
   children?: NavigationRouteWithSection[];
 };
 
