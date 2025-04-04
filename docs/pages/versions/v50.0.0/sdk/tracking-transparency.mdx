@@ -30,12 +30,6 @@ For more information on Apple's new App Tracking Transparency framework, see the
 
 You can configure `expo-tracking-transparency` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
-<ConfigReactNative>
-
-Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).
-
-</ConfigReactNative>
-
 <ConfigPluginExample>
 
 ```json app.json
@@ -67,6 +61,25 @@ Learn how to configure the native projects in the [installation instructions in 
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `com.google.android.gms.permission.AD_ID` permission to your project's **android/app/src/main/AndroidManifest.xml**.
+
+  ```xml
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+  ```
+
+- For iOS, add `NSUserTrackingUsageDescription` key to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSUserTrackingUsageDescription</key>
+  <string>Your custom usage description string here.</string>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 

@@ -68,7 +68,20 @@ You can configure `expo-av` using its built-in [config plugin](/config-plugins/i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-av` repository](https://github.com/expo/expo/tree/main/packages/expo-av#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.RECORD_AUDIO` permission to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  ```
+
+- For iOS, add `NSMicrophoneUsageDescription` to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+  ```
 
 </ConfigReactNative>
 
