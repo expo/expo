@@ -9,7 +9,6 @@
     "githubUrl": "https://github.com/expo/native-component-list",
     "orientation": "default",
     "primaryColor": "#cccccc",
-    "privacy": "public",
     "icon": "./assets/icons/icon.png",
     "scheme": "ncl",
     "notification": {
@@ -44,10 +43,6 @@
       "googleServicesFile": "./google-services.json",
       "playStoreUrl": "https://play.google.com/store/apps/details?id=host.exp.exponent",
       "config": {
-        "googleSignIn": {
-          "apiKey": "AIzaSyC2kse8d0rFfi27jff5nD14cSNcPBQC4Tk",
-          "certificateHash": "1746BECB2497593B3296903145793BC0BE8C426B"
-        },
         "googleMaps": {
           "apiKey": "AIzaSyC2kse8d0rFfi27jff5nD14cSNcPBQC4Tk"
         },

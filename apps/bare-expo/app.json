@@ -9,15 +9,10 @@
       "backgroundColor": "#000020"
     },
     "scheme": "bareexpo",
-    "facebookScheme": "fb629712900716487",
-    "facebookAppId": "629712900716487",
-    "facebookDisplayName": "Expo APIs",
-    "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
     "userInterfaceStyle": "automatic",
     "android": {
-      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
@@ -25,10 +20,6 @@
       "package": "dev.expo.payments"
     },
     "ios": {
-      "scheme": [
-        "msauth.dev.expo.Payments",
-        "com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e"
-      ],
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
       "requireFullScreen": false,
@@ -38,10 +29,6 @@
     },
     "web": {
       "bundler": "metro"
-    },
-    "notification": {
-      "serviceWorkerPath": "/expo-service-worker.js",
-      "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
     },
     "extra": {
       "eas": {
