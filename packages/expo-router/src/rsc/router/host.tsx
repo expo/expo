@@ -223,11 +223,13 @@ export const callServerRSC = async (
     callServer: (actionId: string, args: unknown[]) => callServerRSC(actionId, args, fetchCache),
   });
   fetchCache[ON_FETCH_DATA]?.(data);
-  startTransition(() => {
-    // FIXME this causes rerenders even if data is empty
-    fetchCache[SET_ELEMENTS]?.((prev) => mergeElements(prev, data));
-  });
-  return (await data)._value;
+
+  const value = (await data)._value;
+
+  // FIXME this causes rerenders even if data is empty
+  fetchCache[SET_ELEMENTS]?.((prev) => mergeElements(prev, data));
+
+  return value;
 };
 
 const prefetchedParams = new WeakMap<Promise<unknown>, unknown>();

@@ -8,8 +8,10 @@ import { Image, Text } from 'react-native';
 import NestedClientTest from './nested';
 import { CallActions } from './wrapped-action-client-impl';
 import { WrappedActionProvider } from './wrapped-action-provider-impl';
+import React from 'react';
 
 export async function renderPage(params: { title: string }) {
+  console.log('renderPage', params);
   const platformHeader = (await unstable_headers()).get('expo-platform');
   return (
     <>
