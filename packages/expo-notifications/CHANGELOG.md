@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- remove deprecated `presentNotificationAsync` ([#35900](https://github.com/expo/expo/pull/35900) by [@vonovak](https://github.com/vonovak))
 - [post-swift-conversion] UNTextInputNotificationAction wasn't provided with options ([#35903](https://github.com/expo/expo/pull/35903) by [@vonovak](https://github.com/vonovak))
 - [post-swift-conversion] event emitter should not influence notification presentation ([#35858](https://github.com/expo/expo/pull/35858) by [@vonovak](https://github.com/vonovak))
 - correctly serialize `null` trigger on iOS ([#35672](https://github.com/expo/expo/pull/35672) by [@vonovak](https://github.com/vonovak))
