@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 8.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
 - Fix activationState must be used from main thread only ([#35403](https://github.com/expo/expo/pull/35403) by [@dylancom](https://github.com/dylancom))
 
 ### 💡 Others

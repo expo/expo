@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.20.0 — 2025-04-04
+
+### 🎉 New features
+
 - Add support for `Worker` and `require.unstable_resolveWorker()`. ([#34938](https://github.com/expo/expo/pull/34938) by [@EvanBacon](https://github.com/EvanBacon))
 - Include import hints for all optional imports. ([#35239](https://github.com/expo/expo/pull/35239) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `postcss.config.mjs`. ([#34840](https://github.com/expo/expo/pull/34840) by [@EvanBacon](https://github.com/EvanBacon))

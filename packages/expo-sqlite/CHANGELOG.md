@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.2.0 — 2025-04-04
+
+### 🎉 New features
+
 - Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
 - Added [Session Extension](https://www.sqlite.org/sessionintro.html) support. ([#35457](https://github.com/expo/expo/pull/35457), [#35458](https://github.com/expo/expo/pull/35458), [#35459](https://github.com/expo/expo/pull/35459), [#35461](https://github.com/expo/expo/pull/35461), [#35476](https://github.com/expo/expo/pull/35476) by [@kudo](https://github.com/kudo))
 - Added `backupDatabaseAsync` and `backupDatabaseSync` APIs. ([#35604](https://github.com/expo/expo/pull/35604) by [@kudo](https://github.com/kudo))

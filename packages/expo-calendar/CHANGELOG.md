@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
 - Allow nullable dates for `getRemindersAsync` ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
 
 ### 🐛 Bug fixes

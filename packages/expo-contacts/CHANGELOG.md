@@ -2,9 +2,17 @@
 
 ## Unpublished
 
-- Fixed an issue on iOS where social profile urls were badly stored. ([#31771](https://github.com/expo/expo/pull/31771) by [@mlecoq](https://github.com/mlecoq))
-
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.1.0 — 2025-04-04
+
+- Fixed an issue on iOS where social profile urls were badly stored. ([#31771](https://github.com/expo/expo/pull/31771) by [@mlecoq](https://github.com/mlecoq))
 
 ### 🎉 New features
 
