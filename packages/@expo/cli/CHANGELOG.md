@@ -12,6 +12,7 @@
 
 - Upgrade unstable React canary to oss-stable build of react (b10cb4c01ec1ae41b67422239d919f261fefa7d1).
 - Symbolicate React error stacks in terminal logs. ([#35866](https://github.com/expo/expo/pull/35866) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade unstable React canary to oss-stable build of react (b10cb4c01ec1ae41b67422239d919f261fefa7d1).
 - Add improved error message for missing optional imports. ([#35239](https://github.com/expo/expo/pull/35239) by [@EvanBacon](https://github.com/EvanBacon))
 - Estimate Xcode binary path in minimal builds. ([#33415](https://github.com/expo/expo/pull/33415) by [@EvanBacon](https://github.com/EvanBacon))
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
