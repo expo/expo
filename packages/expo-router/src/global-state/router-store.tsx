@@ -24,6 +24,7 @@ import {
   setParams,
   dismissTo,
   LinkToOptions,
+  prefetch,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -83,6 +84,7 @@ export class RouterStore {
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
   reload = reload.bind(this);
+  prefetch = prefetch.bind(this);
 
   initialize(
     context: RequireContext,
@@ -138,7 +140,7 @@ export class RouterStore {
 
       // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
       // This will cause static rendering to fail, which once performs a single pass.
-      // If the initialURL is a string, we can preload the state and routeInfo, skipping React Navigation's async behavior.
+      // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
       const initialURL = this.linking?.getInitialURL?.();
       if (typeof initialURL === 'string') {
         this.rootState = this.linking.getStateFromPath?.(initialURL, this.linking.config);
