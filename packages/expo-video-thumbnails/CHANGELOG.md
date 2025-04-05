@@ -16,7 +16,7 @@
 
 ## 9.0.4 — 2025-03-22
 
-- Created **getNativeThumbnailAsync()**. Returns an image reference of the generated image. ([#35240](https://github.com/expo/expo/issues/35240) by [@mistermunchkin](https://github.com/MisterMunchkin))
+- Created **getNativeThumbnailAsync()**. Returns an image reference of the generated image. ([#35240](https://github.com/expo/expo/issues/35240) by [@mistermunchkin](https://github.com/MisterMunchkin)) ([#35641](https://github.com/expo/expo/pull/35641) by [@MisterMunchkin](https://github.com/MisterMunchkin))
 
 ## 9.0.3 - 2025-01-10
 
