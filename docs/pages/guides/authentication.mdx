@@ -608,6 +608,7 @@ export default function App() {
 - Leverages the Hosted UI in Cognito ([API documentation][c-cognito-api-docs])
 - Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE)
 - The `/token` endpoint requires a `code_verifier` parameter which you can retrieve from the request before calling `exchangeCodeAsync()`:
+
 ```tsx
 extraParams: {
   code_verifier: request.codeVerifier,
