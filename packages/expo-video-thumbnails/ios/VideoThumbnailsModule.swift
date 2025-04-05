@@ -9,7 +9,7 @@ public class VideoThumbnailsModule: Module {
 
     AsyncFunction("getThumbnail", getVideoThumbnail)
     AsyncFunction("getNativeThumbnail", getNativeVideoThumbnail)
-      
+
     Class(NativeVideoThumbnail.self) {
       Property("width", \.ref.size.width)
       Property("height", \.ref.size.height)
@@ -76,22 +76,22 @@ public class VideoThumbnailsModule: Module {
 
     return fileUrl
   }
-    
+
   internal func getNativeVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) async throws -> NativeVideoThumbnail? {
     if sourceFilename.isFileURL {
       guard FileSystemUtilities.permissions(appContext, for: sourceFilename).contains(.read) else {
         throw FileSystemReadPermissionException(sourceFilename.absoluteString)
       }
     }
-    
+
     let asset = AVURLAsset(url: sourceFilename, options: ["AVURLAssetHTTPHeaderFieldsKey": options.headers])
     let generator = AVAssetImageGenerator(asset: asset)
-    
+
     generator.appliesPreferredTrackTransform = true
     generator.requestedTimeToleranceAfter = CMTime.zero
-    
+
     let time = CMTimeMake(value: options.time, timescale: 1000)
-    
+
     // `requestedTimeToleranceBefore` can only be set if `time` is less
     // than the video duration, otherwise it will fail to generate an image.
     if time < asset.duration {
@@ -100,11 +100,10 @@ public class VideoThumbnailsModule: Module {
 
     return try await generateNativeThumbnail(generator: generator, time: time)
   }
-  
+
   private func generateNativeThumbnail(generator: AVAssetImageGenerator, time: CMTime) async throws -> NativeVideoThumbnail? {
     if #available(iOS 16, tvOS 16, *) {
-      let result = try await generator
-          .image(at: time)
+      let result = try await generator.image(at: time)
 
       return NativeVideoThumbnail(result.image, requestedTime: time, actualTime: result.actualTime)
     }
@@ -113,9 +112,9 @@ public class VideoThumbnailsModule: Module {
       .reduce(into: [NativeVideoThumbnail]()) { thumbnails, thumbnail in
         thumbnails.append(thumbnail)
       }
-    return legacyResult.first ?? nil;
+    return legacyResult.first;
   }
-    
+
   /**
     A replacement for the `AVAssetImageGenerator.images(for:)` async iterator that is available only as of iOS 16.
     */
