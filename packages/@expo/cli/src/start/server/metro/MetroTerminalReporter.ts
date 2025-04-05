@@ -17,6 +17,7 @@ import {
   maybeSymbolicateAndFormatReactErrorLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
@@ -51,6 +52,16 @@ export class MetroTerminalReporter extends TerminalReporter {
             //     '\u001B[27m',
             // );
             return;
+          }
+
+          if (!env.EXPO_DEBUG) {
+            // In the context of developing an iOS app or website, the MetroInspectorProxy "connection" logs are very confusing.
+            // Here we'll hide them behind EXPO_DEBUG or DEBUG=expo:*. In the future we can reformat them to clearly indicate that the "Connection" is regarding the debugger.
+            // These logs are also confusing because they can say "connection established" even when the debugger is not in a usable state. Really they belong in a UI or behind some sort of debug logging.
+            if (message.match(/Connection (closed|established|failed|terminated)/i)) {
+              // Skip logging.
+              return;
+            }
           }
         }
         break;
