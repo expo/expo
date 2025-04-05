@@ -16,7 +16,7 @@
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
+#import <WebKit/WebKit.h>
 #import <objc/runtime.h>
 
 #import "CoreModulesPlugins.h"
@@ -68,8 +68,14 @@
 
 @end
 
-@interface RCTRedBoxController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface RCTRedBoxController : UIViewController <UITableViewDelegate, UITableViewDataSource, WKScriptMessageHandler>
+
 @property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
+@property (nonatomic, assign) BOOL useInlineHTML;
+@property (nonatomic, strong) WKWebView *webView;
+@property (nonatomic, strong) NSString *errorMessage;
+
+- (void)showErrorInfo:(NSString *)errorInfoJson;
 @end
 
 @implementation RCTRedBoxController {
@@ -93,25 +99,119 @@
   return self;
 }
 
+
+- (void)setupWebView {
+    if (_webView) {
+        return;
+    }
+    // Configure WKWebView with a user content controller for script message bindings.
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    WKUserContentController *userController = [[WKUserContentController alloc] init];
+    // Bind native functions to JS message handlers.
+    [userController addScriptMessageHandler:self name:@"reload"];
+    [userController addScriptMessageHandler:self name:@"copy"];
+    [userController addScriptMessageHandler:self name:@"dismiss"];
+    [userController addScriptMessageHandler:self name:@"refresh"];
+    config.userContentController = userController;
+    
+    _webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];
+   
+    _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:_webView];
+    
+    BOOL useInlineHTML = NO;
+    
+    if (useInlineHTML) {
+      // Inline HTML that uses DOM elements to display the error message and stack trace.
+      NSString *html = @"<html><head>"
+                        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                        "<style>"
+                        "body { background-color: black; color: white; font-family: monospace; padding: 20px; }"
+                        "h1 { font-size: 24px; margin-bottom: 20px; }"
+                        "#error-message { white-space: pre-wrap; word-break: break-all; margin-bottom: 20px; }"
+                        "#stack-trace { border-top: 1px solid gray; padding-top: 10px; }"
+                        ".stack-frame { margin-bottom: 10px; }"
+                        ".stack-frame .method { font-weight: bold; }"
+                        ".stack-frame .source { color: gray; }"
+                        "button { margin: 5px; padding: 10px; font-size: 16px; }"
+                        "</style></head>"
+                        "<body>"
+                        "<h1>Error Overlay</h1>"
+                        "<pre id='error-message'></pre>"
+                        "<div id='stack-trace'></div>"
+                        "<div>"
+                        "<button onclick=\"window.webkit.messageHandlers.reload.postMessage(null)\">Reload</button>"
+                        "<button onclick=\"window.webkit.messageHandlers.copy.postMessage(null)\">Copy</button>"
+                        "<button onclick=\"window.webkit.messageHandlers.dismiss.postMessage(null)\">Dismiss</button>"
+                        "</div>"
+                        "<script>"
+                        "function updateErrorInfo(errorInfoJson) {"
+                        "  try {"
+                        "    var errorInfo = JSON.parse(errorInfoJson);"
+                        "    document.getElementById('error-message').textContent = errorInfo.errorMessage;"
+                        "    var stackContainer = document.getElementById('stack-trace');"
+                        "    stackContainer.innerHTML = '';"
+                        "    if (errorInfo.stack && errorInfo.stack.length > 0) {"
+                        "      errorInfo.stack.forEach(function(frame) {"
+                        "         var frameDiv = document.createElement('div');"
+                        "         frameDiv.className = 'stack-frame';"
+                        "         var methodDiv = document.createElement('div');"
+                        "         methodDiv.className = 'method';"
+                        "         methodDiv.textContent = frame.methodName || '(unnamed method)';"
+                        "         frameDiv.appendChild(methodDiv);"
+                        "         if (frame.file) {"
+                        "           var sourceDiv = document.createElement('div');"
+                        "           sourceDiv.className = 'source';"
+                        "           sourceDiv.textContent = frame.file + ':' + frame.lineNumber + (frame.column ? ':' + frame.column : '');"
+                        "           frameDiv.appendChild(sourceDiv);"
+                        "         }"
+                        "         stackContainer.appendChild(frameDiv);"
+                        "      });"
+                        "    }"
+                        "  } catch(e) {"
+                        "    console.error('Error parsing error info JSON', e);"
+                        "  }"
+                        "}"
+                        "</script>"
+                        "</body></html>";
+      [_webView loadHTMLString:html baseURL:nil];
+    } else {
+        if (@available(iOS 16.4, *)) {
+            _webView.inspectable = YES;
+        }
+        
+      // Load a remote dev server endpoint.
+      NSURL *url = [NSURL URLWithString:@"http://localhost:8085/"];
+      NSURLRequest *request = [NSURLRequest requestWithURL:url];
+      [_webView loadRequest:request];
+    }
+    
+    
+}
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
+
+    [self setupWebView];
+    
+    
   const CGFloat buttonHeight = 60;
 
-  CGRect detailsFrame = self.view.bounds;
-  detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
-
-  _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
-  _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  _stackTraceTableView.delegate = self;
-  _stackTraceTableView.dataSource = self;
-  _stackTraceTableView.backgroundColor = [UIColor clearColor];
-  _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
-  _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-  [self.view addSubview:_stackTraceTableView];
+//  CGRect detailsFrame = self.view.bounds;
+//  detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
+//
+//  _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
+//  _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//  _stackTraceTableView.delegate = self;
+//  _stackTraceTableView.dataSource = self;
+//  _stackTraceTableView.backgroundColor = [UIColor clearColor];
+//  _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
+//  _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//  _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+//  [self.view addSubview:_stackTraceTableView];
 
 #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
   NSString *reloadText = @"Reload\n(\u2318R)";
@@ -193,6 +293,35 @@
   ]];
 }
 
+- (void)showErrorInfo:(NSString *)errorInfoJson {
+    // Escape the JSON string to ensure it's safe for JS
+    NSString *escapedJson = [self jsEscapedString:errorInfoJson];
+    // Inject the JSON as a global variable in JavaScript
+    NSString *js = [NSString stringWithFormat:
+            @";(function() {\n"
+             "  try {\n"
+             "    var errorInfoJson = JSON.parse('%@');\n"
+             "    window.errorInfo = errorInfoJson;\n"
+             "    window.dispatchEvent(new CustomEvent(\"$$dom_event\", { detail: errorInfoJson }));\n"
+             "  } catch (e) {}\n"
+             "})();\n"
+             "true;", escapedJson];
+    
+    [self setupWebView];
+    [_webView evaluateJavaScript:js completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Error injecting error info: %@", error);
+        }
+    }];
+}
+
+- (NSString *)jsEscapedString:(NSString *)string {
+  NSString *escaped = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+  escaped = [escaped stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+  escaped = [escaped stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+  return escaped;
+}
+
 - (UIButton *)redBoxButton:(NSString *)title
     accessibilityIdentifier:(NSString *)accessibilityIdentifier
                    selector:(SEL)selector
@@ -237,14 +366,32 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
 }
 
+- (void)updateWebViewWithErrorData {
+    
+    // Build an error info dictionary.
+    NSMutableArray *stackFrames = [NSMutableArray array];
+    for (RCTJSStackFrame *frame in _lastStackTrace) {
+      [stackFrames addObject:[frame toDictionary]];
+    }
+    NSDictionary *errorDict = @{@"errorMessage": _lastErrorMessage ?: @"",
+                                @"stack": stackFrames};
+    // Convert the dictionary to a JSON string.
+    NSString *errorInfoJson = RCTJSONStringify(errorDict, NULL);
+    [self showErrorInfo:errorInfoJson];
+}
+
 - (void)showErrorMessage:(NSString *)message
                withStack:(NSArray<RCTJSStackFrame *> *)stack
                 isUpdate:(BOOL)isUpdate
              errorCookie:(int)errorCookie
 {
+    
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
+    
+
+    
   BOOL isRootViewControllerPresented = self.presentingViewController != nil;
   // Show if this is a new message, or if we're updating the previous message
   BOOL isNew = !isRootViewControllerPresented && !isUpdate;
@@ -257,9 +404,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     // message is displayed using UILabel, which is unable to render text of
     // unlimited length, so we truncate it
     _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
+
     _lastErrorCookie = errorCookie;
 
     [_stackTraceTableView reloadData];
+      
+      
+      
+      
 
     if (!isRootViewControllerPresented) {
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
@@ -267,6 +419,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                                           animated:NO];
       [RCTKeyWindow().rootViewController presentViewController:self animated:YES completion:nil];
     }
+      
+      [self updateWebViewWithErrorData];
   }
 }
 
@@ -424,6 +578,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+
+#pragma mark - WKScriptMessageHandler
+
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message {
+  if ([message.name isEqualToString:@"reload"]) {
+    [self reload];
+  } else if ([message.name isEqualToString:@"copy"]) {
+    [self copyStack];
+  } else if ([message.name isEqualToString:@"dismiss"]) {
+    [self dismiss];
+  }  else if ([message.name isEqualToString:@"refresh"]) {
+      [self updateWebViewWithErrorData];
+    }
 }
 
 #pragma mark - Key commands
