@@ -48,7 +48,7 @@ internal final class FileSystemDirectory: FileSystemPath {
 
     let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
       for item in items {
-        contents.append(["isDirectory": item.hasDirectoryPath, "path": item.absoluteString])
+        contents.append(["isDirectory": item.hasDirectoryPath, "uri": item.absoluteString])
       }
     return contents
   }

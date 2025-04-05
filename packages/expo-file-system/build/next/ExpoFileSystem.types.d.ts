@@ -61,7 +61,7 @@ export declare class Directory {
      */
     listAsRecords(): {
         isDirectory: string;
-        path: string;
+        uri: string;
     }[];
     /**
      * Lists the contents of a directory.
