@@ -5,6 +5,7 @@ import {
   findModulesAsync,
   generateModulesProviderAsync,
   generatePackageListAsync,
+  getConfiguration,
   getProjectPackageJsonPathAsync,
   mergeLinkingOptionsAsync,
   resolveExtraBuildDependenciesAsync,
@@ -164,6 +165,7 @@ module.exports = async function (args: string[]) {
   registerResolveCommand('resolve', async (results, options) => {
     const modules = await resolveModulesAsync(results, options);
     const extraDependencies = await resolveExtraBuildDependenciesAsync(options);
+    const configuration = getConfiguration(options);
 
     const coreFeatures = [
       ...modules.reduce<Set<string>>((acc, module) => {
@@ -179,10 +181,27 @@ module.exports = async function (args: string[]) {
       }, new Set()),
     ];
     if (options.json) {
-      console.log(JSON.stringify({ extraDependencies, coreFeatures, modules }));
+      console.log(
+        JSON.stringify({
+          extraDependencies,
+          coreFeatures,
+          modules,
+          ...(configuration ? { configuration } : {}),
+        })
+      );
     } else {
       console.log(
-        require('util').inspect({ extraDependencies, coreFeatures, modules }, false, null, true)
+        require('util').inspect(
+          {
+            extraDependencies,
+            coreFeatures,
+            modules,
+            ...(configuration ? { configuration } : {}),
+          },
+          false,
+          null,
+          true
+        )
       );
     }
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);

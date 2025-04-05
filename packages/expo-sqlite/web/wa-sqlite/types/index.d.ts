@@ -928,6 +928,71 @@ declare interface SQLiteAPI {
    * @returns `SQLITE_OK` (throws exception on error)
    */
   vfs_register(vfs: SQLiteVFS, makeDefault?: boolean): number;
+
+  /**
+   * Apply a changeset to a database
+   * @see https://www.sqlite.org/session/sqlite3changeset_apply.html
+   * @param db database pointer
+   * @param changeset changeset to apply
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  changeset_apply(db: number, changeset: Uint8Array): number;
+
+  /**
+   * Invert a changeset
+   * @see https://www.sqlite.org/session/sqlite3changeset_invert.html
+   * @param changeset changeset to invert
+   * @returns inverted changeset
+   */
+  changeset_invert(changeset: Uint8Array): Uint8Array;
+
+  /**
+   * Create a new session object
+   * @see https://www.sqlite.org/session/sqlite3session_create.html
+   * @param db database pointer
+   * @param dbName database name ("main" or "temp")
+   * @returns session pointer
+   */
+  session_create(db: number, dbName: string): number;
+
+  /**
+   * Delete a session object
+   * @see https://www.sqlite.org/session/sqlite3session_delete.html
+   */
+  session_delete(session: number): void;
+
+  /**
+   * Enable or disable a session object
+   * @see https://www.sqlite.org/session/sqlite3session_enable.html
+   * @param session session pointer
+   * @param enabled true to enable, false to disable
+   */
+  session_enable(session: number, enabled: boolean): void;
+
+  /**
+   * Attach a table to a session object
+   * @see https://www.sqlite.org/session/sqlite3session_attach.html
+   * @param session session pointer
+   * @param tableName table name to attach, or `null` to detach all tables
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  session_attach(session: number, tableName: string | null): number;
+
+  /**
+   * Generate a changeset from a session object
+   * @see https://www.sqlite.org/session/sqlite3session_changeset.html
+   * @param session session pointer
+   * @returns changeset as Uint8Array
+   */
+  session_changeset(session: number): Uint8Array;
+
+  /**
+   * Generate an inverted changeset from a session object
+   * This is a convenience function that combines session_changeset and changeset_invert
+   * @param session session pointer
+   * @returns inverted changeset as Uint8Array
+   */
+  session_changeset_inverted(session: number): Uint8Array;
 }
 
 /** @ignore */

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove getAccountUsername from package exports ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Remove getAccountUsername from package exports ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
 
 ## 10.0.11 - 2025-03-11
 

@@ -237,27 +237,31 @@ export const general = [
   makeSection('Expo Router', [
     makePage('router/introduction.mdx'),
     makePage('router/installation.mdx'),
-    makePage('router/create-pages.mdx'),
-    makePage('router/navigating-pages.mdx'),
-    makePage('router/layouts.mdx'),
-    makePage('router/error-handling.mdx'),
+    makeGroup('Router 101', [
+      makePage('router/basics/core-concepts.mdx'),
+      makePage('router/basics/notation.mdx'),
+      makePage('router/basics/layout.mdx'),
+      makePage('router/basics/navigation.mdx'),
+      makePage('router/basics/common-navigation-patterns.mdx'),
+    ]),
     makeGroup('Navigation patterns', [
-      makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
+      makePage('router/advanced/authentication.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
-      makePage('router/advanced/custom-tabs.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/custom-tabs.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
@@ -265,8 +269,6 @@ export const general = [
       makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
-      makePage('router/reference/authentication.mdx'),
-      makePage('router/reference/not-found.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
@@ -389,6 +391,7 @@ export const eas = [
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makeGroup('Reference', [makePage('eas/workflows/reference/e2e-tests.mdx')]),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -443,7 +446,6 @@ export const eas = [
         makePage('build-reference/build-configuration.mdx'),
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
-        makePage('build-reference/e2e-tests.mdx'),
         makePage('build-reference/easignore.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
@@ -591,7 +593,11 @@ export const learn = [
 ];
 
 const preview = [
-  makeSection('Preview', [makePage('preview/introduction.mdx'), { expanded: true }]),
+  makeSection('Preview', [
+    makePage('preview/introduction.mdx'),
+    makePage('preview/singular.mdx'),
+    { expanded: true },
+  ]),
 ];
 
 const archive = [
@@ -721,7 +727,7 @@ function makePage(file) {
 
   const result = {
     // TODO(cedric): refactor name into title
-    name: data.title,
+    name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
     isNew: data.isNew ?? undefined,

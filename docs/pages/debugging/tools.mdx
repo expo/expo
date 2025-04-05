@@ -163,7 +163,7 @@ The **Components** tab allows you to inspect the React components in your app. Y
 The **Profiler** tab allows you to record and analyze the performance of your app's JavaScript. You can start recording, interact with your app, and stop recording to analyze the profile.
 
 <ContentSpotlight
-  alt="React DevTools Profiler tab open to show insights on app's JavaScript performance."
+  alt="React Native DevTools Profiler tab open to show insights on app's JavaScript performance."
   src="/static/images/debugging/inspector-profiler.png"
   className="max-w-[720px]"
 />
@@ -191,30 +191,16 @@ To start debugging:
 
 This will attach VS Code to your running app.
 
-## Debugging with React DevTools
-
-React DevTools is a great way to look at your components' props and state. You can open it by pressing <kbd>Shift</kbd> + <kbd>m</kbd> in the terminal where Expo was started. Once it's open, it will appear as below:
-
-<ContentSpotlight
-  alt="Inspect your components using the React DevTools"
-  src="/static/images/debugging/react-devtools.png"
-/>
-
-React DevTools can also be paired with the [element inspector](#showhide-element-inspector), allowing you to inspect props, state, and instance properties by tapping components inside your app.
-
-Pressing the <kbd>shift</kbd> + <kbd>m</kbd> shortcut will also show installed [dev tools plugins](/debugging/devtools-plugins) to provide additional ways to inspect your app.
-
 ## React Native Debugger
 
 > **warning** The React Native Debugger requires Remote JS debugging, which has been deprecated since [React Native 0.73](https://reactnative.dev/docs/other-debugging-methods#remote-javascript-debugging-deprecated).
 
-The React Native Debugger is a standalone app that wraps the React DevTools, Redux DevTools, and the React Native DevTools. Unfortunately, it requires the [deprecated Remote JS debugging workflow](https://github.com/jhen0409/react-native-debugger/discussions/774) and is incompatible with Hermes.
+The React Native Debugger is a standalone app that wraps the React DevTools, Redux DevTools, and React Native DevTools. Unfortunately, it requires the [deprecated Remote JS debugging workflow](https://github.com/jhen0409/react-native-debugger/discussions/774) and is incompatible with Hermes.
 
 If you are using Expo **SDK 50** or **above**, you can use the [Expo dev tools plugins](/debugging/devtools-plugins) equivalents to the React Native Debugger:
 
-- [React DevTools](#debugging-with-react-devtools)
-- [Redux DevTools](/debugging/devtools-plugins/#redux)
 - [React Native DevTools](#debugging-with-react-native-devtools)
+- [Redux DevTools](/debugging/devtools-plugins/#redux)
 
 If you are using Expo SDK 49 or below, you can use the React Native Debugger. This section provides quick get started instructions. For in-depth information, check its [documentation](https://github.com/jhen0409/react-native-debugger#documentation).
 

@@ -16,7 +16,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }) {
+        getSystemRoute({ route, type }, defaults) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -60,6 +60,14 @@ function getRoutes(contextModule, options = {}) {
                     internal: true,
                     dynamic: [{ name: '+not-found', deep: true, notFound: true }],
                     children: [],
+                };
+            }
+            else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return require('./getRoutesRedirects').getRedirectModule(route);
+                    },
                 };
             }
             throw new Error(`Unknown system route: ${route} and type: ${type}`);

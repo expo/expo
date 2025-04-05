@@ -204,6 +204,7 @@ export async function exportEmbedBundleAndAssetsAsync(
 
   try {
     const bundles = await devServer.nativeExportBundleAsync(
+      exp,
       {
         // TODO: Re-enable when we get bytecode chunk splitting working again.
         splitChunks: false, //devServer.isReactServerComponentsEnabled,

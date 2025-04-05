@@ -18,7 +18,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-safe-area-context"
+remove_dependencies "react-native-reanimated" "react-native-svg" "lottie-react-native"
 
 RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
 if [[ "$RN_MACOS_VERSION" != "null" ]]; then
@@ -28,6 +28,9 @@ else
     echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
     if ! yarn add "react-native-macos@$RN_MINOR_VERSION" --non-interactive --silent; then
         echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
-        yarn add react-native-macos@latest
+        # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
+        latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
+        yarn add "react-native-macos@$latest_version"
+
     fi
 fi

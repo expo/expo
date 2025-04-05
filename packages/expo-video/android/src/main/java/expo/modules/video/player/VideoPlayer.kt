@@ -37,6 +37,7 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
+import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.records.VideoTrack
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
@@ -50,7 +51,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
-  private var currentPlayerView = WeakReference<PlayerView?>(null)
+  private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val trackSelector = DefaultTrackSelector(context)
@@ -61,6 +62,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
+  private val firstFrameEventGenerator = createFirstFrameEventGenerator()
   val serviceConnection = PlaybackServiceConnection(WeakReference(this))
   val intervalUpdateClock = IntervalUpdateClock(this)
 
@@ -302,7 +304,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   fun changePlayerView(playerView: PlayerView?) {
     PlayerView.switchTargetView(player, currentPlayerView.get(), playerView)
-    currentPlayerView = WeakReference(playerView)
+    currentPlayerView.set(playerView)
   }
 
   fun prepare() {
@@ -382,6 +384,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     // Emits to the JS side
     if (event.emitToJS) {
       emit(event.name, event.jsEventPayload)
+    }
+  }
+
+  private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
+    return FirstFrameEventGenerator(player, currentPlayerView) {
+      sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }
 

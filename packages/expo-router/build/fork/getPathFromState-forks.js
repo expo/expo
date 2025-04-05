@@ -75,7 +75,6 @@ function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
 exports.appendBaseUrl = appendBaseUrl;
 function getPathWithConventionsCollapsed({ pattern, route, params, preserveGroups, preserveDynamicRoutes, shouldEncodeURISegment = true, initialRouteName, }) {
     const segments = pattern.split('/');
-    // console.log({ segments, params });
     return segments
         .map((p, i) => {
         const name = (0, exports.getParamName)(p);

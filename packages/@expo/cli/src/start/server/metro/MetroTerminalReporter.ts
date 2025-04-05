@@ -12,6 +12,13 @@ import {
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
 import { learnMore } from '../../../utils/link';
+import {
+  logLikeMetro,
+  maybeSymbolicateAndFormatReactErrorLogAsync,
+  parseErrorStringToObject,
+} from '../serverLogLikeMetro';
+
+const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -26,6 +33,52 @@ export class MetroTerminalReporter extends TerminalReporter {
     terminal: Terminal
   ) {
     super(terminal);
+  }
+
+  _log(event: TerminalReportableEvent): void {
+    switch (event.type) {
+      case 'client_log': {
+        if (this.shouldFilterClientLog(event)) {
+          return;
+        }
+        const { level } = event;
+
+        if (!level) {
+          break;
+        }
+
+        const mode = event.mode === 'NOBRIDGE' ? '' : (event.mode ?? '');
+        // @ts-expect-error
+        if (level === 'warn' || level === 'error') {
+          // Quick check to see if an unsymbolicated stack is being logged.
+          const msg = event.data.join('\n');
+          if (msg.includes('.bundle//&platform=')) {
+            const parsed = parseErrorStringToObject(msg);
+            if (parsed) {
+              maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, parsed)
+                .then((res) => {
+                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, res);
+                })
+                .catch((e) => {
+                  // Fallback on the original error message if we can't symbolicate the stack.
+                  debug('Error formatting stack', e);
+
+                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+                });
+
+              return;
+            }
+          }
+        }
+
+        // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+        return;
+      }
+    }
+    return super._log(event);
   }
 
   // Used for testing
@@ -118,11 +171,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
-  shouldFilterClientLog(event: {
-    type: 'client_log';
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
-    data: unknown[];
-  }): boolean {
+  shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
     return isAppRegistryStartupMessage(event.data);
   }
 

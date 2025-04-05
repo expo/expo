@@ -14,9 +14,13 @@ class ProgressProps: ExpoSwiftUI.ViewProps {
   @Field var color: Color?
 }
 
-struct ProgressView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ProgressProps
+struct ProgressView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ProgressProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+
+  init(props: ProgressProps) {
+    self.props = props
+  }
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(

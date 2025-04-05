@@ -438,18 +438,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   }
 }
 
-- (void)reconnectReactDevTools
-{
-  if ([self enablesDeveloperTools]) {
-    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
-    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"RCTDevMenuShown" body:nil];
-#pragma clang diagnostic pop
-  }
-}
-
 - (void)toggleDevMenu
 {
   [[EXKernel sharedInstance] switchTasks];
@@ -478,8 +466,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
               [weakSelf toggleElementInspector];
             } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
               [weakSelf togglePerformanceMonitor];
-            } else if ([name isEqualToString:@"reconnectReactDevTools"]) {
-              [weakSelf reconnectReactDevTools];
             }
           }
         }

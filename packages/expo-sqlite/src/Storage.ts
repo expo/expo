@@ -1,5 +1,8 @@
 import { openDatabaseSync, type SQLiteDatabase } from './index';
 
+/**
+ * @hidden
+ */
 export function checkValidInput(...input: unknown[]) {
   const [key, value] = input;
 

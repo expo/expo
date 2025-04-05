@@ -84,7 +84,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -231,7 +231,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -307,7 +307,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -467,7 +467,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="ml-1.5 mr-2 mt-[5px] self-baseline"
             >
               <svg
-                class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+                class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
@@ -799,7 +799,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"

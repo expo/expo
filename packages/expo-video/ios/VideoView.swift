@@ -39,6 +39,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   let onPictureInPictureStop = EventDispatcher()
   let onFullscreenEnter = EventDispatcher()
   let onFullscreenExit = EventDispatcher()
+  let onFirstFrameRender = EventDispatcher()
+
+  var firstFrameObserver: NSKeyValueObservation?
 
   public override var bounds: CGRect {
     didSet {
@@ -60,11 +63,13 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.updatesNowPlayingInfoCenter = false
     #endif
 
+    addFirstFrameObserver()
     addSubview(playerViewController.view)
   }
 
   deinit {
     VideoManager.shared.unregister(videoView: self)
+    removeFirstFrameObserver()
   }
 
   func enterFullscreen() {
@@ -203,5 +208,17 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     // This is the only way that I (@behenate) found to force re-calculation of the safe-area insets for native controls
     playerViewController.view.removeFromSuperview()
     addSubview(playerViewController.view)
+  }
+
+  private func addFirstFrameObserver() {
+    firstFrameObserver = playerViewController.observe(\.isReadyForDisplay, changeHandler: { [weak self] playerViewController, _ in
+      if playerViewController.isReadyForDisplay {
+        self?.onFirstFrameRender()
+      }
+    })
+  }
+  private func removeFirstFrameObserver() {
+    firstFrameObserver?.invalidate()
+    firstFrameObserver = nil
   }
 }

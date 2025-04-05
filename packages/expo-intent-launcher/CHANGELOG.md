@@ -6,10 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.1.0 — 2025-04-04
+
+### 🎉 New features
+
 - Added a synchronous function `openApplication` to open an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
 - Added an asynchronous function `getApplicationIconAsync` to retrieve the icon of an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

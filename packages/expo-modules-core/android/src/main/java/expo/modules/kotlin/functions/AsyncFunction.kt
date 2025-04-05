@@ -58,7 +58,7 @@ abstract class AsyncFunction(
   }
 
   private fun dispatchOnQueue(appContext: AppContext, block: () -> Unit) {
-    when (queue) {
+    when (val queue = queue) {
       Queues.DEFAULT -> {
         appContext.modulesQueue.launch {
           block()
@@ -81,6 +81,11 @@ abstract class AsyncFunction(
           block()
         }
       }
+
+      is CustomQueue ->
+        queue.scope.launch {
+          block()
+        }
     }
   }
 }

@@ -5,10 +5,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { ToastAndroid, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
 
-type NavigationRouteConfigMap = React.ReactElement;
+type NavigationRouteConfigMap = React.ComponentType;
 
 type RoutesConfig = {
   'test-suite': NavigationRouteConfigMap;
@@ -47,8 +47,6 @@ const Redirect = optionalRequire(() =>
 const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
-
-const DevMenu = optionalRequire(() => require('expo-dev-menu')) as any;
 
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
@@ -130,54 +128,9 @@ export default () => {
     if (isReady) {
       return;
     }
-    const setupDevMenuItems = async () => {
+    const restoreState = async () => {
       const key = 'PERSIST_NAV_STATE';
       const persistenceEnabled = !!(await AsyncStorage.getItem(key));
-
-      // on Android, we need to keep the title of the item the same
-      // because updating dev menu items currently doesn't work
-      // TODO https://linear.app/expo/issue/ENG-12786
-      const label = Platform.select({
-        ios: persistenceEnabled
-          ? '✗  Disable navigation state persistence'
-          : '✓  Enable navigation state persistence',
-        default: 'Toggle navigation state persistence',
-      });
-      const devMenuItems = [
-        {
-          shouldCollapse: true,
-          name: label,
-          callback: async () => {
-            if (Platform.OS === 'android') {
-              // because the label is always the same, we show a toast to inform
-              // whether the persistence is going to be enabled or disabled
-              const message = persistenceEnabled
-                ? 'Navigation state persistence disabled'
-                : 'Navigation state persistence enabled';
-              ToastAndroid.show(message, ToastAndroid.LONG);
-            }
-            try {
-              if (persistenceEnabled) {
-                await AsyncStorage.removeItem(key);
-              } else {
-                await AsyncStorage.setItem(key, 'true');
-              }
-              // refresh the dev menu labels with latest preference
-              await setupDevMenuItems();
-            } catch (err) {
-              console.error(err);
-            }
-          },
-        },
-      ];
-
-      if (DevMenu) {
-        await DevMenu.registerDevMenuItems(devMenuItems);
-      }
-      return persistenceEnabled;
-    };
-    const restoreState = async () => {
-      const persistenceEnabled = await setupDevMenuItems();
 
       if (persistenceEnabled) {
         const initialUrl = await Linking.getInitialURL();

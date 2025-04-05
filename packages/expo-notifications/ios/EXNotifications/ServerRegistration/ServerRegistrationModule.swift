@@ -4,7 +4,7 @@ import ExpoModulesCore
 import UIKit
 import MachO
 
-public class ServerRegistrationModule: Module {
+open class ServerRegistrationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("NotificationsServerRegistrationModule")
 
@@ -54,15 +54,15 @@ public class ServerRegistrationModule: Module {
   }
 
   private func getLegacyInstallationIdFromUserDefaults() -> String? {
-    return UserDefaults.standard.string(forKey: kEXDeviceInstallationUUIDLegacyKey)
+    return UserDefaults.standard.string(forKey: ServerRegistrationModule.kEXDeviceInstallationUUIDLegacyKey)
   }
 
   private func removeLegacyInstallationIdFromUserDefaults() {
-    UserDefaults.standard.removeObject(forKey: kEXDeviceInstallationUUIDLegacyKey)
+    UserDefaults.standard.removeObject(forKey: ServerRegistrationModule.kEXDeviceInstallationUUIDLegacyKey)
   }
 
   private func installationIdSearchQueryMerging(_ dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
-    return keychainSearchQueryFor(key: kEXDeviceInstallationUUIDKey, dictionaryToMerge: dictionaryToMerge)
+    return keychainSearchQueryFor(key: ServerRegistrationModule.kEXDeviceInstallationUUIDKey, dictionaryToMerge: dictionaryToMerge)
   }
 
   private func installationIdSearchQuery() -> CFDictionary {
@@ -93,8 +93,8 @@ public class ServerRegistrationModule: Module {
     return try storeStringWithQueries(search: registrationSearchQuery(), set: registrationSetQuery(registrationInfo))
   }
 
-  private func registrationSearchQueryMerging(_ dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
-    return keychainSearchQueryFor(key: kEXRegistrationInfoKey, dictionaryToMerge: dictionaryToMerge)
+  open func registrationSearchQueryMerging(_ dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
+    return keychainSearchQueryFor(key: ServerRegistrationModule.kEXRegistrationInfoKey, dictionaryToMerge: dictionaryToMerge)
   }
 
   private func registrationSearchQuery() -> CFDictionary {
@@ -117,7 +117,7 @@ public class ServerRegistrationModule: Module {
 
   // MARK: - Generic keychain methods
 
-  private func keychainSearchQueryFor(key: String, dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
+  public func keychainSearchQueryFor(key: String, dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
     let encodedKey: Data = dataFromString(key)
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
     var query: [AnyHashable: Any] = [
@@ -172,8 +172,8 @@ public class ServerRegistrationModule: Module {
     return input.data(using: fastEncoding)!
   }
 
-  private let kEXDeviceInstallationUUIDKey = "EXDeviceInstallationUUIDKey"
-  private let kEXDeviceInstallationUUIDLegacyKey = "EXDeviceInstallationUUIDKey"
-  private let kEXRegistrationInfoKey = "EXNotificationRegistrationInfoKey"
+  public static let kEXDeviceInstallationUUIDKey = "EXDeviceInstallationUUIDKey"
+  public static let kEXDeviceInstallationUUIDLegacyKey = "EXDeviceInstallationUUIDKey"
+  public static let kEXRegistrationInfoKey = "EXNotificationRegistrationInfoKey"
   private let CFTrue = true as CFBoolean
 }

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig, Platform } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs';
 import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
@@ -154,16 +155,13 @@ export function withExtendedResolver(
   }
 ) {
   if (isReactServerComponentsEnabled) {
-    Log.warn(
-      `Experimental React Server Components is enabled. Production exports are not supported yet.`
-    );
+    Log.warn(`React Server Components (beta) is enabled.`);
+  }
+  if (isReactCanaryEnabled) {
+    Log.warn(`Experimental React 19 canary is enabled.`);
   }
   if (isFastResolverEnabled) {
-    Log.warn(`Experimental module resolution is enabled.`);
-  }
-
-  if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Canary version is enabled.`);
+    Log.log(chalk.dim`Fast resolver is enabled.`);
   }
 
   const defaultResolver = metroResolver.resolve;
@@ -343,7 +341,7 @@ export function withExtendedResolver(
 
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
-        return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+        return /^(source-map-support(\/.*)?|react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
           moduleName
         );
       },
@@ -715,6 +713,13 @@ export function withExtendedResolver(
         ];
       }
 
+      // HACK:
+      if (moduleName.match(/^@react-navigation\//)) {
+        // Force to use the ESM versions of react-navigation to prevent Metro behavior where it changes the
+        // resolution based on if a module is `import`ing or `require`ing it.
+        context.unstable_conditionNames = ['import', 'require'];
+      }
+
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
@@ -752,15 +757,9 @@ export function withExtendedResolver(
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
-          context.unstable_conditionNames = [
-            'node',
-            'import',
-            'require',
-            'react-server',
-            'workerd',
-          ];
+          context.unstable_conditionNames = ['node', 'react-server', 'workerd'];
         } else {
-          context.unstable_conditionNames = ['node', 'require'];
+          context.unstable_conditionNames = ['node'];
         }
       } else {
         // Non-server changes
@@ -844,6 +843,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+    );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
