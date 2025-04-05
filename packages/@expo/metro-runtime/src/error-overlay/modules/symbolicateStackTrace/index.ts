@@ -27,13 +27,17 @@ async function symbolicateStackTrace(stack: StackFrame[]): Promise<SymbolicatedS
   const baseUrl =
     typeof window === 'undefined'
       ? process.env.EXPO_DEV_SERVER_ORIGIN
-      : window.location.protocol + '//' + window.location.host;
+      : (window.__expo_override_baseUrl ?? window.location.protocol + '//' + window.location.host);
 
   const response = await fetch(baseUrl + '/symbolicate', {
     method: 'POST',
     body: JSON.stringify({ stack }),
   });
-  return await response.json();
+
+  const res = await response.json();
+
+  console.log('symbolicateStackTrace', stack, res);
+  return res;
 }
 
 export default symbolicateStackTrace;

@@ -37,25 +37,25 @@
 
 - (RCTRedBoxButtonPressHandler)rct_handler
 {
-  return objc_getAssociatedObject(self, @selector(rct_handler));
+    return objc_getAssociatedObject(self, @selector(rct_handler));
 }
 
 - (void)setRct_handler:(RCTRedBoxButtonPressHandler)rct_handler
 {
-  objc_setAssociatedObject(self, @selector(rct_handler), rct_handler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(rct_handler), rct_handler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)rct_callBlock
 {
-  if (self.rct_handler) {
-    self.rct_handler();
-  }
+    if (self.rct_handler) {
+        self.rct_handler();
+    }
 }
 
 - (void)rct_addBlock:(RCTRedBoxButtonPressHandler)handler forControlEvents:(UIControlEvents)controlEvents
 {
-  self.rct_handler = handler;
-  [self addTarget:self action:@selector(rct_callBlock) forControlEvents:controlEvents];
+    self.rct_handler = handler;
+    [self addTarget:self action:@selector(rct_callBlock) forControlEvents:controlEvents];
 }
 
 @end
@@ -79,24 +79,24 @@
 @end
 
 @implementation RCTRedBoxController {
-  UITableView *_stackTraceTableView;
-  NSString *_lastErrorMessage;
-  NSArray<RCTJSStackFrame *> *_lastStackTrace;
-  NSArray<NSString *> *_customButtonTitles;
-  NSArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
-  int _lastErrorCookie;
+    UITableView *_stackTraceTableView;
+    NSString *_lastErrorMessage;
+    NSArray<RCTJSStackFrame *> *_lastStackTrace;
+    NSArray<NSString *> *_customButtonTitles;
+    NSArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
+    int _lastErrorCookie;
 }
 
 - (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
                       customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
 {
-  if (self = [super init]) {
-    _lastErrorCookie = -1;
-    _customButtonTitles = customButtonTitles;
-    _customButtonHandlers = customButtonHandlers;
-  }
-
-  return self;
+    if (self = [super init]) {
+        _lastErrorCookie = -1;
+        _customButtonTitles = customButtonTitles;
+        _customButtonHandlers = customButtonHandlers;
+    }
+    
+    return self;
 }
 
 
@@ -115,10 +115,10 @@
     config.userContentController = userController;
     
     _webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];
-   
+    
     _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-// Disable safe area insets to allow full-screen rendering.
+    
+    // Disable safe area insets to allow full-screen rendering.
     
     _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     _webView.scrollView.contentInset = UIEdgeInsetsZero;
@@ -126,75 +126,75 @@
     _webView.scrollView.backgroundColor = [UIColor clearColor];
     _webView.backgroundColor = [UIColor clearColor];
     _webView.opaque = NO;
-
-
+    
+    
     [self.view addSubview:_webView];
     
     BOOL useInlineHTML = NO;
     
     if (useInlineHTML) {
-      // Inline HTML that uses DOM elements to display the error message and stack trace.
-      NSString *html = @"<html><head>"
-                        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                        "<style>"
-                        "body { background-color: black; color: white; font-family: monospace; padding: 20px; }"
-                        "h1 { font-size: 24px; margin-bottom: 20px; }"
-                        "#error-message { white-space: pre-wrap; word-break: break-all; margin-bottom: 20px; }"
-                        "#stack-trace { border-top: 1px solid gray; padding-top: 10px; }"
-                        ".stack-frame { margin-bottom: 10px; }"
-                        ".stack-frame .method { font-weight: bold; }"
-                        ".stack-frame .source { color: gray; }"
-                        "button { margin: 5px; padding: 10px; font-size: 16px; }"
-                        "</style></head>"
-                        "<body>"
-                        "<h1>Error Overlay</h1>"
-                        "<pre id='error-message'></pre>"
-                        "<div id='stack-trace'></div>"
-                        "<div>"
-                        "<button onclick=\"window.webkit.messageHandlers.reload.postMessage(null)\">Reload</button>"
-                        "<button onclick=\"window.webkit.messageHandlers.copy.postMessage(null)\">Copy</button>"
-                        "<button onclick=\"window.webkit.messageHandlers.dismiss.postMessage(null)\">Dismiss</button>"
-                        "</div>"
-                        "<script>"
-                        "function updateErrorInfo(errorInfoJson) {"
-                        "  try {"
-                        "    var errorInfo = JSON.parse(errorInfoJson);"
-                        "    document.getElementById('error-message').textContent = errorInfo.errorMessage;"
-                        "    var stackContainer = document.getElementById('stack-trace');"
-                        "    stackContainer.innerHTML = '';"
-                        "    if (errorInfo.stack && errorInfo.stack.length > 0) {"
-                        "      errorInfo.stack.forEach(function(frame) {"
-                        "         var frameDiv = document.createElement('div');"
-                        "         frameDiv.className = 'stack-frame';"
-                        "         var methodDiv = document.createElement('div');"
-                        "         methodDiv.className = 'method';"
-                        "         methodDiv.textContent = frame.methodName || '(unnamed method)';"
-                        "         frameDiv.appendChild(methodDiv);"
-                        "         if (frame.file) {"
-                        "           var sourceDiv = document.createElement('div');"
-                        "           sourceDiv.className = 'source';"
-                        "           sourceDiv.textContent = frame.file + ':' + frame.lineNumber + (frame.column ? ':' + frame.column : '');"
-                        "           frameDiv.appendChild(sourceDiv);"
-                        "         }"
-                        "         stackContainer.appendChild(frameDiv);"
-                        "      });"
-                        "    }"
-                        "  } catch(e) {"
-                        "    console.error('Error parsing error info JSON', e);"
-                        "  }"
-                        "}"
-                        "</script>"
-                        "</body></html>";
-      [_webView loadHTMLString:html baseURL:nil];
+        // Inline HTML that uses DOM elements to display the error message and stack trace.
+        NSString *html = @"<html><head>"
+        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+        "<style>"
+        "body { background-color: black; color: white; font-family: monospace; padding: 20px; }"
+        "h1 { font-size: 24px; margin-bottom: 20px; }"
+        "#error-message { white-space: pre-wrap; word-break: break-all; margin-bottom: 20px; }"
+        "#stack-trace { border-top: 1px solid gray; padding-top: 10px; }"
+        ".stack-frame { margin-bottom: 10px; }"
+        ".stack-frame .method { font-weight: bold; }"
+        ".stack-frame .source { color: gray; }"
+        "button { margin: 5px; padding: 10px; font-size: 16px; }"
+        "</style></head>"
+        "<body>"
+        "<h1>Error Overlay</h1>"
+        "<pre id='error-message'></pre>"
+        "<div id='stack-trace'></div>"
+        "<div>"
+        "<button onclick=\"window.webkit.messageHandlers.reload.postMessage(null)\">Reload</button>"
+        "<button onclick=\"window.webkit.messageHandlers.copy.postMessage(null)\">Copy</button>"
+        "<button onclick=\"window.webkit.messageHandlers.dismiss.postMessage(null)\">Dismiss</button>"
+        "</div>"
+        "<script>"
+        "function updateErrorInfo(errorInfoJson) {"
+        "  try {"
+        "    var errorInfo = JSON.parse(errorInfoJson);"
+        "    document.getElementById('error-message').textContent = errorInfo.errorMessage;"
+        "    var stackContainer = document.getElementById('stack-trace');"
+        "    stackContainer.innerHTML = '';"
+        "    if (errorInfo.stack && errorInfo.stack.length > 0) {"
+        "      errorInfo.stack.forEach(function(frame) {"
+        "         var frameDiv = document.createElement('div');"
+        "         frameDiv.className = 'stack-frame';"
+        "         var methodDiv = document.createElement('div');"
+        "         methodDiv.className = 'method';"
+        "         methodDiv.textContent = frame.methodName || '(unnamed method)';"
+        "         frameDiv.appendChild(methodDiv);"
+        "         if (frame.file) {"
+        "           var sourceDiv = document.createElement('div');"
+        "           sourceDiv.className = 'source';"
+        "           sourceDiv.textContent = frame.file + ':' + frame.lineNumber + (frame.column ? ':' + frame.column : '');"
+        "           frameDiv.appendChild(sourceDiv);"
+        "         }"
+        "         stackContainer.appendChild(frameDiv);"
+        "      });"
+        "    }"
+        "  } catch(e) {"
+        "    console.error('Error parsing error info JSON', e);"
+        "  }"
+        "}"
+        "</script>"
+        "</body></html>";
+        [_webView loadHTMLString:html baseURL:nil];
     } else {
         if (@available(iOS 16.4, *)) {
             _webView.inspectable = YES;
         }
         
-      // Load a remote dev server endpoint.
-      NSURL *url = [NSURL URLWithString:@"http://localhost:8085/"];
-      NSURLRequest *request = [NSURLRequest requestWithURL:url];
-      [_webView loadRequest:request];
+        // Load a remote dev server endpoint.
+        NSURL *url = [NSURL URLWithString:@"http://localhost:8085/"];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        [_webView loadRequest:request];
     }
     
     
@@ -202,106 +202,106 @@
 
 - (void)viewDidLoad
 {
-  [super viewDidLoad];
-  self.view.backgroundColor = [UIColor blackColor];
-
-
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor blackColor];
+    
+    
     [self setupWebView];
     
     
-  const CGFloat buttonHeight = 60;
-
-//  CGRect detailsFrame = self.view.bounds;
-//  detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
-//
-//  _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
-//  _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-//  _stackTraceTableView.delegate = self;
-//  _stackTraceTableView.dataSource = self;
-//  _stackTraceTableView.backgroundColor = [UIColor clearColor];
-//  _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
-//  _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//  _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-//  [self.view addSubview:_stackTraceTableView];
-
+    const CGFloat buttonHeight = 60;
+    
+    //  CGRect detailsFrame = self.view.bounds;
+    //  detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
+    //
+    //  _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
+    //  _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    //  _stackTraceTableView.delegate = self;
+    //  _stackTraceTableView.dataSource = self;
+    //  _stackTraceTableView.backgroundColor = [UIColor clearColor];
+    //  _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
+    //  _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    //  _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    //  [self.view addSubview:_stackTraceTableView];
+    
 #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  NSString *reloadText = @"Reload\n(\u2318R)";
-  NSString *dismissText = @"Dismiss\n(ESC)";
-  NSString *copyText = @"Copy\n(\u2325\u2318C)";
-  NSString *extraText = @"Extra Info\n(\u2318E)";
+    NSString *reloadText = @"Reload\n(\u2318R)";
+    NSString *dismissText = @"Dismiss\n(ESC)";
+    NSString *copyText = @"Copy\n(\u2325\u2318C)";
+    NSString *extraText = @"Extra Info\n(\u2318E)";
 #else
-  NSString *reloadText = @"Reload JS";
-  NSString *dismissText = @"Dismiss";
-  NSString *copyText = @"Copy";
-  NSString *extraText = @"Extra Info";
+    NSString *reloadText = @"Reload JS";
+    NSString *dismissText = @"Dismiss";
+    NSString *copyText = @"Copy";
+    NSString *extraText = @"Extra Info";
 #endif
-//
-//  UIButton *dismissButton = [self redBoxButton:dismissText
-//                       accessibilityIdentifier:@"redbox-dismiss"
-//                                      selector:@selector(dismiss)
-//                                         block:nil];
-//  UIButton *reloadButton = [self redBoxButton:reloadText
-//                      accessibilityIdentifier:@"redbox-reload"
-//                                     selector:@selector(reload)
-//                                        block:nil];
-//  UIButton *copyButton = [self redBoxButton:copyText
-//                    accessibilityIdentifier:@"redbox-copy"
-//                                   selector:@selector(copyStack)
-//                                      block:nil];
-//  UIButton *extraButton = [self redBoxButton:extraText
-//                     accessibilityIdentifier:@"redbox-extra"
-//                                    selector:@selector(showExtraDataViewController)
-//                                       block:nil];
-//
-//  [NSLayoutConstraint activateConstraints:@[
-//    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
-//    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
-//    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
-//    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
-//  ]];
-//
-//  UIStackView *buttonStackView = [[UIStackView alloc] init];
-//  buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
-//  buttonStackView.axis = UILayoutConstraintAxisHorizontal;
-//  buttonStackView.distribution = UIStackViewDistributionFillEqually;
-//  buttonStackView.alignment = UIStackViewAlignmentTop;
-//  buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-//
-//  [buttonStackView addArrangedSubview:dismissButton];
-//  [buttonStackView addArrangedSubview:reloadButton];
-//  [buttonStackView addArrangedSubview:copyButton];
-//  [buttonStackView addArrangedSubview:extraButton];
-//
-//  [self.view addSubview:buttonStackView];
-
-//  [NSLayoutConstraint activateConstraints:@[
-//    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
-//    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-//    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-//    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
-//  ]];
-//
-//  for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
-//    UIButton *button = [self redBoxButton:_customButtonTitles[i]
-//                  accessibilityIdentifier:@""
-//                                 selector:nil
-//                                    block:_customButtonHandlers[i]];
-//    [button.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-//    [buttonStackView addArrangedSubview:button];
-//  }
-//
-//  UIView *topBorder = [[UIView alloc] init];
-//  topBorder.translatesAutoresizingMaskIntoConstraints = NO;
-//  topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-//  [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
-//
-//  [self.view addSubview:topBorder];
-//
-//  [NSLayoutConstraint activateConstraints:@[
-//    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-//    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-//    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
-//  ]];
+    //
+    //  UIButton *dismissButton = [self redBoxButton:dismissText
+    //                       accessibilityIdentifier:@"redbox-dismiss"
+    //                                      selector:@selector(dismiss)
+    //                                         block:nil];
+    //  UIButton *reloadButton = [self redBoxButton:reloadText
+    //                      accessibilityIdentifier:@"redbox-reload"
+    //                                     selector:@selector(reload)
+    //                                        block:nil];
+    //  UIButton *copyButton = [self redBoxButton:copyText
+    //                    accessibilityIdentifier:@"redbox-copy"
+    //                                   selector:@selector(copyStack)
+    //                                      block:nil];
+    //  UIButton *extraButton = [self redBoxButton:extraText
+    //                     accessibilityIdentifier:@"redbox-extra"
+    //                                    selector:@selector(showExtraDataViewController)
+    //                                       block:nil];
+    //
+    //  [NSLayoutConstraint activateConstraints:@[
+    //    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    //    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    //    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    //    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
+    //  ]];
+    //
+    //  UIStackView *buttonStackView = [[UIStackView alloc] init];
+    //  buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    //  buttonStackView.axis = UILayoutConstraintAxisHorizontal;
+    //  buttonStackView.distribution = UIStackViewDistributionFillEqually;
+    //  buttonStackView.alignment = UIStackViewAlignmentTop;
+    //  buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+    //
+    //  [buttonStackView addArrangedSubview:dismissButton];
+    //  [buttonStackView addArrangedSubview:reloadButton];
+    //  [buttonStackView addArrangedSubview:copyButton];
+    //  [buttonStackView addArrangedSubview:extraButton];
+    //
+    //  [self.view addSubview:buttonStackView];
+    
+    //  [NSLayoutConstraint activateConstraints:@[
+    //    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+    //    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    //    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    //    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+    //  ]];
+    //
+    //  for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
+    //    UIButton *button = [self redBoxButton:_customButtonTitles[i]
+    //                  accessibilityIdentifier:@""
+    //                                 selector:nil
+    //                                    block:_customButtonHandlers[i]];
+    //    [button.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
+    //    [buttonStackView addArrangedSubview:button];
+    //  }
+    //
+    //  UIView *topBorder = [[UIView alloc] init];
+    //  topBorder.translatesAutoresizingMaskIntoConstraints = NO;
+    //  topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+    //  [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
+    //
+    //  [self.view addSubview:topBorder];
+    //
+    //  [NSLayoutConstraint activateConstraints:@[
+    //    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    //    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    //    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+    //  ]];
 }
 
 - (void)showErrorInfo:(NSString *)errorInfoJson {
@@ -309,14 +309,14 @@
     NSString *escapedJson = [self jsEscapedString:errorInfoJson];
     // Inject the JSON as a global variable in JavaScript
     NSString *js = [NSString stringWithFormat:
-            @";(function() {\n"
-             "  try {\n"
-             "    var errorInfoJson = JSON.parse('%@');\n"
-             "    window.errorInfo = errorInfoJson;\n"
-             "    window.dispatchEvent(new CustomEvent(\"$$dom_event\", { detail: errorInfoJson }));\n"
-             "  } catch (e) {}\n"
-             "})();\n"
-             "true;", escapedJson];
+                    @";(function() {\n"
+                    "  try {\n"
+                    "    var errorInfoJson = JSON.parse('%@');\n"
+                    "    window.errorInfo = errorInfoJson;\n"
+                    "    window.dispatchEvent(new CustomEvent(\"$$dom_event\", { detail: errorInfoJson }));\n"
+                    "  } catch (e) {}\n"
+                    "})();\n"
+                    "true;", escapedJson];
     
     [self setupWebView];
     [_webView evaluateJavaScript:js completionHandler:^(id _Nullable result, NSError * _Nullable error) {
@@ -327,42 +327,42 @@
 }
 
 - (NSString *)jsEscapedString:(NSString *)string {
-  NSString *escaped = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-  escaped = [escaped stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-  escaped = [escaped stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-  return escaped;
+    NSString *escaped = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    escaped = [escaped stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+    escaped = [escaped stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+    return escaped;
 }
 
 - (UIButton *)redBoxButton:(NSString *)title
-    accessibilityIdentifier:(NSString *)accessibilityIdentifier
-                   selector:(SEL)selector
-                      block:(RCTRedBoxButtonPressHandler)block
+   accessibilityIdentifier:(NSString *)accessibilityIdentifier
+                  selector:(SEL)selector
+                     block:(RCTRedBoxButtonPressHandler)block
 {
-  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-  button.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
-  button.accessibilityIdentifier = accessibilityIdentifier;
-  button.titleLabel.font = [UIFont systemFontOfSize:13];
-  button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  button.titleLabel.textAlignment = NSTextAlignmentCenter;
-  button.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-  [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-  if (selector) {
-    [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-  } else if (block) {
-    [button rct_addBlock:block forControlEvents:UIControlEventTouchUpInside];
-  }
-  return button;
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.autoresizingMask =
+    UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
+    button.accessibilityIdentifier = accessibilityIdentifier;
+    button.titleLabel.font = [UIFont systemFontOfSize:13];
+    button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    button.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
+    if (selector) {
+        [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+    } else if (block) {
+        [button rct_addBlock:block forControlEvents:UIControlEventTouchUpInside];
+    }
+    return button;
 }
 
 - (NSInteger)bottomSafeViewHeight
 {
 #if TARGET_OS_MACCATALYST
-  return 0;
+    return 0;
 #else
-  return RCTKeyWindow().safeAreaInsets.bottom;
+    return RCTKeyWindow().safeAreaInsets.bottom;
 #endif
 }
 
@@ -370,11 +370,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (NSString *)stripAnsi:(NSString *)text
 {
-  NSError *error = nil;
-  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\x1b\\[[0-9;]*m"
-                                                                         options:NSRegularExpressionCaseInsensitive
-                                                                           error:&error];
-  return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\x1b\\[[0-9;]*m"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
 }
 
 - (void)updateWebViewWithErrorData {
@@ -382,7 +382,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     // Build an error info dictionary.
     NSMutableArray *stackFrames = [NSMutableArray array];
     for (RCTJSStackFrame *frame in _lastStackTrace) {
-      [stackFrames addObject:[frame toDictionary]];
+        [stackFrames addObject:[frame toDictionary]];
     }
     NSDictionary *errorDict = @{@"errorMessage": _lastErrorMessage ?: @"",
                                 @"stack": stackFrames};
@@ -397,198 +397,213 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
              errorCookie:(int)errorCookie
 {
     
-  // Remove ANSI color codes from the message
-  NSString *messageWithoutAnsi = [self stripAnsi:message];
-
+    // Remove ANSI color codes from the message
+    NSString *messageWithoutAnsi = [self stripAnsi:message];
     
-
     
-  BOOL isRootViewControllerPresented = self.presentingViewController != nil;
-  // Show if this is a new message, or if we're updating the previous message
-  BOOL isNew = !isRootViewControllerPresented && !isUpdate;
-  BOOL isUpdateForSameMessage = !isNew &&
-      (isRootViewControllerPresented && isUpdate &&
-       ((errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
-        (errorCookie == _lastErrorCookie)));
-  if (isNew || isUpdateForSameMessage) {
-    _lastStackTrace = stack;
-    // message is displayed using UILabel, which is unable to render text of
-    // unlimited length, so we truncate it
-    _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
-
-    _lastErrorCookie = errorCookie;
-
-    [_stackTraceTableView reloadData];
-      
-      
-      
-      
-
-    if (!isRootViewControllerPresented) {
-      [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                  atScrollPosition:UITableViewScrollPositionTop
-                                          animated:NO];
-      [RCTKeyWindow().rootViewController presentViewController:self animated:YES completion:nil];
+    
+    
+    BOOL isRootViewControllerPresented = self.presentingViewController != nil;
+    // Show if this is a new message, or if we're updating the previous message
+    BOOL isNew = !isRootViewControllerPresented && !isUpdate;
+    BOOL isUpdateForSameMessage = !isNew &&
+    (isRootViewControllerPresented && isUpdate &&
+     ((errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
+      (errorCookie == _lastErrorCookie)));
+    if (isNew || isUpdateForSameMessage) {
+        _lastStackTrace = stack;
+        // message is displayed using UILabel, which is unable to render text of
+        // unlimited length, so we truncate it
+        _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
+        
+        _lastErrorCookie = errorCookie;
+        
+        [_stackTraceTableView reloadData];
+        
+        
+        
+        
+        
+        if (!isRootViewControllerPresented) {
+            [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                                        atScrollPosition:UITableViewScrollPositionTop
+                                                animated:NO];
+            [RCTKeyWindow().rootViewController presentViewController:self animated:YES completion:nil];
+        }
+        
+        [self updateWebViewWithErrorData];
     }
-      
-      [self updateWebViewWithErrorData];
-  }
 }
 
 - (void)dismiss
 {
-  [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+        if (self->_webView) {
+            WKUserContentController *userController = self->_webView.configuration.userContentController;
+            [userController removeScriptMessageHandlerForName:@"reload"];
+            [userController removeScriptMessageHandlerForName:@"copy"];
+            [userController removeScriptMessageHandlerForName:@"dismiss"];
+            [userController removeScriptMessageHandlerForName:@"refresh"];
+            [self->_webView stopLoading]; // Stop any ongoing loads
+            [self->_webView removeFromSuperview]; // Remove from view hierarchy
+            self->_webView = nil; // Clear the strong reference
+        }
+        
+    }];
 }
 
 - (void)reload
 {
-  if (_actionDelegate != nil) {
-    [_actionDelegate reloadFromRedBoxController:self];
-  } else {
-    // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
-    RCTTriggerReloadCommandListeners(@"Redbox");
-    [self dismiss];
-  }
+    if (_actionDelegate != nil) {
+        [_actionDelegate reloadFromRedBoxController:self];
+    } else {
+        // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
+        RCTTriggerReloadCommandListeners(@"Redbox");
+        [self dismiss];
+    }
 }
+
+
 
 - (void)showExtraDataViewController
 {
-  [_actionDelegate loadExtraDataViewController];
+    [_actionDelegate loadExtraDataViewController];
 }
 
 - (void)copyStack
 {
-  NSMutableString *fullStackTrace;
-
-  if (_lastErrorMessage != nil) {
-    fullStackTrace = [_lastErrorMessage mutableCopy];
-    [fullStackTrace appendString:@"\n\n"];
-  } else {
-    fullStackTrace = [NSMutableString string];
-  }
-
-  for (RCTJSStackFrame *stackFrame in _lastStackTrace) {
-    [fullStackTrace appendString:[NSString stringWithFormat:@"%@\n", stackFrame.methodName]];
-    if (stackFrame.file) {
-      [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
+    NSMutableString *fullStackTrace;
+    
+    if (_lastErrorMessage != nil) {
+        fullStackTrace = [_lastErrorMessage mutableCopy];
+        [fullStackTrace appendString:@"\n\n"];
+    } else {
+        fullStackTrace = [NSMutableString string];
     }
-  }
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  [pb setString:fullStackTrace];
+    
+    for (RCTJSStackFrame *stackFrame in _lastStackTrace) {
+        [fullStackTrace appendString:[NSString stringWithFormat:@"%@\n", stackFrame.methodName]];
+        if (stackFrame.file) {
+            [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
+        }
+    }
+    UIPasteboard *pb = [UIPasteboard generalPasteboard];
+    [pb setString:fullStackTrace];
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
 {
-  NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
-  NSString *lineInfo = [NSString stringWithFormat:@"%@:%lld", fileName, (long long)stackFrame.lineNumber];
-
-  if (stackFrame.column != 0) {
-    lineInfo = [lineInfo stringByAppendingFormat:@":%lld", (long long)stackFrame.column];
-  }
-  return lineInfo;
+    NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
+    NSString *lineInfo = [NSString stringWithFormat:@"%@:%lld", fileName, (long long)stackFrame.lineNumber];
+    
+    if (stackFrame.column != 0) {
+        lineInfo = [lineInfo stringByAppendingFormat:@":%lld", (long long)stackFrame.column];
+    }
+    return lineInfo;
 }
 
 #pragma mark - TableView
 
 - (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
 {
-  return 2;
+    return 2;
 }
 
 - (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return section == 0 ? 1 : _lastStackTrace.count;
+    return section == 0 ? 1 : _lastStackTrace.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"msg-cell"];
-    return [self reuseCell:cell forErrorMessage:_lastErrorMessage];
-  }
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-  NSUInteger index = indexPath.row;
-  RCTJSStackFrame *stackFrame = _lastStackTrace[index];
-  return [self reuseCell:cell forStackFrame:stackFrame];
+    if (indexPath.section == 0) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"msg-cell"];
+        return [self reuseCell:cell forErrorMessage:_lastErrorMessage];
+    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    NSUInteger index = indexPath.row;
+    RCTJSStackFrame *stackFrame = _lastStackTrace[index];
+    return [self reuseCell:cell forStackFrame:stackFrame];
 }
 
 - (UITableViewCell *)reuseCell:(UITableViewCell *)cell forErrorMessage:(NSString *)message
 {
-  if (!cell) {
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
-    cell.textLabel.accessibilityIdentifier = @"redbox-error";
-    cell.textLabel.textColor = [UIColor whiteColor];
-
-    // Prefer a monofont for formatting messages that were designed
-    // to be displayed in a terminal.
-    cell.textLabel.font = [UIFont monospacedSystemFontOfSize:14 weight:UIFontWeightBold];
-
-    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines = 0;
-    cell.detailTextLabel.textColor = [UIColor whiteColor];
-    cell.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  }
-
-  cell.textLabel.text = message;
-
-  return cell;
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
+        cell.textLabel.accessibilityIdentifier = @"redbox-error";
+        cell.textLabel.textColor = [UIColor whiteColor];
+        
+        // Prefer a monofont for formatting messages that were designed
+        // to be displayed in a terminal.
+        cell.textLabel.font = [UIFont monospacedSystemFontOfSize:14 weight:UIFontWeightBold];
+        
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        cell.textLabel.numberOfLines = 0;
+        cell.detailTextLabel.textColor = [UIColor whiteColor];
+        cell.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    cell.textLabel.text = message;
+    
+    return cell;
 }
 
 - (UITableViewCell *)reuseCell:(UITableViewCell *)cell forStackFrame:(RCTJSStackFrame *)stackFrame
 {
-  if (!cell) {
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-    cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
-    cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
-    cell.textLabel.numberOfLines = 2;
-    cell.detailTextLabel.textColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-    cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
-    cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    cell.backgroundColor = [UIColor clearColor];
-    cell.selectedBackgroundView = [UIView new];
-    cell.selectedBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
-  }
-
-  cell.textLabel.text = stackFrame.methodName ?: @"(unnamed method)";
-  if (stackFrame.file) {
-    cell.detailTextLabel.text = [self formatFrameSource:stackFrame];
-  } else {
-    cell.detailTextLabel.text = @"";
-  }
-  cell.textLabel.textColor = stackFrame.collapse ? [UIColor lightGrayColor] : [UIColor whiteColor];
-  cell.detailTextLabel.textColor = stackFrame.collapse ? [UIColor colorWithRed:0.50 green:0.50 blue:0.50 alpha:1.0]
-                                                       : [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-  return cell;
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
+        cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+        cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
+        cell.textLabel.numberOfLines = 2;
+        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+        cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
+        cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+        cell.backgroundColor = [UIColor clearColor];
+        cell.selectedBackgroundView = [UIView new];
+        cell.selectedBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
+    }
+    
+    cell.textLabel.text = stackFrame.methodName ?: @"(unnamed method)";
+    if (stackFrame.file) {
+        cell.detailTextLabel.text = [self formatFrameSource:stackFrame];
+    } else {
+        cell.detailTextLabel.text = @"";
+    }
+    cell.textLabel.textColor = stackFrame.collapse ? [UIColor lightGrayColor] : [UIColor whiteColor];
+    cell.detailTextLabel.textColor = stackFrame.collapse ? [UIColor colorWithRed:0.50 green:0.50 blue:0.50 alpha:1.0]
+    : [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0) {
-    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-
-    NSDictionary *attributes =
+    if (indexPath.section == 0) {
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        
+        NSDictionary *attributes =
         @{NSFontAttributeName : [UIFont boldSystemFontOfSize:16], NSParagraphStyleAttributeName : paragraphStyle};
-    CGRect boundingRect =
+        CGRect boundingRect =
         [_lastErrorMessage boundingRectWithSize:CGSizeMake(tableView.frame.size.width - 30, CGFLOAT_MAX)
                                         options:NSStringDrawingUsesLineFragmentOrigin
                                      attributes:attributes
                                         context:nil];
-    return ceil(boundingRect.size.height) + 40;
-  } else {
-    return 50;
-  }
+        return ceil(boundingRect.size.height) + 40;
+    } else {
+        return 50;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 1) {
-    NSUInteger row = indexPath.row;
-    RCTJSStackFrame *stackFrame = _lastStackTrace[row];
-    [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
-  }
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == 1) {
+        NSUInteger row = indexPath.row;
+        RCTJSStackFrame *stackFrame = _lastStackTrace[row];
+        [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
+    }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 
@@ -596,14 +611,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
-  if ([message.name isEqualToString:@"reload"]) {
-    [self reload];
-  } else if ([message.name isEqualToString:@"copy"]) {
-    [self copyStack];
-  } else if ([message.name isEqualToString:@"dismiss"]) {
-    [self dismiss];
-  }  else if ([message.name isEqualToString:@"refresh"]) {
-      [self updateWebViewWithErrorData];
+    if ([message.name isEqualToString:@"reload"]) {
+        [self reload];
+    } else if ([message.name isEqualToString:@"copy"]) {
+        [self copyStack];
+    } else if ([message.name isEqualToString:@"dismiss"]) {
+        [self dismiss];
+    }  else if ([message.name isEqualToString:@"refresh"]) {
+        [self updateWebViewWithErrorData];
     }
 }
 
@@ -611,50 +626,50 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
-  // NOTE: We could use RCTKeyCommands for this, but since
-  // we control this window, we can use the standard, non-hacky
-  // mechanism instead
-
-  return @[
-    // Dismiss red box
-    [UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(dismiss)],
-
-    // Reload
-    [UIKeyCommand keyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand action:@selector(reload)],
-
-    // Copy = Cmd-Option C since Cmd-C in the simulator copies the pasteboard from
-    // the simulator to the desktop pasteboard.
-    [UIKeyCommand keyCommandWithInput:@"c"
-                        modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
-                               action:@selector(copyStack)],
-
-    // Extra data
-    [UIKeyCommand keyCommandWithInput:@"e"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(showExtraDataViewController)]
-  ];
+    // NOTE: We could use RCTKeyCommands for this, but since
+    // we control this window, we can use the standard, non-hacky
+    // mechanism instead
+    
+    return @[
+        // Dismiss red box
+        [UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(dismiss)],
+        
+        // Reload
+        [UIKeyCommand keyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand action:@selector(reload)],
+        
+        // Copy = Cmd-Option C since Cmd-C in the simulator copies the pasteboard from
+        // the simulator to the desktop pasteboard.
+        [UIKeyCommand keyCommandWithInput:@"c"
+                            modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                                   action:@selector(copyStack)],
+        
+        // Extra data
+        [UIKeyCommand keyCommandWithInput:@"e"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:@selector(showExtraDataViewController)]
+    ];
 }
 
 - (BOOL)canBecomeFirstResponder
 {
-  return YES;
+    return YES;
 }
 
 @end
 
 @interface RCTRedBox () <
-    RCTInvalidating,
-    RCTRedBoxControllerActionDelegate,
-    RCTRedBoxExtraDataActionDelegate,
-    NativeRedBoxSpec>
+RCTInvalidating,
+RCTRedBoxControllerActionDelegate,
+RCTRedBoxExtraDataActionDelegate,
+NativeRedBoxSpec>
 @end
 
 @implementation RCTRedBox {
-  RCTRedBoxController *_controller;
-  NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
-  RCTRedBoxExtraDataViewController *_extraDataViewController;
-  NSMutableArray<NSString *> *_customButtonTitles;
-  NSMutableArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
+    RCTRedBoxController *_controller;
+    NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
+    RCTRedBoxExtraDataViewController *_extraDataViewController;
+    NSMutableArray<NSString *> *_customButtonTitles;
+    NSMutableArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
 }
 
 @synthesize bridge = _bridge;
@@ -665,48 +680,48 @@ RCT_EXPORT_MODULE()
 
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!self->_errorCustomizers) {
-      self->_errorCustomizers = [NSMutableArray array];
-    }
-    if (![self->_errorCustomizers containsObject:errorCustomizer]) {
-      [self->_errorCustomizers addObject:errorCustomizer];
-    }
-  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!self->_errorCustomizers) {
+            self->_errorCustomizers = [NSMutableArray array];
+        }
+        if (![self->_errorCustomizers containsObject:errorCustomizer]) {
+            [self->_errorCustomizers addObject:errorCustomizer];
+        }
+    });
 }
 
 // WARNING: Should only be called from the main thread/dispatch queue.
 - (RCTErrorInfo *)_customizeError:(RCTErrorInfo *)error
 {
-  RCTAssertMainQueue();
-  if (!self->_errorCustomizers) {
-    return error;
-  }
-  for (id<RCTErrorCustomizer> customizer in self->_errorCustomizers) {
-    RCTErrorInfo *newInfo = [customizer customizeErrorInfo:error];
-    if (newInfo) {
-      error = newInfo;
+    RCTAssertMainQueue();
+    if (!self->_errorCustomizers) {
+        return error;
     }
-  }
-  return error;
+    for (id<RCTErrorCustomizer> customizer in self->_errorCustomizers) {
+        RCTErrorInfo *newInfo = [customizer customizeErrorInfo:error];
+        if (newInfo) {
+            error = newInfo;
+        }
+    }
+    return error;
 }
 
 - (void)showError:(NSError *)error
 {
-  [self showErrorMessage:error.localizedDescription
-             withDetails:error.localizedFailureReason
-                   stack:error.userInfo[RCTJSStackTraceKey]
-             errorCookie:-1];
+    [self showErrorMessage:error.localizedDescription
+               withDetails:error.localizedFailureReason
+                     stack:error.userInfo[RCTJSStackTraceKey]
+               errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message
 {
-  [self showErrorMessage:message withParsedStack:nil isUpdate:NO errorCookie:-1];
+    [self showErrorMessage:message withParsedStack:nil isUpdate:NO errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details
 {
-  [self showErrorMessage:message withDetails:details stack:nil errorCookie:-1];
+    [self showErrorMessage:message withDetails:details stack:nil errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message
@@ -714,72 +729,72 @@ RCT_EXPORT_MODULE()
                    stack:(NSArray<RCTJSStackFrame *> *)stack
              errorCookie:(int)errorCookie
 {
-  NSString *combinedMessage = message;
-  if (details) {
-    combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
-  }
-  [self showErrorMessage:combinedMessage withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
+    NSString *combinedMessage = message;
+    if (details) {
+        combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
+    }
+    [self showErrorMessage:combinedMessage withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
 {
-  [self showErrorMessage:message withRawStack:rawStack errorCookie:-1];
+    [self showErrorMessage:message withRawStack:rawStack errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack errorCookie:(int)errorCookie
 {
-  NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
-  [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
+    NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
+    [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self showErrorMessage:message withStack:stack errorCookie:-1];
+    [self showErrorMessage:message withStack:stack errorCookie:-1];
 }
 
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self updateErrorMessage:message withStack:stack errorCookie:-1];
+    [self updateErrorMessage:message withStack:stack errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie
 {
-  [self showErrorMessage:message
-         withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack]
-                isUpdate:NO
-             errorCookie:errorCookie];
+    [self showErrorMessage:message
+           withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack]
+                  isUpdate:NO
+               errorCookie:errorCookie];
 }
 
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie
 {
-  [self showErrorMessage:message
-         withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack]
-                isUpdate:YES
-             errorCookie:errorCookie];
+    [self showErrorMessage:message
+           withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack]
+                  isUpdate:YES
+               errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
 {
-  [self showErrorMessage:message withParsedStack:stack errorCookie:-1];
+    [self showErrorMessage:message withParsedStack:stack errorCookie:-1];
 }
 
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
 {
-  [self updateErrorMessage:message withParsedStack:stack errorCookie:-1];
+    [self updateErrorMessage:message withParsedStack:stack errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message
          withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
              errorCookie:(int)errorCookie
 {
-  [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
+    [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
 }
 
 - (void)updateErrorMessage:(NSString *)message
            withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
                errorCookie:(int)errorCookie
 {
-  [self showErrorMessage:message withParsedStack:stack isUpdate:YES errorCookie:errorCookie];
+    [self showErrorMessage:message withParsedStack:stack isUpdate:YES errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message
@@ -787,111 +802,111 @@ RCT_EXPORT_MODULE()
                 isUpdate:(BOOL)isUpdate
              errorCookie:(int)errorCookie
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (self->_extraDataViewController == nil) {
-      self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
-      self->_extraDataViewController.actionDelegate = self;
-    }
-
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_extraDataViewController == nil) {
+            self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
+            self->_extraDataViewController.actionDelegate = self;
+        }
+        
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
-                                                                                body:nil];
+        [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                    body:nil];
 #pragma clang diagnostic pop
-    if (!self->_controller) {
-      self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles
-                                                             customButtonHandlers:self->_customButtonHandlers];
-      self->_controller.actionDelegate = self;
-    }
-
-    RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message stack:stack];
-    errorInfo = [self _customizeError:errorInfo];
-    [self->_controller showErrorMessage:errorInfo.errorMessage
-                              withStack:errorInfo.stack
-                               isUpdate:isUpdate
-                            errorCookie:errorCookie];
-  });
+        if (!self->_controller) {
+            self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles
+                                                                   customButtonHandlers:self->_customButtonHandlers];
+            self->_controller.actionDelegate = self;
+        }
+        
+        RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message stack:stack];
+        errorInfo = [self _customizeError:errorInfo];
+        [self->_controller showErrorMessage:errorInfo.errorMessage
+                                  withStack:errorInfo.stack
+                                   isUpdate:isUpdate
+                                errorCookie:errorCookie];
+    });
 }
 
 - (void)loadExtraDataViewController
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Make sure the CMD+E shortcut doesn't call this twice
-    if (self->_extraDataViewController != nil && ![self->_controller presentedViewController]) {
-      [self->_controller presentViewController:self->_extraDataViewController animated:YES completion:nil];
-    }
-  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Make sure the CMD+E shortcut doesn't call this twice
+        if (self->_extraDataViewController != nil && ![self->_controller presentedViewController]) {
+            [self->_controller presentViewController:self->_extraDataViewController animated:YES completion:nil];
+        }
+    });
 }
 
 RCT_EXPORT_METHOD(setExtraData : (NSDictionary *)extraData forIdentifier : (NSString *)identifier)
 {
-  [_extraDataViewController addExtraData:extraData forIdentifier:identifier];
+    [_extraDataViewController addExtraData:extraData forIdentifier:identifier];
 }
 
 RCT_EXPORT_METHOD(dismiss)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_controller dismiss];
-  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_controller dismiss];
+    });
 }
 
 - (void)invalidate
 {
-  [self dismiss];
+    [self dismiss];
 }
 
 - (void)redBoxController:(__unused RCTRedBoxController *)redBoxController
-    openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
+  openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
-  if (![bundleURL.scheme hasPrefix:@"http"]) {
-    RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
-    return;
-  }
-
-  NSData *stackFrameJSON = [RCTJSONStringify([stackFrame toDictionary], NULL) dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
-  NSMutableURLRequest *request = [NSMutableURLRequest new];
-  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:bundleURL];
-  request.HTTPMethod = @"POST";
-  request.HTTPBody = stackFrameJSON;
-  [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-  [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-
-  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
+    NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
+    if (![bundleURL.scheme hasPrefix:@"http"]) {
+        RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
+        return;
+    }
+    
+    NSData *stackFrameJSON = [RCTJSONStringify([stackFrame toDictionary], NULL) dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
+    NSMutableURLRequest *request = [NSMutableURLRequest new];
+    request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:bundleURL];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = stackFrameJSON;
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
 - (void)reload
 {
-  // Window is not used and can be nil
-  [self reloadFromRedBoxController:nil];
+    // Window is not used and can be nil
+    [self reloadFromRedBoxController:nil];
 }
 
 - (void)reloadFromRedBoxController:(__unused RCTRedBoxController *)redBoxController
 {
-  if (_overrideReloadAction) {
-    _overrideReloadAction();
-  } else {
-    RCTTriggerReloadCommandListeners(@"Redbox");
-  }
-  [self dismiss];
+    if (_overrideReloadAction) {
+        _overrideReloadAction();
+    } else {
+        RCTTriggerReloadCommandListeners(@"Redbox");
+    }
+    [self dismiss];
 }
 
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler
 {
-  if (!_customButtonTitles) {
-    _customButtonTitles = [NSMutableArray new];
-    _customButtonHandlers = [NSMutableArray new];
-  }
-
-  [_customButtonTitles addObject:title];
-  [_customButtonHandlers addObject:handler];
+    if (!_customButtonTitles) {
+        _customButtonTitles = [NSMutableArray new];
+        _customButtonHandlers = [NSMutableArray new];
+    }
+    
+    [_customButtonTitles addObject:title];
+    [_customButtonHandlers addObject:handler];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params
+(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
+    return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end
@@ -905,7 +920,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 + (NSString *)moduleName
 {
-  return nil;
+    return nil;
 }
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer
 {
@@ -965,9 +980,9 @@ RCT_EXPORT_METHOD(dismiss)
 {
 }
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params
+(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
+    return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end
@@ -976,5 +991,5 @@ RCT_EXPORT_METHOD(dismiss)
 
 Class RCTRedBoxCls(void)
 {
-  return RCTRedBox.class;
+    return RCTRedBox.class;
 }

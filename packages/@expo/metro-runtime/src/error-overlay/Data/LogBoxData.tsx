@@ -375,6 +375,7 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
     }
 
     componentDidCatch(err: Error, errorInfo: { componentStack: string } & any) {
+      console.log('did catch:', err);
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
       reportLogBoxError(err, errorInfo.componentStack);
@@ -398,6 +399,7 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
     };
 
     render() {
+      console.log('render');
       return (
         <LogContext.Provider
           value={{

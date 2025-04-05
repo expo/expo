@@ -1,0 +1,14 @@
+{
+  "name": "@expo/error-overlay-tester",
+  "version": "0.0.0",
+  "main": "./index",
+  "scripts": {
+    "start": "expo start --port 8085"
+  },
+  "dependencies": {
+    "expo": "~53.0.0-preview.0",
+    "react": "19.0.0",
+    "react-native": "0.79.0-rc.4"
+  },
+  "private": true
+}

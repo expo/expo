@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "error-overlay-tester",
+    "slug": "error-overlay-tester",
+    "sdkVersion": "UNVERSIONED",
+    "scheme": "error-overlay-tester",
+    "platforms": ["web"],
+    "web": {
+      "output": "single"
+    }
+  }
+}

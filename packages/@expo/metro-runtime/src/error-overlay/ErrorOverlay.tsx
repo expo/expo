@@ -16,6 +16,8 @@ import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
 import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
 import { LogBoxInspectorStackFrames } from './overlay/LogBoxInspectorStackFrames';
 
+import './ErrorOverlay.css';
+
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
   error: 'Console Error',
