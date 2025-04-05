@@ -37,6 +37,23 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
+      case 'unstable_server_log':
+        if (typeof event.data?.[0] === 'string') {
+          const message = event.data[0];
+          if (message.match(/JavaScript logs have moved/)) {
+            // Hide this very loud message from upstream React Native in favor of the note in the terminal UI:
+            // The "› Press j │ open debugger"
+
+            // logger?.info(
+            //   '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+            //     'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+            //     'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+            //     '\u001B[27m',
+            // );
+            return;
+          }
+        }
+        break;
       case 'client_log': {
         if (this.shouldFilterClientLog(event)) {
           return;

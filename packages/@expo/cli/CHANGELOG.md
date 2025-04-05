@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix fusebox log formatting and silence migration warning.
+
 ### 💡 Others
 
 ## 0.23.0 — 2025-04-04
