@@ -95,7 +95,7 @@
     }
   },
   "devDependencies": {
-    "@react-navigation/drawer": "^7.2.q",
+    "@react-navigation/drawer": "^7.2.1",
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^15.0.7",
     "@testing-library/react-native": "^13.1.0",
