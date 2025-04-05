@@ -28,7 +28,7 @@ export async function getThumbnailAsync(
  *
  * @param sourceFilename An URI of the video, local or remote.
  * @param options A map defining how modified thumbnail should be created.
- * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail)
+ * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail).
  */
 export async function getNativeThumbnailAsync(
   sourceFilename: string,
