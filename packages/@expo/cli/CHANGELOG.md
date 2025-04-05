@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix fusebox log formatting and silence migration warning.
+- Fix fusebox log formatting and silence migration warning. ([#35911](https://github.com/expo/expo/pull/35911) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
