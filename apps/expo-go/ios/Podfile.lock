@@ -104,7 +104,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.1.0):
     - ExpoModulesCore
-  - ExpoHead (5.0.0-preview.0):
+  - ExpoHead (5.0.1-preview.0):
     - ExpoModulesCore
   - ExpoImage (2.1.0):
     - ExpoModulesCore
@@ -3414,7 +3414,7 @@ SPEC CHECKSUMS:
   ExpoFont: 5af4e4b0244085f7ba0d3f5a1ffaa5eefd7685ac
   ExpoGL: 6700074917e230c63c2f6f5b57d3882ac0385526
   ExpoHaptics: 34441ea73056adccafd3171fc3d09974ba56b794
-  ExpoHead: 73745b9d8f383ce7112773184a47fe347ee357e9
+  ExpoHead: 114e2d75cff75987047b73b7096303a2461f1982
   ExpoImage: cb747af8de4d16f0f2adf2196af9d9334800d5d9
   ExpoImageManipulator: d419c7ff7006af01beb08a088299f19ffcf0033a
   ExpoImagePicker: d1a20705434423221129cb08faa0f4050d3b6b1e
@@ -3468,7 +3468,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 81132a98a142a56fc9bc7c8a235db18ab5212cd8
+  hermes-engine: 3abe878508a2dedb39dbbe371466a032641886bd
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
