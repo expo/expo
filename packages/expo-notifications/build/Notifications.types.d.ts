@@ -487,7 +487,7 @@ export interface NotificationRequest {
     trigger: NotificationTrigger;
 }
 /**
- * An object which represents notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
+ * An object which represents notification content that you pass in as a part of `NotificationRequestInput`.
  */
 export type NotificationContentInput = {
     /**

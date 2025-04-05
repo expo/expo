@@ -4,29 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.NotificationSerializer
-import expo.modules.notifications.notifications.interfaces.INotificationContent
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule
 import expo.modules.notifications.service.NotificationsService
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.notifications.ScopedNotificationsUtils
-import host.exp.exponent.notifications.model.ScopedNotificationRequest
 
 class ScopedExpoNotificationPresentationModule(
   private val context: Context,
   private val experienceKey: ExperienceKey
 ) : ExpoNotificationPresentationModule() {
   private val scopedNotificationsUtils = ScopedNotificationsUtils(context)
-
-  override fun createNotificationRequest(
-    identifier: String,
-    content: INotificationContent,
-    trigger: NotificationTrigger?
-  ): NotificationRequest {
-    return ScopedNotificationRequest(identifier, content, trigger, experienceKey.scopeKey)
-  }
 
   override fun serializeNotifications(notifications: Collection<Notification>): List<Bundle> {
     return notifications
