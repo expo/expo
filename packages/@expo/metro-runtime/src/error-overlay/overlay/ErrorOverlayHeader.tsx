@@ -37,7 +37,7 @@ export function ErrorOverlayHeader(props: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        padding: '0 1rem',
+        padding: '1rem 1rem',
         height: 48,
         justifyContent: 'space-between',
       }}>

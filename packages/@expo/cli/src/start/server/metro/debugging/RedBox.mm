@@ -117,6 +117,17 @@
     _webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];
    
     _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+// Disable safe area insets to allow full-screen rendering.
+    
+    _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    _webView.scrollView.contentInset = UIEdgeInsetsZero;
+    _webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
+    _webView.scrollView.backgroundColor = [UIColor clearColor];
+    _webView.backgroundColor = [UIColor clearColor];
+    _webView.opaque = NO;
+
+
     [self.view addSubview:_webView];
     
     BOOL useInlineHTML = NO;
@@ -224,73 +235,73 @@
   NSString *copyText = @"Copy";
   NSString *extraText = @"Extra Info";
 #endif
+//
+//  UIButton *dismissButton = [self redBoxButton:dismissText
+//                       accessibilityIdentifier:@"redbox-dismiss"
+//                                      selector:@selector(dismiss)
+//                                         block:nil];
+//  UIButton *reloadButton = [self redBoxButton:reloadText
+//                      accessibilityIdentifier:@"redbox-reload"
+//                                     selector:@selector(reload)
+//                                        block:nil];
+//  UIButton *copyButton = [self redBoxButton:copyText
+//                    accessibilityIdentifier:@"redbox-copy"
+//                                   selector:@selector(copyStack)
+//                                      block:nil];
+//  UIButton *extraButton = [self redBoxButton:extraText
+//                     accessibilityIdentifier:@"redbox-extra"
+//                                    selector:@selector(showExtraDataViewController)
+//                                       block:nil];
+//
+//  [NSLayoutConstraint activateConstraints:@[
+//    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
+//    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
+//    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
+//    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
+//  ]];
+//
+//  UIStackView *buttonStackView = [[UIStackView alloc] init];
+//  buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
+//  buttonStackView.axis = UILayoutConstraintAxisHorizontal;
+//  buttonStackView.distribution = UIStackViewDistributionFillEqually;
+//  buttonStackView.alignment = UIStackViewAlignmentTop;
+//  buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+//
+//  [buttonStackView addArrangedSubview:dismissButton];
+//  [buttonStackView addArrangedSubview:reloadButton];
+//  [buttonStackView addArrangedSubview:copyButton];
+//  [buttonStackView addArrangedSubview:extraButton];
+//
+//  [self.view addSubview:buttonStackView];
 
-  UIButton *dismissButton = [self redBoxButton:dismissText
-                       accessibilityIdentifier:@"redbox-dismiss"
-                                      selector:@selector(dismiss)
-                                         block:nil];
-  UIButton *reloadButton = [self redBoxButton:reloadText
-                      accessibilityIdentifier:@"redbox-reload"
-                                     selector:@selector(reload)
-                                        block:nil];
-  UIButton *copyButton = [self redBoxButton:copyText
-                    accessibilityIdentifier:@"redbox-copy"
-                                   selector:@selector(copyStack)
-                                      block:nil];
-  UIButton *extraButton = [self redBoxButton:extraText
-                     accessibilityIdentifier:@"redbox-extra"
-                                    selector:@selector(showExtraDataViewController)
-                                       block:nil];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
-    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
-    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
-    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
-  ]];
-
-  UIStackView *buttonStackView = [[UIStackView alloc] init];
-  buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  buttonStackView.axis = UILayoutConstraintAxisHorizontal;
-  buttonStackView.distribution = UIStackViewDistributionFillEqually;
-  buttonStackView.alignment = UIStackViewAlignmentTop;
-  buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-
-  [buttonStackView addArrangedSubview:dismissButton];
-  [buttonStackView addArrangedSubview:reloadButton];
-  [buttonStackView addArrangedSubview:copyButton];
-  [buttonStackView addArrangedSubview:extraButton];
-
-  [self.view addSubview:buttonStackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
-    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
-  ]];
-
-  for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
-    UIButton *button = [self redBoxButton:_customButtonTitles[i]
-                  accessibilityIdentifier:@""
-                                 selector:nil
-                                    block:_customButtonHandlers[i]];
-    [button.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-    [buttonStackView addArrangedSubview:button];
-  }
-
-  UIView *topBorder = [[UIView alloc] init];
-  topBorder.translatesAutoresizingMaskIntoConstraints = NO;
-  topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-  [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
-
-  [self.view addSubview:topBorder];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
-  ]];
+//  [NSLayoutConstraint activateConstraints:@[
+//    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+//    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+//    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+//    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+//  ]];
+//
+//  for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
+//    UIButton *button = [self redBoxButton:_customButtonTitles[i]
+//                  accessibilityIdentifier:@""
+//                                 selector:nil
+//                                    block:_customButtonHandlers[i]];
+//    [button.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
+//    [buttonStackView addArrangedSubview:button];
+//  }
+//
+//  UIView *topBorder = [[UIView alloc] init];
+//  topBorder.translatesAutoresizingMaskIntoConstraints = NO;
+//  topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+//  [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
+//
+//  [self.view addSubview:topBorder];
+//
+//  [NSLayoutConstraint activateConstraints:@[
+//    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+//    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+//    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+//  ]];
 }
 
 - (void)showErrorInfo:(NSString *)errorInfoJson {

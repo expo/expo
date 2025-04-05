@@ -4,7 +4,7 @@ import { LogBoxLog } from './LogBoxLog';
 
 // Context provider for Array<LogBoxLog>
 
-const IS_TESTING = true;
+const IS_TESTING = false;
 
 const FIXTURES = {
   build_error_module_not_found: [
@@ -216,6 +216,10 @@ export function useLogs(): {
   logs: LogBoxLog[];
 } {
   const logs = React.useContext(LogContext);
+  const nativeError = useNativeErrorInjection();
+  if (nativeError) {
+    return nativeError;
+  }
 
   if (IS_TESTING) {
     // HACK: This is here for testing during UI development of the LogBox
@@ -237,12 +241,112 @@ export function useLogs(): {
           ...raw,
           logs: raw.logs.map((raw: any) => new LogBoxLog(raw)),
         };
+      } else {
+        // Native error boundary.
       }
     }
 
     throw new Error('useLogs must be used within a LogContext.Provider');
   }
   return logs;
+}
+
+const WEBVIEW_BINDINGS = {
+  reload() {
+    window.webkit.messageHandlers.reload.postMessage(null);
+  },
+  copy() {
+    window.webkit.messageHandlers.copy.postMessage(null);
+  },
+  dismiss() {
+    window.webkit.messageHandlers.dismiss.postMessage(null);
+  },
+  refresh(): Promise<NativeErrorInfo> {
+    return new Promise((resolve) => {
+      // Listen for window.dispatchEvent(new CustomEvent(\"$$dom_event\", { detail: errorInfoJson }));
+      // from the native side of the webview
+
+      const listener = (event) => {
+        const errorInfo = event.detail;
+        window.errorInfo = errorInfo;
+        window.removeEventListener('$$dom_event', listener);
+        resolve(errorInfo);
+      };
+      window.addEventListener('$$dom_event', listener);
+      window.webkit.messageHandlers.refresh.postMessage(null);
+    });
+  },
+};
+
+type NativeErrorInfo = {
+  errorMessage: string;
+  stack: {
+    collapse: boolean;
+    column: number;
+    file: string;
+    lineNumber: number;
+    methodName: string;
+  }[];
+};
+
+function useNativeErrorInjection() {
+  const [error, setError] = React.useState<NativeErrorInfo | undefined>(window.errorInfo);
+  React.useEffect(() => {
+    if (process.env.EXPO_OS !== 'web') {
+      return;
+    }
+    const listener = (event) => {
+      const errorInfo = event.detail;
+      setError(errorInfo);
+      window.removeEventListener('$$dom_event', listener);
+    };
+    window.addEventListener('$$dom_event', listener);
+    if (!window.errorInfo) {
+      window.webkit.messageHandlers.refresh.postMessage(null);
+    }
+    return () => {
+      window.removeEventListener('$$dom_event', listener);
+    };
+  }, []);
+
+  if (!error) {
+    return undefined;
+  }
+  const { errorMessage, stack } = error;
+
+  // Convert to LogBoxLog format
+  const logs = stack.map((frame) => ({
+    file: frame.file,
+    methodName: frame.methodName,
+    lineNumber: frame.lineNumber,
+    column: frame.column,
+    arguments: [],
+  }));
+  const log = new LogBoxLog({
+    level: 'fatal',
+    type: 'error',
+    message: {
+      content: errorMessage,
+      substitutions: [],
+    },
+    stack: logs,
+    category: 'NativeError',
+    componentStack: [],
+    codeFrame: {
+      content: errorMessage,
+      location: {
+        row: 0,
+        column: 0,
+      },
+      fileName: 'NativeError',
+    },
+    isComponentError: false,
+  });
+  return {
+    selectedLogIndex: 0,
+    isDisabled: false,
+    logs: [log],
+  };
 }
 
 export function useSelectedLog() {

@@ -23,7 +23,12 @@
   --expo-log-gradient-from: #181a1b 15%;
   --expo-log-gradient-to: #181a1b00 100%;
   --expo-log-gradient-stops: var(--expo-log-gradient-from), var(--expo-log-gradient-to);
+  --expo-log-footer-height: 3rem;
 }
+[data-webview] {
+  --expo-log-footer-height: 0rem;
+}
+
 
 [data-expo-log-overlay] {
   position: fixed;
@@ -64,7 +69,7 @@
 
 [data-expo-log-root] {
   --expo-log-max-width: 960px;
-  --expo-log-footer-height: 3rem;
+  
 
   margin: 0 auto;
   max-width: var(--expo-log-max-width);
@@ -84,6 +89,24 @@
   padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
   /* background-image: linear-gradient(to bottom, var(--expo-log-gradient-stops)); */
 }
+
+/* If the html has data-webview then make the root full screen */
+[data-webview] [data-expo-log-root] {
+  max-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+
+  /* Add safe area inset for the bottom and sides */
+  padding-bottom: calc(var(--expo-log-footer-height) + env(safe-area-inset-bottom) + 1rem);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+[data-webview] [data-expo-log-overlay] {
+  top: 0;
+  bottom: 0;
+}
+
 
 [data-expo-log-toast] {
   /* black/60 on the border color. */

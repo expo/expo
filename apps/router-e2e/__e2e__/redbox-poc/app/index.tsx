@@ -59,18 +59,13 @@ function useNativeError(): NativeErrorInfo | undefined {
 }
 
 export default function Page() {
-  const error = useNativeError();
+  useEffect(() => {
+    // Inject an attribute in the HTML to indicate to the CSS that this app is running in a webview
+    const html = document.querySelector('html');
+    if (html) {
+      html.setAttribute('data-webview', 'true');
+    }
+  }, []);
 
-  return (
-    <div className="bg-slate-100 rounded-xl">
-      <p className="text-lg text-blue-400 font-medium">Welcome to Tailwind</p>
-      {error && <div>{JSON.stringify(error, null, 2)}</div>}
-      <button
-        onClick={async () => {
-          console.log(await WEBVIEW_BINDINGS.refresh());
-        }}>
-        Refresh
-      </button>
-    </div>
-  );
+  return <div />;
 }
