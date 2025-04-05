@@ -216,10 +216,6 @@ export function useLogs(): {
   logs: LogBoxLog[];
 } {
   const logs = React.useContext(LogContext);
-  const nativeError = useNativeErrorInjection();
-  if (nativeError) {
-    return nativeError;
-  }
 
   if (IS_TESTING) {
     // HACK: This is here for testing during UI development of the LogBox
@@ -249,124 +245,6 @@ export function useLogs(): {
     throw new Error('useLogs must be used within a LogContext.Provider');
   }
   return logs;
-}
-
-const WEBVIEW_BINDINGS = {
-  reload() {
-    window.webkit.messageHandlers.reload.postMessage(null);
-  },
-  copy() {
-    window.webkit.messageHandlers.copy.postMessage(null);
-  },
-  dismiss() {
-    window.webkit.messageHandlers.dismiss.postMessage(null);
-  },
-  refresh(): Promise<NativeErrorInfo> {
-    return new Promise((resolve) => {
-      // Listen for window.dispatchEvent(new CustomEvent(\"$$dom_event\", { detail: errorInfoJson }));
-      // from the native side of the webview
-
-      const listener = (event) => {
-        const errorInfo = event.detail;
-        window.errorInfo = errorInfo;
-        window.removeEventListener('$$dom_event', listener);
-        resolve(errorInfo);
-      };
-      window.addEventListener('$$dom_event', listener);
-      window.webkit.messageHandlers.refresh.postMessage(null);
-    });
-  },
-};
-
-type NativeErrorInfo = {
-  errorMessage: string;
-  stack: {
-    collapse: boolean;
-    column: number;
-    file: string;
-    lineNumber: number;
-    methodName: string;
-  }[];
-};
-
-const WEBVIEW_FIXTURE = JSON.parse(
-  '{"stack":[{"lineNumber":103548,"collapse":false,"methodName":"createWebSocketConnection","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":32},{"lineNumber":103557,"collapse":false,"methodName":"anonymous","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":27},{"lineNumber":253,"collapse":false,"methodName":"loadModuleImplementation","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":162,"collapse":false,"methodName":"guardedLoadModule","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":37},{"lineNumber":82,"collapse":false,"methodName":"metroRequire","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":91},{"lineNumber":103538,"collapse":false,"methodName":"anonymous","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":253,"collapse":false,"methodName":"loadModuleImplementation","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":162,"collapse":false,"methodName":"guardedLoadModule","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":37},{"lineNumber":82,"collapse":false,"methodName":"metroRequire","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":91},{"lineNumber":1283,"collapse":false,"methodName":"anonymous","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":9},{"lineNumber":253,"collapse":false,"methodName":"loadModuleImplementation","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":162,"collapse":false,"methodName":"guardedLoadModule","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":37},{"lineNumber":82,"collapse":false,"methodName":"metroRequire","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":91},{"lineNumber":1271,"collapse":false,"methodName":"anonymous","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":9},{"lineNumber":253,"collapse":false,"methodName":"loadModuleImplementation","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":162,"collapse":false,"methodName":"guardedLoadModule","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":37},{"lineNumber":82,"collapse":false,"methodName":"metroRequire","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":91},{"lineNumber":1268,"collapse":false,"methodName":"anonymous","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":9},{"lineNumber":253,"collapse":false,"methodName":"loadModuleImplementation","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":13},{"lineNumber":155,"collapse":false,"methodName":"guardedLoadModule","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":46},{"lineNumber":82,"collapse":false,"methodName":"metroRequire","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":91},{"lineNumber":167850,"collapse":false,"methodName":"global","file":"http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.bacon.apr5-53&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable","column":3}],"errorMessage":"[runtime not ready]: TypeError: getDevServer is not a function (it is Object), js engine: hermes"}'
-);
-
-function useNativeErrorInjection() {
-  // TODO: Populate this from the native side too.
-  window.__expo_override_baseUrl = 'http://localhost:8081';
-
-  // if (IS_TESTING) {
-  return nativeErrorToLogBoxLog(WEBVIEW_FIXTURE);
-  // }
-
-  const [error, setError] = React.useState<NativeErrorInfo | undefined>(window.errorInfo);
-
-  React.useEffect(() => {
-    if (process.env.EXPO_OS !== 'web') {
-      return;
-    }
-    const listener = (event) => {
-      const errorInfo = event.detail;
-      window.errorInfo = errorInfo;
-      setError(errorInfo);
-      console.log('errorInfo', errorInfo);
-      window.removeEventListener('$$dom_event', listener);
-    };
-    window.addEventListener('$$dom_event', listener);
-    if (!window.errorInfo) {
-      window.webkit.messageHandlers.refresh.postMessage(null);
-    }
-    return () => {
-      window.removeEventListener('$$dom_event', listener);
-    };
-  }, []);
-
-  if (!error) {
-    return undefined;
-  }
-
-  console.log('NATIVE DATA', JSON.stringify(error));
-  return nativeErrorToLogBoxLog(error);
-}
-
-function nativeErrorToLogBoxLog(nativeError: NativeErrorInfo) {
-  const { errorMessage, stack } = nativeError;
-
-  // Convert to LogBoxLog format
-  const logs = stack.map((frame) => ({
-    file: frame.file,
-    methodName: frame.methodName,
-    lineNumber: frame.lineNumber,
-    column: frame.column,
-    arguments: [],
-  }));
-  const log = new LogBoxLog({
-    level: 'fatal',
-    type: 'error',
-    message: {
-      content: errorMessage,
-      substitutions: [],
-    },
-    stack: logs,
-    category: 'NativeError',
-    componentStack: [],
-    codeFrame: {
-      content: errorMessage,
-      location: {
-        row: 0,
-        column: 0,
-      },
-      fileName: 'NativeError',
-    },
-    isComponentError: false,
-  });
-  return {
-    selectedLogIndex: 0,
-    isDisabled: false,
-    logs: [log],
-  };
 }
 
 export function useSelectedLog() {

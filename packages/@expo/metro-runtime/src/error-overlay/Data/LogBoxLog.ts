@@ -136,6 +136,7 @@ export class LogBoxLog {
     }
     const status = this.symbolicated[type].status;
 
+    console.log('_symbolicate:', status);
     if (status === 'COMPLETE') {
       return this.flushCallbacks(type);
     }
@@ -187,6 +188,7 @@ export class LogBoxLog {
     codeFrame?: CodeFrame | null
   ): void {
     const lastStatus = this.symbolicated[type].status;
+
     if (error != null) {
       this.symbolicated[type] = {
         error,

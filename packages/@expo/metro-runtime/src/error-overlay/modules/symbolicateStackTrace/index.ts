@@ -24,12 +24,16 @@ export type SymbolicatedStackTrace = {
 };
 
 async function symbolicateStackTrace(stack: StackFrame[]): Promise<SymbolicatedStackTrace> {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? process.env.EXPO_DEV_SERVER_ORIGIN
-      : (window.__expo_override_baseUrl ?? window.location.protocol + '//' + window.location.host);
+  const stackBaseUrl = stack.find((frame) => frame.file?.match(/^(?:https?:)?\/\//))?.file;
 
-  const response = await fetch(baseUrl + '/symbolicate', {
+  const baseUrl =
+    stackBaseUrl ??
+    (typeof window === 'undefined'
+      ? process.env.EXPO_DEV_SERVER_ORIGIN
+      : (window.__expo_override_baseUrl ?? window.location.protocol + '//' + window.location.host));
+
+  console.log('baseUrl', baseUrl);
+  const response = await fetch(new URL('/symbolicate', baseUrl).href, {
     method: 'POST',
     body: JSON.stringify({ stack }),
   });

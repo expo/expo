@@ -42,6 +42,7 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
         style={{
           display: 'flex',
           minHeight: 40,
+          position: 'relative',
           justifyContent: 'space-between',
           overflow: 'hidden',
           backgroundColor: 'var(--expo-log-color-background)',
@@ -49,13 +50,15 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
           borderTopLeftRadius: 6,
           borderTopRightRadius: 6,
           paddingLeft: 12,
+
           // className="flex min-h-[40px] justify-between overflow-hidden border border-default bg-default rounded-t-md border-b-0 pl-3"
-        }}>
+        }}
+        className="expo-log-code-frame-header">
         <span
           data-text="true"
           style={{
             color: 'inherit',
-            fontSize: 15,
+            // fontSize: 15,
             lineHeight: 1.25,
             letterSpacing: '-0.009rem',
             display: 'flex',
@@ -73,8 +76,10 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
             style={{
               overflowWrap: 'break-word',
               fontFamily: 'var(--expo-log-font-mono)',
-
+              whiteSpace: 'nowrap',
+              overflowX: 'auto',
               color: 'var(--expo-log-color-label)',
+              paddingRight: 8,
             }}>
             {getFileName()}
             <span style={{ opacity: 0.8 }}>{getLocation()}</span>
@@ -86,6 +91,10 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
             alignItems: 'center',
             justifyContent: 'flex-end',
             borderLeft: '1px solid var(--expo-log-color-border)',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
           }} /* flex items-center justify-end */
         >
           <button
@@ -131,6 +140,7 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
 
                   letterSpacing: '-0.003rem',
                 }} /* text-default font-normal text-[13px] leading-[1.6154] tracking-[-0.003rem] */
+                className="xs-hidden"
                 data-text="true">
                 Open
               </p>

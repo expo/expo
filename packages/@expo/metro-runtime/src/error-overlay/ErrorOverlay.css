@@ -193,7 +193,7 @@
     background-color: transparent;
 
     box-shadow: none;
-    gap: 6px;
+    /* gap: 6px; */
     height: 40px;
     border-radius: 0;
     border-width: 0;
@@ -203,4 +203,29 @@
 
 .expo-log-code-frame-button:hover {
     background-color: var(--expo-log-secondary-system-background-hover);
+}
+
+.xs-hidden {
+  display: none;
+}
+
+[data-text] {
+  font-size: 0.7rem;
+}
+
+
+.expo-log-code-frame-header {
+  padding-right: 54px;
+}
+
+@media (min-width: 576px) {
+  .xs-hidden {
+    display: block;
+  }
+  [data-text] {
+    font-size: 1rem;
+  }
+  .expo-log-code-frame-header {
+    padding-right: 96px;
+  }
 }

@@ -68,6 +68,13 @@ export function LogBoxInspectorStackFrames({
     return null;
   }
 
+  console.log(
+    'log.symbolicated[type].status',
+    log.symbolicated[type].status,
+    type,
+    log.symbolicated
+  );
+
   return (
     <View style={styles.section}>
       {/* Header */}

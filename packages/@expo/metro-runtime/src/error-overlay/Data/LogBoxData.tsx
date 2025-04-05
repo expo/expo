@@ -18,6 +18,8 @@ import { parseLogBoxException } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 import NativeLogBox from '../modules/NativeLogBox';
 import parseErrorStack from '../modules/parseErrorStack';
+import { Stack } from './LogBoxSymbolication';
+import { WEBVIEW_BINDINGS } from '../overlay/webviewNativeModule';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -181,14 +183,14 @@ function appendNewLog(newLog: LogBoxLog): void {
   }
 }
 
-export function addLog(log: LogData): void {
+export function addLog(log: LogData & { stack?: Stack }): void {
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setTimeout(() => {
     try {
-      const stack = parseErrorStack(errorForStackTrace?.stack);
+      const stack = log.stack ?? parseErrorStack(errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({
@@ -201,6 +203,7 @@ export function addLog(log: LogData): void {
         })
       );
     } catch (error) {
+      console.log('unexpected error:', error);
       reportUnexpectedLogBoxError(error);
     }
   }, 0);
@@ -290,6 +293,10 @@ export function dismiss(log: LogBoxLog): void {
   if (logs.has(log)) {
     logs.delete(log);
     handleUpdate();
+
+    if (WEBVIEW_BINDINGS) {
+      WEBVIEW_BINDINGS.dismiss();
+    }
   }
 }
 
