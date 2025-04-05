@@ -247,8 +247,8 @@ CREATE TABLE IF NOT EXISTS nulling (id INTEGER PRIMARY KEY NOT NULL, x NUMERIC, 
 `);
       await db.runAsync('INSERT INTO nulling (x, y) VALUES (?, ?)', [null, null]);
       const statement = await db.prepareAsync('INSERT INTO nulling (x, y) VALUES (?, ?)');
-      statement.executeAsync(null, null);
-      statement.finalizeAsync();
+      await statement.executeAsync(null, null);
+      await statement.finalizeAsync();
 
       const results = await db.getAllAsync<{ x: number | null; y: number | null }>(
         'SELECT * FROM nulling'

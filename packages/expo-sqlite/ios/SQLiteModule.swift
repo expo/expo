@@ -7,6 +7,8 @@ private typealias SQLiteColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 private let MEMORY_DB_NAME = ":memory:"
 
+private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
+
 public final class SQLiteModule: Module {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
@@ -47,7 +49,7 @@ public final class SQLiteModule: Module {
 
     AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
       try deleteDatabase(databasePath: databasePath)
-    }
+    }.runOnQueue(moduleQueue)
     Function("deleteDatabaseSync") { (databasePath: String) in
       try deleteDatabase(databasePath: databasePath)
     }
@@ -64,11 +66,11 @@ public final class SQLiteModule: Module {
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
       try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
-    }
+    }.runOnQueue(moduleQueue)
 
     AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
-    }
+    }.runOnQueue(moduleQueue)
     Function("ensureDatabasePathExistsSync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
     }
@@ -76,7 +78,7 @@ public final class SQLiteModule: Module {
     // swiftlint:disable:next line_length
     AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
       try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
-    }
+    }.runOnQueue(moduleQueue)
     Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
       try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
     }
@@ -110,7 +112,7 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("initAsync") { (database: NativeDatabase) in
         try initDb(database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("initSync") { (database: NativeDatabase) in
         try initDb(database: database)
       }
@@ -118,7 +120,7 @@ public final class SQLiteModule: Module {
       AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
         try maybeThrowForClosedDatabase(database)
         return exsqlite3_get_autocommit(database.pointer) == 0
-      }
+      }.runOnQueue(moduleQueue)
       Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
         try maybeThrowForClosedDatabase(database)
         return exsqlite3_get_autocommit(database.pointer) == 0
@@ -129,7 +131,7 @@ public final class SQLiteModule: Module {
         if let db = removeCachedDatabase(of: database) {
           try closeDatabase(db)
         }
-      }
+      }.runOnQueue(moduleQueue)
       Function("closeSync") { (database: NativeDatabase) in
         try maybeThrowForClosedDatabase(database)
         if let db = removeCachedDatabase(of: database) {
@@ -139,28 +141,28 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
         try exec(database: database, source: source)
-      }
+      }.runOnQueue(moduleQueue)
       Function("execSync") { (database: NativeDatabase, source: String) in
         try exec(database: database, source: source)
       }
 
       AsyncFunction("serializeAsync") { (database: NativeDatabase, databaseName: String) in
         try serialize(database: database, databaseName: databaseName)
-      }
+      }.runOnQueue(moduleQueue)
       Function("serializeSync") { (database: NativeDatabase, databaseName: String) in
         try serialize(database: database, databaseName: databaseName)
       }
 
       AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
-      }
+      }.runOnQueue(moduleQueue)
       Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
       }
 
       AsyncFunction("createSessionAsync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
         try sessionCreate(database: database, session: session, dbName: dbName)
-      }
+      }.runOnQueue(moduleQueue)
       Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
         try sessionCreate(database: database, session: session, dbName: dbName)
       }
@@ -178,7 +180,7 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
-      }
+      }.runOnQueue(moduleQueue)
       Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
@@ -187,35 +189,35 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("stepAsync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
         return try step(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("stepSync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
         return try step(statement: statement, database: database)
       }
 
       AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
       }
 
       AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
         try reset(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("resetSync") { (statement: NativeStatement, database: NativeDatabase) in
         try reset(statement: statement, database: database)
       }
 
       AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
-      }
+      }.runOnQueue(moduleQueue)
       Function("getColumnNamesSync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
       }
 
       AsyncFunction("finalizeAsync") { (statement: NativeStatement, database: NativeDatabase) in
         try finalize(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("finalizeSync") { (statement: NativeStatement, database: NativeDatabase) in
         try finalize(statement: statement, database: database)
       }
@@ -231,49 +233,49 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("attachAsync") { (session: NativeSession, database: NativeDatabase, table: String?) in
         try sessionAttach(database: database, session: session, table: table)
-      }
+      }.runOnQueue(moduleQueue)
       Function("attachSync") { (session: NativeSession, database: NativeDatabase, table: String?) in
         try sessionAttach(database: database, session: session, table: table)
       }
 
       AsyncFunction("enableAsync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
         try sessionEnable(database: database, session: session, enabled: enabled)
-      }
+      }.runOnQueue(moduleQueue)
       Function("enableSync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
         try sessionEnable(database: database, session: session, enabled: enabled)
       }
 
       AsyncFunction("closeAsync") { (session: NativeSession, database: NativeDatabase) in
         try sessionClose(database: database, session: session)
-      }
+      }.runOnQueue(moduleQueue)
       Function("closeSync") { (session: NativeSession, database: NativeDatabase) in
         try sessionClose(database: database, session: session)
       }
 
       AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
         return try sessionCreateChangeset(database: database, session: session)
-      }
+      }.runOnQueue(moduleQueue)
       Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
         return try sessionCreateChangeset(database: database, session: session)
       }
 
       AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
         return try sessionCreateInvertedChangeset(database: database, session: session)
-      }
+      }.runOnQueue(moduleQueue)
       Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
         return try sessionCreateInvertedChangeset(database: database, session: session)
       }
 
       AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
         try sessionApplyChangeset(database: database, session: session, changeset: changeset)
-      }
+      }.runOnQueue(moduleQueue)
       Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
         try sessionApplyChangeset(database: database, session: session, changeset: changeset)
       }
 
       AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
         return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-      }
+      }.runOnQueue(moduleQueue)
       Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
         return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
       }
