@@ -86,21 +86,14 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
 
     createExpoPublishToMavenLocalTask(publicationInfo)
 
-    val publicationToken = rootProject.findProperty("EXPO_GITHUB_PUBLISH_TOKEN") as? String
-    if (!publicationToken.isNullOrEmpty()) {
-      publishingExtension().repositories.maven { mavenRepo ->
-        mavenRepo.name = "GitHubPackages"
-        mavenRepo.url = URI("https://maven.pkg.github.com/expo/expo")
-
-        mavenRepo.credentials { pc ->
-          pc.username = "expo"
-          pc.password = publicationToken
-        }
-      }
-      createExpoPublishTask(publicationInfo)
-    } else {
-      createExpoPublishTask(IllegalStateException("EXPO_GITHUB_PUBLISH_TOKEN is not defined"))
+    val npmLocalRepositoryRelativePath = "local-maven-repo"
+    val npmLocalRepository = URI("file://${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
+    publishingExtension().repositories.mavenLocal { mavenRepo ->
+      mavenRepo.name = "NPMPackage"
+      mavenRepo.url = npmLocalRepository
     }
+
+    createExpoPublishTask(publicationInfo, npmLocalRepositoryRelativePath)
   }
 }
 

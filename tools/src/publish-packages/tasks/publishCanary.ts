@@ -6,6 +6,7 @@ import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackageAccess } from './checkPackageAccess';
 import { loadRequestedParcels } from './loadRequestedParcels';
 import { packPackageToTarball } from './packPackageToTarball';
+import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
 import { updateModuleTemplate } from './updateModuleTemplate';
@@ -24,6 +25,7 @@ import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan, green } = chalk;
 
@@ -167,6 +169,8 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateBundledNativeModulesFile,
       updateModuleTemplate,
       updateWorkspaceProjects,
+      updateAndroidProjects,
+      publishAndroidArtifacts,
       packPackageToTarball,
       publishPackages,
       publishCanaryProjectTemplates,
