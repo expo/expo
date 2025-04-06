@@ -66,11 +66,11 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 These modules generally provide a lower-accuracy polyfill or approximation of their Node.js counterparts.
 For example, the `http` and `https` modules only provide thin Node.js compatibility wrappers around the `fetch` API and cannot be used to make arbitrary HTTP requests.
 
-Any of the listed Node.js modules can be used in API routes or dependencies of your API routes as usual and will use appropriate compatibility modules. However, some of these modules may not provide any practical functionality and only exist to shim APIs to prevent runtime crashes.
+Any of the above listed Node.js modules can be used in API routes or dependencies of your API routes as usual and will use appropriate compatibility modules. However, some of these modules may not provide any practical functionality and only exist to shim APIs to prevent runtime crashes.
 
 Any modules that aren't mentioned here are unavailable or unsupported, and your code and none of your dependencies should rely on them being provided.
 
-> More Node compatibility shims may be added in the future, but all Node APIs that are not documented in this non-exhaustive list are not expected to work.
+> More Node.js compatibility shims may be added in the future, but all Node.js APIs that are not documented in this non-exhaustive list are not expected to work.
 
 ## Globals
 
