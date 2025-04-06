@@ -16,7 +16,7 @@ import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
-import { modifySdkVersionsAsync } from '../Versions';
+import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
 
 const s3Client = new S3({ region: 'us-east-1' });
 
@@ -63,6 +63,12 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: internalIosSimulatorPublishAsync,
     internal: true,
   },
+  'verify-versions-endpoint-available': {
+    name: '[internal] Verify that the versions endpoint is available',
+    actionId: 'verify-versions-endpoint-available',
+    action: verifyVersionsEndpointAvailableAsync,
+    internal: true,
+  },
   'android-apk-publish': {
     name: '[internal] Upload Android client to S3 and update www endpoint',
     actionId: 'android-apk-publish',
@@ -70,6 +76,29 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     internal: true,
   },
 };
+
+export async function verifyVersionsEndpointAvailableAsync() {
+  logger.debug('Verifying versions endpoint is available');
+  const sentinelSdkVersion = 'x.x.x';
+
+  // Set some sentinel value
+  await modifySdkVersionsAsync(sentinelSdkVersion, (sdkVersions) => {
+    (sdkVersions as any).sentinel = new Date().toISOString();
+    return sdkVersions;
+  });
+
+  logger.debug('Sentinel value set');
+
+  // Remove the sentinel value
+  await modifyVersionsAsync((versions) => {
+    delete versions.sdkVersions[sentinelSdkVersion];
+    return versions;
+  });
+
+  logger.debug('Sentinel value removed');
+
+  logger.debug('Versions endpoint is available');
+}
 
 export default (program: Command) => {
   program
