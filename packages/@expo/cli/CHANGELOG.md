@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Hide BRIDGE tags in webview logs.
+
 ### 💡 Others
 
 - Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))

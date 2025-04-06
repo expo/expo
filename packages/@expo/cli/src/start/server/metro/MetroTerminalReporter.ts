@@ -47,7 +47,7 @@ export class MetroTerminalReporter extends TerminalReporter {
           break;
         }
 
-        const mode = event.mode === 'NOBRIDGE' ? '' : (event.mode ?? '');
+        const mode = event.mode === 'NOBRIDGE' || event.mode === 'BRIDGE' ? '' : (event.mode ?? '');
         // @ts-expect-error
         if (level === 'warn' || level === 'error') {
           // Quick check to see if an unsymbolicated stack is being logged.
