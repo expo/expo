@@ -98,6 +98,13 @@ export default class NotificationScreen extends React.Component<
           onPress={this._unregisterForNotificationsAsync}
           title="Unregister for push notifications"
         />
+        <ListButton
+          onPress={async () => {
+            const token = await Notifications.getDevicePushTokenAsync();
+            Alert.alert('Push token received', JSON.stringify(token));
+          }}
+          title="Get push token after unregistering"
+        />
         <BackgroundNotificationHandlingSection />
         <HeadingText>Badge Number</HeadingText>
         <ListButton
