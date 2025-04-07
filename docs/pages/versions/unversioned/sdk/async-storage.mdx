@@ -7,14 +7,22 @@ platforms: ['android', 'ios', 'tvos', 'macos', 'web']
 inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-An asynchronous, unencrypted, persistent, key-value storage API.
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Async Storage is asynchronous, unencrypted, persistent, key-value storage solution.
 
 ## Installation
 
 <APIInstallSection href="https://react-native-async-storage.github.io/async-storage/docs/install#android--ios" />
 
-## Usage
+## Learn more
 
-See [Async Storage's documentation](https://react-native-async-storage.github.io/async-storage/docs/usage) for usage instructions.
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://react-native-async-storage.github.io/async-storage/docs/usage"
+/>

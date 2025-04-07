@@ -7,11 +7,10 @@ platforms: ['android', 'ios', 'macos', 'web']
 inExpoGo: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-
-{/* todo: add video */}
-
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { BoxLink } from '~/ui/components/BoxLink';
 
 A component that provides access to the system UI for picking between several options.
 
@@ -19,6 +18,11 @@ A component that provides access to the system UI for picking between several op
 
 <APIInstallSection href="https://github.com/react-native-picker/picker#getting-started" />
 
-## Usage
+## Learn more
 
-See complete documentation at [`react-native-picker/picker`](https://github.com/react-native-picker/picker).
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/react-native-picker/picker"
+/>

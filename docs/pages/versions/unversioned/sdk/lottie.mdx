@@ -7,10 +7,11 @@ platforms: ['android', 'ios', 'tvos', 'web']
 inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/set-up-your-environment/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { SnackInline } from '~/ui/components/Snippet';
 
 [Lottie](https://airbnb.io/lottie/) renders After Effects animations in real time, allowing apps to use animations as easily as they use static images.
 
@@ -21,7 +22,7 @@ import { SnackInline } from '~/ui/components/Snippet';
   href="https://github.com/lottie-react-native/lottie-react-native#installing"
 />
 
-## Usage
+## Example
 
 <SnackInline
   label="Lottie"
@@ -83,10 +84,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## API
+## Learn more
 
-```js
-import LottieView from 'lottie-react-native';
-```
-
-Refer to the [lottie-react-native repository](https://github.com/lottie-react-native/lottie-react-native#usage) for more detailed documentation.
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://airbnb.io/lottie/#/react-native"
+/>

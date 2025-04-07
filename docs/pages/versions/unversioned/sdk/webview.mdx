@@ -7,7 +7,10 @@ platforms: ['android', 'ios']
 inExpoGo: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `react-native-webview` provides a `WebView` component that renders web content in a native view.
@@ -17,8 +20,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 <APIInstallSection href="https://github.com/react-native-webview/react-native-webview/blob/master/docs/Getting-Started.md#react-native-webview-getting-started-guide" />
 
 ## Usage
-
-You should refer to the [`react-native-webview` documentation](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Guide.md#react-native-webview-guide) for more information on the API and its usage. The following example (courtesy of that repository) is a quick way to get up and running!
 
 <SnackInline label="Basic Webview usage" dependencies={["react-native-webview", "expo-constants"]}>
 
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-Minimal example with inline HTML:
+### With inline HTML
 
 <SnackInline label="Webview inline HTML" dependencies={["react-native-webview", "expo-constants"]}>
 
@@ -75,3 +76,12 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+## Learn more
+
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/react-native-webview/react-native-webview/blob/master/docs/Guide.md"
+/>

@@ -7,9 +7,10 @@ platforms: ['android', 'ios']
 inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/set-up-your-environment/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Given a view, `captureRef` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something, and then you want to save an image from it.
 
@@ -18,37 +19,6 @@ If you're interested in taking snapshots from the GLView, we recommend you use [
 ## Installation
 
 <APIInstallSection href="https://github.com/gre/react-native-view-shot" />
-
-## API
-
-```js
-import { captureRef } from 'react-native-view-shot';
-```
-
-### `captureRef(view, options)`
-
-Snapshots the given view.
-
-#### Arguments
-
-- **view (_number|ReactElement_)** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
-- **options (_object_)** --
-
-  An optional map of optional options
-
-  - **format (_string_)** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
-  - **quality (_number_)** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
-  - **result (_string_)** -- The type for the resulting image.
-    \- `'tmpfile'` -- (default) Return a temporary file uri.
-    \- `'base64'` -- base64 encoded image.
-    \- `'data-uri'` -- base64 encoded image with data-uri prefix.
-  - **height (_number_)** -- Height of result in pixels
-  - **width (_number_)** -- Width of result in pixels
-  - **snapshotContentContainer (_bool_)** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
-
-#### Returns
-
-An image of the format specified in the options parameter.
 
 ## Note on pixel values
 
@@ -70,3 +40,12 @@ const result = await captureRef(this.imageContainer, {
   format: 'png',
 });
 ```
+
+## Learn more
+
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/gre/react-native-view-shot"
+/>

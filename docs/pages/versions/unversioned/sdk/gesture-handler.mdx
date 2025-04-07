@@ -7,7 +7,10 @@ platforms: ['android', 'ios', 'web']
 inExpoGo: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 `react-native-gesture-handler` is a library for handling complex gestures. From it's README:
 
@@ -17,6 +20,11 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 <APIInstallSection href="https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation" />
 
-## Usage
+## Learn more
 
-Read the [`react-native-gesture-handler` documentation](https://docs.swmansion.com/react-native-gesture-handler/) for more information on the API and usage.
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://docs.swmansion.com/react-native-gesture-handler/"
+/>
