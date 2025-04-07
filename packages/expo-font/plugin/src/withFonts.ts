@@ -7,11 +7,9 @@ const pkg = require('expo-font/package.json');
 
 export type FontProps = {
   fonts?: string[];
-  android?:
-    | {
-        fonts?: string[];
-      }
-    | XmlFonts[];
+  android?: {
+    fonts?: (string | XmlFonts)[];
+  };
   ios?: {
     fonts?: string[];
   };
@@ -28,13 +26,18 @@ const withFonts: ConfigPlugin<FontProps> = (config, props) => {
     config = withFontsIos(config, iosFonts);
   }
 
-  if (Array.isArray(props.android)) {
-    config = withXmlFontsAndroid(config, props.android);
-  } else {
-    const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
-    if (androidFonts.length > 0) {
-      config = withFontsAndroid(config, androidFonts);
-    }
+  const xmlFonts = props.android?.fonts?.filter((item) => typeof item !== 'string') ?? [];
+  const assetFonts = [
+    ...(props.fonts ?? []),
+    ...(props.android?.fonts?.filter((item) => typeof item === 'string') ?? []),
+  ];
+
+  if (xmlFonts.length > 0) {
+    config = withXmlFontsAndroid(config, xmlFonts as XmlFonts[]);
+  }
+
+  if (assetFonts.length > 0) {
+    config = withFontsAndroid(config, assetFonts as string[]);
   }
 
   return config;
