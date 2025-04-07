@@ -34,9 +34,9 @@
     "@typescript-eslint/parser": "^8.18.2",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-expo": "^0.1.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0"
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0"
   },
   "devDependencies": {
     "eslint": "^9.18.0",
