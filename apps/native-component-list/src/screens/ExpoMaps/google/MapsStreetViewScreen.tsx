@@ -12,7 +12,6 @@ const cameraCoordinates: GoogleMaps.StreetViewProps['position'][] = [
   },
   {
     coordinates: { latitude: 37.78825, longitude: -122.4324 },
-    zoom: 1,
     tilt: 10,
     bearing: 70,
   },

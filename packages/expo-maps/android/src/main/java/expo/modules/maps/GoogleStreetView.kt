@@ -13,7 +13,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
 data class GoogleStreetViewProps(
-  val cameraPosition: MutableState<CameraPositionStreetViewRecord> = mutableStateOf(CameraPositionStreetViewRecord()),
+  val position: MutableState<CameraPositionStreetViewRecord> = mutableStateOf(CameraPositionStreetViewRecord()),
   val isPanningGesturesEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isStreetNamesEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isUserNavigationEnabled: MutableState<Boolean> = mutableStateOf(true),
@@ -29,10 +29,10 @@ class GoogleStreetView(
 
   init {
     setContent {
-      key(props.cameraPosition.value.coordinates.toString()) {
+      key(props.position.value.coordinates.toString()) {
         StreetView(
           streetViewPanoramaOptionsFactory = {
-            props.cameraPosition.value.let { camera ->
+            props.position.value.let { camera ->
               StreetViewPanoramaOptions()
                 .position(camera.coordinates.toLatLng())
                 .panoramaCamera(StreetViewPanoramaCamera(camera.zoom, camera.tilt, camera.bearing))
