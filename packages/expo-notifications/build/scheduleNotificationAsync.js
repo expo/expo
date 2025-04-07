@@ -117,7 +117,7 @@ function parseCalendarTrigger(trigger) {
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.CALENDAR) {
         const { repeats, ...calendarTrigger } = trigger;
-        return { type: 'calendar', value: calendarTrigger, repeats };
+        return { ...calendarTrigger, repeats: !!repeats, type: 'calendar' };
     }
     return undefined;
 }

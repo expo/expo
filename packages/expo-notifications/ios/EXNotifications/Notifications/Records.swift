@@ -56,10 +56,10 @@ public struct CalendarTriggerRecord: TriggerRecord {
     if let timeZone = calendarTrigger.timezone {
       dateComponents.timeZone = TimeZone(identifier: timeZone)
     }
-    dateComponentsMatchMap.keys.forEach { key in
-      let calendarComponent = dateComponentsMatchMap[key] ?? .day
-      if let value = calendarTrigger.toDictionary()[key] as? Int {
-        dateComponents.setValue(value, for: calendarComponent)
+    let triggerAsDict = calendarTrigger.toDictionary()
+    dateComponentsMatchMap.forEach { key, keyVal in
+      if let value = triggerAsDict[key] as? Int {
+        dateComponents.setValue(value, for: keyVal)
       }
     }
     return dateComponents
@@ -181,7 +181,7 @@ public struct YearlyTriggerRecord: TriggerRecord {
 
   public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(
-      month: self.month,
+      month: self.month + 1, // iOS months are 1-based, JS months are 0-based
       day: self.day,
       hour: self.hour,
       minute: self.minute
