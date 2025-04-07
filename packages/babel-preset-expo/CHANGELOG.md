@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use `registerClientReference` for client components and assert unsupported syntax.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
