@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed React Native Devtools opening issue. ([#35935](https://github.com/expo/expo/pull/35935) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
