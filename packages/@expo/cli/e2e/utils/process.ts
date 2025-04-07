@@ -108,7 +108,7 @@ export async function waitForProcessOutput<T>(
 export async function waitForProcessReady<T>(
   child: ChildProcess,
   resolver: () => Promise<T>,
-  timeoutMs = 60_000
+  timeoutMs = 120_000
 ) {
   // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
   let resolve: (value: T | PromiseLike<T>) => void;

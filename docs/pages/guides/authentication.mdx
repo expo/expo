@@ -615,6 +615,16 @@ extraParams: {
 }
 ```
 
+- To open a specific social identity provider, such as Google, you can supply the provider's name with the `identity_provider` parameter within `extraParams` for the sign in URL.
+
+```tsx
+extraParams: {
+    identity_provider: "Google",
+}
+```
+
+- Valid providers are `Google`, `COGNITO`, `Facebook` `LoginWithAmazon`, `SignInWithApple`. These are case sensitive and must match the social provider within Cognito. You can provide custom providers.
+
 {/* prettier-ignore */}
 ```tsx Cognito Auth Example
 import { useState, useMemo, useEffect } from 'react';

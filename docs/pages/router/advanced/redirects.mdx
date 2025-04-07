@@ -52,10 +52,14 @@ Static redirects allow you to specify a redirect configuration in your [app conf
   "plugins": [
     [
       "expo-router",
-      "redirects": [{
-        "source": "/redirect/from/here",
-        "destination": "/to/this/route"
-      }]
+      {
+        "redirects": [
+          {
+            "source": "/redirect/from/here",
+            "destination": "/to/this/route"
+          }
+        ]
+      }
     ]
   ]
 }
@@ -81,10 +85,14 @@ The `source` and `destination` routes can use the [dynamic route syntax](/develo
   "plugins": [
     [
       "expo-router",
-      "redirects": [{
-        "source": "/redirect/[slug]",
-        "destination": "/target/[slug]"
-      }]
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[slug]",
+            "destination": "/target/[slug]"
+          }
+        ]
+      }
     ]
   ]
 }
@@ -97,10 +105,14 @@ The variable names will be matched when performing the redirection, if available
   "plugins": [
     [
       "expo-router",
-      "redirects": [{
-        "source": "/redirect/[fruit]/[vegetable]/[meat]",
-        "destination": "/target/[vegetable]/[fruit]"
-      }]
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[fruit]/[vegetable]/[meat]",
+            "destination": "/target/[vegetable]/[fruit]"
+          }
+        ]
+      }
     ]
   ]
 }
@@ -117,11 +129,13 @@ To redirect only certain HTTP methods, provide the methods as a string inside an
   "plugins": [
     [
       "expo-router",
-      "redirects": [{
-        "source": "/redirect/[slug]",
-        "destination": "/target/[slug]"
-        "methods": ["POST"]
-      }]
+      {
+        "redirects": [{
+          "source": "/redirect/[slug]",
+          "destination": "/target/[slug]"
+          "methods": ["POST"]
+        }]
+      }
     ]
   ]
 }
@@ -136,10 +150,14 @@ Rewrites are only possible through static configuration. They are different from
   "plugins": [
     [
       "expo-router",
-      "rewrites": [{
-        "source": "/redirect/from/here",
-        "destination": "/to/this/route"
-      }]
+      {
+        "rewrites": [
+          {
+            "source": "/redirect/from/here",
+            "destination": "/to/this/route"
+          }
+        ]
+      }
     ]
   ]
 }

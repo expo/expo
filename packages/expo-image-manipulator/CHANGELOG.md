@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
 - Changed `export` to `export type` for TS type declarations. ([#33446](https://github.com/expo/expo/pull/33446) by [@j-piasecki](https://github.com/j-piasecki))
 - Fixed `saveAsync` not respecting the format and compression quality. ([#33690](https://github.com/expo/expo/pull/33690) by [@tsapeta](https://github.com/tsapeta))
 
