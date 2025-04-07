@@ -2,6 +2,7 @@ import * as AllowBackup from './AllowBackup';
 import * as BuildProperties from './BuildProperties';
 import * as Colors from './Colors';
 import * as EasBuild from './EasBuild';
+import * as EdgeToEdge from './EdgeToEdge';
 import * as GoogleMapsApiKey from './GoogleMapsApiKey';
 import * as GoogleServices from './GoogleServices';
 import * as IntentFilters from './IntentFilters';
@@ -39,4 +40,5 @@ export {
   Updates,
   Version,
   WindowSoftInputMode,
+  EdgeToEdge,
 };

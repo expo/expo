@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Support `enableEdgeToEdge` field in app config.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -31,6 +33,8 @@ _This version does not introduce any user-facing changes._
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
 - Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`. ([#35789](https://github.com/expo/expo/pull/35789) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
 
 ### 💡 Others
 

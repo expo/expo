@@ -1,3 +1,5 @@
+import { getConfig } from '@expo/config';
+import { hasEnabledEdgeToEdge } from '@expo/config-plugins/build/android/EdgeToEdge';
 import fs from 'fs/promises';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -90,9 +92,17 @@ export async function findDependencyRootsAsync(
     ...Object.keys(packageJson.dependencies ?? {}),
     ...Object.keys(packageJson.devDependencies ?? {}),
   ];
+  const config = getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+  });
+
+  // There are two reasons why we don't want to autolink `edge-to-edge` when `edgeToEdge` property is set to `false`:
+  // 1. `react-native-is-edge-to-edge` tries to check if the `edge-to-edge` turbomodule is present to determine whether edge-to-edge is enabled.
+  // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
   const shouldAutolinkEdgeToEdge =
     platform === 'android' &&
     getExpoVersion(packageJson) >= 53 &&
+    hasEnabledEdgeToEdge(config.exp) &&
     !dependencies.includes('react-native-edge-to-edge');
 
   // Edge-to-egde is a dependency of expo for versions >= 53, so it's a transitive dependency for the project, but is a not an expo module,

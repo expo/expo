@@ -186,7 +186,9 @@ const withAndroidExpoPlugins = (config, props) => {
   _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
-  _configPlugins().AndroidConfig.Package.withPackageRefactor]);
+  _configPlugins().AndroidConfig.Package.withPackageRefactor,
+  // Add the configuration for react-native-edge-to-edge
+  _configPlugins().AndroidConfig.EdgeToEdge.withEdgeToEdge]);
 };
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`

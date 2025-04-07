@@ -25,6 +25,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
+- [Android] Add support for `enableEdgeToEdge` app config field.
 
 ### 🐛 Bug fixes
 

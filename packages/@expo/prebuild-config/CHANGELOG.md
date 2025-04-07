@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+ 
+- [Android] Support `enableEdgeToEdge` field in app config.
 
 ### 🐛 Bug fixes
 
