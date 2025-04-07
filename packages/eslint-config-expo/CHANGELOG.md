@@ -8,6 +8,7 @@
 - Support flat config. ([#34653](https://github.com/expo/expo/pull/34653) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
+- Wrap exported config in `defineConfig`. ([#34371](https://github.com/expo/expo/pull/34371) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
