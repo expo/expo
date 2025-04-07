@@ -11,6 +11,7 @@ import {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import { env } from '../../../utils/env';
 import { learnMore } from '../../../utils/link';
 import {
   logLikeMetro,
@@ -37,6 +38,33 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
+      case 'unstable_server_log':
+        if (typeof event.data?.[0] === 'string') {
+          const message = event.data[0];
+          if (message.match(/JavaScript logs have moved/)) {
+            // Hide this very loud message from upstream React Native in favor of the note in the terminal UI:
+            // The "› Press j │ open debugger"
+
+            // logger?.info(
+            //   '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+            //     'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+            //     'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+            //     '\u001B[27m',
+            // );
+            return;
+          }
+
+          if (!env.EXPO_DEBUG) {
+            // In the context of developing an iOS app or website, the MetroInspectorProxy "connection" logs are very confusing.
+            // Here we'll hide them behind EXPO_DEBUG or DEBUG=expo:*. In the future we can reformat them to clearly indicate that the "Connection" is regarding the debugger.
+            // These logs are also confusing because they can say "connection established" even when the debugger is not in a usable state. Really they belong in a UI or behind some sort of debug logging.
+            if (message.match(/Connection (closed|established|failed|terminated)/i)) {
+              // Skip logging.
+              return;
+            }
+          }
+        }
+        break;
       case 'client_log': {
         if (this.shouldFilterClientLog(event)) {
           return;
