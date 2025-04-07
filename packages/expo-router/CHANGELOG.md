@@ -4,6 +4,20 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.1-preview.0 — 2025-04-05
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Wrap app in root `<Slot />` navigator ([#35613](https://github.com/expo/expo/pull/35613) by [@marklawlor](https://github.com/marklawlor))
 - Use UNSTABLE_router & add 'dangerouslySingular' prop ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
 
@@ -17,6 +31,7 @@
 
 ### 💡 Others
 
+- Improve route `displayName` for debugging component stacks. ([#35867](https://github.com/expo/expo/pull/35867) by [@EvanBacon](https://github.com/EvanBacon))
 - Temporarily Remove RSC dependency. ([#34505](https://github.com/expo/expo/pull/34505) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `expo-linking` to synchronously get the initial URL. This fixes App Clips and improves RSC support. ([#34328](https://github.com/expo/expo/pull/34328) by [@EvanBacon](https://github.com/EvanBacon))
 - Polyfill relative fetch requests and `window.location` by default. ([#34169](https://github.com/expo/expo/pull/34169) by [@EvanBacon](https://github.com/EvanBacon))

@@ -1,14 +1,14 @@
-/*
-This script updates the necessary schema for the passed-in version.
+/**
+ * This script updates the necessary schema for the passed-in version.
+ *
+ * yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-config.md uses
+ * yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
+ */
 
-yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-config.md uses
-yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
-*/
-
-const parser = require('@apidevtools/json-schema-ref-parser');
-const axios = require('axios');
-const fs = require('fs-extra');
-const path = require('node:path');
+import parser from '@apidevtools/json-schema-ref-parser';
+import axios from 'axios';
+import fs from 'fs-extra';
+import path from 'node:path';
 
 const version = process.argv[2];
 
@@ -57,7 +57,7 @@ async function fetchAndWriteSchema(version, staging) {
 
 async function preprocessSchema(schema) {
   // replace all $ref references with the actual definitions
-  return await parser.dereference(schema);
+  return parser.dereference(schema);
 }
 
 run();

@@ -4,12 +4,25 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.23.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed react-devtools integration from CLI. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
+- Symbolicate React error stacks in terminal logs. ([#35866](https://github.com/expo/expo/pull/35866) by [@EvanBacon](https://github.com/EvanBacon))
 - Add improved error message for missing optional imports. ([#35239](https://github.com/expo/expo/pull/35239) by [@EvanBacon](https://github.com/EvanBacon))
 - Estimate Xcode binary path in minimal builds. ([#33415](https://github.com/expo/expo/pull/33415) by [@EvanBacon](https://github.com/EvanBacon))
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
@@ -19,6 +32,7 @@
 
 ### 🐛 Bug fixes
 
+- Force react-navigation to resolve to the same condition each time.
 - Silence missing favicon file error. ([#35357](https://github.com/expo/expo/pull/35357) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix importing `@radix-ui/colors` in CSS files. ([#35213](https://github.com/expo/expo/pull/35213) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure HMR updates use the same serializer pass as initial bundles. ([#35110](https://github.com/expo/expo/pull/35110) by [@EvanBacon](https://github.com/EvanBacon))
@@ -31,6 +45,7 @@
 
 ### 💡 Others
 
+- Remove ridiculous **NOBRIDGE** tag from logs. ([#35868](https://github.com/expo/expo/pull/35868) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade readiness status of React Server Components. ([#35467](https://github.com/expo/expo/pull/35467) by [@EvanBacon](https://github.com/EvanBacon))
 - Add tests for `Worker` and `require.unstable_resolveWorker()`. ([#34938](https://github.com/expo/expo/pull/34938) by [@EvanBacon](https://github.com/EvanBacon))
 - Replace cacache in fetch cache with lighter implementation. ([#34983](https://github.com/expo/expo/pull/34983) by [@EvanBacon](https://github.com/EvanBacon))

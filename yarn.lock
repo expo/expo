@@ -1541,6 +1541,16 @@
   resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
+"@expo/server@^0.5.0":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@expo/server/-/server-0.5.3.tgz#7e2c268699aa962035bfb95c7e0d46515940709c"
+  integrity sha512-WXsWzeBs5v/h0PUfHyNLLz07rwwO5myQ1A5DGYewyyGLmsyl61yVCe8AgAlp1wkiMsqhj2hZqI2u3K10QnCMrQ==
+  dependencies:
+    abort-controller "^3.0.0"
+    debug "^4.3.4"
+    source-map-support "~0.5.21"
+    undici "^6.18.2"
+
 "@expo/spawn-async@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.7.2.tgz#fcfe66c3e387245e72154b1a7eae8cada6a47f58"
@@ -3167,11 +3177,11 @@
     nullthrows "^1.1.1"
 
 "@react-navigation/bottom-tabs@^7.3.0", "@react-navigation/bottom-tabs@^7.3.1":
-  version "7.3.3"
-  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.3.tgz#f6b1fae9b24c150e9fe32a3e53bf1e634a2b4d81"
-  integrity sha512-194WSK3nhmU4M4MK6H2A+FFMk23xAcYZjDukcg0BDkx6+ybHHMaYT73vBTXXUfn5U72cKh+u26g5lkHe78YvFw==
+  version "7.3.6"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.6.tgz#793aa988e2bb14d817434e2320922a41bc75a8ce"
+  integrity sha512-BL7nwjmQhmh4vH+skA5/4xic0NTLh7Mg78ngrvJ+FagdGILX6zQb4fMI3yN5SrCBpZNvhDQvD9prkwdUUR9OBw==
   dependencies:
-    "@react-navigation/elements" "^2.3.1"
+    "@react-navigation/elements" "^2.3.4"
     color "^4.2.3"
 
 "@react-navigation/core@7.6.0", "@react-navigation/core@^7.6.0":
@@ -3197,7 +3207,7 @@
     react-native-drawer-layout "^4.1.2"
     use-latest-callback "^0.2.1"
 
-"@react-navigation/elements@2.2.8", "@react-navigation/elements@^2.2.5", "@react-navigation/elements@^2.2.8", "@react-navigation/elements@^2.3.1":
+"@react-navigation/elements@2.2.8", "@react-navigation/elements@^2.2.5", "@react-navigation/elements@^2.2.8", "@react-navigation/elements@^2.3.4":
   version "2.2.8"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.2.8.tgz#b63fb2128940744c927f9931faa88e433de10eb2"
   integrity sha512-wJoeywG/hHIml4+ycFiQKofYczkLNbHw0s5i8tSXJYzhZ0B1P3s945Tuuf0OreZtnK5XX4K3p3VQ66RtBWA88w==
@@ -6335,13 +6345,12 @@ css-font-parser@0.2.3:
   resolved "https://registry.yarnpkg.com/css-font-parser/-/css-font-parser-0.2.3.tgz#9a391d2e47086be5401e47274e687ec06e238c0e"
   integrity sha512-QhdfNV+RjQLVg24d/ls4I8UrA/5WCeEfUmi1je8ISPr7RGZJXwWU2AwZpCiUmWuLZW7dKaB3ER0Bq1W9UhEUag==
 
-css-in-js-utils@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
-  integrity sha512-PJF0SpJT+WdbVVt0AOYp9C8GnuruRlL/UFW7932nLWmFLQTaWEzTBQEx7/hn4BuV+WON75iAViSUJLiU3PKbpA==
+css-in-js-utils@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-3.1.0.tgz#640ae6a33646d401fc720c54fc61c42cd76ae2bb"
+  integrity sha512-fJAcud6B3rRu+KHYk+Bwf+WFL2MDCJJ1XG9x137tJQ0xYxor7XziQtuGFbWNdqrvF4Tk26O3H73nfVqXt/fW1A==
   dependencies:
-    hyphenate-style-name "^1.0.2"
-    isobject "^3.0.1"
+    hyphenate-style-name "^1.0.3"
 
 css-line-break@^2.1.0:
   version "2.1.0"
@@ -8997,10 +9006,10 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-hyphenate-style-name@^1.0.2:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
-  integrity sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
+hyphenate-style-name@^1.0.3:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.1.0.tgz#1797bf50369588b47b72ca6d5e65374607cf4436"
+  integrity sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==
 
 i18n-js@^3.1.0:
   version "3.9.2"
@@ -9120,12 +9129,12 @@ ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-inline-style-prefixer@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/inline-style-prefixer/-/inline-style-prefixer-6.0.1.tgz#c5c0e43ba8831707afc5f5bbfd97edf45c1fa7ae"
-  integrity sha512-AsqazZ8KcRzJ9YPN1wMH2aNM7lkWQ8tSPrW5uDk1ziYwiAPWSZnUsC7lfZq+BDqLqz0B4Pho5wscWcJzVvRzDQ==
+inline-style-prefixer@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/inline-style-prefixer/-/inline-style-prefixer-7.0.1.tgz#9310f3cfa2c6f3901d1480f373981c02691781e8"
+  integrity sha512-lhYo5qNTQp3EvSSp3sRvXMbVQTLrvGV6DycRMJ5dm2BLMiJ30wpXKdDdgX+GmJZ5uQMucwRKHamXSst3Sj/Giw==
   dependencies:
-    css-in-js-utils "^2.0.0"
+    css-in-js-utils "^3.1.0"
 
 inquirer@^8.0.0:
   version "8.2.2"
@@ -13169,15 +13178,15 @@ react-native-view-shot@4.0.3:
   dependencies:
     html2canvas "^1.4.1"
 
-react-native-web@~0.19.13:
-  version "0.19.13"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.19.13.tgz#2d84849bf0251ec0e3a8072fda7f9a7c29375331"
-  integrity sha512-etv3bN8rJglrRCp/uL4p7l8QvUNUC++QwDbdZ8CB7BvZiMvsxfFIRM1j04vxNldG3uo2puRd6OSWR3ibtmc29A==
+react-native-web@~0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.20.0.tgz#3fb0591999ed4b54d7822a2785547415e8a5c031"
+  integrity sha512-OOSgrw+aON6R3hRosCau/xVxdLzbjEcsLysYedka0ZON4ZZe6n9xgeN9ZkoejhARM36oTlUgHIQqxGutEJ9Wxg==
   dependencies:
     "@babel/runtime" "^7.18.6"
     "@react-native/normalize-colors" "^0.74.1"
     fbjs "^3.0.4"
-    inline-style-prefixer "^6.0.1"
+    inline-style-prefixer "^7.0.1"
     memoize-one "^6.0.0"
     nullthrows "^1.1.1"
     postcss-value-parser "^4.2.0"

@@ -9,9 +9,14 @@ class LabelViewProps: ExpoSwiftUI.ViewProps {
   @Field var color: Color?
 }
 
-struct LabelView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: LabelViewProps
+struct LabelView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: LabelViewProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+
+  init(props: LabelViewProps) {
+    self.props = props
+  }
+
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
       Label(

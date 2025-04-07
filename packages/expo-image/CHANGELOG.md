@@ -4,6 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed SVG image tinting on iOS. ([#35927](https://github.com/expo/expo/pull/35927) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 2.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features

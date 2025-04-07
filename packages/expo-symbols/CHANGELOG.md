@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.3.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
 - [Android] Fix platform misconfiguration in the `expo-modules.config`. ([#35849](https://github.com/expo/expo/pull/35849) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others

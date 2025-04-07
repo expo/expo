@@ -391,6 +391,7 @@ export const eas = [
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makeGroup('Reference', [makePage('eas/workflows/reference/e2e-tests.mdx')]),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -445,7 +446,6 @@ export const eas = [
         makePage('build-reference/build-configuration.mdx'),
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
-        makePage('build-reference/e2e-tests.mdx'),
         makePage('build-reference/easignore.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
@@ -593,7 +593,11 @@ export const learn = [
 ];
 
 const preview = [
-  makeSection('Preview', [makePage('preview/introduction.mdx'), { expanded: true }]),
+  makeSection('Preview', [
+    makePage('preview/introduction.mdx'),
+    makePage('preview/singular.mdx'),
+    { expanded: true },
+  ]),
 ];
 
 const archive = [

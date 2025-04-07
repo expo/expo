@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.3.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix support for react-native-macos 0.78 ([#35688](https://github.com/expo/expo/pull/35688) by [@gabrieldonadel](https://github.com/gabrieldonadel))
@@ -22,6 +32,7 @@
 - [Android] Add Constant API ([#35157](https://github.com/expo/expo/pull/35157) by [@jakex7](https://github.com/jakex7))
 - [iOS] Add Constant API ([#35199](https://github.com/expo/expo/pull/35199) by [@jakex7](https://github.com/jakex7))
 - [Android] Added support for custom queues for async functions. ([#35838](https://github.com/expo/expo/pull/35838) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Allow undefined props on ExpoSwiftUIView ([#35852](https://github.com/expo/expo/pull/35852) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -50,6 +61,7 @@
 - [Android] Make ExpoComposeView builder function optional. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
 - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
 - [Android] Used `compileOnly` to depend on the `expo-modules-core` when applying default dependencies. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+- Removed extra `UIView` from SwiftUI integration. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

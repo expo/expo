@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
@@ -17,8 +27,6 @@
 
 - Fix namespace type export stripping. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Add all missing dependencies for package resolution with NPM. ([#34628](https://github.com/expo/expo/pull/34628) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 12.0.10 - 2025-03-31
 

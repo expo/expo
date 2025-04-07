@@ -139,10 +139,8 @@ public final class ImageView: ExpoView {
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     if imageTintColor != nil {
-      var decodeOptions = context[.imageDecodeOptions] as? [SDImageCoderOption: Any] ?? [:]
-      decodeOptions[.decodeThumbnailPixelSize] = sdImageView.bounds.size
-      decodeOptions[.decodePreserveAspectRatio] = true
-      context[.imageDecodeOptions] = decodeOptions
+      context[.imagePreserveAspectRatio] = true
+      context[.imageThumbnailPixelSize] = sdImageView.bounds.size
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.

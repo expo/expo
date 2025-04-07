@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.7.0 — 2025-04-04
+
+### 💡 Others
+
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 
 ## 0.6.5 - 2025-02-14
