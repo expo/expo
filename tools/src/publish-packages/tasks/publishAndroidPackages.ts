@@ -18,6 +18,11 @@ export const publishAndroidArtifacts = new Task(
     dependsOn: [updateAndroidProjects],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    if (options.skipAndroidArtifacts) {
+      logger.log('\n🤖 Skipping publishing Android artifacts.');
+      return;
+    }
+
     const packages = parcels.map((parcels) => parcels.pkg);
 
     // Collect all packages that have Android artifacts to publish.
