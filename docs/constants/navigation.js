@@ -644,8 +644,11 @@ const versionsReference = VERSIONS.reduce(
         { expanded: true }
       ),
       makeSection(
-        'Included in Expo Go',
-        pagesFromDir(`versions/${version}/sdk`).filter(entry => entry.inExpoGo),
+        'Third-party libraries',
+        shiftEntryToFront(
+          pagesFromDir(`versions/${version}/sdk`).filter(entry => entry.inExpoGo),
+          entry => entry.name === 'Overview'
+        ),
         { expanded: true }
       ),
       makeSection('Technical specs', [
