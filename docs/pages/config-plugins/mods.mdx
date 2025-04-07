@@ -78,12 +78,11 @@ The following default mods are provided by the mod compiler for common file mani
 | `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
 | `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
 
-After the mods are resolved, the contents of each mod will be written to disk. Custom default mods can be added to support new native files. For example, you can create a mod to support the `GoogleServices-Info.plist`, and pass it to other mods.
+After the mods are resolved, the contents of each mod will be written to disk. Custom mods can be added to support new native files. For example, you can create a mod to support the **GoogleServices-Info.plist**, and pass it to other mods.
 
 ### Mod plugins
 
-Mods are responsible for a lot of tasks, so they can be pretty difficult to understand at first.
-If you're developing a feature that requires mods, it's best not to interact with them directly.
+Mods are responsible for a lot of tasks, so they can be pretty difficult to understand at first. If you're developing a feature that requires mods, it's best not to interact with them directly.
 
 Instead you should use the mod plugins provided by `expo/config-plugins`:
 
@@ -127,7 +126,7 @@ A mod plugin gets passed a `config` object with additional properties `modResult
 
 ## Create a mod
 
-For example, you want to write a mod to update the Xcode Project's "product name". You'll create a config plugin file that uses the `withXcodeProject` mod plugin.
+For example, if you want to write a mod to update the Xcode Project's "product name", you'll create a config plugin file that uses the `withXcodeProject` mod plugin.
 
 ```ts my-config-plugin.ts
 import { ConfigPlugin, withXcodeProject, IOSConfig } from 'expo/config-plugins';
@@ -182,7 +181,7 @@ Be careful using `withDangerousMod` as it is subject to change in the future. Th
 
 When implementing plugins, there are two fundamental approaches to consider:
 
-1. **Project-integrated plugins**: These plugins live locally within your project, making them easy to customize and maintain alongside your app's code. They are ideal for project-specific customizations.
+1. ** Plugins defined within your app's project**: These plugins live locally within your project, making them easy to customize and maintain alongside your app's code. They are ideal for project-specific customizations.
 
 2. **Standalone package plugins**: These plugins exist as separate packages and are published to npm. This approach is ideal for reusable plugins that can be shared across multiple projects.
 
@@ -190,11 +189,11 @@ Both approaches provide the same capabilities for modifying your native configur
 
 > Any resolution pattern that isn't specified below is unexpected behavior, and subject to breaking changes.
 
-### Project-integrated plugins
+### Plugins defined within your app's project
 
-With project-integrated plugins, you can implement plugins directly in your project in several ways:
+With plugins defined within your app's project, you can implement plugins directly in your project in several ways:
 
-#### Project file
+#### File import
 
 You can quickly create a plugin in your project by creating a JavaScript/TypeScript and use it in your config like any other JS/TS file.
 
@@ -238,7 +237,7 @@ This is different to how config plugins in Node modules work because **app.plugi
   ]}
 />
 
-#### Raw functions
+#### Inline function inside of dynamic app config
 
 Expo config objects also support passing functions as-is to the `plugins` array. This is useful for testing, or if you want to use a plugin without creating a file.
 
@@ -346,7 +345,7 @@ We support this to make testing, and plugin authoring easier, but we don't expec
 
 ## Why app.plugin.js for plugins
 
-Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin. This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
+Config resolution searches for a file named **app.plugin.js** first when a Node module name is provided as a plugin. This is because Node environments are often different compared Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reason, the root of a Node module is searched instead of right next to the **index.js**. Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**, if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
 
