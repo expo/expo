@@ -53,6 +53,7 @@ it('runs `npx expo lint --help`', async () => {
 it('runs `npx expo lint` to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackagesDev: ['eslint-config-expo'],
   });
 
   // `npx expo install expo-sms`
@@ -65,13 +66,20 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   // And not in the dependencies
   expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
+  // TODO(Kadi): remove linkExpoPackagesDev and uncomment when eslint-config-expo is published
+  // when linking packages locally, eslint is showing up as installed because monorepo and does not get installed via the cli
+
   // Ensure the eslint package was added
-  expect(pkg.devDependencies).toHaveProperty('eslint');
+  // expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
   expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(findProjectFiles(projectRoot)).toStrictEqual([
+  expect(
+    findProjectFiles(projectRoot).filter(
+      (value) => !value.startsWith('.tarballs/eslint-config-expo')
+    )
+  ).toStrictEqual([
     'App.js',
     'app.json',
     'bun.lock',
@@ -87,6 +95,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
 it('runs `npx expo customize eslint.config.js to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackagesDev: ['eslint-config-expo'],
   });
 
   // `npx expo customize eslint.config.js`
@@ -99,13 +108,20 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
   // And not in the dependencies
   expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
+  // TODO(Kadi): remove linkExpoPackagesDev and uncomment when eslint-config-expo is published
+  // when linking packages locally, eslint is showing up as installed because monorepo and does not get installed via the cli
+
   // Ensure the eslint package was added
-  expect(pkg.devDependencies).toHaveProperty('eslint');
+  // expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
   expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(findProjectFiles(projectRoot)).toStrictEqual([
+  expect(
+    findProjectFiles(projectRoot).filter(
+      (value) => !value.startsWith('.tarballs/eslint-config-expo')
+    )
+  ).toStrictEqual([
     'App.js',
     'app.json',
     'bun.lock',
