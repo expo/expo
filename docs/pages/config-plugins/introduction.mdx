@@ -1,5 +1,5 @@
 ---
-title: Introduction to Config Plugins
+title: Introduction to config plugins
 description: An introduction Expo config plugins.
 sidebar_title: Introduction
 ---
@@ -8,22 +8,22 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-It is possible to have an automatic setup for adding a native module to your project. Sometimes, a module may require a more complex setup. In such scenarios, you can use a config plugin to automatically configure your native project for a module and reduce the complexity by avoiding interaction with native project.
+When using a [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) project, you might want to implement native project (**android** and **ios** directories) changes without directly interacting with the native project files. In such scenarios, you can use a config plugin to automatically configure your native project.
 
 ## What is a config plugin
 
-Config plugin is a system for extending the [app config](/workflow/configuration) and customizing the [prebuild](/workflow/continuous-native-generation/) process of your app. They serve as a bridge between the JavaScript side of your app and the native Android and iOS platforms. Internally, Expo CLI uses config plugins to generate and configure all the native code for a project that is continuously generated (_previously known as_ a managed project).
+Config plugins let you add custom configuration points that are not already built into the [app config](/workflow/configuration). These custom configuration can modify the native projects created during the [prebuild](/workflow/continuous-native-generation/#usage) process in CNG projects.
 
-## Why use config plugins
+## Why use a config plugin
 
-Config plugins are used to add native modules that aren't included by default or to add any native code that needs to be configured further. They can be used to generate app icons, set the app name, configure **AndroidManifest.xml** and **Info.plist**, and so on.
+Config plugins can add native configuration to your project that isn't included by default. They can be used to generate app icons, set the app name, configure **AndroidManigest.xml** and **Info.plist**, and so on.
 
-You can think of plugins like a bundler for native projects (**android** and **ios** directories) and running `npx expo prebuild` to bundle the projects by evaluating all project plugins. Doing so will generate **android** and **ios** directories. You can modify these directories manually after generating them, but then you cannot regenerate them safely without potentially overwriting manual modifications.
+Generally, in CNG projects, it is best to avoid modifying these native projects manually because you cannot regenerate them safely without potentially overwriting manual modifications. Config plugins allows you to modify these native projects in a _predictable way_ by keeping track of the changes you made to the native projects and only applying them when you run `npx expo prebuild` (either manually or automatically during a CI/CD process). For example, when you change the name of your app in app config and run `npx expo prebuild`, the name will change in your native projects automatically without the need to manually update **AndroidManifest.xml** and **Info.plist** files.
 
 ## Get started
 
 <BoxLink
-  title="Create a local config plugin"
+  title="Create a config plugin"
   description="Comprehensive guide on how to create and use config plugins in your Expo project."
   href="/config-plugins/plugins/"
   Icon={BookOpen02Icon}
