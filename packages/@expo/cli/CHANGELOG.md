@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Hide BRIDGE tags in webview logs. ([#35920](https://github.com/expo/expo/pull/35920) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed React Native Devtools opening issue. ([#35935](https://github.com/expo/expo/pull/35935) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
