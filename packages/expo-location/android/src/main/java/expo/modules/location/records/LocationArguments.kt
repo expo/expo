@@ -45,23 +45,18 @@ internal class LocationTaskOptions(
   @Field var deferredUpdatesTimeout: Float? = null,
   @Field var foregroundService: LocationTaskServiceOptions? = null
 ) : LocationOptions() {
-  internal fun toMutableMap(): MutableMap<String, Any?> {
-    val map: MutableMap<String, Any?> = mutableMapOf(
-      "accuracy" to accuracy,
-      "distanceInterval" to distanceInterval,
-      "mayShowUserSettingsDialog" to mayShowUserSettingsDialog,
-      "timeInterval" to timeInterval,
-      "deferredUpdatesDistance" to deferredUpdatesDistance,
-      "deferredUpdatesInterval" to deferredUpdatesInterval,
-      "deferredUpdatesTimeout" to deferredUpdatesTimeout
-    )
-
-    // Only add foregroundService to the map if it's not null
+internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>(
+    "accuracy" to accuracy,
+    "distanceInterval" to distanceInterval,
+    "mayShowUserSettingsDialog" to mayShowUserSettingsDialog,
+    "timeInterval" to timeInterval,
+    "deferredUpdatesDistance" to deferredUpdatesDistance,
+    "deferredUpdatesInterval" to deferredUpdatesInterval,
+    "deferredUpdatesTimeout" to deferredUpdatesTimeout
+  ).apply {
     foregroundService?.let {
-      map["foregroundService"] = (foregroundService?.toMutableMap() ?: mutableMapOf()) as Any
+      this["foregroundService"] = it.toMutableMap()
     }
-
-    return map
   }
 }
 
