@@ -11,13 +11,13 @@ import {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import { env } from '../../../utils/env';
 import { learnMore } from '../../../utils/link';
 import {
   logLikeMetro,
   maybeSymbolicateAndFormatReactErrorLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
