@@ -8,6 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "enableEdgeToEdge": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
