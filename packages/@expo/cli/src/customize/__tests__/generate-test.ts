@@ -90,7 +90,7 @@ describe(selectAndGenerateAsync, () => {
       '/'
     );
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
 
     await selectAndGenerateAsync('/', {
       props: {
@@ -110,7 +110,7 @@ describe(selectAndGenerateAsync, () => {
   it(`selects a file from installed, and generates`, async () => {
     vol.fromJSON({}, '/');
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
 
     await selectAndGenerateAsync('/', {
       props: {
