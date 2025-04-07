@@ -12,9 +12,19 @@ import { Notification, NotificationContent, NotificationRequest, NotificationRes
 export declare const mapNotificationResponse: (response: NotificationResponse) => {
     notification: {
         request: {
-            content: NotificationContent & {
-                dataString?: string | undefined;
-            };
+            content: ({
+                title: string | null;
+                subtitle: string | null;
+                body: string | null;
+                data: Record<string, any>;
+                sound: "default" | "defaultCritical" | "custom" | null;
+            } & import("../Notifications.types").NotificationContentIos) | ({
+                title: string | null;
+                subtitle: string | null;
+                body: string | null;
+                data: Record<string, any>;
+                sound: "default" | "defaultCritical" | "custom" | null;
+            } & import("../Notifications.types").NotificationContentAndroid);
             identifier: string;
             trigger: import("../Notifications.types").NotificationTrigger;
         };
@@ -34,9 +44,19 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
  */
 export declare const mapNotification: (notification: Notification) => {
     request: {
-        content: NotificationContent & {
-            dataString?: string | undefined;
-        };
+        content: ({
+            title: string | null;
+            subtitle: string | null;
+            body: string | null;
+            data: Record<string, any>;
+            sound: "default" | "defaultCritical" | "custom" | null;
+        } & import("../Notifications.types").NotificationContentIos) | ({
+            title: string | null;
+            subtitle: string | null;
+            body: string | null;
+            data: Record<string, any>;
+            sound: "default" | "defaultCritical" | "custom" | null;
+        } & import("../Notifications.types").NotificationContentAndroid);
         identifier: string;
         trigger: import("../Notifications.types").NotificationTrigger;
     };
@@ -52,9 +72,19 @@ export declare const mapNotification: (notification: Notification) => {
  * @returns the mapped request.
  */
 export declare const mapNotificationRequest: (request: NotificationRequest) => {
-    content: NotificationContent & {
-        dataString?: string | undefined;
-    };
+    content: ({
+        title: string | null;
+        subtitle: string | null;
+        body: string | null;
+        data: Record<string, any>;
+        sound: "default" | "defaultCritical" | "custom" | null;
+    } & import("../Notifications.types").NotificationContentIos) | ({
+        title: string | null;
+        subtitle: string | null;
+        body: string | null;
+        data: Record<string, any>;
+        sound: "default" | "defaultCritical" | "custom" | null;
+    } & import("../Notifications.types").NotificationContentAndroid);
     identifier: string;
     trigger: import("../Notifications.types").NotificationTrigger;
 };
@@ -66,7 +96,17 @@ export declare const mapNotificationRequest: (request: NotificationRequest) => {
  * @param content The raw content passed in from native code
  * @returns the mapped content.
  */
-export declare const mapNotificationContent: (content: NotificationContent) => NotificationContent & {
-    dataString?: string | undefined;
-};
+export declare const mapNotificationContent: (content: NotificationContent) => ({
+    title: string | null;
+    subtitle: string | null;
+    body: string | null;
+    data: Record<string, any>;
+    sound: "default" | "defaultCritical" | "custom" | null;
+} & import("../Notifications.types").NotificationContentIos) | ({
+    title: string | null;
+    subtitle: string | null;
+    body: string | null;
+    data: Record<string, any>;
+    sound: "default" | "defaultCritical" | "custom" | null;
+} & import("../Notifications.types").NotificationContentAndroid);
 //# sourceMappingURL=mapNotificationResponse.d.ts.map

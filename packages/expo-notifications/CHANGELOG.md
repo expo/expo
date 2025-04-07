@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- fix Android `NotificationContent` not containing JSON data object ([#35942](https://github.com/expo/expo/pull/35942) by [@vonovak](https://github.com/vonovak))
 - [post-swift-conversion] fix regressions in `CalendarTriggerRecord` ([#35937](https://github.com/expo/expo/pull/35937) by [@vonovak](https://github.com/vonovak))
 - remove deprecated `presentNotificationAsync` ([#35900](https://github.com/expo/expo/pull/35900) by [@vonovak](https://github.com/vonovak))
 - [post-swift-conversion] UNTextInputNotificationAction wasn't provided with options ([#35903](https://github.com/expo/expo/pull/35903) by [@vonovak](https://github.com/vonovak))

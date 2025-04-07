@@ -59,15 +59,22 @@ export const mapNotificationRequest = (request: NotificationRequest) => ({
  * @returns the mapped content.
  */
 export const mapNotificationContent = (content: NotificationContent) => {
-  const mappedContent: NotificationContent & { dataString?: string } = { ...content };
   try {
-    const dataString = mappedContent['dataString'];
+    const dataString = content['dataString'];
     if (typeof dataString === 'string') {
+      const mappedContent: NotificationContent & { dataString?: string } = { ...content };
       mappedContent.data = JSON.parse(dataString);
-      delete mappedContent.dataString;
+      Object.defineProperty(mappedContent, 'dataString', {
+        get() {
+          // TODO(vonovak) remove this warning and delete dataString entry in a next version
+          console.warn('reading dataString is deprecated, use data instead');
+          return dataString;
+        },
+      });
+      return mappedContent;
     }
   } catch (e: any) {
-    console.log(`Error in notification: ${e}`);
+    console.error(`Error parsing notification: ${e}`);
   }
-  return mappedContent;
+  return content;
 };
