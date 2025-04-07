@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Hide BRIDGE tags in webview logs.
+- Hide BRIDGE tags in webview logs. ([#35920](https://github.com/expo/expo/pull/35920) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
