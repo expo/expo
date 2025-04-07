@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateFontFamilyXml = exports.normalizeFilename = exports.getFontWeight = exports.resolveFontPaths = void 0;
+exports.generateFontFamilyXml = exports.normalizeFilename = exports.resolveXmlFontPaths = exports.resolveFontPaths = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 async function resolveFontPaths(fonts, projectRoot) {
@@ -21,33 +21,24 @@ async function resolveFontPaths(fonts, projectRoot) {
         .filter((p) => p.endsWith('.ttf') || p.endsWith('.otf') || p.endsWith('.woff') || p.endsWith('.woff2'));
 }
 exports.resolveFontPaths = resolveFontPaths;
-const weightMap = {
-    thin: 100,
-    extralight: 200,
-    ultralight: 200,
-    light: 300,
-    regular: 400,
-    normal: 400,
-    book: 400,
-    medium: 500,
-    semibold: 600,
-    demibold: 600,
-    bold: 700,
-    extrabold: 800,
-    ultrabold: 800,
-    black: 900,
-    heavy: 900,
-};
-const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
-function getFontWeight(filename) {
-    for (const weight of weights) {
-        if (filename.replaceAll('_', '').includes(weight)) {
-            return weightMap[weight];
+async function resolveXmlFontPaths(fonts, projectRoot) {
+    const promises = fonts.map(async (p) => {
+        const resolvedPath = path_1.default.resolve(projectRoot, p.font);
+        const stat = await promises_1.default.stat(resolvedPath);
+        if (stat.isDirectory()) {
+            const dir = await promises_1.default.readdir(resolvedPath);
+            return dir.map((file) => ({ ...p, font: path_1.default.join(resolvedPath, file) }));
         }
-    }
-    return 400;
+        return [{ ...p, font: resolvedPath }];
+    });
+    return (await Promise.all(promises))
+        .flat()
+        .filter((p) => p.font.endsWith('.ttf') ||
+        p.font.endsWith('.otf') ||
+        p.font.endsWith('.woff') ||
+        p.font.endsWith('.woff2'));
 }
-exports.getFontWeight = getFontWeight;
+exports.resolveXmlFontPaths = resolveXmlFontPaths;
 function normalizeFilename(filename) {
     return filename
         .toLowerCase()
@@ -60,10 +51,15 @@ exports.normalizeFilename = normalizeFilename;
 function generateFontFamilyXml(files) {
     let xml = `<?xml version="1.0" encoding="utf-8"?>\n<font-family xmlns:app="http://schemas.android.com/apk/res-auto">\n`;
     files.forEach((file) => {
-        const filename = normalizeFilename(path_1.default.basename(file, path_1.default.extname(file)));
-        const fontWeight = getFontWeight(filename);
-        const fontStyle = filename.includes('italic') ? 'italic' : 'normal';
-        xml += `    <font app:fontStyle="${fontStyle}" app:fontWeight="${fontWeight}" app:font="@font/${filename}" />\n`;
+        const filename = normalizeFilename(path_1.default.basename(file.font, path_1.default.extname(file.font)));
+        xml += `    <font`;
+        if (file.fontStyle) {
+            xml += ` app:fontStyle="${file.fontStyle}"`;
+        }
+        if (file.fontWeight) {
+            xml += ` app:fontWeight="${file.fontWeight}"`;
+        }
+        xml += ` app:font="@font/${filename}" />\n`;
     });
     xml += `</font-family>\n`;
     return xml;

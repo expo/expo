@@ -7,10 +7,20 @@ import { type ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { generateFontFamilyXml, normalizeFilename, resolveFontPaths } from './utils';
+import {
+  generateFontFamilyXml,
+  normalizeFilename,
+  resolveFontPaths,
+  resolveXmlFontPaths,
+} from './utils';
 
+export type FontFiles = {
+  font: string;
+  fontStyle: 'normal' | 'italic';
+  fontWeight: `${number}`;
+};
 export type XmlFonts = {
-  fontFiles: string[];
+  files: FontFiles[];
   fontName: string;
 };
 
@@ -42,30 +52,31 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
     const fontsDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
     await fs.mkdir(fontsDir, { recursive: true });
 
-    const isJava = config.modResults.language === 'java';
-    config.modResults.contents = addImports(
-      config.modResults.contents,
+    const modResults = config.modResults;
+    const isJava = modResults.language === 'java';
+    modResults.contents = addImports(
+      modResults.contents,
       ['com.facebook.react.common.assets.ReactFontManager'],
       isJava
     );
 
     Promise.all(
-      fonts.map(async ({ fontName, fontFiles }) => {
+      fonts.map(async ({ fontName, files }) => {
         const xmlFileName = normalizeFilename(fontName);
-        const resolvedFonts = await resolveFontPaths(fontFiles, config.modRequest.projectRoot);
+        const resolvedFonts = await resolveXmlFontPaths(files, config.modRequest.projectRoot);
         const fontXml = generateFontFamilyXml(resolvedFonts);
         const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
         await fs.writeFile(xmlPath, fontXml);
 
         await Promise.all(
           resolvedFonts.map(async (file) => {
-            const destPath = path.join(fontsDir, path.basename(file));
-            await fs.copyFile(path.resolve(__dirname, file), destPath);
+            const destPath = path.join(fontsDir, path.basename(file.font));
+            await fs.copyFile(path.resolve(__dirname, file.font), destPath);
           })
         );
 
-        config.modResults.contents = appendContentsInsideDeclarationBlock(
-          config.modResults.contents,
+        modResults.contents = appendContentsInsideDeclarationBlock(
+          modResults.contents,
           'onCreate',
           `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `
         );

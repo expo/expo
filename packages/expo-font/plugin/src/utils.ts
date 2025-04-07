@@ -1,6 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import type { FontFiles } from './withFontsAndroid';
+
 export async function resolveFontPaths(fonts: string[], projectRoot: string) {
   const promises = fonts.map(async (p) => {
     const resolvedPath = path.resolve(projectRoot, p);
@@ -19,33 +21,26 @@ export async function resolveFontPaths(fonts: string[], projectRoot: string) {
     );
 }
 
-const weightMap: Record<string, number> = {
-  thin: 100,
-  extralight: 200,
-  ultralight: 200,
-  light: 300,
-  regular: 400,
-  normal: 400,
-  book: 400,
-  medium: 500,
-  semibold: 600,
-  demibold: 600,
-  bold: 700,
-  extrabold: 800,
-  ultrabold: 800,
-  black: 900,
-  heavy: 900,
-};
-const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
+export async function resolveXmlFontPaths(fonts: FontFiles[], projectRoot: string) {
+  const promises = fonts.map(async (p) => {
+    const resolvedPath = path.resolve(projectRoot, p.font);
+    const stat = await fs.stat(resolvedPath);
 
-export function getFontWeight(filename: string) {
-  for (const weight of weights) {
-    if (filename.replaceAll('_', '').includes(weight)) {
-      return weightMap[weight];
+    if (stat.isDirectory()) {
+      const dir = await fs.readdir(resolvedPath);
+      return dir.map((file) => ({ ...p, font: path.join(resolvedPath, file) }));
     }
-  }
-
-  return 400;
+    return [{ ...p, font: resolvedPath }];
+  });
+  return (await Promise.all(promises))
+    .flat()
+    .filter(
+      (p) =>
+        p.font.endsWith('.ttf') ||
+        p.font.endsWith('.otf') ||
+        p.font.endsWith('.woff') ||
+        p.font.endsWith('.woff2')
+    );
 }
 
 export function normalizeFilename(filename: string): string {
@@ -57,15 +52,20 @@ export function normalizeFilename(filename: string): string {
     .replace(/^_+|_+$/g, '');
 }
 
-export function generateFontFamilyXml(files: string[]) {
+export function generateFontFamilyXml(files: FontFiles[]) {
   let xml = `<?xml version="1.0" encoding="utf-8"?>\n<font-family xmlns:app="http://schemas.android.com/apk/res-auto">\n`;
 
   files.forEach((file) => {
-    const filename = normalizeFilename(path.basename(file, path.extname(file)));
-    const fontWeight = getFontWeight(filename);
-    const fontStyle = filename.includes('italic') ? 'italic' : 'normal';
+    const filename = normalizeFilename(path.basename(file.font, path.extname(file.font)));
+    xml += `    <font`;
+    if (file.fontStyle) {
+      xml += ` app:fontStyle="${file.fontStyle}"`;
+    }
+    if (file.fontWeight) {
+      xml += ` app:fontWeight="${file.fontWeight}"`;
+    }
 
-    xml += `    <font app:fontStyle="${fontStyle}" app:fontWeight="${fontWeight}" app:font="@font/${filename}" />\n`;
+    xml += ` app:font="@font/${filename}" />\n`;
   });
 
   xml += `</font-family>\n`;
