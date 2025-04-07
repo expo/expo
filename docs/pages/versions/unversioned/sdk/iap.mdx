@@ -1,0 +1,375 @@
+# Expo IAP
+
+> **Key Feature**: `expo-iap` works seamlessly with Expo's managed workflow—no native code required! This is a major improvement over `react-native-iap`, making it ideal for small teams using the Expo SDK.
+
+---
+
+import APISection from '~/components/plugins/APISection'; import { APIInstallSection } from '~/components/plugins/InstallSection'; import { ConfigReactNative, ConfigPluginExample } from '~/ui/components/ConfigSection'; import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-iap` is an Expo module for handling in-app purchases (IAP) on iOS (via StoreKit 2) and Android (via Google Play Billing). It supports consumables, non-consumables, and subscriptions. Unlike [`react-native-iap`](https://github.com/hyochan/react-native-iap), which requires native setup, `expo-iap` integrates seamlessly into Expo's [managed workflow](https://docs.expo.dev/archive/managed-vs-bare)—no ejecting needed! However, you’ll need a [development client](https://docs.expo.dev/development/introduction/) rather than Expo Go for full functionality. Starting from version 2.2.8, most features of `react-native-iap` have been ported.
+
+## Installation
+
+`expo-iap` is compatible with [Expo SDK](https://expo.dev) 51+ and supports both managed workflows and React Native CLI projects.
+
+<APIInstallSection packageName="expo-iap" />
+
+### Configure with Expo Config Plugin (Managed Workflow Only)
+
+For managed workflows, add `'expo-iap'` to the `plugins` array in your `app.json` or `app.config.js`:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-iap"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+This plugin automatically configures Android BILLING permissions and iOS setup, making it plug-and-play with a development client built via [EAS Build](/build/introduction) or `npx expo run:[android|ios]`.
+
+## Managed Expo Projects
+
+> **No Native Code Required—Use a Development Client!**  
+> Unlike `react-native-iap`, `expo-iap` works in Expo’s managed workflow without native modifications. However, Expo Go is not supported—use a [development client](https://docs.expo.dev/development/introduction/) instead.
+
+1. **Run Your App**  
+   After installing the package and configuring the plugin, build a development client:
+
+   ```bash
+   npx expo run:android
+   npx expo run:ios
+   ```
+
+2. **Example**  
+   See a working sample at [example/App.tsx](https://github.com/hyochan/expo-iap/blob/main/example/App.tsx). It demonstrates:
+   - Initializing the connection (`initConnection`)
+   - Fetching products/subscriptions (`getProducts`, `getSubscriptions`)
+   - Handling purchases (`requestPurchase`)
+   - Listening for updates/errors (`purchaseUpdatedListener`, `purchaseErrorListener`)
+
+## React Native CLI Projects
+
+For React Native CLI projects, you’ll need to manually configure native settings that the Expo config plugin handles automatically in managed workflows.
+
+### Prerequisites
+
+Ensure the Expo package is installed:
+
+```bash
+npx install-expo-modules@latest
+```
+
+Follow the setup in [Installing Expo Modules](https://docs.expo.dev/bare/installing-expo-modules/).
+
+### iOS Configuration
+
+Run `npx pod-install` to install native dependencies. Update your `ios/Podfile` to set the deployment target to `15.0` or higher (required for StoreKit 2):
+
+```ruby
+platform :ios, '15.0'
+```
+
+### Android Configuration
+
+<ConfigReactNative>
+
+1. **Update `android/build.gradle`**  
+   Add `supportLibVersion` to the `ext` block:
+
+   ```gradle
+   buildscript {
+       ext {
+           supportLibVersion = "28.0.0"  // Add this line
+           // Other existing ext properties...
+       }
+       // ...
+   }
+   ```
+
+   If no `ext` block exists, append it at the end.
+
+2. **Update `android/app/src/main/AndroidManifest.xml`**  
+   Add the BILLING permission:
+
+   ```xml
+   <manifest ...>
+       <uses-permission android:name="com.android.vending.BILLING" />
+       <!-- Other manifest content... -->
+   </manifest>
+   ```
+
+</ConfigReactNative>
+
+## Usage
+
+Below is a simple example of fetching products and making a purchase with `expo-iap` in a managed workflow:
+
+<SnackInline label="Simple IAP Example" dependencies={['expo-iap']} platforms={['ios', 'android']}>
+
+```tsx
+import {useEffect, useState} from 'react';
+import {Button, Text, View} from 'react-native';
+import {
+  initConnection,
+  endConnection,
+  getProducts,
+  requestPurchase,
+  purchaseUpdatedListener,
+  finishTransaction,
+} from 'expo-iap';
+
+export default function SimpleIAP() {
+  const [isConnected, setIsConnected] = useState(false);
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const setupIAP = async () => {
+      if (await initConnection()) {
+        setIsConnected(true);
+        const products = await getProducts(['my.consumable.item']); // Replace with your SKU
+        if (products.length > 0) setProduct(products[0]);
+      }
+    };
+    setupIAP();
+
+    const purchaseListener = purchaseUpdatedListener(async (purchase) => {
+      if (purchase) {
+        await finishTransaction({purchase, isConsumable: true});
+        alert('Purchase completed!');
+      }
+    });
+
+    return () => {
+      purchaseListener.remove();
+      endConnection();
+    };
+  }, []);
+
+  const buyItem = async () => {
+    if (!product) return;
+    await requestPurchase({
+      request: {skus: [product.id]}, // Android expects 'skus'; iOS uses 'sku'
+    });
+  };
+
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>{isConnected ? 'Connected' : 'Connecting...'}</Text>
+      {product ? (
+        <>
+          <Text>{`${product.title} - ${product.displayPrice}`}</Text>
+          <Button title="Buy Now" onPress={buyItem} />
+        </>
+      ) : (
+        <Text>Loading product...</Text>
+      )}
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
+### Using the `useIAP` Hook
+
+The `useIAP` hook simplifies IAP management. Here’s an example:
+
+<SnackInline label="IAP with useIAP Hook" dependencies={['expo-iap']} platforms={['ios', 'android']}>
+
+```tsx
+import {useEffect, useState} from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Button,
+  Alert,
+} from 'react-native';
+import {useIAP} from 'expo-iap';
+
+const productSkus = ['cpk.points.1000', 'cpk.points.5000'];
+const subscriptionSkus = ['cpk.membership.monthly.bronze'];
+
+export default function IAPWithHook() {
+  const {
+    connected,
+    products,
+    subscriptions,
+    getProducts,
+    getSubscriptions,
+    requestPurchase,
+    finishTransaction,
+  } = useIAP();
+
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (!connected) return;
+    const initializeIAP = async () => {
+      await Promise.all([
+        getProducts(productSkus),
+        getSubscriptions(subscriptionSkus),
+      ]);
+      setIsReady(true);
+    };
+    initializeIAP();
+  }, [connected, getProducts, getSubscriptions]);
+
+  const handlePurchase = async (sku, type = 'inapp') => {
+    await requestPurchase({
+      request: {skus: [sku]},
+      type,
+    });
+    Alert.alert('Purchase Initiated', `Purchasing ${sku}`);
+  };
+
+  if (!connected) return <Text>Connecting to IAP...</Text>;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Expo IAP with useIAP</Text>
+      {isReady ? (
+        <ScrollView>
+          <Text style={styles.section}>Products</Text>
+          {products.map((item) => (
+            <View key={item.id} style={styles.item}>
+              <Text>{`${item.title} - ${item.displayPrice}`}</Text>
+              <Button title="Buy" onPress={() => handlePurchase(item.id)} />
+            </View>
+          ))}
+          <Text style={styles.section}>Subscriptions</Text>
+          {subscriptions.map((item) => (
+            <View key={item.id} style={styles.item}>
+              <Text>{`${item.title} - ${item.displayPrice}`}</Text>
+              <Button
+                title="Subscribe"
+                onPress={() => handlePurchase(item.id, 'subs')}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <Text>Loading...</Text>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {flex: 1, padding: 20},
+  title: {fontSize: 20, fontWeight: 'bold', marginBottom: 10},
+  section: {fontSize: 18, marginTop: 10},
+  item: {marginVertical: 5},
+});
+```
+
+</SnackInline>
+
+## IAP Types
+
+`expo-iap` supports the following purchase types:
+
+### Consumable
+
+- **Description**: Items consumed after purchase and repurchasable (e.g., in-game currency).
+- **Behavior**: Requires acknowledgment via `finishTransaction` to enable repurchasing.
+- **Platforms**: iOS, Android.
+
+### Non-Consumable
+
+- **Description**: One-time purchases owned permanently (e.g., ad removal).
+- **Behavior**: Supports restoration; cannot be repurchased.
+- **Platforms**: iOS, Android.
+
+### Subscription
+
+- **Description**: Recurring purchases for ongoing access (e.g., memberships).
+- **Behavior**: Includes auto-renewing options and restoration.
+- **Platforms**: iOS, Android.
+
+## Product Types
+
+### Common Product Types (`BaseProduct`)
+
+| Property       | Type          | Description                |
+| -------------- | ------------- | -------------------------- |
+| `id`           | `string`      | Unique product identifier  |
+| `title`        | `string`      | Product title              |
+| `description`  | `string`      | Product description        |
+| `type`         | `ProductType` | `inapp` or `subs`          |
+| `displayName`  | `string?`     | UI display name (optional) |
+| `displayPrice` | `string?`     | Formatted price (optional) |
+| `price`        | `number?`     | Price value (optional)     |
+| `currency`     | `string?`     | Currency code (optional)   |
+
+### Android-Only Product Types
+
+- **`ProductAndroid`**
+  - `name: string`
+  - `oneTimePurchaseOfferDetails?: OneTimePurchaseOfferDetails`
+  - `subscriptionOfferDetails?: SubscriptionOfferDetail[]`
+- **`SubscriptionProductAndroid`**
+  - `subscriptionOfferDetails: SubscriptionOfferAndroid[]`
+
+### iOS-Only Product Types
+
+- **`ProductIos`**
+  - `isFamilyShareable: boolean`
+  - `jsonRepresentation: string`
+  - `subscription: SubscriptionInfo`
+- **`SubscriptionProductIos`**
+  - `discounts?: Discount[]`
+  - `introductoryPrice?: string`
+
+## Purchase Types
+
+### Common Purchase Types (`ProductPurchase`)
+
+| Property             | Type      | Description               |
+| -------------------- | --------- | ------------------------- |
+| `id`                 | `string`  | Purchased product ID      |
+| `transactionId`      | `string?` | Transaction ID (optional) |
+| `transactionDate`    | `number`  | Unix timestamp            |
+| `transactionReceipt` | `string`  | Receipt data              |
+
+### Android-Only Purchase Types
+
+- **`ProductPurchase`**
+  - `ids?: string[]`
+  - `dataAndroid?: string`
+  - `signatureAndroid?: string`
+  - `purchaseStateAndroid?: number`
+- **`SubscriptionPurchase`**
+  - `autoRenewingAndroid?: boolean`
+  - `purchaseTokenAndroid?: string`
+
+### iOS-Only Purchase Types
+
+- **`ProductPurchase`**
+  - `quantityIos?: number`
+  - `expirationDateIos?: number`
+  - `subscriptionGroupIdIos?: string`
+- **`SubscriptionPurchase`**
+  - Extends `ProductPurchase` with subscription-specific fields.
+
+## Development and Testing
+
+- **Expo Go**: Not supported. Use a development client instead.
+- **Simulators**: Limited functionality; test on real devices for accurate behavior.
+- **Feedback**: Updates are ongoing. Test thoroughly in production and report issues or contribute at [expo-iap GitHub](https://github.com/hyochan/expo-iap).
+
+## API
+
+```js
+import * as IAP from 'expo-iap';
+```
+
+<APISection packageName="expo-iap" apiName="IAP" />
