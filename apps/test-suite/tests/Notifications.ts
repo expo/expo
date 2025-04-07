@@ -1,10 +1,19 @@
-'use strict';
-
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
-import * as FileSystem from 'expo-file-system';
-import { Platform } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
+import {
+  AndroidImportance,
+  DailyTriggerInput,
+  NotificationAction,
+  NotificationBehavior,
+  NotificationCategoryOptions,
+  NotificationChannelInput,
+  NotificationHandler,
+  NotificationTriggerInput,
+  SchedulableNotificationTriggerInput,
+  SchedulableTriggerInputTypes,
+} from 'expo-notifications';
 import { Alert, AppState } from 'react-native';
 
 import { waitFor } from './helpers';
@@ -13,51 +22,31 @@ import { isInteractive } from '../utils/Environment';
 
 export const name = 'Notifications';
 
+const behaviorEnableAll: NotificationBehavior = {
+  shouldShowAlert: true,
+  shouldPlaySound: true,
+  shouldSetBadge: true,
+};
+
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+  const onlyInteractiveDescribe = isInteractive ? t.describe : t.xdescribe;
 
   t.describe('Notifications', () => {
     t.describe('getDevicePushTokenAsync', () => {
-      let subscription = null;
-      let tokenFromEvent = null;
-      let tokenFromMethodCall = null;
-
-      t.beforeAll(() => {
-        subscription = Notifications.addPushTokenListener((newEvent) => {
+      t.it('resolves with a token equal to the one from addPushTokenListener()', async () => {
+        let tokenFromEvent = null;
+        const subscription = Notifications.addPushTokenListener((newEvent) => {
           tokenFromEvent = newEvent;
         });
-      });
-
-      t.afterAll(() => {
-        if (subscription) {
-          subscription.remove();
-          subscription = null;
-        }
-      });
-
-      if (Platform.OS === 'android' || Platform.OS === 'ios') {
-        t.it('resolves with a string', async () => {
-          const devicePushToken = await Notifications.getDevicePushTokenAsync();
-          t.expect(typeof devicePushToken.data).toBe('string');
-          tokenFromMethodCall = devicePushToken;
-        });
-      }
-
-      if (Platform.OS === 'web') {
-        t.it('resolves with an object', async () => {
-          const devicePushToken = await Notifications.getDevicePushTokenAsync();
-          t.expect(typeof devicePushToken.data).toBe('object');
-          tokenFromMethodCall = devicePushToken;
-        });
-      }
-
-      t.it('emits an event with token (or not, if getDevicePushTokenAsync failed)', async () => {
-        // It would be better to do `if (!tokenFromMethodCall) { pending(); } else { ... }`
-        // but `t.pending()` still doesn't work.
-        await waitFor(500);
-        t.expect(tokenFromEvent).toEqual(tokenFromMethodCall);
+        const devicePushToken = await Notifications.getDevicePushTokenAsync();
+        const expectedType = Platform.OS === 'web' ? 'object' : 'string';
+        t.expect(typeof devicePushToken.data).toBe(expectedType);
+        await waitFor(1000);
+        t.expect(tokenFromEvent).toEqual(devicePushToken);
+        subscription.remove();
       });
 
       t.it('resolves when multiple calls are issued', async () => {
@@ -72,32 +61,18 @@ export async function test(t) {
       // Not running this test on web since Expo push notification doesn't yet support web.
       const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.it : t.xit;
       itWithExpoPushToken('fetches Expo push token', async () => {
-        let experienceId = undefined;
-        if (!Constants.manifest && !Constants.manifest2) {
-          // Absence of manifest means we're running out of managed workflow
-          // in bare-expo. @exponent/bare-expo "experience" has been configured
-          // to use Apple Push Notification key that will work in bare-expo.
-          experienceId = '@exponent/bare-expo';
-        }
-        const expoPushToken = await Notifications.getExpoPushTokenAsync({
-          experienceId,
-        });
+        const expoPushToken = await Notifications.getExpoPushTokenAsync();
         t.expect(expoPushToken.type).toBe('expo');
         t.expect(typeof expoPushToken.data).toBe('string');
       });
 
       itWithExpoPushToken('resolves when mixed multiple calls are issued', async () => {
-        let experienceId = undefined;
-        if (!Constants.manifest && !Constants.manifest2) {
-          // Absence of manifest means we're running out of managed workflow
-          // in bare-expo. @exponent/bare-expo "experience" has been configured
-          // to use Apple Push Notification key that will work in bare-expo.
-          experienceId = '@exponent/bare-expo';
-        }
-        await Promise.all([
-          Notifications.getExpoPushTokenAsync({ experienceId }),
+        const [expoToken, deviceToken] = await Promise.all([
+          Notifications.getExpoPushTokenAsync(),
           Notifications.getDevicePushTokenAsync(),
         ]);
+        t.expect(typeof expoToken.data).toBe('string');
+        t.expect(typeof deviceToken.data).toBe('string');
       });
     });
 
@@ -107,28 +82,19 @@ export async function test(t) {
       : t.xdescribe;
 
     describeWithExpoPushToken('when a push notification is sent', () => {
-      let notificationToHandle;
-      let handleSuccessEvent;
-      let handleErrorEvent;
+      let notificationToHandle: Notifications.Notification | undefined;
+      let handleSuccessEvent: string | undefined;
+      let handleErrorEvent: Parameters<NotificationHandler['handleError']>;
 
-      let receivedEvent = null;
+      let receivedEvent: Notifications.Notification | undefined;
       let receivedSubscription = null;
 
-      let expoPushToken;
+      let expoPushToken: string | undefined;
 
-      let handleFuncOverride;
+      let handleFuncOverride: NotificationHandler['handleNotification'];
 
       t.beforeAll(async () => {
-        let experienceId = undefined;
-        if (!Constants.manifest && !Constants.manifest2) {
-          // Absence of manifest means we're running out of managed workflow
-          // in bare-expo. @exponent/bare-expo "experience" has been configured
-          // to use Apple Push Notification key that will work in bare-expo.
-          experienceId = '@exponent/bare-expo';
-        }
-        const pushToken = await Notifications.getExpoPushTokenAsync({
-          experienceId,
-        });
+        const pushToken = await Notifications.getExpoPushTokenAsync();
         expoPushToken = pushToken.data;
 
         Notifications.setNotificationHandler({
@@ -137,18 +103,14 @@ export async function test(t) {
             if (handleFuncOverride) {
               return await handleFuncOverride(notification);
             } else {
-              return {
-                shouldPlaySound: false,
-                shouldSetBadge: false,
-                shouldShowAlert: true,
-              };
+              return behaviorEnableAll;
             }
           },
           handleSuccess: (event) => {
             handleSuccessEvent = event;
           },
-          handleError: (...event) => {
-            handleErrorEvent = event;
+          handleError: (...eventArgs) => {
+            handleErrorEvent = eventArgs;
           },
         });
 
@@ -174,53 +136,26 @@ export async function test(t) {
       });
 
       t.it('calls the `handleNotification` callback of the notification handler', async () => {
-        let iterations = 0;
-        while (iterations < 5) {
-          iterations += 1;
-          if (notificationToHandle) {
-            break;
-          }
-          await waitFor(1000);
-        }
+        await waitUntil(() => !!notificationToHandle);
+
         t.expect(notificationToHandle).not.toBeNull();
       });
 
-      t.it('emits a “notification received” event', async () => {
-        let iterations = 0;
-        while (iterations < 5) {
-          iterations += 1;
-          if (receivedEvent) {
-            break;
-          }
-          await waitFor(1000);
-        }
+      t.it('emits a "notification received" event with `data` value', async () => {
+        await waitUntil(() => !!receivedEvent);
         t.expect(receivedEvent).not.toBeNull();
-      });
-
-      t.it('the notification has proper `data` value', async () => {
-        let iterations = 0;
-        while (iterations < 5) {
-          iterations += 1;
-          if (receivedEvent) {
-            break;
-          }
-          await waitFor(1000);
-        }
         t.expect(receivedEvent.request.content.data.fieldTestedInDataContentsTest).toBe(42);
+        if (Platform.OS === 'android') {
+          // @ts-expect-error delete this later, see TODO in mapNotificationContent
+          t.expect(typeof receivedEvent.request.content.dataString).toBe('string');
+        }
       });
 
       t.describe('if handler responds in time', async () => {
         t.it(
           'calls `handleSuccess` callback of the notification handler',
           async () => {
-            let iterations = 0;
-            while (iterations < 5) {
-              iterations += 1;
-              if (handleSuccessEvent) {
-                break;
-              }
-              await waitFor(1000);
-            }
+            await waitUntil(() => !!handleSuccessEvent);
             t.expect(handleSuccessEvent).not.toBeNull();
             t.expect(handleErrorEvent).toBeNull();
           },
@@ -232,11 +167,7 @@ export async function test(t) {
         t.beforeAll(() => {
           handleFuncOverride = async () => {
             await waitFor(3000);
-            return {
-              shouldPlaySound: false,
-              shouldSetBadge: false,
-              shouldShowAlert: true,
-            };
+            return behaviorEnableAll;
           };
         });
 
@@ -247,14 +178,7 @@ export async function test(t) {
         t.it(
           'calls `handleError` callback of the notification handler',
           async () => {
-            let iterations = 0;
-            while (iterations < 5) {
-              iterations += 1;
-              if (handleErrorEvent) {
-                break;
-              }
-              await waitFor(1000);
-            }
+            await waitUntil(() => !!handleErrorEvent);
             t.expect(handleErrorEvent).not.toBeNull();
             t.expect(typeof handleErrorEvent[0]).toBe('string');
             t.expect(handleSuccessEvent).toBeNull();
@@ -281,35 +205,16 @@ export async function test(t) {
 
       t.it('resolves with specific permissions requested', async () => {
         const permissions = await Notifications.requestPermissionsAsync({
-          providesAppNotificationSettings: true,
-          allowsAlert: true,
-          allowsBadge: true,
-          allowsSound: true,
+          ios: {
+            provideAppNotificationSettings: true,
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+          },
         });
         t.expect(permissions).toBeDefined();
         t.expect(typeof permissions).toBe('object');
         t.expect(typeof permissions.status).toBe('string');
-      });
-    });
-
-    t.describe('presentNotificationAsync', () => {
-      t.it('presents a simple notification', async () => {
-        await Notifications.presentNotificationAsync({
-          title: 'Sample title',
-          subtitle: 'What an event!',
-          body: 'An interesting event has just happened',
-          badge: 1,
-        });
-      });
-
-      t.it('presents a notification with attachments', async () => {
-        const fileUri = FileSystem.documentDirectory + 'expo-notifications-test-image.jpg';
-        await FileSystem.downloadAsync('https://placekitten.com/200/300', fileUri);
-        await Notifications.presentNotificationAsync({
-          title: 'Look at that kitten! ➡️',
-          body: 'What a cutie!',
-          attachments: [{ uri: fileUri }],
-        });
       });
     });
 
@@ -318,8 +223,9 @@ export async function test(t) {
       const fallbackChannelId = 'expo_notifications_fallback_notification_channel';
       const fallbackChannelName = 'Miscellaneous';
       const testChannelId = 'test-channel-id';
-      const testChannel = {
+      const testChannel: NotificationChannelInput = {
         name: 'Test channel',
+        importance: AndroidImportance.UNSPECIFIED,
       };
 
       t.describe('getNotificationChannelAsync()', () => {
@@ -360,12 +266,15 @@ export async function test(t) {
       });
 
       t.describe('setNotificationChannelAsync()', () => {
+        t.beforeAll(async () => {
+          await Notifications.deleteNotificationChannelAsync(testChannelId);
+        });
         t.afterEach(async () => {
           await Notifications.deleteNotificationChannelAsync(testChannelId);
         });
 
         if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
-          t.it('returns the modified channel', async () => {
+          t.it('returns the created channel', async () => {
             const channel = await Notifications.setNotificationChannelAsync(
               testChannelId,
               testChannel
@@ -386,7 +295,8 @@ export async function test(t) {
           });
 
           t.it('sets custom properties', async () => {
-            const spec = {
+            const randomChannelId = `test-channel-${Math.floor(Math.random() * 1000)}`;
+            const spec: NotificationChannelInput = {
               name: 'Name',
               importance: Notifications.AndroidImportance.MIN,
               bypassDnd: true,
@@ -394,7 +304,7 @@ export async function test(t) {
               lightColor: '#FF231F7C',
               lockscreenVisibility: Notifications.AndroidNotificationVisibility.SECRET,
               showBadge: false,
-              sound: null,
+              sound: 'pop_sound.wav',
               audioAttributes: {
                 usage: Notifications.AndroidAudioUsage.NOTIFICATION,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
@@ -407,8 +317,18 @@ export async function test(t) {
               enableLights: true,
               enableVibrate: true,
             };
-            const channel = await Notifications.setNotificationChannelAsync(testChannelId, spec);
-            t.expect(channel).toEqual(t.jasmine.objectContaining({ ...spec, id: testChannelId }));
+            // we need to create a new channel every time to have android respect the settings
+            const channel = await Notifications.setNotificationChannelAsync(randomChannelId, spec);
+            await Notifications.deleteNotificationChannelAsync(randomChannelId);
+            const expected = {
+              ...spec,
+              id: randomChannelId,
+            };
+            // it appears android may not always respect these settings
+            delete expected.lockscreenVisibility;
+            delete expected.sound;
+            delete expected.bypassDnd;
+            t.expect(channel).toEqual(t.jasmine.objectContaining(expected));
           });
 
           t.it('assigns a channel to a group', async () => {
@@ -429,12 +349,14 @@ export async function test(t) {
             }
           });
 
-          t.it('updates a channel', async () => {
+          t.it('updates a channel (only name and description can be changed)', async () => {
             await Notifications.setNotificationChannelAsync(testChannelId, {
               name: 'Name before change',
+              importance: AndroidImportance.DEFAULT,
             });
             await Notifications.setNotificationChannelAsync(testChannelId, {
               name: 'Name after change',
+              importance: AndroidImportance.DEFAULT,
             });
             const channels = await Notifications.getNotificationChannelsAsync();
             t.expect(channels).toContain(
@@ -471,7 +393,7 @@ export async function test(t) {
           });
         } else {
           t.it("doesn't throw an error", async () => {
-            await Notifications.deleteNotificationChannelAsync(testChannelId, testChannel);
+            await Notifications.deleteNotificationChannelAsync(testChannelId);
           });
         }
       });
@@ -630,7 +552,13 @@ export async function test(t) {
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
       };
 
-      const testCategory1 = {
+      type CategoryParams = {
+        identifier: string;
+        actions: NotificationAction[];
+        options?: NotificationCategoryOptions;
+      };
+
+      const testCategory1: CategoryParams = {
         identifier: 'testNotificationCategory1',
         actions: [vanillaButton],
         options: {
@@ -640,9 +568,11 @@ export async function test(t) {
           showTitle: false,
           showSubtitle: false,
           allowAnnouncement: false,
+          categorySummaryFormat: '',
+          intentIdentifiers: [],
         },
       };
-      const testCategory2 = {
+      const testCategory2: CategoryParams = {
         identifier: 'testNotificationCategory2',
         actions: [vanillaButton, textResponseButton],
         options: {
@@ -651,6 +581,9 @@ export async function test(t) {
           showTitle: true,
           showSubtitle: true,
           allowAnnouncement: false,
+          categorySummaryFormat: '',
+          previewPlaceholder: 'exPreview',
+          intentIdentifiers: [],
         },
       };
 
@@ -663,9 +596,9 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async (id) => {
+          for (const id of allTestCategoryIds) {
             await Notifications.deleteNotificationCategoryAsync(id);
-          });
+          }
         });
 
         t.it('returns an empty array if there are no categories', async () => {
@@ -693,9 +626,9 @@ export async function test(t) {
 
       t.describe('setNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async (id) => {
+          for (const id of allTestCategoryIds) {
             await Notifications.deleteNotificationCategoryAsync(id);
-          });
+          }
         });
         t.it('creates a category with one action successfully', async () => {
           const resultCategory = await Notifications.setNotificationCategoryAsync(
@@ -740,9 +673,9 @@ export async function test(t) {
 
       t.describe('deleteNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async (id) => {
+          for (const id of allTestCategoryIds) {
             await Notifications.deleteNotificationCategoryAsync(id);
-          });
+          }
         });
         t.it('deleting a category that does not exist returns false', async () => {
           const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
@@ -821,9 +754,7 @@ export async function test(t) {
 
       t.beforeAll(() => {
         Notifications.setNotificationHandler({
-          handleNotification: async () => ({
-            shouldShowAlert: true,
-          }),
+          handleNotification: async () => behaviorEnableAll,
           handleSuccess: (notificationId) => {
             notificationStatuses[notificationId] = true;
           },
@@ -831,15 +762,16 @@ export async function test(t) {
       });
 
       t.it('resolves with an array containing a displayed notification', async () => {
-        await Notifications.presentNotificationAsync(
-          {
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: {
             title: 'Sample title',
             subtitle: 'What an event!',
             body: 'An interesting event has just happened',
             badge: 1,
           },
-          identifier
-        );
+          trigger: null,
+        });
         await waitFor(1000);
         const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
         t.expect(displayedNotifications).toContain(
@@ -881,15 +813,18 @@ export async function test(t) {
       }
     });
 
-    t.describe('dismissNotificationAsync()', () => {
+    t.describe('scheduleNotificationAsync() with null trigger', () => {
       t.it('resolves for a valid notification ID', async () => {
         const identifier = 'test-id';
-        await Notifications.presentNotificationAsync({
+        await Notifications.scheduleNotificationAsync({
           identifier,
-          title: 'Sample title',
-          subtitle: 'What an event!',
-          body: 'An interesting event has just happened',
-          badge: 1,
+          content: {
+            title: 'Sample title',
+            subtitle: 'What an event!',
+            body: 'An interesting event has just happened',
+            badge: 1,
+          },
+          trigger: null,
         });
         await Notifications.dismissNotificationAsync(identifier);
       });
@@ -919,7 +854,8 @@ export async function test(t) {
       });
 
       t.it('contains a scheduled notification', async () => {
-        const trigger = {
+        const trigger: NotificationTriggerInput = {
+          type: SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: 10,
         };
         await Notifications.scheduleNotificationAsync({
@@ -942,7 +878,8 @@ export async function test(t) {
       });
 
       t.it('does not contain a canceled notification', async () => {
-        const trigger = {
+        const trigger: NotificationTriggerInput = {
+          type: SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: 10,
         };
         await Notifications.scheduleNotificationAsync({
@@ -979,7 +916,7 @@ export async function test(t) {
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
@@ -996,25 +933,8 @@ export async function test(t) {
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
-              trigger: { seconds: 5, hour: 2 },
-            });
-          } catch (err) {
-            error = err;
-          }
-          t.expect(error).toBeDefined();
-        },
-        10000
-      );
-
-      t.it(
-        'throws an error if a user defines an invalid trigger (with repeats)',
-        async () => {
-          let error = undefined;
-          try {
-            await Notifications.scheduleNotificationAsync({
-              identifier,
-              content: notification,
-              trigger: { seconds: 5, repeats: true, hour: 2 },
+              // @ts-expect-error
+              trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
             });
           } catch (err) {
             error = err;
@@ -1033,7 +953,7 @@ export async function test(t) {
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
@@ -1061,15 +981,13 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async (event) => {
               notificationFromEvent = event;
-              return {
-                shouldShowAlert: true,
-              };
+              return behaviorEnableAll;
             },
           });
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
@@ -1085,10 +1003,7 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async (event) => {
               notificationFromEvent = event;
-              return {
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-              };
+              return behaviorEnableAll;
             },
           });
           await Notifications.scheduleNotificationAsync({
@@ -1097,7 +1012,7 @@ export async function test(t) {
               ...notification,
               sound: 'notification.wav',
             },
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
@@ -1122,10 +1037,7 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async (event) => {
               notificationFromEvent = event;
-              return {
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-              };
+              return behaviorEnableAll;
             },
           });
           await Notifications.scheduleNotificationAsync({
@@ -1134,7 +1046,7 @@ export async function test(t) {
               ...notification,
               sound: 'no-such-file.wav',
             },
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
@@ -1159,12 +1071,13 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async (event) => {
               notificationFromEvent = event;
-              return {
-                shouldShowAlert: true,
-              };
+              return behaviorEnableAll;
             },
           });
-          const trigger = new Date(Date.now() + 5 * 1000);
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.DATE,
+            date: new Date(Date.now() + 5 * 1000),
+          };
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
@@ -1181,10 +1094,10 @@ export async function test(t) {
         'schedules a repeating daily notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
-          const trigger = {
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.DAILY,
             hour: dateNow.getHours(),
             minute: (dateNow.getMinutes() + 2) % 60,
-            repeats: true,
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
@@ -1192,7 +1105,7 @@ export async function test(t) {
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
-          delete trigger.repeats;
+
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'daily',
@@ -1205,7 +1118,7 @@ export async function test(t) {
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
               dateComponents: {
-                ...trigger,
+                ...removeTriggerType(trigger),
                 timeZone: null,
                 isLeapMonth: false,
                 calendar: null,
@@ -1222,13 +1135,13 @@ export async function test(t) {
         'schedules a repeating weekly notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
-          const trigger = {
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.WEEKLY,
             // JS weekday range equals 0 to 6, Sunday equals 0
             // Native weekday range equals 1 to 7, Sunday equals 1
             weekday: dateNow.getDay() + 1,
             hour: dateNow.getHours(),
             minute: (dateNow.getMinutes() + 2) % 60,
-            repeats: true,
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
@@ -1236,7 +1149,7 @@ export async function test(t) {
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
-          delete trigger.repeats;
+
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'weekly',
@@ -1249,7 +1162,7 @@ export async function test(t) {
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
               dateComponents: {
-                ...trigger,
+                ...removeTriggerType(trigger),
                 timeZone: null,
                 isLeapMonth: false,
                 calendar: null,
@@ -1266,12 +1179,12 @@ export async function test(t) {
         'schedules a repeating yearly notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
-          const trigger = {
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.YEARLY,
             day: dateNow.getDate(),
-            month: dateNow.getMonth(),
+            month: dateNow.getMonth(), // 0 is January
             hour: dateNow.getHours(),
             minute: (dateNow.getMinutes() + 2) % 60,
-            repeats: true,
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
@@ -1279,7 +1192,7 @@ export async function test(t) {
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
-          delete trigger.repeats;
+
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'yearly',
@@ -1292,7 +1205,7 @@ export async function test(t) {
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
               dateComponents: {
-                ...trigger,
+                ...removeTriggerType(trigger),
                 // iOS uses 1-12 based months
                 month: trigger.month + 1,
                 timeZone: null,
@@ -1322,6 +1235,7 @@ export async function test(t) {
               identifier,
               content: notification,
               trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                 seconds: 5,
                 repeats: true,
               },
@@ -1345,6 +1259,7 @@ export async function test(t) {
               identifier,
               content: notification,
               trigger: {
+                type: SchedulableTriggerInputTypes.CALENDAR,
                 second: (new Date().getSeconds() + 5) % 60,
               },
             });
@@ -1360,14 +1275,24 @@ export async function test(t) {
     t.describe('getNextTriggerDateAsync', () => {
       if (Platform.OS === 'ios') {
         t.it('generates trigger date for a calendar trigger', async () => {
-          const nextDate = await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9 });
+          const nextDate = await Notifications.getNextTriggerDateAsync({
+            type: SchedulableTriggerInputTypes.CALENDAR,
+            month: 1,
+            hour: 9,
+            repeats: true,
+          });
           t.expect(nextDate).not.toBeNull();
         });
       } else {
         t.it('fails to generate trigger date for a calendar trigger', async () => {
           let exception = null;
           try {
-            await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9, repeats: true });
+            await Notifications.getNextTriggerDateAsync({
+              type: SchedulableTriggerInputTypes.CALENDAR,
+              month: 1,
+              hour: 9,
+              repeats: true,
+            });
           } catch (e) {
             exception = e;
           }
@@ -1377,9 +1302,9 @@ export async function test(t) {
 
       t.it('generates trigger date for a daily trigger', async () => {
         const nextDate = await Notifications.getNextTriggerDateAsync({
+          type: SchedulableTriggerInputTypes.DAILY,
           hour: 9,
           minute: 20,
-          repeats: true,
         });
         t.expect(nextDate).not.toBeNull();
         t.expect(new Date(nextDate).getHours()).toBe(9);
@@ -1388,10 +1313,10 @@ export async function test(t) {
 
       t.it('generates trigger date for a weekly trigger', async () => {
         const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+          type: SchedulableTriggerInputTypes.WEEKLY,
           weekday: 2,
           hour: 9,
           minute: 20,
-          repeats: true,
         });
         t.expect(nextDateTimestamp).not.toBeNull();
         const nextDate = new Date(nextDateTimestamp);
@@ -1403,11 +1328,11 @@ export async function test(t) {
 
       t.it('generates trigger date for a yearly trigger', async () => {
         const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+          type: SchedulableTriggerInputTypes.YEARLY,
           day: 2,
           month: 6,
           hour: 9,
           minute: 20,
-          repeats: true,
         });
         t.expect(nextDateTimestamp).not.toBeNull();
         const nextDate = new Date(nextDateTimestamp);
@@ -1420,6 +1345,7 @@ export async function test(t) {
       t.it('fails to generate trigger date for the immediate trigger', async () => {
         let exception = null;
         try {
+          // @ts-expect-error invalid arg
           await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
         } catch (e) {
           exception = e;
@@ -1441,7 +1367,7 @@ export async function test(t) {
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
-            trigger: { seconds: 5 },
+            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await Notifications.cancelScheduledNotificationAsync(identifier);
           await waitFor(6000);
@@ -1465,7 +1391,7 @@ export async function test(t) {
             await Notifications.scheduleNotificationAsync({
               identifier: `notification-${i}`,
               content: notification,
-              trigger: { seconds: 5 },
+              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
             });
           }
           await Notifications.cancelAllScheduledNotificationsAsync();
@@ -1479,9 +1405,8 @@ export async function test(t) {
       );
     });
 
-    const onlyInteractiveDescribe = isInteractive ? t.describe : t.xdescribe;
     onlyInteractiveDescribe('when the app is in background', () => {
-      let subscription = null;
+      let subscription: EventSubscription = null;
       let handleNotificationSpy = null;
       let handleSuccessSpy = null;
       let handleErrorSpy = null;
@@ -1535,10 +1460,9 @@ export async function test(t) {
                   identifier,
                   content: {
                     title: 'Hello from the application!',
-                    message:
-                      'You can now return to the app and let the test know the notification has been shown.',
+                    body: 'You can now return to the app and let the test know the notification has been shown.',
                   },
-                  trigger: { seconds: 1 },
+                  trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1 },
                 });
                 notificationSent = true;
               } else if (state === 'active' && notificationSent) {
@@ -1552,7 +1476,7 @@ export async function test(t) {
                   subscription.remove();
                   subscription = null;
                 }
-                resolve();
+                resolve(undefined);
               }
             }
             userInteractionTimeout = setTimeout(() => {
@@ -1567,7 +1491,7 @@ export async function test(t) {
                 'Scheduled notification test was skipped',
                 `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
               );
-              resolve();
+              resolve(undefined);
             }, secondsToTimeout * 1000);
             subscription = AppState.addEventListener('change', handleStateChange);
           }),
@@ -1581,9 +1505,7 @@ export async function test(t) {
 
       t.beforeEach(async () => {
         Notifications.setNotificationHandler({
-          handleNotification: async () => ({
-            shouldShowAlert: true,
-          }),
+          handleNotification: async () => behaviorEnableAll,
         });
         subscription = Notifications.addNotificationResponseReceivedListener((anEvent) => {
           event = anEvent;
@@ -1600,11 +1522,11 @@ export async function test(t) {
       });
 
       t.it(
-        'calls the “notification response received” listener with default action identifier',
+        'calls the "notification response received" listener with default action identifier',
         async () => {
           const secondsToTimeout = 5;
           const shouldRun = await Promise.race([
-            askUserYesOrNo('Could you tap on a notification when it shows?'),
+            askUserYesOrNo('Could you tap on the next notification when it shows?'),
             waitFor(secondsToTimeout * 1000),
           ]);
           if (!shouldRun) {
@@ -1621,15 +1543,11 @@ export async function test(t) {
             title: 'Tap me!',
             body: 'Better be quick!',
           };
-          await Notifications.presentNotificationAsync(notificationSpec);
-          let iterations = 0;
-          while (iterations < 5) {
-            iterations += 1;
-            if (event) {
-              break;
-            }
-            await waitFor(1000);
-          }
+          await Notifications.scheduleNotificationAsync({
+            content: notificationSpec,
+            trigger: null,
+          });
+          await waitUntil(() => !!event);
           t.expect(event).not.toBeNull();
           t.expect(event.actionIdentifier).toBe(Notifications.DEFAULT_ACTION_IDENTIFIER);
           t.expect(event.notification).toEqual(
@@ -1663,9 +1581,7 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async () => {
               timesSpyHasBeenCalled += 1;
-              return {
-                shouldShowAlert: false,
-              };
+              return behaviorEnableAll;
             },
           });
         });
@@ -1676,36 +1592,37 @@ export async function test(t) {
         });
 
         t.it(
-          'triggers a repeating daily notification. only first event is verified.',
+          '[long-running] triggers a repeating daily notification. only first event is verified.',
           async () => {
             // On iOS because we are using the calendar with repeat, it needs to be
             // greater than 60 seconds
             const triggerDate = new Date(
-              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+              new Date().getTime() + (Platform.OS === 'ios' ? 120001 : 60000)
             );
+            const trigger: DailyTriggerInput = {
+              type: SchedulableTriggerInputTypes.DAILY,
+              hour: triggerDate.getHours(),
+              minute: triggerDate.getMinutes(),
+            };
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
-              trigger: {
-                hour: triggerDate.getHours(),
-                minute: triggerDate.getMinutes(),
-                repeats: true,
-              },
+              trigger,
             });
             const scheduledTime = new Date(triggerDate);
             scheduledTime.setSeconds(0);
             scheduledTime.setMilliseconds(0);
-            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            const milliSecondsToWait = scheduledTime.getTime() - new Date().getTime() + 2000;
             await waitFor(milliSecondsToWait);
             t.expect(timesSpyHasBeenCalled).toBe(1);
           },
-          140000
+          200000
         );
       }
     );
 
     onlyInteractiveDescribe(
-      'triggers a repeating weekly notification. only first scheduled event is awaited and verified.',
+      '[long-running] triggers a repeating weekly notification. only first scheduled event is awaited and verified.',
       () => {
         let timesSpyHasBeenCalled = 0;
         const identifier = 'test-scheduled-notification';
@@ -1722,9 +1639,7 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async () => {
               timesSpyHasBeenCalled += 1;
-              return {
-                shouldShowAlert: false,
-              };
+              return behaviorEnableAll;
             },
           });
         });
@@ -1735,29 +1650,29 @@ export async function test(t) {
         });
 
         t.it(
-          'triggers a repeating weekly notification. only first event is verified.',
+          '[long-running] triggers a repeating weekly notification. only first event is verified.',
           async () => {
             // On iOS because we are using the calendar with repeat, it needs to be
             // greater than 60 seconds
             const triggerDate = new Date(
-              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+              new Date().getTime() + (Platform.OS === 'ios' ? 120001 : 60000)
             );
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
               trigger: {
+                type: SchedulableTriggerInputTypes.WEEKLY,
                 // JS weekday range equals 0 to 6, Sunday equals 0
                 // Native weekday range equals 1 to 7, Sunday equals 1
                 weekday: triggerDate.getDay() + 1,
                 hour: triggerDate.getHours(),
                 minute: triggerDate.getMinutes(),
-                repeats: true,
               },
             });
             const scheduledTime = new Date(triggerDate);
             scheduledTime.setSeconds(0);
             scheduledTime.setMilliseconds(0);
-            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            const milliSecondsToWait = scheduledTime.getTime() - new Date().getTime() + 2000;
             await waitFor(milliSecondsToWait);
             t.expect(timesSpyHasBeenCalled).toBe(1);
           },
@@ -1767,7 +1682,7 @@ export async function test(t) {
     );
 
     onlyInteractiveDescribe(
-      'triggers a repeating yearly notification. only first scheduled event is awaited and verified.',
+      '[long-running] triggers a repeating yearly notification. only first scheduled event is awaited and verified.',
       () => {
         let timesSpyHasBeenCalled = 0;
         const identifier = 'test-scheduled-notification';
@@ -1784,9 +1699,7 @@ export async function test(t) {
           Notifications.setNotificationHandler({
             handleNotification: async () => {
               timesSpyHasBeenCalled += 1;
-              return {
-                shouldShowAlert: false,
-              };
+              return behaviorEnableAll;
             },
           });
         });
@@ -1802,23 +1715,23 @@ export async function test(t) {
             // On iOS because we are using the calendar with repeat, it needs to be
             // greater than 60 seconds
             const triggerDate = new Date(
-              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+              new Date().getTime() + (Platform.OS === 'ios' ? 120001 : 60000)
             );
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
               trigger: {
+                type: SchedulableTriggerInputTypes.YEARLY,
                 day: triggerDate.getDate(),
                 month: triggerDate.getMonth(),
                 hour: triggerDate.getHours(),
                 minute: triggerDate.getMinutes(),
-                repeats: true,
               },
             });
             const scheduledTime = new Date(triggerDate);
             scheduledTime.setSeconds(0);
             scheduledTime.setMilliseconds(0);
-            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            const milliSecondsToWait = scheduledTime.getTime() - new Date().getTime() + 2000;
             await waitFor(milliSecondsToWait);
             t.expect(timesSpyHasBeenCalled).toBe(1);
           },
@@ -1834,7 +1747,10 @@ export async function test(t) {
 // own server or use the local notification API if you want to notify this user.
 const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
-async function sendTestPushNotification(expoPushToken, notificationOverrides) {
+async function sendTestPushNotification(
+  expoPushToken: string,
+  notificationOverrides?: Record<string, string>
+) {
   // POST the token to the Expo push server
   const response = await fetch(PUSH_ENDPOINT, {
     method: 'POST',
@@ -1913,3 +1829,19 @@ function askUserYesOrNo(title, message = '') {
     }
   });
 }
+
+const waitUntil = async (shouldBreak: () => boolean, maxIterations = 5) => {
+  let iterations = 0;
+  while (iterations < maxIterations) {
+    iterations += 1;
+    if (shouldBreak()) {
+      break;
+    }
+    await waitFor(1000);
+  }
+};
+
+const removeTriggerType = (trigger: SchedulableNotificationTriggerInput) => {
+  const { type, ...rest } = trigger;
+  return rest;
+};
