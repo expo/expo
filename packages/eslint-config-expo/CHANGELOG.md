@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Wrap exported config in `defineConfig`. ([#34371](https://github.com/expo/expo/pull/34371) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 

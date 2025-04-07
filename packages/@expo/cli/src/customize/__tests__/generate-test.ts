@@ -28,7 +28,7 @@ describe(queryAndGenerateAsync, () => {
         extras: [],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js, web/index.html, webpack.config.js, app/+html.tsx, app/+native-intent.ts"`
+      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js (deprecated), eslint.config.js, web/index.html, webpack.config.js, app/+html.tsx, app/+native-intent.ts"`
     );
   });
   it(`does nothing`, async () => {
@@ -90,7 +90,7 @@ describe(selectAndGenerateAsync, () => {
       '/'
     );
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
 
     await selectAndGenerateAsync('/', {
       props: {
@@ -110,7 +110,7 @@ describe(selectAndGenerateAsync, () => {
   it(`selects a file from installed, and generates`, async () => {
     vol.fromJSON({}, '/');
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
 
     await selectAndGenerateAsync('/', {
       props: {
