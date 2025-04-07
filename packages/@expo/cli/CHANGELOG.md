@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
+- Output recommended versions in prebuild ([#35941](https://github.com/expo/expo/pull/35941) by [@jakex7](https://github.com/jakex7))
 
 ## 0.23.0 — 2025-04-04
 
