@@ -5,13 +5,15 @@ export async function asyncServerImport(moduleId) {
     return $$require_external(moduleId);
   }
 
-  const m = await import(/* @metro-ignore */ moduleId);
+  let mod = await import(/* @metro-ignore */ moduleId);
 
-  if ('default' in m && typeof m.default === 'object' && m.default) {
-    const def = m.default;
-    if ('default' in def && typeof def.default === 'object' && def.default) {
-      return def;
+  // Return the default export, or nested default export
+  if ('default' in mod && typeof mod.default === 'object' && mod.default) {
+    mod = mod.default;
+    if ('default' in mod && typeof mod.default === 'object' && mod.default) {
+      mod = mod.default;
     }
   }
-  return m;
+
+  return mod;
 }
