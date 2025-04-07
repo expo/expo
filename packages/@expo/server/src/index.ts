@@ -143,23 +143,9 @@ export function createRequestHandler(
 
     const url = new URL(request.url, 'http://expo.dev');
 
-    const sanitizedPathname = url.pathname;
+    let sanitizedPathname = url.pathname;
 
     debug('Request', sanitizedPathname);
-
-    if (routesManifest.rewrites) {
-      for (const route of routesManifest.rewrites) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
-          continue;
-        }
-
-        const url = getRedirectRewriteLocation(request, route);
-
-        if (url) {
-          request = new Request(new URL(url, new URL(request.url).origin), request);
-        }
-      }
-    }
 
     if (routesManifest.redirects) {
       for (const route of routesManifest.redirects) {
@@ -180,6 +166,22 @@ export function createRequestHandler(
             },
           });
         }
+      }
+    }
+
+    if (routesManifest.rewrites) {
+      for (const route of routesManifest.rewrites) {
+        if (!route.namedRegex.test(sanitizedPathname)) {
+          continue;
+        }
+
+        if (route.methods && !route.methods.includes(request.method)) {
+          continue;
+        }
+
+        const url = getRedirectRewriteLocation(request, route);
+        request = new Request(new URL(url, new URL(request.url).origin), request);
+        sanitizedPathname = new URL(request.url, 'http://expo.dev').pathname;
       }
     }
 
@@ -329,12 +331,6 @@ function updateRequestWithConfig(
 }
 
 function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) {
-  if (route.methods) {
-    if (!route.methods.includes(request.method)) {
-      return;
-    }
-  }
-
   const params = updateRequestWithConfig(request, route);
 
   const urlSearchParams = new URL(request.url).searchParams;
