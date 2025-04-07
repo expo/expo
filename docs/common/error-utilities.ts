@@ -501,7 +501,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After updating config plugin section
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
-  
+
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
 };
