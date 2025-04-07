@@ -46,7 +46,7 @@ export type ContextMenuProps = {
      */
     color?: string;
     /**
-     * Optional styles to apply to the `ContextMenu`
+     * Optional styles to apply to the `ContextMenu`.
      */
     style?: StyleProp<ViewStyle>;
 };
@@ -114,8 +114,8 @@ export declare function Preview(props: {
  * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
  *
  * There are some platform-specific differences in the behavior of the context menu:
- * - On Android the expansion of the context menu is controlled by the (`expanded`)[#expanded] prop, iOS does not allow for manual control of the expansion state.
- * - On iOS the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
+ * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
+ * - On iOS, the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
  * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
  * - Android does not support showing a `Picker` element in the context menu.
  */

@@ -6,6 +6,12 @@ export type * from '../Slider';
 export type * from '../Switch';
 export type * from '../Label';
 export type * from '../List';
+export type * from '../BottomSheet';
+export type * from '../Gauge';
+export type * from '../ColorPicker';
+export type * from '../DatePicker';
+export type * from '../TextInput';
+export type * from '../Progress';
 /**
  * @hidden
  */

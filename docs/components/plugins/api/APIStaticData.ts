@@ -90,6 +90,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   AudioSampleCallback: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  ColorValue: 'https://reactnative.dev/docs/colors',
   Component: 'https://react.dev/reference/react/Component',
   CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',

@@ -17,9 +17,6 @@ export type PickerElementColors = {
     disabledActiveContainerColor?: string;
     disabledInactiveContainerColor?: string;
 };
-/**
- * Props for the Picker component.
- */
 export type PickerProps = {
     /**
      * An array of options to be displayed in the picker.

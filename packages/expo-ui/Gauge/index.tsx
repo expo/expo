@@ -2,11 +2,16 @@ import { requireNativeView } from 'expo';
 import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
 
 /**
- * Gauge style type.
+ * The type of `Gauge`.
+ * @platform ios
  */
-type GuageType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
+export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
 
-type ValueOptions = {
+/**
+ * Value options for the `Gauge` component.
+ * @platform ios
+ */
+export type ValueOptions = {
   /**
    * Value of the element.
    */
@@ -21,12 +26,9 @@ type ValueOptions = {
   color?: ColorValue;
 };
 
-/**
- * Props for the Gauge component.
- */
 export type GaugeProps = {
   /**
-   * A label displayed on the Gauge.
+   * A label displayed on the `Gauge`.
    */
   label?: string;
   /**
@@ -46,15 +48,15 @@ export type GaugeProps = {
    */
   max?: ValueOptions;
   /**
-   * Gauge style type.
+   * The type of `Gauge`.
    */
-  type?: GuageType;
+  type?: GaugeType;
   /**
-   * Color (or array of colors for gradient) of the Gauge.
+   * Color (or array of colors for gradient) of the `Gauge`.
    */
   color?: ColorValue | ColorValue[];
   /**
-   * Optional style to apply to the Guage component.
+   * Optional style to apply to the `Gauge` component.
    */
   style?: StyleProp<ViewStyle>;
 };
@@ -65,6 +67,10 @@ if (Platform.OS === 'ios') {
   GaugeNativeView = requireNativeView('ExpoUI', 'GaugeView');
 }
 
+/**
+ * Renders a native `Gauge` component.
+ * @platform ios
+ */
 export function Gauge({ type = 'default', ...props }: GaugeProps) {
   if (!GaugeNativeView) {
     return null;
