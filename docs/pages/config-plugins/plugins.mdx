@@ -1,7 +1,7 @@
 ---
 title: Create and use config plugins
 description: Learn how to create and use a config plugins in your Expo project.
-sidebar_title: Plugins
+sidebar_title: Create a plugin
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
@@ -13,7 +13,7 @@ A config plugin is made up of individual plugin functions that modify your app's
 
 - Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified `ExpoConfig`
 - Plugins should be named using the following convention: `with<Plugin Functionality>`, for example, `withFacebook`
-- Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added
+- Plugins should be synchronous and their return value should be serializable except for adding any `mods`. `Mods` are asynchronous functions that modify native project files.
 - Optionally, a second argument can be passed to the plugin to configure it
 - `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`. However, the `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
 
