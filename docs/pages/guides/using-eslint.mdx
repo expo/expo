@@ -17,11 +17,11 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 ### Setup
 
-To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **.eslintrc.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
+To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **eslint.config.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
 <Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
 
-> **info** From **SDK 53** onwards, the created ESLint config file will use the [Flat Config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format, however legacy config will also be supported.
+> **info** From **SDK 53** onwards, the created ESLint config file will use the [Flat Config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. However, legacy config will also be supported.
 
 <Collapsible summary="Setup instructions for SDK 50 and below">
 
@@ -169,7 +169,7 @@ To install Prettier in your project:
 
 <Tabs>
 
-<Tab label="Flat Config">
+<Tab label="Flat config">
 
 To integrate Prettier with ESlint, update your **eslint.config.js**:
 
@@ -189,7 +189,7 @@ module.exports = defineConfig([
 
 </Tab>
 
-<Tab label="Legacy Config">
+<Tab label="Legacy config">
 
 To integrate Prettier with ESlint, update your **.eslintrc.js**:
 
@@ -236,72 +236,9 @@ ESLint can be slow to run on large projects. The easiest way to speed up the pro
 node_modules
 ```
 
-## Migration to `eslint-config-expo`
+## Migration to Flat config
 
-If you're migrating from an older version of Expo SDK that has `eslint-config-universe` installed, install `eslint-config-expo` library and update your ESLint configuration to extend it from the new library.
-
-<Step label="1">
-
-Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
-
-<Tabs>
-
-<Tab label="macOS/Linux">
-
-<Terminal cmd={['$ npx expo install eslint-config-expo --dev']} />
-
-</Tab>
-
-<Tab label="Windows">
-
-<Terminal cmd={['$ npx expo install eslint-config-expo "--" --dev']} />
-
-</Tab>
-
-</Tabs>
-
-</Step>
-
-<Step label="2">
-
-Update your ESLint configuration to extend the `eslint-config-expo`:
-
-```js .eslintrc.js
-module.exports = {
-  /* @info Replace the extends key with the new configuration. */
-  extends: 'expo',
-  /* @end */
-  /* @hide ...*/ /* @end */
-};
-```
-
-You can continue using your existing ESLint configuration with the new library and the `lint` script in your **package.json**. If your project uses SDK 51 and above, you can switch to using `npx expo lint` by following the next step.
-
-</Step>
-
-<Step label="3">
-
-To use `npx expo lint` command to lint your code, update the `lint` script in your **package.json**:
-
-```json package.json
-{
-  "scripts": {
-    /* @info */
-    "lint": "expo lint"
-    /* @end */
-  }
-}
-```
-
-> **Note:** The above configuration will work only for SDK 51 and above.
-
-Now you can run `npx expo lint` to lint your code.
-
-</Step>
-
-## Migration to Flat Config
-
-> **Note:** Flat config is supported in Expo SDK 53 and above.
+> **info** **Note:** Flat config is supported in Expo SDK 53 and above.
 
 Upgrade ESLint and `eslint-config-expo`:
 
@@ -321,8 +258,8 @@ Upgrade ESLint and `eslint-config-expo`:
 
 </Tabs>
 
-If you haven't customized your eslint config at all, delete your `.eslintrc.js` and generate the new config with:
+If you haven't customized your ESLint config at all, delete your **.eslintrc.js** and generate the new config with:
 
 <Terminal cmd={['$ npx expo lint']} />
 
-Alternatively migrate your config based on the [migration guide](https://eslint.org/docs/latest/use/configure/migration-guide). `npx expo lint` supports both legacy and flat config, so the new config will automatically be picked up by the CLI.
+Alternatively, migrate your config based on the [ESLint's migration guide](https://eslint.org/docs/latest/use/configure/migration-guide). `npx expo lint` supports both legacy and flat config, so the new config will automatically be picked up by the CLI.
