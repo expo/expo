@@ -9,8 +9,12 @@ internal class NativeDatabase(val databasePath: String, val openOptions: OpenDat
   var isClosed = false
   private val refCount = AtomicInteger(1)
 
-  internal fun addRef() {
-    refCount.incrementAndGet()
+  internal fun addRef(): Int {
+    return refCount.incrementAndGet()
+  }
+
+  internal fun release(): Int {
+    return refCount.decrementAndGet()
   }
 
   override fun equals(other: Any?): Boolean {
@@ -23,9 +27,6 @@ internal class NativeDatabase(val databasePath: String, val openOptions: OpenDat
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
-    val shouldClose = refCount.decrementAndGet() <= 0
-    if (shouldClose) {
-      this.ref.close()
-    }
+    this.ref.close()
   }
 }

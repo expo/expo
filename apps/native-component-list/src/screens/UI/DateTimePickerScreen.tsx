@@ -1,5 +1,5 @@
-import { DateTimePicker, DatePickerProps } from '@expo/ui/components/DatePicker';
-import { Picker } from '@expo/ui/components/Picker';
+import { DateTimePicker, DatePickerProps } from '@expo/ui/DatePicker';
+import { Picker } from '@expo/ui/Picker';
 import * as React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 

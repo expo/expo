@@ -4,7 +4,6 @@ import expo.modules.plugin.gradle.beforeRootProject
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import java.io.File
-import kotlin.text.trim
 
 open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
   override fun apply(settings: Settings) {

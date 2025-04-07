@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 0.2.0 — 2025-04-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.4 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- [Android] added proguard rules for background-task consumer ([#35816](https://github.com/expo/expo/pull/35816) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- added error handling when registering/unregistering invalid tasks with the TaskManager. ([#35734](https://github.com/expo/expo/pull/35734) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.1.3 - 2025-03-14
 
 ### 💡 Others

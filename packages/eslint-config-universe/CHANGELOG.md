@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.1.0 — 2025-04-04
+
+### 💡 Others
+
 - Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
 - Update `eslint-plugin-react-hooks` dependency to new major version. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
 

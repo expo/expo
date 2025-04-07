@@ -2,10 +2,12 @@
   "platforms": ["apple", "android"],
   "apple": {
     "modules": [
+      "BackgroundModule",
       "BadgeModule",
       "CategoriesModule",
       "EmitterModule",
       "HandlerModule",
+      "PermissionsModule",
       "PresentationModule",
       "PushTokenModule",
       "SchedulerModule",

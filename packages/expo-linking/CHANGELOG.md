@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add macOS support. ([#35064](https://github.com/expo/expo/pull/35064) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add macOS support. ([#35064](https://github.com/expo/expo/pull/35064) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

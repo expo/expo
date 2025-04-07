@@ -12,9 +12,16 @@ export type AutolinkingOptions = {
     ignorePaths?: string[] | null;
     exclude?: string[] | null;
     flags?: Record<string, any>;
-} & {
+};
+export type AndroidAutolinkingOptions = AutolinkingOptions & {
+    buildFromSource?: string[] | null;
+};
+export type BaseAutolinkingOptions = AutolinkingOptions & {
     [key in SupportedPlatform]?: AutolinkingOptions;
 };
+export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
+    android?: AndroidAutolinkingOptions;
+}
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;
@@ -30,6 +37,9 @@ export interface SearchOptions {
      */
     onlyProjectDeps?: boolean;
     flags?: Record<string, any>;
+    android?: {
+        buildFromSource?: string[] | null;
+    };
 }
 export interface ResolveOptions extends SearchOptions {
     json?: boolean;
@@ -59,6 +69,7 @@ export interface ModuleAndroidProjectInfo {
     modules: string[];
     publication?: AndroidPublication;
     aarProjects?: AndroidGradleAarProjectDescriptor[];
+    shouldUsePublicationScriptPath?: string;
 }
 export interface ModuleAndroidPluginInfo {
     id: string;
@@ -193,6 +204,12 @@ export type RawAndroidProjectConfig = {
      * Information about the available publication of an Android AAR file
      */
     publication?: AndroidPublication;
+    /**
+     * The path to the script that determines whether the publication should be used.
+     * Evaluate in the context of the `settings.gradle` file.
+     * Won't be run if the publication is not defined.
+     */
+    shouldUsePublicationScriptPath?: string;
     /**
      * Names of the modules to be linked in the project.
      */

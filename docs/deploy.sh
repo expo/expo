@@ -189,10 +189,10 @@ redirects[routing/introduction]=router/introduction
 redirects[routing/installation]=router/installation
 redirects[routing/create-pages]=router/create-pages
 redirects[routing/navigating-pages]=router/navigating-pages
-redirects[routing/layouts]=router/layouts
+redirects[routing/layouts]=router/basics/layout
 redirects[routing/appearance]=router/introduction
 redirects[routing/error-handling]=router/error-handling
-redirects[router/advance/root-layout]=router/advanced/root-layout
+redirects[router/advance/root-layout]=router/basics/layout/#root-layout
 redirects[router/advance/stack]=router/advanced/stack
 redirects[router/advance/tabs]=router/advanced/tabs
 redirects[router/advance/drawer]=router/advanced/drawer
@@ -323,6 +323,9 @@ redirects[eas-workflows/control-flow]=eas/workflows/syntax/#control-flow
 redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
+
+# After moving e2e-tests to eas/workflows/reference
+redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites

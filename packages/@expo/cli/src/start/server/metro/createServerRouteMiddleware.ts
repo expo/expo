@@ -64,6 +64,8 @@ export function createRouteHandlerMiddleware(
             ],
             apiRoutes: [],
             notFoundRoutes: [],
+            redirects: [],
+            rewrites: [],
           }
         );
       },

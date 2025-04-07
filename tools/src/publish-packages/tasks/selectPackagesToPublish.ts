@@ -21,6 +21,9 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { green, cyan } = chalk;
 
+let lastAction: string | undefined;
+let lastVersionIndex: number = 0;
+
 /**
  * Prompts which suggested packages are going to be published.
  */
@@ -87,7 +90,11 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
  * Prompts the user to confirm whether the package should be published.
  * It immediately returns `true` if it's run on the CI.
  */
-async function promptToPublishParcel(parcel: Parcel, options: CommandOptions): Promise<boolean> {
+async function promptToPublishParcel(
+  parcel: Parcel,
+  options: CommandOptions,
+  index: number
+): Promise<boolean | 'back' | 'skip'> {
   const customVersionId = 'custom-version';
   const packageName = parcel.pkg.packageName;
   const releaseVersion = resolveReleaseTypeAndVersion(parcel, options);
@@ -97,18 +104,51 @@ async function promptToPublishParcel(parcel: Parcel, options: CommandOptions): P
     return true;
   }
 
-  const { selected } = await inquirer.prompt([
+  const choices = [
     {
-      type: 'confirm',
-      name: 'selected',
+      name: 'Yes',
+      value: 'yes',
+    },
+    {
+      name: 'Show more options',
+      value: 'no',
+    },
+    {
+      name: 'Skip to next package',
+      value: 'skip',
+    },
+  ];
+
+  // Only add back option if we're not on the first package
+  if (index > 0) {
+    choices.push({
+      name: 'Go back to previous package',
+      value: 'back',
+    });
+  }
+
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
       message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?`,
-      default: true,
+      choices,
+      default: lastAction || 'yes',
     },
   ]);
 
-  if (selected) {
+  // Store the selected action for next time
+  lastAction = action;
+
+  if (action === 'yes') {
     parcel.state.releaseVersion = releaseVersion;
     return true;
+  }
+  if (action === 'skip') {
+    return 'skip';
+  }
+  if (action === 'back') {
+    return 'back';
   }
 
   const suggestedVersions = getSuggestedVersions(
@@ -122,10 +162,6 @@ async function promptToPublishParcel(parcel: Parcel, options: CommandOptions): P
       name: 'version',
       message: `What do you want to do with ${green.bold(packageName)}?`,
       choices: [
-        {
-          name: "Don't publish",
-          value: null,
-        },
         ...suggestedVersions.map((version) => {
           return {
             name: `Publish as ${cyan.bold(version)}`,
@@ -136,7 +172,24 @@ async function promptToPublishParcel(parcel: Parcel, options: CommandOptions): P
           name: 'Publish as custom version',
           value: customVersionId,
         },
+        {
+          name: "Don't publish",
+          value: null,
+        },
+        ...(index > 0
+          ? [
+              {
+                name: 'Go back to previous package',
+                value: 'back',
+              },
+            ]
+          : []),
+        {
+          name: 'Skip to next package',
+          value: 'skip',
+        },
       ],
+      default: lastVersionIndex,
       validate: validateVersion(parcel),
     },
     {
@@ -150,8 +203,19 @@ async function promptToPublishParcel(parcel: Parcel, options: CommandOptions): P
     },
   ]);
 
+  if (version === 'back') {
+    return 'back';
+  }
+  if (version === 'skip') {
+    return 'skip';
+  }
+
   if (customVersion || version) {
     parcel.state.releaseVersion = customVersion ?? version;
+    // Store the index of the selected version
+    if (version && !customVersion) {
+      lastVersionIndex = suggestedVersions.indexOf(version);
+    }
     return true;
   }
   parcel.state.releaseVersion = null;
@@ -167,25 +231,83 @@ async function selectParcelsToPublish(
   selectedParcels: Set<Parcel>,
   options: CommandOptions
 ): Promise<Set<Parcel>> {
-  for (const parcel of parcelsToSelect) {
-    // Since this function can be run multiple times (we're resolving dependents dependencies too),
-    // the parcel could already be selected or rejected.
-    const wasAlreadyAsked = parcel.state.releaseVersion != null || selectedParcels.has(parcel);
+  const parcelsArray = Array.from(parcelsToSelect);
+  const skipped = new Set<string>();
+  let currentIndex = 0;
 
-    if (!wasAlreadyAsked && isParcelUnpublished(parcel)) {
-      printPackageParcel(parcel);
+  while (currentIndex >= 0 && currentIndex < parcelsArray.length) {
+    const parcel = parcelsArray[currentIndex];
+    const packageName = parcel.pkg.packageName;
 
-      if (await promptToPublishParcel(parcel, options)) {
-        selectedParcels.add(parcel);
-        continue;
-      }
+    if (
+      !(parcel.state.releaseVersion === null || parcel.state.releaseVersion === undefined) ||
+      skipped.has(packageName) ||
+      !isParcelUnpublished(parcel)
+    ) {
+      // Skip prompting if a release version is already set (chosen version or explicitly null)
+      // or if the user previously chose to skip this package.
+      // Also skip if all changes to the package have already been published previously.
+      currentIndex++;
+      continue;
     }
-    // Remove the package from dependent's dependencies if it's not going to be published.
-    // Dependents are always prompted at the end, thus it can work properly.
-    parcel.dependents.forEach((dependent) => {
-      dependent.dependencies.delete(parcel);
-    });
+
+    printPackageParcel(parcel);
+    const result = await promptToPublishParcel(parcel, options, currentIndex);
+
+    if (result === 'back') {
+      let prevPromptableIndex = -1;
+      // Search backwards for the first unpublished package
+      for (let j = currentIndex - 1; j >= 0; j--) {
+        if (isParcelUnpublished(parcelsArray[j])) {
+          prevPromptableIndex = j;
+          break;
+        }
+      }
+
+      if (prevPromptableIndex !== -1) {
+        // Reset state for ALL packages from target up to current (inclusive)
+        for (let k = prevPromptableIndex; k <= currentIndex; k++) {
+          const p = parcelsArray[k];
+          p.state.releaseVersion = null;
+          selectedParcels.delete(p);
+          skipped.delete(p.pkg.packageName);
+        }
+
+        currentIndex = prevPromptableIndex; // Jump to the target index
+        continue; // Re-process the target package
+      } else {
+        currentIndex++; // Prevent getting stuck if no previous target
+      }
+    } else if (result === 'skip') {
+      skipped.add(packageName);
+      parcel.state.releaseVersion = null;
+      selectedParcels.delete(parcel);
+      currentIndex++;
+    } else if (result === true) {
+      // Selected "Yes"
+      selectedParcels.add(parcel);
+      skipped.delete(packageName);
+      currentIndex++;
+    } else {
+      // Selected "Don't Publish" or null
+      parcel.state.releaseVersion = null;
+      selectedParcels.delete(parcel);
+      skipped.delete(packageName);
+      currentIndex++;
+    }
   }
+
+  // Final cleanup: If a parcel wasn't selected for publishing, remove it from the
+  // dependency lists of other packages considered in this run. This ensures that
+  // subsequent steps operate only on dependencies that are being published together.
+  for (const parcel of parcelsArray) {
+    if (!selectedParcels.has(parcel)) {
+      parcel.dependents.forEach((dependent) => {
+        dependent.dependencies.delete(parcel);
+      });
+    }
+  }
+
   return selectedParcels;
 }
 

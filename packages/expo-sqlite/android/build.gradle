@@ -5,10 +5,6 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-expoModule {
-  canBePublished false
-}
-
 String toPlatformIndependentPath(File path) {
   def result = path.toString()
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -33,7 +29,7 @@ def getSQLiteBuildFlags() {
     buildFlags <<= ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   }
   if (ext.USE_SQLCIPHER) {
-    buildFlags <<= ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_OPENSSL'
+    buildFlags <<= ' -DSQLITE_HAS_CODEC=1 -DSQLITE_EXTRA_INIT=sqlcipher_extra_init -DSQLITE_EXTRA_SHUTDOWN=sqlcipher_extra_shutdown -DSQLCIPHER_CRYPTO_OPENSSL'
   }
   def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
   if (customBuildFlags != '') {
@@ -49,13 +45,13 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.3'
+version = '15.2.0'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "15.0.3"
+    versionName "15.2.0"
     buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
 
     externalNativeBuild {
@@ -88,7 +84,7 @@ android {
 
 dependencies {
   if (project.ext.USE_SQLCIPHER) {
-    compileOnly 'com.android.ndk.thirdparty:openssl:1.1.1q-beta-1'
+    compileOnly 'io.github.ronickg:openssl:3.3.2'
   }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 }

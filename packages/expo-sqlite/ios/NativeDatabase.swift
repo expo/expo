@@ -8,11 +8,22 @@ final class NativeDatabase: SharedObject, Equatable, Hashable {
   let openOptions: OpenDatabaseOptions
   var isClosed = false
   var extraPointer: OpaquePointer?
+  private var refCount = AtomicInteger(1)
 
   init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions) {
     self.pointer = pointer
     self.databasePath = databasePath
     self.openOptions = openOptions
+  }
+
+  @discardableResult
+  func addRef() -> Int {
+    return refCount.increment()
+  }
+
+  @discardableResult
+  func release() -> Int {
+    return refCount.decrement()
   }
 
   // MARK: - Equatable

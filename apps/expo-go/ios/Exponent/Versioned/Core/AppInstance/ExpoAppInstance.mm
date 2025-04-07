@@ -3,6 +3,9 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RCTHost.h>
 
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+#endif
 
 @implementation ExpoAppInstance
 

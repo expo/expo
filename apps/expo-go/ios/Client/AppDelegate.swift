@@ -38,6 +38,9 @@ class AppDelegate: ExpoAppDelegate {
   }
 
   private func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    if self.window != nil {
+      return
+    }
     ExpoKit.sharedInstance().registerRootViewControllerClass(EXRootViewController.self)
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
 

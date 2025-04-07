@@ -6,8 +6,10 @@ extension ExpoSwiftUI {
   /**
    SwiftUI view that embeds an UIKit-based view.
    */
-  struct UIViewHost: UIViewRepresentable {
+  struct UIViewHost: UIViewRepresentable, AnyChild {
     let view: UIView
+
+    // MARK: - UIViewRepresentable implementations
 
     #if os(macOS)
     func makeNSView(context: Context) -> NSView {
@@ -25,6 +27,16 @@ extension ExpoSwiftUI {
 
     func updateUIView(_ uiView: UIView, context: Context) {
       // Nothing to do here
+    }
+
+    // MARK: - AnyChild implementations
+
+    var childView: some SwiftUI.View {
+      self
+    }
+
+    var id: ObjectIdentifier {
+      ObjectIdentifier(view)
     }
   }
 }

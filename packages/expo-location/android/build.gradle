@@ -4,17 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '18.0.2'
+version = '18.1.0'
 
 android {
   namespace "expo.modules.location"
   defaultConfig {
     versionCode 29
-    versionName "18.0.2"
+    versionName "18.1.0"
     consumerProguardFiles("proguard-rules.pro")
   }
 }
 
 dependencies {
   api 'com.google.android.gms:play-services-location:21.0.1'
+  implementation 'androidx.annotation:annotation:1.7.1'
 }

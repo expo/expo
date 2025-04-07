@@ -5,6 +5,13 @@ set -xeuo pipefail
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
 export PATH="$ROOT_DIR/bin:$PATH"
 
+if [ -n "${EXPO_TOKEN+x}" ]; then
+  echo "Unsetting EXPO_TOKEN"
+  unset EXPO_TOKEN
+else
+  echo "EXPO_TOKEN is not set"
+fi
+
 if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sudo apt-get -y update
   sudo apt-get -y install ruby icu-devtools libicu-dev maven

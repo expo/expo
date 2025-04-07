@@ -56,8 +56,8 @@ function getStatusFromMedia(media, id) {
     const status = {
         id,
         isLoaded: true,
-        duration: media.duration * 1000,
-        currentTime: media.currentTime * 1000,
+        duration: media.duration,
+        currentTime: media.currentTime,
         playbackState: '',
         timeControlStatus: isPlaying ? 'playing' : 'paused',
         reasonForWaitingToPlay: '',
@@ -103,10 +103,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.loop = value;
     }
     get duration() {
-        return this.media.duration * 1000;
+        return this.media.duration;
     }
     get currentTime() {
-        return this.media.currentTime * 1000;
+        return this.media.currentTime;
     }
     get paused() {
         return this.media.paused;
@@ -142,7 +142,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media = this._createMediaElement();
     }
     async seekTo(seconds) {
-        this.media.currentTime = seconds / 1000;
+        this.media.currentTime = seconds;
     }
     // Not supported on web
     setAudioSamplingEnabled(enabled) {

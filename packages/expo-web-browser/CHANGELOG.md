@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
 - Add config plugin to enable correct behavior on android.([#34160](https://github.com/expo/expo/pull/34160) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes

@@ -31,6 +31,7 @@ const native_1 = require("@react-navigation/native");
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const expo = __importStar(require("./getStateFromPath-forks"));
+const getLinkingConfig_1 = require("../getLinkingConfig");
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -61,14 +62,14 @@ path, options) {
     const expoPath = expo.getUrlWithReactNavigationConcessions(path);
     // END FORK
     // START FORK
-    let remaining = expoPath.nonstandardPathname
-        // let remaining = path
-        // END FORK
-        .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
-        .replace(/^\//, '') // Remove extra leading slash
-        .replace(/\?.*$/, ''); // Remove query params which we will handle later
-    // Make sure there is a trailing slash
-    remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+    let remaining = expo.cleanPath(expoPath.nonstandardPathname);
+    // let remaining = path
+    //   .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+    //   .replace(/^\//, '') // Remove extra leading slash
+    //   .replace(/\?.*$/, ''); // Remove query params which we will handle later
+    // // Make sure there is a trailing slash
+    // remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+    // END FORK
     const prefix = options?.path?.replace(/^\//, ''); // Remove extra leading slash
     if (prefix) {
         // Make sure there is a trailing slash
@@ -144,7 +145,6 @@ previousSegments
 ) {
     // START FORK - We need to disable this caching as our configs can change based upon the current state
     // if (cachedConfigResources[0] !== options) {
-    //   console.log(previousSegments);
     cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
     // }
     // END FORK FORK
@@ -369,7 +369,9 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 config.exact !== true
                     ? joinPaths(parentPattern || '', config.path || '')
                     : config.path || '';
-            configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
+            if (screen !== getLinkingConfig_1.INTERNAL_SLOT_NAME) {
+                configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
+            }
         }
         if (config.screens) {
             // property `initialRouteName` without `screens` has no purpose
@@ -391,17 +393,22 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
 const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, config = {}) => {
     // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
     pattern = pattern.split('/').filter(Boolean).join('/');
-    const regex = pattern
-        ? new RegExp(`^(${pattern
-            .split('/')
-            .map((it) => {
-            if (it.startsWith(':')) {
-                return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
-            }
-            return `${it === '*' ? '.*' : (0, escape_string_regexp_1.default)(it)}\\/`;
-        })
-            .join('')})`)
-        : undefined;
+    // START FORK
+    const regex = pattern ? expo.routePatternToRegex(pattern) : undefined;
+    // const regex = pattern
+    //   ? new RegExp(
+    //       `^(${pattern
+    //         .split('/')
+    //         .map((it) => {
+    //           if (it.startsWith(':')) {
+    //             return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+    //           }
+    //           return `${it === '*' ? '.*' : escape(it)}\\/`;
+    //         })
+    //         .join('')})`
+    //     )
+    //   : undefined;
+    // END FORK
     return {
         screen,
         regex,

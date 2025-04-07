@@ -1,6 +1,6 @@
 {
   "name": "react-native-view-shot",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Capture a React Native view to an image",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -39,5 +39,5 @@
       "javaPackageName": "fr.greweb.reactnativeviewshot"
     }
   },
-  "stableVersion": "4.0.1"
+  "stableVersion": "4.0.2"
 }

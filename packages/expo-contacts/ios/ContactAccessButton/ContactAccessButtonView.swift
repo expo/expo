@@ -4,8 +4,8 @@ import ContactsUI
 import SwiftUI
 import ExpoModulesCore
 
-internal struct ExpoContactAccessButton: ExpoSwiftUI.View {
-  @EnvironmentObject
+internal struct ExpoContactAccessButton: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject
   internal var props: ContactAccessButtonProps
 
   var body: some View {
