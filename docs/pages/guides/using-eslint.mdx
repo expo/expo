@@ -174,16 +174,17 @@ To install Prettier in your project:
 To integrate Prettier with ESlint, update your **eslint.config.js**:
 
 ```js eslint.config.js
+const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
 
-module.exports = [
-  ...expoConfig,
+module.exports = defineConfig([
+  expoConfig,
   eslintPluginPrettierRecommended,
   {
     ignores: ['dist/*'],
   },
-];
+]);
 ```
 
 </Tab>

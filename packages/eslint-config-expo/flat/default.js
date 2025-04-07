@@ -3,8 +3,9 @@ const expoConfig = require('./utils/expo.js');
 const reactConfig = require('./utils/react.js');
 const typescriptConfig = require('./utils/typescript.js');
 const { allExtensions } = require('./utils/extensions.js');
+const { defineConfig } = require('eslint/config');
 
-module.exports = [
+module.exports = defineConfig([
   ...coreConfig,
   ...typescriptConfig,
   ...reactConfig,
@@ -41,4 +42,4 @@ module.exports = [
     files: ['*.web.*'],
     env: { browser: true },
   },
-];
+]);
