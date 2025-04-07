@@ -350,7 +350,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`setBadgeCountAsync`](#setbadgecountasyncbadgecount-number-options-setbadgecountoptions-promiseboolean) -- sets the application badge number value
 - **scheduling notifications**
   - [`getAllScheduledNotificationsAsync`](#getallschedulednotificationsasync-promisenotification) -- fetches information about all scheduled notifications
-  - [`presentNotificationAsync`](#presentnotificationasynccontent-notificationcontentinput-identifier-string-promisestring) -- schedules a notification for immediate trigger
   - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
@@ -901,12 +900,6 @@ Fetches information about all scheduled notifications.
 
 It returns a `Promise` resolving to an array of objects conforming to the [`Notification`](#notification) interface.
 
-### `presentNotificationAsync(content: NotificationContentInput, identifier?: string): Promise<string>`
-
-Schedules a notification for immediate trigger.
-
-> **Note:** This method has been deprecated in favor of using an explicit `NotificationHandler` and the `scheduleNotificationAsync` method. More info may be found at https://expo.fyi/presenting-notifications-deprecated.
-
 #### Arguments
 
 The only argument to this function is a [`NotificationContentInput`](#notificationcontentinput).
@@ -917,18 +910,7 @@ It returns a `Promise` resolving with the notification's identifier once the not
 
 #### Examples
 
-##### Presenting the notification to the user (deprecated way)
-
-```ts
-import * as Notifications from 'expo-notifications';
-
-Notifications.presentNotificationAsync({
-  title: 'Look at that notification',
-  body: "I'm so proud of myself!",
-});
-```
-
-##### Presenting the notification to the user (recommended way)
+##### Presenting the notification to the user
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -1415,7 +1397,7 @@ export type NotificationContent = {
 
 ### `NotificationContentInput`
 
-An object representing notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
+An object representing notification content that you pass as a part of `NotificationRequestInput`.
 
 ```ts
 export interface NotificationContentInput {
