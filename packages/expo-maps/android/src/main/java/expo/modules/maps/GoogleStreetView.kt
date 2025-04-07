@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.maps.StreetViewPanoramaOptions
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import expo.modules.kotlin.AppContext
@@ -12,7 +13,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
 data class GoogleStreetViewProps(
-  val position: MutableState<Coordinates> = mutableStateOf(Coordinates(0.0, 0.0)),
+  val cameraPosition: MutableState<CameraPositionStreetViewRecord> = mutableStateOf(CameraPositionStreetViewRecord()),
   val isPanningGesturesEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isStreetNamesEnabled: MutableState<Boolean> = mutableStateOf(true),
   val isUserNavigationEnabled: MutableState<Boolean> = mutableStateOf(true),
@@ -28,11 +29,14 @@ class GoogleStreetView(
 
   init {
     setContent {
-      key(props.position.value.toString()) {
+      key(props.cameraPosition.value.coordinates.toString()) {
         StreetView(
           streetViewPanoramaOptionsFactory = {
-            StreetViewPanoramaOptions()
-              .position(props.position.value.toLatLng())
+            props.cameraPosition.value.let { camera ->
+              StreetViewPanoramaOptions()
+                .position(camera.coordinates.toLatLng())
+                .panoramaCamera(StreetViewPanoramaCamera(camera.zoom, camera.tilt, camera.bearing))
+            }
           },
           isPanningGesturesEnabled = props.isPanningGesturesEnabled.value,
           isStreetNamesEnabled = props.isStreetNamesEnabled.value,
