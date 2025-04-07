@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Use `registerClientReference` for client components and assert unsupported syntax.
+- Use `registerClientReference` for client components and assert unsupported syntax. ([#35957](https://github.com/expo/expo/pull/35957) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

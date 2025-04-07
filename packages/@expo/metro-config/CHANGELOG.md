@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update RSC tests.
+- Update RSC tests. ([#35957](https://github.com/expo/expo/pull/35957) by [@EvanBacon](https://github.com/EvanBacon))
 - Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.20.0 — 2025-04-04
