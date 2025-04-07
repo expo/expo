@@ -9,6 +9,7 @@ import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
 import { loadRequestedParcels } from './loadRequestedParcels';
+import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -18,12 +19,11 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { runWithSpinner } from '../../Utils';
-import Git from '../../Git';
-import { publishAndroidArtifacts } from './publishAndroidPackages';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, yellow } = chalk;
 
