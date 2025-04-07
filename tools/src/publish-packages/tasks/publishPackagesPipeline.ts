@@ -21,8 +21,41 @@ import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { runWithSpinner } from '../../Utils';
+import Git from '../../Git';
+import { publishAndroidArtifacts } from './publishAndroidPackages';
 
 const { cyan, yellow } = chalk;
+
+/**
+ * Cleans up all the changes that were made by previously run tasks.
+ */
+const cleanWorkingTree = new Task<TaskArgs>(
+  {
+    name: 'cleanWorkingTree',
+    dependsOn: [],
+  },
+  async () => {
+    await runWithSpinner(
+      'Cleaning up the working tree',
+      async () => {
+        // JSON files are automatically added to the index after previous tasks.
+        await Git.checkoutAsync({
+          ref: 'HEAD',
+          paths: ['packages/**/expo-module.config.json'],
+        });
+
+        // Remove local repositories.
+        await Git.cleanAsync({
+          recursive: true,
+          force: true,
+          paths: ['packages/**/local-maven-repo/**'],
+        });
+      },
+      'Cleaned up the working tree'
+    );
+  }
+);
 
 /**
  * Pipeline with a bunch of tasks required to publish packages.
@@ -41,6 +74,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
+      publishAndroidArtifacts,
       updateIosProjects,
       cutOffChangelogs,
       commitStagedChanges,
@@ -48,6 +82,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       publishPackages,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
+      cleanWorkingTree,
       // commentOnIssuesTask,
     ],
   },

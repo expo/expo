@@ -16,7 +16,6 @@ export const publishAndroidArtifacts = new Task(
   {
     name: 'publishAndroidArtifacts',
     dependsOn: [updateAndroidProjects],
-    filesToStage: ['packages/**/expo-module.config.json'],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     const packages = parcels.map((parcels) => parcels.pkg);
