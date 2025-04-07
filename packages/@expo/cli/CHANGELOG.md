@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - Fix fusebox log formatting and silence migration warning. ([#35911](https://github.com/expo/expo/pull/35911) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed React Native Devtools opening issue. ([#35935](https://github.com/expo/expo/pull/35935) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.23.0 — 2025-04-04
 
@@ -29,6 +32,7 @@
 - Create `keep.xml` to prevent resource shrinking on Android. ([#35465](https://github.com/expo/expo/pull/35465) by [@jakex7](https://github.com/jakex7))
 - Bump version of React Navigation ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
 - Expo Router static redirects ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+- Add flat config support to `npx expo lint`. ([#34029](https://github.com/expo/expo/pull/34371) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 

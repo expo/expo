@@ -21,7 +21,7 @@
     "expo": "~53.0.0-preview.0",
     "expo-font": "13.1.0",
     "expo-linking": "7.1.0",
-    "expo-router": "5.0.0-preview.0",
+    "expo-router": "5.0.1-preview.0",
     "expo-splash-screen": "0.30.0",
     "expo-sqlite": "15.2.0",
     "expo-status-bar": "2.1.0",

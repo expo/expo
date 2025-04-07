@@ -82,6 +82,7 @@ export class MetroTerminalReporter extends TerminalReporter {
           const msg = event.data.join('\n');
           if (msg.includes('.bundle//&platform=')) {
             const parsed = parseErrorStringToObject(msg);
+
             if (parsed) {
               maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, parsed)
                 .then((res) => {

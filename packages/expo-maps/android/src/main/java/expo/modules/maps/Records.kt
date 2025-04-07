@@ -201,3 +201,17 @@ data class CameraMoveEvent(
   @Field
   val bearing: Float
 ) : Record
+
+data class CameraPositionStreetViewRecord(
+  @Field
+  val coordinates: Coordinates = Coordinates(),
+
+  @Field
+  val zoom: Float = 0f,
+
+  @Field
+  val tilt: Float = 0f,
+
+  @Field
+  val bearing: Float = 0f
+) : Record
