@@ -9,6 +9,7 @@ import {
   NotificationBehavior,
   NotificationCategoryOptions,
   NotificationChannelInput,
+  NotificationContentInput,
   NotificationHandler,
   NotificationTriggerInput,
   SchedulableNotificationTriggerInput,
@@ -895,12 +896,14 @@ export async function test(t) {
 
     t.describe('scheduleNotificationAsync', () => {
       const identifier = 'test-scheduled-notification';
-      const notification = {
+      const notificationContent: NotificationContentInput = {
         title: 'Scheduled notification',
+        body: 'below title',
         data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
         color: '#FF0000',
+        sound: 'pop_sound.wav',
       };
 
       t.afterEach(async () => {
@@ -915,11 +918,58 @@ export async function test(t) {
             Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
+
           await waitFor(6000);
-          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          const platformTrigger =
+            Platform.OS === 'android'
+              ? {
+                  channelId: null,
+                }
+              : {
+                  class: 'UNTimeIntervalNotificationTrigger',
+                };
+
+          const platformContent =
+            Platform.OS === 'android'
+              ? {
+                  vibrationPattern: [100, 100, 100, 100, 100, 100],
+                  color: '#FFFF0000',
+                  autoDismiss: true,
+                  sticky: false,
+                }
+              : {
+                  launchImageName: '',
+                  categoryIdentifier: '',
+                  interruptionLevel: 'active',
+                  attachments: [],
+                  threadIdentifier: '',
+                  targetContentIdentifier: null,
+                };
+
+          t.expect(notificationReceivedSpy).toHaveBeenCalledWith({
+            date: t.jasmine.any(Number),
+            request: {
+              trigger: t.jasmine.objectContaining({
+                seconds: 5,
+                repeats: false,
+                type: 'timeInterval',
+                ...platformTrigger,
+              }),
+              content: t.jasmine.objectContaining({
+                ...platformContent,
+                sound: 'custom',
+                title: notificationContent.title,
+                body: notificationContent.body,
+                subtitle: null,
+                badge: 2,
+                data: { key: 'value' },
+              }),
+              identifier,
+            },
+          });
           subscription.remove();
         },
         10000
@@ -932,7 +982,7 @@ export async function test(t) {
           try {
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               // @ts-expect-error
               trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
             });
@@ -940,36 +990,6 @@ export async function test(t) {
             error = err;
           }
           t.expect(error).toBeDefined();
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which contains the custom color',
-        async () => {
-          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription =
-            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notification,
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationReceivedSpy).toHaveBeenCalled();
-          if (Platform.OS === 'android') {
-            t.expect(notificationReceivedSpy).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({
-                request: t.jasmine.objectContaining({
-                  content: t.jasmine.objectContaining({
-                    // #AARRGGBB
-                    color: '#FFFF0000',
-                  }),
-                }),
-              })
-            );
-          }
-          subscription.remove();
         },
         10000
       );
@@ -986,45 +1006,11 @@ export async function test(t) {
           });
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
-          Notifications.setNotificationHandler(null);
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which triggers the handler (with custom sound)',
-        async () => {
-          let notificationFromEvent = undefined;
-          Notifications.setNotificationHandler({
-            handleNotification: async (event) => {
-              notificationFromEvent = event;
-              return behaviorEnableAll;
-            },
-          });
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: {
-              ...notification,
-              sound: 'notification.wav',
-            },
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationFromEvent).toBeDefined();
-          t.expect(notificationFromEvent).toEqual(
-            t.jasmine.objectContaining({
-              request: t.jasmine.objectContaining({
-                content: t.jasmine.objectContaining({
-                  sound: 'custom',
-                }),
-              }),
-            })
-          );
           Notifications.setNotificationHandler(null);
         },
         10000
@@ -1043,7 +1029,7 @@ export async function test(t) {
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: {
-              ...notification,
+              ...notificationContent,
               sound: 'no-such-file.wav',
             },
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
@@ -1080,7 +1066,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           await waitFor(6000);
@@ -1101,7 +1087,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1145,7 +1131,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1188,7 +1174,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1233,7 +1219,7 @@ export async function test(t) {
             });
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               trigger: {
                 type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                 seconds: 5,
@@ -1257,7 +1243,7 @@ export async function test(t) {
               Notifications.addNotificationReceivedListener(notificationReceivedSpy);
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               trigger: {
                 type: SchedulableTriggerInputTypes.CALENDAR,
                 second: (new Date().getSeconds() + 5) % 60,
