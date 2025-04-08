@@ -257,7 +257,6 @@ export function setSelectedLog(proposedNewIndex: number): void {
   }
   _selectedIndex = newIndex;
   handleUpdate();
-  console.log('openLog:', NativeLogBox);
   if (NativeLogBox) {
     setTimeout(() => {
       if (oldIndex < 0 && newIndex >= 0) {
