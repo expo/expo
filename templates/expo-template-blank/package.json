@@ -14,7 +14,7 @@
     "expo": "~53.0.0-preview.0",
     "expo-status-bar": "~2.1.0",
     "react": "19.0.0",
-    "react-native": "0.79.0-rc.4"
+    "react-native": "0.79.0"
   },
   "overrides": {
     "react": "19.0.0"
