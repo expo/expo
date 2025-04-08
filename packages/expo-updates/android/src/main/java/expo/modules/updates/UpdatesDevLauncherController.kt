@@ -163,7 +163,6 @@ class UpdatesDevLauncherController(
     )
     loader.start(object : Loader.LoaderCallback {
       override fun onFailure(e: Exception) {
-        databaseHolder.releaseDatabase()
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
         callback.onFailure(e)
@@ -171,7 +170,6 @@ class UpdatesDevLauncherController(
 
       override fun onSuccess(loaderResult: Loader.LoaderResult) {
         // the dev launcher doesn't handle roll back to embedded commands
-        databaseHolder.releaseDatabase()
         if (loaderResult.updateEntity == null) {
           callback.onSuccess(null)
           return
@@ -283,14 +281,12 @@ class UpdatesDevLauncherController(
       databaseHolder.database,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
-          databaseHolder.releaseDatabase()
           // reset controller's configuration to what it was before this request
           updatesConfiguration = previousUpdatesConfiguration
           callback.onFailure(e)
         }
 
         override fun onSuccess() {
-          databaseHolder.releaseDatabase()
           this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
             override val manifest: JSONObject
@@ -305,9 +301,6 @@ class UpdatesDevLauncherController(
   }
 
   private fun getDatabase(): UpdatesDatabase = databaseHolder.database
-  private fun releaseDatabase() {
-    databaseHolder.releaseDatabase()
-  }
 
   private fun runReaper() {
     AsyncTask.execute {
@@ -320,7 +313,6 @@ class UpdatesDevLauncherController(
           launchedUpdate,
           selectionPolicy
         )
-        releaseDatabase()
       }
     }
   }

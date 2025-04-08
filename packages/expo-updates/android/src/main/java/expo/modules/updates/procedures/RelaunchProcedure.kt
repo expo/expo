@@ -106,8 +106,6 @@ class RelaunchProcedure(
         )
       } catch (e: Exception) {
         logger.error("Could not run Reaper.", e, UpdatesErrorCode.Unknown)
-      } finally {
-        databaseHolder.releaseDatabase()
       }
     }
   }

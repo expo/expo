@@ -144,11 +144,6 @@ class LoaderTask(
     )
   }
 
-  private interface LaunchUpdateCallback {
-    fun onFailure(e: Exception)
-    fun onSuccess()
-  }
-
   var isRunning = false
     private set
 
@@ -288,12 +283,10 @@ class LoaderTask(
     candidateLauncher = launcher
     val launcherCallback: LauncherCallback = object : LauncherCallback {
       override fun onFailure(e: Exception) {
-        databaseHolder.releaseDatabase()
         continuation.resumeWithException(e)
       }
 
       override fun onSuccess() {
-        databaseHolder.releaseDatabase()
         continuation.resume(Unit)
       }
     }
@@ -350,7 +343,6 @@ class LoaderTask(
       RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
-            databaseHolder.releaseDatabase()
             callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
             logger.error("Failed to download remote update", e, UpdatesErrorCode.UpdateFailedToLoad)
             continuation.resumeWithException(e)
@@ -435,7 +427,6 @@ class LoaderTask(
               database,
               object : LauncherCallback {
                 override fun onFailure(e: Exception) {
-                  databaseHolder.releaseDatabase()
                   callback.onRemoteUpdateFinished(
                     RemoteUpdateStatus.ERROR,
                     null,
@@ -446,7 +437,6 @@ class LoaderTask(
                 }
 
                 override fun onSuccess() {
-                  databaseHolder.releaseDatabase()
                   synchronized(this@LoaderTask) {
                     if (!hasLaunched) {
                       candidateLauncher = newLauncher
@@ -486,7 +476,6 @@ class LoaderTask(
           finalizedLaunchedUpdate,
           selectionPolicy
         )
-        databaseHolder.releaseDatabase()
       }
     }
   }

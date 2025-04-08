@@ -244,7 +244,6 @@ class StartupProcedure(
           override fun onFailure(e: Exception) {
             logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
-            databaseHolder.releaseDatabase()
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
@@ -255,7 +254,6 @@ class StartupProcedure(
                 ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               }
             )
-            databaseHolder.releaseDatabase()
           }
 
           override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
@@ -290,8 +288,7 @@ class StartupProcedure(
         }
         procedureScope.launch {
           val launchedUpdate = launchedUpdate ?: return@launch
-          databaseHolder.database.updateDao().incrementFailedLaunchCount(launchedUpdate)
-          databaseHolder.releaseDatabase()
+          databaseHolder.withDatabase { it.updateDao().incrementFailedLaunchCount(launchedUpdate) }
         }
       }
 
@@ -301,8 +298,7 @@ class StartupProcedure(
         }
         procedureScope.launch {
           val launchedUpdate = launchedUpdate ?: return@launch
-          databaseHolder.database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
-          databaseHolder.releaseDatabase()
+          databaseHolder.withDatabase { it.updateDao().incrementSuccessfulLaunchCount(launchedUpdate) }
         }
       }
 
