@@ -44,7 +44,7 @@
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
-    "@types/node": "^18.19.34",
+    "@types/node": "^20.14.8",
     "@types/picomatch": "^2.3.3",
     "@types/prompts": "2.0.14",
     "@vercel/ncc": "^0.38.1",
