@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Disambiguated `limited` permission status from `granted`. ([#35772](https://github.com/expo/expo/pull/35772) by [@clarkg](https://github.com/clarkg))
 - added the ability to change isFavorite property of contacts on Android (using updateContactAsync) ([#34483](https://github.com/expo/expo/pull/34483) by [@NorseGaud](https://github.com/NorseGaud))
 - Add `presentAccessPickerAsync` function that presents the iOS 18.0+ picker for limited contacts access. ([#33771](https://github.com/expo/expo/pull/33771) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Exposed `ContactAccessButton` from SwiftUI. ([#33782](https://github.com/expo/expo/pull/33782) by [@tsapeta](https://github.com/tsapeta))

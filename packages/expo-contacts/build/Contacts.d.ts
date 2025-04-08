@@ -1,5 +1,13 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { type ShareOptions } from 'react-native';
+export type ContactsPermissionResponse = PermissionResponse & {
+    /**
+     * Indicates if your app has access to the whole or only part of the contact library. Possible values are:
+     * - `'all'` if the user granted your app access to the whole contact library
+     * - `'limited'` if the user granted your app access only to selected contacts (only available on iOS 18+)
+     */
+    accessPrivileges?: 'all' | 'limited' | 'none';
+};
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
 export type ContactType = ContactTypes | `${ContactTypes}`;
@@ -754,14 +762,14 @@ export declare function getDefaultContainerIdAsync(): Promise<string>;
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
 /**
  * Checks user's permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
  * Presents a modal which allows the user to select which contacts the app has access to.
  * Using this function is reasonable only when the app has "limited" permissions.
