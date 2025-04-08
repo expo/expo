@@ -1,5 +1,3 @@
-/// <reference types="node" />
-/// <reference types="node" />
 import { Transform, type TransformCallback } from 'stream';
 interface Options {
     /**
