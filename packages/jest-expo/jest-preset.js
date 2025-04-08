@@ -110,5 +110,8 @@ if (!Array.isArray(jestPreset.setupFiles)) {
 }
 jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
 
+// See: https://jestjs.io/docs/configuration#prettierpath-string
+jestPreset.prettierPath = require.resolve('jest-snapshot-prettier');
+
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);
