@@ -205,10 +205,8 @@ export abstract class DevToolsPluginClient {
       data = event.data;
     } else if (event.data instanceof ArrayBuffer) {
       data = event.data;
-    } else if (ArrayBuffer.isView(event.data)) {
-      const newBuffer = new ArrayBuffer(event.data.buffer.byteLength);
-      new Uint8Array(newBuffer).set(new Uint8Array(event.data.buffer));
-      data = newBuffer;
+    } else if (ArrayBuffer.isView(event.data) && event.data.buffer instanceof ArrayBuffer) {
+      data = event.data.buffer;
     } else if (event.data instanceof Blob) {
       data = await blobToArrayBufferAsync(event.data);
     } else {
