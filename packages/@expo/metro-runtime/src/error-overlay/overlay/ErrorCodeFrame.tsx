@@ -91,37 +91,25 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
           />
         </span>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            borderLeft: '1px solid var(--expo-log-color-border)',
+        <button
+          className={mStyles.copyButton}
+          type="button"
+          title="Open in editor"
+          onClick={() => {
+            openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
+          }}
+          aria-label="Copy content">
+          <p className={mStyles.copyButtonText} data-text="true">
+            Open
+          </p>
 
-            backgroundColor: 'var(--expo-log-color-background)',
-          }} /* flex items-center justify-end */
-        >
-          <button
-            className={mStyles.copyButton}
-            type="button"
-            title="Open in editor"
-            onClick={() => {
-              openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
-            }}
-            aria-label="Copy content">
-            <p className={mStyles.copyButtonText} data-text="true">
-              Open
-            </p>
-
-            <OpenIcon className={mStyles.copyButtonIcon} width={26} height={26} />
-          </button>
-        </div>
+          <OpenIcon className={mStyles.copyButtonIcon} width={26} height={26} />
+        </button>
       </header>
 
       <div
         style={{
           padding: 10,
-
           display: 'flex',
           flexDirection: 'column',
         }}>

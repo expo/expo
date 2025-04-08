@@ -23,6 +23,10 @@
     border-width: 0;
     padding-left: 16px;
     padding-right: 16px;
+    
+    justify-content: flex-end;
+    border-left: 1px solid var(--expo-log-color-border);
+    background-color: var(--expo-log-color-background);
 }
 
 .copyButton:hover {
