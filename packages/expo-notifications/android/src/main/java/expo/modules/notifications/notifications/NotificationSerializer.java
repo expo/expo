@@ -59,7 +59,7 @@ public class NotificationSerializer {
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
-      if(requestTrigger instanceof FirebaseNotificationTrigger trigger) {
+      if (requestTrigger instanceof FirebaseNotificationTrigger trigger) {
         RemoteMessage message = trigger.getRemoteMessage();
         Map<String, String> data = message.getData();
         String dataBody = data.get("body");
@@ -121,7 +121,7 @@ public class NotificationSerializer {
       serializedContent.putString("priority", content.getPriority().getEnumValue());
     }
     if (content.getVibrationPattern() != null) {
-      serializedContent.putIntArray("vibrationPattern", RemoteMessageSerializer.intArrayFromLongArray(content.getVibrationPattern()));
+      serializedContent.putLongArray("vibrationPattern", content.getVibrationPattern());
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     if (content.getCategoryId() != null) {
