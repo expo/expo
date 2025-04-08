@@ -402,7 +402,7 @@ struct NotificationRequestContentRecord: Record {
   @Field
   var badge: Int?
   @Field
-  var userInfo: [String: Any]?
+  var data: [String: Any]?
   @Field
   var categoryIdentifier: String?
   @Field
@@ -492,7 +492,7 @@ struct NotificationRequestContentRecord: Record {
       content.badge = NSNumber.init(value: badge)
     }
 
-    if let userInfo = userInfo {
+    if let userInfo = data {
       content.userInfo = userInfo
     }
 
