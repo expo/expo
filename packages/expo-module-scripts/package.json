@@ -31,6 +31,9 @@
     "./jest-preset-plugin": {
       "default": "./jest-preset-plugin.js"
     },
+    "./jest-preset-plugin.js": {
+      "default": "./jest-preset-plugin.js"
+    },
     "./jest-preset-scripts": {
       "default": "./jest-preset-scripts.js"
     },
