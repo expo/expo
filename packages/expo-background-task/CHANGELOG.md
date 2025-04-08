@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] added expo-background-task to Expo Go's configuration
+
 ### 💡 Others
 
 ## 0.2.0 — 2025-04-04
