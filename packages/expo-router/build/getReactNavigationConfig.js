@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReactNavigationConfig = exports.getReactNavigationScreensConfig = exports.parseRouteSegments = void 0;
+exports.parseRouteSegments = parseRouteSegments;
+exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
+exports.getReactNavigationConfig = getReactNavigationConfig;
 const matchers_1 = require("./matchers");
 // `[page]` -> `:page`
 // `page` -> `page`
@@ -36,7 +38,6 @@ function parseRouteSegments(segments) {
         // Join to return as a path.
         .join('/'));
 }
-exports.parseRouteSegments = parseRouteSegments;
 function convertRouteNodeToScreen(node, metaOnly) {
     const path = parseRouteSegments(node.route);
     if (!node.children.length) {
@@ -69,7 +70,6 @@ function convertRouteNodeToScreen(node, metaOnly) {
 function getReactNavigationScreensConfig(nodes, metaOnly) {
     return Object.fromEntries(nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)]));
 }
-exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
 function getReactNavigationConfig(routes, metaOnly) {
     const config = {
         initialRouteName: undefined,
@@ -82,5 +82,4 @@ function getReactNavigationConfig(routes, metaOnly) {
     }
     return config;
 }
-exports.getReactNavigationConfig = getReactNavigationConfig;
 //# sourceMappingURL=getReactNavigationConfig.js.map

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import type { Minimatch } from 'minimatch';
 import type { SourceSkips } from './sourcer/SourceSkips';
 export type FingerprintSource = HashSource & {

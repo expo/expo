@@ -1,7 +1,7 @@
 "use strict";
 // Copyright 2015-present 650 Industries. All rights reserved.
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoImportMetaTransformPlugin = void 0;
+exports.expoImportMetaTransformPlugin = expoImportMetaTransformPlugin;
 function expoImportMetaTransformPlugin(api) {
     const { types: t } = api;
     return {
@@ -17,4 +17,3 @@ function expoImportMetaTransformPlugin(api) {
         },
     };
 }
-exports.expoImportMetaTransformPlugin = expoImportMetaTransformPlugin;

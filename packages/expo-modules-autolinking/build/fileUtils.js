@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.globMatchFunctorFirstAsync = exports.globMatchFunctorAllAsync = exports.fileExistsAsync = void 0;
+exports.fileExistsAsync = fileExistsAsync;
+exports.globMatchFunctorAllAsync = globMatchFunctorAllAsync;
+exports.globMatchFunctorFirstAsync = globMatchFunctorFirstAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
@@ -13,7 +15,6 @@ const path_1 = __importDefault(require("path"));
 async function fileExistsAsync(file) {
     return (await promises_1.default.stat(file).catch(() => null))?.isFile() ?? false;
 }
-exports.fileExistsAsync = fileExistsAsync;
 /**
  * Search files that match the glob pattern and return all matches from the matchFunctor.
  */
@@ -34,7 +35,6 @@ async function globMatchFunctorAllAsync(globPattern, matchFunctor, options) {
     }
     return results;
 }
-exports.globMatchFunctorAllAsync = globMatchFunctorAllAsync;
 /**
  * Search files that match the glob pattern and return the first match from the matchFunctor.
  */
@@ -54,5 +54,4 @@ async function globMatchFunctorFirstAsync(globPattern, matchFunctor, options) {
     }
     return null;
 }
-exports.globMatchFunctorFirstAsync = globMatchFunctorFirstAsync;
 //# sourceMappingURL=fileUtils.js.map

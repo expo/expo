@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRequestHandler = exports.getRoutesManifest = void 0;
+exports.getRoutesManifest = getRoutesManifest;
+exports.createRequestHandler = createRequestHandler;
 require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -51,7 +52,6 @@ function getProcessedManifest(path) {
 function getRoutesManifest(distFolder) {
     return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
 }
-exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // Serve a static file by exact route name
@@ -248,7 +248,6 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         return response;
     };
 }
-exports.createRequestHandler = createRequestHandler;
 /** Match `[page]` -> `page` */
 // Ported from `expo-router/src/matchers.tsx`
 function matchDynamicName(name) {
