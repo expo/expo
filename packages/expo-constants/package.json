@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@expo/config": "~11.0.0",
-    "@expo/env": "~1.0.0"
+    "@expo/env": "~1.0.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.1.0"

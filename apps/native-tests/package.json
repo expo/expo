@@ -9,11 +9,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~53.0.0-preview.0",
+    "expo": "~53.0.0-preview.1",
     "expo-camera": "~16.1.0",
     "expo-dev-client": "~5.1.0",
-    "expo-image": "~2.1.0",
-    "expo-notifications": "~0.30.0",
+    "expo-image": "~2.1.1",
+    "expo-notifications": "~0.30.1",
     "expo-splash-screen": "~0.30.0",
     "native-component-list": "*",
     "react": "19.0.0",
