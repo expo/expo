@@ -66,7 +66,7 @@ export const withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin<
     {
       propName: 'newArchEnabled',
       propValueGetter: (config) =>
-        (config.android?.newArchEnabled ?? config.newArchEnabled ?? false).toString(),
+        (config.android?.newArchEnabled ?? config.newArchEnabled)?.toString(),
     },
   ],
   'withNewArchEnabledGradleProps'
