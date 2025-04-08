@@ -7,12 +7,16 @@ import expo.modules.plugin.android.PublicationInfo
 import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
 import expo.modules.plugin.android.applySDKVersions
+import expo.modules.plugin.android.createEmptyExpoPublishTask
+import expo.modules.plugin.android.createEmptyExpoPublishToMavenLocalTask
+import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
 import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
+import java.net.URI
 
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
@@ -34,9 +38,12 @@ internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
 }
 
 internal fun Project.applyDefaultDependencies() {
-  val modulesCore = project.project(":expo-modules-core")
+  val modulesCore = rootProject.project(":expo-modules-core")
   if (project != modulesCore) {
-    project.dependencies.add("implementation", project.project(":expo-modules-core"))
+    project.dependencies.add("compileOnly", modulesCore)
+
+    project.dependencies.add("testImplementation", modulesCore)
+    project.dependencies.add("androidTestImplementation", modulesCore)
   }
 }
 
@@ -60,6 +67,8 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
  */
 internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
   if (!expoModulesExtension.canBePublished) {
+    createEmptyExpoPublishTask()
+    createEmptyExpoPublishToMavenLocalTask()
     return
   }
 
@@ -76,6 +85,15 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
       .createReleasePublication(publicationInfo)
 
     createExpoPublishToMavenLocalTask(publicationInfo)
+
+    val npmLocalRepositoryRelativePath = "local-maven-repo"
+    val npmLocalRepository = URI("file://${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
+    publishingExtension().repositories.mavenLocal { mavenRepo ->
+      mavenRepo.name = "NPMPackage"
+      mavenRepo.url = npmLocalRepository
+    }
+
+    createExpoPublishTask(publicationInfo, npmLocalRepositoryRelativePath)
   }
 }
 

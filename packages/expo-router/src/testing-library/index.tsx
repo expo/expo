@@ -39,7 +39,7 @@ declare global {
       toHavePathnameWithParams(pathname: string): R;
       toHaveSegments(segments: string[]): R;
       toHaveSearchParams(params: Record<string, string | string[]>): R;
-      toHaveRouterState(state: NavigationState<any> | PartialState<any>): R;
+      toHaveRouterState(state: Record<string, unknown>): R;
     }
   }
 }

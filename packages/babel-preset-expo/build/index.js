@@ -181,15 +181,13 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
+    if (platformOptions.unstable_transformImportMeta === true) {
+        extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
+    }
     return {
         presets: [
-            [
-                // We use `require` here instead of directly using the package name because we want to
-                // specifically use the `@react-native/babel-preset` installed by this package (ex:
-                // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
-                // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-                isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
-                {
+            (() => {
+                const presetOpts = {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
                     // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -217,8 +215,28 @@ function babelPresetExpo(api, options = {}) {
                         : // Pass the option directly to `@react-native/babel-preset`, which in turn
                             // passes it to `babel-plugin-transform-modules-commonjs`
                             lazyImportsOption,
-                },
-            ],
+                    dev: isDev,
+                };
+                if (isModernEngine) {
+                    return [require('./web-preset'), presetOpts];
+                }
+                // We use `require` here instead of directly using the package name because we want to
+                // specifically use the `@react-native/babel-preset` installed by this package (ex:
+                // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
+                // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
+                const { getPreset } = require('@react-native/babel-preset');
+                // We need to customize the `@react-native/babel-preset` to ensure that the `@babel/plugin-transform-export-namespace-from`
+                // plugin is run after the TypeScript plugins. This is normally handled by the combination of standard `@babel/preset-env` and `@babel/preset-typescript` but React Native
+                // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
+                const babelPresetReactNativeEnv = getPreset(null, presetOpts);
+                // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
+                // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
+                // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
+                babelPresetReactNativeEnv.overrides.push({
+                    plugins: [require('@babel/plugin-transform-export-namespace-from')],
+                });
+                return babelPresetReactNativeEnv;
+            })(),
             // React support with similar options to Metro.
             // We override this logic outside of the metro preset so we can add support for
             // React 17 automatic JSX transformations.
@@ -251,7 +269,6 @@ function babelPresetExpo(api, options = {}) {
                 require('@babel/plugin-proposal-decorators'),
                 platformOptions.decorators ?? { legacy: true },
             ],
-            require('@babel/plugin-transform-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
             (0, common_1.hasModule)('react-native-reanimated') &&

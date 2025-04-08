@@ -1,0 +1,93 @@
+{
+  "name": "notification-tester",
+  "main": "index.js",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "test": "jest --watchAll",
+    "lint": "expo lint",
+    "prebuild:android": "./scripts/prebuild-android.sh",
+    "prebuild:ios": "./scripts/prebuild-ios.sh"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.3.9",
+    "@react-navigation/native": "^7.1.5",
+    "expo": "~53.0.0-preview.0",
+    "expo-font": "13.1.0",
+    "expo-linking": "7.1.0",
+    "expo-router": "5.0.1-preview.0",
+    "expo-splash-screen": "0.30.0",
+    "expo-sqlite": "15.2.0",
+    "expo-status-bar": "2.1.0",
+    "expo-notifications": "0.30.0",
+    "expo-task-manager": "13.1.0",
+    "native-component-list": "*",
+    "react-native-gesture-handler": "~2.24.0",
+    "react": "19.0.0",
+    "react-native": "0.79.0",
+    "react-native-safe-area-context": "5.3.0",
+    "react-native-screens": "4.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/jest": "^29.5.12",
+    "@types/react": "~19.0.10"
+  },
+  "resolutions": {
+    "react-test-renderer": "19.0.0"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "@expo/ui",
+        "expo-audio",
+        "expo-av",
+        "expo-battery",
+        "expo-blur",
+        "expo-brightness",
+        "expo-calendar",
+        "expo-camera",
+        "expo-cellular",
+        "expo-updates",
+        "expo-updates-interface",
+        "expo-clipboard",
+        "expo-contacts",
+        "expo-crypto",
+        "expo-document-picker",
+        "expo-file-system",
+        "expo-gl",
+        "expo-haptics",
+        "expo-image-manipulator",
+        "expo-image-picker",
+        "expo-intent-launcher",
+        "expo-linear-gradient",
+        "expo-local-authentication",
+        "expo-localization",
+        "expo-location",
+        "expo-mail-composer",
+        "expo-maps",
+        "expo-media-library",
+        "expo-print",
+        "expo-screen-capture",
+        "expo-screen-orientation",
+        "expo-secure-store",
+        "expo-sensors",
+        "expo-sharing",
+        "expo-sms",
+        "expo-speech",
+        "expo-store-review",
+        "expo-video",
+        "expo-video-thumbnails",
+        "expo-tracking-transparency",
+        "expo-web-browser"
+      ]
+    }
+  },
+  "private": true
+}

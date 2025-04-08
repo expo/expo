@@ -9,7 +9,7 @@ import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Experimentally available in **SDK 52 and above**. This is a very early preview and not ready for production or wide use yet. This initial version is meant to help library authors understand universal React Server Components and add support in their libraries.
+> Experimentally available in **SDK 52 and above**. This is a beta release and subject to breaking changes.
 
 React Server Components enable a number of exciting capabilities, including:
 
@@ -28,7 +28,7 @@ Your project must use Expo Router and React Native new architecture (default in 
 
 To use React Server Components in your Expo app, you need to:
 
-1. Install the required RSC dependency `react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610`
+1. Install the required RSC dependency `react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610` (`react-server-dom-webpack@~19.0.0` for SDK 53 and above).
 2. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
 3. Enable the flag in the project app config:
 
@@ -544,7 +544,7 @@ The CSS will be hoisted into the client bundle from the server.
 
 ## Deployment
 
-> Avoid using universal Server Components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
+> Universal React Server Components are still in beta.
 
 ### Web
 
@@ -563,7 +563,7 @@ Then you can host it locally with `npx expo serve` or deploy it to the cloud:
 
 ### Native
 
-You can experimentally deploy your native React Server Components by following the server deployment guide:
+You can deploy your native React Server Components by following the server deployment guide:
 
 <BoxLink
   title="Deploy native servers to EAS"

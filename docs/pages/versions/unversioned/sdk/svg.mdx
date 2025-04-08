@@ -1,16 +1,18 @@
 ---
-title: React Native SVG
-sidebar_title: Svg
+title: react-native-svg
 description: A library that allows using SVGs in your app.
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-svg'
-packageName: 'react-native-svg'
+packageName: react-native-svg
 platforms: ['android', 'ios', 'macos', 'web', 'tvos']
+inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { SnackInline } from '~/ui/components/Snippet';
+import { MONOSPACE } from '~/ui/components/Text';
 
 `react-native-svg` allows you to use SVGs in your app, with support for interactivity and animation.
 
@@ -24,7 +26,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 import * as Svg from 'react-native-svg';
 ```
 
-### `Svg`
+### <MONOSPACE>Svg</MONOSPACE>
 
 A set of drawing primitives such as `Circle`, `Rect`, `Path`,
 `ClipPath`, and `Polygon`. It supports most SVG elements and properties.
@@ -47,11 +49,20 @@ export default function SvgComponent(props) {
 
 </SnackInline>
 
-### Pro tips
+### Tips
 
 Here are some helpful links that will get you moving fast!
 
 - Looking for SVGs? Try the [noun project](https://thenounproject.com/).
 - Create or modify your own SVGs for free using [Figma](https://www.figma.com/).
 - Optimize your SVG with [SVGOMG](https://jakearchibald.github.io/svgomg/). This will make the code smaller and easier to work with. Be sure not to remove the `viewbox` for best results on Android.
-- Convert your SVG to an Expo component in the browser using [React SVGR](https://react-svgr.com/playground/?native=true&typescript=true).
+- Convert your SVG to an Expo component in the browser using [SVGR](https://react-svgr.com/playground/?native=true&typescript=true).
+
+## Learn more
+
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/software-mansion/react-native-svg"
+/>

@@ -19,7 +19,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     body: 'Change sides!',
  *   },
  *   trigger: {
- *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -34,7 +34,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
- *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },
@@ -45,15 +45,18 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule
@@ -117,7 +120,7 @@ function parseCalendarTrigger(trigger) {
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.CALENDAR) {
         const { repeats, ...calendarTrigger } = trigger;
-        return { type: 'calendar', value: calendarTrigger, repeats };
+        return { ...calendarTrigger, repeats: !!repeats, type: 'calendar' };
     }
     return undefined;
 }

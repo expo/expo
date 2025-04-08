@@ -10,16 +10,10 @@ import type {
 } from '@react-navigation/native';
 import React from 'react';
 
-import {
-  DynamicConvention,
-  LoadedRoute,
-  Route,
-  RouteNode,
-  sortRoutesWithInitial,
-  useRouteNode,
-} from './Route';
+import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
+import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';
 import { Try } from './views/Try';
@@ -49,7 +43,13 @@ export type ScreenProps<
       }) => ScreenListeners<TState, TEventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
+
+  dangerouslySingular?: SingularOptions;
 };
+
+export type SingularOptions =
+  | boolean
+  | ((name: string, params: UnknownOutputParams) => string | undefined);
 
 function getSortedChildren(
   children: RouteNode[],
@@ -64,37 +64,69 @@ function getSortedChildren(
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, redirect, initialParams, listeners, options, getId }) => {
-      if (!entries.length) {
-        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
-        return null;
-      }
-      const matchIndex = entries.findIndex((child) => child.route === name);
-      if (matchIndex === -1) {
-        console.warn(
-          `[Layout children]: No route named "${name}" exists in nested children:`,
-          children.map(({ route }) => route)
-        );
-        return null;
-      } else {
-        // Get match and remove from entries
-        const match = entries[matchIndex];
-        entries.splice(matchIndex, 1);
-
-        // Ensure to return null after removing from entries.
-        if (redirect) {
-          if (typeof redirect === 'string') {
-            throw new Error(`Redirecting to a specific route is not supported yet.`);
-          }
+    .map(
+      ({
+        name,
+        redirect,
+        initialParams,
+        listeners,
+        options,
+        getId,
+        dangerouslySingular: singular,
+      }) => {
+        if (!entries.length) {
+          console.warn(
+            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
+          );
           return null;
         }
+        const matchIndex = entries.findIndex((child) => child.route === name);
+        if (matchIndex === -1) {
+          console.warn(
+            `[Layout children]: No route named "${name}" exists in nested children:`,
+            children.map(({ route }) => route)
+          );
+          return null;
+        } else {
+          // Get match and remove from entries
+          const match = entries[matchIndex];
+          entries.splice(matchIndex, 1);
 
-        return {
-          route: match,
-          props: { initialParams, listeners, options, getId },
-        };
+          // Ensure to return null after removing from entries.
+          if (redirect) {
+            if (typeof redirect === 'string') {
+              throw new Error(`Redirecting to a specific route is not supported yet.`);
+            }
+            return null;
+          }
+
+          if (getId) {
+            console.warn(
+              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+            );
+            if (singular) {
+              console.warn(
+                `Screen ${name} cannot use both getId and dangerouslySingular together.`
+              );
+            }
+          } else if (singular) {
+            // If singular is set, use it as the getId function.
+            if (typeof singular === 'string') {
+              getId = () => singular;
+            } else if (typeof singular === 'function' && name) {
+              getId = (options) => singular(name, options.params || {});
+            } else if (singular === true && name) {
+              getId = (options) => getSingularId(name, options);
+            }
+          }
+
+          return {
+            route: match,
+            props: { initialParams, listeners, options, getId },
+          };
+        }
       }
-    })
+    )
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps>;
@@ -123,16 +155,27 @@ export function useSortedScreens(order: ScreenProps[]): React.ReactNode[] {
   );
 }
 
-function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
+function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRoute) {
+  // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
+  if (component?.default && __DEV__) {
+    component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
+  }
+
   if (ErrorBoundary) {
+    const Wrapped = React.forwardRef((props: any, ref: any) => {
+      const children = React.createElement(component.default || EmptyRoute, {
+        ...props,
+        ref,
+      });
+      return <Try catch={ErrorBoundary}>{children}</Try>;
+    });
+
+    if (__DEV__) {
+      Wrapped.displayName = `ErrorBoundary(${value.contextKey})`;
+    }
+
     return {
-      default: React.forwardRef((props: any, ref: any) => {
-        const children = React.createElement(component.default || EmptyRoute, {
-          ...props,
-          ref,
-        });
-        return <Try catch={ErrorBoundary}>{children}</Try>;
-      }),
+      default: Wrapped,
     };
   }
   if (process.env.NODE_ENV !== 'production') {
@@ -148,12 +191,12 @@ function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
   return { default: component.default };
 }
 
-function fromLoadedRoute(res: LoadedRoute) {
+function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
   if (!(res instanceof Promise)) {
-    return fromImport(res);
+    return fromImport(value, res);
   }
 
-  return res.then(fromImport);
+  return res.then(fromImport.bind(null, value));
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -166,115 +209,55 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return qualifiedStore.get(value)!;
   }
 
-  let ScreenComponent: React.ForwardRefExoticComponent<React.RefAttributes<unknown>>;
+  let ScreenComponent:
+    | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
+    | React.ComponentType<any>;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy(async () => {
       const res = value.loadRoute();
-      return fromLoadedRoute(res) as Promise<{
+      return fromLoadedRoute(value, res) as Promise<{
         default: React.ComponentType<any>;
       }>;
     });
+
+    if (__DEV__) {
+      ScreenComponent.displayName = `AsyncRoute(${value.route})`;
+    }
   } else {
     const res = value.loadRoute();
-    const Component = fromImport(res).default as React.ComponentType<any>;
-    ScreenComponent = React.forwardRef((props, ref) => {
-      return <Component {...props} ref={ref} />;
-    });
+    ScreenComponent = fromImport(value, res).default!;
+  }
+  function BaseRoute({
+    // Remove these React Navigation props to
+    // enforce usage of expo-router hooks (where the query params are correct).
+    route,
+    navigation,
+
+    // Pass all other props to the component
+    ...props
+  }: any) {
+    return (
+      <Route node={value} route={route}>
+        <React.Suspense fallback={<SuspenseFallback route={value} />}>
+          <ScreenComponent
+            {...props}
+            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+            // the intention is to make it possible to deduce shared routes.
+            segment={value.route}
+          />
+        </React.Suspense>
+      </Route>
+    );
   }
 
-  const getLoadable = (props: any, ref: any) => (
-    <React.Suspense fallback={<SuspenseFallback route={value} />}>
-      <ScreenComponent
-        {...{
-          ...props,
-          ref,
-          // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-          // the intention is to make it possible to deduce shared routes.
-          segment: value.route,
-        }}
-      />
-    </React.Suspense>
-  );
-
-  const QualifiedRoute = React.forwardRef(
-    (
-      {
-        // Remove these React Navigation props to
-        // enforce usage of expo-router hooks (where the query params are correct).
-        route,
-        navigation,
-
-        // Pass all other props to the component
-        ...props
-      }: any,
-      ref: any
-    ) => {
-      const loadable = getLoadable(props, ref);
-
-      return (
-        <Route node={value} route={route}>
-          {loadable}
-        </Route>
-      );
-    }
-  );
-
-  QualifiedRoute.displayName = `Route(${value.route})`;
-
-  qualifiedStore.set(value, QualifiedRoute);
-  return QualifiedRoute;
-}
-
-/**
- * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
- * @returns a function which provides a screen id that matches the dynamic route name in params. */
-export function createGetIdForRoute(
-  route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>,
-  getId: ScreenProps['getId']
-): ScreenProps['getId'] {
-  const include = new Map<string, DynamicConvention>();
-
-  if (route.dynamic) {
-    for (const segment of route.dynamic) {
-      include.set(segment.name, segment);
-    }
+  if (__DEV__) {
+    BaseRoute.displayName = `Route(${value.route})`;
   }
 
-  return (options = {}) => {
-    const { params = {} } = options;
-    if (params.__EXPO_ROUTER_key) {
-      const key = params.__EXPO_ROUTER_key;
-      delete params.__EXPO_ROUTER_key;
-      if (getId == null) {
-        return key;
-      }
-    }
-
-    if (getId != null) {
-      return getId(options);
-    }
-
-    const segments: string[] = [];
-
-    for (const dynamic of include.values()) {
-      const value = params?.[dynamic.name];
-      if (Array.isArray(value) && value.length > 0) {
-        // If we are an array with a value
-        segments.push(value.join('/'));
-      } else if (value && !Array.isArray(value)) {
-        // If we have a value and not an empty array
-        segments.push(value);
-      } else if (dynamic.deep) {
-        segments.push(`[...${dynamic.name}]`);
-      } else {
-        segments.push(`[${dynamic.name}]`);
-      }
-    }
-
-    return segments.join('/') ?? route.contextKey;
-  };
+  qualifiedStore.set(value, BaseRoute);
+  return BaseRoute;
 }
 
 export function screenOptionsFactory(
@@ -310,11 +293,29 @@ export function routeToScreen(
   return (
     <Screen
       {...props}
-      getId={createGetIdForRoute(route, getId)}
       name={route.route}
       key={route.route}
+      getId={getId}
       options={screenOptionsFactory(route, options)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );
+}
+
+export function getSingularId(
+  name: string,
+  options: { params?: Record<string, any> | undefined } = {}
+) {
+  return name
+    .split('/')
+    .map((segment) => {
+      if (segment.startsWith('[...')) {
+        return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
+      } else if (segment.startsWith('[')) {
+        return options.params?.[segment.slice(1, -1)] || segment;
+      } else {
+        return segment;
+      }
+    })
+    .join('/');
 }

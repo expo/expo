@@ -1,5 +1,11 @@
 pluginManagement {
-  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
+  def reactNativeGradlePlugin = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
+    }.standardOutput.asText.get().trim()
+  ).getParentFile().absolutePath
+  includeBuild(reactNativeGradlePlugin)
 
   def expoPluginsPath = new File(
     providers.exec {
@@ -10,6 +16,7 @@ pluginManagement {
   ).absolutePath
   includeBuild(expoPluginsPath)
 }
+
 plugins {
   id("com.facebook.react.settings")
   id("expo-autolinking-settings")
@@ -22,43 +29,10 @@ expoAutolinking.useExpoModules()
 
 rootProject.name = 'BareExpo'
 
-def reactNativePackage = providers.exec {
-  workingDir(rootDir)
-  commandLine("node", "--print", "require.resolve('react-native/package.json')")
-}.standardOutput.asText.get().trim()
-
-dependencyResolutionManagement {
-  versionCatalogs {
-    libs {
-      from(files(new File(reactNativePackage, "../gradle/libs.versions.toml")))
-      if (hasProperty('android.buildToolsVersion')) {
-        version("buildTools", findProperty('android.buildToolsVersion'))
-      }
-      if (hasProperty('android.minSdkVersion')) {
-        version("minSdk", findProperty('android.minSdkVersion'))
-      }
-      if (hasProperty('android.compileSdkVersion')) {
-        version("compileSdk", findProperty('android.compileSdkVersion'))
-      }
-      if (hasProperty('android.targetSdkVersion')) {
-        version("targetSdk", findProperty('android.targetSdkVersion'))
-      }
-      if (hasProperty('android.kotlinVersion')) {
-        version("kotlin", findProperty('android.kotlinVersion'))
-      }
-    }
-  }
-}
+expoAutolinking.useExpoVersionCatalog()
 
 include(":expo-modules-test-core")
 project(":expo-modules-test-core").projectDir = new File("../../../packages/expo-modules-test-core/android")
 
 include ':app'
-includeBuild(
-  file(
-    providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')")
-    }.standardOutput.asText.get().trim()
-  ).getParentFile()
-)
+includeBuild(expoAutolinking.reactNativeGradlePlugin)

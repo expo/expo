@@ -5,6 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
+import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
 import { RouterStore } from '../global-state/router-store';
 
 export type Options<ParamList extends object> = ExpoOptions & {
@@ -85,15 +86,15 @@ export function getStateFromPath<ParamList extends object>(
   // END FORK
 
   // START FORK
-  let remaining = expoPath.nonstandardPathname
-    // let remaining = path
-    // END FORK
-    .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
-    .replace(/^\//, '') // Remove extra leading slash
-    .replace(/\?.*$/, ''); // Remove query params which we will handle later
+  let remaining = expo.cleanPath(expoPath.nonstandardPathname);
+  // let remaining = path
+  //   .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+  //   .replace(/^\//, '') // Remove extra leading slash
+  //   .replace(/\?.*$/, ''); // Remove query params which we will handle later
 
-  // Make sure there is a trailing slash
-  remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // // Make sure there is a trailing slash
+  // remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // END FORK
 
   const prefix = options?.path?.replace(/^\//, ''); // Remove extra leading slash
 
@@ -192,7 +193,6 @@ function getConfigResources<ParamList extends object>(
 ) {
   // START FORK - We need to disable this caching as our configs can change based upon the current state
   // if (cachedConfigResources[0] !== options) {
-  //   console.log(previousSegments);
   cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
   // }
   // END FORK FORK
@@ -500,9 +500,11 @@ const createNormalizedConfigs = (
           ? joinPaths(parentPattern || '', config.path || '')
           : config.path || '';
 
-      configs.push(
-        createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
-      );
+      if (screen !== INTERNAL_SLOT_NAME) {
+        configs.push(
+          createConfigItem(screen, routeNames, pattern!, config.path, config.parse, config)
+        );
+      }
     }
 
     if (config.screens) {
@@ -545,20 +547,23 @@ const createConfigItem = (
   // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
   pattern = pattern.split('/').filter(Boolean).join('/');
 
-  const regex = pattern
-    ? new RegExp(
-        `^(${pattern
-          .split('/')
-          .map((it) => {
-            if (it.startsWith(':')) {
-              return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
-            }
+  // START FORK
+  const regex = pattern ? expo.routePatternToRegex(pattern) : undefined;
+  // const regex = pattern
+  //   ? new RegExp(
+  //       `^(${pattern
+  //         .split('/')
+  //         .map((it) => {
+  //           if (it.startsWith(':')) {
+  //             return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+  //           }
 
-            return `${it === '*' ? '.*' : escape(it)}\\/`;
-          })
-          .join('')})`
-      )
-    : undefined;
+  //           return `${it === '*' ? '.*' : escape(it)}\\/`;
+  //         })
+  //         .join('')})`
+  //     )
+  //   : undefined;
+  // END FORK
 
   return {
     screen,

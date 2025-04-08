@@ -60,8 +60,8 @@ Since you have changed the update provider from CodePush to EAS Update, you will
 
 Follow the respective store guidelines for submitting a new build of your application:
 
-- [Submitting to Apple App Store](/submit/ios)
 - [Submitting to Google Play Store](/submit/android)
+- [Submitting to Apple App Store](/submit/ios)
 
 After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration. If your app is not updating as expected, [validate your configuration](/eas-update/debug).
 
@@ -81,7 +81,7 @@ CodePush CLI has a `--mandatory` flag that allows you to release mandatory updat
 
 CodePush CLI has a `--description` flag that allows you to include a message in an update. You can build this functionality with EAS Update using the `extra` field in your app config.
 
-Refer the `--message` flag in this example: [expo/UpdatesAPIDemo](https://github.com/expo/UpdatesAPIDemo)
+Refer the `--message` flag in this example: [`expo/UpdatesAPIDemo`](https://github.com/expo/UpdatesAPIDemo).
 
 </Collapsible>
 
@@ -138,13 +138,13 @@ CodePush and EAS Update are both services that allow you to send hotfixes to the
 
 **CodePush has single streams of updates for deployments**. What this means is that you can point a build to a deployment, and it will pull updates from that. If you want to change the deployment that is targeted by a build, you can do this at runtime through a JavaScript API.
 
-**EAS Update has multiple streams of updates** — one that correspond to your source control branches (called branches), and another called channels, which point to branches. The mapping between channels and branches is handled on the server side, and a channel can point to different branches for each runtime version (additionally, more advanced logic may be expressed, such as to support incremental rollouts). Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. The reason for this is that it ensures that certain branches (eg: development, staging) don't automatically go out to production &mdash; your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
+**EAS Update has multiple streams of updates** — one that correspond to your source control branches (called branches), and another called channels, which point to branches. The mapping between channels and branches is handled on the server side, and a channel can point to different branches for each runtime version (additionally, more advanced logic may be expressed, such as to support incremental rollouts). Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. The reason for this is that it ensures that certain branches (for example: development, staging) don't automatically go out to production &mdash; your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
 
 </Collapsible>
 
 <Collapsible summary="Differences in how updates are selected at runtime">
 
-A key distinction between CodePush and EAS Update that can impact your release process is that **with CodePush, the client controls the target update deployment at runtime**, and **with EAS Update, it is controlled on the server side, by mapping channels to branches**. This means that you can't include code in your app using EAS Update to instruct it to load a different stream of updates depending on runtime criteria, such as the current user role (eg: distribute beta releases to employees) - it will only load the branch that is mapped on EAS Update servers to the corresponding channel (such as production or staging).
+A key distinction between CodePush and EAS Update that can impact your release process is that **with CodePush, the client controls the target update deployment at runtime**, and **with EAS Update, it is controlled on the server side, by mapping channels to branches**. This means that you can't include code in your app using EAS Update to instruct it to load a different stream of updates depending on runtime criteria, such as the current user role (for example: distribute beta releases to employees) - it will only load the branch that is mapped on EAS Update servers to the corresponding channel (such as production or staging).
 
 The ability to control the target deployment at runtime is commonly used with CodePush in staging environments to allow non-technical stakeholders to test features from a single build on Google Play Beta / TestFlight. The current alternative for this with EAS Update is to use [development builds](/eas-update/expo-dev-client/). We're currently working on providing a way to do this with release builds.
 

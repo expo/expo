@@ -1,15 +1,17 @@
 ---
-title: ViewPager
+title: react-native-pager-view
 description: A component library that provides a carousel-like view to swipe through pages of content.
 sourceCodeUrl: 'https://github.com/callstack/react-native-pager-view'
-packageName: 'react-native-pager-view'
+packageName: react-native-pager-view
 platforms: ['android', 'ios']
+inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 `react-native-pager-view` exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
@@ -18,10 +20,6 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 ## Installation
 
 <APIInstallSection href="https://github.com/callstack/react-native-pager-view#linking" />
-
-## Usage
-
-See full documentation at [callstack/react-native-pager-view](https://github.com/callstack/react-native-pager-view).
 
 ## Example
 
@@ -58,3 +56,12 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+## Learn more
+
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/callstack/react-native-pager-view"
+/>

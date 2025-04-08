@@ -296,7 +296,8 @@ export function getHtmlFiles({
           });
         }
       } else if (typeof value === 'object' && value?.screens) {
-        const newPath = baseUrl + value.path + '/';
+        // The __root slot has no path.
+        const newPath = value.path ? baseUrl + value.path + '/' : baseUrl;
         traverseScreens(value.screens, value._route ?? null, newPath);
       }
     }

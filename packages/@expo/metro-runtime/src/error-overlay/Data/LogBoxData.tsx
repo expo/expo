@@ -66,7 +66,7 @@ type State = {
 const observers: Set<{ observer: Observer } & any> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
-let updateTimeout: null | ReturnType<typeof setTimeout> | ReturnType<typeof setTimeout> = null;
+let updateTimeout: null | ReturnType<typeof setTimeout> = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 

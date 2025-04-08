@@ -1,6 +1,9 @@
 import type { ErrorLike } from "./types";
 
-export function checkValidArgs(keyValuePairs: unknown[], callback: unknown) {
+export function checkValidArgs(
+  keyValuePairs: readonly unknown[],
+  callback: unknown
+) {
   if (
     !Array.isArray(keyValuePairs) ||
     keyValuePairs.length === 0 ||

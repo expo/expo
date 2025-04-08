@@ -7,7 +7,7 @@ pluginManagement {
 }
 
 include(
-  ":shared",
+  ":expo-autolinking-plugin-shared",
   ":expo-autolinking-settings-plugin",
   ":expo-autolinking-plugin"
 )

@@ -1,14 +1,16 @@
 ---
-title: FlashList
+title: '@shopify/flash-list'
 description: A React Native component that provides a fast and performant way to render lists.
 sourceCodeUrl: 'https://github.com/shopify/flash-list'
 packageName: '@shopify/flash-list'
 platforms: ['android', 'ios', 'tvos', 'web']
+inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/set-up-your-environment/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 `@shopify/flash-list` is a "Fast and performant React Native list" component that is a drop-in replacement for React Native's `<FlatList>` component. It "recycles components under the hood to maximize performance."
 
@@ -16,6 +18,11 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 <APIInstallSection href="https://shopify.github.io/flash-list/docs/" />
 
-## Usage
+## Learn more
 
-See full documentation at [https://shopify.github.io/flash-list/](https://shopify.github.io/flash-list/).
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://shopify.github.io/flash-list/"
+/>

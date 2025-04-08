@@ -33,22 +33,34 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
     self.dependencyProvider = RCTAppDependencyProvider()
     self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
-    let rootView = reactNativeFactory?.rootViewFactory.view(
+#if os(iOS) || os(tvOS)
+    window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(withModuleName: self.moduleName, in: window, launchOptions: launchOptions)
+#elseif os(macOS)
+    if let rootView = reactNativeFactory?.rootViewFactory.view(
       withModuleName: self.moduleName as String,
       initialProperties: self.initialProps,
       launchOptions: launchOptions
-    )
+    ) {
+      let frame = NSRect(x: 0, y: 0, width: 1280, height: 720)
+      let window = NSWindow(
+        contentRect: NSRect.zero,
+        styleMask: [.titled, .resizable, .closable, .miniaturizable],
+        backing: .buffered,
+        defer: false)
 
-    let window = UIWindow(frame: UIScreen.main.bounds)
-    let rootViewController = createRootViewController()
+      window.title = moduleName
+      window.autorecalculatesKeyViewLoop = true
 
-    setRootView(rootView, toRootViewController: rootViewController)
+      let rootViewController = NSViewController()
+      rootViewController.view = rootView
+      rootView.frame = frame
 
-    window.windowScene?.delegate = self
-    window.rootViewController = rootViewController
-    window.makeKeyAndVisible()
-
-    self.window = window
+      window.contentViewController = rootViewController
+      window.makeKeyAndOrderFront(self)
+      window.center()
+    }
+#endif
   }
 
   @objc
@@ -113,7 +125,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
 
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
     // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
-    return bundleURL()
+    return bridge.bundleURL ?? bundleURL()
   }
 
   // MARK: - Initializing the App
@@ -156,7 +168,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   }
 
 #elseif os(macOS)
-  open override func applicationWillFinishLaunching(_ notification: Notification) {
+  open func applicationWillFinishLaunching(_ notification: Notification) {
     let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
       $0.responds(to: #selector(applicationWillFinishLaunching(_:)))
     }
@@ -166,9 +178,10 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
     }
   }
 
-  open override func applicationDidFinishLaunching(_ notification: Notification) {
-    if shouldCallReactNativeSetup {
-      super.applicationDidFinishLaunching(notification)
+  open func applicationDidFinishLaunching(_ notification: Notification) {
+    if automaticallyLoadReactNativeWindow {
+      let launchOptions = notification.userInfo as? [String: Any]
+      loadReactNativeWindow(launchOptions: launchOptions)
     }
 
     ExpoAppDelegateSubscriberRepository
@@ -221,33 +234,33 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
 
 #elseif os(macOS)
   @objc
-  open override func applicationDidBecomeActive(_ notification: Notification) {
+  open func applicationDidBecomeActive(_ notification: Notification) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationDidBecomeActive?(notification) }
   }
 
   @objc
-  open override func applicationWillResignActive(_ notification: Notification) {
+  open func applicationWillResignActive(_ notification: Notification) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillResignActive?(notification) }
   }
 
   @objc
-  open override func applicationDidHide(_ notification: Notification) {
+  open func applicationDidHide(_ notification: Notification) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationDidHide?(notification) }
   }
 
-  open override func applicationWillUnhide(_ notification: Notification) {
+  open func applicationWillUnhide(_ notification: Notification) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillUnhide?(notification) }
   }
 
-  open override func applicationWillTerminate(_ notification: Notification) {
+  open func applicationWillTerminate(_ notification: Notification) {
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { $0.applicationWillTerminate?(notification) }
@@ -351,7 +364,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   }
 
 #elseif os(macOS)
-  open override func application(
+  open func application(
     _ application: NSApplication,
     didReceiveRemoteNotification userInfo: [String: Any]
   ) {
@@ -405,7 +418,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
     }
   }
 #elseif os(macOS)
-  open override func application(
+  open func application(
     _ application: NSApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void
@@ -542,7 +555,7 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
     }
   }
 #elseif os(macOS)
-  open override func application(_ app: NSApplication, open urls: [URL]) {
+  open func application(_ app: NSApplication, open urls: [URL]) {
     ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
       subscriber.application?(app, open: urls)
     }

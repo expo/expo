@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`asserts that use client and use server cannot be used together 1`] = `
-"/unknown: It's not possible to have both \`use client\` and \`use server\` directives in the same file.
+"/unknown: It's not possible to have both "use client" and "use server" directives in the same file.
 > 1 |
     | ^
   2 |     'use server';

@@ -19,11 +19,12 @@ protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
 }
 
-struct AppleMapsViewWrapper: ExpoSwiftUI.View, AppleMapsViewProtocol {
-  @EnvironmentObject var props: AppleMapsViewProps
+struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, AppleMapsViewProtocol {
+  @ObservedObject var props: AppleMapsViewProps
   var appleMapsView: (any AppleMapsViewProtocol)?
 
-  init() {
+  init(props: AppleMapsViewProps) {
+    self.props = props
     if #available(iOS 18.0, *) {
       appleMapsView = AppleMapsView()
     } else {

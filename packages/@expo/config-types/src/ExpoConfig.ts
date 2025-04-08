@@ -213,6 +213,10 @@ export interface ExpoConfig {
      * Whether to disable the built-in expo-updates anti-bricking measures. Defaults to false. If set to true, this will allow overriding certain configuration options from the JS API, which is liable to leave an app in a bricked state if not done carefully. This should not be used in production.
      */
     disableAntiBrickingMeasures?: boolean;
+    /**
+     * Enable debugging of native code with updates enabled. Defaults to false. If set to true, the EX_UPDATES_NATIVE_DEBUG environment variable will be set in Podfile.properties.json and gradle.properties. This causes Xcode and Android Studio debug builds to be built with expo-updates enabled, and JS debugging (with dev client or packager) disabled. This should not be used in production.
+     */
+    useNativeDebug?: boolean;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes

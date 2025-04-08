@@ -1,8 +1,11 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
+
+// Flag to warn about running on Apple simulator
+let warnAboutRunningOniOSSimulator = false;
 
 // @needsAudit
 /**
@@ -60,7 +63,20 @@ export async function registerTaskAsync(
       `Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`
     );
   }
-  console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
+  if (await TaskManager.isTaskRegisteredAsync(taskName)) {
+    throw new Error(`Task '${taskName}' is already registered.`);
+  }
+  if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
+    if (!warnAboutRunningOniOSSimulator) {
+      const message =
+        Platform.OS === 'ios'
+          ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
+          : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
+      console.warn(message);
+      warnAboutRunningOniOSSimulator = true;
+    }
+    return;
+  }
   await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
 }
 
@@ -74,7 +90,9 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoBackgroundTaskModule.unregisterTaskAsync) {
     throw new UnavailabilityError('BackgroundTask', 'unregisterTaskAsync');
   }
-  console.log('Calling ExpoBackgroundTaskModule.unregisterTaskAsync', taskName);
+  if (!(await TaskManager.isTaskRegisteredAsync(taskName))) {
+    throw new Error(`Task '${taskName}' is not registered.`);
+  }
   await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
 }
 

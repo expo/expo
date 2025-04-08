@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-navigation/bottom-tabs/package.json b/node_modules/@react-navigation/bottom-tabs/package.json
+index c238b0a..f745b55 100644
+--- a/node_modules/@react-navigation/bottom-tabs/package.json
++++ b/node_modules/@react-navigation/bottom-tabs/package.json
+@@ -19,6 +19,7 @@
+   },
+   "source": "./src/index.tsx",
+   "main": "./lib/module/index.js",
++  "types": "./lib/typescript/src/index.d.ts",
+   "exports": {
+     ".": {
+       "types": "./lib/typescript/src/index.d.ts",

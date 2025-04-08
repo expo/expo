@@ -4,6 +4,7 @@ import { registerWebModule, NativeModule } from 'expo';
 
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
+import { type Changeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -15,6 +16,7 @@ import {
 let worker: Worker | null = null;
 let nextNativeDatabaseId = 0;
 let nextNativeStatementId = 0;
+let nextNativeSessionId = 0;
 
 function getWorker(): Worker {
   if (!worker) {
@@ -119,6 +121,20 @@ class NativeDatabase {
       nativeDatabaseId: this.id,
       nativeStatementId: nativeStatement.id,
       source,
+    });
+  }
+  async createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'sessionCreate', {
+      nativeDatabaseId: this.id,
+      nativeSessionId: nativeSession.id,
+      dbName,
+    });
+  }
+  createSessionSync(nativeSession: NativeSession, dbName: string): void {
+    invokeWorkerSync(getWorker(), 'sessionCreate', {
+      nativeDatabaseId: this.id,
+      nativeSessionId: nativeSession.id,
+      dbName,
     });
   }
 }
@@ -259,6 +275,113 @@ class NativeStatement {
   }
 }
 
+export class NativeSession {
+  public readonly id: number;
+
+  constructor() {
+    this.id = nextNativeSessionId++;
+  }
+
+  async attachAsync(database: NativeDatabase, table: string | null): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'sessionAttach', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      table,
+    });
+  }
+  attachSync(database: NativeDatabase, table: string | null): void {
+    invokeWorkerSync(getWorker(), 'sessionAttach', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      table,
+    });
+  }
+
+  async enableAsync(database: NativeDatabase, enabled: boolean): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'sessionEnable', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      enabled,
+    });
+  }
+  enableSync(database: NativeDatabase, enabled: boolean): void {
+    invokeWorkerSync(getWorker(), 'sessionEnable', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      enabled,
+    });
+  }
+
+  async closeAsync(database: NativeDatabase): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'sessionClose', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+  closeSync(database: NativeDatabase): void {
+    invokeWorkerSync(getWorker(), 'sessionClose', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+
+  async createChangesetAsync(database: NativeDatabase): Promise<Changeset> {
+    return await invokeWorkerAsync(getWorker(), 'sessionCreateChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+  createChangesetSync(database: NativeDatabase): Changeset {
+    return invokeWorkerSync(getWorker(), 'sessionCreateChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+
+  async createInvertedChangesetAsync(database: NativeDatabase): Promise<Changeset> {
+    return await invokeWorkerAsync(getWorker(), 'sessionCreateInvertedChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+  createInvertedChangesetSync(database: NativeDatabase): Changeset {
+    return invokeWorkerSync(getWorker(), 'sessionCreateInvertedChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+  }
+
+  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'sessionApplyChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      changeset,
+    });
+  }
+  applyChangesetSync(database: NativeDatabase, changeset: Changeset): void {
+    invokeWorkerSync(getWorker(), 'sessionApplyChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      changeset,
+    });
+  }
+
+  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<Changeset> {
+    return await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      changeset,
+    });
+  }
+  invertChangesetSync(database: NativeDatabase, changeset: Changeset): Changeset {
+    return invokeWorkerSync(getWorker(), 'sessionInvertChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+      changeset,
+    });
+  }
+}
+
 export class SQLiteModule extends NativeModule {
   readonly defaultDatabaseDirectory = '.';
 
@@ -280,6 +403,33 @@ export class SQLiteModule extends NativeModule {
     // No-op for web
   }
 
+  async backupDatabaseAsync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: string,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: string
+  ): Promise<void> {
+    await invokeWorkerAsync(getWorker(), 'backupDatabase', {
+      destNativeDatabaseId: destDatabase.id,
+      destDatabaseName,
+      sourceNativeDatabaseId: sourceDatabase.id,
+      sourceDatabaseName,
+    });
+  }
+  backupDatabaseSync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: string,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: string
+  ): void {
+    invokeWorkerSync(getWorker(), 'backupDatabase', {
+      destNativeDatabaseId: destDatabase.id,
+      destDatabaseName,
+      sourceNativeDatabaseId: sourceDatabase.id,
+      sourceDatabaseName,
+    });
+  }
+
   async importAssetDatabaseAsync(
     databasePath: string,
     assetDatabasePath: string,
@@ -294,6 +444,7 @@ export class SQLiteModule extends NativeModule {
 
   readonly NativeDatabase: typeof NativeDatabase = NativeDatabase;
   readonly NativeStatement: typeof NativeStatement = NativeStatement;
+  readonly NativeSession: typeof NativeSession = NativeSession;
 }
 
 const SQLiteModuleInstance = registerWebModule(SQLiteModule);

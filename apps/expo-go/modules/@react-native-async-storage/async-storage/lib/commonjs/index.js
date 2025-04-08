@@ -12,7 +12,6 @@ Object.defineProperty(exports, "useAsyncStorage", {
 });
 var _AsyncStorage = _interopRequireDefault(require("./AsyncStorage"));
 var _hooks = require("./hooks");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-var _default = _AsyncStorage.default;
-exports.default = _default;
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = exports.default = _AsyncStorage.default;
 //# sourceMappingURL=index.js.map

@@ -6,7 +6,7 @@ export const warnOfExpoGoPushUsage = () => {
   if (__DEV__ && isRunningInExpoGo() && !didWarn) {
     didWarn = true;
     console.warn(
-      `expo-notifications: Push notifications (remote notifications) functionality provided by expo-notifications will be removed from Expo Go in SDK 53. Instead, use a development build. Read more at https://docs.expo.dev/develop/development-builds/introduction/.`
+      `expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.`
     );
   }
 };

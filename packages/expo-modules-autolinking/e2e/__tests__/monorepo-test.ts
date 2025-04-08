@@ -20,6 +20,8 @@ const monorepoConfig = {
 const apps = ['ejected', 'managed', 'with-sentry'];
 const testCases = combinations('app', apps, 'platform', ['android', 'apple']);
 
+jest.setTimeout(5 * 60 * 1000);
+
 describe('monorepo', () => {
   let monorepoProject: string | undefined;
 
@@ -31,17 +33,14 @@ describe('monorepo', () => {
     return join(monorepoProject!, 'apps', app);
   }
 
-  beforeAll(
-    async () => {
-      const temp = join(tempDirectory(), 'monorepo');
-      console.log(`Cloning monorepo into: ${temp}`);
-      await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
-      console.log('Yarning');
-      yarnSync({ cwd: temp });
-      monorepoProject = temp;
-    },
-    5 * 60 * 1000
-  );
+  beforeAll(async () => {
+    const temp = join(tempDirectory(), 'monorepo');
+    console.log(`Cloning monorepo into: ${temp}`);
+    await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
+    console.log('Yarning');
+    yarnSync({ cwd: temp });
+    monorepoProject = temp;
+  });
 
   afterAll(async () => {
     if (monorepoProject) {
