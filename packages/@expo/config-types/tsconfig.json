@@ -1,8 +1,10 @@
 {
   "extends": "../../../tsconfig.node",
-  "include": ["./src"],
+  "include": ["./src", "./scripts"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
+    "checkJs": true,
+    "resolveJsonModule": true,
     "outDir": "./build"
   }
 }
