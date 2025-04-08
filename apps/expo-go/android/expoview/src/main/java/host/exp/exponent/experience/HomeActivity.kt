@@ -2,8 +2,10 @@
 package host.exp.exponent.experience
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Debug
+import androidx.activity.enableEdgeToEdge
 import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
@@ -48,6 +50,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
@@ -111,6 +114,12 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onError(intent: Intent) {
     intent.putExtra(ErrorActivity.IS_HOME_KEY, true)
     kernel.setHasError()
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    // Will update the navigation bar colors if the system theme has changed. This is only relevant for the three button navigation bar.
+    enableEdgeToEdge()
+    super.onConfigurationChanged(newConfig)
   }
 
   companion object : ModulesProvider {
