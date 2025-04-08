@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._internal_maybeHideAsync = exports._internal_preventAutoHideAsync = exports.preventAutoHideAsync = exports.hideAsync = exports.hide = void 0;
+exports._internal_maybeHideAsync = exports._internal_preventAutoHideAsync = exports.setOptions = exports.preventAutoHideAsync = exports.hideAsync = exports.hide = void 0;
 const expo_1 = require("expo");
 const SplashModule = (0, expo_1.requireOptionalNativeModule)('ExpoSplashScreen');
 let _initializedErrorHandler = false;
@@ -22,6 +22,13 @@ async function preventAutoHideAsync() {
     return SplashModule.preventAutoHideAsync();
 }
 exports.preventAutoHideAsync = preventAutoHideAsync;
+async function setOptions(options) {
+    if (!SplashModule) {
+        return;
+    }
+    return SplashModule.setOptions(options);
+}
+exports.setOptions = setOptions;
 async function _internal_preventAutoHideAsync() {
     if (!SplashModule) {
         return false;
