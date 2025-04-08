@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Unpack default exports correctly from server actions using `expo-router/_async-server-import` ([#35948](https://github.com/expo/expo/pull/35948) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 5.0.1-preview.0 — 2025-04-05

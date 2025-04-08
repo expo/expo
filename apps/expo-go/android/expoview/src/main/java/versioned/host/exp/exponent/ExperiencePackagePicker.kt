@@ -7,6 +7,7 @@ import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
+import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
@@ -141,6 +142,7 @@ object ExperiencePackagePicker : ModulesProvider {
     // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
+    BackgroundTaskModule::class.java,
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
