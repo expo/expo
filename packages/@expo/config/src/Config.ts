@@ -35,8 +35,8 @@ let hasWarnedAboutRootConfig = false;
  *
  * @param config Input config object to reduce
  */
-function reduceExpoObject(config?: any): SplitConfigs {
-  if (!config) return config === undefined ? null : config;
+function reduceExpoObject(config?: any): SplitConfigs | null {
+  if (!config) return config || null;
 
   if (config.expo && !hasWarnedAboutRootConfig) {
     const keys = Object.keys(config).filter((key) => key !== 'expo');
