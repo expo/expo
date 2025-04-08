@@ -1,5 +1,8 @@
-import { getRoutes } from '../getRoutes';
-import { removeSupportedExtensions } from '../matchers';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
+const getRoutes_1 = require("../getRoutes");
+const matchers_1 = require("../matchers");
 // /[...param1]/ - Match [...param1]
 const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
@@ -7,10 +10,10 @@ const SLUG = /\[.+?\]/g;
 // /(group)/path/(group2)/route - Match [(group), (group2)]
 const GROUP = /(?:^|\/)\(.*?\)/g;
 const urlParams = "${`?${string}` | `#${string}` | ''}";
-export function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
+function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
     let routeNode = null;
     try {
-        routeNode = getRoutes(ctx, {
+        routeNode = (0, getRoutes_1.getRoutes)(ctx, {
             ignore: [/_layout\.[tj]sx?$/], // Skip layout files
             platformRoutes: false, // We don't need to generate platform specific routes
             notFound: false, // We don't need +not-found routes either
@@ -114,7 +117,7 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         routeKey = routeNode.route;
     }
     else {
-        routeKey = removeSupportedExtensions(routeNode.contextKey)
+        routeKey = (0, matchers_1.removeSupportedExtensions)(routeNode.contextKey)
             .replace(/\/index$/, '') // Remove any trailing /index
             .replace(/^\./, ''); // Remove any leading .
     }

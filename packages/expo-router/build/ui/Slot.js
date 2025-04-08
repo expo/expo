@@ -1,6 +1,9 @@
-import { Slot as RUISlot } from '@radix-ui/react-slot';
-import { forwardRef, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Slot = void 0;
+const react_slot_1 = require("@radix-ui/react-slot");
+const react_1 = require("react");
+const react_native_1 = require("react-native");
 /**
  * RadixUI has special logic to handle the merging of `style` and `className` props.
  * On the web styles are not allowed so Radix does not handle this scenario.
@@ -15,10 +18,10 @@ import { StyleSheet } from 'react-native';
  * @returns
  */
 function ShimSlotForReactNative(Component) {
-    return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
-        style = useMemo(() => StyleSheet.flatten(style), [style]);
+    return (0, react_1.forwardRef)(function RNSlotHOC({ style, ...props }, ref) {
+        style = (0, react_1.useMemo)(() => react_native_1.StyleSheet.flatten(style), [style]);
         return <Component ref={ref} {...props} style={style}/>;
     });
 }
-export const Slot = ShimSlotForReactNative(RUISlot);
+exports.Slot = ShimSlotForReactNative(react_slot_1.Slot);
 //# sourceMappingURL=Slot.js.map

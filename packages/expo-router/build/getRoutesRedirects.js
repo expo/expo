@@ -1,6 +1,11 @@
-import { createElement } from 'react';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
-export function getRedirectModule(route) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getRedirectModule = getRedirectModule;
+exports.convertRedirect = convertRedirect;
+exports.mergeVariablesWithPath = mergeVariablesWithPath;
+const react_1 = require("react");
+const matchers_1 = require("./matchers");
+function getRedirectModule(route) {
     return {
         default: function RedirectComponent() {
             // Use the store directly instead of useGlobalSearchParams.
@@ -10,7 +15,7 @@ export function getRedirectModule(route) {
             let href = route
                 .split('/')
                 .map((part) => {
-                const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
+                const match = (0, matchers_1.matchDynamicName)(part) || (0, matchers_1.matchDeepDynamicRouteName)(part);
                 if (!match) {
                     return part;
                 }
@@ -25,21 +30,21 @@ export function getRedirectModule(route) {
             if (queryString) {
                 href += `?${queryString}`;
             }
-            return createElement(require('./link/Link').Redirect, { href });
+            return (0, react_1.createElement)(require('./link/Link').Redirect, { href });
         },
     };
 }
-export function convertRedirect(path, config) {
+function convertRedirect(path, config) {
     const params = {};
     const parts = path.split('/');
     const sourceParts = config.source.split('/');
     for (const [index, sourcePart] of sourceParts.entries()) {
-        let match = matchDynamicName(sourcePart);
+        let match = (0, matchers_1.matchDynamicName)(sourcePart);
         if (match) {
             params[match] = parts[index];
             continue;
         }
-        match = matchDeepDynamicRouteName(sourcePart);
+        match = (0, matchers_1.matchDeepDynamicRouteName)(sourcePart);
         if (match) {
             params[match] = parts.slice(index);
             break;
@@ -47,11 +52,11 @@ export function convertRedirect(path, config) {
     }
     return mergeVariablesWithPath(config.destination, params);
 }
-export function mergeVariablesWithPath(path, params) {
+function mergeVariablesWithPath(path, params) {
     return path
         .split('/')
         .map((part) => {
-        const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
+        const match = (0, matchers_1.matchDynamicName)(part) || (0, matchers_1.matchDeepDynamicRouteName)(part);
         if (!match) {
             return part;
         }

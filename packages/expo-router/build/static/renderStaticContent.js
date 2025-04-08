@@ -1,21 +1,61 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getManifest = exports.getBuildTimeServerManifestAsync = void 0;
+exports.getStaticContent = getStaticContent;
 /**
  * Copyright © 2023 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import '@expo/metro-runtime';
-import { ServerContainer } from '@react-navigation/native';
-import * as Font from 'expo-font/build/server';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server.node';
-import { AppRegistry } from 'react-native-web';
-import { getRootComponent } from './getRootComponent';
-import { ctx } from '../../_ctx';
-import { ExpoRoot } from '../ExpoRoot';
-import { Head } from '../head';
+require("@expo/metro-runtime");
+const native_1 = require("@react-navigation/native");
+const Font = __importStar(require("expo-font/build/server"));
+const react_1 = __importDefault(require("react"));
+const server_node_1 = __importDefault(require("react-dom/server.node"));
+const react_native_web_1 = require("react-native-web");
+const getRootComponent_1 = require("./getRootComponent");
+const _ctx_1 = require("../../_ctx");
+const ExpoRoot_1 = require("../ExpoRoot");
+const head_1 = require("../head");
 const debug = require('debug')('expo:router:renderStaticContent');
-AppRegistry.registerComponent('App', () => ExpoRoot);
+react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -24,33 +64,33 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
-export async function getStaticContent(location) {
+async function getStaticContent(location) {
     const headContext = {};
-    const ref = React.createRef();
+    const ref = react_1.default.createRef();
     const { 
     // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider`.
-    element, getStyleElement, } = AppRegistry.getApplication('App', {
+    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
         initialProps: {
             location,
-            context: ctx,
+            context: _ctx_1.ctx,
             wrapper: ({ children }) => (<Root>
           <div id="root">{children}</div>
         </Root>),
         },
     });
-    const Root = getRootComponent();
+    const Root = (0, getRootComponent_1.getRootComponent)();
     // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
     // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
     Font.resetServerContext();
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
-    const html = await ReactDOMServer.renderToString(<Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>{element}</ServerContainer>
-    </Head.Provider>);
+    const html = await server_node_1.default.renderToString(<head_1.Head.Provider context={headContext}>
+      <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
+    </head_1.Head.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+    const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
     const fonts = Font.getServerResources();
@@ -74,5 +114,7 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     return html;
 }
 // Re-export for use in server
-export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
+var getServerManifest_1 = require("./getServerManifest");
+Object.defineProperty(exports, "getBuildTimeServerManifestAsync", { enumerable: true, get: function () { return getServerManifest_1.getBuildTimeServerManifestAsync; } });
+Object.defineProperty(exports, "getManifest", { enumerable: true, get: function () { return getServerManifest_1.getManifest; } });
 //# sourceMappingURL=renderStaticContent.js.map

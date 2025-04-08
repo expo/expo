@@ -1,9 +1,13 @@
-import { Platform } from 'react-native';
-import { emitDomLinkEvent } from './useDomComponentNavigation';
-import { appendBaseUrl } from '../fork/getPathFromState-forks';
-import { useExpoRouter } from '../global-state/router-store';
-import { stripGroupSegmentsFromPath } from '../matchers';
-import { shouldLinkExternally } from '../utils/url';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = useLinkToPathProps;
+exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
+const react_native_1 = require("react-native");
+const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
+const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
+const router_store_1 = require("../global-state/router-store");
+const matchers_1 = require("../matchers");
+const url_1 = require("../utils/url");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -23,20 +27,20 @@ function eventShouldPreventDefault(e) {
     }
     return false;
 }
-export default function useLinkToPathProps({ href, ...options }) {
-    const { linkTo } = useExpoRouter();
+function useLinkToPathProps({ href, ...options }) {
+    const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
-            if (emitDomLinkEvent(href, options)) {
+            if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
                 return;
             }
             linkTo(href, options);
         }
     };
-    let strippedHref = stripGroupSegmentsFromPath(href) || '/';
+    let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
     // Append base url only if needed.
-    if (!shouldLinkExternally(strippedHref)) {
-        strippedHref = appendBaseUrl(strippedHref);
+    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
+        strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
     }
     return {
         href: strippedHref,
@@ -44,8 +48,8 @@ export default function useLinkToPathProps({ href, ...options }) {
         onPress,
     };
 }
-export function shouldHandleMouseEvent(event) {
-    if (Platform.OS !== 'web') {
+function shouldHandleMouseEvent(event) {
+    if (react_native_1.Platform.OS !== 'web') {
         return !event?.defaultPrevented;
     }
     if (event && eventShouldPreventDefault(event)) {

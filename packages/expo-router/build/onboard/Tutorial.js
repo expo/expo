@@ -1,13 +1,19 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { createEntryFileAsync } from './createEntryFile';
-import { Link } from '../exports';
-import { Pressable } from '../views/Pressable';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tutorial = Tutorial;
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const createEntryFile_1 = require("./createEntryFile");
+const exports_1 = require("../exports");
+const Pressable_1 = require("../views/Pressable");
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
-export function Tutorial() {
-    React.useEffect(() => {
-        if (Platform.OS === 'web') {
+function Tutorial() {
+    react_1.default.useEffect(() => {
+        if (react_native_1.Platform.OS === 'web') {
             // Reset the route on web so the initial route isn't a 404 after
             // the user has created the entry file.
             // This is useful for cases where you are testing the tutorial.
@@ -21,25 +27,25 @@ export function Tutorial() {
             }
         }
     }, []);
-    return (<SafeAreaView style={styles.background}>
-      <StatusBar barStyle="light-content"/>
-      <View style={styles.container}>
-        <View style={styles.logotypeWrapper}>
-          <Image style={styles.logotype} source={require('expo-router/assets/logotype.png')}/>
-        </View>
-        <Text role="heading" aria-level={1} style={styles.title}>
+    return (<react_native_safe_area_context_1.SafeAreaView style={styles.background}>
+      <react_native_1.StatusBar barStyle="light-content"/>
+      <react_native_1.View style={styles.container}>
+        <react_native_1.View style={styles.logotypeWrapper}>
+          <react_native_1.Image style={styles.logotype} source={require('expo-router/assets/logotype.png')}/>
+        </react_native_1.View>
+        <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
           Welcome to Expo
-        </Text>
-        <Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
-          Start by creating a file{Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
-          <Text style={{ fontWeight: '600' }}>{getRootDir()}</Text> directory.
-        </Text>
-        <Text>
-          <Link href="https://docs.expo.dev/router/introduction/" {...Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
-            <Pressable>
-              {({ hovered, pressed }) => (<Text style={[
+        </react_native_1.Text>
+        <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
+          Start by creating a file{react_native_1.Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
+          <react_native_1.Text style={{ fontWeight: '600' }}>{getRootDir()}</react_native_1.Text> directory.
+        </react_native_1.Text>
+        <react_native_1.Text>
+          <exports_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
+            <Pressable_1.Pressable>
+              {({ hovered, pressed }) => (<react_native_1.Text style={[
                 styles.link,
-                Platform.select({
+                react_native_1.Platform.select({
                     web: {
                         transitionDuration: '200ms',
                         marginBottom: 12,
@@ -54,13 +60,13 @@ export function Tutorial() {
                 },
             ]}>
                   Learn more about Expo Router in the documentation.
-                </Text>)}
-            </Pressable>
-          </Link>
-        </Text>
+                </react_native_1.Text>)}
+            </Pressable_1.Pressable>
+          </exports_1.Link>
+        </react_native_1.Text>
         {canAutoTouchFile && <Button />}
-      </View>
-    </SafeAreaView>);
+      </react_native_1.View>
+    </react_native_safe_area_context_1.SafeAreaView>);
 }
 function getRootDir() {
     const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT;
@@ -73,16 +79,16 @@ function getRootDir() {
     return dir.split('/').pop() ?? dir;
 }
 function Button() {
-    return (<Pressable onPress={() => {
-            createEntryFileAsync();
+    return (<Pressable_1.Pressable onPress={() => {
+            (0, createEntryFile_1.createEntryFileAsync)();
         }} style={styles.button}>
-      {({ pressed, hovered }) => (<View style={[
+      {({ pressed, hovered }) => (<react_native_1.View style={[
                 styles.buttonContainer,
                 hovered && {
                     backgroundColor: '#fff',
                 },
                 pressed &&
-                    Platform.select({
+                    react_native_1.Platform.select({
                         web: {
                             transform: 'scale(0.98)',
                             transitionDuration: '200ms',
@@ -92,21 +98,21 @@ function Button() {
                         },
                     }),
             ]}>
-          <Text style={[
+          <react_native_1.Text style={[
                 styles.code,
                 hovered && { color: '#000' },
                 pressed &&
-                    Platform.select({
+                    react_native_1.Platform.select({
                         native: { color: '#000' },
                     }),
             ]}>
-            <Text style={styles.textSecondary}>$</Text> touch {getRootDir()}
+            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {getRootDir()}
             /index.tsx
-          </Text>
-        </View>)}
-    </Pressable>);
+          </react_native_1.Text>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     background: {
         backgroundColor: '#000',
         flex: 1,
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginHorizontal: 'auto',
         gap: 16,
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 maxWidth: 960,
             },
@@ -145,7 +151,7 @@ const styles = StyleSheet.create({
         height: 44,
     },
     title: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 fontSize: 64,
                 lineHeight: 64,
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     buttonContainer: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 transitionDuration: '200ms',
             },
@@ -173,7 +179,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     button: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 marginTop: 12,
             },
@@ -187,13 +193,13 @@ const styles = StyleSheet.create({
         }),
     },
     code: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 transitionDuration: '200ms',
                 fontFamily: 'Courier, monospace',
             },
             default: {
-                fontFamily: Platform.select({
+                fontFamily: react_native_1.Platform.select({
                     ios: 'Courier New',
                     android: 'monospace',
                 }),
@@ -216,7 +222,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#52a9ff',
         marginTop: 12,
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 marginBottom: 24,
             },

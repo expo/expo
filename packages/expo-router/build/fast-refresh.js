@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * This is a hack for Expo Router to support Fast Refresh on _layout files
  *

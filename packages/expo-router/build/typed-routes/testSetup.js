@@ -1,7 +1,9 @@
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { getTypedRoutesDeclarationFile } from './generate';
-import { inMemoryContext } from '../testing-library/context-stubs';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const promises_1 = require("fs/promises");
+const path_1 = require("path");
+const generate_1 = require("./generate");
+const context_stubs_1 = require("../testing-library/context-stubs");
 const fixtures = {
     default: {
         context: {
@@ -30,11 +32,11 @@ const fixtures = {
 };
 module.exports = function () {
     return Promise.all(Object.entries(fixtures).map(async ([key, value]) => {
-        const template = getTypedRoutesDeclarationFile(inMemoryContext(value.context), {
+        const template = (0, generate_1.getTypedRoutesDeclarationFile)((0, context_stubs_1.inMemoryContext)(value.context), {
             ...value.options,
             testIgnoreComments: true,
         });
-        return writeFile(join(__dirname, '/__tests__/fixtures/', key + '.d.ts'), template);
+        return (0, promises_1.writeFile)((0, path_1.join)(__dirname, '/__tests__/fixtures/', key + '.d.ts'), template);
     }));
 };
 //# sourceMappingURL=testSetup.js.map

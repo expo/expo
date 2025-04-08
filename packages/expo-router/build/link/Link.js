@@ -1,14 +1,21 @@
 'use client';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Link = void 0;
+exports.Redirect = Redirect;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { forwardRef, useMemo } from 'react';
-import { Text, Platform } from 'react-native';
-import { resolveHref } from './href';
-import useLinkToPathProps from './useLinkToPathProps';
-import { useRouter } from '../hooks';
-import { useFocusEffect } from '../useFocusEffect';
-import { useInteropClassName, useHrefAttrs } from './useLinkHooks';
-import { Slot } from '../ui/Slot';
+const react_1 = require("react");
+const react_native_1 = require("react-native");
+const href_1 = require("./href");
+const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
+const hooks_1 = require("../hooks");
+const useFocusEffect_1 = require("../useFocusEffect");
+const useLinkHooks_1 = require("./useLinkHooks");
+const Slot_1 = require("../ui/Slot");
 /**
  * Redirects to the `href` as soon as the component is mounted.
  *
@@ -32,9 +39,9 @@ import { Slot } from '../ui/Slot';
  * }
  * ```
  */
-export function Redirect({ href, relativeToDirectory, withAnchor }) {
-    const router = useRouter();
-    useFocusEffect(() => {
+function Redirect({ href, relativeToDirectory, withAnchor }) {
+    const router = (0, hooks_1.useRouter)();
+    (0, useFocusEffect_1.useFocusEffect)(() => {
         try {
             router.replace(href, { relativeToDirectory, withAnchor });
         }
@@ -70,20 +77,20 @@ export function Redirect({ href, relativeToDirectory, withAnchor }) {
  *}
  * ```
  */
-export const Link = forwardRef(ExpoRouterLink);
-Link.resolveHref = resolveHref;
+exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
+exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
-    const style = useInteropClassName(rest);
+    const style = (0, useLinkHooks_1.useInteropClassName)(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
-    const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
-    const resolvedHref = useMemo(() => {
+    const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
+    const resolvedHref = (0, react_1.useMemo)(() => {
         if (href == null) {
             throw new Error('Link: href is required');
         }
-        return resolveHref(href);
+        return (0, href_1.resolveHref)(href);
     }, [href]);
     let event;
     if (push)
@@ -92,7 +99,7 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         event = 'REPLACE';
     if (dismissTo)
         event = 'POP_TO';
-    const props = useLinkToPathProps({
+    const props = (0, useLinkToPathProps_1.default)({
         href: resolvedHref,
         event,
         relativeToDirectory,
@@ -105,9 +112,9 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         }
         props.onPress(e);
     };
-    const Element = asChild ? Slot : Text;
+    const Element = asChild ? Slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-    return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...Platform.select({
+    return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,
         },

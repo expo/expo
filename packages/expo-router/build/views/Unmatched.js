@@ -1,25 +1,31 @@
 // Copyright © 2024 650 Industries.
 'use client';
-import { createURL } from 'expo-linking';
-import React from 'react';
-import { StyleSheet, Text, View, Platform, Image } from 'react-native';
-import { usePathname, useRouter } from '../hooks';
-import { Link } from '../link/Link';
-import { useNavigation } from '../useNavigation';
-import { Pressable } from '../views/Pressable';
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () { };
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Unmatched = Unmatched;
+const expo_linking_1 = require("expo-linking");
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const hooks_1 = require("../hooks");
+const Link_1 = require("../link/Link");
+const useNavigation_1 = require("../useNavigation");
+const Pressable_1 = require("../views/Pressable");
+const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
 /**
  * Default screen for unmatched routes.
  *
  * @hidden
  */
-export function Unmatched() {
-    const [render, setRender] = React.useState(false);
-    const router = useRouter();
-    const navigation = useNavigation();
-    const pathname = usePathname();
-    const url = createURL(pathname);
-    React.useEffect(() => {
+function Unmatched() {
+    const [render, setRender] = react_1.default.useState(false);
+    const router = (0, hooks_1.useRouter)();
+    const navigation = (0, useNavigation_1.useNavigation)();
+    const pathname = (0, hooks_1.usePathname)();
+    const url = (0, expo_linking_1.createURL)(pathname);
+    react_1.default.useEffect(() => {
         setRender(true);
     }, []);
     useLayoutEffect(() => {
@@ -27,20 +33,20 @@ export function Unmatched() {
             title: 'Not Found',
         });
     }, [navigation]);
-    return (<View style={styles.container}>
+    return (<react_native_1.View style={styles.container}>
       <NotFoundAsset />
-      <Text role="heading" aria-level={1} style={styles.title}>
+      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
         Unmatched Route
-      </Text>
-      <Text role="heading" aria-level={2} style={[styles.subtitle, styles.secondaryText]}>
+      </react_native_1.Text>
+      <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.secondaryText]}>
         Page could not be found.
-      </Text>
-      {render ? (<Link href={pathname} replace {...Platform.select({ native: { asChild: true } })}>
-          <Pressable>
-            {({ hovered, pressed }) => (<Text style={[
+      </react_native_1.Text>
+      {render ? (<Link_1.Link href={pathname} replace {...react_native_1.Platform.select({ native: { asChild: true } })}>
+          <Pressable_1.Pressable>
+            {({ hovered, pressed }) => (<react_native_1.Text style={[
                     styles.pageLink,
                     styles.secondaryText,
-                    Platform.select({
+                    react_native_1.Platform.select({
                         web: {
                             transitionDuration: '200ms',
                             opacity: 1,
@@ -55,12 +61,12 @@ export function Unmatched() {
                     },
                 ]}>
                 {url}
-              </Text>)}
-          </Pressable>
-        </Link>) : (<View style={[styles.pageLink, styles.placeholder]}/>)}
-      <View style={styles.linkContainer}>
-        <Pressable>
-          {({ hovered, pressed }) => (<Text onPress={() => {
+              </react_native_1.Text>)}
+          </Pressable_1.Pressable>
+        </Link_1.Link>) : (<react_native_1.View style={[styles.pageLink, styles.placeholder]}/>)}
+      <react_native_1.View style={styles.linkContainer}>
+        <Pressable_1.Pressable>
+          {({ hovered, pressed }) => (<react_native_1.Text onPress={() => {
                 if (router.canGoBack()) {
                     router.back();
                 }
@@ -69,7 +75,7 @@ export function Unmatched() {
                 }
             }} style={[
                 styles.link,
-                Platform.select({
+                react_native_1.Platform.select({
                     web: {
                         transitionDuration: '200ms',
                         opacity: 1,
@@ -84,14 +90,14 @@ export function Unmatched() {
                 },
             ]}>
               Go back
-            </Text>)}
-        </Pressable>
-        <Text style={[styles.linkSeparator, styles.secondaryText]}>•</Text>
-        <Link href="/_sitemap" replace {...Platform.select({ native: { asChild: true } })}>
-          <Pressable>
-            {({ hovered, pressed }) => (<Text style={[
+            </react_native_1.Text>)}
+        </Pressable_1.Pressable>
+        <react_native_1.Text style={[styles.linkSeparator, styles.secondaryText]}>•</react_native_1.Text>
+        <Link_1.Link href="/_sitemap" replace {...react_native_1.Platform.select({ native: { asChild: true } })}>
+          <Pressable_1.Pressable>
+            {({ hovered, pressed }) => (<react_native_1.Text style={[
                 styles.link,
-                Platform.select({
+                react_native_1.Platform.select({
                     web: {
                         transitionDuration: '200ms',
                         opacity: 1,
@@ -106,16 +112,16 @@ export function Unmatched() {
                 },
             ]}>
                 Sitemap
-              </Text>)}
-          </Pressable>
-        </Link>
-      </View>
-    </View>);
+              </react_native_1.Text>)}
+          </Pressable_1.Pressable>
+        </Link_1.Link>
+      </react_native_1.View>
+    </react_native_1.View>);
 }
 function NotFoundAsset() {
-    return <Image source={require('expo-router/assets/unmatched.png')} style={styles.image}/>;
+    return <react_native_1.Image source={require('expo-router/assets/unmatched.png')} style={styles.image}/>;
 }
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'black',
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 28,
     },
     title: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 fontSize: 64,
                 lineHeight: 64,

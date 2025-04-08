@@ -1,9 +1,15 @@
 'use client';
-import { useNavigation as useUpstreamNavigation, } from '@react-navigation/native';
-import React from 'react';
-import { store } from './global-state/router-store';
-import { useSegments } from './hooks';
-import { resolveHref } from './link/href';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useNavigation = useNavigation;
+const native_1 = require("@react-navigation/native");
+const react_1 = __importDefault(require("react"));
+const router_store_1 = require("./global-state/router-store");
+const hooks_1 = require("./hooks");
+const href_1 = require("./link/href");
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
@@ -56,21 +62,21 @@ import { resolveHref } from './link/href';
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
  * for more information.
  */
-export function useNavigation(parent) {
-    let navigation = useUpstreamNavigation();
+function useNavigation(parent) {
+    let navigation = (0, native_1.useNavigation)();
     const initialNavigation = navigation;
-    const segments = useSegments();
-    let targetNavigatorContextKey = React.useMemo(() => {
+    const segments = (0, hooks_1.useSegments)();
+    let targetNavigatorContextKey = react_1.default.useMemo(() => {
         if (!parent) {
             return;
         }
         if (typeof parent === 'object') {
-            parent = resolveHref(parent);
+            parent = (0, href_1.resolveHref)(parent);
         }
         if (parent === '/') {
             return '';
         }
-        let state = store.getStateFromPath(parent.startsWith('../') ? segments.join('/') : parent);
+        let state = router_store_1.store.getStateFromPath(parent.startsWith('../') ? segments.join('/') : parent);
         // Reconstruct the context key from the state
         let contextKey = '';
         const names = [];

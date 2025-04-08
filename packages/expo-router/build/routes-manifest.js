@@ -1,7 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createRoutesManifest = createRoutesManifest;
 // This file runs in Node.js environments.
 // no relative imports
-import { getRoutes } from './getRoutesSSR';
-import { getServerManifest } from './getServerManifest';
+const getRoutesSSR_1 = require("./getRoutesSSR");
+const getServerManifest_1 = require("./getServerManifest");
 function createMockContextModule(map = []) {
     const contextModule = (key) => ({ default() { } });
     Object.defineProperty(contextModule, 'keys', {
@@ -9,9 +12,9 @@ function createMockContextModule(map = []) {
     });
     return contextModule;
 }
-export function createRoutesManifest(paths, options) {
+function createRoutesManifest(paths, options) {
     // TODO: Drop this part for Node.js
-    const routeTree = getRoutes(createMockContextModule(paths), {
+    const routeTree = (0, getRoutesSSR_1.getRoutes)(createMockContextModule(paths), {
         ...options,
         preserveApiRoutes: true,
         preserveRedirectAndRewrites: true,
@@ -22,6 +25,6 @@ export function createRoutesManifest(paths, options) {
     if (!routeTree) {
         return null;
     }
-    return getServerManifest(routeTree);
+    return (0, getServerManifest_1.getServerManifest)(routeTree);
 }
 //# sourceMappingURL=routes-manifest.js.map

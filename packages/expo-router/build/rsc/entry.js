@@ -5,14 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 'use client';
-import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Router } from './router/client';
-import { ErrorBoundary } from '../views/ErrorBoundary';
-import { Try } from '../views/Try';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.App = App;
+const react_1 = __importDefault(require("react"));
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const client_1 = require("./router/client");
+const ErrorBoundary_1 = require("../views/ErrorBoundary");
+const Try_1 = require("../views/Try");
 // Add root error recovery.
 function RootErrorBoundary(props) {
-    React.useEffect(() => {
+    react_1.default.useEffect(() => {
         function refetchRoute() {
             if (props.error) {
                 props.retry();
@@ -31,7 +37,7 @@ function RootErrorBoundary(props) {
             globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
         }
     }, [props.error, props.retry]);
-    return (<ErrorBoundary error={props.error} retry={() => {
+    return (<ErrorBoundary_1.ErrorBoundary error={props.error} retry={() => {
             // TODO: Invalidate the cache automatically when the request fails.
             // Invalidate the fetch cache so we can retry the request.
             globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
@@ -39,11 +45,11 @@ function RootErrorBoundary(props) {
         }}/>);
 }
 // Must be exported or Fast Refresh won't update the context
-export function App() {
-    return (<SafeAreaProvider>
-      <Try catch={RootErrorBoundary}>
-        <Router />
-      </Try>
-    </SafeAreaProvider>);
+function App() {
+    return (<react_native_safe_area_context_1.SafeAreaProvider>
+      <Try_1.Try catch={RootErrorBoundary}>
+        <client_1.Router />
+      </Try_1.Try>
+    </react_native_safe_area_context_1.SafeAreaProvider>);
 }
 //# sourceMappingURL=entry.js.map

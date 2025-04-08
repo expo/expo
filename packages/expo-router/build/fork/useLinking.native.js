@@ -1,15 +1,52 @@
-import { getActionFromState as getActionFromStateDefault, getStateFromPath as getStateFromPathDefault, useNavigationIndependentTree, } from '@react-navigation/native';
-import * as ExpoLinking from 'expo-linking';
-import * as React from 'react';
-import { Linking, Platform } from 'react-native';
-import { extractExpoPathFromURL } from './extractPathFromURL';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useLinking = useLinking;
+exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
+const native_1 = require("@react-navigation/native");
+const ExpoLinking = __importStar(require("expo-linking"));
+const React = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const extractPathFromURL_1 = require("./extractPathFromURL");
 const linkingHandlers = [];
-export function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
+function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);
-    const subscription = Linking.addEventListener('url', callback);
+    const subscription = react_native_1.Linking.addEventListener('url', callback);
     // Storing this in a local variable stops Jest from complaining about import after teardown
     // @ts-expect-error: removeEventListener is not present in newer RN versions
-    const removeEventListener = Linking.removeEventListener?.bind(Linking);
+    const removeEventListener = react_native_1.Linking.removeEventListener?.bind(react_native_1.Linking);
     return () => {
         // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
         if (subscription?.remove) {
@@ -19,8 +56,8 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
             removeEventListener?.('url', callback);
         }
     };
-}, getStateFromPath = getStateFromPathDefault, getActionFromState = getActionFromStateDefault, }, onUnhandledLinking) {
-    const independent = useNavigationIndependentTree();
+}, getStateFromPath = native_1.getStateFromPath, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
+    const independent = (0, native_1.useNavigationIndependentTree)();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
@@ -33,7 +70,7 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
                 'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
                 "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
                 '- Only a single instance of the root component is rendered',
-                Platform.OS === 'android'
+                react_native_1.Platform.OS === 'android'
                     ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
                     : '',
             ]
@@ -74,7 +111,7 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
         if (!url || (filterRef.current && !filterRef.current(url))) {
             return undefined;
         }
-        const path = extractExpoPathFromURL(prefixesRef.current, url);
+        const path = (0, extractPathFromURL_1.extractExpoPathFromURL)(prefixesRef.current, url);
         return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
     }, []);
     const getInitialState = React.useCallback(() => {
@@ -87,13 +124,13 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
                         const state = getStateFromURL(url);
                         if (typeof url === 'string') {
                             // If the link were handled, it gets cleared in NavigationContainer
-                            onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+                            onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                         }
                         return state;
                     });
                 }
                 else {
-                    onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+                    onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                 }
             }
             state = getStateFromURL(url);
@@ -117,7 +154,7 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
             const state = navigation ? getStateFromURL(url) : undefined;
             if (navigation && state) {
                 // If the link were handled, it gets cleared in NavigationContainer
-                onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+                onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                 const rootState = navigation.getRootState();
                 if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
                     return;
@@ -144,17 +181,17 @@ export function useLinking(ref, { enabled = true, prefixes, filter, config, getI
         getInitialState,
     };
 }
-export function getInitialURLWithTimeout() {
+function getInitialURLWithTimeout() {
     if (typeof window === 'undefined') {
         return '';
     }
-    else if (Platform.OS === 'ios') {
+    else if (react_native_1.Platform.OS === 'ios') {
         // Use the new Expo API for iOS. This has better support for App Clips and handoff.
         return ExpoLinking.getLinkingURL();
     }
     return Promise.race([
         // TODO: Phase this out in favor of expo-linking on Android.
-        Linking.getInitialURL(),
+        react_native_1.Linking.getInitialURL(),
         new Promise((resolve) => 
         // Timeout in 150ms if `getInitialState` doesn't resolve
         // Workaround for https://github.com/facebook/react-native/issues/25675

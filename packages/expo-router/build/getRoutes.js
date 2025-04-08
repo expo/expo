@@ -1,4 +1,9 @@
-import { getRoutes as getRoutesCore } from './getRoutesCore';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = void 0;
+exports.getRoutes = getRoutes;
+exports.getExactRoutes = getExactRoutes;
+const getRoutesCore_1 = require("./getRoutesCore");
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -11,8 +16,8 @@ import { getRoutes as getRoutesCore } from './getRoutesCore';
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-export function getRoutes(contextModule, options = {}) {
-    return getRoutesCore(contextModule, {
+function getRoutes(contextModule, options = {}) {
+    return (0, getRoutesCore_1.getRoutes)(contextModule, {
         getSystemRoute({ route, type }, defaults) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
@@ -72,11 +77,14 @@ export function getRoutes(contextModule, options = {}) {
         ...options,
     });
 }
-export function getExactRoutes(contextModule, options = {}) {
+function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
-export { generateDynamic, extrapolateGroups, getIgnoreList } from './getRoutesCore';
+var getRoutesCore_2 = require("./getRoutesCore");
+Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
+Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });
+Object.defineProperty(exports, "getIgnoreList", { enumerable: true, get: function () { return getRoutesCore_2.getIgnoreList; } });
 //# sourceMappingURL=getRoutes.js.map

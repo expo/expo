@@ -1,9 +1,14 @@
-export async function loadStaticParamsAsync(route) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadStaticParamsAsync = loadStaticParamsAsync;
+exports.evalStaticParamsAsync = evalStaticParamsAsync;
+exports.assertStaticParams = assertStaticParams;
+async function loadStaticParamsAsync(route) {
     const expandedChildren = await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })));
     route.children = expandedChildren.flat();
     return route;
 }
-export async function evalStaticParamsAsync(route, props, generateStaticParams) {
+async function evalStaticParamsAsync(route, props, generateStaticParams) {
     if (!route.dynamic && generateStaticParams) {
         throw new Error('Cannot use generateStaticParams in a route without dynamic segments: ' + route.contextKey);
     }
@@ -113,7 +118,7 @@ function formatExpected(expected, received) {
         '}',
     ].join('\n');
 }
-export function assertStaticParams(route, params) {
+function assertStaticParams(route, params) {
     // Type checking
     if (!route.dynamic) {
         throw new Error('assertStaticParams() must be called on a dynamic route.');

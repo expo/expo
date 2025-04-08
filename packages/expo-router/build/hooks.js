@@ -1,7 +1,23 @@
 'use client';
-import React from 'react';
-import { LocalRouteParamsContext } from './Route';
-import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useRootNavigationState = useRootNavigationState;
+exports.useRouteInfo = useRouteInfo;
+exports.useRootNavigation = useRootNavigation;
+exports.useNavigationContainerRef = useNavigationContainerRef;
+exports.useRouter = useRouter;
+exports.useUnstableGlobalHref = useUnstableGlobalHref;
+exports.useSegments = useSegments;
+exports.usePathname = usePathname;
+exports.useGlobalSearchParams = useGlobalSearchParams;
+exports.useLocalSearchParams = useLocalSearchParams;
+exports.useSearchParams = useSearchParams;
+const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
+const router_store_1 = require("./global-state/router-store");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -17,25 +33,25 @@ import { store, useStoreRootState, useStoreRouteInfo } from './global-state/rout
  * }
  * ```
  */
-export function useRootNavigationState() {
-    return useStoreRootState();
+function useRootNavigationState() {
+    return (0, router_store_1.useStoreRootState)();
 }
-export function useRouteInfo() {
-    return useStoreRouteInfo();
+function useRouteInfo() {
+    return (0, router_store_1.useStoreRouteInfo)();
 }
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
  * which returns a React `ref`.
  */
-export function useRootNavigation() {
-    return store.navigationRef.current;
+function useRootNavigation() {
+    return router_store_1.store.navigationRef.current;
 }
 /**
  * @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null`
  * if the `<NavigationContainer />` hasn't mounted yet.
  */
-export function useNavigationContainerRef() {
-    return store.navigationRef;
+function useNavigationContainerRef() {
+    return router_store_1.store.navigationRef;
 }
 /**
  *
@@ -55,19 +71,19 @@ export function useNavigationContainerRef() {
  *}
  * ```
  */
-export function useRouter() {
-    return React.useMemo(() => ({
-        push: store.push,
-        dismiss: store.dismiss,
-        dismissAll: store.dismissAll,
-        dismissTo: store.dismissTo,
-        canDismiss: store.canDismiss,
-        back: store.goBack,
-        replace: store.replace,
-        setParams: store.setParams,
-        canGoBack: store.canGoBack,
-        navigate: store.navigate,
-        reload: store.reload,
+function useRouter() {
+    return react_1.default.useMemo(() => ({
+        push: router_store_1.store.push,
+        dismiss: router_store_1.store.dismiss,
+        dismissAll: router_store_1.store.dismissAll,
+        dismissTo: router_store_1.store.dismissTo,
+        canDismiss: router_store_1.store.canDismiss,
+        back: router_store_1.store.goBack,
+        replace: router_store_1.store.replace,
+        setParams: router_store_1.store.setParams,
+        canGoBack: router_store_1.store.canGoBack,
+        navigate: router_store_1.store.navigate,
+        reload: router_store_1.store.reload,
     }), []);
 }
 /**
@@ -75,11 +91,11 @@ export function useRouter() {
  * @returns The current global pathname with query params attached. This may change in the future to include the hostname
  * from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
-export function useUnstableGlobalHref() {
-    return useStoreRouteInfo().unstable_globalHref;
+function useUnstableGlobalHref() {
+    return (0, router_store_1.useStoreRouteInfo)().unstable_globalHref;
 }
-export function useSegments() {
-    return useStoreRouteInfo().segments;
+function useSegments() {
+    return (0, router_store_1.useStoreRouteInfo)().segments;
 }
 /**
  * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
@@ -98,14 +114,14 @@ export function useSegments() {
  * }
  * ```
  */
-export function usePathname() {
-    return useStoreRouteInfo().pathname;
+function usePathname() {
+    return (0, router_store_1.useStoreRouteInfo)().pathname;
 }
-export function useGlobalSearchParams() {
-    return useStoreRouteInfo().params;
+function useGlobalSearchParams() {
+    return (0, router_store_1.useStoreRouteInfo)().params;
 }
-export function useLocalSearchParams() {
-    const params = React.useContext(LocalRouteParamsContext) ?? {};
+function useLocalSearchParams() {
+    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
@@ -130,8 +146,8 @@ export function useLocalSearchParams() {
         }
     }));
 }
-export function useSearchParams({ global = false } = {}) {
-    const globalRef = React.useRef(global);
+function useSearchParams({ global = false } = {}) {
+    const globalRef = react_1.default.useRef(global);
     if (process.env.NODE_ENV !== 'production') {
         if (global !== globalRef.current) {
             console.warn(`Detected change in 'global' option of useSearchParams. This value cannot change between renders`);

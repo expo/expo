@@ -1,5 +1,8 @@
+"use strict";
 // Forked so we can access without importing any React Native code in Node.js environments.
-export function findFocusedRoute(state) {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.findFocusedRoute = findFocusedRoute;
+function findFocusedRoute(state) {
     let current = state;
     while (current?.routes[current.index ?? 0].state != null) {
         current = current.routes[current.index ?? 0].state;

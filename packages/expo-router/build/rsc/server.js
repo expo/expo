@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -5,9 +6,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { AsyncLocalStorage } from 'async_hooks';
-export const REQUEST_HEADERS = '__expo_requestHeaders';
-export function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.runWithRenderStore = exports.REQUEST_HEADERS = void 0;
+exports.defineEntries = defineEntries;
+exports.rerender = rerender;
+exports.getContext = getContext;
+exports.unstable_headers = unstable_headers;
+const async_hooks_1 = require("async_hooks");
+exports.REQUEST_HEADERS = '__expo_requestHeaders';
+function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
 // TODO(EvanBacon): This can leak between platforms and runs.
@@ -23,7 +30,7 @@ function getGlobalCacheForPlatform() {
     if (globalThis.__EXPO_RSC_CACHE__.has(platform)) {
         return globalThis.__EXPO_RSC_CACHE__.get(platform);
     }
-    const serverCache = new AsyncLocalStorage();
+    const serverCache = new async_hooks_1.AsyncLocalStorage();
     globalThis.__EXPO_RSC_CACHE__.set(platform, serverCache);
     return serverCache;
 }
@@ -32,7 +39,7 @@ let currentRenderStore;
 /**
  * This is an internal function and not for public use.
  */
-export const runWithRenderStore = (renderStore, fn) => {
+const runWithRenderStore = (renderStore, fn) => {
     const renderStorage = getGlobalCacheForPlatform();
     if (renderStorage) {
         return renderStorage.run(renderStore, fn);
@@ -46,7 +53,8 @@ export const runWithRenderStore = (renderStore, fn) => {
         currentRenderStore = previousRenderStore;
     }
 };
-export async function rerender(input, params) {
+exports.runWithRenderStore = runWithRenderStore;
+async function rerender(input, params) {
     const renderStorage = getGlobalCacheForPlatform();
     const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
@@ -54,7 +62,7 @@ export async function rerender(input, params) {
     }
     renderStore.rerender(input, params);
 }
-export function getContext() {
+function getContext() {
     const renderStorage = getGlobalCacheForPlatform();
     const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
@@ -63,8 +71,8 @@ export function getContext() {
     return renderStore.context;
 }
 /** Get the request headers used to make the server component or action request. */
-export async function unstable_headers() {
-    const headers = (getContext()[REQUEST_HEADERS] || {});
+async function unstable_headers() {
+    const headers = (getContext()[exports.REQUEST_HEADERS] || {});
     return new ReadonlyHeaders(headers);
 }
 class ReadonlyHeaders extends Headers {

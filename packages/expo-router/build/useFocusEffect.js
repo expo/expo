@@ -1,8 +1,44 @@
 'use client';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useFocusEffect = useFocusEffect;
 // A fork of `useFocusEffect` that waits for the navigation state to load before
 // running the effect. This is especially useful for native redirects.
-import * as React from 'react';
-import { useOptionalNavigation } from './link/useLoadedNavigation';
+const React = __importStar(require("react"));
+const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
 /**
  * Hook to run an effect whenever a route is **focused**. Similar to
  * [`React.useEffect`](https://react.dev/reference/react/useEffect).
@@ -37,8 +73,8 @@ import { useOptionalNavigation } from './link/useLoadedNavigation';
  * @param effect Memoized callback containing the effect, should optionally return a cleanup function.
  * @param do_not_pass_a_second_prop
  */
-export function useFocusEffect(effect, do_not_pass_a_second_prop) {
-    const navigation = useOptionalNavigation();
+function useFocusEffect(effect, do_not_pass_a_second_prop) {
+    const navigation = (0, useLoadedNavigation_1.useOptionalNavigation)();
     if (do_not_pass_a_second_prop !== undefined) {
         const message = "You passed a second argument to 'useFocusEffect', but it only accepts one argument. " +
             "If you want to pass a dependency array, you can use 'React.useCallback':\n\n" +

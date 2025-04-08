@@ -1,28 +1,35 @@
 'use client';
-import { createContext, useContext } from 'react';
-import { getContextKey } from './matchers';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-const CurrentRouteContext = createContext(null);
-export const LocalRouteParamsContext = createContext({});
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = void 0;
+exports.useRouteNode = useRouteNode;
+exports.useContextKey = useContextKey;
+exports.Route = Route;
+const react_1 = require("react");
+const matchers_1 = require("./matchers");
+const sortRoutes_1 = require("./sortRoutes");
+Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
+Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
+const CurrentRouteContext = (0, react_1.createContext)(null);
+exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
 }
 /** Return the RouteNode at the current contextual boundary. */
-export function useRouteNode() {
-    return useContext(CurrentRouteContext);
+function useRouteNode() {
+    return (0, react_1.useContext)(CurrentRouteContext);
 }
-export function useContextKey() {
+function useContextKey() {
     const node = useRouteNode();
     if (node == null) {
         throw new Error('No filename found. This is likely a bug in expo-router.');
     }
-    return getContextKey(node.contextKey);
+    return (0, matchers_1.getContextKey)(node.contextKey);
 }
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node, route }) {
-    return (<LocalRouteParamsContext.Provider value={route?.params}>
+function Route({ children, node, route }) {
+    return (<exports.LocalRouteParamsContext.Provider value={route?.params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
-    </LocalRouteParamsContext.Provider>);
+    </exports.LocalRouteParamsContext.Provider>);
 }
-export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.js.map

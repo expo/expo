@@ -1,9 +1,50 @@
-import { findFocusedRoute, getActionFromState as getActionFromStateDefault, getPathFromState as getPathFromStateDefault, getStateFromPath as getStateFromPathDefault, useNavigationIndependentTree, } from '@react-navigation/native';
-import isEqual from 'fast-deep-equal';
-import * as React from 'react';
-import { createMemoryHistory } from './createMemoryHistory';
-import { appendBaseUrl } from './getPathFromState';
-import { ServerContext } from '../global-state/serverLocationContext';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.series = void 0;
+exports.useLinking = useLinking;
+exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
+const native_1 = require("@react-navigation/native");
+const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
+const React = __importStar(require("react"));
+const createMemoryHistory_1 = require("./createMemoryHistory");
+const getPathFromState_1 = require("./getPathFromState");
+const serverLocationContext_1 = require("../global-state/serverLocationContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -36,16 +77,17 @@ const findMatchingState = (a, b) => {
 /**
  * Run async function in series as it's called.
  */
-export const series = (cb) => {
+const series = (cb) => {
     let queue = Promise.resolve();
     const callback = () => {
         queue = queue.then(cb);
     };
     return callback;
 };
+exports.series = series;
 const linkingHandlers = [];
-export function useLinking(ref, { enabled = true, config, getStateFromPath = getStateFromPathDefault, getPathFromState = getPathFromStateDefault, getActionFromState = getActionFromStateDefault, }, onUnhandledLinking) {
-    const independent = useNavigationIndependentTree();
+function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.getStateFromPath, getPathFromState = native_1.getPathFromState, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
+    const independent = (0, native_1.useNavigationIndependentTree)();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
@@ -73,7 +115,7 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
             }
         };
     }, [enabled, independent]);
-    const [history] = React.useState(createMemoryHistory);
+    const [history] = React.useState(createMemoryHistory_1.createMemoryHistory);
     // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
     // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
     // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
@@ -96,7 +138,7 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
         // Otherwise there's an error in the linking configuration
         return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
     }, [ref]);
-    const server = React.useContext(ServerContext);
+    const server = React.useContext(serverLocationContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {
@@ -213,13 +255,13 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
             if (route?.path) {
                 const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
                 if (stateForPath) {
-                    const focusedRoute = findFocusedRoute(stateForPath);
+                    const focusedRoute = (0, native_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
-                        isEqual({ ...focusedRoute.params }, { ...route.params })) {
+                        (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })) {
                         // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
                         // path = route.path;
-                        path = appendBaseUrl(route.path);
+                        path = (0, getPathFromState_1.appendBaseUrl)(route.path);
                         // END FORK
                     }
                 }
@@ -249,7 +291,7 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
             // This will allow the initial state to be in the history entry
             const state = ref.current.getRootState();
             if (state) {
-                const route = findFocusedRoute(state);
+                const route = (0, native_1.findFocusedRoute)(state);
                 const path = getPathForRoute(route, state);
                 if (previousStateRef.current === undefined) {
                     previousStateRef.current = state;
@@ -269,7 +311,7 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
                 return;
             }
             const pendingPath = pendingPopStatePathRef.current;
-            const route = findFocusedRoute(state);
+            const route = (0, native_1.findFocusedRoute)(state);
             const path = getPathForRoute(route, state);
             previousStateRef.current = state;
             pendingPopStatePathRef.current = undefined;
@@ -331,13 +373,13 @@ export function useLinking(ref, { enabled = true, config, getStateFromPath = get
         // We debounce onStateChange coz we don't want multiple state changes to be handled at one time
         // This could happen since `history.go(n)` is asynchronous
         // If `pushState` or `replaceState` were called before `history.go(n)` completes, it'll mess stuff up
-        return ref.current?.addListener('state', series(onStateChange));
+        return ref.current?.addListener('state', (0, exports.series)(onStateChange));
     }, [enabled, history, ref]);
     return {
         getInitialState,
     };
 }
-export function getInitialURLWithTimeout() {
+function getInitialURLWithTimeout() {
     return typeof window === 'undefined' ? '' : window.location.href;
 }
 //# sourceMappingURL=useLinking.js.map

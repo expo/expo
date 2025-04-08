@@ -1,13 +1,17 @@
-import { getDevServer } from '../getDevServer';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createEntryFileAsync = createEntryFileAsync;
+exports.getAbsolutePath = getAbsolutePath;
+const getDevServer_1 = require("../getDevServer");
 /** Middleware for creating an entry file in the project. */
-export function createEntryFileAsync() {
+function createEntryFileAsync() {
     if (process.env.NODE_ENV === 'production') {
         // No dev server
         console.warn('createEntryFile() cannot be used in production');
         return;
     }
     // Pings middleware in the Expo CLI dev server.
-    return fetch(getDevServer().url + '_expo/touch', {
+    return fetch((0, getDevServer_1.getDevServer)().url + '_expo/touch', {
         method: 'POST',
         body: JSON.stringify({
             contents: TEMPLATE,
@@ -18,7 +22,7 @@ export function createEntryFileAsync() {
         }),
     });
 }
-export function getAbsolutePath() {
+function getAbsolutePath() {
     return process.env.EXPO_ROUTER_ABS_APP_ROOT + '/index.js';
 }
 const TEMPLATE = `import { StyleSheet, Text, View } from "react-native";

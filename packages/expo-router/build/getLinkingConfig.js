@@ -1,19 +1,24 @@
-import { getActionFromState } from '@react-navigation/native';
-import { Platform } from 'expo-modules-core';
-import { getReactNavigationConfig } from './getReactNavigationConfig';
-import { addEventListener, getInitialURL, getPathFromState, getStateFromPath, } from './link/linking';
-export const INTERNAL_SLOT_NAME = '__root';
-export function getNavigationConfig(routes, metaOnly = true) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.INTERNAL_SLOT_NAME = void 0;
+exports.getNavigationConfig = getNavigationConfig;
+exports.getLinkingConfig = getLinkingConfig;
+const native_1 = require("@react-navigation/native");
+const expo_modules_core_1 = require("expo-modules-core");
+const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
+const linking_1 = require("./link/linking");
+exports.INTERNAL_SLOT_NAME = '__root';
+function getNavigationConfig(routes, metaOnly = true) {
     return {
         screens: {
-            [INTERNAL_SLOT_NAME]: {
+            [exports.INTERNAL_SLOT_NAME]: {
                 path: '',
-                ...getReactNavigationConfig(routes, metaOnly),
+                ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
             },
         },
     };
 }
-export function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
+function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -24,7 +29,7 @@ export function getLinkingConfig(store, routes, context, { metaOnly = true, serv
         ? context(nativeLinkingKey)
         : undefined;
     const config = getNavigationConfig(routes, metaOnly);
-    const boundGetStateFromPath = getStateFromPath.bind(store);
+    const boundGetStateFromPath = linking_1.getStateFromPath.bind(store);
     return {
         prefixes: [],
         config,
@@ -37,11 +42,11 @@ export function getLinkingConfig(store, routes, context, { metaOnly = true, serv
             // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
             // Therefor we memoize the result.
             if (!hasCachedInitialUrl) {
-                if (Platform.OS === 'web') {
-                    initialUrl = serverUrl ?? getInitialURL();
+                if (expo_modules_core_1.Platform.OS === 'web') {
+                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                 }
                 else {
-                    initialUrl = serverUrl ?? getInitialURL();
+                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
                         initialUrl = store.applyRedirects(initialUrl);
                         if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
@@ -62,10 +67,10 @@ export function getLinkingConfig(store, routes, context, { metaOnly = true, serv
             }
             return initialUrl;
         },
-        subscribe: addEventListener(nativeLinking, store),
+        subscribe: (0, linking_1.addEventListener)(nativeLinking, store),
         getStateFromPath: boundGetStateFromPath,
         getPathFromState(state, options) {
-            return (getPathFromState(state, {
+            return ((0, linking_1.getPathFromState)(state, {
                 ...config,
                 ...options,
                 screens: config.screens ?? options?.screens ?? {},
@@ -73,7 +78,7 @@ export function getLinkingConfig(store, routes, context, { metaOnly = true, serv
         },
         // Add all functions to ensure the types never need to fallback.
         // This is a convenience for usage in the package.
-        getActionFromState,
+        getActionFromState: native_1.getActionFromState,
     };
 }
 //# sourceMappingURL=getLinkingConfig.js.map

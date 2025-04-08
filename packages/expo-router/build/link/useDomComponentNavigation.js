@@ -1,5 +1,16 @@
-import { addGlobalDomEventListener } from 'expo/dom/global';
-import React from 'react';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.emitDomSetParams = emitDomSetParams;
+exports.emitDomDismiss = emitDomDismiss;
+exports.emitDomGoBack = emitDomGoBack;
+exports.emitDomDismissAll = emitDomDismissAll;
+exports.emitDomLinkEvent = emitDomLinkEvent;
+exports.useDomComponentNavigation = useDomComponentNavigation;
+const global_1 = require("expo/dom/global");
+const react_1 = __importDefault(require("react"));
 const ROUTER_LINK_TYPE = '$$router_link';
 const ROUTER_DISMISS_ALL_TYPE = '$$router_dismissAll';
 const ROUTER_DISMISS_TYPE = '$$router_dismiss';
@@ -13,27 +24,27 @@ function emitDomEvent(type, data = {}) {
     }
     return false;
 }
-export function emitDomSetParams(params = {}) {
+function emitDomSetParams(params = {}) {
     return emitDomEvent(ROUTER_SET_PARAMS_TYPE, { params });
 }
-export function emitDomDismiss(count) {
+function emitDomDismiss(count) {
     return emitDomEvent(ROUTER_DISMISS_TYPE, { count });
 }
-export function emitDomGoBack() {
+function emitDomGoBack() {
     return emitDomEvent(ROUTER_BACK_TYPE);
 }
-export function emitDomDismissAll() {
+function emitDomDismissAll() {
     return emitDomEvent(ROUTER_DISMISS_ALL_TYPE);
 }
-export function emitDomLinkEvent(href, options) {
+function emitDomLinkEvent(href, options) {
     return emitDomEvent(ROUTER_LINK_TYPE, { href, options });
 }
-export function useDomComponentNavigation(store) {
-    React.useEffect(() => {
+function useDomComponentNavigation(store) {
+    react_1.default.useEffect(() => {
         if (process.env.EXPO_OS === 'web') {
             return () => { };
         }
-        return addGlobalDomEventListener(({ type, data }) => {
+        return (0, global_1.addGlobalDomEventListener)(({ type, data }) => {
             switch (type) {
                 case ROUTER_LINK_TYPE:
                     store.linkTo(data.href, data.options);

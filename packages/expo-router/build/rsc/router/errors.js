@@ -1,10 +1,13 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-export class MetroServerError extends Error {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetworkError = exports.ReactServerError = exports.MetroServerError = void 0;
+class MetroServerError extends Error {
     url;
     code = 'METRO_SERVER_ERROR';
     constructor(errorObject, url) {
@@ -16,7 +19,8 @@ export class MetroServerError extends Error {
         }
     }
 }
-export class ReactServerError extends Error {
+exports.MetroServerError = MetroServerError;
+class ReactServerError extends Error {
     url;
     statusCode;
     headers;
@@ -31,7 +35,8 @@ export class ReactServerError extends Error {
         this.name = 'ReactServerError';
     }
 }
-export class NetworkError extends Error {
+exports.ReactServerError = ReactServerError;
+class NetworkError extends Error {
     url;
     code = 'NETWORK_ERROR';
     constructor(message, url) {
@@ -40,4 +45,5 @@ export class NetworkError extends Error {
         this.name = 'NetworkError';
     }
 }
+exports.NetworkError = NetworkError;
 //# sourceMappingURL=errors.js.map

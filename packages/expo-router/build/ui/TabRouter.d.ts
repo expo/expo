@@ -45,15 +45,15 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("@react-navigation/routers").PartialState<Readonly<{
+    }> | import("@react-navigation/native").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -61,11 +61,11 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("@react-navigation/routers").Route<string>, "key">[];
+        routes: Omit<import("@react-navigation/native").Route<string>, "key">[];
     })) | undefined;
     source?: string;
     target?: string;
