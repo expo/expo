@@ -1,1 +1,0 @@
-{"root":["./src/constants.ts","./src/getDefaultScheme.ts","./src/withDevClient.ts","./src/withGeneratedAndroidScheme.ts","./src/withGeneratedIosScheme.ts"],"version":"5.8.3"}
