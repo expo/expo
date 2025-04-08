@@ -211,9 +211,22 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
-    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
-      stdio: isDebug ? 'inherit' : 'pipe',
-    });
+    let opensslVersionCommandOutput = '';
+
+    // Handle different openssl versions
+    try {
+      const { stdout } = await spawnAsync('openssl', ['--version'], {
+        stdio: isDebug ? 'inherit' : 'pipe',
+      });
+      opensslVersionCommandOutput = stdout.toString();
+    } catch (err) {
+      console.log(`'openssl --version' failed, trying 'openssl version'. ${err}`);
+      const { stdout } = await spawnAsync('openssl', ['version'], {
+        stdio: isDebug ? 'inherit' : 'pipe',
+      });
+      opensslVersionCommandOutput = stdout.toString();
+    }
+
     const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
     const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
     assert(matches, 'Could not parse openssl version');
