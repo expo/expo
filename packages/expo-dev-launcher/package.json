@@ -62,6 +62,9 @@
     "setupFilesAfterEnv": [
       "./setupTests.ts"
     ],
-    "testTimeout": 15000
+    "testTimeout": 15000,
+    "transformIgnorePatterns": [
+      "/node_modules/(?!((jest-)?react-native|@react-native(-community)?)/|@react-navigation/)"
+    ]
   }
 }
