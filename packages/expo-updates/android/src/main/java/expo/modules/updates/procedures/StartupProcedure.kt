@@ -1,8 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import expo.modules.updates.UpdatesConfiguration
@@ -25,6 +23,9 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class StartupProcedure(
@@ -35,7 +36,8 @@ class StartupProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
-  private val callback: StartupProcedureCallback
+  private val callback: StartupProcedureCallback,
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-startup"
 
@@ -67,16 +69,6 @@ class StartupProcedure(
     private set
   private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags.enableBridgelessArchitecture)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-
-  // TODO: move away from DatabaseHolder pattern to Handler thread
-  private val databaseHandlerThread = HandlerThread("expo-updates-database")
-  private lateinit var databaseHandler: Handler
-  private fun initializeDatabaseHandler() {
-    if (!::databaseHandler.isInitialized) {
-      databaseHandlerThread.start()
-      databaseHandler = Handler(databaseHandlerThread.looper)
-    }
-  }
 
   private val loaderTask = LoaderTask(
     context,
@@ -211,7 +203,6 @@ class StartupProcedure(
   override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
-    initializeDatabaseHandler()
     initializeErrorRecovery()
     loaderTask.start()
   }
@@ -297,8 +288,8 @@ class StartupProcedure(
         if (emergencyLaunchException != null) {
           return
         }
-        databaseHandler.post {
-          val launchedUpdate = launchedUpdate ?: return@post
+        procedureScope.launch {
+          val launchedUpdate = launchedUpdate ?: return@launch
           databaseHolder.database.updateDao().incrementFailedLaunchCount(launchedUpdate)
           databaseHolder.releaseDatabase()
         }
@@ -308,8 +299,8 @@ class StartupProcedure(
         if (emergencyLaunchException != null) {
           return
         }
-        databaseHandler.post {
-          val launchedUpdate = launchedUpdate ?: return@post
+        procedureScope.launch {
+          val launchedUpdate = launchedUpdate ?: return@launch
           databaseHolder.database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
           databaseHolder.releaseDatabase()
         }
