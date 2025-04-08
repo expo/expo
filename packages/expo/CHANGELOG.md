@@ -2,6 +2,16 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 53.0.0-preview.0 — 2025-04-04
+
 - Remove `transformOrigin` type override. ([#34183](https://github.com/expo/expo/pull/34183) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🛠 Breaking changes
@@ -16,8 +26,6 @@
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 - Add ExpoAppDelegate support for macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for macOS AppDelegate subscribers ([#35062](https://github.com/expo/expo/pull/35062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

@@ -12,6 +12,12 @@ export default {
       );
       warningHasBeenShown = true;
     }
+    return {
+      remove: () => {},
+    };
   },
-  removeListeners: () => {},
+  removeListener: () => {},
+  removeAllListeners: () => {},
+  emit: () => {},
+  listenerCount: () => 0,
 } as PushTokenManagerModule;

@@ -53,6 +53,7 @@ it('runs `npx expo lint --help`', async () => {
 it('runs `npx expo lint` to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackagesDev: ['eslint-config-expo'],
   });
 
   // `npx expo install expo-sms`
@@ -65,17 +66,24 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   // And not in the dependencies
   expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
+  // TODO(Kadi): remove linkExpoPackagesDev and uncomment when eslint-config-expo is published
+  // when linking packages locally, eslint is showing up as installed because monorepo and does not get installed via the cli
+
   // Ensure the eslint package was added
-  expect(pkg.devDependencies).toHaveProperty('eslint');
+  // expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
   expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(findProjectFiles(projectRoot)).toStrictEqual([
-    '.eslintrc.js',
+  expect(
+    findProjectFiles(projectRoot).filter(
+      (value) => !value.startsWith('.tarballs/eslint-config-expo')
+    )
+  ).toStrictEqual([
     'App.js',
     'app.json',
     'bun.lock',
+    'eslint.config.js',
     'metro.config.js',
     'package.json',
   ]);
@@ -84,13 +92,14 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
 });
 
-it('runs `npx expo customize .eslintrc.js` to install lint in a project', async () => {
+it('runs `npx expo customize eslint.config.js to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackagesDev: ['eslint-config-expo'],
   });
 
-  // `npx expo customize .eslintrc.js`
-  await executeExpoAsync(projectRoot, ['customize', '.eslintrc.js']);
+  // `npx expo customize eslint.config.js`
+  await executeExpoAsync(projectRoot, ['customize', 'eslint.config.js']);
 
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
@@ -99,17 +108,24 @@ it('runs `npx expo customize .eslintrc.js` to install lint in a project', async 
   // And not in the dependencies
   expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
+  // TODO(Kadi): remove linkExpoPackagesDev and uncomment when eslint-config-expo is published
+  // when linking packages locally, eslint is showing up as installed because monorepo and does not get installed via the cli
+
   // Ensure the eslint package was added
-  expect(pkg.devDependencies).toHaveProperty('eslint');
+  // expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
   expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(findProjectFiles(projectRoot)).toStrictEqual([
-    '.eslintrc.js',
+  expect(
+    findProjectFiles(projectRoot).filter(
+      (value) => !value.startsWith('.tarballs/eslint-config-expo')
+    )
+  ).toStrictEqual([
     'App.js',
     'app.json',
     'bun.lock',
+    'eslint.config.js',
     'metro.config.js',
     'package.json',
   ]);

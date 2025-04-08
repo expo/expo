@@ -10,7 +10,7 @@ final class ViewDefinitionSpec: ExpoSpec {
       it("creates a view") {
         let definition = View(UIImageView.self) {}
         let view = definition.createView(appContext: AppContext())
-        expect(view).to(beAKindOf(UIImageView.self))
+        expect(try? view?.toUIView()).to(beAKindOf(UIImageView.self))
       }
     }
 

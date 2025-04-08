@@ -255,9 +255,18 @@ export type GoogleMapsViewType = {
 /**
  * @platform android
  */
+export type StreetViewCameraPosition = {
+    coordinates: Coordinates;
+    zoom?: number;
+    tilt?: number;
+    bearing?: number;
+};
+/**
+ * @platform android
+ */
 export type GoogleStreetViewProps = {
     style?: StyleProp<ViewStyle>;
-    position?: Coordinates;
+    position: StreetViewCameraPosition;
     isPanningGesturesEnabled?: boolean;
     isStreetNamesEnabled?: boolean;
     isUserNavigationEnabled?: boolean;

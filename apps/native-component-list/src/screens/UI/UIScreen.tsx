@@ -85,6 +85,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'List component',
+    route: 'ui/list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},

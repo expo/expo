@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.2.0 — 2025-04-04
+
+### 💡 Others
+
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
 

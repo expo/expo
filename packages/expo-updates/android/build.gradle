@@ -34,8 +34,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'com.google.devtools.ksp'
 
+expoModule {
+  canBePublished false
+}
+
 group = 'host.exp.exponent'
-version = '0.26.9'
+version = '0.28.0'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -78,7 +82,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.26.9'
+    versionName '0.28.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

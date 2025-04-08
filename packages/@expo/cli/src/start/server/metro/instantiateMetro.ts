@@ -186,17 +186,17 @@ export async function instantiateMetroAsync(
 }> {
   const projectRoot = metroBundler.projectRoot;
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    {
-      exp,
-      isExporting,
-      getMetroBundler() {
-        return metro.getBundler().getBundler();
-      },
-    }
-  );
+  const {
+    config: metroConfig,
+    setEventReporter,
+    reporter,
+  } = await loadMetroConfigAsync(projectRoot, options, {
+    exp,
+    isExporting,
+    getMetroBundler() {
+      return metro.getBundler().getBundler();
+    },
+  });
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
@@ -207,7 +207,10 @@ export async function instantiateMetroAsync(
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
+      metroBundler,
+      reporter
+    );
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());

@@ -139,13 +139,8 @@ public final class ImageView: ExpoView {
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     if imageTintColor != nil {
-      context[.imageDecodeOptions] = [
-        SDImageCoderOption.webImageContext: [
-          "svgPrefersBitmap": true,
-          "svgImageSize": sdImageView.bounds.size,
-          "svgImagePreserveAspectRatio": true
-        ]
-      ]
+      context[.imagePreserveAspectRatio] = true
+      context[.imageThumbnailPixelSize] = sdImageView.bounds.size
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -348,9 +343,15 @@ public final class ImageView: ExpoView {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
+    sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
     if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      if image.sd_isAnimated {
+        let size = idealSize * scale
+        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
+        return image
+      }
+      return resize(image: image, toSize: idealSize, scale: scale)
     }
     return image
   }

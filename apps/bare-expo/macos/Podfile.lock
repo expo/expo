@@ -71,9 +71,9 @@ PODS:
   - FBLazyVector (0.78.1)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - hermes-engine (0.78.1):
-    - hermes-engine/Pre-built (= 0.78.1)
-  - hermes-engine/Pre-built (0.78.1)
+  - hermes-engine (0.78.2):
+    - hermes-engine/Pre-built (= 0.78.2)
+  - hermes-engine/Pre-built (0.78.2)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1373,7 +1373,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.13.0):
+  - react-native-webview (13.13.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1681,7 +1681,7 @@ PODS:
     - React-logger (= 0.78.1)
     - React-perflogger (= 0.78.1)
     - React-utils (= 0.78.1)
-  - RNCAsyncStorage (1.23.1):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2010,12 +2010,12 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 6c0a136e19a68e75227bdb60c201cc29fd199b1d
   ExpoMeshGradient: 10206dfd6045700677d876bf58a27f065f4b9f70
   ExpoModulesCore: cf7b8f45e323a3a56e12556764e78d0b2ee35967
-  ExpoSQLite: d79d134aa51e09131a680d40449207681c258cfb
+  ExpoSQLite: 0e8bb21d43a6a9a9b72c97b28fe262ca3a78103a
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: a29527fb904bdadfd186d3569a8b331182aba808
   fmt: f6af2d677a106e3e44c9536a4c0c7f03ab53c854
   glog: b7594b792ee4e02ed1f44b01d046ca25fa713e3d
-  hermes-engine: f493b0a600aed5dc06532141603688a30a5b2f61
+  hermes-engine: 2771b98fb813fdc6f92edd7c9c0035ecabf9fee7
   RCT-Folly: abec2d7f4af402b4957c44e86ceff8725b23c1b4
   RCTDeprecation: 082fbc90409015eac1366795a0b90f8b5cb28efe
   RCTRequired: b6cf430c377f7efc0f6c3068ae86f9e8c17c5aaa
@@ -2048,7 +2048,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 78c4f3d31e399be14d6e597b03cbd4d3afa9d7ba
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-safe-area-context: 286b3e7b5589795bb85ffc38faf4c0706c48a092
-  react-native-webview: 0ddb59b30cf225f2ba3125fd03c24e7d33ac68a8
+  react-native-webview: ca20dfd45204cc81f0b21e70d1e5a349daecfb81
   React-NativeModulesApple: b21916ccfa82cd96549a4b853873dbc4d7e4958c
   React-perflogger: 1ce6643ec4c2203b962685db7b097a0bd98089d9
   React-performancetimeline: b64a44fbe9c4737681d01f00db322fcda7472fe9
@@ -2077,7 +2077,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 3ac55872ca212de36d40040447bf57cd501ceb75
   ReactCodegen: 59ef42bc10a9c0d13f7d97e70ade29471687bd41
   ReactCommon: eab76065d06df1d0b25cf74ef20092e39b905de1
-  RNCAsyncStorage: cb52fe44ef589ac407cfe26da409b539354caa9a
+  RNCAsyncStorage: 4f4de141719fef3490c87a0dd779575c64c0472c
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: afc9fdda8cd72a3463a1a08e3f3e14aa67250add

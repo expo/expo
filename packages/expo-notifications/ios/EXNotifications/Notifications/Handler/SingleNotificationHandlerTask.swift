@@ -44,7 +44,7 @@ public class SingleNotificationHandlerTask {
     finish()
   }
 
-  public func handleResponse(_ behavior: [String: Bool]) -> Bool {
+  public func processNotificationWithBehavior(_ behavior: [String: Bool]) -> Bool {
     if let completionHandler = completionHandler {
       let options = presentationOptions(behavior)
       completionHandler(options)

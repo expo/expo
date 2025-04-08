@@ -4,11 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
 
 - Add RSC support. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
+- Add .riv to accepted media types ([#35758](https://github.com/expo/expo/pull/35758) by [@alextoudic](https://github.com/alextoudic))
 
 ### 🐛 Bug fixes
 

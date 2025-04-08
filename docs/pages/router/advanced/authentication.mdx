@@ -193,7 +193,7 @@ export default function Root() {
 
 <Step label="3">
 
-Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
+Create a nested [layout route](/router/basics/layout/) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```tsx app/(app)/_layout.tsx|collapseHeight=400
 import { Text } from 'react-native';
@@ -330,7 +330,7 @@ export default function AppLayout() {
 
 ## Navigating without navigation
 
-You may encounter the following error when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/advanced/root-layout).
+You may encounter the following error when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/basics/layout/#root-layout).
 
 ```text
 Error: Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.

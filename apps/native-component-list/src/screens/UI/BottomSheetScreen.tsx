@@ -1,5 +1,5 @@
-import { BottomSheet } from '@expo/ui/components/BottomSheet';
-import { Button } from '@expo/ui/components/Button';
+import { BottomSheet } from '@expo/ui/BottomSheet';
+import { Button } from '@expo/ui/Button';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';

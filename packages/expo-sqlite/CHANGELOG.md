@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.2.0 — 2025-04-04
+
+### 🎉 New features
+
 - Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
 - Added [Session Extension](https://www.sqlite.org/sessionintro.html) support. ([#35457](https://github.com/expo/expo/pull/35457), [#35458](https://github.com/expo/expo/pull/35458), [#35459](https://github.com/expo/expo/pull/35459), [#35461](https://github.com/expo/expo/pull/35461), [#35476](https://github.com/expo/expo/pull/35476) by [@kudo](https://github.com/kudo))
 - Added `backupDatabaseAsync` and `backupDatabaseSync` APIs. ([#35604](https://github.com/expo/expo/pull/35604) by [@kudo](https://github.com/kudo))
@@ -13,6 +21,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
+- Added reference counting for database closing functions. ([#35818](https://github.com/expo/expo/pull/35818) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -24,10 +33,17 @@
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
 - Fixed build warnings. ([#35610](https://github.com/expo/expo/pull/35610) by [@kudo](https://github.com/kudo))
 - Added backup and session API stubs to LibSQL implementations. ([#35755](https://github.com/expo/expo/pull/35755) by [@kudo](https://github.com/kudo))
+- Updated function docs. ([#35761](https://github.com/expo/expo/pull/35761) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
 - Updated SQLite to 3.49.1 and SQLCipher to 4.7.0. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
+
+## 15.1.4 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
 
 ## 15.1.3 - 2025-03-26
 
