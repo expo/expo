@@ -31,6 +31,7 @@ export function PagePackageVersion({ packageName, testRequire }: Props) {
             versions.find((entry: Record<string, string>) => entry.npmPackage === packageName)
               .versionRange
           }
+          className="select-auto"
         />
       </div>
     );
