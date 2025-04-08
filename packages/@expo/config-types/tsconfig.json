@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.node",
-  "include": ["./src", "./scripts"],
+  "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "checkJs": true,
