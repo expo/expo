@@ -11,7 +11,7 @@ export function withErrorOverlay(Comp: React.ComponentType<any>) {
   }
 
   const { default: ErrorToastContainer } =
-    require('./toast/ErrorToastContainer') as typeof import('./toast/ErrorToastContainer');
+    require('./toast/ErrorToastContainer') as typeof import('./ErrorToastContainer');
 
   return function ErrorOverlay(props: any) {
     return (
