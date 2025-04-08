@@ -1,4 +1,4 @@
-import cliPreset from 'expo-module-scripts/jest-preset-cli.js';
+import cliPreset from 'expo-module-scripts/jest-preset-cli';
 import fs from 'fs';
 import path from 'path';
 import url from 'url';

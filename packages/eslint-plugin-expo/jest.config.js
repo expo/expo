@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  ...require('expo-module-scripts/jest-preset-cli.js'),
+  ...require('expo-module-scripts/jest-preset-cli'),
   preset: 'ts-jest',
   clearMocks: true,
   displayName: require('./package').name,
