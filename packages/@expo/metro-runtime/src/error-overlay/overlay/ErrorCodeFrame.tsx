@@ -6,16 +6,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import type { CodeFrame } from '../Data/parseLogBoxLog';
 import { Ansi } from '../UI/AnsiHighlight';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
 import { CODE_FONT } from '../UI/constants';
 import { openFileInEditor } from '../devServerEndpoints';
 import { formatProjectFilePath } from '../formatProjectFilePath';
 
 declare const process: any;
+
+import mStyles from './ErrorCodeFrame.module.css';
 
 export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
   if (codeFrame == null) {
@@ -37,20 +38,14 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
 
   // Try to match the Expo docs
   return (
-    <View style={styles.box}>
-      <header
-        style={{
-          display: 'flex',
-          minHeight: 40,
-          justifyContent: 'space-between',
-          overflow: 'hidden',
-          backgroundColor: 'var(--expo-log-color-background)',
-          borderBottom: '1px solid var(--expo-log-color-border)',
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-          paddingLeft: 12,
-          // className="flex min-h-[40px] justify-between overflow-hidden border border-default bg-default rounded-t-md border-b-0 pl-3"
-        }}>
+    <div
+      style={{
+        backgroundColor: 'var(--expo-log-secondary-system-grouped-background)',
+        border: '1px solid var(--expo-log-color-border)',
+        marginTop: 5,
+        borderRadius: 6,
+      }}>
+      <header className={mStyles.header}>
         <span
           data-text="true"
           style={{
@@ -59,12 +54,12 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
             lineHeight: 1.25,
             letterSpacing: '-0.009rem',
             display: 'flex',
-            minHeight: 40,
+
             width: '100%',
+            overflowX: 'auto',
             alignItems: 'center',
             gap: 8,
-
-            paddingRight: 16,
+            position: 'relative',
             fontWeight: '600',
             // className="text-default text-[15px] leading-[1.6] tracking-[-0.009rem] flex min-h-10 w-full items-center gap-2 py-1 pr-4 font-medium !leading-tight"
           }}>
@@ -73,68 +68,52 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
             style={{
               overflowWrap: 'break-word',
               fontFamily: 'var(--expo-log-font-mono)',
-
+              whiteSpace: 'nowrap',
+              overflow: 'auto',
               color: 'var(--expo-log-color-label)',
+              paddingRight: 16,
             }}>
             {getFileName()}
             <span style={{ opacity: 0.8 }}>{getLocation()}</span>
           </span>
+
+          {/* R-L gradient to fade contents */}
+          <span
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: 20,
+              background:
+                'linear-gradient(to left, var(--expo-log-color-background) 0%, rgba(0, 0, 0, 0) 100%)',
+            }} /* absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-default to-transparent */
+          />
         </span>
+
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',
             borderLeft: '1px solid var(--expo-log-color-border)',
+
+            backgroundColor: 'var(--expo-log-color-background)',
           }} /* flex items-center justify-end */
         >
           <button
-            className="expo-log-code-frame-button"
+            className={mStyles.copyButton}
             type="button"
+            title="Open in editor"
             onClick={() => {
               openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
             }}
             aria-label="Copy content">
-            <svg
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{
-                transform: 'translateZ(0)',
-                width: '1rem',
-                height: '1rem',
-                color: 'var(--expo-log-secondary-label)',
-              }} /* translate-z icon-sm text-icon-default */
-              role="img">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M7 17L17 7M17 7H7M17 7V17"
-              />
-            </svg>
-            <span
-              style={{
-                display: 'flex',
-                alignSelf: 'center',
-                color: 'inherit',
-                lineHeight: 1,
-              }} /* flex self-center text-inherit leading-none */
-            >
-              <p
-                style={{
-                  fontFamily: 'var(--expo-log-font-family)',
-                  color: 'var(--expo-log-color-label)',
+            <p className={mStyles.copyButtonText} data-text="true">
+              Open
+            </p>
 
-                  fontWeight: 'normal',
-                  fontSize: '14px',
-
-                  letterSpacing: '-0.003rem',
-                }} /* text-default font-normal text-[13px] leading-[1.6154] tracking-[-0.003rem] */
-                data-text="true">
-                Open
-              </p>
-            </span>
+            <OpenIcon className={mStyles.copyButtonIcon} width={26} height={26} />
           </button>
         </div>
       </header>
@@ -154,7 +133,20 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
           <Ansi style={styles.content} text={codeFrame.content} />
         </ScrollView>
       </div>
-    </View>
+    </div>
+  );
+}
+
+function OpenIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props} role="img">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M7 17L17 7M17 7H7M17 7V17"
+      />
+    </svg>
   );
 }
 
@@ -169,6 +161,7 @@ export function FileIcon() {
         height: '1rem',
         color: 'var(--expo-log-secondary-label)',
       }}
+      className={mStyles.fileIcon}
       role="img">
       <path
         strokeLinecap="round"
@@ -181,17 +174,9 @@ export function FileIcon() {
 }
 
 const styles = StyleSheet.create({
-  box: {
-    backgroundColor: 'var(--expo-log-secondary-system-grouped-background)',
-    borderWidth: 1,
-    borderColor: 'var(--expo-log-color-border)',
-
-    marginTop: 5,
-    borderRadius: 6,
-  },
   content: {
     flexDirection: 'column',
-    color: LogBoxStyle.getTextColor(1),
+    color: 'white',
     fontSize: 12,
     includeFontPadding: false,
     lineHeight: 20,
