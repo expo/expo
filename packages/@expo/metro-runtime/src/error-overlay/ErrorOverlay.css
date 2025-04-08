@@ -159,27 +159,3 @@
 .expo-log-page-button:not([aria-disabled]):hover {
   background-color: var(--expo-log-secondary-system-background-hover);
 }
-
-.expo-log-code-frame-button {
-    cursor: pointer;
-    display: inline-flex;
-    font-weight: 500;
-    align-items: center;
-    white-space: nowrap;
-    transition: all 0.2s ease-in-out;
-    font-size: 10px;
-
-    background-color: transparent;
-
-    box-shadow: none;
-    gap: 6px;
-    height: 40px;
-    border-radius: 0;
-    border-width: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-}
-
-.expo-log-code-frame-button:hover {
-    background-color: var(--expo-log-secondary-system-background-hover);
-}
