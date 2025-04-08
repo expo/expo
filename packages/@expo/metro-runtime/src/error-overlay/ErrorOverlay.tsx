@@ -12,7 +12,7 @@ import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, StackType } from './Data/LogBoxLog';
 import { useLogs, useSelectedLog } from './Data/LogContext';
 import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
-import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
+import { ErrorCodeFrame } from './overlay/ErrorCodeFrame';
 import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
 import { StackTraceList } from './overlay/StackTraceList';
 
@@ -117,7 +117,26 @@ export function LogBoxInspector({
             onSelectIndex={onChangeSelectedIndex}
             level={log.level}
           />
-          <ErrorOverlayBody onRetry={_handleRetry} />
+          <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
+            <ErrorCodeFrame codeFrame={log.codeFrame} />
+
+            <StackTraceList
+              type="stack"
+              stack={log.getAvailableStack('stack')}
+              symbolicationStatus={log.symbolicated['stack'].status}
+              // eslint-disable-next-line react/jsx-no-bind
+              onRetry={_handleRetry.bind(_handleRetry, 'stack')}
+            />
+            {!!log?.componentStack?.length && (
+              <StackTraceList
+                type="component"
+                stack={log.getAvailableStack('component')}
+                symbolicationStatus={log.symbolicated['component'].status}
+                // eslint-disable-next-line react/jsx-no-bind
+                onRetry={_handleRetry.bind(_handleRetry, 'component')}
+              />
+            )}
+          </ErrorOverlayBody>
           {!isDismissable && (
             <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
           )}
@@ -150,30 +169,31 @@ function ErrorOverlayFooter({ message }: { message?: string }) {
   );
 }
 
-function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
-  const log = useSelectedLog();
-
+function ErrorOverlayBody({
+  message,
+  level,
+  type,
+  isComponentError,
+  children,
+}: {
+  type: LogBoxLog['type'];
+  message: LogBoxLog['message'];
+  level: LogBoxLog['level'];
+  isComponentError?: boolean;
+  children?: React.ReactNode;
+}) {
   const [collapsed, setCollapsed] = useState(true);
 
-  useEffect(() => {
-    setCollapsed(true);
-  }, [log]);
-
-  const headerTitle = HEADER_TITLE_MAP[log.isComponentError ? 'component' : log.level] ?? log.type;
+  const headerTitle = HEADER_TITLE_MAP[isComponentError ? 'component' : level] ?? type;
 
   const header = (
     <LogBoxInspectorMessageHeader
       collapsed={collapsed}
       onPress={() => setCollapsed(!collapsed)}
-      message={log.message}
-      level={log.level}
+      message={message}
+      level={level}
       title={headerTitle}
     />
-  );
-
-  // Hide useless React stack.
-  const needsStack = !log.message.content.match(
-    /(Expected server HTML to contain a matching|Text content did not match\.)/
   );
 
   return (
@@ -182,26 +202,7 @@ function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
       <ScrollView contentContainerStyle={{ gap: 10, paddingHorizontal: '1rem' }}>
         {!collapsed && header}
 
-        <LogBoxInspectorCodeFrame codeFrame={log.codeFrame} />
-
-        {needsStack && (
-          <StackTraceList
-            type="stack"
-            stack={log.getAvailableStack('stack')}
-            symbolicationStatus={log.symbolicated['stack'].status}
-            // eslint-disable-next-line react/jsx-no-bind
-            onRetry={onRetry.bind(onRetry, 'stack')}
-          />
-        )}
-        {!!log?.componentStack?.length && (
-          <StackTraceList
-            type="component"
-            stack={log.getAvailableStack('component')}
-            symbolicationStatus={log.symbolicated['component'].status}
-            // eslint-disable-next-line react/jsx-no-bind
-            onRetry={onRetry.bind(onRetry, 'component')}
-          />
-        )}
+        {children}
       </ScrollView>
     </>
   );

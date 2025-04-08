@@ -17,7 +17,7 @@ import { formatProjectFilePath } from '../formatProjectFilePath';
 
 declare const process: any;
 
-export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
+export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
   if (codeFrame == null) {
     return null;
   }
