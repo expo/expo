@@ -258,6 +258,8 @@ export function useLocalSearchParams() {
             }
           }),
         ];
+      } else if (typeof value === 'undefined' || value === null) {
+        return [key, value];
       } else {
         try {
           return [key, decodeURIComponent(value as string)];
