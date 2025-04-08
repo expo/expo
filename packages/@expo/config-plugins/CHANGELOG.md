@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Enabled `newArchEnabled` by default. ([#35964](https://github.com/expo/expo/pull/35964) by [@kudo](https://github.com/kudo))
+
 ## 9.1.0 — 2025-04-04
 
 ### 🎉 New features
