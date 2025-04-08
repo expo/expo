@@ -7,15 +7,15 @@
  */
 import React, { useEffect, useCallback, useMemo } from 'react';
 
-import * as LogBoxData from '../Data/LogBoxData';
-import { LogBoxLog } from '../Data/LogBoxLog';
-import { useLogs } from '../Data/LogContext';
-import { useRejectionHandler } from '../useRejectionHandler';
+import * as LogBoxData from './Data/LogBoxData';
+import { LogBoxLog } from './Data/LogBoxLog';
+import { useLogs } from './Data/LogContext';
+import { useRejectionHandler } from './useRejectionHandler';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { LogBoxMessage } from '../UI/LogBoxMessage';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
+import { LogBoxMessage } from './UI/LogBoxMessage';
+import * as LogBoxStyle from './UI/LogBoxStyle';
 
-import '../ErrorOverlay.css';
+import './ErrorOverlay.css';
 
 export function ErrorToastContainer() {
   useRejectionHandler();
