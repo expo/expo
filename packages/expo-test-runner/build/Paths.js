@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.temporaryDirectory = exports.SelfPath = void 0;
+exports.SelfPath = void 0;
+exports.temporaryDirectory = temporaryDirectory;
 const fs_1 = require("fs");
 const path_1 = require("path");
 const temp_dir_1 = __importDefault(require("temp-dir"));
@@ -14,5 +15,4 @@ function temporaryDirectory() {
     (0, fs_1.mkdirSync)(directory);
     return directory;
 }
-exports.temporaryDirectory = temporaryDirectory;
 //# sourceMappingURL=Paths.js.map

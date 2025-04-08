@@ -1,12 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.doctor = void 0;
-const debug_1 = __importDefault(require("debug"));
-const subset_1 = __importDefault(require("semver/ranges/subset"));
-const debug = (0, debug_1.default)('expo:router:doctor');
+import createDebug from 'debug';
+import semverRangeSubset from 'semver/ranges/subset';
+const debug = createDebug('expo:router:doctor');
 /**
  * Small hack to get the package.json.
  * We do no use import() as this would require changing the rootDir in `tsconfig.json`,
@@ -14,7 +8,7 @@ const debug = (0, debug_1.default)('expo:router:doctor');
  */
 const routerPkg = require('../../package.json');
 const routerDependencies = Object.entries(Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)).filter((entry) => entry[0].startsWith('@react-navigation') && entry[1] !== '*');
-function doctor(pkg, appReactNavigationPath, 
+export function doctor(pkg, appReactNavigationPath, 
 // Reuse the formatting functions from expo-cli
 { bold, learnMore, }) {
     const resolvedDependencies = { ...pkg.dependencies, ...pkg.devDependencies };
@@ -49,7 +43,7 @@ function doctor(pkg, appReactNavigationPath,
             continue;
         }
         debug(`Checking ${dep} with ${allowedRange} and found ${usersRange}`);
-        if (!usersRange || (0, subset_1.default)(allowedRange, usersRange)) {
+        if (!usersRange || semverRangeSubset(allowedRange, usersRange)) {
             continue;
         }
         debug(`Incorrect dependency found for ${dep}`);
@@ -62,5 +56,4 @@ function doctor(pkg, appReactNavigationPath,
     }
     return incorrectDependencies;
 }
-exports.doctor = doctor;
 //# sourceMappingURL=index.js.map

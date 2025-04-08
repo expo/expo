@@ -1,31 +1,5 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBaseUrl = exports.getPathDataFromState = exports.getPathFromState = void 0;
-const queryString = __importStar(require("query-string"));
-const expo = __importStar(require("./getPathFromState-forks"));
+import * as queryString from 'query-string';
+import * as expo from './getPathFromState-forks';
 // END FORK
 const getActiveRoute = (state) => {
     const route = typeof state.index === 'number'
@@ -69,11 +43,10 @@ let cachedNormalizedConfigs = [
  * @param options Extra options to fine-tune how to serialize the path.
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
-function getPathFromState(state, options) {
+export function getPathFromState(state, options) {
     return getPathDataFromState(state, options).path;
 }
-exports.getPathFromState = getPathFromState;
-function getPathDataFromState(state, options) {
+export function getPathDataFromState(state, options) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
     }
@@ -283,7 +256,6 @@ function getPathDataFromState(state, options) {
     return { path, params: allParams };
     // END FORK
 }
-exports.getPathDataFromState = getPathDataFromState;
 // const getParamName = (pattern: string) => pattern.replace(/^:/, '').replace(/\?$/, '');
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
@@ -313,7 +285,7 @@ const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.
     const result = createConfigItem(c, pattern);
     return [name, result];
 }));
-function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
+export function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
             return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
@@ -321,5 +293,4 @@ function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

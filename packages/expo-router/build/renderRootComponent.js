@@ -1,33 +1,7 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRootComponent = void 0;
-const expo_1 = require("expo");
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const SplashScreen = __importStar(require("./utils/splash"));
+import { registerRootComponent } from 'expo';
+import * as React from 'react';
+import { View } from 'react-native';
+import * as SplashScreen from './utils/splash';
 function isBaseObject(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
         return false;
@@ -66,7 +40,7 @@ function convertError(error) {
  * Register and mount the root component using the predefined rendering
  * method. This function ensures the Splash Screen and errors are handled correctly.
  */
-function renderRootComponent(Component) {
+export function renderRootComponent(Component) {
     try {
         // This must be delayed so the user has a chance to call it first.
         setTimeout(() => {
@@ -75,10 +49,10 @@ function renderRootComponent(Component) {
         React.startTransition(() => {
             if (process.env.NODE_ENV !== 'production') {
                 const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
-                (0, expo_1.registerRootComponent)(withErrorOverlay(Component));
+                registerRootComponent(withErrorOverlay(Component));
             }
             else {
-                (0, expo_1.registerRootComponent)(Component);
+                registerRootComponent(Component);
             }
         });
     }
@@ -90,7 +64,7 @@ function renderRootComponent(Component) {
         //  ERROR  Invariant Violation: "main" has not been registered. This can happen if:
         // * Metro (the local dev server) is run from the wrong folder. Check if Metro is running, stop it and restart it in the current project.
         // * A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.
-        (0, expo_1.registerRootComponent)(() => <react_native_1.View />);
+        registerRootComponent(() => <View />);
         // Console is pretty useless on native, on web you get interactive stack traces.
         if (process.env.EXPO_OS === 'web') {
             console.error(error);
@@ -103,5 +77,4 @@ function renderRootComponent(Component) {
         // TODO: Render a production-only error screen.
     }
 }
-exports.renderRootComponent = renderRootComponent;
 //# sourceMappingURL=renderRootComponent.js.map

@@ -37,7 +37,7 @@ export async function convertReadableStreamToUint8ArrayAsync(
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
 export async function normalizeBodyInitAsync(
-  body: BodyInit | null | undefined
+  body: BodyInit | ArrayBufferLike | null | undefined
 ): Promise<{ body: Uint8Array | null; overriddenHeaders?: NativeHeadersType }> {
   if (body == null) {
     return { body: null };

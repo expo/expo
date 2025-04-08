@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createExpoPages = void 0;
-const create_pages_1 = require("./create-pages");
+import { createPages } from './create-pages';
 /**
  * Wrapper around `createPages` to pass data from the server to the fn
  *
@@ -11,12 +8,11 @@ const create_pages_1 = require("./create-pages");
  * @param fn
  * @returns
  */
-function createExpoPages(fn) {
+export function createExpoPages(fn) {
     return (getRouteOptions) => {
         return {
-            default: (0, create_pages_1.createPages)((a, b) => fn(a, { ...b, getRouteOptions })),
+            default: createPages((a, b) => fn(a, { ...b, getRouteOptions })),
         };
     };
 }
-exports.createExpoPages = createExpoPages;
 //# sourceMappingURL=create-expo-pages.js.map
