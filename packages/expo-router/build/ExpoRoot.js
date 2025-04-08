@@ -1,44 +1,18 @@
 'use client';
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRoot = void 0;
-const native_1 = require("@react-navigation/native");
-const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const NavigationContainer_1 = require("./fork/NavigationContainer");
-const getLinkingConfig_1 = require("./getLinkingConfig");
-const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = require("./global-state/serverLocationContext");
-const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
-const primitives_1 = require("./primitives");
-const statusbar_1 = require("./utils/statusbar");
-const SplashScreen = __importStar(require("./views/Splash"));
+import { StackRouter, useNavigationBuilder, } from '@react-navigation/native';
+import React, { Fragment, useMemo } from 'react';
+import { StatusBar, useColorScheme, Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
+import { INTERNAL_SLOT_NAME } from './getLinkingConfig';
+import { useInitializeExpoRouter } from './global-state/router-store';
+import { ServerContext } from './global-state/serverLocationContext';
+import { useDomComponentNavigation } from './link/useDomComponentNavigation';
+import { Screen } from './primitives';
+import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import * as SplashScreen from './views/Splash';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
+const INITIAL_METRICS = Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -47,7 +21,7 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
 /**
  * @hidden
  */
-function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
+export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -55,29 +29,28 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+          {canOverrideStatusBarBehavior && <AutoStatusBar />}
           {children}
-        </react_native_safe_area_context_1.SafeAreaProvider>
+        </SafeAreaProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
-exports.ExpoRoot = ExpoRoot;
 function AutoStatusBar() {
-    return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
+    return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'}/>;
 }
-const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
+const initialUrl = Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = Fragment, linking = {}, }) {
     // location and linking.getInitialURL are both used to initialize the router state
     //  - location is used on web and during static rendering
     //  - linking.getInitialURL is used on native
-    const serverContext = (0, react_1.useMemo)(() => {
+    const serverContext = useMemo(() => {
         let contextType = {};
         if (initialLocation instanceof URL) {
             contextType = {
@@ -106,11 +79,11 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     const serverUrl = serverContext.location
         ? `${serverContext.location.pathname}${serverContext.location.search}`
         : undefined;
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
+    const store = useInitializeExpoRouter(context, {
         ...linking,
         serverUrl,
     });
-    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
+    useDomComponentNavigation(store);
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -124,19 +97,19 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             return null;
         }
     }
-    return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
+    return (<UpstreamNavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverLocationContext_1.ServerContext.Provider value={serverContext}>
+      <ServerContext.Provider value={serverContext}>
         <WrapperComponent>
           <Content component={store.rootComponent}/>
         </WrapperComponent>
-      </serverLocationContext_1.ServerContext.Provider>
-    </NavigationContainer_1.NavigationContainer>);
+      </ServerContext.Provider>
+    </UpstreamNavigationContainer>);
 }
 function Content({ component }) {
-    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={getLinkingConfig_1.INTERNAL_SLOT_NAME} component={component}/>,
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
+        children: <Screen name={INTERNAL_SLOT_NAME} component={component}/>,
     });
     return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }

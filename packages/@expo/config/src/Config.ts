@@ -35,7 +35,7 @@ let hasWarnedAboutRootConfig = false;
  *
  * @param config Input config object to reduce
  */
-function reduceExpoObject(config?: any): SplitConfigs {
+function reduceExpoObject(config?: any): SplitConfigs | null {
   if (!config) return config === undefined ? null : config;
 
   if (config.expo && !hasWarnedAboutRootConfig) {
@@ -115,26 +115,26 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   const rawStaticConfig = paths.staticConfigPath ? getStaticConfig(paths.staticConfigPath) : null;
   // For legacy reasons, always return an object.
   const rootConfig = (rawStaticConfig || {}) as AppJSONConfig;
-  const staticConfig = reduceExpoObject(rawStaticConfig) || {};
+  const staticConfig = reduceExpoObject(rawStaticConfig);
 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
 
   function fillAndReturnConfig(
-    config: SplitConfigs,
+    config: SplitConfigs | null,
     dynamicConfigObjectType: string | null,
     mayHaveUnusedStaticConfig: boolean = false
   ) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
-        exp: config.expo,
+        exp: config ? config.expo : {},
         pkg: packageJson,
         skipSDKVersionRequirement: options.skipSDKVersionRequirement,
         paths,
         packageJsonPath,
       }),
-      mods: config.mods,
+      mods: config ? config.mods : {},
       dynamicConfigObjectType,
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
@@ -184,10 +184,10 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   }
 
   // Fill in the static config
-  function getContextConfig(config: SplitConfigs) {
+  function getContextConfig(config: SplitConfigs | null) {
     return ensureConfigHasDefaultValues({
       projectRoot,
-      exp: config.expo,
+      exp: config ? config.expo : {},
       pkg: packageJson,
       skipSDKVersionRequirement: true,
       paths,
@@ -209,12 +209,12 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     });
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
-    const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
+    const dynamicConfig = reduceExpoObject(rawDynamicConfig);
     return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config
-  return fillAndReturnConfig(staticConfig || {}, null);
+  return fillAndReturnConfig(staticConfig, null);
 }
 
 export function getPackageJson(projectRoot: string): PackageJSONConfig {

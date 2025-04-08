@@ -37,7 +37,7 @@ it('renders a Link with a slot', () => {
   expect(asFragment().getRootNode()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <a
-        class="css-view-175oi2r"
+        class="css-view-g5y9jx"
         data-testid="pressable"
         href="/foo"
         role="link"

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import type { Href } from '../types';
 import { useRouter_UNSTABLE } from './router/client';
 export { Link } from './router/client';

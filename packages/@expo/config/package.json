@@ -12,6 +12,14 @@
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
+  "exports": {
+    ".": {
+      "default": "./build/index.js"
+    },
+    "./paths": {
+      "default": "./paths/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",

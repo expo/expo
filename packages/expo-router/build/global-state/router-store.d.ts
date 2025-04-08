@@ -56,26 +56,26 @@ export declare class RouterStore {
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        history?: unknown[];
+        routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
-        stale?: true | undefined;
-        routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+        stale?: true;
+        routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
     }> & {
-        state?: (Partial<Omit<Readonly<{
+        state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
-            history?: unknown[] | undefined;
-            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            history?: unknown[];
+            routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
-            stale?: true | undefined;
-            routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-        }> & any) | undefined;
+            stale?: true;
+            routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
+        }> & /*elided*/ any;
     }) | undefined;
     applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
 }

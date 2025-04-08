@@ -23,6 +23,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     this.addListener('readyForJSFinalization', this.finalize);
   }
 
+  public bytes = () => {
+    throw new Error('Not implemented');
+  };
+
   get body(): ReadableStream<Uint8Array> | null {
     if (this.bodyStream == null) {
       const response = this;

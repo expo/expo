@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgraded React Navigation
+
 ## 5.1.0 — 2025-04-04
 
 ### 🛠 Breaking changes

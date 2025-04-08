@@ -1,23 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingConfig = exports.getNavigationConfig = exports.INTERNAL_SLOT_NAME = void 0;
-const native_1 = require("@react-navigation/native");
-const expo_modules_core_1 = require("expo-modules-core");
-const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
-const linking_1 = require("./link/linking");
-exports.INTERNAL_SLOT_NAME = '__root';
-function getNavigationConfig(routes, metaOnly = true) {
+import { getActionFromState } from '@react-navigation/native';
+import { Platform } from 'expo-modules-core';
+import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { addEventListener, getInitialURL, getPathFromState, getStateFromPath, } from './link/linking';
+export const INTERNAL_SLOT_NAME = '__root';
+export function getNavigationConfig(routes, metaOnly = true) {
     return {
         screens: {
-            [exports.INTERNAL_SLOT_NAME]: {
+            [INTERNAL_SLOT_NAME]: {
                 path: '',
-                ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
+                ...getReactNavigationConfig(routes, metaOnly),
             },
         },
     };
 }
-exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
+export function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -28,7 +24,7 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
         ? context(nativeLinkingKey)
         : undefined;
     const config = getNavigationConfig(routes, metaOnly);
-    const boundGetStateFromPath = linking_1.getStateFromPath.bind(store);
+    const boundGetStateFromPath = getStateFromPath.bind(store);
     return {
         prefixes: [],
         config,
@@ -41,11 +37,11 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
             // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
             // Therefor we memoize the result.
             if (!hasCachedInitialUrl) {
-                if (expo_modules_core_1.Platform.OS === 'web') {
-                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
+                if (Platform.OS === 'web') {
+                    initialUrl = serverUrl ?? getInitialURL();
                 }
                 else {
-                    initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
+                    initialUrl = serverUrl ?? getInitialURL();
                     if (typeof initialUrl === 'string') {
                         initialUrl = store.applyRedirects(initialUrl);
                         if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
@@ -66,10 +62,10 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking, store),
+        subscribe: addEventListener(nativeLinking, store),
         getStateFromPath: boundGetStateFromPath,
         getPathFromState(state, options) {
-            return ((0, linking_1.getPathFromState)(state, {
+            return (getPathFromState(state, {
                 ...config,
                 ...options,
                 screens: config.screens ?? options?.screens ?? {},
@@ -77,8 +73,7 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
         },
         // Add all functions to ensure the types never need to fallback.
         // This is a convenience for usage in the package.
-        getActionFromState: native_1.getActionFromState,
+        getActionFromState,
     };
 }
-exports.getLinkingConfig = getLinkingConfig;
 //# sourceMappingURL=getLinkingConfig.js.map

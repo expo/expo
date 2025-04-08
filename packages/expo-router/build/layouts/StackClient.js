@@ -1,13 +1,10 @@
 'use client';
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackRouter = exports.stackRouterOverride = void 0;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
-const withLayoutContext_1 = require("./withLayoutContext");
-const useScreens_1 = require("../useScreens");
-const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
-const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
+import { StackRouter as RNStackRouter, } from '@react-navigation/native';
+import { createNativeStackNavigator, } from '@react-navigation/native-stack';
+import { withLayoutContext } from './withLayoutContext';
+import { getSingularId } from '../useScreens';
+const NativeStackNavigator = createNativeStackNavigator().Navigator;
+const RNStack = withLayoutContext(NativeStackNavigator);
 function isStackAction(action) {
     return (action.type === 'PUSH' ||
         action.type === 'NAVIGATE' ||
@@ -24,7 +21,7 @@ function isStackAction(action) {
  * Instead of reimplementing the entire StackRouter, we can override the getStateForAction method to handle the singular screen logic.
  *
  */
-const stackRouterOverride = (original) => {
+export const stackRouterOverride = (original) => {
     return {
         getStateForAction: (state, action, options) => {
             if (action.target && action.target !== state.key) {
@@ -96,7 +93,7 @@ const stackRouterOverride = (original) => {
                         routeGetIdList: {
                             ...options.routeGetIdList,
                             [action.payload.name]: getIdFunction((options) => {
-                                return (0, useScreens_1.getSingularId)(action.payload.name, options);
+                                return getSingularId(action.payload.name, options);
                             }),
                         },
                     });
@@ -116,13 +113,12 @@ const stackRouterOverride = (original) => {
         },
     };
 };
-exports.stackRouterOverride = stackRouterOverride;
 function getActionSingularIdFn(actionGetId, name) {
     if (typeof actionGetId === 'function') {
         return (options) => actionGetId(name, options.params ?? {});
     }
     else if (actionGetId === true) {
-        return (options) => (0, useScreens_1.getSingularId)(name, options);
+        return (options) => getSingularId(name, options);
     }
     return undefined;
 }
@@ -165,17 +161,16 @@ function filterSingular(state, singular) {
     };
 }
 const Stack = Object.assign((props) => {
-    return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    return <RNStack {...props} UNSTABLE_router={stackRouterOverride}/>;
 }, {
     Screen: RNStack.Screen,
 });
-exports.default = Stack;
-const StackRouter = (options) => {
-    const router = (0, native_1.StackRouter)(options);
+export default Stack;
+export const StackRouter = (options) => {
+    const router = RNStackRouter(options);
     return {
         ...router,
-        ...(0, exports.stackRouterOverride)(router),
+        ...stackRouterOverride(router),
     };
 };
-exports.StackRouter = StackRouter;
 //# sourceMappingURL=StackClient.js.map

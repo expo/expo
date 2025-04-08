@@ -16,82 +16,82 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
 };
 export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
     type: "GO_BACK";
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | {
     type: "NAVIGATE";
     payload: {
         name: string;
-        params?: object | undefined;
-        path?: string | undefined;
-        merge?: boolean | undefined;
-        pop?: boolean | undefined;
+        params?: object;
+        path?: string;
+        merge?: boolean;
+        pop?: boolean;
     };
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | {
     type: "NAVIGATE_DEPRECATED";
     payload: {
         name: string;
-        params?: object | undefined;
-        merge?: boolean | undefined;
+        params?: object;
+        merge?: boolean;
     };
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | {
     type: "RESET";
     payload: (Readonly<{
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        history?: unknown[];
+        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("@react-navigation/native").PartialState<Readonly<{
+    }> | import("@react-navigation/routers").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        history?: unknown[];
+        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        history?: unknown[];
+        routes: import("@react-navigation/routers").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("@react-navigation/native").Route<string>, "key">[];
+        routes: Omit<import("@react-navigation/routers").Route<string>, "key">[];
     })) | undefined;
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | {
     type: "SET_PARAMS";
     payload: {
-        params?: object | undefined;
+        params?: object;
     };
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | {
     type: "PRELOAD";
     payload: {
         name: string;
-        params?: object | undefined;
+        params?: object;
     };
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
 } | RNTabActionType | {
     type: "JUMP_TO";
-    source?: string | undefined;
-    target?: string | undefined;
+    source?: string;
+    target?: string;
     payload: {
         name: string;
-        reset?: ExpoTabsResetValue | undefined;
-        params?: object | undefined;
+        reset?: ExpoTabsResetValue;
+        params?: object;
     };
 }>;
 //# sourceMappingURL=TabRouter.d.ts.map
