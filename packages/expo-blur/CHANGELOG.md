@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgraded to Typescript 5.4
+
 ## 14.1.0 — 2025-04-04
 
 ### 💡 Others
