@@ -8,8 +8,8 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.3.9",
-    "@react-navigation/native": "^7.1.5",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/native": "^7.1.6",
     "expo": "~53.0.0-preview.0",
     "expo-linking": "~7.1.0",
     "expo-router": "^5.0.1-preview.0",
