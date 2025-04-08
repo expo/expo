@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated to use Typescript 5.4
+
 ## 18.1.0 — 2025-04-04
 
 ### 🐛 Bug fixes
