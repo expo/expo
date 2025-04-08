@@ -42,6 +42,7 @@ export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): stri
   }
 }
 
+// TODO: Only used in Expo Router ErrorBoundary in dev
 export function LogBoxInspectorStackFrames({
   onRetry,
   type,
@@ -64,7 +65,8 @@ export function LogBoxInspectorStackFrames({
     }
   }
 
-  if (log.getAvailableStack(type)?.length === 0) {
+  const stackCount = log.getAvailableStack(type)?.length;
+  if (!stackCount) {
     return null;
   }
 
@@ -83,6 +85,7 @@ export function LogBoxInspectorStackFrames({
           <Text style={styles.headingText}>
             {type === 'component' ? 'Component Stack' : 'Call Stack'}
           </Text>
+
           <LogBoxInspectorSourceMapStatus
             onPress={log.symbolicated[type].status === 'FAILED' ? onRetry : null}
             // status={'PENDING'}

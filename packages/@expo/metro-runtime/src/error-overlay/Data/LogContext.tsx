@@ -67,6 +67,14 @@ const FIXTURES = {
               collapse: false,
             },
             {
+              arguments: ['foobar'],
+              column: 10,
+              file: '/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e/__e2e__/05-errors/app/index.tsx',
+              lineNumber: 10,
+              methodName: 'Text.props.onPress',
+              collapse: false,
+            },
+            {
               arguments: [],
               column: 6,
               file: '/Users/evanbacon/Documents/GitHub/expo/node_modules/react-native-web/dist/exports/Text/index.js',
@@ -222,8 +230,8 @@ export function useLogs(): {
     return {
       selectedLogIndex: 0,
       isDisabled: false,
-      logs: FIXTURES.build_error_module_not_found,
-      // logs: FIXTURES.undefined_is_not_a_function_runtime,
+      // logs: FIXTURES.build_error_module_not_found,
+      logs: FIXTURES.undefined_is_not_a_function_runtime,
     };
   }
 
