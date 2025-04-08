@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "module": "preserve",
+    "module": "commonjs",
+    "moduleResolution": "node10",
     "resolveJsonModule": true,
     "types": [
       "jest",
