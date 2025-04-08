@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] added expo-background-task to Expo Go's configuration
+- [android] added expo-background-task to Expo Go's configuration ([#36000](https://github.com/expo/expo/pull/36000) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
