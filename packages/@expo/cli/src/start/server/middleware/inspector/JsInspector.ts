@@ -52,8 +52,6 @@ export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorP
   }
 
   const url = new URL('/open-debugger', metroBaseUrl);
-  url.searchParams.set('appId', app.appId);
-  url.searchParams.set('device', app.reactNative.logicalDeviceId);
   url.searchParams.set('target', app.id);
 
   // Request to open the React Native DevTools, but limit it to 1s
