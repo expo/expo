@@ -9,6 +9,7 @@ import {
   findDependencyRootsAsync,
   resolveAppProjectConfigAsync,
   resolveDependencyConfigAsync,
+  findEdgeToEdgeDependencyRoot,
 } from '../reactNativeConfig';
 import type {
   RNConfigReactNativeLibraryConfig,
@@ -16,7 +17,31 @@ import type {
 } from '../reactNativeConfig.types';
 
 jest.mock('fs/promises');
-jest.mock('resolve-from');
+jest.mock('resolve-from', () => ({
+  ...jest.requireActual('resolve-from'),
+  silent: (fromDirectory, request) => {
+    const fs = require('memfs').fs;
+    const path = require('path');
+    const stats = fs.statSync(fromDirectory);
+
+    try {
+      const resolvedPath = fs.realpathSync(fromDirectory);
+      fromDirectory = stats.isFile() ? path.dirname(resolvedPath) : resolvedPath;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        fromDirectory = path.dirname(path.resolve(fromDirectory));
+      } else {
+        return;
+      }
+    }
+
+    const outputPath = path.join(fromDirectory, 'node_modules', request);
+
+    if (fs.existsSync(outputPath)) {
+      return outputPath;
+    }
+  },
+}));
 jest.mock('../androidResolver');
 jest.mock('../iosResolver');
 jest.mock('../config');
@@ -198,6 +223,76 @@ describe(findDependencyRootsAsync, () => {
         "react-native-test": "/app/node_modules/react-native-test",
       }
     `);
+  });
+
+  describe(findEdgeToEdgeDependencyRoot, () => {
+    beforeAll(() => {
+      vol.reset();
+    });
+    it('should find edge-to-edge from expo package root', async () => {
+      const packageJson = {
+        dependencies: {
+          expo: '53.0.0',
+          'react-native-edge-to-edge': '^1.0.0',
+        },
+      };
+
+      const expoPackageJson = {
+        name: 'expo',
+        version: '53.0.0',
+      };
+
+      vol.fromJSON({
+        '/app/package.json': JSON.stringify(packageJson),
+        '/app/node_modules/expo/package.json': JSON.stringify(expoPackageJson),
+        '/app/node_modules/react-native-edge-to-edge/package.json': '', // Added just to make sure it doesn't resolve from this location
+        '/app/node_modules/expo/node_modules/react-native-edge-to-edge/package.json': '{}',
+      });
+
+      const results = await findEdgeToEdgeDependencyRoot('/app');
+      expect(results).toMatchInlineSnapshot(`
+        {
+          "react-native-edge-to-edge": "/app/node_modules/expo/node_modules/react-native-edge-to-edge",
+        }
+      `);
+    });
+
+    it('should find edge-to-edge from project root if expo package not found', async () => {
+      const packageJson = {
+        dependencies: {
+          expo: '53.0.0',
+          'react-native-edge-to-edge': '^1.0.0',
+        },
+      };
+
+      vol.fromJSON({
+        '/app/package.json': JSON.stringify(packageJson),
+        '/app/node_modules/react-native-edge-to-edge/package.json': '',
+      });
+
+      const results = await findEdgeToEdgeDependencyRoot('/app');
+      expect(results).toMatchInlineSnapshot(`
+        {
+          "react-native-edge-to-edge": "/app/node_modules/react-native-edge-to-edge",
+        }
+      `);
+    });
+
+    it('should return an empty object if failed to resolve', async () => {
+      const packageJson = {
+        dependencies: {
+          expo: '53.0.0',
+          'react-native-edge-to-edge': '^1.0.0',
+        },
+      };
+
+      vol.fromJSON({
+        '/app/package.json': JSON.stringify(packageJson),
+      });
+
+      const results = await findEdgeToEdgeDependencyRoot('/app');
+      expect(results).toMatchInlineSnapshot(`{}`);
+    });
   });
 
   it('should find all dependencies and devDependencies within hoisted monorepo', async () => {
