@@ -16,6 +16,7 @@ import type { Stack } from '../Data/LogBoxSymbolication';
 import { openFileInEditor } from '../devServerEndpoints';
 import { getStackFormattedLocation } from '../formatProjectFilePath';
 
+import './StackTraceList.css';
 export function StackTraceList({
   onRetry,
   type,
@@ -37,10 +38,12 @@ export function StackTraceList({
     : collapsed === true
       ? stack.filter(({ collapse }) => !collapse)
       : stack;
-  const stackCount = visibleStack.length;
+  const stackCount = stack?.length;
   if (!stackCount) {
     return null;
   }
+
+  const collapseTitle = getCollapseMessage(stack, !!collapsed);
 
   return (
     <div style={{ marginTop: 5, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -89,26 +92,55 @@ export function StackTraceList({
 
         <Pressable onPress={() => setCollapsed(!collapsed)}>
           {({ hovered }) => (
-            <View
-              style={[
-                {
-                  padding: 6,
-                  borderRadius: 8,
-                  transition: 'background-color 0.3s',
-                  outlineColor: 'transparent',
-                },
-                hovered && {
-                  backgroundColor: 'rgba(234.6, 234.6, 244.8, 0.1)',
-                },
-              ]}>
-              <Text
-                selectable={false}
+            <div
+              title={collapseTitle}
+              style={{
+                padding: 6,
+                borderRadius: 8,
+                transition: 'background-color 0.3s',
+                outlineColor: 'transparent',
+                backgroundColor: hovered ? 'rgba(234.6, 234.6, 244.8, 0.1)' : undefined,
+                color: 'rgba(234.6, 234.6, 244.8, 0.6)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 2,
+              }}>
+              <span
+                className="expo-log-md-visible"
                 style={{
+                  fontFamily: 'var(--expo-log-font-family)',
+                  fontSize: 14,
+                  userSelect: 'none',
                   color: 'rgba(234.6, 234.6, 244.8, 0.6)',
                 }}>
-                {getCollapseMessage(stack, !!collapsed)}
-              </Text>
-            </View>
+                {collapseTitle}
+              </span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="md-hidden">
+                {collapsed ? (
+                  <>
+                    <path d="m7 15 5 5 5-5" />
+                    <path d="m7 9 5-5 5 5" />
+                  </>
+                ) : (
+                  <>
+                    <path d="m7 20 5-5 5 5" />
+                    <path d="m7 4 5 5 5-5" />
+                  </>
+                )}
+              </svg>
+            </div>
           )}
         </Pressable>
       </div>
