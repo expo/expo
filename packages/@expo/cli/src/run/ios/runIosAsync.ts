@@ -13,6 +13,7 @@ import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { uploadRemoteBuildCache, resolveRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
@@ -102,6 +103,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   let binaryPath: string;
+  let shouldUpdateBuildCache = false;
   if (options.binary) {
     binaryPath = await getValidBinaryPathAsync(options.binary, props);
     Log.log('Using custom binary path:', binaryPath);
@@ -126,6 +128,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     // Find the path to the built app binary, this will be used to install the binary
     // on a device.
     binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+    shouldUpdateBuildCache = true;
   }
   debug('Binary path:', binaryPath);
 
@@ -178,6 +181,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     logProjectLogsLocation();
   } else {
     await manager.stopAsync();
+  }
+
+  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
+    await uploadRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
   }
 }
 
