@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rebuild JavaScript files. ([#35996](https://github.com/expo/expo/pull/35996) by [@kudo](https://github.com/kudo))
+
 ## 0.2.0 — 2025-04-04
 
 ### 💡 Others
