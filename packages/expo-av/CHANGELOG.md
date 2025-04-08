@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Expo AV has now been deprecated.
+
 ## 15.1.0 — 2025-04-04
 
 ### 💡 Others
