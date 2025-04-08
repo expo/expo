@@ -17,7 +17,7 @@ import { LogContext } from './LogContext';
 import { parseLogBoxException } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 import NativeLogBox from '../modules/NativeLogBox';
-import parseErrorStack from '../modules/parseErrorStack';
+import { parseErrorStack } from '../devServerEndpoints';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 

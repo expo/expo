@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
-import type { Stack } from '../Data/LogBoxSymbolication';
+import { type Stack } from '../devServerEndpoints';
 export declare function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string;
 export declare function LogBoxInspectorStackFrames({ onRetry, type, }: {
     type: StackType;

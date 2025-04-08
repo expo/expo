@@ -11,10 +11,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
-import type { Stack } from '../Data/LogBoxSymbolication';
 import { useSelectedLog } from '../Data/LogContext';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
-import { openFileInEditor } from '../devServerEndpoints';
+import { openFileInEditor, type Stack } from '../devServerEndpoints';
 
 export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {
   if (stackFrames.length === 0) {

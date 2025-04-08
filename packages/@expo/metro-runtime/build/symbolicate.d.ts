@@ -1,5 +1,4 @@
 import { LogBoxLog } from './error-overlay/Data/LogBoxLog';
-import parseErrorStack from './error-overlay/modules/parseErrorStack';
-export { LogBoxLog, parseErrorStack };
-export { getStackFormattedLocation } from './error-overlay/formatProjectFilePath';
+export { LogBoxLog };
+export { getStackFormattedLocation, parseErrorStack } from './error-overlay/devServerEndpoints';
 //# sourceMappingURL=symbolicate.d.ts.map

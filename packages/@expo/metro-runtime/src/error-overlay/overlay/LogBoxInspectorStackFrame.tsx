@@ -12,8 +12,7 @@ import { StackFrame } from 'stacktrace-parser';
 
 import { LogBoxButton } from '../UI/LogBoxButton';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
-import { CODE_FONT } from '../UI/constants';
-import { getStackFormattedLocation } from '../formatProjectFilePath';
+import { getStackFormattedLocation } from '../devServerEndpoints';
 
 declare const process: any;
 
@@ -43,6 +42,16 @@ export function LogBoxInspectorStackFrame(props: {
     </View>
   );
 }
+
+const CODE_FONT =
+  process.env.EXPO_OS === 'ios'
+    ? // iOS
+      'Courier New'
+    : process.env.EXPO_OS === 'android'
+      ? // Android
+        'monospace'
+      : // Default
+        'Courier';
 
 const styles = StyleSheet.create({
   frameContainer: {

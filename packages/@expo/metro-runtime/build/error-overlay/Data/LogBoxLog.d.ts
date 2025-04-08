@@ -5,9 +5,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Stack } from './LogBoxSymbolication';
+import type { Stack } from '../devServerEndpoints';
 import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
-type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
+export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
 export type LogBoxLogData = {
     level: LogLevel;

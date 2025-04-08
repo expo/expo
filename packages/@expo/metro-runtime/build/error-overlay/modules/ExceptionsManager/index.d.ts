@@ -17,6 +17,8 @@ declare function parseException(e: ExtendedError, isFatal: boolean): {
     componentStack: any;
     stack: (import("stacktrace-parser").StackFrame & {
         collapse?: boolean;
+    } & {
+        collapse?: boolean;
     })[];
     id: number;
     isFatal: boolean;

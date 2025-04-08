@@ -6,8 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import parseErrorStack from '../parseErrorStack';
-
+import { parseErrorStack } from '../../devServerEndpoints';
 type ExtendedError = any;
 
 class SyntheticError extends Error {

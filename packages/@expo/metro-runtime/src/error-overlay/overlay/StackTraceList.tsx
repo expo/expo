@@ -11,10 +11,7 @@ import type { GestureResponderEvent } from 'react-native';
 import type { StackFrame } from 'stacktrace-parser';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import type { StackType } from '../Data/LogBoxLog';
-import type { Stack } from '../Data/LogBoxSymbolication';
-
-import { openFileInEditor } from '../devServerEndpoints';
-import { getStackFormattedLocation } from '../formatProjectFilePath';
+import { openFileInEditor, getStackFormattedLocation, type Stack } from '../devServerEndpoints';
 
 import './StackTraceList.css';
 export function StackTraceList({
