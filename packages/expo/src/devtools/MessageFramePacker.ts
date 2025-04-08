@@ -55,7 +55,10 @@ export class MessageFramePacker<T extends MessageKeyTypeBase> {
   private textEncoder = new TextEncoder();
   private textDecoder = new TextDecoder();
 
-  public pack({ messageKey, payload }: MessageFrame<T>): string | Uint8Array | Promise<Uint8Array> {
+  public pack({
+    messageKey,
+    payload,
+  }: MessageFrame<T>): string | Uint8Array<ArrayBuffer> | Promise<Uint8Array<ArrayBuffer>> {
     // Fast path to pack as string given `JSON.stringify` is fast.
     if (this.isFastPathPayload(payload)) {
       return JSON.stringify({ messageKey, payload });
@@ -148,7 +151,7 @@ export class MessageFramePacker<T extends MessageKeyTypeBase> {
   private packImpl(
     { messageKey, payload }: MessageFrame<T>,
     payloadType: PayloadTypeIndicator | undefined
-  ): Promise<Uint8Array> | Uint8Array {
+  ): Uint8Array<ArrayBuffer> | Promise<Uint8Array<ArrayBuffer>> {
     const messageKeyString = JSON.stringify(messageKey);
     const messageKeyBytes = this.textEncoder.encode(messageKeyString);
     const messageKeyLength = messageKeyBytes.length;

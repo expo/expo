@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getRoutes = void 0;
-const matchers_1 = require("./matchers");
-const url_1 = require("./utils/url");
+import { matchArrayGroupName, matchDeepDynamicRouteName, matchDynamicName, matchGroupName, matchLastGroupName, removeFileSystemDots, removeFileSystemExtensions, removeSupportedExtensions, stripInvisibleSegmentsFromPath, } from './matchers';
+import { shouldLinkExternally } from './utils/url';
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -16,7 +13,7 @@ const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-function getRoutes(contextModule, options) {
+export function getRoutes(contextModule, options) {
     const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
@@ -28,7 +25,6 @@ function getRoutes(contextModule, options) {
     }
     return rootNode;
 }
-exports.getRoutes = getRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -58,18 +54,18 @@ function getDirectoryTree(contextModule, options) {
             for (const redirect of options.redirects) {
                 // Remove the leading `./` or `/`
                 const source = redirect.source.replace(/^\.?\//, '');
-                const isExternalRedirect = (0, url_1.shouldLinkExternally)(redirect.destination);
+                const isExternalRedirect = shouldLinkExternally(redirect.destination);
                 const targetDestination = isExternalRedirect
                     ? redirect.destination
-                    : (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(redirect.destination.replace(/^\.?\/?/, ''))));
-                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                    : stripInvisibleSegmentsFromPath(removeFileSystemDots(removeFileSystemExtensions(redirect.destination.replace(/^\.?\/?/, ''))));
+                const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
                 if (ignoreList.some((regex) => regex.test(normalizedSource))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
                 validRedirectDestinations ??= contextKeys.map((key) => {
                     return [
-                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
                         key,
                     ];
                 });
@@ -88,7 +84,7 @@ function getDirectoryTree(contextModule, options) {
                     }
                     continue;
                 }
-                const fakeContextKey = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(source));
                 contextKeys.push(fakeContextKey);
                 redirects[fakeContextKey] = {
                     source,
@@ -103,15 +99,15 @@ function getDirectoryTree(contextModule, options) {
             for (const rewrite of options.rewrites) {
                 // Remove the leading `./` or `/`
                 const source = rewrite.source.replace(/^\.?\//, '');
-                const targetDestination = (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(rewrite.destination)));
-                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+                const targetDestination = stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(rewrite.destination)));
+                const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
                 if (ignoreList.some((regex) => regex.test(normalizedSource))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
                 validRedirectDestinations ??= contextKeys.map((key) => {
                     return [
-                        (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key))),
+                        stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
                         key,
                     ];
                 });
@@ -180,7 +176,7 @@ function getDirectoryTree(contextModule, options) {
                 return routeModule;
             },
             contextKey: filePath,
-            route: '',
+            route: '', // This is overwritten during hoisting based upon the _layout
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
@@ -191,7 +187,7 @@ function getDirectoryTree(contextModule, options) {
             if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'redirect',
-                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
+                    route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
                 }, node);
             }
             if (redirects[filePath].methods) {
@@ -205,7 +201,7 @@ function getDirectoryTree(contextModule, options) {
             if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'rewrite',
-                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
+                    route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
                 }, node);
             }
             if (redirects[filePath].methods) {
@@ -388,11 +384,11 @@ pathToRemove = '') {
 }
 function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
-    const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
+    const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
     let route = key;
-    const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
+    const parts = removeFileSystemDots(originalKey).split('/');
     const filename = parts[parts.length - 1];
-    const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
+    const [filenameWithoutExtensions, platformExtension] = removeSupportedExtensions(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -443,21 +439,20 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         isRewrite: key in rewrites,
     };
 }
-function getIgnoreList(options) {
+export function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
     if (options?.preserveApiRoutes !== true) {
         ignore.push(/\+api\.[tj]sx?$/);
     }
     return ignore;
 }
-exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
-function extrapolateGroups(key, keys = new Set()) {
-    const match = (0, matchers_1.matchArrayGroupName)(key);
+export function extrapolateGroups(key, keys = new Set()) {
+    const match = matchArrayGroupName(key);
     if (!match) {
         keys.add(key);
         return keys;
@@ -476,8 +471,7 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-exports.extrapolateGroups = extrapolateGroups;
-function generateDynamic(path) {
+export function generateDynamic(path) {
     const dynamic = path
         .split('/')
         .map((part) => {
@@ -488,8 +482,8 @@ function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
-        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
+        const deepDynamicName = matchDeepDynamicRouteName(part);
+        const dynamicName = deepDynamicName ?? matchDynamicName(part);
         if (!dynamicName)
             return null;
         return { name: dynamicName, deep: !!deepDynamicName };
@@ -497,7 +491,6 @@ function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
-exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory, options) {
     if (!directory.files.has('_sitemap') && options.getSystemRoute) {
         directory.files.set('_sitemap', [
@@ -524,7 +517,7 @@ function getLayoutNode(node, options) {
      * Each of these layouts will have a different anchor based upon the first group name.
      */
     // We may strip loadRoute during testing
-    const groupName = (0, matchers_1.matchLastGroupName)(node.route);
+    const groupName = matchLastGroupName(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
@@ -553,7 +546,7 @@ function getLayoutNode(node, options) {
     return {
         ...node,
         route: node.route.replace(/\/?_layout$/, ''),
-        children: [],
+        children: [], // Each layout should have its own children
         initialRouteName: anchor,
     };
 }
@@ -576,7 +569,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
          * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
          * Each of these layouts will have a different anchor based upon the first group.
          */
-        const groupName = (0, matchers_1.matchGroupName)(node.route);
+        const groupName = matchGroupName(node.route);
         const childMatchingGroup = node.children.find((child) => {
             return child.route.replace(/\/index$/, '') === groupName;
         });

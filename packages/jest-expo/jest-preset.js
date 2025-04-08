@@ -81,9 +81,7 @@ const defaultExpoMetroAssetExts = [
 ];
 
 const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
-jestPreset.transform[assetNamePattern] = require.resolve(
-  'jest-expo/src/preset/assetFileTransformer.js'
-);
+jestPreset.transform[assetNamePattern] = require.resolve('jest-expo/config/assetFileTransformer');
 
 // transformIgnorePatterns
 if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
@@ -108,7 +106,7 @@ jestPreset.transformIgnorePatterns = [
 if (!Array.isArray(jestPreset.setupFiles)) {
   jestPreset.setupFiles = [];
 }
-jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
+jestPreset.setupFiles.push(require.resolve('jest-expo/preset/setup'));
 
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);

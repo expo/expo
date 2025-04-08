@@ -206,7 +206,7 @@ function getConfig(projectRoot, options = {}) {
   const rawStaticConfig = paths.staticConfigPath ? (0, _getConfig().getStaticConfig)(paths.staticConfigPath) : null;
   // For legacy reasons, always return an object.
   const rootConfig = rawStaticConfig || {};
-  const staticConfig = reduceExpoObject(rawStaticConfig) || {};
+  const staticConfig = reduceExpoObject(rawStaticConfig);
 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
@@ -214,13 +214,13 @@ function getConfig(projectRoot, options = {}) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
-        exp: config.expo,
+        exp: config ? config.expo : {},
         pkg: packageJson,
         skipSDKVersionRequirement: options.skipSDKVersionRequirement,
         paths,
         packageJsonPath
       }),
-      mods: config.mods,
+      mods: config ? config.mods : {},
       dynamicConfigObjectType,
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
@@ -264,7 +264,7 @@ function getConfig(projectRoot, options = {}) {
   function getContextConfig(config) {
     return ensureConfigHasDefaultValues({
       projectRoot,
-      exp: config.expo,
+      exp: config ? config.expo : {},
       pkg: packageJson,
       skipSDKVersionRequirement: true,
       paths,
@@ -285,12 +285,12 @@ function getConfig(projectRoot, options = {}) {
     });
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
-    const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
+    const dynamicConfig = reduceExpoObject(rawDynamicConfig);
     return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config
-  return fillAndReturnConfig(staticConfig || {}, null);
+  return fillAndReturnConfig(staticConfig, null);
 }
 function getPackageJson(projectRoot) {
   const [pkg] = getPackageJsonAndPath(projectRoot);

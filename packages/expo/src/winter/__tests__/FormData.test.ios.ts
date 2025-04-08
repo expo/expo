@@ -51,7 +51,7 @@ describe('FormData', () => {
     });
 
     it(`supports react-native local uri`, () => {
-      const a = new FormData() as ExpoFormData;
+      const a = new FormData() as unknown as ExpoFormData;
       a.append('a', { uri: 'file:///path/to/test.jpg', type: 'image/jpeg', name: 'test.jpg' });
       expect(a.get('a')).toEqual({
         uri: 'file:///path/to/test.jpg',
