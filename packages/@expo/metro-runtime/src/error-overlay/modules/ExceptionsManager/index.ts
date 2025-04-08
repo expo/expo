@@ -33,8 +33,6 @@ function parseException(e: ExtendedError, isFatal: boolean) {
     message = namePrefix + message;
   }
 
-  message = e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
-
   const data = {
     message,
     originalMessage: message === originalMessage ? null : originalMessage,

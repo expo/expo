@@ -7,6 +7,7 @@
 import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
 import type { Stack } from '../Data/LogBoxSymbolication';
+import './StackTraceList.css';
 export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, }: {
     type: StackType;
     onRetry: () => void;

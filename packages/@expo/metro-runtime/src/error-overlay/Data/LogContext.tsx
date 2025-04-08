@@ -4,7 +4,7 @@ import { LogBoxLog } from './LogBoxLog';
 
 // Context provider for Array<LogBoxLog>
 
-const IS_TESTING = true;
+const IS_TESTING = false;
 
 const FIXTURES = {
   build_error_module_not_found: [
