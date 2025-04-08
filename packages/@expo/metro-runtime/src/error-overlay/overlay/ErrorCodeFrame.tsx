@@ -8,7 +8,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 
 import type { CodeFrame } from '../Data/parseLogBoxLog';
-import { Ansi } from '../UI/AnsiHighlight';
+import { Ansi } from '../AnsiHighlight';
 import { openFileInEditor, formatProjectFilePath } from '../devServerEndpoints';
 
 declare const process: any;
