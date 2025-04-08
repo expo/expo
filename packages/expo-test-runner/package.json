@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.14.0",
     "@types/node-fetch": "^2.5.12",
     "eslint-config-universe": "^14.2.0",
     "expo-module-scripts": "^4.1.0",

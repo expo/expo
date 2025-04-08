@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^4.1.0",
     "express": "^4.21.1",
