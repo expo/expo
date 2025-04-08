@@ -37,9 +37,9 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
-    "@react-navigation/bottom-tabs": "^7.3.9",
-    "@react-navigation/native": "^7.1.5",
-    "@react-navigation/stack": "^7.2.9",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/stack": "^7.2.10",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^13.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
