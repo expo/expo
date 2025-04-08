@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { getIsolatedModulesPath } from '../autolinking/utils';
 import { fileExistsAsync } from '../fileUtils';
@@ -33,6 +34,16 @@ export async function createReactNativeConfigAsync({
     ...(await findDependencyRootsAsync(projectRoot, searchPaths, platform)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
+
+  // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
+  // has also included it as a project dependency, we have to autolink it (transitive non-expo module dependencies are not autolinked).
+  const shouldAutolinkEdgeToEdge =
+    platform === 'android' && !Object.keys(dependencyRoots).includes('react-native-edge-to-edge');
+
+  if (shouldAutolinkEdgeToEdge) {
+    const edgeToEdgeDependencyRoots = await findEdgeToEdgeDependencyRoot(projectRoot);
+    Object.assign(dependencyRoots, edgeToEdgeDependencyRoots);
+  }
 
   // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
   // the Cocoapods resolution will detect path mismatches and generate nonsensical
@@ -77,16 +88,6 @@ export async function findDependencyRootsAsync(
     ...Object.keys(packageJson.dependencies ?? {}),
     ...Object.keys(packageJson.devDependencies ?? {}),
   ];
-  const shouldAutolinkEdgeToEdge =
-    platform === 'android' &&
-    getExpoVersion(packageJson) >= 53 &&
-    !dependencies.includes('react-native-edge-to-edge');
-
-  // Edge-to-egde is a dependency of expo for versions >= 53, so it's a transitive dependency for the project, but is a not an expo module,
-  // so it won't be autolinked. We will try to find it in the search paths and autolink it.
-  if (shouldAutolinkEdgeToEdge) {
-    dependencies.push('react-native-edge-to-edge');
-  }
 
   const results: Record<string, string> = {};
   // `searchPathSet` can be mutated to discover all "isolated modules groups", when using isolated modules
@@ -174,6 +175,24 @@ export async function resolveDependencyConfigAsync(
     platforms: {
       [platform]: platformData,
     },
+  };
+}
+
+export async function findEdgeToEdgeDependencyRoot(
+  projectRoot: string
+): Promise<Record<string, string>> {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const edgeToEdgePath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'react-native-edge-to-edge/package.json'
+  ) as string;
+
+  if (!(await fileExistsAsync(edgeToEdgePath))) {
+    return {};
+  }
+
+  return {
+    'react-native-edge-to-edge': path.dirname(edgeToEdgePath),
   };
 }
 
