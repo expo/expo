@@ -104,3 +104,14 @@ export interface RNConfigReactNativeAppProjectConfig {
     sourceDir: string;
   };
 }
+
+/**
+ * Represents a transitive dependency that can be autolinked manually.
+ */
+export interface TransitiveDependency {
+  name: string;
+  /**
+   * Whether the dependency should be included in the autolinking process.
+   */
+  autolink?: boolean;
+}

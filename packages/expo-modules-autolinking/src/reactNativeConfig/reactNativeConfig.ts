@@ -1,3 +1,5 @@
+import { ExpoConfig, getConfig } from '@expo/config';
+import { getSDKVersion } from '@expo/config-plugins/build/utils/Updates';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -18,6 +20,7 @@ import type {
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
+  TransitiveDependency,
 } from './reactNativeConfig.types';
 
 /**
@@ -28,10 +31,21 @@ export async function createReactNativeConfigAsync({
   projectRoot,
   searchPaths,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
+  const transitiveDependenciesToAutolink: TransitiveDependency[] = [
+    {
+      name: 'react-native-edge-to-edge',
+      autolink: platform === 'android' && getExpoSdkVersionNumber(getConfig(projectRoot).exp) >= 53,
+    },
+  ];
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
-    ...(await findDependencyRootsAsync(projectRoot, searchPaths, platform)),
+    ...(await findDefaultDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
+    ...(await findTransitiveDependencyRootsAsync(
+      projectRoot,
+      searchPaths,
+      transitiveDependenciesToAutolink
+    )),
   };
 
   // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
@@ -65,29 +79,14 @@ export async function createReactNativeConfigAsync({
 }
 
 /**
- * Find all dependencies and their directories from the project.
+ * Finds the roots of the dependencies in the specified search paths.
+ * @param searchPaths
+ * @param dependencies
  */
 export async function findDependencyRootsAsync(
-  projectRoot: string,
   searchPaths: string[],
-  platform: SupportedPlatform
+  dependencies: string[]
 ): Promise<Record<string, string>> {
-  const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
-  const dependencies = [
-    ...Object.keys(packageJson.dependencies ?? {}),
-    ...Object.keys(packageJson.devDependencies ?? {}),
-  ];
-  const shouldAutolinkEdgeToEdge =
-    platform === 'android' &&
-    getExpoVersion(packageJson) >= 53 &&
-    !dependencies.includes('react-native-edge-to-edge');
-
-  // Edge-to-egde is a dependency of expo for versions >= 53, so it's a transitive dependency for the project, but is a not an expo module,
-  // so it won't be autolinked. We will try to find it in the search paths and autolink it.
-  if (shouldAutolinkEdgeToEdge) {
-    dependencies.push('react-native-edge-to-edge');
-  }
-
   const results: Record<string, string> = {};
   // `searchPathSet` can be mutated to discover all "isolated modules groups", when using isolated modules
   const searchPathSet = new Set(searchPaths);
@@ -112,6 +111,37 @@ export async function findDependencyRootsAsync(
 }
 
 /**
+ * Find all dependencies and their directories from the project.
+ */
+export async function findDefaultDependencyRootsAsync(
+  projectRoot: string,
+  searchPaths: string[]
+): Promise<Record<string, string>> {
+  const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
+
+  const dependencies = [
+    ...Object.keys(packageJson.dependencies ?? {}),
+    ...Object.keys(packageJson.devDependencies ?? {}),
+  ];
+  return findDependencyRootsAsync(searchPaths, dependencies);
+}
+
+/**
+ * Find roots of explicitly specified non-expo modules, which are a transitive dependency of the expo package.
+ */
+export async function findTransitiveDependencyRootsAsync(
+  projectRoot: string,
+  searchPaths: string[],
+  transitiveDependencies: TransitiveDependency[]
+) {
+  const transitiveDependenciesToAutolink = transitiveDependencies
+    .filter((dependency) => dependency.autolink !== false)
+    .map((dependency) => dependency.name);
+
+  return findDependencyRootsAsync(searchPaths, transitiveDependenciesToAutolink);
+}
+
+export /**
  * Find local dependencies that specified in the `react-native.config.js` file.
  */
 function findProjectLocalDependencyRoots(
@@ -209,10 +239,14 @@ export async function resolveAppProjectConfigAsync(
 }
 
 /**
- * Extracts the major version number from the 'expo' dependency string.
+ * Extracts the SDK number from the app config.
  *
  * @returns The major version number or 0.
  */
-function getExpoVersion(packageJson: { dependencies?: { expo?: string } }): number {
-  return +(packageJson?.dependencies?.expo?.match(/\d+/)?.[0] ?? '0');
+function getExpoSdkVersionNumber(config: Pick<ExpoConfig, 'sdkVersion'>): number {
+  const versionString = getSDKVersion(config);
+  if (!versionString) {
+    return 0;
+  }
+  return +(versionString.match(/\d+/)?.[0] ?? '0');
 }
