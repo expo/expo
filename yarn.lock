@@ -3176,7 +3176,7 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.3.9", "@react-navigation/bottom-tabs@^7.3.0", "@react-navigation/bottom-tabs@^7.3.9":
+"@react-navigation/bottom-tabs@7.3.9", "@react-navigation/bottom-tabs@^7.3.9":
   version "7.3.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.9.tgz#0a08ede3a83d9adcecd649030df1ac2191f0964d"
   integrity sha512-m5RPLtvzCvxf/6iVU5sBeLP7FJMhDqZZ8sAjG5n/4caNPl3Xa+YkzKV5cNwAGYO/HquIQeG5zna2Mdt8YeQLjQ==
@@ -3222,7 +3222,7 @@
     "@react-navigation/elements" "^2.3.7"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.1.5", "@react-navigation/native@^7.0.17", "@react-navigation/native@^7.1.5":
+"@react-navigation/native@7.1.5", "@react-navigation/native@^7.1.5":
   version "7.1.5"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.1.5.tgz#4156373fd329186c0f957b4a731db2c13c7bebbc"
   integrity sha512-r3XonOO3b/73rSu3tisU1apcMCmiMhKTC424Hr9XO8Gy6lLVRlfCJS6r+JLGeyLMR8l2zURoWukPHfCcvIcfhQ==
@@ -3240,7 +3240,7 @@
   dependencies:
     nanoid "3.3.8"
 
-"@react-navigation/stack@7.2.9", "@react-navigation/stack@^7.1.1", "@react-navigation/stack@^7.2.9":
+"@react-navigation/stack@7.2.9", "@react-navigation/stack@^7.2.9":
   version "7.2.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.2.9.tgz#e52b2082b87d204a62ac95a36a9a81524b9ca66c"
   integrity sha512-1kW7W+LKcqT/xf3nUrgVPWX91IIG5SsWWqZTcz8zF8V3p39Sxh3bwD253k7gNw7DLlJiCtoY7kKfOpQHcjwuHQ==
