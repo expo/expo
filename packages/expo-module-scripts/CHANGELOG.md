@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Prevent generate `tsbuildinfo` files for plugins. ([#35996](https://github.com/expo/expo/pull/35996) by [@kudo](https://github.com/kudo))
+
 ## 4.1.0 — 2025-04-04
 
 _This version does not introduce any user-facing changes._
