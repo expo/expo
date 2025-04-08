@@ -85,9 +85,9 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   /*
-   * Returns the file as a Blob. The blob can be used in `@expo/fetch` to send files over network and for other uses.
+   * Returns the file as a `FileBlob`. The blob can be used in `@expo/fetch` to send files over network and for other uses.
    */
-  blob(): Blob {
+  blob(): FileBlob {
     return new FileBlob(this);
   }
 

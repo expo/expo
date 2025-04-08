@@ -35,7 +35,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * ```
      */
     constructor(...uris: (string | File | Directory)[]);
-    blob(): Blob;
+    blob(): FileBlob;
     get parentDirectory(): Directory;
     /**
      * File extension.
