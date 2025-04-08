@@ -7,12 +7,13 @@ export async function asyncServerImport(moduleId) {
 
   let mod = await import(/* @metro-ignore */ moduleId);
 
-  // Return the default export, or nested default export
-  if ('default' in mod && typeof mod.default === 'object' && mod.default) {
+  // Unwrap exported `{ default: <mod> }` objects, where `<mod>` is another default exported ESM module
+  if (
+    'default' in mod &&
+    typeof mod.default === 'object' &&
+    (mod.default.default !== undefined || mod.default.__esModule === true)
+  ) {
     mod = mod.default;
-    if ('default' in mod && typeof mod.default === 'object' && mod.default) {
-      mod = mod.default;
-    }
   }
 
   return mod;
