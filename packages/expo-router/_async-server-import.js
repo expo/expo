@@ -11,6 +11,7 @@ export async function asyncServerImport(moduleId) {
   if (
     'default' in mod &&
     typeof mod.default === 'object' &&
+    mod.default !== null &&
     (mod.default.default !== undefined || mod.default.__esModule === true)
   ) {
     mod = mod.default;
