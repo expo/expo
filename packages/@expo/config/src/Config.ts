@@ -25,7 +25,7 @@ import { withConfigPlugins } from './plugins/withConfigPlugins';
 import { withInternal } from './plugins/withInternal';
 import { getRootPackageJsonPath } from './resolvePackageJson';
 
-type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
+type SplitConfigs = { expo?: ExpoConfig; mods?: ModConfig };
 
 let hasWarnedAboutRootConfig = false;
 
@@ -128,7 +128,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
-        exp: config.expo,
+        exp: config.expo || {},
         pkg: packageJson,
         skipSDKVersionRequirement: options.skipSDKVersionRequirement,
         paths,
@@ -187,7 +187,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   function getContextConfig(config: SplitConfigs) {
     return ensureConfigHasDefaultValues({
       projectRoot,
-      exp: config.expo,
+      exp: config.expo || {},
       pkg: packageJson,
       skipSDKVersionRequirement: true,
       paths,
