@@ -14,7 +14,7 @@ import { useLogs, useSelectedLog } from './Data/LogContext';
 import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
 import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
-import { LogBoxInspectorStackFrames } from './overlay/LogBoxInspectorStackFrames';
+import { StackTraceList } from './overlay/StackTraceList';
 
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
@@ -185,15 +185,19 @@ function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
         <LogBoxInspectorCodeFrame codeFrame={log.codeFrame} />
 
         {needsStack && (
-          <LogBoxInspectorStackFrames
+          <StackTraceList
             type="stack"
+            stack={log.getAvailableStack('stack')}
+            symbolicationStatus={log.symbolicated['stack'].status}
             // eslint-disable-next-line react/jsx-no-bind
             onRetry={onRetry.bind(onRetry, 'stack')}
           />
         )}
         {!!log?.componentStack?.length && (
-          <LogBoxInspectorStackFrames
+          <StackTraceList
             type="component"
+            stack={log.getAvailableStack('component')}
+            symbolicationStatus={log.symbolicated['component'].status}
             // eslint-disable-next-line react/jsx-no-bind
             onRetry={onRetry.bind(onRetry, 'component')}
           />

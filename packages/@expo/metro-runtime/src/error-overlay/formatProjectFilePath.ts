@@ -26,7 +26,10 @@ function pathRelativeToPath(path: string, relativeTo: string, sep = '/') {
   return pathParts.slice(i).join(sep);
 }
 
-export function getStackFormattedLocation(projectRoot: string, frame: MetroStackFrame) {
+export function getStackFormattedLocation(
+  projectRoot: string,
+  frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>
+): string {
   const column = frame.column != null && parseInt(String(frame.column), 10);
   const location =
     formatProjectFilePath(projectRoot, frame.file) +
