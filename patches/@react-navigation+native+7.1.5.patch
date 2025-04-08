@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-navigation/native/package.json b/node_modules/@react-navigation/native/package.json
+index c4e6829..462e34f 100644
+--- a/node_modules/@react-navigation/native/package.json
++++ b/node_modules/@react-navigation/native/package.json
+@@ -20,6 +20,7 @@
+   "homepage": "https://reactnavigation.org",
+   "source": "./src/index.tsx",
+   "main": "./lib/module/index.js",
++  "types": "./lib/typescript/src/index.d.ts",
+   "exports": {
+     ".": {
+       "types": "./lib/typescript/src/index.d.ts",

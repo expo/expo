@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-navigation/drawer/package.json b/node_modules/@react-navigation/drawer/package.json
+index 61bd68f..a6ac9b9 100644
+--- a/node_modules/@react-navigation/drawer/package.json
++++ b/node_modules/@react-navigation/drawer/package.json
+@@ -24,6 +24,7 @@
+   "homepage": "https://reactnavigation.org/docs/drawer-navigator/",
+   "source": "./src/index.tsx",
+   "main": "./lib/module/index.js",
++  "types": "./lib/typescript/src/index.d.ts",
+   "exports": {
+     ".": {
+       "types": "./lib/typescript/src/index.d.ts",

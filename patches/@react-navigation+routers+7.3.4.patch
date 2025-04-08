@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-navigation/routers/package.json b/node_modules/@react-navigation/routers/package.json
+index b3c8bdc..f2234b2 100644
+--- a/node_modules/@react-navigation/routers/package.json
++++ b/node_modules/@react-navigation/routers/package.json
+@@ -19,6 +19,7 @@
+   "homepage": "https://reactnavigation.org/docs/custom-routers/",
+   "source": "./src/index.tsx",
+   "main": "./lib/module/index.js",
++  "types": "./lib/typescript/src/index.d.ts",
+   "exports": {
+     ".": {
+       "types": "./lib/typescript/src/index.d.ts",
