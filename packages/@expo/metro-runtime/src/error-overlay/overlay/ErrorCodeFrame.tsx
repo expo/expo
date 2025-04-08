@@ -1,22 +1,19 @@
 /**
  * Copyright (c) 650 Industries.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import type { CodeFrame } from '../Data/parseLogBoxLog';
 import { Ansi } from '../UI/AnsiHighlight';
-import { CODE_FONT } from '../UI/constants';
-import { openFileInEditor } from '../devServerEndpoints';
-import { formatProjectFilePath } from '../formatProjectFilePath';
+import { openFileInEditor, formatProjectFilePath } from '../devServerEndpoints';
 
 declare const process: any;
 
-import mStyles from './ErrorCodeFrame.module.css';
+import styles from './ErrorCodeFrame.module.css';
 
 export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
   if (codeFrame == null) {
@@ -45,7 +42,7 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
         marginTop: 5,
         borderRadius: 6,
       }}>
-      <header className={mStyles.header}>
+      <header className={styles.header}>
         <span
           data-text="true"
           style={{
@@ -92,18 +89,18 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
         </span>
 
         <button
-          className={mStyles.copyButton}
+          className={styles.copyButton}
           type="button"
           title="Open in editor"
           onClick={() => {
             openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
           }}
           aria-label="Copy content">
-          <p className={mStyles.copyButtonText} data-text="true">
+          <p className={styles.copyButtonText} data-text="true">
             Open
           </p>
 
-          <OpenIcon className={mStyles.copyButtonIcon} width={26} height={26} />
+          <OpenIcon className={styles.copyButtonIcon} width={26} height={26} />
         </button>
       </header>
 
@@ -118,7 +115,17 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
           contentContainerStyle={{
             flexDirection: 'column',
           }}>
-          <Ansi style={styles.content} text={codeFrame.content} />
+          <Ansi
+            style={{
+              flexDirection: 'column',
+              color: 'white',
+              fontSize: 12,
+              includeFontPadding: false,
+              lineHeight: 20,
+              fontFamily: 'var(--expo-log-font-mono)',
+            }}
+            text={codeFrame.content}
+          />
         </ScrollView>
       </div>
     </div>
@@ -149,7 +156,7 @@ export function FileIcon() {
         height: '1rem',
         color: 'var(--expo-log-secondary-label)',
       }}
-      className={mStyles.fileIcon}
+      className={styles.fileIcon}
       role="img">
       <path
         strokeLinecap="round"
@@ -160,14 +167,3 @@ export function FileIcon() {
     </svg>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    flexDirection: 'column',
-    color: 'white',
-    fontSize: 12,
-    includeFontPadding: false,
-    lineHeight: 20,
-    fontFamily: CODE_FONT,
-  },
-});

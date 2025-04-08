@@ -6,11 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as LogBoxSymbolication from './LogBoxSymbolication';
-import type { Stack } from './LogBoxSymbolication';
+import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../devServerEndpoints';
+import type { Stack } from '../devServerEndpoints';
 import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
 
-type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
+export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
 
@@ -27,6 +27,14 @@ export type LogBoxLogData = {
 
 export type StackType = 'stack' | 'component';
 
+type SymbolicationCallback = (status: SymbolicationStatus) => void;
+
+type SymbolicationResult =
+  | { error: null; stack: null; status: 'NONE' }
+  | { error: null; stack: null; status: 'PENDING' }
+  | { error: null; stack: Stack; status: 'COMPLETE' }
+  | { error: Error; stack: null; status: 'FAILED' };
+
 function componentStackToStack(componentStack: ComponentStack): Stack {
   return componentStack.map((stack) => ({
     file: stack.fileName,
@@ -36,15 +44,6 @@ function componentStackToStack(componentStack: ComponentStack): Stack {
     arguments: [],
   }));
 }
-
-type SymbolicationCallback = (status: SymbolicationStatus) => void;
-
-type SymbolicationResult =
-  | { error: null; stack: null; status: 'NONE' }
-  | { error: null; stack: null; status: 'PENDING' }
-  | { error: null; stack: Stack; status: 'COMPLETE' }
-  | { error: Error; stack: null; status: 'FAILED' };
-
 export class LogBoxLog {
   message: Message;
   type: string;
@@ -141,7 +140,7 @@ export class LogBoxLog {
     }
 
     if (retry) {
-      LogBoxSymbolication.deleteStack(this.getStack(type));
+      invalidateCachedStack(this.getStack(type));
       this.handleSymbolicate(type);
     } else {
       if (status === 'NONE') {
@@ -169,7 +168,7 @@ export class LogBoxLog {
 
     if (this.symbolicated[type].status !== 'PENDING') {
       this.updateStatus(type, null, null, null);
-      LogBoxSymbolication.symbolicate(ensureStackFilesHaveParams(this.getStack(type))).then(
+      symbolicateStackAndCacheAsync(ensureStackFilesHaveParams(this.getStack(type))).then(
         (data) => {
           this.updateStatus(type, null, data?.stack, data?.codeFrame);
         },
