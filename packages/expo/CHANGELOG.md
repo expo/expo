@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 53.0.0-preview.1 — 2025-04-08
+
+### 💡 Others
+
 - Added `globalThis.__ExpoImportMetaRegistry`. ([#34755](https://github.com/expo/expo/pull/34755) by [@kudo](https://github.com/kudo))
 
 ## 53.0.0-preview.0 — 2025-04-04

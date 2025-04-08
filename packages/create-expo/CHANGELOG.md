@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.3.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 3.3.0 — 2025-03-31
 
 ### 🎉 New features
