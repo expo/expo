@@ -58,8 +58,9 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-jest.mock('@react-navigation/native', () => {
-  const actualRequire = jest.requireActual('@react-navigation/native');
+// @ts-expect-error
+jest.unstable_mockModule('@react-navigation/native', async () => {
+  const actualRequire = await import('@react-navigation/native');
   return {
     ...actualRequire,
     useNavigation: jest.fn(),

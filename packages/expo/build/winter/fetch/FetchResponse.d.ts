@@ -12,6 +12,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     private streamingState;
     private bodyStream;
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
+    bytes: () => never;
     get body(): ReadableStream<Uint8Array> | null;
     get headers(): Headers;
     get ok(): boolean;

@@ -5,6 +5,46 @@
   "license": "MIT",
   "main": "src/index.js",
   "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./src/index.js",
+      "types": "./src/index.d.js"
+    },
+    "./config": {
+      "default": "./config/index.js"
+    },
+    "./config/getPlatformPreset": {
+      "default": "./config/getPlatformPreset.js"
+    },
+    "./config/withWatchPlugins": {
+      "default": "./config/withWatchPlugins.js"
+    },
+    "./config/assetFileTransformer": {
+      "default": "./src/preset/assetFileTransformer.js"
+    },
+    "./preset/setup": {
+      "default": "./src/preset/setup.js"
+    },
+    "./universal/jest-preset": {
+      "default": "./universal/jest-preset.js"
+    },
+    "./node/jest-preset": {
+      "default": "./node/jest-preset.js"
+    },
+    "./ios/jest-preset": {
+      "default": "./ios/jest-preset.js"
+    },
+    "./android/jest-preset": {
+      "default": "./android/jest-preset.js"
+    },
+    "./web/jest-preset": {
+      "default": "./web/jest-preset.js"
+    },
+    "./rsc/jest-preset": {
+      "default": "./rsc/jest-preset.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/expo/expo.git",

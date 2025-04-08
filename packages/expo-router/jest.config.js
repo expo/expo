@@ -31,6 +31,7 @@ projects.push({
   roots: ['src'],
   clearMocks: true,
   setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
+  prettierPath: require.resolve('jest-snapshot-prettier'),
 });
 
 const config = withWatchPlugins({
@@ -44,6 +45,7 @@ const tsdProject = {
   rootDir: path.resolve(__dirname),
   roots: ['src'],
   setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
+  prettierPath: require.resolve('jest-snapshot-prettier'),
 };
 
 /*

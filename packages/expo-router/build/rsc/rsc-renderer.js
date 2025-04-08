@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 dai-shi.
@@ -8,16 +7,14 @@
  *
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
-require("@expo/metro-runtime/rsc/runtime");
-const server_1 = require("react-server-dom-webpack/server");
-const path_1 = require("./path");
-const utils_1 = require("./router/utils");
-const server_2 = require("./server");
-async function renderRsc(args, opts) {
+import '@expo/metro-runtime/rsc/runtime';
+import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
+import { fileURLToFilePath } from './path';
+import { decodeActionId } from './router/utils';
+import { runWithRenderStore } from './server';
+export async function renderRsc(args, opts) {
     const { input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
@@ -30,7 +27,7 @@ async function renderRsc(args, opts) {
         // The name of the import (e.g. "default" or "")
         // This will be empty when using `module.exports = ` and `require('...')`.
         name = '',] = encodedId.split('#');
-        const filePath = file.startsWith('file://') ? (0, path_1.fileURLToFilePath)(file) : file;
+        const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
         args.moduleIdCallback?.({
             id: filePath,
             chunks: [
@@ -65,7 +62,7 @@ async function renderRsc(args, opts) {
                 throw new Error('Cannot rerender');
             },
         };
-        return (0, server_2.runWithRenderStore)(renderStore, async () => {
+        return runWithRenderStore(renderStore, async () => {
             const elements = await renderEntries(input, {
                 params,
                 buildConfig,
@@ -78,7 +75,7 @@ async function renderRsc(args, opts) {
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)(elements, bundlerConfig, {
+            return renderToReadableStream(elements, bundlerConfig, {
                 onError,
             });
         });
@@ -102,14 +99,14 @@ async function renderRsc(args, opts) {
                 }));
             },
         };
-        return (0, server_2.runWithRenderStore)(renderStore, async () => {
+        return runWithRenderStore(renderStore, async () => {
             const actionValue = await actionFn(...actionArgs);
             const elements = await elementsPromise;
             rendered = true;
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)({ ...elements, _value: actionValue }, bundlerConfig, {
+            return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig, {
                 onError,
             });
         });
@@ -120,13 +117,13 @@ async function renderRsc(args, opts) {
         if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
             // XXX This doesn't support streaming unlike busboy
             const formData = parseFormData(bodyStr, contentType);
-            decodedBody = await (0, server_1.decodeReply)(formData, serverConfig);
+            decodedBody = await decodeReply(formData, serverConfig);
         }
         else if (bodyStr) {
-            decodedBody = await (0, server_1.decodeReply)(bodyStr, serverConfig);
+            decodedBody = await decodeReply(bodyStr, serverConfig);
         }
     }
-    const actionId = (0, utils_1.decodeActionId)(input);
+    const actionId = decodeActionId(input);
     if (actionId) {
         if (!opts.isExporting &&
             // @ts-ignore
@@ -148,7 +145,6 @@ async function renderRsc(args, opts) {
     // method === 'GET'
     return renderWithContext(context, input, decodedBody);
 }
-exports.renderRsc = renderRsc;
 // TODO is this correct? better to use a library?
 const parseFormData = (body, contentType) => {
     const boundary = contentType.split('boundary=')[1];
