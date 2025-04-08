@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Updated to use Typescript 5.4
+- Updated to use Typescript 5.4 ([#35973](https://github.com/expo/expo/pull/35973) by [@chrfalch](https://github.com/chrfalch))
 
 ## 18.1.0 — 2025-04-04
 
