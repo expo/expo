@@ -30,7 +30,7 @@
     "expo-speech": "~13.1.0",
     "expo-sqlite": "~15.2.0",
     "react": "19.0.0",
-    "react-native": "0.79.0-rc.4",
+    "react-native": "0.79.0",
     "react-native-safe-area-context": "5.3.0",
     "react-native-screens": "4.10.0",
     "react-native-webview": "13.13.5"
