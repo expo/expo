@@ -6,15 +6,14 @@
  */
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 
+import type { StackFrame } from 'stacktrace-parser';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import type { StackType } from '../Data/LogBoxLog';
 import type { Stack } from '../Data/LogBoxSymbolication';
+
 import { openFileInEditor } from '../devServerEndpoints';
-
-import type { GestureResponderEvent } from 'react-native';
-import { StackFrame } from 'stacktrace-parser';
-
 import { getStackFormattedLocation } from '../formatProjectFilePath';
 
 export function StackTraceList({
@@ -28,8 +27,6 @@ export function StackTraceList({
   stack: Stack | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
-  symbolicationStatus = 'FAILED';
-
   const [collapsed, setCollapsed] = useState(() => {
     // Only collapse frames initially if some frames are not collapsed.
     return stack?.some(({ collapse }) => !collapse);
