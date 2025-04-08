@@ -158,7 +158,6 @@ class EnabledUpdatesController(
     purgeUpdatesLogsOlderThanOneDay()
 
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
-    databaseHolder.releaseDatabase()
 
     stateMachine.queueExecution(startupProcedure)
   }
@@ -239,7 +238,6 @@ class EnabledUpdatesController(
           databaseHolder.database,
           updatesConfiguration
         )
-        databaseHolder.releaseDatabase()
         val resultMap = when (result) {
           null -> Bundle()
           else -> {
@@ -252,7 +250,6 @@ class EnabledUpdatesController(
         }
         continuation.resume(resultMap)
       } catch (e: Exception) {
-        databaseHolder.releaseDatabase()
         continuation.resumeWithException(e.toCodedException())
       }
     }
@@ -267,10 +264,8 @@ class EnabledUpdatesController(
           key,
           value
         )
-        databaseHolder.releaseDatabase()
         continuation.resume(Unit)
       }.onFailure { e ->
-        databaseHolder.releaseDatabase()
         continuation.resumeWithException(e.toCodedException())
       }
     }

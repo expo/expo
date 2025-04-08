@@ -47,7 +47,6 @@ class FetchUpdateProcedure(
       )
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {
-      databaseHolder.releaseDatabase()
       procedureContext.onComplete()
     }
   }

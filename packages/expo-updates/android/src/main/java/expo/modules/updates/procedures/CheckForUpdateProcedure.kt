@@ -49,8 +49,6 @@ class CheckForUpdateProcedure(
       procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
       callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))
       procedureContext.onComplete()
-    } finally {
-      databaseHolder.releaseDatabase()
     }
   }
 

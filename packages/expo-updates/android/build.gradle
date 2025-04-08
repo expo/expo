@@ -127,6 +127,7 @@ dependencies {
   def mockk_version = "1.13.11"
 
   implementation "androidx.room:room-runtime:$room_version"
+  implementation "androidx.room:room-ktx:$room_version"
   ksp "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
