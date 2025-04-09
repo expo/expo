@@ -2,6 +2,8 @@ import { Text, View } from 'react-native';
 
 // import 'foobar';
 
+const Broken = undefined;
+
 export default function App() {
   return (
     <View style={{ flex: 1, padding: 48 }}>
@@ -13,6 +15,10 @@ export default function App() {
         }}>
         Runtime error: undefined is not a function
       </Text>
+
+      {Array.from({ length: 3 }, (_, i) => (
+        <View style={{ padding: 8, backgroundColor: 'white' }}></View>
+      )).reverse()}
     </View>
   );
 }

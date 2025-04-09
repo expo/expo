@@ -1,8 +1,6 @@
 import { View } from 'react-native';
 import { ErrorCodeFrame } from '@expo/metro-runtime/src/error-overlay/overlay/ErrorCodeFrame';
 
-// const Foo = undefined;
-
 export default function App() {
   return (
     <View style={{ flex: 1, gap: 16, backgroundColor: 'black' }}>
@@ -17,10 +15,6 @@ export default function App() {
           }}
         />
       </View>
-
-      {/* {Array.from({ length: 3 }, (_, i) => (
-        <View style={{ padding: 8, backgroundColor: 'white' }}></View>
-      )).reverse()} */}
 
       <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <ErrorCodeFrame
