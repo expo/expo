@@ -23,6 +23,11 @@
   border-top-right-radius: 20px;
   gap: 0.5rem;
   overflow-y: auto;
+  
+  /* Wrap horizontal contents */
+  overflow-x: hidden;
+  
+
 
   background-color: var(--expo-log-color-background);
   display: flex;
