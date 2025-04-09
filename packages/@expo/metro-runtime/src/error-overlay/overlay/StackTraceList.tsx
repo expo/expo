@@ -8,10 +8,13 @@ import React, { useState } from 'react';
 import { Pressable } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
 
-import type { StackFrame } from 'stacktrace-parser';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import type { StackType } from '../Data/LogBoxLog';
-import { openFileInEditor, getStackFormattedLocation, type Stack } from '../devServerEndpoints';
+import {
+  openFileInEditor,
+  getStackFormattedLocation,
+  type MetroStackFrame,
+} from '../devServerEndpoints';
 
 import './StackTraceList.css';
 export function StackTraceList({
@@ -22,7 +25,7 @@ export function StackTraceList({
 }: {
   type: StackType;
   onRetry: () => void;
-  stack: Stack | null;
+  stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
   const [collapsed, setCollapsed] = useState(true);
@@ -191,7 +194,7 @@ function StackTraceItem({
   frame,
   onPress,
 }: {
-  frame: StackFrame & { collapse?: boolean };
+  frame: MetroStackFrame;
   onPress?: (event: GestureResponderEvent) => void;
 }) {
   return (
@@ -233,7 +236,7 @@ function StackTraceItem({
   );
 }
 
-function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {
+function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean): string {
   if (stackFrames.length === 0) {
     return 'No frames to show';
   }

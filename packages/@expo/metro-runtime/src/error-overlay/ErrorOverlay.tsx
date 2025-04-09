@@ -18,6 +18,7 @@ import { StackTraceList } from './overlay/StackTraceList';
 import type { Message } from './Data/parseLogBoxLog';
 import { LogBoxMessage } from './LogBoxMessage';
 import styles from './ErrorOverlay.module.css';
+
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
   error: 'Console Error',

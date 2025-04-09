@@ -13,9 +13,9 @@ import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
 import { useSelectedLog } from '../Data/LogContext';
 import * as LogBoxStyle from '../LogBoxStyle';
-import { openFileInEditor, type Stack } from '../devServerEndpoints';
+import { openFileInEditor, type MetroStackFrame } from '../devServerEndpoints';
 
-export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {
+export function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean): string {
   if (stackFrames.length === 0) {
     return 'No frames to show';
   }
@@ -138,7 +138,7 @@ function StackFrameList({
   list,
   status,
 }: {
-  list: Stack;
+  list: MetroStackFrame[];
   status: 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 }): any {
   return list.map((frame, index) => {
