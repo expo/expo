@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.3.2 — 2025-04-09
+
+### 💡 Others
+
 - [Android] Migrate `AppLoaderProvider` to kotlin. ([#36035](https://github.com/expo/expo/pull/36035) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.3.1 — 2025-04-08
