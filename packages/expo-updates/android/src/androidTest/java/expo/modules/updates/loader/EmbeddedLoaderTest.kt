@@ -34,6 +34,7 @@ class EmbeddedLoaderTest {
   private lateinit var logger: UpdatesLogger
   private lateinit var manifest: Update
   private lateinit var loader: EmbeddedLoader
+  private lateinit var loaderWithCopyAssets: EmbeddedLoader
   private lateinit var mockLoaderFiles: LoaderFiles
   private lateinit var mockCallback: LoaderCallback
 
@@ -55,7 +56,17 @@ class EmbeddedLoaderTest {
       logger,
       db,
       File("testDirectory"),
-      mockLoaderFiles
+      mockLoaderFiles,
+      shouldCopyEmbeddedAssets = false
+    )
+    loaderWithCopyAssets = EmbeddedLoader(
+      context,
+      configuration,
+      logger,
+      db,
+      File("testDirectory"),
+      mockLoaderFiles,
+      shouldCopyEmbeddedAssets = true
     )
     manifest = EmbeddedUpdate.fromEmbeddedManifest(
       EmbeddedManifest(JSONObject("{\"id\":\"c3c47024-0e03-4cb4-8e8b-1a0ba2260be6\",\"commitTime\":1630374791665,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
@@ -76,7 +87,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -84,26 +94,6 @@ class EmbeddedLoaderTest {
 
     val assets = db.assetDao().loadAllAssets()
     Assert.assertEquals(2, assets.size.toLong())
-  }
-
-  @Test
-  @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_FailureToCopyAssets() {
-    every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
-
-    loader.start(mockCallback)
-
-    verify(exactly = 0) { mockCallback.onSuccess(any()) }
-    verify { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
-
-    val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
-    // status embedded indicates the update wasn't able to be fully copied to the expo-updates cache
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
-
-    val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(0, assets.size.toLong())
   }
 
   @Test
@@ -120,7 +110,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 3) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -144,7 +133,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 3) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -156,7 +144,27 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_BothDbAndDisk() {
+  fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() {
+    every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
+
+    loaderWithCopyAssets.start(mockCallback)
+
+    verify(exactly = 0) { mockCallback.onSuccess(any()) }
+    verify { mockCallback.onFailure(any()) }
+    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    // status embedded indicates the update wasn't able to be fully copied to the expo-updates cache
+    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
+
+    val assets = db.assetDao().loadAllAssets()
+    Assert.assertEquals(0, assets.size.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_BothDbAndDisk() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any()) } answers {
       firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
@@ -166,7 +174,7 @@ class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
     db.assetDao().insertAssetForTest(existingAsset)
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -184,7 +192,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_DbOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DbOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any()) } returns false
 
@@ -192,7 +200,7 @@ class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
     db.assetDao().insertAssetForTest(existingAsset)
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -212,7 +220,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_DiskOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DiskOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any()) } answers {
       firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
@@ -220,7 +228,7 @@ class EmbeddedLoaderTest {
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -278,9 +286,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-
-    // missing assets should still be copied
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
