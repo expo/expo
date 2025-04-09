@@ -25,7 +25,8 @@ export function useLogs(): {
     return {
       selectedLogIndex: 0,
       isDisabled: false,
-      logs: FIXTURES.react_each_child_in_a_list_should_have_a_unique_key_prop,
+      logs: FIXTURES.react_element_type_is_invalid,
+      // logs: FIXTURES.react_each_child_in_a_list_should_have_a_unique_key_prop,
       // logs: FIXTURES.build_error_module_not_found,
       // logs: FIXTURES.undefined_is_not_a_function_runtime,
     };
