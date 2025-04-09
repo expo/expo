@@ -118,7 +118,7 @@ export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
           <Ansi
             style={{
               flexDirection: 'column',
-              color: 'white',
+              color: 'var(--expo-log-color-label)',
               fontSize: 12,
               includeFontPadding: false,
               lineHeight: 20,
