@@ -17,7 +17,7 @@ import { StackTraceList } from './overlay/StackTraceList';
 
 import type { Message } from './Data/parseLogBoxLog';
 import { LogBoxMessage } from './LogBoxMessage';
-
+import styles from './ErrorOverlay.module.css';
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
   error: 'Console Error',
@@ -102,7 +102,7 @@ export function LogBoxInspector({
 
   return (
     <>
-      <div data-expo-log-overlay="true">
+      <div className={styles.overlay}>
         <div
           data-expo-log-backdrop="true"
           onClick={() => {
@@ -111,7 +111,7 @@ export function LogBoxInspector({
             }
           }}
         />
-        <div data-expo-log-root="true">
+        <div className={styles.container}>
           <ErrorOverlayHeader
             isDismissable={isDismissable}
             onDismiss={onDismiss}
@@ -150,7 +150,7 @@ export function LogBoxInspector({
 
 function ErrorOverlayFooter({ message }: { message?: string }) {
   return (
-    <div data-expo-log-footer>
+    <div className={styles.footer}>
       <footer
         style={{
           padding: '1rem',
