@@ -25,6 +25,7 @@
 
   background-color: var(--expo-log-color-background);
   display: flex;
+  flex: 1;
   flex-direction: column;
 
   position: relative;

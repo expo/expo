@@ -196,7 +196,6 @@ function Dismiss({ onPress }: { onPress: () => void }) {
               // color: 'var(--expo-log-color-danger)',
             }}>
             <path
-              id="Icon"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
