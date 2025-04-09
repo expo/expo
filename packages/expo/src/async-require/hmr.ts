@@ -12,6 +12,11 @@ import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 
+// import LoadingView from '../environment/DevLoadingView';
+// import LogBox from '@expo/metro-runtime/src/error-overlay/LogBox';
+// import getDevServer from './getDevServer';
+import { dismissGlobalErrorOverlay } from '@expo/metro-runtime/src/error-overlay/ErrorOverlay';
+
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showLoading(message: string, _type: 'load' | 'refresh') {
   DeviceEventEmitter.emit('devLoadingView:showMessage', {
@@ -205,10 +210,11 @@ const HMRClient: HMRClientNativeInterface = {
 
     client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
-        dismissRedbox();
+        // dismissRedbox();
         // @ts-expect-error
         globalThis.__expo_dev_resetErrors?.();
         // LogBox.clearAllLogs();
+        // dismissGlobalErrorOverlay();
       }
     });
 
@@ -314,10 +320,6 @@ function flushEarlyLogs() {
   }
 }
 
-function dismissRedbox() {
-  // TODO(EvanBacon): Error overlay for web.
-}
-
 function showCompileError() {
   if (currentCompileErrorMessage === null) {
     return;
@@ -325,7 +327,7 @@ function showCompileError() {
 
   // Even if there is already a redbox, syntax errors are more important.
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissRedbox();
+  dismissGlobalErrorOverlay();
 
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;

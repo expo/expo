@@ -21,6 +21,6 @@ export declare function ErrorMessageHeader(props: {
     title: string;
     onPress: () => void;
 }): React.JSX.Element;
-declare const _default: React.Component<object, {}, any>;
-export default _default;
+export declare function presentGlobalErrorOverlay(): void;
+export declare function dismissGlobalErrorOverlay(): void;
 //# sourceMappingURL=ErrorOverlay.d.ts.map

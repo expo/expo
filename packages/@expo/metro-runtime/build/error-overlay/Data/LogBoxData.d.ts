@@ -16,7 +16,6 @@ export type LogData = {
     category: Category;
     componentStack: ComponentStack;
 };
-type ExtendedError = any;
 export type Observer = (options: {
     logs: LogBoxLogs;
     isDisabled: boolean;
@@ -36,8 +35,14 @@ export type WarningInfo = {
     monitorSampleRate: number;
 };
 export type WarningFilter = (format: string) => WarningInfo;
-export declare function reportLogBoxError(error: ExtendedError, componentStack?: string): void;
-export declare function reportUnexpectedLogBoxError(error: ExtendedError, componentStack?: string): void;
+type State = {
+    logs: LogBoxLogs;
+    isDisabled: boolean;
+    hasError: boolean;
+    selectedLogIndex: number;
+};
+export declare function reportUnexpectedLogBoxError(error: any): void;
+export declare function reportUnexpectedThrownValue(value: any): void;
 export declare function isLogBoxErrorMessage(message: string): boolean;
 export declare function isMessageIgnored(message: string): boolean;
 /** Exposed for debugging */
@@ -57,6 +62,46 @@ export declare function addIgnorePatterns(patterns: IgnorePattern[]): void;
 export declare function setDisabled(value: boolean): void;
 export declare function isDisabled(): boolean;
 export declare function observe(observer: Observer): Subscription;
-export declare function withSubscription(WrappedComponent: React.FC<object>): React.Component<object>;
+export declare function withSubscription(WrappedComponent: React.FC<object>): {
+    new (props: object): {
+        componentDidCatch(err: Error & {
+            componentStack?: string;
+        }, errorInfo: {
+            componentStack: string;
+        } & any): void;
+        _subscription?: Subscription;
+        state: {
+            logs: Set<LogBoxLog>;
+            isDisabled: boolean;
+            hasError: boolean;
+            selectedLogIndex: number;
+        };
+        retry: () => Promise<void>;
+        render(): React.JSX.Element;
+        componentDidMount(): void;
+        componentWillUnmount(): void;
+        _handleDismiss: () => void;
+        _handleMinimize: () => void;
+        _handleSetSelectedLog: (index: number) => void;
+        context: unknown;
+        setState<K extends keyof State>(state: State | ((prevState: Readonly<State>, props: Readonly<React.PropsWithChildren<object>>) => State | Pick<State, K> | null) | Pick<State, K> | null, callback?: (() => void) | undefined): void;
+        forceUpdate(callback?: (() => void) | undefined): void;
+        readonly props: Readonly<React.PropsWithChildren<object>>;
+        shouldComponentUpdate?(nextProps: Readonly<React.PropsWithChildren<object>>, nextState: Readonly<State>, nextContext: any): boolean;
+        getSnapshotBeforeUpdate?(prevProps: Readonly<React.PropsWithChildren<object>>, prevState: Readonly<State>): any;
+        componentDidUpdate?(prevProps: Readonly<React.PropsWithChildren<object>>, prevState: Readonly<State>, snapshot?: any): void;
+        componentWillMount?(): void;
+        UNSAFE_componentWillMount?(): void;
+        componentWillReceiveProps?(nextProps: Readonly<React.PropsWithChildren<object>>, nextContext: any): void;
+        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<React.PropsWithChildren<object>>, nextContext: any): void;
+        componentWillUpdate?(nextProps: Readonly<React.PropsWithChildren<object>>, nextState: Readonly<State>, nextContext: any): void;
+        UNSAFE_componentWillUpdate?(nextProps: Readonly<React.PropsWithChildren<object>>, nextState: Readonly<State>, nextContext: any): void;
+    };
+    getDerivedStateFromError(): {
+        hasError: boolean;
+    };
+    contextType?: React.Context<any> | undefined;
+    propTypes?: any;
+};
 export {};
 //# sourceMappingURL=LogBoxData.d.ts.map

@@ -18,6 +18,7 @@ import type { Message } from './Data/parseLogBoxLog';
 import { LogBoxMessage } from './LogBoxMessage';
 //@ts-expect-error
 import styles from './ErrorOverlay.module.css';
+import ReactDOM from 'react-dom/client';
 
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
@@ -303,4 +304,29 @@ function ShowMoreButton({
   );
 }
 
-export default LogBoxData.withSubscription(LogBoxInspectorContainer);
+let currentRoot: ReactDOM.Root | null = null;
+
+export function presentGlobalErrorOverlay() {
+  if (currentRoot) {
+    return;
+  }
+  const ErrorOverlay = LogBoxData.withSubscription(LogBoxInspectorContainer);
+
+  // Create a new div with ID `error-overlay` element and render LogBoxInspector into it.
+  const div = document.createElement('div');
+  div.id = 'error-overlay';
+  document.body.appendChild(div);
+
+  currentRoot = ReactDOM.createRoot(div);
+  currentRoot.render(React.createElement(ErrorOverlay));
+}
+
+export function dismissGlobalErrorOverlay() {
+  // Remove div with ID `error-overlay`
+  if (currentRoot) {
+    currentRoot.unmount();
+    currentRoot = null;
+  }
+  const div = document.getElementById('error-overlay');
+  div?.remove();
+}
