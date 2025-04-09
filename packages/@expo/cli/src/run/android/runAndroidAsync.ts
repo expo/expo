@@ -15,7 +15,7 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
-import { resolveRemoteBuildCache } from '../resolveRemoteBuildCache';
+import { resolveRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
