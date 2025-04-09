@@ -25,10 +25,11 @@ export function StackTraceList({
   stack: Stack | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
-  const [collapsed, setCollapsed] = useState(() => {
-    // Only collapse frames initially if some frames are not collapsed.
-    return stack?.some(({ collapse }) => !collapse);
-  });
+  const [collapsed, setCollapsed] = useState(true);
+  // const [collapsed, setCollapsed] = useState(() => {
+  //   // Only collapse frames initially if some frames are not collapsed.
+  //   return stack?.some(({ collapse }) => !collapse);
+  // });
 
   const visibleStack = !stack
     ? []
