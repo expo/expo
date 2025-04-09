@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -14,6 +15,7 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { resolveRemoteBuildCache } from '../resolveRemoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
@@ -23,6 +25,17 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   const isProduction = options.variant?.toLowerCase().endsWith('release');
   setNodeEnv(isProduction ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
+
+  const projectConfig = getConfig(projectRoot);
+  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache) {
+    const localPath = await resolveRemoteBuildCache(projectRoot, {
+      platform: 'android',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 

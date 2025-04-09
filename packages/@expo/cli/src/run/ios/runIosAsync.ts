@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -21,6 +22,7 @@ import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { CommandError } from '../../utils/errors';
+import { resolveRemoteBuildCache } from '../resolveRemoteBuildCache';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -32,12 +34,29 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
+  let maybePromptToSyncPods = false;
+  // Only prompt to sync pods if the user is not using a custom binary.
   if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
-    await maybePromptToSyncPodsAsync(projectRoot);
+    maybePromptToSyncPods = true;
   }
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  const projectConfig = getConfig(projectRoot);
+  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache && props.isSimulator) {
+    const localPath = await resolveRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
+
+  if (!options.binary && maybePromptToSyncPods) {
+    await maybePromptToSyncPodsAsync(projectRoot);
+  }
 
   if (options.rebundle) {
     Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
