@@ -3,7 +3,6 @@ package host.exp.exponent.taskManager
 import android.content.Context
 import android.util.Log
 import expo.modules.adapters.react.apploader.HeadlessAppLoaderNotifier
-import expo.modules.apploader.AppLoaderProvider
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.apploader.HeadlessAppLoader.AppConfigurationError
 import expo.modules.core.interfaces.Consumer
