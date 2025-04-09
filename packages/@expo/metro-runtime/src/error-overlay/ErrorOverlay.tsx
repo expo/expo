@@ -201,19 +201,15 @@ function ErrorOverlayBody({
 
   const headerTitle = HEADER_TITLE_MAP[isComponentError ? 'component' : level] ?? type;
 
-  const header = (
-    <ErrorMessageHeader
-      collapsed={collapsed}
-      onPress={() => setCollapsed(!collapsed)}
-      message={message}
-      level={level}
-      title={headerTitle}
-    />
-  );
-
   return (
     <>
-      {collapsed && header}
+      <ErrorMessageHeader
+        collapsed={collapsed}
+        onPress={() => setCollapsed(!collapsed)}
+        message={message}
+        level={level}
+        title={headerTitle}
+      />
 
       <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
         {children}
@@ -298,7 +294,7 @@ function ShowMoreButton({
         fontSize: 14,
       }}
       onClick={onPress}>
-      ... See More
+      ... See more
     </button>
   );
 }

@@ -16,8 +16,7 @@ export { LogData, ExtendedExceptionData, IgnorePattern };
 /**
  * LogBox displays logs in the app.
  */
-const { parseLogBoxLog, parseInterpolation } =
-  require('./Data/parseLogBoxLog') as typeof import('./Data/parseLogBoxLog');
+import { parseLogBoxLog } from './Data/parseLogBoxLog';
 
 let originalConsoleError: typeof console.error | undefined;
 let consoleErrorImpl: typeof console.error | undefined;
@@ -115,46 +114,6 @@ const registerError = (...args: Parameters<typeof console.error>): void => {
   }
 
   try {
-    let stack;
-
-    // Handle React 19 errors.
-    if (React.captureOwnerStack != null) {
-      // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
-      const error = process.env.NODE_ENV !== 'production' ? [...Object.values(args)][1] : args[0];
-
-      const isReactThrownError =
-        !!error && error instanceof Error && typeof error.stack === 'string';
-      if (isReactThrownError) {
-        // TODO: This is the naive approach from RN.
-        if (!hasComponentStack(args)) {
-          stack = React.captureOwnerStack();
-
-          if (stack != null && stack !== '') {
-            args[0] = args[0] += '%s';
-            args.push(stack);
-          }
-        }
-
-        // const componentStackTrace =
-        //   (error as any).componentStack ||
-        //   (error as any)._componentStack ||
-        //   React.captureOwnerStack();
-
-        // console.log('REACT INTERNAL STACK:', componentStackTrace);
-        // const componentStackFrames =
-        //   typeof componentStackTrace === 'string'
-        //     ? parseComponentStack(componentStackTrace)
-        //     : undefined
-
-        // TODO: Handle special...
-        // const unhandledError = {
-        //   reason: error,
-        //   // componentStackFrames,
-        //   // frames: parseStack(error.stack),
-        // };
-      }
-    }
-
     // if (!isWarningModuleWarning(...args)) {
     //   // Only show LogBox for the 'warning' module, otherwise pass through.
     //   // By passing through, this will get picked up by the React console override,
@@ -170,10 +129,12 @@ const registerError = (...args: Parameters<typeof console.error>): void => {
     const { category, message, componentStack } = parseLogBoxLog(args);
 
     if (!LogBoxData.isMessageIgnored(message.content)) {
+      // NOTE: Unlike React Native, we'll just pass the logs directly to the console
+      originalConsoleError?.(...args);
       // Interpolate the message so they are formatted for adb and other CLIs.
       // This is different than the message.content above because it includes component stacks.
-      const interpolated = parseInterpolation(args);
-      originalConsoleError?.(interpolated.message.content);
+      // const interpolated = parseInterpolation(args);
+      // originalConsoleError?.(interpolated.message.content);
 
       LogBoxData.addLog({
         // Always show the static rendering issues as full screen since they

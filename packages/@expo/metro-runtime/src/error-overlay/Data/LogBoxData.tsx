@@ -14,7 +14,7 @@ import { NativeEventEmitter } from 'react-native';
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';
 import { LogContext } from './LogContext';
-import { parseLogBoxException } from './parseLogBoxLog';
+import { isError, parseLogBoxException, tagError } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 import { parseErrorStack } from '../devServerEndpoints';
 import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
@@ -80,13 +80,15 @@ function getNextState() {
 }
 
 export function reportUnexpectedLogBoxError(error: any): void {
-  if (error instanceof Error) {
+  if (isError(error)) {
     error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   }
   reportUnexpectedThrownValue(error);
 }
 
 export function reportUnexpectedThrownValue(value: any): void {
+  tagError(value);
+
   addException(parseUnexpectedThrownValue(value));
 }
 

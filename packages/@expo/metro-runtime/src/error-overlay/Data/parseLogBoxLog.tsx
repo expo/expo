@@ -6,8 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import React from 'react';
 import type { LogBoxLogData } from './LogBoxLog';
 import { parseErrorStack } from '../devServerEndpoints';
+import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -141,42 +143,17 @@ function isComponentStack(consoleArgument: string) {
   return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
 }
 
-export function parseComponentStack(message: string): ComponentStack {
-  // In newer versions of React, the component stack is formatted as a call stack frame.
-  // First try to parse the component stack as a call stack frame, and if that doesn't
-  // work then we'll fallback to the old custom component stack format parsing.
-  const stack = parseErrorStack(message);
-  if (stack && stack.length > 0) {
-    return stack.map((frame) => ({
-      content: frame.methodName,
-      collapse: frame.collapse || false,
-      fileName: frame.file == null ? 'unknown' : frame.file,
-      location: {
-        column: frame.column == null ? -1 : frame.column,
-        row: frame.lineNumber == null ? -1 : frame.lineNumber,
-      },
-    }));
-  }
-
-  return message
-    .split(/\n {4}in /g)
-    .map((s) => {
-      if (!s) {
-        return null;
-      }
-      const match = s.match(/(.*) \(at (.*\.js):([\d]+)\)/);
-      if (!match) {
-        return null;
-      }
-
-      const [content, fileName, row] = match.slice(1);
-      return {
-        content,
-        fileName,
-        location: { column: -1, row: parseInt(row, 10) },
-      };
-    })
-    .filter(Boolean) as ComponentStack;
+// TODO: Why are we returning a code frame?
+function parseComponentStack(message: string): ComponentStack {
+  return parseErrorStack(message)?.map((frame) => ({
+    content: frame.methodName,
+    collapse: frame.collapse || false,
+    fileName: frame.file == null ? 'unknown' : frame.file,
+    location: {
+      column: frame.column == null ? -1 : frame.column,
+      row: frame.lineNumber == null ? -1 : frame.lineNumber,
+    },
+  }));
 }
 
 export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogData {
@@ -303,7 +280,123 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   };
 }
 
-export function parseLogBoxLog(args: readonly any[]): {
+function interpolateLikeConsole(...args: any[]) {
+  let output = '';
+  let i = 0;
+
+  if (typeof args[0] === 'string') {
+    const format = args[0];
+    const rest = args.slice(1);
+    let argIndex = 0;
+
+    output = format.replace(/%[sdifoO%]/g, (match) => {
+      if (match === '%%') return '%'; // escape %%
+      const arg = rest[argIndex++];
+      switch (match) {
+        case '%s':
+          return String(arg);
+        case '%d':
+        case '%i':
+          return parseInt(arg);
+        case '%f':
+          return parseFloat(arg);
+        case '%o':
+        case '%O':
+          return arg instanceof Error
+            ? arg.message || arg.toString()
+            : JSON.stringify(arg, null, 2);
+        default:
+          return match;
+      }
+    });
+
+    // Append any remaining arguments
+    for (; argIndex < rest.length; argIndex++) {
+      const arg = rest[argIndex];
+      output +=
+        ' ' +
+        (typeof arg === 'object'
+          ? arg instanceof Error
+            ? arg.stack || arg.toString()
+            : JSON.stringify(arg, null, 2)
+          : String(arg));
+    }
+  } else {
+    // No format string, just join args with spaces
+    output = args
+      .map((arg) => {
+        return typeof arg === 'object'
+          ? arg instanceof Error
+            ? arg.stack || arg.toString()
+            : JSON.stringify(arg, null, 2)
+          : String(arg);
+      })
+      .join(' ');
+  }
+
+  return output;
+}
+
+const ERROR_TAG_SYMBOL = Symbol.for('expo.error.tagged');
+
+export function hasTaggedError(error: any) {
+  return error != null && error[ERROR_TAG_SYMBOL] === true;
+}
+
+export function tagError(error: any) {
+  if (isError(error)) {
+    error[ERROR_TAG_SYMBOL] = true;
+  }
+  return error;
+}
+export function isError(err: any): err is Error {
+  return typeof err === 'object' && err !== null && 'name' in err && 'message' in err;
+}
+
+const REACT_ERROR_STACK_BOTTOM_FRAME = 'react-stack-bottom-frame';
+const REACT_ERROR_STACK_BOTTOM_FRAME_REGEX = new RegExp(
+  `(at ${REACT_ERROR_STACK_BOTTOM_FRAME} )|(${REACT_ERROR_STACK_BOTTOM_FRAME}\\@)`
+);
+
+function getReactStitchedError<T = unknown>(err: T): Error | T {
+  const isErrorInstance = isError(err);
+  const originStack = isErrorInstance ? err.stack || '' : '';
+  const originMessage = isErrorInstance ? err.message : '';
+  const stackLines = originStack.split('\n');
+  const indexOfSplit = stackLines.findIndex((line) =>
+    REACT_ERROR_STACK_BOTTOM_FRAME_REGEX.test(line)
+  );
+  const isOriginalReactError = indexOfSplit >= 0; // has the react-stack-bottom-frame
+  const newStack = isOriginalReactError
+    ? stackLines.slice(0, indexOfSplit).join('\n')
+    : originStack;
+
+  const newError = new Error(originMessage);
+  // Copy all enumerable properties, e.g. digest
+  Object.assign(newError, err);
+  newError.stack = newStack;
+  // Avoid duplicate overriding stack frames
+  appendOwnerStack(newError);
+
+  return newError;
+}
+
+function appendOwnerStack(error: Error) {
+  if (!React.captureOwnerStack) {
+    return;
+  }
+  let stack = error.stack || '';
+  // This module is only bundled in development mode so this is safe.
+  const ownerStack = React.captureOwnerStack();
+  // Avoid duplicate overriding stack frames
+  if (ownerStack && stack.endsWith(ownerStack) === false) {
+    stack += ownerStack;
+    // Override stack
+    error.stack = stack;
+  }
+}
+
+export function parseLogBoxLog(args: any[]): {
   componentStack: ComponentStack;
   category: Category;
   message: Message;
@@ -311,6 +404,37 @@ export function parseLogBoxLog(args: readonly any[]): {
   const message = args[0];
   let argsWithoutComponentStack: any[] = [];
   let componentStack: ComponentStack = [];
+
+  // Handle React 19 errors which have a custom format, come through console.error, and include a raw error object.
+  if (React.captureOwnerStack != null) {
+    // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
+    let error = process.env.NODE_ENV !== 'production' ? args[1] : args[0];
+
+    console.log('FOUND ONCE:', hasTaggedError(error), tagError(error));
+    const isReactThrownError = !!error && error instanceof Error && typeof error.stack === 'string';
+    if (isReactThrownError) {
+      error = getReactStitchedError(error);
+      const componentStackTrace = (error as any).stack;
+      const message = interpolateLikeConsole(...args);
+      return {
+        componentStack: parseComponentStack(componentStackTrace),
+        category: error.message,
+        message: {
+          content: message,
+          substitutions: [],
+        },
+      };
+    } else if (
+      // TODO: This is the naive approach from RN. This can probably be removed.
+      !hasComponentStack(args)
+    ) {
+      const stack = React.captureOwnerStack();
+      if (stack != null && stack !== '') {
+        args[0] = args[0] += '%s';
+        args.push(stack);
+      }
+    }
+  }
 
   // Extract component stack from warnings like "Some warning%s".
   if (typeof message === 'string' && message.slice(-2) === '%s' && args.length > 0) {
