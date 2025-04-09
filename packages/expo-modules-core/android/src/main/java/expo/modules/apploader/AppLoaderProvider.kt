@@ -29,13 +29,12 @@ object AppLoaderProvider {
         PackageManager.GET_META_DATA
       ).metaData.getString(
         "org.unimodules.core.AppLoader#$name"
-      )
-      loaderClassName?.let {
-        loaderClass = Class.forName(loaderClassName) as Class<out HeadlessAppLoader>
-        loaders[name] =
-          loaderClass.getDeclaredConstructor(Context::class.java)
-            .newInstance(context) as HeadlessAppLoader
-      } ?: throw IllegalStateException("Unable to instantiate AppLoader!")
+      ) ?: throw IllegalStateException("Unable to instantiate AppLoader!")
+
+      loaderClass = Class.forName(loaderClassName) as Class<out HeadlessAppLoader>
+      loaders[name] = loaderClass
+        .getDeclaredConstructor(Context::class.java)
+        .newInstance(context) as HeadlessAppLoader
     } catch (e: PackageManager.NameNotFoundException) {
       throw IllegalStateException("Unable to instantiate AppLoader!", e)
     }
