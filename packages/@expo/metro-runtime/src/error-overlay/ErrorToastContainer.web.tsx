@@ -41,10 +41,10 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
 
   // HACK: This is here to develop the UI for the error overlay.
   // DO NOT SHIP TO PROD!
-  React.useEffect(() => {
-    // Open the UI for the last log
-    LogBoxData.setSelectedLog(0);
-  }, []);
+  // React.useEffect(() => {
+  //   // Open the UI for the last log
+  //   LogBoxData.setSelectedLog(0);
+  // }, []);
 
   function openLog(log: LogBoxLog) {
     let index = logs.length - 1;

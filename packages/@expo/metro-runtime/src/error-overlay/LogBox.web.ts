@@ -6,8 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import React from 'react';
 import { IgnorePattern, LogData } from './Data/LogBoxData';
-import { ExtendedExceptionData } from './Data/parseLogBoxLog';
+import { ExtendedExceptionData, hasComponentStack } from './Data/parseLogBoxLog';
+import * as LogBoxData from './Data/LogBoxData';
 
 export { LogData, ExtendedExceptionData, IgnorePattern };
 
@@ -28,7 +30,6 @@ interface ILogBox {
  * LogBox displays logs in the app.
  */
 if (__DEV__) {
-  const LogBoxData = require('./Data/LogBoxData');
   const { parseLogBoxLog, parseInterpolation } =
     require('./Data/parseLogBoxLog') as typeof import('./Data/parseLogBoxLog');
 
@@ -112,7 +113,12 @@ if (__DEV__) {
   };
 
   const isWarningModuleWarning = (...args: any) => {
-    return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
+    if (typeof args[0] !== 'string') {
+      return false;
+    }
+
+    // console.log('LogBox: ', Object.entries(args));
+    return / {4}at/.test(args[0]) || /^Warning:\s/.test(args[0]);
   };
 
   const registerError = (...args: Parameters<typeof console.error>): void => {
@@ -123,17 +129,28 @@ if (__DEV__) {
     }
 
     try {
-      if (!isWarningModuleWarning(...args)) {
-        // Only show LogBox for the 'warning' module, otherwise pass through.
-        // By passing through, this will get picked up by the React console override,
-        // potentially adding the component stack. React then passes it back to the
-        // React Native ExceptionsManager, which reports it to LogBox as an error.
-        //
-        // The 'warning' module needs to be handled here because React internally calls
-        // `console.error('Warning: ')` with the component stack already included.
-        originalConsoleError?.(...args);
-        return;
+      let stack;
+      // $FlowFixMe[prop-missing] Not added to flow types yet.
+      if (React.captureOwnerStack != null && !hasComponentStack(args)) {
+        stack = React.captureOwnerStack();
+
+        if (stack != null && stack !== '') {
+          args[0] = args[0] += '%s';
+          args.push(stack);
+        }
       }
+
+      // if (!isWarningModuleWarning(...args)) {
+      //   // Only show LogBox for the 'warning' module, otherwise pass through.
+      //   // By passing through, this will get picked up by the React console override,
+      //   // potentially adding the component stack. React then passes it back to the
+      //   // React Native ExceptionsManager, which reports it to LogBox as an error.
+      //   //
+      //   // The 'warning' module needs to be handled here because React internally calls
+      //   // `console.error('Warning: ')` with the component stack already included.
+      //   originalConsoleError?.(...args);
+      //   return;
+      // }
 
       const { category, message, componentStack } = parseLogBoxLog(args);
 
