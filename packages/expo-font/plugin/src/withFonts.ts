@@ -1,6 +1,6 @@
 import { type ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
-import { withFontsAndroid } from './withFontsAndroid';
+import { withXmlFontsAndroid, withFontsAndroid, type XmlFonts } from './withFontsAndroid';
 import { withFontsIos } from './withFontsIos';
 
 const pkg = require('expo-font/package.json');
@@ -8,7 +8,7 @@ const pkg = require('expo-font/package.json');
 export type FontProps = {
   fonts?: string[];
   android?: {
-    fonts?: string[];
+    fonts?: (string | XmlFonts)[];
   };
   ios?: {
     fonts?: string[];
@@ -26,10 +26,18 @@ const withFonts: ConfigPlugin<FontProps> = (config, props) => {
     config = withFontsIos(config, iosFonts);
   }
 
-  const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
+  const xmlFonts = props.android?.fonts?.filter((item) => typeof item !== 'string') ?? [];
+  const assetFonts = [
+    ...(props.fonts ?? []),
+    ...(props.android?.fonts?.filter((item) => typeof item === 'string') ?? []),
+  ];
 
-  if (androidFonts.length > 0) {
-    config = withFontsAndroid(config, androidFonts);
+  if (xmlFonts.length > 0) {
+    config = withXmlFontsAndroid(config, xmlFonts as XmlFonts[]);
+  }
+
+  if (assetFonts.length > 0) {
+    config = withFontsAndroid(config, assetFonts as string[]);
   }
 
   return config;

@@ -27,6 +27,7 @@
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add support for linking fonts as XML, this fixes issues with `fontStyle` and `fontWeight` ([#34620](https://github.com/expo/expo/pull/34620) by [@BalogunofAfrica](<(https://github.com/BalogunofAfrica)>))
 
 ## 13.0.4 - 2025-02-19
 
