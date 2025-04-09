@@ -458,8 +458,7 @@ open class NotificationsService : BroadcastReceiver() {
       // are not allowed. If the notification wants to open foreground app,
       // we should use the dedicated Activity pendingIntent.
       if (action.opensAppToForeground() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val notificationResponse = getNotificationResponseFromBroadcastIntent(intent)
-        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent, notificationResponse)
+        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent)
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
@@ -545,7 +544,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param notificationResponse Notification response to marshall
      * @return Given request marshalled to a byte array or null if the process failed.
      */
-    private fun marshalObject(objectToMarshal: Parcelable): ByteArray? {
+    private fun marshalObject(objectToMarshal: Parcelable): ByteArray {
       val parcel: Parcel = Parcel.obtain()
       objectToMarshal.writeToParcel(parcel, 0)
       val bytes: ByteArray = parcel.marshall()

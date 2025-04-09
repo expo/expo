@@ -12,18 +12,17 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.NotificationAction
-import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.notifications.model.TextInputNotificationAction
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.createNotificationResponseIntent
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
-import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 
@@ -40,13 +39,18 @@ open class ExpoNotificationBuilder(
     builder: NotificationCompat.Builder,
     categoryIdentifier: String
   ) {
-    var actions = emptyList<NotificationAction>()
     try {
-      val category: NotificationCategory? = store.getNotificationCategory(categoryIdentifier)
-      if (category != null) {
-        actions = category.actions
+      val category = store.getNotificationCategory(categoryIdentifier) ?: run {
+        throw InvalidArgumentException("The category does not exist, did you call setNotificationCategoryAsync()?")
       }
-    } catch (e: ClassNotFoundException) {
+      for (action in category.actions) {
+        if (action is TextInputNotificationAction) {
+          builder.addAction(buildTextInputAction(action))
+        } else {
+          builder.addAction(buildButtonAction(action))
+        }
+      }
+    } catch (e: Exception) {
       Log.e(
         "expo-notifications",
         String.format(
@@ -55,22 +59,6 @@ open class ExpoNotificationBuilder(
           e.message
         )
       )
-    } catch (e: IOException) {
-      Log.e(
-        "expo-notifications",
-        String.format(
-          "Could not read category with identifier: %s. %s",
-          categoryIdentifier,
-          e.message
-        )
-      )
-    }
-    for (action in actions) {
-      if (action is TextInputNotificationAction) {
-        builder.addAction(buildTextInputAction(action))
-      } else {
-        builder.addAction(buildButtonAction(action))
-      }
     }
   }
 

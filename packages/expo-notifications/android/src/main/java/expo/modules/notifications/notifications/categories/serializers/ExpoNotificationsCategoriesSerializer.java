@@ -60,6 +60,8 @@ public class ExpoNotificationsCategoriesSerializer implements NotificationsCateg
       Bundle serializedTextInputOptions = new Bundle();
       serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction) action).getPlaceholder());
       serializedAction.putBundle("textInput", serializedTextInputOptions);
+    } else {
+      serializedAction.putBundle("textInput", null);
     }
 
     return serializedAction;
