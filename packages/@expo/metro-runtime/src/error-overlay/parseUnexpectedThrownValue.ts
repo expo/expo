@@ -6,19 +6,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { parseErrorStack } from '../../devServerEndpoints';
-type ExtendedError = any;
-
-class SyntheticError extends Error {
-  name: string = '';
-}
+import { parseErrorStack } from './devServerEndpoints';
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 let exceptionID = 0;
 
-function parseException(e: ExtendedError, isFatal: boolean) {
+/**
+ * Logs exceptions to the (native) console and displays them
+ */
+export function parseUnexpectedThrownValue(error: any) {
+  let e: Error & { componentStack?: string; jsEngine?: string; isComponentError?: boolean } = error;
+  if (error instanceof Error) {
+    e = error;
+  } else {
+    // Workaround for reporting errors caused by `throw 'some string'`
+    // Unfortunately there is no way to figure out the stacktrace in this
+    // case, so if you ended up here trying to trace an error, look for
+    // `throw '<error message>'` somewhere in your codebase.
+    e = new Error(error);
+  }
+
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
   const originalMessage = e.message || '';
@@ -39,7 +48,7 @@ function parseException(e: ExtendedError, isFatal: boolean) {
     componentStack: typeof e.componentStack === 'string' ? e.componentStack : null,
     stack,
     id: currentExceptionID,
-    isFatal,
+    isFatal: true,
     extraData: {
       jsEngine: e.jsEngine,
       rawStack: e.stack,
@@ -51,29 +60,3 @@ function parseException(e: ExtendedError, isFatal: boolean) {
     isComponentError: !!e.isComponentError,
   };
 }
-
-/**
- * Logs exceptions to the (native) console and displays them
- */
-function handleException(e: any) {
-  let error: Error;
-  if (e instanceof Error) {
-    error = e;
-  } else {
-    // Workaround for reporting errors caused by `throw 'some string'`
-    // Unfortunately there is no way to figure out the stacktrace in this
-    // case, so if you ended up here trying to trace an error, look for
-    // `throw '<error message>'` somewhere in your codebase.
-    error = new SyntheticError(e);
-  }
-
-  require('../../LogBox').default.addException(parseException(error, true));
-}
-
-const ErrorUtils = {
-  parseException,
-  handleException,
-  SyntheticError,
-};
-
-export default ErrorUtils;

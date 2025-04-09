@@ -14,6 +14,7 @@ import prettyFormat, { plugins } from 'pretty-format';
 import LoadingView from './LoadingView';
 import LogBox from './error-overlay/LogBox';
 import getDevServer from './getDevServer';
+import { dismissGlobalErrorOverlay } from './error-overlay/ErrorOverlay';
 
 const pendingEntryPoints: string[] = [];
 
@@ -186,8 +187,8 @@ const HMRClient: HMRClientNativeInterface = {
 
     client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
-        dismissRedbox();
         LogBox.clearAllLogs();
+        // dismissGlobalErrorOverlay();
       }
     });
 
@@ -293,10 +294,6 @@ function flushEarlyLogs() {
   }
 }
 
-function dismissRedbox() {
-  // TODO(EvanBacon): Error overlay for web.
-}
-
 function showCompileError() {
   if (currentCompileErrorMessage === null) {
     return;
@@ -304,7 +301,7 @@ function showCompileError() {
 
   // Even if there is already a redbox, syntax errors are more important.
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissRedbox();
+  dismissGlobalErrorOverlay();
 
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;

@@ -16,8 +16,9 @@ import type { LogLevel } from './LogBoxLog';
 import { LogContext } from './LogContext';
 import { parseLogBoxException } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
-import NativeLogBox from '../modules/NativeLogBox';
 import { parseErrorStack } from '../devServerEndpoints';
+import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
+import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -27,8 +28,6 @@ export type LogData = {
   category: Category;
   componentStack: ComponentStack;
 };
-
-type ExtendedError = any;
 
 export type Observer = (options: {
   logs: LogBoxLogs;
@@ -70,8 +69,7 @@ let updateTimeout: null | ReturnType<typeof setTimeout> = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-const LOGBOX_ERROR_MESSAGE =
-  'An error was thrown when attempting to render log messages via LogBox.';
+const LOGBOX_ERROR_MESSAGE = 'An error was thrown while presenting an error!';
 
 function getNextState() {
   return {
@@ -81,18 +79,15 @@ function getNextState() {
   };
 }
 
-export function reportLogBoxError(error: ExtendedError, componentStack?: string): void {
-  const ExceptionsManager = require('../modules/ExceptionsManager').default;
-
-  if (componentStack != null) {
-    error.componentStack = componentStack;
+export function reportUnexpectedLogBoxError(error: any): void {
+  if (error instanceof Error) {
+    error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   }
-  ExceptionsManager.handleException(error);
+  reportUnexpectedThrownValue(error);
 }
 
-export function reportUnexpectedLogBoxError(error: ExtendedError, componentStack?: string): void {
-  error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
-  return reportLogBoxError(error, componentStack);
+export function reportUnexpectedThrownValue(value: any): void {
+  addException(parseUnexpectedThrownValue(value));
 }
 
 export function isLogBoxErrorMessage(message: string): boolean {
@@ -201,8 +196,8 @@ export function addLog(log: LogData): void {
           componentStack: log.componentStack,
         })
       );
-    } catch (error) {
-      reportUnexpectedLogBoxError(error);
+    } catch (unexpectedError: any) {
+      reportUnexpectedLogBoxError(unexpectedError);
     }
   }, 0);
 }
@@ -213,8 +208,8 @@ export function addException(error: ExtendedExceptionData): void {
   setTimeout(() => {
     try {
       _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
-    } catch (loggingError) {
-      reportUnexpectedLogBoxError(loggingError);
+    } catch (unexpectedError: any) {
+      reportUnexpectedLogBoxError(unexpectedError);
     }
   }, 0);
 }
@@ -259,15 +254,13 @@ export function setSelectedLog(proposedNewIndex: number): void {
   _selectedIndex = newIndex;
   handleUpdate();
 
-  if (NativeLogBox) {
-    setTimeout(() => {
-      if (oldIndex < 0 && newIndex >= 0) {
-        NativeLogBox.show();
-      } else if (oldIndex >= 0 && newIndex < 0) {
-        NativeLogBox.hide();
-      }
-    }, 0);
-  }
+  setTimeout(() => {
+    if (oldIndex < 0 && newIndex >= 0) {
+      presentGlobalErrorOverlay();
+    } else if (oldIndex >= 0 && newIndex < 0) {
+      dismissGlobalErrorOverlay();
+    }
+  }, 0);
 }
 
 export function clearWarnings(): void {
@@ -357,7 +350,7 @@ const emitter = new NativeEventEmitter({
   removeListeners() {},
 });
 
-export function withSubscription(WrappedComponent: React.FC<object>): React.Component<object> {
+export function withSubscription(WrappedComponent: React.FC<object>) {
   class LogBoxStateSubscription extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
       return { hasError: true };
@@ -375,10 +368,16 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
       }
     }
 
-    componentDidCatch(err: Error, errorInfo: { componentStack: string } & any) {
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
-      reportLogBoxError(err, errorInfo.componentStack);
+    componentDidCatch(
+      err: Error & { componentStack?: string },
+      errorInfo: { componentStack: string } & any
+    ) {
+      // TODO: Won't this catch all React errors and make them appear as unexpected rendering errors?
+      if (errorInfo.componentStack != null) {
+        err.componentStack = errorInfo.componentStack;
+      }
+
+      reportUnexpectedThrownValue(err);
     }
 
     _subscription?: Subscription;
@@ -454,6 +453,5 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
     };
   }
 
-  // @ts-expect-error
   return LogBoxStateSubscription;
 }

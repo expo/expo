@@ -6,18 +6,18 @@ if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
 }
 
 export function withErrorOverlay(RootComponent: React.ComponentType<any>) {
-  if (process.env.NODE_ENV === 'production') {
-    return RootComponent;
+  if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
+    const ErrorToastContainer = require('./ErrorToast')
+      .default as typeof import('./ErrorToast').default;
+
+    return function ErrorOverlay(props: any) {
+      return (
+        <ErrorToastContainer>
+          <RootComponent {...props} />
+        </ErrorToastContainer>
+      );
+    };
   }
 
-  const ErrorToastContainer = require('./ErrorToast')
-    .default as typeof import('./ErrorToast').default;
-
-  return function ErrorOverlay(props: any) {
-    return (
-      <ErrorToastContainer>
-        <RootComponent {...props} />
-      </ErrorToastContainer>
-    );
-  };
+  return RootComponent;
 }
