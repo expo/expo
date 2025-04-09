@@ -11,7 +11,10 @@ export async function resolveRemoteBuildCache(
   {
     platform,
     provider,
-  }: { platform: ModPlatform; provider?: ExpoConfig['experiments']['remoteBuildCache']['provider'] }
+  }: {
+    platform: ModPlatform;
+    provider?: Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider'];
+  }
 ): Promise<string | null> {
   const Fingerprint = importFingerprintForDev(projectRoot);
   if (!Fingerprint) {
