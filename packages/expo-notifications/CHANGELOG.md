@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Defer calling `addTokenListener` until `OnCreate`.
+- [Android] Defer calling `addTokenListener` until `OnCreate`. ([#36052](https://github.com/expo/expo/pull/36052) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
