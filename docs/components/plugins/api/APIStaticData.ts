@@ -10,7 +10,6 @@ export const nonLinkableTypes = [
   'EmitterSubscription',
   'EventName',
   'EventSubscription',
-  'FileBlob',
   'FileSystemDirectory',
   'FileSystemFile',
   'ForwardRefExoticComponent',
