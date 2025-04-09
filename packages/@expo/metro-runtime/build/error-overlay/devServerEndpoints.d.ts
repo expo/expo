@@ -1,5 +1,5 @@
 import { type StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
-type StackFrame = UpstreamStackFrame & {
+export type MetroStackFrame = UpstreamStackFrame & {
     collapse?: boolean;
 };
 export type CodeFrame = {
@@ -12,17 +12,15 @@ export type CodeFrame = {
     fileName: string;
 };
 export type SymbolicatedStackTrace = {
-    stack: StackFrame[];
+    stack: MetroStackFrame[];
     codeFrame?: CodeFrame;
 };
 export declare function openFileInEditor(file: string, lineNumber: number): void;
 export declare function formatProjectFilePath(projectRoot: string, file?: string | null): string;
-export declare function getStackFormattedLocation(projectRoot: string, frame: Pick<StackFrame, 'column' | 'file' | 'lineNumber'>): string;
-export declare function parseErrorStack(stack?: string): (StackFrame & {
+export declare function getStackFormattedLocation(projectRoot: string, frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>): string;
+export declare function parseErrorStack(stack?: string): (MetroStackFrame & {
     collapse?: boolean;
 })[];
-export type Stack = StackFrame[];
-export declare function invalidateCachedStack(stack: Stack): void;
-export declare function symbolicateStackAndCacheAsync(stack: Stack): Promise<SymbolicatedStackTrace>;
-export {};
+export declare function invalidateCachedStack(stack: MetroStackFrame[]): void;
+export declare function symbolicateStackAndCacheAsync(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace>;
 //# sourceMappingURL=devServerEndpoints.d.ts.map

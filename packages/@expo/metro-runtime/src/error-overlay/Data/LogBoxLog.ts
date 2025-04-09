@@ -6,8 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../devServerEndpoints';
-import type { Stack } from '../devServerEndpoints';
+import {
+  symbolicateStackAndCacheAsync,
+  invalidateCachedStack,
+  type MetroStackFrame,
+} from '../devServerEndpoints';
 import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
 
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
@@ -18,7 +21,7 @@ export type LogBoxLogData = {
   level: LogLevel;
   type?: string;
   message: Message;
-  stack: Stack;
+  stack: MetroStackFrame[];
   category: string;
   componentStack: ComponentStack;
   codeFrame?: CodeFrame;
@@ -32,10 +35,10 @@ type SymbolicationCallback = (status: SymbolicationStatus) => void;
 type SymbolicationResult =
   | { error: null; stack: null; status: 'NONE' }
   | { error: null; stack: null; status: 'PENDING' }
-  | { error: null; stack: Stack; status: 'COMPLETE' }
+  | { error: null; stack: MetroStackFrame[]; status: 'COMPLETE' }
   | { error: Error; stack: null; status: 'FAILED' };
 
-function componentStackToStack(componentStack: ComponentStack): Stack {
+function componentStackToStack(componentStack: ComponentStack): MetroStackFrame[] {
   return componentStack.map((stack) => ({
     file: stack.fileName,
     methodName: stack.content,
@@ -49,7 +52,7 @@ export class LogBoxLog {
   type: string;
   category: Category;
   componentStack: ComponentStack;
-  stack: Stack;
+  stack: MetroStackFrame[];
   count: number;
   level: LogLevel;
   codeFrame?: CodeFrame;
@@ -92,7 +95,7 @@ export class LogBoxLog {
     this.count += 1;
   }
 
-  getAvailableStack(type: StackType): Stack | null {
+  getAvailableStack(type: StackType): MetroStackFrame[] | null {
     if (this.symbolicated[type].status === 'COMPLETE') {
       return this.symbolicated[type].stack;
     }
@@ -171,9 +174,9 @@ export class LogBoxLog {
     }
   }
 
-  private componentStackCache: Stack | null = null;
+  private componentStackCache: MetroStackFrame[] | null = null;
 
-  private getStack(type: StackType): Stack {
+  private getStack(type: StackType): MetroStackFrame[] {
     if (type === 'component') {
       if (this.componentStackCache == null) {
         this.componentStackCache = componentStackToStack(this.componentStack);
@@ -204,7 +207,7 @@ export class LogBoxLog {
   private updateStatus(
     type: StackType,
     error?: Error | null,
-    stack?: Stack | null,
+    stack?: MetroStackFrame[] | null,
     codeFrame?: CodeFrame | null
   ): void {
     const lastStatus = this.symbolicated[type].status;
@@ -243,7 +246,7 @@ export class LogBoxLog {
 
 // Sometime the web stacks don't have correct query params, this can lead to Metro errors when it attempts to resolve without a platform.
 // This will attempt to reconcile the issue by adding the current query params to the stack frames if they exist, or fallback to some common defaults.
-function ensureStackFilesHaveParams(stack: Stack): Stack {
+function ensureStackFilesHaveParams(stack: MetroStackFrame[]): MetroStackFrame[] {
   const currentSrc =
     typeof document !== 'undefined' && document.currentScript
       ? ('src' in document.currentScript && document.currentScript.src) || null

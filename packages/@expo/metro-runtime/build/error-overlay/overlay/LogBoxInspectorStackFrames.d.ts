@@ -7,8 +7,8 @@
  */
 import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
-import { type Stack } from '../devServerEndpoints';
-export declare function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string;
+import { type MetroStackFrame } from '../devServerEndpoints';
+export declare function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean): string;
 export declare function LogBoxInspectorStackFrames({ onRetry, type, }: {
     type: StackType;
     onRetry: () => void;

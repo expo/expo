@@ -1,6 +1,6 @@
 import { parse, type StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
 
-type StackFrame = UpstreamStackFrame & { collapse?: boolean };
+export type MetroStackFrame = UpstreamStackFrame & { collapse?: boolean };
 
 export type CodeFrame = {
   content: string;
@@ -13,9 +13,11 @@ export type CodeFrame = {
 };
 
 export type SymbolicatedStackTrace = {
-  stack: StackFrame[];
+  stack: MetroStackFrame[];
   codeFrame?: CodeFrame;
 };
+
+const cache: Map<MetroStackFrame[], Promise<SymbolicatedStackTrace>> = new Map();
 
 function getBaseUrl() {
   if (typeof window === 'undefined') {
@@ -42,7 +44,7 @@ export function openFileInEditor(file: string, lineNumber: number): void {
   });
 }
 
-async function symbolicateStackTrace(stack: StackFrame[]): Promise<SymbolicatedStackTrace> {
+async function symbolicateStackTrace(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace> {
   const response = await fetch(new URL('/symbolicate', getBaseUrl()).href, {
     method: 'POST',
     body: JSON.stringify({ stack }),
@@ -76,7 +78,7 @@ function pathRelativeToPath(path: string, relativeTo: string, sep = '/') {
 
 export function getStackFormattedLocation(
   projectRoot: string,
-  frame: Pick<StackFrame, 'column' | 'file' | 'lineNumber'>
+  frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>
 ): string {
   const column = frame.column != null && parseInt(String(frame.column), 10);
   const location =
@@ -88,7 +90,7 @@ export function getStackFormattedLocation(
   return location;
 }
 
-export function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
+export function parseErrorStack(stack?: string): (MetroStackFrame & { collapse?: boolean })[] {
   if (stack == null) {
     return [];
   }
@@ -105,10 +107,6 @@ export function parseErrorStack(stack?: string): (StackFrame & { collapse?: bool
   });
 }
 
-export type Stack = StackFrame[];
-
-const cache: Map<Stack, Promise<SymbolicatedStackTrace>> = new Map();
-
 /**
  * Sanitize because sometimes, `symbolicateStackTrace` gives us invalid values.
  */
@@ -119,7 +117,7 @@ function normalizeMetroSymbolicatedStackResults({
   if (!Array.isArray(maybeStack)) {
     throw new Error('Expected stack to be an array.');
   }
-  const stack: StackFrame[] = [];
+  const stack: MetroStackFrame[] = [];
   for (const maybeFrame of maybeStack) {
     let collapse = false;
     if ('collapse' in maybeFrame) {
@@ -140,11 +138,13 @@ function normalizeMetroSymbolicatedStackResults({
   return { stack, codeFrame };
 }
 
-export function invalidateCachedStack(stack: Stack): void {
+export function invalidateCachedStack(stack: MetroStackFrame[]): void {
   cache.delete(stack);
 }
 
-export function symbolicateStackAndCacheAsync(stack: Stack): Promise<SymbolicatedStackTrace> {
+export function symbolicateStackAndCacheAsync(
+  stack: MetroStackFrame[]
+): Promise<SymbolicatedStackTrace> {
   let promise = cache.get(stack);
   if (promise == null) {
     promise = symbolicateStackTrace(stack).then(normalizeMetroSymbolicatedStackResults);

@@ -19,6 +19,7 @@ import type { Message } from './Data/parseLogBoxLog';
 import { LogBoxMessage } from './LogBoxMessage';
 //@ts-expect-error
 import styles from './ErrorOverlay.module.css';
+
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
   error: 'Console Error',

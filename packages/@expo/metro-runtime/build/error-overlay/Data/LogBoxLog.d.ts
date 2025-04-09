@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Stack } from '../devServerEndpoints';
+import { type MetroStackFrame } from '../devServerEndpoints';
 import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
@@ -13,7 +13,7 @@ export type LogBoxLogData = {
     level: LogLevel;
     type?: string;
     message: Message;
-    stack: Stack;
+    stack: MetroStackFrame[];
     category: string;
     componentStack: ComponentStack;
     codeFrame?: CodeFrame;
@@ -30,7 +30,7 @@ type SymbolicationResult = {
     status: 'PENDING';
 } | {
     error: null;
-    stack: Stack;
+    stack: MetroStackFrame[];
     status: 'COMPLETE';
 } | {
     error: Error;
@@ -42,7 +42,7 @@ export declare class LogBoxLog {
     type: string;
     category: Category;
     componentStack: ComponentStack;
-    stack: Stack;
+    stack: MetroStackFrame[];
     count: number;
     level: LogLevel;
     codeFrame?: CodeFrame;
@@ -53,7 +53,7 @@ export declare class LogBoxLog {
         symbolicated?: Record<StackType, SymbolicationResult>;
     });
     incrementCount(): void;
-    getAvailableStack(type: StackType): Stack | null;
+    getAvailableStack(type: StackType): MetroStackFrame[] | null;
     private flushCallbacks;
     private pushCallback;
     retrySymbolicate(type: StackType, callback?: (status: SymbolicationStatus) => void): void;

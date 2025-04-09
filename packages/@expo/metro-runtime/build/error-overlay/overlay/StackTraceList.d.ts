@@ -6,12 +6,12 @@
  */
 import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
-import { type Stack } from '../devServerEndpoints';
+import { type MetroStackFrame } from '../devServerEndpoints';
 import './StackTraceList.css';
 export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, }: {
     type: StackType;
     onRetry: () => void;
-    stack: Stack | null;
+    stack: MetroStackFrame[] | null;
     symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }): React.JSX.Element | null;
 //# sourceMappingURL=StackTraceList.d.ts.map
