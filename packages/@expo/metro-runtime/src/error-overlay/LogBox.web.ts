@@ -130,13 +130,50 @@ if (__DEV__) {
 
     try {
       let stack;
-      // $FlowFixMe[prop-missing] Not added to flow types yet.
-      if (React.captureOwnerStack != null && !hasComponentStack(args)) {
-        stack = React.captureOwnerStack();
 
-        if (stack != null && stack !== '') {
-          args[0] = args[0] += '%s';
-          args.push(stack);
+      // Handle React 19 errors.
+      if (React.captureOwnerStack != null) {
+        // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
+        const error = process.env.NODE_ENV !== 'production' ? [...Object.values(args)][1] : args[0];
+
+        const isReactThrownError =
+          !!error && error instanceof Error && typeof error.stack === 'string';
+        console.log(
+          'isReactThrownError',
+          isReactThrownError,
+          error.stack
+          // error,
+          // [...Object.values(args)],
+          // Object.entries(error)
+        );
+        if (isReactThrownError) {
+          // TODO: This is the naive approach from RN.
+          if (!hasComponentStack(args)) {
+            stack = React.captureOwnerStack();
+
+            if (stack != null && stack !== '') {
+              args[0] = args[0] += '%s';
+              args.push(stack);
+            }
+          }
+
+          const componentStackTrace =
+            (error as any).componentStack ||
+            (error as any)._componentStack ||
+            React.captureOwnerStack();
+
+          console.log('REACT INTERNAL STACK:', componentStackTrace);
+          // const componentStackFrames =
+          //   typeof componentStackTrace === 'string'
+          //     ? parseComponentStack(componentStackTrace)
+          //     : undefined
+
+          // TODO: Handle special...
+          const unhandledError = {
+            reason: error,
+            // componentStackFrames,
+            // frames: parseStack(error.stack),
+          };
         }
       }
 
