@@ -130,10 +130,21 @@ export function _appendNewLog(newLog: LogBoxLog): void {
   // then roll it up into the last log in the list by incrementing
   // the count (similar to how Chrome does it).
   const lastLog = Array.from(logs).pop();
+
   if (lastLog && lastLog.category === newLog.category) {
-    lastLog.incrementCount();
-    handleUpdate();
-    return;
+    if (lastLog.level === newLog.level) {
+      lastLog.incrementCount();
+      handleUpdate();
+      return;
+    } else {
+      // Determine which one is more important. This is because console.error for React errors shows before the more important root componentDidCatch which should force the UI to show.
+      if (newLog.level === 'fatal') {
+        // If the new log is fatal, then we want to show it
+        // and hide the last one.
+        newLog.count = lastLog.count;
+        logs.delete(lastLog);
+      }
+    }
   }
 
   if (newLog.level === 'fatal') {
@@ -381,10 +392,11 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
       const { category, message, componentStack } = parseLogBoxLog([err]);
 
       if (!isMessageIgnored(message.content)) {
+        console.log('pushing error to logbox');
         addLog({
           // Always show the static rendering issues as full screen since they
           // are too confusing otherwise.
-          level: 'error',
+          level: 'fatal',
           category,
           message,
           componentStack,
