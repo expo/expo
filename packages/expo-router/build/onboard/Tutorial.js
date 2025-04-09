@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tutorial = void 0;
+exports.Tutorial = Tutorial;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -68,7 +68,6 @@ function Tutorial() {
       </react_native_1.View>
     </react_native_safe_area_context_1.SafeAreaView>);
 }
-exports.Tutorial = Tutorial;
 function getRootDir() {
     const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT;
     if (dir.match(/\/src\/app$/)) {

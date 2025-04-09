@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withConsoleDisabledAsync = void 0;
+exports.withConsoleDisabledAsync = withConsoleDisabledAsync;
 async function withConsoleDisabledAsync(block) {
     const loggingFunctions = {
         log: console.log,
@@ -21,4 +21,3 @@ async function withConsoleDisabledAsync(block) {
         console.error = loggingFunctions.error;
     }
 }
-exports.withConsoleDisabledAsync = withConsoleDisabledAsync;

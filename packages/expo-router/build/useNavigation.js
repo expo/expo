@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigation = void 0;
+exports.useNavigation = useNavigation;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const router_store_1 = require("./global-state/router-store");
@@ -125,5 +125,4 @@ function useNavigation(parent) {
     }
     return navigation;
 }
-exports.useNavigation = useNavigation;
 //# sourceMappingURL=useNavigation.js.map

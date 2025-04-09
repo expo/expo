@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
+exports.createRequestHandler = createRequestHandler;
+exports.convertRequest = convertRequest;
+exports.convertHeaders = convertHeaders;
+exports.respond = respond;
 const node_stream_1 = require("node:stream");
 const promises_1 = require("node:stream/promises");
 const index_1 = require("../index");
@@ -25,7 +28,6 @@ function createRequestHandler({ build }, setup) {
         }
     };
 }
-exports.createRequestHandler = createRequestHandler;
 function convertRawHeaders(requestHeaders) {
     const headers = new Headers();
     for (let index = 0; index < requestHeaders.length; index += 2) {
@@ -52,7 +54,6 @@ function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
-exports.convertRequest = convertRequest;
 function convertHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
@@ -69,7 +70,6 @@ function convertHeaders(requestHeaders) {
     }
     return headers;
 }
-exports.convertHeaders = convertHeaders;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.statusCode = expoRes.status;
@@ -88,5 +88,4 @@ async function respond(res, expoRes) {
         res.end();
     }
 }
-exports.respond = respond;
 //# sourceMappingURL=http.js.map

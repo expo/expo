@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchChunk = exports.ReactImportsPatchTransform = void 0;
+exports.ReactImportsPatchTransform = void 0;
+exports.patchChunk = patchChunk;
 const stream_1 = require("stream");
 /**
  * A transform stream that patches React import statements in Objective-C files.
@@ -75,7 +76,6 @@ function patchChunk(chunk, headerSet = HEADER_SET) {
     });
     return transformContent;
 }
-exports.patchChunk = patchChunk;
 // Fingerprint doesn't run `pod install` so we have a snapshot of the headers in the React-Core module from react-native 0.74.
 const HEADER_SET = new Set([
     'CoreModulesPlugins.h',

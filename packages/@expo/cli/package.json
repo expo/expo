@@ -125,7 +125,7 @@
     "@types/execa": "^0.9.0",
     "@types/getenv": "^1.0.0",
     "@types/klaw-sync": "^6.0.0",
-    "@types/node": "^18.19.34",
+    "@types/node": "^22.14.0",
     "@types/npm-package-arg": "^6.1.0",
     "@types/picomatch": "^2.3.3",
     "@types/progress": "^2.0.5",

@@ -1,7 +1,7 @@
 'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorBoundary = void 0;
+exports.ErrorBoundary = ErrorBoundary;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -116,7 +116,6 @@ function ErrorBoundary({ error, retry }) {
       </Wrapper>
     </react_native_1.View>);
 }
-exports.ErrorBoundary = ErrorBoundary;
 const COMMON_ERROR_STATUS = {
     404: 'NOT_FOUND',
     500: 'INTERNAL_SERVER_ERROR',

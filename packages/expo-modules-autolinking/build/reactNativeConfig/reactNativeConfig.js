@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveAppProjectConfigAsync = exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
+exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
+exports.findDependencyRootsAsync = findDependencyRootsAsync;
+exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
+exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../autolinking/utils");
@@ -43,7 +46,6 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
         project: projectData,
     };
 }
-exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 /**
  * Find all dependencies and their directories from the project.
  */
@@ -72,7 +74,6 @@ async function findDependencyRootsAsync(projectRoot, searchPaths) {
     }
     return results;
 }
-exports.findDependencyRootsAsync = findDependencyRootsAsync;
 /**
  * Find local dependencies that specified in the `react-native.config.js` file.
  */
@@ -123,7 +124,6 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
         },
     };
 }
-exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
 async function resolveAppProjectConfigAsync(projectRoot, platform) {
     if (platform === 'android') {
         const androidDir = path_1.default.join(projectRoot, 'android');
@@ -148,5 +148,4 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
     }
     return {};
 }
-exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 //# sourceMappingURL=reactNativeConfig.js.map

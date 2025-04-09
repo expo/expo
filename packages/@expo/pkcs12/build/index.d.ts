@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import forge from 'node-forge';
 /**
  * Returns the serial number of the given X.509 certificate as an uppercased hexadecimal string

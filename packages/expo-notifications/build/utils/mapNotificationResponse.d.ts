@@ -31,7 +31,7 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
         date: number;
     };
     actionIdentifier: string;
-    userText?: string | undefined;
+    userText?: string;
 };
 /**
  * @hidden

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import type { RNConfigDependencyAndroid, RNConfigReactNativePlatformsConfigAndroid } from './reactNativeConfig.types';
 export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: string, reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined): Promise<RNConfigDependencyAndroid | null>;
 /**
