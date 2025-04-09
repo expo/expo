@@ -4,7 +4,7 @@ import { LogBoxLog } from './LogBoxLog';
 
 // Context provider for Array<LogBoxLog>
 
-const IS_TESTING = true;
+const IS_TESTING = false;
 
 export const LogContext = React.createContext<{
   selectedLogIndex: number;
