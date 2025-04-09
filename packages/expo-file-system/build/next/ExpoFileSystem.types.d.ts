@@ -83,8 +83,8 @@ export declare class File {
      */
     readonly uri: string;
     /**
-     * Validates a directory path.
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
+     * Validates a directory path.
      */
     validatePath(): void;
     /**
