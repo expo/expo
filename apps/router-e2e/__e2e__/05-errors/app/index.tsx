@@ -16,9 +16,11 @@ export default function App() {
         Runtime error: undefined is not a function
       </Text>
 
-      {Array.from({ length: 3 }, (_, i) => (
+      <Broken />
+
+      {/* {Array.from({ length: 3 }, (_, i) => (
         <View style={{ padding: 8, backgroundColor: 'white' }}></View>
-      )).reverse()}
+      )).reverse()} */}
     </View>
   );
 }
