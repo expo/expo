@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Ensure fast resolver is enabled when react canary is enabled.
+- Ensure fast resolver is enabled when react canary is enabled. ([#36053](https://github.com/expo/expo/pull/36053) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
