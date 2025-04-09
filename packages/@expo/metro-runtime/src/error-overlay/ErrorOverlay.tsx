@@ -48,7 +48,7 @@ export function LogBoxInspector({
   selectedLogIndex: number;
   logs: LogBoxLog[];
 }) {
-  const onDismiss = useCallback((): void => {
+  const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
     // was either the last log, or when the current index
     // is now outside the bounds of the log array.
@@ -62,7 +62,7 @@ export function LogBoxInspector({
 
       LogBoxData.dismiss(logsArray[selectedLogIndex]);
     }
-  }, [selectedLogIndex]);
+  };
 
   const onMinimize = useCallback((): void => {
     LogBoxData.setSelectedLog(-1);

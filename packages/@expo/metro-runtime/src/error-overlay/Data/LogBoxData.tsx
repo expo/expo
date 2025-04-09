@@ -298,6 +298,16 @@ export function dismiss(log: LogBoxLog): void {
   if (logs.has(log)) {
     logs.delete(log);
     handleUpdate();
+  } else {
+    // Find log with matching message
+    const message = log.message.content;
+    const logToDismiss = Array.from(logs).find((l) => l.message.content === message);
+    if (logToDismiss) {
+      logs.delete(logToDismiss);
+      handleUpdate();
+    } else {
+      console.warn('LogBoxLog not found in logs:', log, logs);
+    }
   }
 }
 
