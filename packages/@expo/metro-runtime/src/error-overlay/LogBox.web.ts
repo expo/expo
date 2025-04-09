@@ -138,14 +138,6 @@ if (__DEV__) {
 
         const isReactThrownError =
           !!error && error instanceof Error && typeof error.stack === 'string';
-        console.log(
-          'isReactThrownError',
-          isReactThrownError,
-          error.stack
-          // error,
-          // [...Object.values(args)],
-          // Object.entries(error)
-        );
         if (isReactThrownError) {
           // TODO: This is the naive approach from RN.
           if (!hasComponentStack(args)) {
@@ -157,23 +149,23 @@ if (__DEV__) {
             }
           }
 
-          const componentStackTrace =
-            (error as any).componentStack ||
-            (error as any)._componentStack ||
-            React.captureOwnerStack();
+          // const componentStackTrace =
+          //   (error as any).componentStack ||
+          //   (error as any)._componentStack ||
+          //   React.captureOwnerStack();
 
-          console.log('REACT INTERNAL STACK:', componentStackTrace);
+          // console.log('REACT INTERNAL STACK:', componentStackTrace);
           // const componentStackFrames =
           //   typeof componentStackTrace === 'string'
           //     ? parseComponentStack(componentStackTrace)
           //     : undefined
 
           // TODO: Handle special...
-          const unhandledError = {
-            reason: error,
-            // componentStackFrames,
-            // frames: parseStack(error.stack),
-          };
+          // const unhandledError = {
+          //   reason: error,
+          //   // componentStackFrames,
+          //   // frames: parseStack(error.stack),
+          // };
         }
       }
 
