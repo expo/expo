@@ -34,10 +34,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  let maybePromptToSyncPods = false;
-  // Only prompt to sync pods if the user is not using a custom binary.
   if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
-    maybePromptToSyncPods = true;
+    await maybePromptToSyncPodsAsync(projectRoot);
   }
 
   // Resolve the CLI arguments into useable options.
@@ -52,10 +50,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     if (localPath) {
       options.binary = localPath;
     }
-  }
-
-  if (!options.binary && maybePromptToSyncPods) {
-    await maybePromptToSyncPodsAsync(projectRoot);
   }
 
   if (options.rebundle) {
