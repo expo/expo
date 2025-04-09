@@ -9,7 +9,6 @@
 import React from 'react';
 import type { LogBoxLogData } from './LogBoxLog';
 import { parseErrorStack } from '../devServerEndpoints';
-import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -282,13 +281,13 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
 
 function interpolateLikeConsole(...args: any[]) {
   let output = '';
-  let i = 0;
 
   if (typeof args[0] === 'string') {
     const format = args[0];
     const rest = args.slice(1);
     let argIndex = 0;
 
+    // TODO: %c for colors
     output = format.replace(/%[sdifoO%]/g, (match) => {
       if (match === '%%') return '%'; // escape %%
       const arg = rest[argIndex++];
@@ -297,14 +296,12 @@ function interpolateLikeConsole(...args: any[]) {
           return String(arg);
         case '%d':
         case '%i':
-          return parseInt(arg);
+          return parseInt(arg, 10);
         case '%f':
           return parseFloat(arg);
         case '%o':
         case '%O':
-          return arg instanceof Error
-            ? arg.message || arg.toString()
-            : JSON.stringify(arg, null, 2);
+          return stringifySafe(arg);
         default:
           return match;
       }
@@ -360,6 +357,7 @@ const REACT_ERROR_STACK_BOTTOM_FRAME_REGEX = new RegExp(
 
 function getReactStitchedError<T = unknown>(err: T): Error | T {
   const isErrorInstance = isError(err);
+  tagError(isErrorInstance);
   const originStack = isErrorInstance ? err.stack || '' : '';
   const originMessage = isErrorInstance ? err.message : '';
   const stackLines = originStack.split('\n');
@@ -377,6 +375,7 @@ function getReactStitchedError<T = unknown>(err: T): Error | T {
   newError.stack = newStack;
   // Avoid duplicate overriding stack frames
   appendOwnerStack(newError);
+  tagError(newError);
 
   return newError;
 }
@@ -408,32 +407,44 @@ export function parseLogBoxLog(args: any[]): {
   // Handle React 19 errors which have a custom format, come through console.error, and include a raw error object.
   if (React.captureOwnerStack != null) {
     // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
-    let error = process.env.NODE_ENV !== 'production' ? args[1] : args[0];
-
-    console.log('FOUND ONCE:', hasTaggedError(error), tagError(error));
-    const isReactThrownError = !!error && error instanceof Error && typeof error.stack === 'string';
-    if (isReactThrownError) {
-      error = getReactStitchedError(error);
-      const componentStackTrace = (error as any).stack;
-      const message = interpolateLikeConsole(...args);
-      return {
-        componentStack: parseComponentStack(componentStackTrace),
-        category: error.message,
-        message: {
-          content: message,
-          substitutions: [],
-        },
-      };
-    } else if (
-      // TODO: This is the naive approach from RN. This can probably be removed.
-      !hasComponentStack(args)
-    ) {
-      const stack = React.captureOwnerStack();
-      if (stack != null && stack !== '') {
-        args[0] = args[0] += '%s';
-        args.push(stack);
+    let error: Error | undefined;
+    for (const arg of args) {
+      if (isError(arg)) {
+        error = arg;
+        break;
       }
     }
+    const message = interpolateLikeConsole(...args);
+    if (!isError(error)) {
+      error = new Error(message);
+    }
+    error = getReactStitchedError(error);
+    const componentStackTrace = (error as any).stack;
+    return {
+      componentStack: parseComponentStack(componentStackTrace),
+      category: error.message,
+      message: {
+        content: message,
+        substitutions: [],
+      },
+    };
+
+    // const message = interpolateLikeConsole(...args);
+
+    // else if (
+    //   // TODO: This is the naive approach from RN. This can probably be removed.
+    //   // This is also used for "Each child in a list should have a unique key prop."
+    //   !hasComponentStack(args)
+    // ) {
+    //   error = args[0];
+    //   console.log('OBJ', Object.entries(args));
+
+    //   const stack = React.captureOwnerStack();
+    //   if (stack != null && stack !== '') {
+    //     args[0] = args[0] += '%s';
+    //     args.push(stack);
+    //   }
+    // }
   }
 
   // Extract component stack from warnings like "Some warning%s".
@@ -549,7 +560,8 @@ function createStringifySafeWithLimits(limits: {
         return '[function unknown]';
       }
     } else if (arg instanceof Error) {
-      return arg.name + ': ' + arg.message;
+      return arg.message;
+      // return arg.name + ': ' + arg.message;
     } else {
       // Perform a try catch, just in case the object has a circular
       // reference or stringify throws for some other reason.

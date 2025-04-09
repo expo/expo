@@ -14,7 +14,7 @@ import { NativeEventEmitter } from 'react-native';
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';
 import { LogContext } from './LogContext';
-import { isError, parseLogBoxException, tagError } from './parseLogBoxLog';
+import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 import { parseErrorStack } from '../devServerEndpoints';
 import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
@@ -211,6 +211,7 @@ export function addException(error: ExtendedExceptionData): void {
     try {
       _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
     } catch (unexpectedError: any) {
+      console.log('Error parsing exception', error);
       reportUnexpectedLogBoxError(unexpectedError);
     }
   }, 0);
@@ -353,7 +354,7 @@ const emitter = new NativeEventEmitter({
 });
 
 export function withSubscription(WrappedComponent: React.FC<object>) {
-  class LogBoxStateSubscription extends React.Component<React.PropsWithChildren<Props>, State> {
+  class RootDevErrorBoundary extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
       return { hasError: true };
     }
@@ -375,11 +376,20 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
       errorInfo: { componentStack: string } & any
     ) {
       // TODO: Won't this catch all React errors and make them appear as unexpected rendering errors?
-      if (errorInfo.componentStack != null) {
-        err.componentStack = errorInfo.componentStack;
-      }
+      err.componentStack ??= errorInfo.componentStack;
 
-      reportUnexpectedThrownValue(err);
+      const { category, message, componentStack } = parseLogBoxLog([err]);
+
+      if (!isMessageIgnored(message.content)) {
+        addLog({
+          // Always show the static rendering issues as full screen since they
+          // are too confusing otherwise.
+          level: 'error',
+          category,
+          message,
+          componentStack,
+        });
+      }
     }
 
     _subscription?: Subscription;
@@ -407,7 +417,7 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
             isDisabled: this.state.isDisabled,
             logs: Array.from(this.state.logs),
           }}>
-          {this.state.hasError ? null : this.props.children}
+          {this.props.children}
           <WrappedComponent />
         </LogContext.Provider>
       );
@@ -455,5 +465,5 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
     };
   }
 
-  return LogBoxStateSubscription;
+  return RootDevErrorBoundary;
 }
