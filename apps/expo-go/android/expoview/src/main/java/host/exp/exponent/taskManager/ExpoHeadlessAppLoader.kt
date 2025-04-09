@@ -3,7 +3,6 @@ package host.exp.exponent.taskManager
 import android.content.Context
 import android.util.Log
 import expo.modules.adapters.react.apploader.HeadlessAppLoaderNotifier
-import expo.modules.apploader.AppLoaderProvider
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.apploader.HeadlessAppLoader.AppConfigurationError
 import expo.modules.core.interfaces.Consumer
@@ -36,21 +35,18 @@ class ExpoHeadlessAppLoader @DoNotStrip constructor(context: Context?) : Headles
         )
         val appRecord = appLoader.loadApp(
           params.appUrl,
-          mapOf(),
-          object : AppLoaderProvider.Callback() {
-            override fun onComplete(success: Boolean, exception: Exception?) {
-              if (exception != null) {
-                exception.printStackTrace()
-                Log.e(TAG, exception.message!!)
-              }
-              HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
-              callback.apply(success)
-              if (!success) {
-                appScopeKeysToAppRecords.remove(params.appScopeKey)
-              }
-            }
+          mapOf()
+        ) { success, exception ->
+          if (exception != null) {
+            exception.printStackTrace()
+            Log.e(TAG, exception.message!!)
           }
-        )
+          HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
+          callback.apply(success)
+          if (!success) {
+            appScopeKeysToAppRecords.remove(params.appScopeKey)
+          }
+        }
 
         appScopeKeysToAppRecords[params.appScopeKey] = appRecord
       }
