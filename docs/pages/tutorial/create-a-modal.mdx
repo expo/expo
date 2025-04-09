@@ -730,7 +730,7 @@ type Props = {
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   return (
-    <View style={{ top: -350 }}>
+    <View>
       <Image source={stickerSource} style={{ width: imageSize, height: imageSize }} />
     </View>
   );
@@ -806,10 +806,14 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
-        /* @tutinfo Add this line to display the emoji sticker on the image. */
-        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
-        /* @end */
       </View>
+        /* @tutinfo Display emoji sticker on image if selected. */
+        {pickedEmoji && (
+        <View style={styles.stickerContainer}>
+          <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
+        </View>
+        )}
+        /* @end */
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
@@ -840,6 +844,17 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
   },
+ /* @tutinfo Add styles for the new <CODE>View</CODE> components. */
+  stickerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+/* @end */
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
