@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Expo AV has now been deprecated. ([#36020](https://github.com/expo/expo/pull/36020) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.1.0 — 2025-04-04
 
 ### 💡 Others
