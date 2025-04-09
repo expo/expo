@@ -84,7 +84,8 @@ export class LogBoxLog {
     this.isComponentError = data.isComponentError;
     this.count = 1;
     this.symbolicated = data.symbolicated ?? this.symbolicated;
-    console.log('LogBoxLog', JSON.stringify(data, null, 2));
+    // Create unsymbolidated fixture:
+    // console.log('LogBoxLog', JSON.stringify(data, null, 2));
   }
 
   incrementCount(): void {
@@ -137,6 +138,26 @@ export class LogBoxLog {
     const status = this.symbolicated[type].status;
 
     if (status === 'COMPLETE') {
+      // Create symbolicated fixture:
+      console.log(
+        'LogBoxLog.symbolicated:',
+        JSON.stringify(
+          {
+            stack: [],
+            componentStack: [],
+            level: this.level,
+            type: this.type,
+            message: this.message,
+            category: this.category,
+            codeFrame: this.codeFrame,
+            isComponentError: this.isComponentError,
+            symbolicated: this.symbolicated,
+          },
+          null,
+          2
+        )
+      );
+
       return this.flushCallbacks(type);
     }
 

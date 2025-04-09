@@ -194,7 +194,7 @@ export function addLog(log: LogData): void {
         new LogBoxLog({
           level: log.level,
           message: log.message,
-          isComponentError: false,
+          isComponentError: !!log.componentStack?.length,
           stack,
           category: log.category,
           componentStack: log.componentStack,
@@ -257,6 +257,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   }
   _selectedIndex = newIndex;
   handleUpdate();
+
   if (NativeLogBox) {
     setTimeout(() => {
       if (oldIndex < 0 && newIndex >= 0) {
@@ -413,7 +414,7 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
     componentDidMount(): void {
       this._subscription = observe((data) => {
         // Ignore the initial empty log
-        if (data.selectedLogIndex === -1) return;
+        // if (data.selectedLogIndex === -1) return;
         React.startTransition(() => {
           this.setState(data);
         });

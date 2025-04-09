@@ -124,6 +124,15 @@ export function parseInterpolation(args: readonly any[]): {
   };
 }
 
+export function hasComponentStack(args: any[]): boolean {
+  for (const arg of args) {
+    if (typeof arg === 'string' && isComponentStack(arg)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function isComponentStack(consoleArgument: string) {
   const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
   const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
