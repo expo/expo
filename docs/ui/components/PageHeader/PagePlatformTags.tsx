@@ -6,7 +6,7 @@ type Props = {
 
 export function PagePlatformTags({ platforms }: Props) {
   return (
-    <div className="mt-3 inline-flex flex-wrap">
+    <div className="inline-flex flex-wrap">
       {platforms
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {
