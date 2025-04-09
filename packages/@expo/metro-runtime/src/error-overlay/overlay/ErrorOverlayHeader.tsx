@@ -119,7 +119,7 @@ function HeaderButton(props: {
   return (
     <button
       className="expo-log-page-button"
-      aria-disabled={!props.onPress || props.disabled}
+      aria-disabled={!props.onPress || props.disabled ? true : undefined}
       onClick={props.disabled ? undefined : props.onPress}>
       {props.children}
     </button>
