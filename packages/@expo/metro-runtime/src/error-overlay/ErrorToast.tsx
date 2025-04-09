@@ -118,7 +118,7 @@ export function ErrorToast(props: {
       <Count count={totalLogCount} />
 
       <Text numberOfLines={1} style={styles.text}>
-        {log.message && <LogBoxMessage maxLength={40} plaintext message={log.message} />}
+        {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
       </Text>
 
       <Dismiss onPress={props.onPressDismiss} />

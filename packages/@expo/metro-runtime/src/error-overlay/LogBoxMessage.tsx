@@ -12,7 +12,6 @@ import type { Message } from './Data/parseLogBoxLog';
 
 type Props = {
   message: Message;
-  plaintext?: boolean;
   maxLength?: number;
 };
 
@@ -23,12 +22,11 @@ const cleanContent = (content: string) => content;
 export function LogBoxMessage(props: Props): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
-  // if (props.plaintext === true) {
-  //   return <span>{cleanContent(content)}</span>;
-  // }
-
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
-  const substitutionStyle: StyleProp<TextStyle> = { opacity: 0.6 };
+  const substitutionStyle: StyleProp<TextStyle> = {
+    opacity: 0.6,
+    // @ts-ignore
+    whiteSpace: 'pre-wrap' };
   const elements: React.ReactElement[] = [];
   let length = 0;
   const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
@@ -71,5 +69,5 @@ export function LogBoxMessage(props: Props): React.ReactElement {
     createUnderLength('-1', lastPart);
   }
 
-  return <>{elements}</>;
+  return <div style={{ whiteSpace: 'pre-wrap' }}>{elements}</div>;
 }

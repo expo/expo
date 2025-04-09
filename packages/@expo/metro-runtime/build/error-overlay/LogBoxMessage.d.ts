@@ -9,7 +9,6 @@ import React from 'react';
 import type { Message } from './Data/parseLogBoxLog';
 type Props = {
     message: Message;
-    plaintext?: boolean;
     maxLength?: number;
 };
 export declare function LogBoxMessage(props: Props): React.ReactElement;
