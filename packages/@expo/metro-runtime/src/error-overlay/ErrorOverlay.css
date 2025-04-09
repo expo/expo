@@ -25,18 +25,6 @@
   --expo-log-gradient-stops: var(--expo-log-gradient-from), var(--expo-log-gradient-to);
 }
 
-[data-expo-log-overlay] {
-  position: fixed;
-  top: 10vh;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 9900;
-  display: flex;
-  align-content: center;
-  align-items: center;
-  flex-direction: column;
-}
 
 
 
@@ -64,28 +52,6 @@
   z-index: -1;
 }
 
-[data-expo-log-root] {
-  --expo-log-max-width: 960px;
-  --expo-log-footer-height: 3rem;
-
-  margin: 0 auto;
-  max-width: var(--expo-log-max-width);
-  width: 100%;
-  max-height: calc(100% - 56px);
-
-  gap: 0.5rem;
-
-  background-color: var(--expo-log-color-background);
-  display: flex;
-  flex-direction: column;
-
-  border: 1px solid var(--expo-log-color-border);
-  border-radius: 10px;
-
-  position: relative;
-  padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
-  /* background-image: linear-gradient(to bottom, var(--expo-log-gradient-stops)); */
-}
 
 [data-expo-log-toast] {
   /* black/60 on the border color. */
@@ -111,32 +77,8 @@
   background-color: #924340;
 }
 
-@media (min-width: 576px) {
-  [data-expo-log-root] {
-    --expo-log-max-width: 540px;
-  }
-}
-@media (min-width: 768px) {
-  [data-expo-log-root] {
-    --expo-log-max-width: 720px;
-  }
-}
-@media (min-width: 992px) {
-  [data-expo-log-root] {
-    --expo-log-max-width: 960px;
-  }
-}
 
-[data-expo-log-footer] {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  border-radius: 0 0 10px 10px;
-  min-height: var(--expo-log-footer-height);
-  overflow: hidden;
-}
+
 
 .expo-log-page-button {
   border: none;
