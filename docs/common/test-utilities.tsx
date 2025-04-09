@@ -25,6 +25,8 @@ export function renderWithHeadings(
 
 export function renderWithTestRouter(element: ReactElement, router: Partial<NextRouter> = {}) {
   return render(
-    <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
+    <TooltipProvider>
+      <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
+    </TooltipProvider>
   );
 }

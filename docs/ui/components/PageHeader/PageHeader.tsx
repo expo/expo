@@ -43,7 +43,7 @@ export function PageHeader({
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="flex gap-1 max-xl-gutters:hidden">
+        <span className="-mt-0.5 flex gap-1 max-xl-gutters:hidden">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         </span>
       </div>

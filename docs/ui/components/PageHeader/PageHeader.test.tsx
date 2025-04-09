@@ -1,22 +1,28 @@
-import { render, screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
-import { renderWithTestRouter } from '~/common/test-utilities';
+import { renderWithHeadings, renderWithTestRouter } from '~/common/test-utilities';
 
 import { PageHeader } from './PageHeader';
 
 const require = createRequire(import.meta.url);
 
 describe(PageHeader, () => {
-  test('displays npm registry link', () => {
-    render(<PageHeader title="test-title" packageName="expo-av" testRequire={require} />);
+  test('displays npm registry link', async () => {
+    renderWithHeadings(
+      <PageHeader title="test-title" packageName="expo-av" testRequire={require} />
+    );
     const linkElement = screen.getAllByRole('link', { hidden: false })[0];
     expect(linkElement.getAttribute('href')).toEqual('https://www.npmjs.com/package/expo-av');
-    expect(linkElement.getAttribute('title')).toEqual('View package in npm Registry');
+
+    fireEvent.focus(linkElement);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent('View package in npm registry');
   });
 
-  test('displays GitHub source code link', () => {
-    render(
+  test('displays GitHub source code link', async () => {
+    renderWithHeadings(
       <PageHeader
         title="test-title"
         packageName="expo-av"
@@ -28,11 +34,15 @@ describe(PageHeader, () => {
     expect(linkElement.getAttribute('href')).toEqual(
       'https://github.com/expo/expo/tree/main/packages/expo-av'
     );
-    expect(linkElement.getAttribute('title')).toEqual('View source code of expo-av on GitHub');
+
+    fireEvent.focus(linkElement);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent('View source code of expo-av on GitHub');
   });
 
   test('displays bundled version when packageName provided', () => {
-    render(
+    renderWithHeadings(
       <PageHeader
         title="test-title"
         packageName="expo-av"
@@ -52,6 +62,6 @@ describe(PageHeader, () => {
     expect(linkElement.getAttribute('href')).toEqual(
       'https://github.com/expo/expo/edit/main/docs/pages/router/reference/hooks.mdx'
     );
-    expect(linkElement.getAttribute('title')).toEqual('Edit content of this page on GitHub');
+    expect(linkElement.getAttribute('aria-label')).toEqual('Edit content of this page on GitHub');
   });
 });
