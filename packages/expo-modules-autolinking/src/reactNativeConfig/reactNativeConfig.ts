@@ -31,7 +31,7 @@ export async function createReactNativeConfigAsync({
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
-    ...(await findDependencyRootsAsync(projectRoot, searchPaths, platform)),
+    ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
 
@@ -82,8 +82,7 @@ export async function createReactNativeConfigAsync({
  */
 export async function findDependencyRootsAsync(
   projectRoot: string,
-  searchPaths: string[],
-  platform: SupportedPlatform
+  searchPaths: string[]
 ): Promise<Record<string, string>> {
   const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
   const dependencies = [
@@ -221,13 +220,4 @@ export async function resolveAppProjectConfigAsync(
   }
 
   return {};
-}
-
-/**
- * Extracts the major version number from the 'expo' dependency string.
- *
- * @returns The major version number or 0.
- */
-function getExpoVersion(packageJson: { dependencies?: { expo?: string } }): number {
-  return +(packageJson?.dependencies?.expo?.match(/\d+/)?.[0] ?? '0');
 }
