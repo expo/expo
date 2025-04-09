@@ -9,12 +9,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
 
 import * as LogBoxData from './Data/LogBoxData';
-import { LogBoxLog, StackType } from './Data/LogBoxLog';
-import { useLogs, useSelectedLog } from './Data/LogContext';
+import { LogBoxLog, type LogLevel, type StackType } from './Data/LogBoxLog';
+import { useLogs } from './Data/LogContext';
 import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { ErrorCodeFrame } from './overlay/ErrorCodeFrame';
-import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
 import { StackTraceList } from './overlay/StackTraceList';
+
+import type { Message } from './Data/parseLogBoxLog';
+import { LogBoxMessage } from './LogBoxMessage';
 
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
@@ -187,7 +189,7 @@ function ErrorOverlayBody({
   const headerTitle = HEADER_TITLE_MAP[isComponentError ? 'component' : level] ?? type;
 
   const header = (
-    <LogBoxInspectorMessageHeader
+    <ErrorMessageHeader
       collapsed={collapsed}
       onPress={() => setCollapsed(!collapsed)}
       message={message}
@@ -199,12 +201,93 @@ function ErrorOverlayBody({
   return (
     <>
       {collapsed && header}
-      <ScrollView contentContainerStyle={{ gap: 10, paddingHorizontal: '1rem' }}>
+      <ScrollView contentContainerStyle={{ gap: 10 }}>
         {!collapsed && header}
-
-        {children}
+        <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+          {children}
+        </div>
       </ScrollView>
     </>
+  );
+}
+
+const SHOW_MORE_MESSAGE_LENGTH = 300;
+
+export function ErrorMessageHeader(props: {
+  collapsed: boolean;
+  message: Message;
+  level: LogLevel;
+  title: string;
+  onPress: () => void;
+}) {
+  return (
+    <div
+      style={{
+        padding: '0 1rem',
+        display: 'flex',
+        gap: 8,
+        flexDirection: 'column',
+      }}>
+      <div style={{ display: 'flex' }}>
+        <span
+          data-testid="logbox_title"
+          style={{
+            fontFamily: 'var(--expo-log-font-family)',
+            padding: 8,
+            backgroundColor:
+              props.level === 'warn' ? 'rgba(243, 250, 154, 0.2)' : 'rgba(205, 97, 94, 0.2)',
+            borderRadius: 8,
+            fontWeight: '600',
+            fontSize: 14,
+            color:
+              props.level === 'warn' ? 'rgba(243, 250, 154, 1)' : `var(--expo-log-color-danger)`,
+          }}>
+          {props.title}
+        </span>
+      </div>
+      <span
+        style={{
+          color: 'var(--expo-log-color-label)',
+          fontFamily: 'var(--expo-log-font-family)',
+          fontSize: 16,
+          fontWeight: '500',
+        }}>
+        <LogBoxMessage
+          maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
+          message={props.message}
+        />
+        <ShowMoreButton {...props} />
+      </span>
+    </div>
+  );
+}
+
+function ShowMoreButton({
+  message,
+  collapsed,
+  onPress,
+}: {
+  collapsed: boolean;
+  message: Message;
+  onPress: () => void;
+}) {
+  if (message.content.length < SHOW_MORE_MESSAGE_LENGTH || !collapsed) {
+    return null;
+  }
+  return (
+    <button
+      style={{
+        color: 'var(--expo-log-color-label)',
+        fontFamily: 'var(--expo-log-font-family)',
+        backgroundColor: 'transparent',
+        cursor: 'pointer',
+        border: 'none',
+        opacity: 0.7,
+        fontSize: 14,
+      }}
+      onClick={onPress}>
+      ... See More
+    </button>
   );
 }
 

@@ -12,8 +12,8 @@ import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
 
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
+import { LogBoxButton } from '../LogBoxButton';
+import * as LogBoxStyle from '../LogBoxStyle';
 
 export function LogBoxInspectorSourceMapStatus(props: {
   onPress?: ((event: GestureResponderEvent) => void) | null;

@@ -6,13 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { StyleProp, Text, TextStyle } from 'react-native';
+import { StyleProp, TextStyle } from 'react-native';
 
-import type { Message } from '../Data/parseLogBoxLog';
+import type { Message } from './Data/parseLogBoxLog';
 
 type Props = {
   message: Message;
-  style: StyleProp<TextStyle>;
   plaintext?: boolean;
   maxLength?: number;
 };
@@ -24,12 +23,12 @@ const cleanContent = (content: string) => content;
 export function LogBoxMessage(props: Props): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
-  if (props.plaintext === true) {
-    return <Text>{cleanContent(content)}</Text>;
-  }
+  // if (props.plaintext === true) {
+  //   return <span>{cleanContent(content)}</span>;
+  // }
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
-  const substitutionStyle: StyleProp<TextStyle> = props.style;
+  const substitutionStyle: StyleProp<TextStyle> = { opacity: 0.6 };
   const elements: React.ReactElement[] = [];
   let length = 0;
   const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
@@ -41,9 +40,9 @@ export function LogBoxMessage(props: Props): React.ReactElement {
 
     if (length < maxLength) {
       elements.push(
-        <Text key={key} style={style}>
+        <span key={key} style={style}>
           {cleanMessage}
-        </Text>
+        </span>
       );
     }
 

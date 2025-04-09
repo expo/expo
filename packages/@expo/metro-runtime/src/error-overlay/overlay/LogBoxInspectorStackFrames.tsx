@@ -12,7 +12,7 @@ import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus
 import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
 import { useSelectedLog } from '../Data/LogContext';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
+import * as LogBoxStyle from '../LogBoxStyle';
 import { openFileInEditor, type Stack } from '../devServerEndpoints';
 
 export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {

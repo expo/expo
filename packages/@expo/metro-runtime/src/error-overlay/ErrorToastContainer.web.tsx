@@ -12,10 +12,10 @@ import { LogBoxLog } from './Data/LogBoxLog';
 import { useLogs } from './Data/LogContext';
 import { useRejectionHandler } from './useRejectionHandler';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { LogBoxMessage } from './UI/LogBoxMessage';
-import * as LogBoxStyle from './UI/LogBoxStyle';
+import { LogBoxMessage } from './LogBoxMessage';
+import * as LogBoxStyle from './LogBoxStyle';
 
-import '../ErrorOverlay.css';
+import './ErrorOverlay.css';
 
 export function ErrorToastContainer() {
   useRejectionHandler();
@@ -116,9 +116,7 @@ export function ErrorToast(props: {
       <Count count={totalLogCount} />
 
       <Text numberOfLines={1} style={styles.text}>
-        {log.message && (
-          <LogBoxMessage plaintext message={log.message} style={styles.substitutionText} />
-        )}
+        {log.message && <LogBoxMessage maxLength={40} plaintext message={log.message} />}
       </Text>
 
       <Dismiss onPress={props.onPressDismiss} />
