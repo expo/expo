@@ -25,9 +25,6 @@
   --expo-log-gradient-stops: var(--expo-log-gradient-from), var(--expo-log-gradient-to);
 }
 
-
-
-
 /* Reset all button children */
 /* [data-expo-log-overlay] button {
     background: none;
@@ -52,7 +49,6 @@
   z-index: -1;
 }
 
-
 [data-expo-log-toast] {
   /* black/60 on the border color. */
   background-color: #632e2c;
@@ -76,9 +72,6 @@
 [data-expo-log-toast]:hover {
   background-color: #924340;
 }
-
-
-
 
 .expo-log-page-button {
   border: none;

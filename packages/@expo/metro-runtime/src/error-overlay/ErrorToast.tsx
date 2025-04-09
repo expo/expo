@@ -69,7 +69,9 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
         right: 10,
         maxWidth: 320,
         position: 'fixed',
+        display: 'flex',
       }}>
+      {/* TODO: Remove warnings */}
       {warnings.length > 0 && (
         <ErrorToast
           log={warnings[warnings.length - 1]}

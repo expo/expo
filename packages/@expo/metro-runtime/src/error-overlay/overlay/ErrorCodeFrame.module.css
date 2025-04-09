@@ -1,92 +1,82 @@
-
-.fileIcon { 
-    display: none;
-
+.fileIcon {
+  display: none;
 }
 
-
 .copyButton {
-    cursor: pointer;
-    display: inline-flex;
-    font-weight: 500;
-    align-items: center;
-    white-space: nowrap;
-    transition: all 0.2s ease-in-out;
-    font-size: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 500;
+  align-items: center;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  font-size: 10px;
 
-    background-color: transparent;
+  background-color: transparent;
 
-    box-shadow: none;
-    gap: 6px;
-    height: 40px;
-    border-radius: 0;
-    border-width: 0;
-    padding-left: 16px;
-    padding-right: 16px;
-    
-    justify-content: flex-end;
-    border-left: 1px solid var(--expo-log-color-border);
-    background-color: var(--expo-log-color-background);
+  box-shadow: none;
+  gap: 6px;
+  height: 40px;
+  border-radius: 0;
+  border-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+
+  justify-content: flex-end;
+  border-left: 1px solid var(--expo-log-color-border);
+  background-color: var(--expo-log-color-background);
 }
 
 .copyButton:hover {
-    background-color: var(--expo-log-secondary-system-background-hover);
+  background-color: var(--expo-log-secondary-system-background-hover);
 }
 
 .copyButtonIcon {
-    
-    transform: translateZ(0);
-    width: 1.1rem;
-    height: 1.1rem;
-    margin-bottom: -1px;
-    color: var(--expo-log-secondary-label);
-    transition: all 0.2s ease-in-out;
+  transform: translateZ(0);
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-bottom: -1px;
+  color: var(--expo-log-secondary-label);
+  transition: all 0.2s ease-in-out;
 }
 
 /* Child svg of copyButton should transition to diagonally on hover of the button */
 .copyButton:hover .copyButtonIcon {
-    /* origin in bottom left */
-    transform-origin: bottom left;
-    transform: scale(1.1);
-
+  /* origin in bottom left */
+  transform-origin: bottom left;
+  transform: scale(1.1);
 }
 
 .copyButtonText {
+  display: none;
+  align-items: center;
+  color: inherit;
+  line-height: 1;
+  font-size: 14px;
+  font-weight: 400;
 
-    display: none;
-    align-items: center;
-    color: inherit;
-    line-height: 1;
-    font-size: 14px;
-    font-weight: 400;
-    
-    letter-spacing: -0.003rem;
-    font-family: var(--expo-log-font-family);
-    color: var(--expo-log-color-label);
-
+  letter-spacing: -0.003rem;
+  font-family: var(--expo-log-font-family);
+  color: var(--expo-log-color-label);
 }
 
-.header { 
-    display: flex;
-    min-height: 40px;
-    justify-content: space-between;
-    overflow: hidden;
-    background-color: var(--expo-log-color-background);
-    border-bottom: 1px solid var(--expo-log-color-border);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    padding-left: 12px;
-    position: relative;
+.header {
+  display: flex;
+  min-height: 40px;
+  justify-content: space-between;
+  overflow: hidden;
+  background-color: var(--expo-log-color-background);
+  border-bottom: 1px solid var(--expo-log-color-border);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  padding-left: 12px;
+  position: relative;
 }
-
-
 
 @media screen and (min-width: 768px) {
-    .fileIcon {
-      display: block;
-    } 
-    .copyButtonText {
-        display: flex;
-    }
+  .fileIcon {
+    display: block;
   }
-  
+  .copyButtonText {
+    display: flex;
+  }
+}
