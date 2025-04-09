@@ -31,7 +31,7 @@ export async function createReactNativeConfigAsync({
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
-    ...(await findDependencyRootsAsync(projectRoot, searchPaths, platform)),
+    ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
 
@@ -41,8 +41,10 @@ export async function createReactNativeConfigAsync({
     platform === 'android' && !Object.keys(dependencyRoots).includes('react-native-edge-to-edge');
 
   if (shouldAutolinkEdgeToEdge) {
-    const edgeToEdgeDependencyRoots = await findEdgeToEdgeDependencyRoot(projectRoot);
-    Object.assign(dependencyRoots, edgeToEdgeDependencyRoots);
+    const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
+    if (edgeToEdgeRoot) {
+      dependencyRoots['react-native-edge-to-edge'] = edgeToEdgeRoot;
+    }
   }
 
   // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
@@ -80,8 +82,7 @@ export async function createReactNativeConfigAsync({
  */
 export async function findDependencyRootsAsync(
   projectRoot: string,
-  searchPaths: string[],
-  platform: SupportedPlatform
+  searchPaths: string[]
 ): Promise<Record<string, string>> {
   const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
   const dependencies = [
@@ -178,22 +179,16 @@ export async function resolveDependencyConfigAsync(
   };
 }
 
-export async function findEdgeToEdgeDependencyRoot(
-  projectRoot: string
-): Promise<Record<string, string>> {
+export function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | null {
   const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
   const edgeToEdgePath = resolveFrom.silent(
     expoPackageRoot ?? projectRoot,
     'react-native-edge-to-edge/package.json'
-  ) as string;
-
-  if (!(await fileExistsAsync(edgeToEdgePath))) {
-    return {};
+  );
+  if (edgeToEdgePath) {
+    return path.dirname(edgeToEdgePath);
   }
-
-  return {
-    'react-native-edge-to-edge': path.dirname(edgeToEdgePath),
-  };
+  return null;
 }
 
 export async function resolveAppProjectConfigAsync(
@@ -225,13 +220,4 @@ export async function resolveAppProjectConfigAsync(
   }
 
   return {};
-}
-
-/**
- * Extracts the major version number from the 'expo' dependency string.
- *
- * @returns The major version number or 0.
- */
-function getExpoVersion(packageJson: { dependencies?: { expo?: string } }): number {
-  return +(packageJson?.dependencies?.expo?.match(/\d+/)?.[0] ?? '0');
 }

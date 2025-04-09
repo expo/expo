@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 exports.findDependencyRootsAsync = findDependencyRootsAsync;
 exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
+exports.resolveEdgeToEdgeDependencyRoot = resolveEdgeToEdgeDependencyRoot;
 exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
 const utils_1 = require("../autolinking/utils");
 const fileUtils_1 = require("../fileUtils");
 const androidResolver_1 = require("./androidResolver");
@@ -23,6 +25,15 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
         ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
         ...findProjectLocalDependencyRoots(projectConfig),
     };
+    // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
+    // has also included it as a project dependency, we have to autolink it (transitive non-expo module dependencies are not autolinked).
+    const shouldAutolinkEdgeToEdge = platform === 'android' && !Object.keys(dependencyRoots).includes('react-native-edge-to-edge');
+    if (shouldAutolinkEdgeToEdge) {
+        const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
+        if (edgeToEdgeRoot) {
+            dependencyRoots['react-native-edge-to-edge'] = edgeToEdgeRoot;
+        }
+    }
     // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
     // the Cocoapods resolution will detect path mismatches and generate nonsensical
     // relative paths that won't resolve
@@ -123,6 +134,14 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
             [platform]: platformData,
         },
     };
+}
+function resolveEdgeToEdgeDependencyRoot(projectRoot) {
+    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
+    const edgeToEdgePath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, 'react-native-edge-to-edge/package.json');
+    if (edgeToEdgePath) {
+        return path_1.default.dirname(edgeToEdgePath);
+    }
+    return null;
 }
 async function resolveAppProjectConfigAsync(projectRoot, platform) {
     if (platform === 'android') {
