@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingConfig = exports.getNavigationConfig = exports.INTERNAL_SLOT_NAME = void 0;
+exports.INTERNAL_SLOT_NAME = void 0;
+exports.getNavigationConfig = getNavigationConfig;
+exports.getLinkingConfig = getLinkingConfig;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
@@ -16,7 +18,6 @@ function getNavigationConfig(routes, metaOnly = true) {
         },
     };
 }
-exports.getNavigationConfig = getNavigationConfig;
 function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
@@ -80,5 +81,4 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
         getActionFromState: native_1.getActionFromState,
     };
 }
-exports.getLinkingConfig = getLinkingConfig;
 //# sourceMappingURL=getLinkingConfig.js.map

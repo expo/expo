@@ -7,7 +7,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unstable_redirect = exports.unstable_defineRouter = void 0;
+exports.unstable_defineRouter = unstable_defineRouter;
+exports.unstable_redirect = unstable_redirect;
 const react_1 = require("react");
 const client_1 = require("./client");
 const common_1 = require("./common");
@@ -157,7 +158,6 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
     };
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
-exports.unstable_defineRouter = unstable_defineRouter;
 function unstable_redirect(pathname, searchParams, skip) {
     if (skip) {
         searchParams = new URLSearchParams(searchParams);
@@ -168,5 +168,4 @@ function unstable_redirect(pathname, searchParams, skip) {
     const input = (0, common_1.getInputString)(pathname);
     (0, server_1.rerender)(input, searchParams);
 }
-exports.unstable_redirect = unstable_redirect;
 //# sourceMappingURL=defineRouter.js.map

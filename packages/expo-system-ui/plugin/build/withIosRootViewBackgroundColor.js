@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRootViewBackgroundColor = exports.setRootViewBackgroundColor = exports.withIosRootViewBackgroundColor = void 0;
+exports.withIosRootViewBackgroundColor = void 0;
+exports.setRootViewBackgroundColor = setRootViewBackgroundColor;
+exports.getRootViewBackgroundColor = getRootViewBackgroundColor;
 // @ts-ignore: uses flow
 const normalize_colors_1 = __importDefault(require("@react-native/normalize-colors"));
 const config_plugins_1 = require("expo/config-plugins");
@@ -34,8 +36,6 @@ function setRootViewBackgroundColor(config, infoPlist) {
     }
     return infoPlist;
 }
-exports.setRootViewBackgroundColor = setRootViewBackgroundColor;
 function getRootViewBackgroundColor(config) {
     return config.ios?.backgroundColor || config.backgroundColor || null;
 }
-exports.getRootViewBackgroundColor = getRootViewBackgroundColor;

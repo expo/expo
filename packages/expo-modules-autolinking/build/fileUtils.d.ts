@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { GlobOptions } from 'glob';
 /**
  * A matching function that takes a file path and its contents and returns a string if it matches, or null otherwise.

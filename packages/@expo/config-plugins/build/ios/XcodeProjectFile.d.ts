@@ -1,4 +1,3 @@
-/// <reference types="xcode" />
 import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 /**
  * Create a build source file and link it to Xcode.

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { RedirectConfig } from './getRoutesCore';
 export declare function getRedirectModule(route: string): {
     default: () => import("react").CElement<{

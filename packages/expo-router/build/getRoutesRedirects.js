@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeVariablesWithPath = exports.convertRedirect = exports.getRedirectModule = void 0;
+exports.getRedirectModule = getRedirectModule;
+exports.convertRedirect = convertRedirect;
+exports.mergeVariablesWithPath = mergeVariablesWithPath;
 const react_1 = require("react");
 const matchers_1 = require("./matchers");
 function getRedirectModule(route) {
@@ -32,7 +34,6 @@ function getRedirectModule(route) {
         },
     };
 }
-exports.getRedirectModule = getRedirectModule;
 function convertRedirect(path, config) {
     const params = {};
     const parts = path.split('/');
@@ -51,7 +52,6 @@ function convertRedirect(path, config) {
     }
     return mergeVariablesWithPath(config.destination, params);
 }
-exports.convertRedirect = convertRedirect;
 function mergeVariablesWithPath(path, params) {
     return path
         .split('/')
@@ -67,5 +67,4 @@ function mergeVariablesWithPath(path, params) {
         .filter(Boolean)
         .join('/');
 }
-exports.mergeVariablesWithPath = mergeVariablesWithPath;
 //# sourceMappingURL=getRoutesRedirects.js.map

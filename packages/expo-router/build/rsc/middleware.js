@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRscAsync = exports.renderRscWithImportsAsync = void 0;
+exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
+exports.renderRscAsync = renderRscAsync;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const _async_server_import_1 = require("expo-router/_async-server-import");
 const node_path_1 = __importDefault(require("node:path"));
@@ -95,7 +96,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         entries: entries,
     });
 }
-exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
 async function renderRscAsync(distFolder, args) {
     const platform = args.platform;
     return renderRscWithImportsAsync(distFolder, {
@@ -106,5 +106,4 @@ async function renderRscAsync(distFolder, args) {
         },
     }, args);
 }
-exports.renderRscAsync = renderRscAsync;
 //# sourceMappingURL=middleware.js.map
