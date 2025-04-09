@@ -34,6 +34,42 @@ class UpdatesUtilsTest : TestCase() {
     Assert.assertEquals(asset1Name.substring(asset1Name.length - 7), ".bundle")
   }
 
+  fun testCreateEmbeddedFilenameForAsset_WithEmbeddedAsset() {
+    val assetEntity = AssetEntity("key", null)
+    assetEntity.embeddedAssetFilename = "index.android.bundle"
+    Assert.assertEquals(
+      "file:///android_asset/index.android.bundle",
+      UpdatesUtils.createEmbeddedFilenameForAsset(assetEntity)
+    )
+  }
+
+  fun testCreateEmbeddedFilenameForAsset_WithDrawableResource() {
+    val assetEntity = AssetEntity("key", "png")
+    assetEntity.resourcesFolder = "drawable"
+    assetEntity.resourcesFilename = "test"
+    assetEntity.scales = arrayOf(1.0f, 2.0f)
+    assetEntity.scale = 2.0f
+    Assert.assertEquals(
+      "file:///android_res/drawable-xhdpi/test.png",
+      UpdatesUtils.createEmbeddedFilenameForAsset(assetEntity)
+    )
+  }
+
+  fun testCreateEmbeddedFilenameForAsset_WithRawResource() {
+    val assetEntity = AssetEntity("key", "ttf")
+    assetEntity.resourcesFolder = "raw"
+    assetEntity.resourcesFilename = "test"
+    Assert.assertEquals(
+      "file:///android_res/raw/test.ttf",
+      UpdatesUtils.createEmbeddedFilenameForAsset(assetEntity)
+    )
+  }
+
+  fun testCreateEmbeddedFilenameForAsset_WithoutEmbedded() {
+    val assetEntity = AssetEntity("key", null)
+    Assert.assertNull(UpdatesUtils.createEmbeddedFilenameForAsset(assetEntity))
+  }
+
   fun testGetRuntimeVersion() {
     val baseConfig = UpdatesConfiguration(
       scopeKey = "wat",

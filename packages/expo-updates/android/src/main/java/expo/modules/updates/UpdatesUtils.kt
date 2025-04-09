@@ -28,6 +28,8 @@ object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
+  private const val ANDROID_EMBEDDED_URL_BASE_ASSET = "file:///android_asset/"
+  private const val ANDROID_EMBEDDED_URL_BASE_RESOURCE = "file:///android_res/"
 
   @Throws(Exception::class)
   fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
@@ -145,16 +147,48 @@ object UpdatesUtils {
     }
   }
 
+  /**
+   * Create an asset filename in file system (files are used to save in `.expo-internal` directory)
+   */
   fun createFilenameForAsset(asset: AssetEntity): String {
-    var fileExtension: String? = ""
-    if (asset.type != null) {
-      fileExtension = if (asset.type!!.startsWith(".")) asset.type else "." + asset.type
-    }
+    val fileExtension = getFileExtension(asset)
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension
     } else {
       asset.key + fileExtension
+    }
+  }
+
+  /**
+   * Create an embedded asset filename in `file:///android_res/` or `file:///android_asset/` format
+   */
+  fun createEmbeddedFilenameForAsset(asset: AssetEntity): String? {
+    val fileExtension = getFileExtension(asset)
+    if (asset.embeddedAssetFilename != null) {
+      return "${ANDROID_EMBEDDED_URL_BASE_ASSET}${asset.embeddedAssetFilename}$fileExtension"
+    }
+    if (asset.resourcesFolder != null && asset.resourcesFilename != null) {
+      return "${ANDROID_EMBEDDED_URL_BASE_RESOURCE}${asset.resourcesFolder}${getDrawableSuffix(asset.scale)}/${asset.resourcesFilename}$fileExtension"
+    }
+    return null
+  }
+
+  private fun getFileExtension(asset: AssetEntity): String {
+    return asset.type?.let {
+      if (it.startsWith(".")) it else ".$it"
+    } ?: ""
+  }
+
+  private fun getDrawableSuffix(scale: Float?): String {
+    return when (scale) {
+      0.75f -> "-ldpi"
+      1f -> "-mdpi"
+      1.5f -> "-hdpi"
+      2f -> "-xhdpi"
+      3f -> "-xxhdpi"
+      4f -> "-xxxhdpi"
+      else -> ""
     }
   }
 
