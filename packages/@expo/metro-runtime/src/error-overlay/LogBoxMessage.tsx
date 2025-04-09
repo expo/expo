@@ -23,7 +23,7 @@ export function LogBoxMessage(props: Props): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
-  const substitutionStyle: StyleProp<TextStyle> = { opacity: 0.6, whiteSpace: 'pre-wrap' };
+  const substitutionStyle: StyleProp<TextStyle> = { opacity: 0.6 };
   const elements: React.ReactElement[] = [];
   let length = 0;
   const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
@@ -64,5 +64,5 @@ export function LogBoxMessage(props: Props): React.ReactElement {
     createUnderLength('-1', lastPart);
   }
 
-  return <div style={{ whiteSpace: 'pre-wrap' }}>{elements}</div>;
+  return <>{elements}</>;
 }

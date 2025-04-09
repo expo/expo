@@ -122,13 +122,6 @@ export function LogBoxInspector({
           <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
             <ErrorCodeFrame codeFrame={log.codeFrame} />
 
-            <StackTraceList
-              type="stack"
-              stack={log.getAvailableStack('stack')}
-              symbolicationStatus={log.symbolicated['stack'].status}
-              // eslint-disable-next-line react/jsx-no-bind
-              onRetry={_handleRetry.bind(_handleRetry, 'stack')}
-            />
             {!!log?.componentStack?.length && (
               <StackTraceList
                 type="component"
@@ -138,6 +131,13 @@ export function LogBoxInspector({
                 onRetry={_handleRetry.bind(_handleRetry, 'component')}
               />
             )}
+            <StackTraceList
+              type="stack"
+              stack={log.getAvailableStack('stack')}
+              symbolicationStatus={log.symbolicated['stack'].status}
+              // eslint-disable-next-line react/jsx-no-bind
+              onRetry={_handleRetry.bind(_handleRetry, 'stack')}
+            />
           </ErrorOverlayBody>
           {!isDismissable && (
             <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
@@ -250,6 +250,7 @@ export function ErrorMessageHeader(props: {
           color: 'var(--expo-log-color-label)',
           fontFamily: 'var(--expo-log-font-family)',
           fontSize: 16,
+          whiteSpace: 'pre-wrap',
           fontWeight: '500',
         }}>
         <LogBoxMessage
