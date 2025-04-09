@@ -4,7 +4,7 @@ import { LogBoxLog } from './LogBoxLog';
 
 // Context provider for Array<LogBoxLog>
 
-const IS_TESTING = true;
+const IS_TESTING = false;
 
 const FIXTURES = {
   build_error_module_not_found: [
@@ -51,7 +51,8 @@ const FIXTURES = {
       isComponentError: false,
       level: 'fatal',
       message: {
-        content: 'undefined is not a function',
+        content:
+          'undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function undefined is not a function ',
         substitutions: [],
       },
       symbolicated: {
@@ -228,7 +229,7 @@ export function useLogs(): {
   if (IS_TESTING) {
     // HACK: This is here for testing during UI development of the LogBox
     return {
-      selectedLogIndex: 0,
+      selectedLogIndex: -1,
       isDisabled: false,
       // logs: FIXTURES.build_error_module_not_found,
       logs: FIXTURES.undefined_is_not_a_function_runtime,

@@ -84,6 +84,7 @@ export class LogBoxLog {
     this.isComponentError = data.isComponentError;
     this.count = 1;
     this.symbolicated = data.symbolicated ?? this.symbolicated;
+    console.log('LogBoxLog', JSON.stringify(data, null, 2));
   }
 
   incrementCount(): void {

@@ -10,8 +10,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
 import { StackFrame } from 'stacktrace-parser';
 
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
+import { LogBoxButton } from '../LogBoxButton';
+import * as LogBoxStyle from '../LogBoxStyle';
 import { getStackFormattedLocation } from '../devServerEndpoints';
 
 declare const process: any;
