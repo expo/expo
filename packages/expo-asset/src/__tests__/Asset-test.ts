@@ -2,11 +2,10 @@ const { Platform } = jest.requireActual('expo-modules-core');
 
 jest.mock('../PlatformUtils', () => ({
   ...jest.requireActual('../PlatformUtils'),
-  getLocalAssets: () => {
-    return {
-      test1: 'file:///Expo.app/asset_test1.png',
-    };
-  },
+  getLocalAssets: jest.fn(() => ({
+    test1: 'file:///Expo.app/asset_test1.png',
+    androidResTest1: 'file:///android_res/drawable/test.png',
+  })),
 }));
 
 jest.mock('@react-native/assets-registry/registry', () => ({
@@ -187,6 +186,31 @@ it(`uses the local file system's cache directory for downloads`, async () => {
   await asset.downloadAsync();
   expect(asset.downloaded).toBe(true);
 });
+
+if (Platform.OS === 'android') {
+  it('should support file:///android_res/drawable/test.png', async () => {
+    const { Asset } = require('../index');
+
+    const asset = Asset.fromMetadata({
+      name: 'androidResTest1',
+      type: 'png',
+      scales: [1],
+      httpServerLocation: '/assets',
+      hash: 'androidResTest1',
+      fileHashes: ['androidResTest1'],
+    });
+    // We treat file:///android_res/ assets as not downloaded
+    expect(asset.localUri).toBe(null);
+    expect(asset.downloaded).toBeFalsy();
+    expect(asset.uri).toBe('file:///android_res/drawable/test.png');
+
+    await asset.downloadAsync();
+    const ExpoAsset = jest.requireMock('../ExpoAsset');
+    expect(ExpoAsset.downloadAsync).toHaveBeenCalledTimes(1);
+    expect(asset.downloaded).toBe(true);
+    expect(asset.localUri).toBeTruthy();
+  });
+}
 
 if (Platform.OS !== 'web') {
   it(`coalesces downloads`, async () => {

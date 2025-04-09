@@ -8,6 +8,11 @@ import { getLocalAssetUri } from './LocalAssets';
 import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 /**
+ * Android resource URL prefix.
+ * @hidden
+ */
+export const ANDROID_EMBEDDED_URL_BASE_RESOURCE = 'file:///android_res/';
+/**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */
@@ -69,7 +74,12 @@ export class Asset {
         }
         if (hash) {
             this.localUri = getLocalAssetUri(hash, type);
-            if (this.localUri) {
+            if (this.localUri?.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
+                // Treat Android embedded resources as not downloaded state, because the uri is not direct accessible.
+                this.uri = this.localUri;
+                this.localUri = null;
+            }
+            else if (this.localUri) {
                 this.downloaded = true;
             }
         }
