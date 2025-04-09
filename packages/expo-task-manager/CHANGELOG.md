@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Removed warning about running on Expo Go. This is handled in packages using the Task Manager.
+- Removed warning about running on Expo Go. This is handled in packages using the Task Manager. ([#36038](https://github.com/expo/expo/pull/36038) by [@chrfalch](https://github.com/chrfalch))
 
 ## 13.1.1 — 2025-04-09
 
