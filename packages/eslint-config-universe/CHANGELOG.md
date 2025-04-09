@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript.
+- Update `prettier` dependency to new minor version.
+- Update other packages patch version for various fixes.
+
 ## 14.1.0 — 2025-04-04
 
 ### 💡 Others
