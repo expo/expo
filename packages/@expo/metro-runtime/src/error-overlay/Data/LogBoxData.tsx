@@ -121,7 +121,8 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog: LogBoxLog): void {
+/** Exposed for debugging */
+export function _appendNewLog(newLog: LogBoxLog): void {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -190,7 +191,7 @@ export function addLog(log: LogData): void {
     try {
       const stack = parseErrorStack(errorForStackTrace?.stack);
 
-      appendNewLog(
+      _appendNewLog(
         new LogBoxLog({
           level: log.level,
           message: log.message,
@@ -211,7 +212,7 @@ export function addException(error: ExtendedExceptionData): void {
   // otherwise spammy logs would pause rendering.
   setTimeout(() => {
     try {
-      appendNewLog(new LogBoxLog(parseLogBoxException(error)));
+      _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
     } catch (loggingError) {
       reportUnexpectedLogBoxError(loggingError);
     }

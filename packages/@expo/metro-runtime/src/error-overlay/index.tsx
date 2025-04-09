@@ -5,18 +5,19 @@ if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
   require('./LogBox').default.install();
 }
 
-export function withErrorOverlay(Comp: React.ComponentType<any>) {
+export function withErrorOverlay(RootComponent: React.ComponentType<any>) {
   if (process.env.NODE_ENV === 'production') {
-    return Comp;
+    return RootComponent;
   }
 
-  const { default: ErrorToastContainer } = require('./ErrorToast') as typeof import('./ErrorToast');
+  const ErrorToastContainer = require('./ErrorToast')
+    .default as typeof import('./ErrorToast').default;
 
   return function ErrorOverlay(props: any) {
     return (
       /* @ts-expect-error fix the type */
       <ErrorToastContainer>
-        <Comp {...props} />
+        <RootComponent {...props} />
       </ErrorToastContainer>
     );
   };

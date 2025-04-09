@@ -40,6 +40,8 @@ export declare function reportLogBoxError(error: ExtendedError, componentStack?:
 export declare function reportUnexpectedLogBoxError(error: ExtendedError, componentStack?: string): void;
 export declare function isLogBoxErrorMessage(message: string): boolean;
 export declare function isMessageIgnored(message: string): boolean;
+/** Exposed for debugging */
+export declare function _appendNewLog(newLog: LogBoxLog): void;
 export declare function addLog(log: LogData): void;
 export declare function addException(error: ExtendedExceptionData): void;
 export declare function symbolicateLogNow(type: StackType, log: LogBoxLog): void;
