@@ -10,6 +10,8 @@
 + (void)performSynchronouslyOnMainThread:(nonnull void (^)(void))block;
 + (nonnull NSString *)hexStringWithCGColor:(nullable CGColorRef)color;
 + (nonnull UIColor *)colorWithRGB:(unsigned int)rgbValue;
++ (BOOL)isExpoHostedUrl:(NSURL *)url;
++ (BOOL)isExpoHostedUrlComponents:(NSURLComponents *)components;
 
 /**
  *  Expects @"#ABCDEF"
