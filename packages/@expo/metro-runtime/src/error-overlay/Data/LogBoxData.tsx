@@ -364,6 +364,14 @@ const emitter = new NativeEventEmitter({
   removeListeners() {},
 });
 
+function isComponentStack(consoleArgument: string) {
+  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
+  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
+  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
+
+  return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
+}
+
 export function withSubscription(WrappedComponent: React.FC<object>) {
   class RootDevErrorBoundary extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
@@ -389,10 +397,11 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
       // TODO: Won't this catch all React errors and make them appear as unexpected rendering errors?
       err.componentStack ??= errorInfo.componentStack;
 
+      // TODO: Make the error appear more like the React console.error, appending the "The above error occurred" line.
+
       const { category, message, componentStack } = parseLogBoxLog([err]);
 
       if (!isMessageIgnored(message.content)) {
-        console.log('pushing error to logbox');
         addLog({
           // Always show the static rendering issues as full screen since they
           // are too confusing otherwise.

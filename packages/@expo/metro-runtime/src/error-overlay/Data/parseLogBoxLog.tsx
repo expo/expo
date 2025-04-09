@@ -320,15 +320,7 @@ function interpolateLikeConsole(...args: any[]) {
     }
   } else {
     // No format string, just join args with spaces
-    output = args
-      .map((arg) => {
-        return typeof arg === 'object'
-          ? arg instanceof Error
-            ? arg.stack || arg.toString()
-            : JSON.stringify(arg, null, 2)
-          : String(arg);
-      })
-      .join(' ');
+    output = args.map((arg) => stringifySafe(arg)).join(' ');
   }
 
   return output;
@@ -418,7 +410,12 @@ export function parseLogBoxLog(args: any[]): {
     if (!isError(error)) {
       error = new Error(message);
     }
-    error = getReactStitchedError(error);
+    // Use the official stack from componentDidCatch
+    if ('componentStack' in error) {
+      error.stack = error.componentStack;
+    } else {
+      error = getReactStitchedError(error);
+    }
     const componentStackTrace = (error as any).stack;
     return {
       componentStack: parseComponentStack(componentStackTrace),
