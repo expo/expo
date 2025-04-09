@@ -39,6 +39,8 @@ _This version does not introduce any user-facing changes._
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
 
+- Fixed href in type definitions. ([#29011](https://github.com/expo/expo/pull/29011) by [@mrakesh0608](https://github.com/mrakesh0608))
+
 ## 6.0.3 — 2024-05-01
 
 _This version does not introduce any user-facing changes._
