@@ -22,6 +22,7 @@
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   gap: 0.5rem;
+  overflow-y: auto;
 
   background-color: var(--expo-log-color-background);
   display: flex;

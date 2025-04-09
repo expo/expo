@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
 
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, type LogLevel, type StackType } from './Data/LogBoxLog';
@@ -113,13 +112,25 @@ export function LogBoxInspector({
           }}
         />
         <div className={styles.container}>
-          <ErrorOverlayHeader
-            isDismissable={isDismissable}
-            onDismiss={onDismiss}
-            onMinimize={onMinimize}
-            onSelectIndex={onChangeSelectedIndex}
-            level={log.level}
-          />
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+              backgroundColor: 'var(--expo-log-color-background)',
+            }}>
+            <ErrorOverlayHeader
+              selectedIndex={selectedLogIndex}
+              total={logs.length}
+              isDismissable={isDismissable}
+              onDismiss={onDismiss}
+              onMinimize={onMinimize}
+              onSelectIndex={onChangeSelectedIndex}
+              level={log.level}
+            />
+          </div>
           <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
             <ErrorCodeFrame codeFrame={log.codeFrame} />
 
@@ -202,12 +213,10 @@ function ErrorOverlayBody({
   return (
     <>
       {collapsed && header}
-      <ScrollView contentContainerStyle={{ gap: 10 }}>
-        {!collapsed && header}
-        <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-          {children}
-        </div>
-      </ScrollView>
+
+      <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </div>
     </>
   );
 }

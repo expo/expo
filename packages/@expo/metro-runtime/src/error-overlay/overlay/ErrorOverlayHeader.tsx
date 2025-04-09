@@ -1,21 +1,21 @@
 import React from 'react';
 
 import type { LogLevel } from '../Data/LogBoxLog';
-import { useLogs } from '../Data/LogContext';
 import styles from './ErrorOverlayHeader.module.css';
 
-export function ErrorOverlayHeader(props: {
+export function ErrorOverlayHeader({
+  selectedIndex,
+  total,
+  ...props
+}: {
   onSelectIndex: (selectedIndex: number) => void;
   level: LogLevel;
   onDismiss: () => void;
   onMinimize: () => void;
   isDismissable: boolean;
+  selectedIndex: number;
+  total: number;
 }) {
-  const { selectedLogIndex: selectedIndex, logs } = useLogs();
-  const total = logs.length;
-
-  const prevIndex = selectedIndex - 1 < 0 ? total - 1 : selectedIndex - 1;
-  const nextIndex = selectedIndex + 1 > total - 1 ? 0 : selectedIndex + 1;
   const titleText = `${selectedIndex + 1}/${total}`;
   const sdkVersion = '53.0.2'; // TODO: Retrieve dynamically
 
@@ -51,8 +51,12 @@ export function ErrorOverlayHeader(props: {
         <div className={styles.divider} />
 
         <div className={styles.navGroup}>
-          <HeaderButton disabled={total <= 1} onPress={() => props.onSelectIndex(prevIndex)}>
-            <LeftChevronIcon />
+          <HeaderButton
+            disabled={total <= 1}
+            onPress={() =>
+              props.onSelectIndex(selectedIndex - 1 < 0 ? total - 1 : selectedIndex - 1)
+            }>
+            <ChevronIcon left />
           </HeaderButton>
 
           <span
@@ -64,9 +68,11 @@ export function ErrorOverlayHeader(props: {
             {titleText}
           </span>
 
-          <HeaderButton disabled={total <= 1} onPress={() => props.onSelectIndex(nextIndex)}>
+          <HeaderButton
+            disabled={total <= 1}
+            onPress={() => props.onSelectIndex((selectedIndex + 1) % total)}>
             {/* Right Chevron */}
-            <RightChevronIcon />
+            <ChevronIcon />
           </HeaderButton>
         </div>
       </div>
@@ -85,7 +91,7 @@ export function ErrorOverlayHeader(props: {
   );
 }
 
-function RightChevronIcon() {
+function ChevronIcon({ left }: { left?: boolean }) {
   return (
     <svg
       width="24"
@@ -93,20 +99,11 @@ function RightChevronIcon() {
       viewBox="0 0 24 24"
       fill="var(--expo-log-secondary-label)"
       xmlns="http://www.w3.org/2000/svg">
-      <path d="M17 11.5C17 11.6053 16.9802 11.7014 16.9407 11.7881C16.9011 11.8748 16.8385 11.9554 16.7527 12.0297L9.31538 18.7955C9.17033 18.9318 8.98901 19 8.77143 19C8.62637 19 8.49451 18.969 8.37582 18.9071C8.26374 18.8513 8.17143 18.7677 8.0989 18.6561C8.03297 18.5446 8 18.4207 8 18.2844C8 18.0861 8.07253 17.9157 8.21758 17.7732L15.1209 11.5L8.21758 5.23606C8.07253 5.08736 8 4.91698 8 4.72491C8 4.5824 8.03297 4.45849 8.0989 4.35316C8.17143 4.24164 8.26374 4.15489 8.37582 4.09294C8.49451 4.03098 8.62637 4 8.77143 4C8.98901 4 9.17033 4.07125 9.31538 4.21375L16.7527 10.9796C16.8385 11.0539 16.9011 11.1344 16.9407 11.2212C16.9802 11.3079 17 11.4009 17 11.5Z" />
-    </svg>
-  );
-}
-
-function LeftChevronIcon() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="var(--expo-log-secondary-label)"
-      xmlns="http://www.w3.org/2000/svg">
-      <path d="M7 11.5C7 11.6053 7.01978 11.7014 7.05934 11.7881C7.0989 11.8748 7.16154 11.9554 7.24725 12.0297L14.6846 18.7955C14.8297 18.9318 15.011 19 15.2286 19C15.3736 19 15.5055 18.969 15.6242 18.9071C15.7363 18.8513 15.8286 18.7677 15.9011 18.6561C15.967 18.5446 16 18.4207 16 18.2844C16 18.0861 15.9275 17.9157 15.7824 17.7732L8.87912 11.5L15.7824 5.23606C15.9275 5.08736 16 4.91698 16 4.72491C16 4.5824 15.967 4.45849 15.9011 4.35316C15.8286 4.24164 15.7363 4.15489 15.6242 4.09294C15.5055 4.03098 15.3736 4 15.2286 4C15.011 4 14.8297 4.07125 14.6846 4.21375L7.24725 10.9796C7.16154 11.0539 7.0989 11.1344 7.05934 11.2212C7.01978 11.3079 7 11.4009 7 11.5Z" />
+      {left ? (
+        <path d="M7 11.5C7 11.6053 7.01978 11.7014 7.05934 11.7881C7.0989 11.8748 7.16154 11.9554 7.24725 12.0297L14.6846 18.7955C14.8297 18.9318 15.011 19 15.2286 19C15.3736 19 15.5055 18.969 15.6242 18.9071C15.7363 18.8513 15.8286 18.7677 15.9011 18.6561C15.967 18.5446 16 18.4207 16 18.2844C16 18.0861 15.9275 17.9157 15.7824 17.7732L8.87912 11.5L15.7824 5.23606C15.9275 5.08736 16 4.91698 16 4.72491C16 4.5824 15.967 4.45849 15.9011 4.35316C15.8286 4.24164 15.7363 4.15489 15.6242 4.09294C15.5055 4.03098 15.3736 4 15.2286 4C15.011 4 14.8297 4.07125 14.6846 4.21375L7.24725 10.9796C7.16154 11.0539 7.0989 11.1344 7.05934 11.2212C7.01978 11.3079 7 11.4009 7 11.5Z" />
+      ) : (
+        <path d="M17 11.5C17 11.6053 16.9802 11.7014 16.9407 11.7881C16.9011 11.8748 16.8385 11.9554 16.7527 12.0297L9.31538 18.7955C9.17033 18.9318 8.98901 19 8.77143 19C8.62637 19 8.49451 18.969 8.37582 18.9071C8.26374 18.8513 8.17143 18.7677 8.0989 18.6561C8.03297 18.5446 8 18.4207 8 18.2844C8 18.0861 8.07253 17.9157 8.21758 17.7732L15.1209 11.5L8.21758 5.23606C8.07253 5.08736 8 4.91698 8 4.72491C8 4.5824 8.03297 4.45849 8.0989 4.35316C8.17143 4.24164 8.26374 4.15489 8.37582 4.09294C8.49451 4.03098 8.62637 4 8.77143 4C8.98901 4 9.17033 4.07125 9.31538 4.21375L16.7527 10.9796C16.8385 11.0539 16.9011 11.1344 16.9407 11.2212C16.9802 11.3079 17 11.4009 17 11.5Z" />
+      )}
     </svg>
   );
 }

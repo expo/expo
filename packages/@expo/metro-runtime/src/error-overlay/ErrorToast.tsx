@@ -17,9 +17,26 @@ import * as LogBoxStyle from './LogBoxStyle';
 
 import './ErrorOverlay.css';
 
+import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
+
 export function ErrorToastContainer() {
   useRejectionHandler();
   const { logs, isDisabled } = useLogs();
+
+  // HACK / DEBUG / TESTING / NOSHIP: This is here to develop the UI for the error overlay.
+  // DO NOT SHIP TO PROD!
+  React.useEffect(() => {
+    // Open the UI for the last log
+    LogBoxData.setSelectedLog(0);
+
+    Object.values(FIXTURES)
+      .flat()
+      .filter((log) => log.level !== 'syntax')
+      .map((log) => {
+        LogBoxData._appendNewLog(log);
+      });
+  }, []);
+
   if (!logs.length || isDisabled) {
     return null;
   }
@@ -38,13 +55,6 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
   const setSelectedLog = useCallback((index: number): void => {
     LogBoxData.setSelectedLog(index);
   }, []);
-
-  // HACK: This is here to develop the UI for the error overlay.
-  // DO NOT SHIP TO PROD!
-  // React.useEffect(() => {
-  //   // Open the UI for the last log
-  //   LogBoxData.setSelectedLog(0);
-  // }, []);
 
   function openLog(log: LogBoxLog) {
     let index = logs.length - 1;

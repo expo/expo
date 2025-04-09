@@ -13,6 +13,8 @@ import {
 } from '../devServerEndpoints';
 import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
 
+const PRINT_FIXTURES = false;
+
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
@@ -141,25 +143,27 @@ export class LogBoxLog {
     const status = this.symbolicated[type].status;
 
     if (status === 'COMPLETE') {
-      // Create symbolicated fixture:
-      console.log(
-        'LogBoxLog.symbolicated:',
-        JSON.stringify(
-          {
-            stack: [],
-            componentStack: [],
-            level: this.level,
-            type: this.type,
-            message: this.message,
-            category: this.category,
-            codeFrame: this.codeFrame,
-            isComponentError: this.isComponentError,
-            symbolicated: this.symbolicated,
-          },
-          null,
-          2
-        )
-      );
+      if (PRINT_FIXTURES) {
+        // Create symbolicated fixture:
+        console.log(
+          'LogBoxLog.symbolicated:',
+          JSON.stringify(
+            {
+              stack: [],
+              componentStack: [],
+              level: this.level,
+              type: this.type,
+              message: this.message,
+              category: this.category,
+              codeFrame: this.codeFrame,
+              isComponentError: this.isComponentError,
+              symbolicated: this.symbolicated,
+            },
+            null,
+            2
+          )
+        );
+      }
 
       return this.flushCallbacks(type);
     }

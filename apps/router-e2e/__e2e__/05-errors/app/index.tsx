@@ -16,7 +16,7 @@ export default function App() {
         Runtime error: undefined is not a function
       </Text>
 
-      <Broken />
+      {/* <Broken /> */}
 
       {/* {Array.from({ length: 3 }, (_, i) => (
         <View style={{ padding: 8, backgroundColor: 'white' }}></View>
