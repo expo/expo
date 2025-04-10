@@ -16,7 +16,7 @@ import {
 } from '../devServerEndpoints';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 
-import './StackTraceList.css';
+import styles from './StackTraceList.module.css';
 export function StackTraceList({
   onRetry,
   type,
@@ -113,7 +113,7 @@ export function StackTraceList({
                 gap: 2,
               }}>
               <span
-                className="expo-log-md-visible"
+                className={styles.collapseTitle}
                 style={{
                   fontFamily: 'var(--expo-log-font-family)',
                   fontSize: 14,

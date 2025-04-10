@@ -4,7 +4,6 @@ export { ExtendedExceptionData, IgnorePattern, LogData };
 declare const LogBox: {
     install(): void;
     uninstall(): void;
-    isInstalled(): boolean;
     ignoreLogs(patterns: IgnorePattern[]): void;
     ignoreAllLogs(value?: boolean): void;
     clearAllLogs(): void;
