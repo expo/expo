@@ -3,8 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
-exports.updateAndroidProguardRules = updateAndroidProguardRules;
+exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -93,6 +92,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.useDayNightTheme',
         propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
+    {
+        propName: 'android.enableBundleCompression',
+        propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
@@ -179,6 +182,7 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     }
     return newContents;
 }
+exports.updateAndroidProguardRules = updateAndroidProguardRules;
 const withAndroidCleartextTraffic = (config, props) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         if (props.android?.usesCleartextTraffic == null) {
