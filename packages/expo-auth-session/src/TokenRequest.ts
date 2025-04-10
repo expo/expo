@@ -156,14 +156,14 @@ export class Request<T, B> {
 /**
  * A generic token request.
  */
-export class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
+export class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> implements TokenRequestConfig {
   readonly clientId: string;
   readonly clientSecret?: string;
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
 
   constructor(
-    request,
+    request: T,
     public grantType: GrantType
   ) {
     super(request);
