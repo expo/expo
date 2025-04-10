@@ -53,7 +53,10 @@ export default {
       }
     } catch (error: any) {
       // it might fail, because user denied permission
-      if (typeof error === 'object' && error?.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+      if (
+        (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+        (await isClipboardPermissionDeniedAsync())
+      ) {
         throw new NoPermissionException();
       }
 
@@ -94,7 +97,10 @@ export default {
           return true;
         } catch (error: any) {
           // it might fail, because user denied permission
-          if (typeof error === 'object' && error?.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+          if (
+            (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+            (await isClipboardPermissionDeniedAsync())
+          ) {
             throw new NoPermissionException();
           }
           throw new CopyFailureException(error.message);
@@ -138,7 +144,10 @@ export default {
       return { data, size };
     } catch (error: any) {
       // it might fail, because user denied permission
-      if (typeof error === 'object' && error?.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+      if (
+        (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+        (await isClipboardPermissionDeniedAsync())
+      ) {
         throw new NoPermissionException();
       }
       throw new PasteFailureException(error.message);
@@ -184,7 +193,10 @@ async function clipboardHasTypesAsync(types: string[]): Promise<boolean> {
     return clipboardItems.flatMap((item) => item.types).some((type) => types.includes(type));
   } catch (error: any) {
     // it might fail, because user denied permission
-    if (typeof error === 'object' && error?.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+    if (
+      (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+      (await isClipboardPermissionDeniedAsync())
+    ) {
       throw new NoPermissionException();
     }
     throw error;
