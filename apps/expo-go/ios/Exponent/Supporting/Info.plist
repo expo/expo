@@ -161,5 +161,9 @@
 	<string>Automatic</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+      <string>com.expo.modules.backgroundtask.processing</string>
+    </array>
 </dict>
 </plist>
