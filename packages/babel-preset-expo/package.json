@@ -64,14 +64,10 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
-    "babel-plugin-react-compiler": "^19.0.0-beta-9ee70a1-20241017",
-    "react-compiler-runtime": "^19.0.0-beta-8a03594-20241020"
+    "babel-plugin-react-compiler": "^19.0.0-beta-e993439-20250405"
   },
   "peerDependenciesMeta": {
     "babel-plugin-react-compiler": {
-      "optional": true
-    },
-    "react-compiler-runtime": {
       "optional": true
     }
   },
@@ -79,9 +75,8 @@
     "@babel/core": "^7.20.0",
     "@babel/traverse": "^7.9.0",
     "@babel/types": "^7.9.0",
-    "babel-plugin-react-compiler": "^19.0.0-beta-9ee70a1-20241017",
+    "babel-plugin-react-compiler": "^19.0.0-beta-e993439-20250405",
     "expo-module-scripts": "^4.1.1",
-    "jest": "^29.2.1",
-    "react-compiler-runtime": "^19.0.0-beta-8a03594-20241020"
+    "jest": "^29.2.1"    
   }
 }

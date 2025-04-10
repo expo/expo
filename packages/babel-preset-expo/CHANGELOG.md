@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Update React Compiler support for React 19.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
