@@ -836,6 +836,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   }
 
   options.mediaType.forEach(checkMediaType);
+  // TODO(@kitten): Add expected native types for `MediaLibrary`
   return await MediaLibrary.getAssetsAsync({
     ...options,
     sortBy: options.sortBy.map(sortByOptionToString),
