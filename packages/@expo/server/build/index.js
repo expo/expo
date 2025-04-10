@@ -17,34 +17,19 @@ function getProcessedManifest(path) {
     const parsed = {
         ...routesManifest,
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         apiRoutes: routesManifest.apiRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         htmlRoutes: routesManifest.htmlRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         redirects: routesManifest.redirects?.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         rewrites: routesManifest.rewrites?.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
     };
     return parsed;
@@ -85,16 +70,12 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     if ('statusCode' in error && typeof error.statusCode === 'number') {
         return new Response(error.message, {
             status: error.statusCode,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain' },
         });
     }
     return new Response('Internal server error', {
         status: 500,
-        headers: {
-            'Content-Type': 'text/plain',
-        },
+        headers: { 'Content-Type': 'text/plain' },
     });
 }, } = {}) {
     let routesManifest;
@@ -108,9 +89,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 // Development error when Expo Router is not setup.
                 return new Response('No routes manifest found', {
                     status: 404,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
         }
@@ -125,16 +104,14 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
+                if (route.methods && !route.methods.includes(request.method)) {
+                    continue;
+                }
                 const Location = getRedirectRewriteLocation(request, route);
                 if (Location) {
                     debug('Redirecting', Location);
                     // Get the params
-                    return new Response(null, {
-                        status: route.permanent ? 308 : 307,
-                        headers: {
-                            Location,
-                        },
-                    });
+                    return new Response(null, { status: route.permanent ? 308 : 307, headers: { Location } });
                 }
             }
         }
@@ -165,20 +142,13 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (!contents) {
                     return new Response('Not found', {
                         status: 404,
-                        headers: {
-                            'Content-Type': 'text/plain',
-                        },
+                        headers: { 'Content-Type': 'text/plain' },
                     });
                 }
                 else if (contents instanceof Response) {
                     return contents;
                 }
-                return new Response(contents, {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'text/html',
-                    },
-                });
+                return new Response(contents, { status: 200, headers: { 'Content-Type': 'text/html' } });
             }
         }
         // Next, test API routes
@@ -194,9 +164,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             if (!routeHandler) {
                 return new Response('Method not allowed', {
                     status: 405,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
             // Mutate to add the expoUrl object.
@@ -225,27 +193,18 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             if (!contents) {
                 return new Response('Not found', {
                     status: 404,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
             else if (contents instanceof Response) {
                 return contents;
             }
-            return new Response(contents, {
-                status: 404,
-                headers: {
-                    'Content-Type': 'text/html',
-                },
-            });
+            return new Response(contents, { status: 404, headers: { 'Content-Type': 'text/html' } });
         }
         // 404
         const response = new Response('Not found', {
             status: 404,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain' },
         });
         return response;
     };
