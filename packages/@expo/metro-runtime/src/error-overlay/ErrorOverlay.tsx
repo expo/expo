@@ -68,9 +68,17 @@ export function LogBoxInspector({
 }) {
   const meta = useDevServerMeta();
   const isDismissable = !['static', 'syntax'].includes(log.level);
+  const [closing, setClosing] = useState(false);
 
   // TODO: Get this outside of the bundle.
   const projectRoot = meta?.projectRoot;
+
+  const animateClosed = (callback: () => void) => {
+    setClosing(true);
+    setTimeout(() => {
+      callback();
+    }, 200);
+  };
 
   const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
@@ -79,17 +87,27 @@ export function LogBoxInspector({
     const logsArray = Array.from(logs);
     if (selectedLogIndex != null) {
       if (logsArray.length - 1 <= 0) {
-        LogBoxData.setSelectedLog(-1);
+        animateClosed(() => {
+          LogBoxData.setSelectedLog(-1);
+        });
       } else if (selectedLogIndex >= logsArray.length - 1) {
         LogBoxData.setSelectedLog(selectedLogIndex - 1);
       }
 
-      LogBoxData.dismiss(logsArray[selectedLogIndex]);
+      if (logs.length === 1) {
+        animateClosed(() => {
+          LogBoxData.dismiss(logsArray[selectedLogIndex]);
+        });
+      } else {
+        LogBoxData.dismiss(logsArray[selectedLogIndex]);
+      }
     }
   };
 
   const onMinimize = useCallback((): void => {
-    LogBoxData.setSelectedLog(-1);
+    animateClosed(() => {
+      LogBoxData.setSelectedLog(-1);
+    });
   }, []);
 
   const onChangeSelectedIndex = useCallback((index: number): void => {
@@ -150,13 +168,14 @@ export function LogBoxInspector({
       <div className={styles.overlay}>
         <div
           data-expo-log-backdrop="true"
+          className={`${styles.bg} ${closing ? styles.bgExit : ''}`}
           onClick={() => {
             if (isDismissable) {
               onMinimize();
             }
           }}
         />
-        <div className={styles.container}>
+        <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
           <div
             style={{
               position: 'sticky',

@@ -26,7 +26,7 @@
   
   /* Wrap horizontal contents */
   overflow-x: hidden;
-  
+
 
 
   background-color: var(--expo-log-color-background);
@@ -37,6 +37,66 @@
   position: relative;
   padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
   /* background-image: linear-gradient(to bottom, var(--expo-log-gradient-stops)); */
+
+
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 200ms ease-out forwards;
+
+}
+
+.bg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  pointer-events: all;
+  z-index: -1;
+
+  opacity: 0;
+  animation: data-expo-log-backdrop-fade-in 150ms ease-out forwards;
+}
+
+.bgExit {
+  opacity: 1;
+  animation: fadeOut 150ms ease-in forwards;
+}
+
+.containerExit {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeOutUp 150ms ease-in forwards;
+}
+
+
+
+@keyframes data-expo-log-backdrop-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOutUp {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .footer {
