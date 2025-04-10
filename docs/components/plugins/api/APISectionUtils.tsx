@@ -584,3 +584,21 @@ export function extractDefaultPropValue(
     (defaultProp: PropData) => defaultProp.name === name
   )[0]?.defaultValue;
 }
+
+export function defineLiteralType(types: TypeDefinitionData[]) {
+  const uniqueTypes = Array.from(
+    new Set(
+      types.map((td: TypeDefinitionData) => {
+        if ('head' in td) {
+          return td.head;
+        } else if ('value' in td) {
+          return td.value && typeof td.value;
+        }
+      })
+    )
+  );
+  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
+    return <CODE>{uniqueTypes[0]}</CODE>;
+  }
+  return null;
+}

@@ -1,10 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
+import { Fragment } from 'react';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
+import { CALLOUT, CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
 
 import {
   CommentTagData,
@@ -16,6 +17,7 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
+  defineLiteralType,
   extractDefaultPropValue,
   getAllTagData,
   getCommentOrSignatureComment,
@@ -121,6 +123,7 @@ export const renderProp = (
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   const platforms = getAllTagData('platform', extractedComment);
+  const isLiteralType = ['literal', 'templateLiteral', 'union', 'tuple'].includes(type.type);
 
   return (
     <div
@@ -137,15 +140,20 @@ export const renderProp = (
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        Type:{' '}
-        <APITypeOrSignatureType
-          type={type}
-          signatures={extractedSignatures}
-          sdkVersion={sdkVersion}
-        />
-        {defaultValue && defaultValue !== UNKNOWN_VALUE && (
+        {type.types && isLiteralType && <>Literal type: {defineLiteralType(type.types)}</>}
+        {!isLiteralType && (
           <>
-            &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
+            Type:{' '}
+            <APITypeOrSignatureType
+              type={type}
+              signatures={extractedSignatures}
+              sdkVersion={sdkVersion}
+            />
+            {defaultValue && defaultValue !== UNKNOWN_VALUE && (
+              <>
+                &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
+              </>
+            )}
           </>
         )}
       </div>
@@ -159,6 +167,17 @@ export const renderProp = (
             className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}
           />
         ))}
+      {type.types && isLiteralType && (
+        <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+          Acceptable values are:{' '}
+          {type.types.map((lt, index, arr) => (
+            <Fragment key={`${name}-literal-type-${index}`}>
+              <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
+              {index + 1 !== arr.length && <span className="text-quaternary"> | </span>}
+            </Fragment>
+          ))}
+        </CALLOUT>
+      )}
     </div>
   );
 };
