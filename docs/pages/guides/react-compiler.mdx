@@ -5,6 +5,7 @@ description: Learn how to enable and use the React Compiler in Expo apps.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 > **warning** **Warning:** React Compiler is experimental. Currently, it is on hold and we'll soon provide more updates on its usage.
 
@@ -26,7 +27,16 @@ This will generally verify if your app is following the [**rules of React**](htt
 
 Install `babel-plugin-react-compiler` and the React compiler runtime in your project:
 
-<Terminal cmd={['$ npx expo install babel-plugin-react-compiler react-compiler-runtime@beta']} />
+<Tabs tabs={['SDK 53 and above', 'SDK 52 and below']}>
+  <Tab>
+    <Terminal cmd={['$ npx expo install babel-plugin-react-compiler@beta']} />
+  </Tab>
+  <Tab>
+    <Terminal
+      cmd={['$ npx expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta']}
+    />
+  </Tab>
+</Tabs>
 
 </Step>
 
