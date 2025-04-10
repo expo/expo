@@ -4,7 +4,7 @@ import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
 
 import {
   CommentTagData,
