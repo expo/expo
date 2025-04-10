@@ -18,6 +18,7 @@ import type { Message } from './Data/parseLogBoxLog';
 import { LogBoxMessage } from './LogBoxMessage';
 import styles from './ErrorOverlay.module.css';
 import ReactDOM from 'react-dom/client';
+import { fetchProjectMetadataAsync, getFormattedStackTrace } from './devServerEndpoints';
 
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',
@@ -30,12 +31,30 @@ const HEADER_TITLE_MAP = {
 
 export function LogBoxInspectorContainer() {
   const { selectedLogIndex, logs } = useLogs();
-  console.log('selectedLogIndex', selectedLogIndex, logs);
   const log = logs[selectedLogIndex];
   if (log == null) {
     return null;
   }
   return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
+}
+
+function useDevServerMeta() {
+  const [meta, setMeta] = useState<{
+    projectRoot: string;
+    serverRoot: string;
+    sdkVersion: string;
+  } | null>(null);
+  useEffect(() => {
+    fetchProjectMetadataAsync()
+      .then(setMeta)
+      .catch((error) => {
+        console.log(
+          `Failed to fetch project metadata. Some debugging features may not work as expected: ${error}`
+        );
+      });
+  }, []);
+
+  return meta;
 }
 
 export function LogBoxInspector({
@@ -47,6 +66,12 @@ export function LogBoxInspector({
   selectedLogIndex: number;
   logs: LogBoxLog[];
 }) {
+  const meta = useDevServerMeta();
+  const isDismissable = !['static', 'syntax'].includes(log.level);
+
+  // TODO: Get this outside of the bundle.
+  const projectRoot = meta?.projectRoot;
+
   const onDismiss = (): void => {
     // Here we handle the cases when the log is dismissed and it
     // was either the last log, or when the current index
@@ -99,7 +124,26 @@ export function LogBoxInspector({
     [log]
   );
 
-  const isDismissable = !['static', 'syntax'].includes(log.level);
+  const onCopy = () => {
+    // Copy log to clipboard
+    const errContents = [log.message.content.trim()];
+
+    const componentStack = log.getAvailableStack('component');
+    if (componentStack?.length) {
+      errContents.push(
+        '',
+        'Component Stack',
+        getFormattedStackTrace(projectRoot ?? '', componentStack)
+      );
+    }
+    const stackTrace = log.getAvailableStack('stack');
+
+    if (stackTrace?.length) {
+      errContents.push('', 'Call Stack', getFormattedStackTrace(projectRoot ?? '', stackTrace));
+    }
+
+    navigator.clipboard.writeText(errContents.join('\n'));
+  };
 
   return (
     <>
@@ -123,6 +167,7 @@ export function LogBoxInspector({
               backgroundColor: 'var(--expo-log-color-background)',
             }}>
             <ErrorOverlayHeader
+              sdkVersion={meta?.sdkVersion}
               selectedIndex={selectedLogIndex}
               total={logs.length}
               isDismissable={isDismissable}
@@ -130,14 +175,16 @@ export function LogBoxInspector({
               onMinimize={onMinimize}
               onSelectIndex={onChangeSelectedIndex}
               level={log.level}
+              onCopy={onCopy}
             />
           </div>
           <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
-            <ErrorCodeFrame codeFrame={log.codeFrame} />
+            <ErrorCodeFrame projectRoot={projectRoot} codeFrame={log.codeFrame} />
 
             {!!log?.componentStack?.length && (
               <StackTraceList
                 type="component"
+                projectRoot={projectRoot}
                 stack={log.getAvailableStack('component')}
                 symbolicationStatus={log.symbolicated['component'].status}
                 // eslint-disable-next-line react/jsx-no-bind
@@ -146,6 +193,7 @@ export function LogBoxInspector({
             )}
             <StackTraceList
               type="stack"
+              projectRoot={projectRoot}
               stack={log.getAvailableStack('stack')}
               symbolicationStatus={log.symbolicated['stack'].status}
               // eslint-disable-next-line react/jsx-no-bind

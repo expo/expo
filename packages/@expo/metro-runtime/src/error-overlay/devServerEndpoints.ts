@@ -44,6 +44,17 @@ export function openFileInEditor(file: string, lineNumber: number): void {
   });
 }
 
+export async function fetchProjectMetadataAsync(): Promise<{
+  projectRoot: string;
+  serverRoot: string;
+  sdkVersion: string;
+}> {
+  const response = await fetch(new URL('/_expo/error-overlay-meta', getBaseUrl()).href, {
+    method: 'GET',
+  });
+  return await response.json();
+}
+
 async function symbolicateStackTrace(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace> {
   const response = await fetch(new URL('/symbolicate', getBaseUrl()).href, {
     method: 'POST',
@@ -61,6 +72,18 @@ export function formatProjectFilePath(projectRoot: string, file?: string | null)
     /\?.*$/,
     ''
   );
+}
+
+export function getFormattedStackTrace(projectRoot: string, stack: MetroStackFrame[]) {
+  return stack
+    .map((frame) => {
+      let stack = `  at `;
+
+      const location = getStackFormattedLocation(projectRoot, frame);
+      stack += `${frame.methodName ?? '<unknown>'} (${location})`;
+      return stack;
+    })
+    .join('\n');
 }
 
 function pathRelativeToPath(path: string, relativeTo: string, sep = '/') {
@@ -81,11 +104,14 @@ export function getStackFormattedLocation(
   frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>
 ): string {
   const column = frame.column != null && parseInt(String(frame.column), 10);
-  const location =
-    formatProjectFilePath(projectRoot, frame.file) +
-    (frame.lineNumber != null
-      ? ':' + frame.lineNumber + (column && !isNaN(column) ? ':' + (column + 1) : '')
-      : '');
+  let location = formatProjectFilePath(projectRoot, frame.file);
+
+  if (frame.lineNumber != null && frame.lineNumber >= 0) {
+    location += ':' + frame.lineNumber;
+    if (column && !isNaN(column) && column >= 0) {
+      location += ':' + (column + 1);
+    }
+  }
 
   return location;
 }

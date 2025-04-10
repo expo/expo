@@ -97,15 +97,6 @@ const LogBox = {
   },
 };
 
-const isWarningModuleWarning = (...args: any) => {
-  if (typeof args[0] !== 'string') {
-    return false;
-  }
-
-  // console.log('LogBox: ', Object.entries(args));
-  return / {4}at/.test(args[0]) || /^Warning:\s/.test(args[0]);
-};
-
 const registerError = (...args: Parameters<typeof console.error>): void => {
   // Let errors within LogBox itself fall through.
   if (LogBoxData.isLogBoxErrorMessage(args[0])) {
@@ -114,18 +105,6 @@ const registerError = (...args: Parameters<typeof console.error>): void => {
   }
 
   try {
-    // if (!isWarningModuleWarning(...args)) {
-    //   // Only show LogBox for the 'warning' module, otherwise pass through.
-    //   // By passing through, this will get picked up by the React console override,
-    //   // potentially adding the component stack. React then passes it back to the
-    //   // React Native ExceptionsManager, which reports it to LogBox as an error.
-    //   //
-    //   // The 'warning' module needs to be handled here because React internally calls
-    //   // `console.error('Warning: ')` with the component stack already included.
-    //   originalConsoleError?.(...args);
-    //   return;
-    // }
-
     const { category, message, componentStack } = parseLogBoxLog(args);
 
     if (!LogBoxData.isMessageIgnored(message.content)) {

@@ -15,13 +15,19 @@ declare const process: any;
 
 import styles from './ErrorCodeFrame.module.css';
 
-export function ErrorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame }) {
+export function ErrorCodeFrame({
+  projectRoot,
+  codeFrame,
+}: {
+  projectRoot?: string;
+  codeFrame?: CodeFrame;
+}) {
   if (codeFrame == null) {
     return null;
   }
 
   function getFileName() {
-    return formatProjectFilePath(process.env.EXPO_PROJECT_ROOT, codeFrame?.fileName);
+    return formatProjectFilePath(projectRoot ?? '', codeFrame?.fileName);
   }
 
   function getLocation() {

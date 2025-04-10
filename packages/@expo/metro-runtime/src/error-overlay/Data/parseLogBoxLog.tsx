@@ -397,6 +397,7 @@ export function parseLogBoxLog(args: any[]): {
   let componentStack: ComponentStack = [];
 
   // Handle React 19 errors which have a custom format, come through console.error, and include a raw error object.
+  // @ts-expect-error
   if (React.captureOwnerStack != null) {
     // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
     let error: Error | undefined;
@@ -412,6 +413,7 @@ export function parseLogBoxLog(args: any[]): {
     }
     // Use the official stack from componentDidCatch
     if ('componentStack' in error) {
+      // @ts-expect-error
       error.stack = error.componentStack;
     } else {
       error = getReactStitchedError(error);
@@ -425,23 +427,6 @@ export function parseLogBoxLog(args: any[]): {
         substitutions: [],
       },
     };
-
-    // const message = interpolateLikeConsole(...args);
-
-    // else if (
-    //   // TODO: This is the naive approach from RN. This can probably be removed.
-    //   // This is also used for "Each child in a list should have a unique key prop."
-    //   !hasComponentStack(args)
-    // ) {
-    //   error = args[0];
-    //   console.log('OBJ', Object.entries(args));
-
-    //   const stack = React.captureOwnerStack();
-    //   if (stack != null && stack !== '') {
-    //     args[0] = args[0] += '%s';
-    //     args.push(stack);
-    //   }
-    // }
   }
 
   // Extract component stack from warnings like "Some warning%s".

@@ -222,7 +222,6 @@ export function addException(error: ExtendedExceptionData): void {
     try {
       _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
     } catch (unexpectedError: any) {
-      console.log('Error parsing exception', error);
       reportUnexpectedLogBoxError(unexpectedError);
     }
   }, 0);

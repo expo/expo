@@ -6,24 +6,28 @@ import styles from './ErrorOverlayHeader.module.css';
 export function ErrorOverlayHeader({
   selectedIndex,
   total,
+  sdkVersion,
   ...props
 }: {
   onSelectIndex: (selectedIndex: number) => void;
   level: LogLevel;
   onDismiss: () => void;
   onMinimize: () => void;
+  onCopy: () => void;
   isDismissable: boolean;
   selectedIndex: number;
+  sdkVersion?: string;
   total: number;
 }) {
   const titleText = `${selectedIndex + 1}/${total}`;
-  const sdkVersion = '53.0.2'; // TODO: Retrieve dynamically
 
   return (
     <div className={styles.container}>
       <div className={styles.leftGroup}>
         <div className={styles.headerControls}>
-          <HeaderButton onPress={props.isDismissable ? props.onDismiss : undefined}>
+          <HeaderButton
+            title="Dismiss error"
+            onPress={props.isDismissable ? props.onDismiss : undefined}>
             {/* Dismiss Icon */}
             <svg
               width="24"
@@ -35,7 +39,9 @@ export function ErrorOverlayHeader({
             </svg>
           </HeaderButton>
 
-          <HeaderButton onPress={props.isDismissable ? props.onMinimize : undefined}>
+          <HeaderButton
+            title="Minimize errors"
+            onPress={props.isDismissable ? props.onMinimize : undefined}>
             {/* Minimize Icon */}
             <svg
               width="24"
@@ -52,6 +58,7 @@ export function ErrorOverlayHeader({
 
         <div className={styles.navGroup}>
           <HeaderButton
+            title="Previous error"
             disabled={total <= 1}
             onPress={() =>
               props.onSelectIndex(selectedIndex - 1 < 0 ? total - 1 : selectedIndex - 1)
@@ -69,6 +76,7 @@ export function ErrorOverlayHeader({
           </span>
 
           <HeaderButton
+            title="Next error"
             disabled={total <= 1}
             onPress={() => props.onSelectIndex((selectedIndex + 1) % total)}>
             {/* Right Chevron */}
@@ -77,15 +85,36 @@ export function ErrorOverlayHeader({
         </div>
       </div>
 
-      <div className={styles.sdkBadge}>
-        <svg
-          className={styles.sdkIcon}
-          fill="white"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 20.084c.043.53.23 1.063.718 1.778.58.849 1.576 1.315 2.303.567.49-.505 5.794-9.776 8.35-13.29a.761.761 0 011.248 0c2.556 3.514 7.86 12.785 8.35 13.29.727.748 1.723.282 2.303-.567.57-.835.728-1.42.728-2.046 0-.426-8.26-15.798-9.092-17.078-.8-1.23-1.044-1.498-2.397-1.542h-1.032c-1.353.044-1.597.311-2.398 1.542C8.267 3.991.33 18.758 0 19.77Z" />
-        </svg>
-        <span className={styles.sdkText}>Expo {sdkVersion}</span>
+      <div className={styles.headerControls}>
+        <HeaderButton title="Copy error" onPress={() => props.onCopy()}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#98989F"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+            <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            <path d="M16 4h2a2 2 0 0 1 2 2v4" />
+            <path d="M21 14H11" />
+            <path d="m15 10-4 4 4 4" />
+          </svg>
+        </HeaderButton>
+
+        <div className={styles.sdkBadge}>
+          <svg
+            className={styles.sdkIcon}
+            fill="white"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 20.084c.043.53.23 1.063.718 1.778.58.849 1.576 1.315 2.303.567.49-.505 5.794-9.776 8.35-13.29a.761.761 0 011.248 0c2.556 3.514 7.86 12.785 8.35 13.29.727.748 1.723.282 2.303-.567.57-.835.728-1.42.728-2.046 0-.426-8.26-15.798-9.092-17.078-.8-1.23-1.044-1.498-2.397-1.542h-1.032c-1.353.044-1.597.311-2.398 1.542C8.267 3.991.33 18.758 0 19.77Z" />
+          </svg>
+          <span className={styles.sdkText}>Expo {sdkVersion}</span>
+        </div>
       </div>
     </div>
   );
@@ -112,9 +141,11 @@ function HeaderButton(props: {
   disabled?: boolean;
   onPress?: () => void;
   children: React.ReactNode;
+  title: string;
 }) {
   return (
     <button
+      title={props.title}
       className="expo-log-page-button"
       aria-disabled={!props.onPress || props.disabled ? true : undefined}
       onClick={props.disabled ? undefined : props.onPress}>

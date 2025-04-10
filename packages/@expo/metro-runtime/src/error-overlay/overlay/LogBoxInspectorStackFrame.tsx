@@ -17,11 +17,15 @@ import { getStackFormattedLocation } from '../devServerEndpoints';
 declare const process: any;
 
 export function LogBoxInspectorStackFrame(props: {
+  projectRoot?: string;
   frame: StackFrame & { collapse?: boolean };
   onPress?: (event: GestureResponderEvent) => void;
 }) {
   const { frame, onPress } = props;
-  const location = getStackFormattedLocation(process.env.EXPO_PROJECT_ROOT, frame);
+  const location = getStackFormattedLocation(
+    props.projectRoot ?? process.env.EXPO_PROJECT_ROOT,
+    frame
+  );
   return (
     <View style={styles.frameContainer}>
       <LogBoxButton

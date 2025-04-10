@@ -1028,6 +1028,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
+      // For providing info to the error overlay.
+      middleware.use((req, res, next) => {
+        if (req.url?.startsWith('/_expo/error-overlay-meta')) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(
+            JSON.stringify({
+              projectRoot: this.projectRoot,
+              serverRoot,
+              sdkVersion: exp.sdkVersion,
+            })
+          );
+          return;
+        }
+        return next();
+      });
+
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
         // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
