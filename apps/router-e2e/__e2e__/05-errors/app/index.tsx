@@ -21,6 +21,12 @@ export default function App() {
       <MountOnPress title="React: async client component">
         {() => <RBugAsyncComponent />}
       </MountOnPress>
+      <MountOnPress title="React Native: invalid element">
+        {() => <RNBugInvalidDomElement />}
+      </MountOnPress>
+      <MountOnPress title="React Native: unwrapped text">
+        {() => <RNBugUnwrappedText />}
+      </MountOnPress>
     </View>
   );
 }
@@ -69,4 +75,10 @@ function RWarningMissingKeys() {
 
 async function RBugAsyncComponent() {
   return <Text>Hello</Text>;
+}
+function RNBugInvalidDomElement() {
+  return <bacon />;
+}
+function RNBugUnwrappedText() {
+  return <View>Hello</View>;
 }
