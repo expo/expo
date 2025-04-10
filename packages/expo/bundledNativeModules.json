@@ -1,7 +1,7 @@
 {
   "@expo/metro-runtime": "~5.0.1",
   "@expo/vector-icons": "^14.1.0",
-  "@expo/ui": "~0.1.0-alpha.0",
+  "@expo/ui": "~0.1.1-alpha.0",
   "@react-native-async-storage/async-storage": "2.1.2",
   "@react-native-community/datetimepicker": "8.3.0",
   "@react-native-masked-view/masked-view": "0.3.2",

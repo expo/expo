@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.1.1-alpha.0 — 2025-04-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.0-alpha.0 — 2025-04-04
 
 ### 🛠 Breaking changes

@@ -35,7 +35,7 @@
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/styleguide-base": "^1.0.1",
-    "@expo/ui": "~0.1.0-alpha.0",
+    "@expo/ui": "~0.1.1-alpha.0",
     "@lottiefiles/dotlottie-react": "^0.10.1",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "2.1.2",

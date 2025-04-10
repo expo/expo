@@ -615,7 +615,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.2.1):
     - ExpoModulesCore
-  - ExpoUI (0.1.0-alpha.0):
+  - ExpoUI (0.1.1-alpha.0):
     - ExpoModulesCore
   - ExpoVideo (2.1.1):
     - ExpoModulesCore
@@ -3661,7 +3661,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: 8ffb7e4f86a849221950eb176cab5e5e2e9caa30
   ExpoSystemUI: 8c341a4f3c79baef832311bdb92f662f6b797878
   ExpoTrackingTransparency: a9e03546959bbef5b1c39fb959d86ac8f9cf5710
-  ExpoUI: e6c6ebe1b9282006e6aac7ba0e6250fcdd9fd117
+  ExpoUI: 88800846d0b32b0a30bf18462221003fd23357eb
   ExpoVideo: 0bd928b8a6fd397c211e354912d4a681d125b6e7
   ExpoVideoThumbnails: 2ee2ae61c89e35067eb8a5b27cf907319d02ac31
   ExpoWebBrowser: 3eb04b232ed8ebbc999d7e3fad55e9efe17af041
