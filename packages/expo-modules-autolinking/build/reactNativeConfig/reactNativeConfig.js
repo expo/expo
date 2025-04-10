@@ -16,6 +16,8 @@ const fileUtils_1 = require("../fileUtils");
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
+const android_1 = require("../platforms/android");
+const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
 /**
  * Create config for react-native core autolinking.
  */
@@ -26,8 +28,13 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
         ...findProjectLocalDependencyRoots(projectConfig),
     };
     // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
-    // has also included it as a project dependency, we have to autolink it (transitive non-expo module dependencies are not autolinked).
-    const shouldAutolinkEdgeToEdge = platform === 'android' && !('react-native-edge-to-edge' in dependencyRoots);
+    // has also included it as a project dependency, we have to autolink it manually (transitive non-expo module dependencies are not autolinked).
+    // There are two reasons why we don't want to autolink `edge-to-edge` when `edgeToEdge` property is set to `false`:
+    // 1. `react-native-is-edge-to-edge` tries to check if the `edge-to-edge` turbomodule is present to determine whether edge-to-edge is enabled.
+    // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
+    const shouldAutolinkEdgeToEdge = platform === 'android' &&
+        (await resolveGradleEdgeToEdgeEnabled(projectRoot)) &&
+        !('react-native-edge-to-edge' in dependencyRoots);
     if (shouldAutolinkEdgeToEdge) {
         const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
         if (edgeToEdgeRoot) {
@@ -166,5 +173,11 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
         };
     }
     return {};
+}
+/**
+ * Resolve the `expo.edgeToEdgeEnabled` property from the `gradle.properties` file.
+ */
+async function resolveGradleEdgeToEdgeEnabled(projectRoot) {
+    return ((await (0, android_1.resolveGradlePropertyAsync)(path_1.default.join(projectRoot, 'android'), EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY)) === 'true');
 }
 //# sourceMappingURL=reactNativeConfig.js.map

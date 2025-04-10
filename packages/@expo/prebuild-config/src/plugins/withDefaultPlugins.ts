@@ -26,6 +26,7 @@ import withNotifications from './unversioned/expo-notifications/expo-notificatio
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
+import withEdgeToEdge from './unversioned/react-native-edge-to-edge/withEdgeToEdge';
 import withMaps from './unversioned/react-native-maps';
 
 const debug = Debug('expo:prebuild-config');
@@ -74,11 +75,11 @@ export const withIosExpoPlugins: ConfigPlugin<{
  */
 export const withAndroidExpoPlugins: ConfigPlugin<{
   package: string;
+  projectRoot: string;
 }> = (config, props) => {
   // Set the package name ahead of time.
   if (!config.android) config.android = {};
   config.android.package = props.package;
-
   return withPlugins(config, [
     // gradle.properties
     AndroidConfig.BuildProperties.withJsEngineGradleProps,
@@ -117,6 +118,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
     AndroidConfig.PrimaryColor.withPrimaryColor,
+    (config) => withEdgeToEdge(config, props),
 
     withAndroidIcons,
     // If we renamed the package, we should also move it around and rename it in source files
