@@ -749,7 +749,7 @@ export default function App() {
 
   **Web dev**: `https://localhost:19006`
 
-  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+  - Run `npx expo start --tunnel` to run with **https**, auth won't work otherwise.
   - Adding a slash to the end of the URL doesn't matter.
 
   **Standalone / development build**: `your-scheme://`
@@ -1639,7 +1639,7 @@ export default function App() {
   **Web dev**: `https://localhost:19006`
 
   - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+  - Run `npx expo start --tunnel` to run with **https**, auth won't work otherwise.
 
   **Standalone / development build**: `your-scheme://`
 
@@ -1962,7 +1962,7 @@ export default function App() {
 - Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
 - Example redirects:
   - Standalone / development build: `com.your.app://`
-  - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
+  - Web (dev `npx expo start --tunnel`): `https://xxxxxxx.bacon.19000.exp.direct:80` the hash will change between runs, use the `EXPO_TUNNEL_SUBDOMAIN` environment variable to create a stable URL.
 - The `redirectUri` requires two slashes (`://`).
 
 {/* prettier-ignore */}

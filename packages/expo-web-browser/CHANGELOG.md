@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update doc comment about `--https` flag.
+
 ## 14.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._
