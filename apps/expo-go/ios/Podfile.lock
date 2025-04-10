@@ -28,7 +28,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.30.2):
     - ExpoModulesCore
-  - Expo (53.0.0-preview.2):
+  - Expo (53.0.0-preview.3):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -3393,7 +3393,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: bbac905a220670da1780d5cfb01850b72b1a7652
   EXNotifications: 8a8362eb6aaf46045d72b45a8b57cda968566045
-  Expo: 3121323a890e0bbc8f8c2f03cec6e19fb6371191
+  Expo: 6770aa7cc06d1c38a2a7924512fdfc87762de551
   ExpoAppleAuthentication: b3b59a3ec5dc937f0a33d8b9d82293bdf188c9ee
   ExpoAsset: a06b4421afd1a541ec9b22f37c214e3852a2a262
   ExpoBackgroundFetch: 11e16d5c6f89ced0d161c6e4c8d54179388a85b8
@@ -3462,13 +3462,13 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ced00f3972ea31e573ba2041d2ab0011c3a41cab
+  hermes-engine: d84bd0d1dda5e9e83b32922a83b7b9161e02dd27
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

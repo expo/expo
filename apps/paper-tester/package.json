@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~53.0.0-preview.2",
+    "expo": "~53.0.0-preview.3",
     "expo-apple-authentication": "~7.2.1",
     "expo-blur": "~14.1.1",
     "expo-camera": "~16.1.1",
