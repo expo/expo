@@ -4,14 +4,23 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
 - Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
+- [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`. ([#35789](https://github.com/expo/expo/pull/35789) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

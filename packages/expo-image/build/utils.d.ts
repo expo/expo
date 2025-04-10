@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import { type ImageResizeMode } from 'react-native';
 import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageProps, ImageTransition } from './Image.types';
 /**

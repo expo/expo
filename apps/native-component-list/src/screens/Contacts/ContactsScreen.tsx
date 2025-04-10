@@ -12,8 +12,20 @@ import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import MonoText from '../../components/MonoText';
 import { Colors } from '../../constants';
+import { optionalRequire } from '../../navigation/routeBuilder';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
+
+export const ContactsScreens = [
+  {
+    name: 'ContactDetail',
+    route: 'contact/detail',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContactDetailScreen'));
+    },
+  },
+];
 
 type StackParams = {
   ContactDetail: { id: string };

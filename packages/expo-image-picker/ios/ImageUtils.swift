@@ -108,6 +108,8 @@ internal struct ImageUtils {
         initialMetadata: nil
       )
       return (gifData, ".gif")
+    case UTType.heic.identifier:
+      return (rawData, ".heic")
     default:
       if options.quality >= 1.0 {
         return (rawData, ".jpg")

@@ -86,7 +86,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'expo.useLegacyPackaging',
-      propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+      propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
     },
     {
       propName: 'android.extraMavenRepos',
@@ -97,12 +97,12 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
           }
           return item;
         });
-        return JSON.stringify(extraMavenRepos);
+        return extraMavenRepos.length > 0 ? JSON.stringify(extraMavenRepos) : undefined;
       },
     },
     {
       propName: 'android.useDayNightTheme',
-      propValueGetter: (config) => (config.android?.useDayNightTheme ?? false).toString(),
+      propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
   ],
   'withAndroidBuildProperties'

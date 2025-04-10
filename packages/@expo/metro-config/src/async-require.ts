@@ -14,8 +14,6 @@ type MetroRequire = {
   importAll: <T>(id: number) => T;
 };
 
-declare const require: MetroRequire;
-
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
 declare let __METRO_GLOBAL_PREFIX__: string;
@@ -41,7 +39,7 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
 
 function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promise<T> | T {
   const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-  const importAll = () => require.importAll<T>(moduleID);
+  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID);
 
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);

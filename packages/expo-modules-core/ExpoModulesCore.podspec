@@ -60,20 +60,11 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
 
-  header_search_paths = [
-    '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
-  ]
+  header_search_paths = []
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
-      # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
-      # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
+      # Transitive dependency of React-Core
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
     ])
   end
   # Swift/Objective-C compatibility
@@ -102,7 +93,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
-  s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
 

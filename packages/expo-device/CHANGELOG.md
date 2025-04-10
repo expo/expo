@@ -10,7 +10,17 @@
 
 ### 💡 Others
 
+## 7.1.0 — 2025-04-04
+
+### 💡 Others
+
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 7.0.3 - 2025-04-01
+
+### 🐛 Bug fixes
+
+- [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
 
 ## 7.0.2 - 2025-01-10
 

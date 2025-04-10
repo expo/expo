@@ -83,7 +83,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .navigationType = stringToOnShouldStartLoadWithRequestNavigationTypeEnum(std::string([[dictionary valueForKey:@"navigationType"] UTF8String])),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .isTopFrame = static_cast<bool>([[dictionary valueForKey:@"isTopFrame"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .mainDocumentURL = std::string([[dictionary valueForKey:@"mainDocumentURL"] UTF8String])
@@ -100,7 +100,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .navigationType = stringToOnLoadingStartNavigationTypeEnum(std::string([[dictionary valueForKey:@"navigationType"] UTF8String])),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .mainDocumentURL = std::string([[dictionary valueForKey:@"mainDocumentURL"] UTF8String], [[dictionary valueForKey:@"mainDocumentURL"] lengthOfBytesUsingEncoding:NSUTF8StringEncoding])
                 };
@@ -117,7 +117,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .code = [[dictionary valueForKey:@"code"] intValue],
                     .description = std::string([[dictionary valueForKey:@"description"] UTF8String] ?: ""),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .domain = std::string([[dictionary valueForKey:@"domain"] UTF8String])
                 };
@@ -132,7 +132,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .lockIdentifier = [[dictionary valueForKey:@"lockIdentifier"] doubleValue],
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .data = std::string([[dictionary valueForKey:@"data"] UTF8String])
                 };
@@ -148,7 +148,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .navigationType = stringToOnLoadingFinishNavigationTypeEnum(std::string([[dictionary valueForKey:@"navigationType"] UTF8String], [[dictionary valueForKey:@"navigationType"] lengthOfBytesUsingEncoding:NSUTF8StringEncoding])),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .mainDocumentURL = std::string([[dictionary valueForKey:@"mainDocumentURL"] UTF8String], [[dictionary valueForKey:@"mainDocumentURL"] lengthOfBytesUsingEncoding:NSUTF8StringEncoding])
                 };
@@ -163,7 +163,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .lockIdentifier = [[dictionary valueForKey:@"lockIdentifier"] doubleValue],
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue]),
                     .progress = [[dictionary valueForKey:@"progress"] doubleValue]
                 };
@@ -178,7 +178,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .lockIdentifier = [[dictionary valueForKey:@"lockIdentifier"] doubleValue],
                     .title = std::string([[dictionary valueForKey:@"title"] UTF8String]),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue])
                 };
                 webViewEventEmitter->onContentProcessDidTerminate(data);
@@ -238,7 +238,7 @@ auto stringToOnLoadingFinishNavigationTypeEnum(std::string value) {
                     .statusCode = [[dictionary valueForKey:@"statusCode"] intValue],
                     .description = std::string([[dictionary valueForKey:@"description"] UTF8String] ?: ""),
                     .canGoBack = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
-                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoBack"] boolValue]),
+                    .canGoForward = static_cast<bool>([[dictionary valueForKey:@"canGoForward"] boolValue]),
                     .loading = static_cast<bool>([[dictionary valueForKey:@"loading"] boolValue])
                 };
                 webViewEventEmitter->onHttpError(data);

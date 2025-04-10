@@ -21,6 +21,7 @@ export class ExpoAndroidProjectConfig {
     public modules?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
+    public shouldUsePublicationScriptPath?: string,
     /**
      * Whether this project is the root one.
      */
@@ -113,6 +114,7 @@ export class ExpoModuleConfig {
         this.rawConfig.android?.modules,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
+        this.rawConfig.android?.shouldUsePublicationScriptPath,
         !this.rawConfig.android?.path // it's default project because path is not defined
       )
     );
@@ -124,7 +126,8 @@ export class ExpoModuleConfig {
           project.path,
           project.modules,
           project.publication,
-          project.gradleAarProjects
+          project.gradleAarProjects,
+          project.shouldUsePublicationScriptPath
         )
       );
     });

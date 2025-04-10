@@ -4,19 +4,33 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 
+- Add add support for TypeScript exports in React Server Actions. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin. ([#34647](https://github.com/expo/expo/pull/34647) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `babel-plugin-syntax-hermes-parser` to the server preset for native RSC. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Fix namespace type export stripping. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Add all missing dependencies for package resolution with NPM. ([#34628](https://github.com/expo/expo/pull/34628) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 💡 Others
+## 12.0.10 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 12.0.9 - 2025-02-20
 

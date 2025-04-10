@@ -17,6 +17,7 @@ function createRoutesManifest(paths, options) {
     const routeTree = (0, getRoutesSSR_1.getRoutes)(createMockContextModule(paths), {
         ...options,
         preserveApiRoutes: true,
+        preserveRedirectAndRewrites: true,
         ignoreRequireErrors: true,
         ignoreEntryPoints: true,
         platform: 'web',

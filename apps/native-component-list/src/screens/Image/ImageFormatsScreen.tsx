@@ -21,6 +21,15 @@ const data: SectionListData<ImageSource>[] = [
       },
     ],
   },
+  Platform.OS === 'ios' && {
+    title: 'Animated WebP (useAppleWebpCodec: false)',
+    data: [
+      {
+        uri: 'https://iili.io/JEBYMvV.webp',
+        useAppleWebpCodec: false,
+      },
+    ],
+  },
   {
     title: 'Animated PNG (APNG)',
     data: [

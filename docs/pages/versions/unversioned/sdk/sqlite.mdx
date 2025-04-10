@@ -4,12 +4,13 @@ description: A library that provides access to a database that can be queried th
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
 iconUrl: '/static/images/packages/expo-sqlite.png'
-platforms: ['android', 'ios', 'macos']
+platforms: ['android', 'ios', 'macos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
@@ -71,6 +72,16 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
     },
   ]}
 />
+
+## Web setup
+
+To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
+
+Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
+
+<DiffBlock source="/static/diffs/sqlite-web-metro-config.diff" />
+
+If you deploy your app to web hosting services, you will also need to add the `Cross-Origin-Embedder-Policy` and `Cross-Origin-Opener-Policy` headers to your web server. [Learn more about the `COEP`, `COOP` headers, and `SharedArrayBuffer`](https://developer.chrome.com/blog/enabling-shared-array-buffer/).
 
 ## Usage
 
@@ -483,6 +494,19 @@ Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`e
 [Knex.js](https://knexjs.org/) is a SQL query builder that is ["flexible, portable, and fun to use!"](https://github.com/knex/knex)
 
 Check out the [`expo-sqlite` integration guide](https://github.com/expo/knex-expo-sqlite-dialect) for more details.
+
+## SQLCipher
+
+> **Note:** SQLCipher is not supported on [Expo Go](https://expo.dev/go).
+
+[SQLCipher](https://www.zetetic.net/sqlcipher/) is a fork of SQLite that adds encryption and authentication to the database. The `expo-sqlite` library supports SQLCipher for Android, iOS, and macOS. To use SQLCipher, you need to add the `useSQLCipher` config to your **app.json** as shown in the [Configuration in app config](#configuration-in-app-config) section and run `npx expo prebuild`.
+
+Right after you open a database, you need to set a password for the database using the `PRAGMA key = 'password'` statement.
+
+```ts Add a password to the database
+const db = await SQLite.openDatabaseAsync('databaseName');
+await db.execAsync(`PRAGMA key = 'password'`);
+```
 
 ## API
 

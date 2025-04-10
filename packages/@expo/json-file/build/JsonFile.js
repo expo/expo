@@ -30,10 +30,8 @@ const code_frame_1 = require("@babel/code-frame");
 const json5_1 = __importDefault(require("json5"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const node_util_1 = require("node:util");
-const write_file_atomic_1 = __importDefault(require("write-file-atomic"));
 const JsonFileError_1 = __importStar(require("./JsonFileError"));
-const writeFileAtomicAsync = (0, node_util_1.promisify)(write_file_atomic_1.default);
+const writeAtomic_1 = require("./writeAtomic");
 const DEFAULT_OPTIONS = {
     badJsonDefault: undefined,
     jsonParseErrorDefault: undefined,
@@ -234,7 +232,7 @@ function write(file, object, options) {
         throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
     }
     const data = addNewLineAtEOF ? `${json}\n` : json;
-    write_file_atomic_1.default.sync(file, data, {});
+    (0, writeAtomic_1.writeFileAtomicSync)(file, data);
     return object;
 }
 async function writeAsync(file, object, options) {
@@ -257,7 +255,7 @@ async function writeAsync(file, object, options) {
         throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
     }
     const data = addNewLineAtEOF ? `${json}\n` : json;
-    await writeFileAtomicAsync(file, data, {});
+    await (0, writeAtomic_1.writeFileAtomic)(file, data);
     return object;
 }
 function setSync(file, key, value, options) {

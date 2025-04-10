@@ -1,4 +1,4 @@
-import { CircularProgress, LinearProgress } from '@expo/ui/components/Progress';
+import { CircularProgress, LinearProgress } from '@expo/ui/Progress';
 import * as React from 'react';
 import { Platform } from 'react-native';
 

@@ -20,7 +20,17 @@ import {
   TextInputProps,
   Button,
 } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+
+// Copied from react-native/Libraries/NewAppScreen/components/Colors.js
+const Colors = {
+  primary: '#1292B4',
+  white: '#FFF',
+  lighter: '#F3F3F3',
+  light: '#DAE1E7',
+  dark: '#444',
+  darker: '#222',
+  black: '#000',
+};
 
 export const DAY_OF_WEEK = Object.freeze({
   Sunday: 0,
