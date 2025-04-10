@@ -13,7 +13,7 @@ declare module 'react-native/Libraries/Core/ExceptionsManager' {
   const ExceptionsManager: {
     parseException(e: any, isFatal: boolean): void;
     handleException(e: any): void;
-    SyntheticError: typeof SyntheticError,
+    SyntheticError: typeof SyntheticError;
   };
   export default ExceptionsManager;
 }
