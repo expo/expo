@@ -4,16 +4,13 @@ import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../src/types';
 
-type AndroidVariant = 'picker' | 'input';
+export type AndroidVariant = 'picker' | 'input';
 
-type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
+export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 
-type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
+export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 
-/**
- * Props for the DatePicker component.
- */
-export type DatePickerProps = {
+export type DateTimePickerProps = {
   /**
    * The initial date to display on the picker.
    */
@@ -70,13 +67,16 @@ export type DatePickerProps = {
 };
 
 type NativeDatePickerProps = Omit<
-  DatePickerProps,
+  DateTimePickerProps,
   'iosVariant' | 'androidVariant' | 'onDateSelected'
 > & {
   variant?: IOSVariant | AndroidVariant;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
-export function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps {
+/**
+ * @hidden
+ */
+export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
   const { iosVariant, androidVariant, ...rest } = props;
   return {
     ...rest,
@@ -92,6 +92,9 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
   'DateTimePickerView'
 );
 
-export function DateTimePicker(props: DatePickerProps) {
-  return <DatePickerNativeView {...transformDatePickerProps(props)} />;
+/**
+ * Renders a `DateTimePicker` component.
+ */
+export function DateTimePicker(props: DateTimePickerProps) {
+  return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
 }
