@@ -2,9 +2,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoImportMetaTransformPluginFactory = expoImportMetaTransformPluginFactory;
+const common_1 = require("./common");
 function expoImportMetaTransformPluginFactory(pluginEnabled) {
     return (api) => {
         const { types: t } = api;
+        const platform = api.caller(common_1.getPlatform);
         return {
             name: 'expo-import-meta-transform',
             visitor: {
@@ -12,7 +14,10 @@ function expoImportMetaTransformPluginFactory(pluginEnabled) {
                     const { node } = path;
                     if (node.meta.name === 'import' && node.property.name === 'meta') {
                         if (!pluginEnabled) {
-                            throw path.buildCodeFrameError('Your code uses `import.meta` which is not supported in the React Native runtime yet. Enable the `unstable_transformImportMeta` option in babel-preset-expo to use `import.meta`.');
+                            if (platform !== 'web') {
+                                throw path.buildCodeFrameError('Your code uses `import.meta` which is not supported in the React Native runtime yet. Enable the `unstable_transformImportMeta` option in babel-preset-expo to use `import.meta`.');
+                            }
+                            return;
                         }
                         const replacement = t.memberExpression(t.identifier('globalThis'), t.identifier('__ExpoImportMetaRegistry'));
                         path.replaceWith(replacement);
