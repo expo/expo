@@ -28,6 +28,7 @@ export default class AssetSourceResolver {
   private readonly serverUrl: string;
   // where the jsbundle is being run from
   // NOTE(EvanBacon): Never defined on web.
+  // @ts-expect-error: Never read locally
   private readonly jsbundleUrl: string | undefined | null;
   // the asset to resolve
   public readonly asset: PackagerAsset | AssetMetadata;

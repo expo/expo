@@ -1,4 +1,4 @@
-import { TextDecoder, TextEncoder } from 'util';
+import { TextDecoder, TextEncoder } from 'node:util';
 
 import MockWebSocket from './MockWebSocket';
 import {
