@@ -25,7 +25,8 @@ const BlurView = forwardRef<{ setNativeProps: (props: BlurViewProps) => void }, 
           if (nativeProps.style) {
             for (const key in nativeProps.style) {
               if (key !== 'intensity') {
-                blurViewRef.current.style[key as any] = nativeProps.style[key as keyof (typeof nativeProps.style)];
+                blurViewRef.current.style[key as any] =
+                  nativeProps.style[key as keyof typeof nativeProps.style];
               }
             }
           }
