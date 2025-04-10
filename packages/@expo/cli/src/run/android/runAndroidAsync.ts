@@ -15,7 +15,7 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
-import { resolveRemoteBuildCache } from '../remoteBuildCache';
+import { resolveRemoteBuildCache, uploadRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
@@ -46,6 +46,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   const androidProjectRoot = path.join(projectRoot, 'android');
 
+  let shouldUpdateBuildCache = false;
   if (!options.binary) {
     let eagerBundleOptions: string | undefined;
 
@@ -66,6 +67,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
       architectures: props.architectures,
       eagerBundleOptions,
     });
+    shouldUpdateBuildCache = true;
 
     // Ensure the port hasn't become busy during the build.
     if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
@@ -107,6 +109,13 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     logProjectLogsLocation();
   } else {
     await manager.stopAsync();
+  }
+
+  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
+    await uploadRemoteBuildCache(projectRoot, {
+      platform: 'android',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
   }
 }
 

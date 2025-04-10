@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for using remote builds as cache ([#36029](https://github.com/expo/expo/pull/36029) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for using remote builds as cache ([#36029](https://github.com/expo/expo/pull/36029), [#36047](https://github.com/expo/expo/pull/36047) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
