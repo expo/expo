@@ -37,7 +37,18 @@ const CanvasWrapper: React.FunctionComponent<
   const ref = React.useRef<View>(null);
   const _canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-  function updateCanvasSize(): void {
+  const getSize = React.useCallback((): { width: number; height: number } => {
+    if (size) {
+      return size;
+    } else if (!ref.current || typeof window === 'undefined') {
+      return { width: 0, height: 0 };
+    }
+    const element = getElement(ref.current);
+    const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
+    return { width, height };
+  }, [!!size, ref.current])
+
+  const updateCanvasSize = React.useCallback((): void => {
     const canvas = _canvasRef.current;
     if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
       const size = getSize();
@@ -49,20 +60,9 @@ const CanvasWrapper: React.FunctionComponent<
       canvas.width = size.width * scale;
       canvas.height = size.height * scale;
     }
-  }
+  }, [getSize, _canvasRef.current]);
 
-  function getSize(): { width: number; height: number } {
-    if (size) {
-      return size;
-    } else if (!ref.current || typeof window === 'undefined') {
-      return { width: 0, height: 0 };
-    }
-    const element = getElement(ref.current);
-    const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
-    return { width, height };
-  }
-
-  const onLayout = (event: LayoutChangeEvent) => {
+  const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const {
       nativeEvent: {
         layout: { width, height },
@@ -76,7 +76,7 @@ const CanvasWrapper: React.FunctionComponent<
         props.onLayout(event);
       }
     }
-  };
+  }, [size?.height, size?.width, props.onLayout]);
 
   React.useEffect(() => {
     if (ref.current != null) {
