@@ -56,6 +56,7 @@
   "expo-localization": "~16.1.1",
   "expo-location": "~18.1.1",
   "expo-mail-composer": "~14.1.1",
+  "expo-maps": "~0.9.1",
   "expo-media-library": "~17.1.1",
   "expo-module-template": "~10.16.1",
   "expo-modules-core": "~2.3.2",
