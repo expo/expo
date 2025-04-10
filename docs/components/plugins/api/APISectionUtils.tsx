@@ -302,15 +302,20 @@ export const resolveTypeName = (
       return (
         <>
           <span className="text-quaternary">{'{\n'}</span>
-          {declaration?.children.map((child: PropData, i) => (
-            <span key={`reflection-${name}-${i}`}>
-              {'  '}
-              {child.name + ': '}
-              {resolveTypeName(child.type, sdkVersion)}
-              {i + 1 !== declaration?.children?.length ? ', ' : null}
-              {'\n'}
-            </span>
-          ))}
+          {declaration?.children.map((child: PropData, i) => {
+            if (!child.type) {
+              return null;
+            }
+            return (
+              <span key={`reflection-${name}-${i}`}>
+                {'  '}
+                {child.name + ': '}
+                {resolveTypeName(child.type, sdkVersion)}
+                {i + 1 !== declaration?.children?.length ? ', ' : null}
+                {'\n'}
+              </span>
+            );
+          })}
           <span className="text-quaternary">{'}'}</span>
         </>
       );
