@@ -11,14 +11,6 @@ export function getBackgroundColor(opacity?: number): string {
   // return `rgba(51, 51, 51, ${opacity == null ? 1 : opacity})`;
 }
 
-export function getWarningColor(opacity?: number): string {
-  return `rgba(250, 186, 48, ${opacity == null ? 1 : opacity})`;
-}
-
-export function getErrorColor(opacity?: number): string {
-  return `rgba(243, 83, 105, ${opacity == null ? 1 : opacity})`;
-}
-
 export function getTextColor(opacity?: number): string {
   return `rgba(255, 255, 255, ${opacity == null ? 1 : opacity})`;
 }
