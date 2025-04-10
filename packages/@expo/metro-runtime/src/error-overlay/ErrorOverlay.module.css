@@ -26,23 +26,15 @@
   
   /* Wrap horizontal contents */
   overflow-x: hidden;
-
-
-
   background-color: var(--expo-log-color-background);
   display: flex;
   flex: 1;
   flex-direction: column;
-
   position: relative;
   padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
-  /* background-image: linear-gradient(to bottom, var(--expo-log-gradient-stops)); */
-
-
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 200ms ease-out forwards;
-
 }
 
 .bg {
@@ -70,8 +62,6 @@
   transform: translateY(0);
   animation: fadeOutUp 150ms ease-in forwards;
 }
-
-
 
 @keyframes data-expo-log-backdrop-fade-in {
   to {

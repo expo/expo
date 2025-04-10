@@ -19,24 +19,7 @@
     Arial, sans-serif;
   --expo-log-font-mono: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
-
-  --expo-log-gradient-from: #181a1b 15%;
-  --expo-log-gradient-to: #181a1b00 100%;
-  --expo-log-gradient-stops: var(--expo-log-gradient-from), var(--expo-log-gradient-to);
 }
-
-/* Reset all button children */
-/* [data-expo-log-overlay] button {
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-    outline: none;
-} */
-
 
 [data-expo-log-toast] {
   /* black/60 on the border color. */

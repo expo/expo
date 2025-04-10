@@ -6,7 +6,5 @@
  * LICENSE file in the root directory of this source tree.
  */
 export declare function getBackgroundColor(opacity?: number): string;
-export declare function getWarningColor(opacity?: number): string;
-export declare function getErrorColor(opacity?: number): string;
 export declare function getTextColor(opacity?: number): string;
 //# sourceMappingURL=LogBoxStyle.d.ts.map
