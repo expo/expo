@@ -15,7 +15,7 @@ export interface ExpoConfig {
      * Falls back to `false` if undefined.
      * @platform android
      */
-    enableEdgeToEdge?: boolean;
+    edgeToEdgeEnabled?: boolean;
     /**
      * A URL-friendly name for your project that is unique across your account.
      */

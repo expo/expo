@@ -26,6 +26,7 @@ import withNotifications from './unversioned/expo-notifications/expo-notificatio
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
+import withEdgeToEdge from './unversioned/react-native-edge-to-edge/withEdgeToEdge';
 import withMaps from './unversioned/react-native-maps';
 
 const debug = Debug('expo:prebuild-config');
@@ -117,13 +118,12 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
     AndroidConfig.PrimaryColor.withPrimaryColor,
+    withEdgeToEdge,
 
     withAndroidIcons,
     // If we renamed the package, we should also move it around and rename it in source files
     // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
     AndroidConfig.Package.withPackageRefactor,
-    // Add the configuration for react-native-edge-to-edge
-    AndroidConfig.EdgeToEdge.withEdgeToEdge,
   ]);
 };
 

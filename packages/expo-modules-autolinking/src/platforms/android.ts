@@ -136,6 +136,21 @@ export async function resolveExtraBuildDependenciesAsync(
   return null;
 }
 
+export async function resolveGradlePropertyAsync(
+  projectNativeRoot: string,
+  propertyKey: string
+): Promise<string | null> {
+  const propsFile = path.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
+  try {
+    const contents = await fs.promises.readFile(propsFile, 'utf8');
+    const propertyValue = searchGradlePropertyFirst(contents, propertyKey);
+    if (propertyValue) {
+      return propertyValue;
+    }
+  } catch {}
+  return null;
+}
+
 /**
  * Generates the string to put into the generated package list.
  */

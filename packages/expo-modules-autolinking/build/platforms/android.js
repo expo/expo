@@ -8,6 +8,7 @@ exports.generatePackageListAsync = generatePackageListAsync;
 exports.isAndroidProject = isAndroidProject;
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+exports.resolveGradlePropertyAsync = resolveGradlePropertyAsync;
 exports.convertPackageToProjectName = convertPackageToProjectName;
 exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjectName;
 exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
@@ -106,6 +107,18 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
         if (extraMavenReposString) {
             const extraMavenRepos = JSON.parse(extraMavenReposString);
             return extraMavenRepos;
+        }
+    }
+    catch { }
+    return null;
+}
+async function resolveGradlePropertyAsync(projectNativeRoot, propertyKey) {
+    const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
+    try {
+        const contents = await fs_1.default.promises.readFile(propsFile, 'utf8');
+        const propertyValue = searchGradlePropertyFirst(contents, propertyKey);
+        if (propertyValue) {
+            return propertyValue;
         }
     }
     catch { }
