@@ -72,6 +72,9 @@ def exUpdatesCustomInit = getBoolStringFromPropOrEnv("EX_UPDATES_CUSTOM_INIT", f
 // (default true)
 def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROID_DELAY_LOAD_APP", true)
 
+// If true, updates will copy embedded assets to file system when startup. (default false)
+def exUpdatesCopyEmbeddedAssets = getBoolStringFromPropOrEnv("EX_UPDATES_COPY_EMBEDDED_ASSETS", false)
+
 def useDevClient = findProject(":expo-dev-client") != null
 
 android {
@@ -89,6 +92,7 @@ android {
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", exUpdatesNativeDebug)
     buildConfigField("boolean", "EX_UPDATES_CUSTOM_INIT", exUpdatesCustomInit)
     buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
+    buildConfigField("boolean", "EX_UPDATES_COPY_EMBEDDED_ASSETS", exUpdatesCopyEmbeddedAssets)
     buildConfigField("boolean", "USE_DEV_CLIENT", useDevClient.toString())
   }
   testOptions {
