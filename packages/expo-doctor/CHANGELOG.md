@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add React 19 override check to package.json validation
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
