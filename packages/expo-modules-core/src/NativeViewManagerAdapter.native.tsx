@@ -27,6 +27,17 @@ import { requireNativeModule } from './requireNativeModule';
  */
 const nativeComponentsCache = new Map<string, HostComponent<any>>();
 
+// TODO(@kitten): Optimally, this is defined on ExpoGlobal, but we treat `__expo_app_identifier__` as internal
+declare namespace globalThis {
+  const expo: undefined | {
+    __expo_app_identifier__?: string;
+    getViewConfig(moduleName: string, viewName?: string): {
+      validAttributes: Record<string, any>;
+      directEventTypes: Record<string, { registrationName: string }>;
+    } | null;
+  };
+}
+
 /**
  * Requires a React Native component using the static view config from an Expo module.
  */
