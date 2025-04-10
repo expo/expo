@@ -2,8 +2,9 @@ import { mergeClasses } from '@expo/styleguide';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
 
 import {
   CommentTagData,
@@ -151,19 +152,12 @@ export const renderProp = (
       <APICommentTextBlock comment={extractedComment} includePlatforms={false} inlineHeaders />
       {extractedSignatures?.length &&
         extractedSignatures[0].parameters?.map(param => (
-          <div
-            className={mergeClasses(
-              STYLES_SECONDARY,
-              VERTICAL_SPACING,
-              ELEMENT_SPACING,
-              'flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5 font-normal'
-            )}
-            key={param.name}>
-            <MONOSPACE>
-              {param.name}: {resolveTypeName(param.type, sdkVersion)}
-            </MONOSPACE>
-            <APICommentTextBlock comment={param.comment} />
-          </div>
+          <APIParamDetailsBlock
+            key={param.name}
+            param={param}
+            sdkVersion={sdkVersion}
+            className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}
+          />
         ))}
     </div>
   );
