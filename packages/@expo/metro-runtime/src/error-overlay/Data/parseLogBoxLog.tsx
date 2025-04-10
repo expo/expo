@@ -50,6 +50,7 @@ export type ComponentStack = CodeFrame[];
 
 const SUBSTITUTION = '\ufeff%s';
 
+// TODO: Get rid of this. The substitution logic is wild.
 export function parseInterpolation(args: readonly any[]): {
   category: Category;
   message: Message;
