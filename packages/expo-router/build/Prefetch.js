@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Prefetch = void 0;
+exports.Prefetch = Prefetch;
 const react_1 = require("react");
 const imperative_api_1 = require("./imperative-api");
 const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
@@ -16,5 +16,4 @@ function Prefetch(props) {
     }, [navigation, props.href]);
     return null;
 }
-exports.Prefetch = Prefetch;
 //# sourceMappingURL=Prefetch.js.map
