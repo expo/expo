@@ -292,7 +292,10 @@ export interface ExpoConfig {
      * Experimentally enable downloading cached builds from remote.
      */
     remoteBuildCache?: {
-      provider: 'eas';
+      /**
+       * Service provider for remote builds.
+       */
+      provider?: 'eas';
     };
   };
   /**
