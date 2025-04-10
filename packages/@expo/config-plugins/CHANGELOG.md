@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features 
+### 🎉 New features
 
 ### 🐛 Bug fixes
 

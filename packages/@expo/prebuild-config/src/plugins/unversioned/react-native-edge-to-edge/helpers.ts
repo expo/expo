@@ -28,11 +28,15 @@ export function hasEnabledEdgeToEdge(config: ExpoConfig) {
 
 export function loadEdgeToEdgeConfigPlugin(projectRoot: string): EdgeToEdgePlugin | null {
   try {
-    const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
-    const edgeToEdgePath = resolveFrom.silent(
-      expoPackageRoot ?? projectRoot,
-      'react-native-edge-to-edge/app.plugin'
-    );
+    let edgeToEdgePath = resolveFrom.silent(projectRoot, 'react-native-edge-to-edge/app.plugin');
+    if (edgeToEdgePath == null) {
+      const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+      edgeToEdgePath = resolveFrom.silent(
+        expoPackageRoot ?? projectRoot,
+        'react-native-edge-to-edge/app.plugin'
+      );
+    }
+
     if (edgeToEdgePath) {
       const { default: plugin } = require(edgeToEdgePath);
       return plugin as EdgeToEdgePlugin;
