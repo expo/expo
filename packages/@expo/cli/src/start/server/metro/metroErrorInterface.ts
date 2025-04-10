@@ -80,6 +80,7 @@ export function getStackAsFormattedLog(
   }
 ): string {
   const logs: string[] = [];
+  let hasCodeFramePresented = false;
   if (codeFrame) {
     const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
@@ -125,9 +126,11 @@ export function getStackAsFormattedLog(
         cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
 
         logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
+        hasCodeFramePresented = true;
       }
     } else {
       logs.push(codeFrame.content);
+      hasCodeFramePresented = true;
     }
   }
 
@@ -141,11 +144,10 @@ export function getStackAsFormattedLog(
     });
 
     const stackLines: string[] = [];
+    const backupStackLines: string[] = [];
 
     stackProps.forEach((frame) => {
-      if (frame.collapse && !showCollapsedFrames) {
-        return;
-      }
+      const shouldShow = !frame.collapse || showCollapsedFrames;
 
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
@@ -156,18 +158,29 @@ export function getStackAsFormattedLog(
         lineItem = chalk.dim(lineItem);
       }
       // Never show the internal module system.
-      if (!frame.subtitle.match(/\/metro-require\/require\.js/)) {
-        stackLines.push(lineItem);
+      const isMetroRuntime =
+        /\/metro-runtime\/src\/polyfills\/require\.js/.test(frame.subtitle) ||
+        /\/metro-require\/require\.js/.test(frame.subtitle);
+      if (!isMetroRuntime) {
+        if (shouldShow) {
+          stackLines.push(lineItem);
+        }
+        backupStackLines.push(lineItem);
       }
     });
 
-    logs.push('');
+    if (hasCodeFramePresented) {
+      logs.push('');
+    }
     logs.push(chalk.bold`Call Stack`);
 
-    if (!stackLines.length) {
+    if (!backupStackLines.length) {
       logs.push(chalk.gray('  No stack trace available.'));
     } else {
-      logs.push(stackLines.join('\n'));
+      // If there are not stack lines then it means the error likely happened in the node modules, in this case we should fallback to showing all the
+      // the stacks to give the user whatever help we can.
+      const displayStack = stackLines.length ? stackLines : backupStackLines;
+      logs.push(displayStack.join('\n'));
     }
   } else if (error) {
     logs.push(chalk.gray(`  ${error.stack}`));

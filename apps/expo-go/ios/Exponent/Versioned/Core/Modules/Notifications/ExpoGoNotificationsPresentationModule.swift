@@ -26,14 +26,6 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
       }
   }
 
-  public override func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
-    if EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: scopeKey) {
-      return super.willPresent(notification, completionHandler: completionHandler)
-    }
-    completionHandler([])
-    return true
-  }
-
   public override func removeDeliveredNotifications(identifier: String) {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [scopedIdentifier])
@@ -47,8 +39,4 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: Array(identifiers))
   }
 
-  public override func presentNotificationAsync(identifier: String, notificationSpec: [String: Any]) async throws {
-    let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    try await super.presentNotificationAsync(identifier: scopedIdentifier, notificationSpec: notificationSpec)
-  }
 }

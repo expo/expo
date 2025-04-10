@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 15.2.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 15.2.0 — 2025-04-04
 
 ### 🎉 New features
@@ -38,6 +46,10 @@
 ### 📚 3rd party library updates
 
 - Updated SQLite to 3.49.1 and SQLCipher to 4.7.0. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Changed async tasks to run on a dedicated parallel queue. ([#35896](https://github.com/expo/expo/pull/35896) by [@kudo](https://github.com/kudo))
 
 ## 15.1.4 - 2025-04-02
 

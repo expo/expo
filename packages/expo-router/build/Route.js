@@ -1,7 +1,10 @@
 'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.sortRoutesWithInitial = exports.Route = exports.useContextKey = exports.useRouteNode = exports.LocalRouteParamsContext = void 0;
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = void 0;
+exports.useRouteNode = useRouteNode;
+exports.useContextKey = useContextKey;
+exports.Route = Route;
 const react_1 = require("react");
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
@@ -16,7 +19,6 @@ if (process.env.NODE_ENV !== 'production') {
 function useRouteNode() {
     return (0, react_1.useContext)(CurrentRouteContext);
 }
-exports.useRouteNode = useRouteNode;
 function useContextKey() {
     const node = useRouteNode();
     if (node == null) {
@@ -24,12 +26,10 @@ function useContextKey() {
     }
     return (0, matchers_1.getContextKey)(node.contextKey);
 }
-exports.useContextKey = useContextKey;
 /** Provides the matching routes and filename to the children. */
 function Route({ children, node, route }) {
     return (<exports.LocalRouteParamsContext.Provider value={route?.params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
     </exports.LocalRouteParamsContext.Provider>);
 }
-exports.Route = Route;
 //# sourceMappingURL=Route.js.map

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 export type ServerContextType = {
     location?: {
         pathname: string;

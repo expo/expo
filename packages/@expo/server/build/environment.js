@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.installGlobals = exports.ExpoResponse = exports.ExpoRequest = void 0;
+exports.ExpoResponse = exports.ExpoRequest = void 0;
+exports.installGlobals = installGlobals;
 /* eslint-disable no-var */
 require("./assertion");
 /** @deprecated */
@@ -22,5 +23,4 @@ function installGlobals() {
     globalThis.ExpoRequest = undiciRequest;
     globalThis.ExpoResponse = undiciResponse;
 }
-exports.installGlobals = installGlobals;
 //# sourceMappingURL=environment.js.map

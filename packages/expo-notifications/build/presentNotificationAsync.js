@@ -1,7 +1,7 @@
-import { UnavailabilityError, uuid } from 'expo-modules-core';
-import NotificationPresenter from './NotificationPresenterModule';
-let warningMessageShown = false;
+import { uuid } from 'expo-modules-core';
 /**
+ * @hidden
+ *
  * Schedules a notification for immediate trigger.
  * @param content An object representing the notification content.
  * @param identifier
@@ -11,13 +11,6 @@ let warningMessageShown = false;
  * More information can be found in our [FYI document](https://expo.fyi/presenting-notifications-deprecated).
  */
 export default async function presentNotificationAsync(content, identifier = uuid.v4()) {
-    if (__DEV__ && !warningMessageShown) {
-        console.warn('`presentNotificationAsync` has been deprecated in favor of using `scheduleNotificationAsync` + an explicit notification handler. Read more at https://expo.fyi/presenting-notifications-deprecated.');
-        warningMessageShown = true;
-    }
-    if (!NotificationPresenter.presentNotificationAsync) {
-        throw new UnavailabilityError('Notifications', 'presentNotificationAsync');
-    }
-    return await NotificationPresenter.presentNotificationAsync(identifier, content);
+    throw new Error('`presentNotificationAsync` has been removed. Use `scheduleNotificationAsync` + an explicit notification handler. Read more at https://expo.fyi/presenting-notifications-deprecated.');
 }
 //# sourceMappingURL=presentNotificationAsync.js.map

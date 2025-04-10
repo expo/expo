@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 13.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2025-04-08
+
+### 🎉 New features
+
+- Use `registerClientReference` for client components and assert unsupported syntax. ([#35957](https://github.com/expo/expo/pull/35957) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 13.0.0 — 2025-04-04
 
 ### 🛠 Breaking changes
@@ -22,6 +32,7 @@
 - Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin. ([#34647](https://github.com/expo/expo/pull/34647) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `babel-plugin-syntax-hermes-parser` to the server preset for native RSC. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `import.meta` transform plugin. ([#34756](https://github.com/expo/expo/pull/34756) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

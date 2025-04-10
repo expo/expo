@@ -2,16 +2,13 @@ import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
 import { NativeSyntheticEvent, processColor, StyleProp, ViewStyle } from 'react-native';
 
-/**
- * Props for the ColorPicker component.
- */
 export type ColorPickerProps = {
   /**
    * The currently selected color in the format `#RRGGBB` or `#RRGGBBAA`.
    */
   selection: string | null;
   /**
-   * A label displayed on the ColorPicker.
+   * A label displayed on the `ColorPicker`.
    */
   label?: string;
   /**
@@ -19,7 +16,7 @@ export type ColorPickerProps = {
    */
   onValueChanged?: (value: string) => void;
   /**
-   * Optional style to apply to the ColorPicker component.
+   * Optional style to apply to the `ColorPicker` component.
    */
   style?: StyleProp<ViewStyle>;
   /**
@@ -37,6 +34,10 @@ const ColorPickerNativeView: React.ComponentType<
   }
 > = requireNativeView('ExpoUI', 'ColorPickerView');
 
+/**
+ * Renders a `ColorPicker` component using SwiftUI.
+ * @platform ios
+ */
 export function ColorPicker({ selection, onValueChanged, ...restProps }: ColorPickerProps) {
   const onNativeValueChanged = useCallback(
     (event: OnValueChangedEvent) => {

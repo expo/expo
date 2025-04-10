@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isBinaryType = exports.convertRequest = exports.createHeaders = exports.respond = exports.createRequestHandler = void 0;
+exports.createRequestHandler = createRequestHandler;
+exports.respond = respond;
+exports.createHeaders = createHeaders;
+exports.convertRequest = convertRequest;
+exports.isBinaryType = isBinaryType;
 const abort_controller_1 = require("abort-controller");
 const index_1 = require("../index");
 function createRequestHandler({ build }) {
@@ -10,7 +14,6 @@ function createRequestHandler({ build }) {
         return respond(response);
     };
 }
-exports.createRequestHandler = createRequestHandler;
 async function readableStreamToString(stream, encoding) {
     const reader = stream.getReader();
     const chunks = [];
@@ -50,7 +53,6 @@ async function respond(res) {
         isBase64Encoded,
     };
 }
-exports.respond = respond;
 function createHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
@@ -62,7 +64,6 @@ function createHeaders(requestHeaders) {
     }
     return headers;
 }
-exports.createHeaders = createHeaders;
 // `netlify dev` doesn't return the full url in the event.rawUrl, so we need to create it ourselves
 function getRawPath(event) {
     let rawPath = event.path;
@@ -115,7 +116,6 @@ function convertRequest(event) {
     }
     return new Request(url.href, init);
 }
-exports.convertRequest = convertRequest;
 /**
  * Common binary MIME types
  * @see https://github.com/architect/functions/blob/45254fc1936a1794c185aac07e9889b241a2e5c6/src/http/helpers/binary-types.js
@@ -185,5 +185,4 @@ function isBinaryType(contentType) {
     const [test] = contentType.split(';');
     return binaryTypes.includes(test);
 }
-exports.isBinaryType = isBinaryType;
 //# sourceMappingURL=netlify.js.map

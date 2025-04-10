@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = getDefaultScheme;
 /*
  * Converts the slug from app configuration to a string that's a valid URI scheme.
  * From RFC3986 Section 3.1.
@@ -23,4 +24,3 @@ function getDefaultScheme(config) {
     // Add a prefix to avoid leading digits and to distinguish from user-defined schemes.
     return `exp+${scheme}`;
 }
-exports.default = getDefaultScheme;

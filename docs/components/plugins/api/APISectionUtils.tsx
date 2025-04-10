@@ -240,9 +240,11 @@ export const resolveTypeName = (
           sdkVersion,
         });
       } else if (type === 'array') {
-        return elementType.name + '[]';
+        return resolveTypeName(elementType, sdkVersion) + '[]';
       }
       return elementType.name + type;
+    } else if (elementType?.type === 'array') {
+      return resolveTypeName(elementType, sdkVersion) + '[]';
     } else if (elementType?.declaration) {
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};

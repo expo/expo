@@ -6,7 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getManifest = exports.getBuildTimeServerManifestAsync = void 0;
+exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
+exports.getManifest = getManifest;
 const _ctx_1 = require("../../_ctx");
 const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
@@ -31,7 +32,6 @@ async function getBuildTimeServerManifestAsync(options = {}) {
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     return (0, getServerManifest_1.getServerManifest)(routeTree);
 }
-exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
     const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
@@ -47,5 +47,4 @@ async function getManifest(options = {}) {
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
 }
-exports.getManifest = getManifest;
 //# sourceMappingURL=getServerManifest.js.map

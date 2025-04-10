@@ -24,9 +24,11 @@ import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 <APIInstallSection />
 
-## Configuration&ensp;<PlatformTag platform='ios' />
+<br />
 
-`TaskManager` works out of the box in the Expo Go app on Android. However, on iOS, you'll need to use a [development build](/develop/development-builds/introduction/).
+> **info** You can test `TaskManager` in the Expo Go app. However, check the documentation of each [library](#libraries-using-expo-taskmanager) that uses `TaskManager` to confirm whether it supports testing in Expo Go.
+
+## Configuration&ensp;<PlatformTag platform='ios' />
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.
 

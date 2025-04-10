@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sitemap = exports.getNavOptions = void 0;
+exports.getNavOptions = getNavOptions;
+exports.Sitemap = Sitemap;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -48,7 +49,6 @@ function getNavOptions() {
         },
     };
 }
-exports.getNavOptions = getNavOptions;
 function Sitemap() {
     return (<react_native_1.View style={styles.container}>
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
@@ -57,7 +57,6 @@ function Sitemap() {
       </react_native_1.ScrollView>
     </react_native_1.View>);
 }
-exports.Sitemap = Sitemap;
 function FileSystemView() {
     const routes = (0, router_store_1.useExpoRouter)().getSortedRoutes();
     return routes.map((route) => (<react_native_1.View key={route.contextKey} style={styles.itemContainer}>

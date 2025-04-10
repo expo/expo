@@ -288,6 +288,15 @@ export interface ExpoConfig {
      * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
      */
     reactServerFunctions?: boolean;
+    /**
+     * Experimentally enable downloading cached builds from remote.
+     */
+    remoteBuildCache?: {
+      /**
+       * Service provider for remote builds.
+       */
+      provider?: 'eas';
+    };
   };
   /**
    * Internal properties for developer tools

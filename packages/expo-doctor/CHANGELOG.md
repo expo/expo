@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.12.9 — 2025-04-08
+
+### 💡 Others
+
+- Added `.env` support. ([#33988](https://github.com/expo/expo/pull/33988) by [@kudo](https://github.com/kudo))
+
 ## 1.12.8 — 2025-03-13
 
 ### 💡 Others

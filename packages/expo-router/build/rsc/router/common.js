@@ -7,7 +7,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOCATION_ID = exports.SHOULD_SKIP_ID = exports.PARAM_KEY_SKIP = exports.parseInputString = exports.getInputString = exports.getComponentIds = void 0;
+exports.LOCATION_ID = exports.SHOULD_SKIP_ID = exports.PARAM_KEY_SKIP = void 0;
+exports.getComponentIds = getComponentIds;
+exports.getInputString = getInputString;
+exports.parseInputString = parseInputString;
 function getComponentIds(path) {
     const pathItems = path.split('/').filter(Boolean);
     const idSet = new Set();
@@ -18,18 +21,15 @@ function getComponentIds(path) {
     idSet.add([...pathItems, 'page'].join('/'));
     return Array.from(idSet);
 }
-exports.getComponentIds = getComponentIds;
 function getInputString(path) {
     if (!path.startsWith('/')) {
         throw new Error('Path should start with `/`');
     }
     return path.slice(1);
 }
-exports.getInputString = getInputString;
 function parseInputString(input) {
     return '/' + input;
 }
-exports.parseInputString = parseInputString;
 exports.PARAM_KEY_SKIP = 'expo_router_skip';
 // It starts with "/" to avoid conflicing with normal component ids.
 exports.SHOULD_SKIP_ID = '/SHOULD_SKIP';

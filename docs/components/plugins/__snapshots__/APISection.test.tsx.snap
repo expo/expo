@@ -110,14 +110,22 @@ exports[`APISection expo-apple-authentication 1`] = `
         data-text="true"
       >
         React.Element
-        &lt;
+        <span
+          class="text-quaternary"
+        >
+          &lt;
+        </span>
         <a
           class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
         </a>
-        &gt;
+        <span
+          class="text-quaternary"
+        >
+          &gt;
+        </span>
       </code>
     </p>
     <div

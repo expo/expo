@@ -3,7 +3,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getReactCompiler = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.hasModule = hasModule;
+exports.getBundler = getBundler;
+exports.getPlatform = getPlatform;
+exports.getPossibleProjectRoot = getPossibleProjectRoot;
+exports.getIsReactServer = getIsReactServer;
+exports.getIsDev = getIsDev;
+exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
+exports.getIsProd = getIsProd;
+exports.getIsNodeModule = getIsNodeModule;
+exports.getBaseUrl = getBaseUrl;
+exports.getReactCompiler = getReactCompiler;
+exports.getIsServer = getIsServer;
+exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
+exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
+exports.getAsyncRoutes = getAsyncRoutes;
 const node_path_1 = __importDefault(require("node:path"));
 function hasModule(name) {
     try {
@@ -16,7 +30,6 @@ function hasModule(name) {
         throw error;
     }
 }
-exports.hasModule = hasModule;
 /** Determine which bundler is being used. */
 function getBundler(caller) {
     assertExpoBabelCaller(caller);
@@ -34,7 +47,6 @@ function getBundler(caller) {
     // Assume anything else is Metro.
     return 'metro';
 }
-exports.getBundler = getBundler;
 function getPlatform(caller) {
     assertExpoBabelCaller(caller);
     if (!caller)
@@ -48,7 +60,6 @@ function getPlatform(caller) {
     // unknown
     return caller.platform;
 }
-exports.getPlatform = getPlatform;
 function getPossibleProjectRoot(caller) {
     assertExpoBabelCaller(caller);
     if (!caller)
@@ -58,13 +69,11 @@ function getPossibleProjectRoot(caller) {
     // unknown
     return process.env.EXPO_PROJECT_ROOT;
 }
-exports.getPossibleProjectRoot = getPossibleProjectRoot;
 /** If bundling for a react-server target. */
 function getIsReactServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isReactServer ?? false;
 }
-exports.getIsReactServer = getIsReactServer;
 function assertExpoBabelCaller(caller) { }
 function getIsDev(caller) {
     assertExpoBabelCaller(caller);
@@ -73,14 +82,12 @@ function getIsDev(caller) {
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
-exports.getIsDev = getIsDev;
 function getIsFastRefreshEnabled(caller) {
     assertExpoBabelCaller(caller);
     if (!caller)
         return false;
     return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
-exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
 function getIsProd(caller) {
     assertExpoBabelCaller(caller);
     if (caller?.isDev != null)
@@ -88,26 +95,21 @@ function getIsProd(caller) {
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
-exports.getIsProd = getIsProd;
 function getIsNodeModule(caller) {
     return caller?.isNodeModule ?? false;
 }
-exports.getIsNodeModule = getIsNodeModule;
 function getBaseUrl(caller) {
     assertExpoBabelCaller(caller);
     return caller?.baseUrl ?? '';
 }
-exports.getBaseUrl = getBaseUrl;
 function getReactCompiler(caller) {
     assertExpoBabelCaller(caller);
     return caller?.supportsReactCompiler ?? false;
 }
-exports.getReactCompiler = getReactCompiler;
 function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
 }
-exports.getIsServer = getIsServer;
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);
     const rootModuleId = caller?.routerRoot ?? './app';
@@ -117,7 +119,6 @@ function getExpoRouterAbsoluteAppRoot(caller) {
     const projectRoot = getPossibleProjectRoot(caller) || '/';
     return node_path_1.default.join(projectRoot, rootModuleId);
 }
-exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 function getInlineEnvVarsEnabled(caller) {
     assertExpoBabelCaller(caller);
     const isWebpack = getBundler(caller) === 'webpack';
@@ -129,7 +130,6 @@ function getInlineEnvVarsEnabled(caller) {
     // Servers have env vars left as-is to read from the environment.
     return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
-exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 function getAsyncRoutes(caller) {
     assertExpoBabelCaller(caller);
     const isServer = getIsServer(caller);
@@ -143,4 +143,3 @@ function getAsyncRoutes(caller) {
     }
     return caller?.asyncRoutes ?? false;
 }
-exports.getAsyncRoutes = getAsyncRoutes;

@@ -8,9 +8,6 @@ import { ViewEvent } from '../src/types';
  */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 
-/**
- * Props for the TextInput component.
- */
 export type TextInputProps = {
   /**
    * Additional styles to apply to the TextInput.
@@ -36,7 +33,7 @@ export type TextInputProps = {
    */
   numberOfLines?: number;
   /**
-   * Determines which keyboard to open, e.g., numeric.
+   * Determines which keyboard to open. For example, `'numeric'`.
    *
    * Types that work on both platforms:
    * - default
@@ -103,6 +100,9 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
   };
 }
 
+/**
+ * Renders a `TextInput` component.
+ */
 export function TextInput(props: TextInputProps) {
   return <TextInputNativeView {...transformTextInputProps(props)} style={props.style} />;
 }
