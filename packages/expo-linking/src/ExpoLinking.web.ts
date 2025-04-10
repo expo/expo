@@ -13,7 +13,8 @@ export default {
       return { remove() {} };
     }
 
-    const nativeListener = (nativeEvent: MessageEvent) => listener({ url: window.location.href, nativeEvent });
+    const nativeListener = (nativeEvent: MessageEvent) =>
+      listener({ url: window.location.href, nativeEvent });
     window.addEventListener('message', nativeListener, false);
     return {
       remove: () => {

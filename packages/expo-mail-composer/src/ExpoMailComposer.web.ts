@@ -5,7 +5,9 @@ import {
   MailComposerStatus,
 } from './MailComposer.types';
 
-function removeNullishValues<T extends Record<string, any>>(obj: T): {
+function removeNullishValues<T extends Record<string, any>>(
+  obj: T
+): {
   [K in keyof T]: Exclude<T[K], null | undefined>;
 } {
   for (const propName in obj) {

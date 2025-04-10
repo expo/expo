@@ -24,8 +24,9 @@ interface WebkitFullscreenElement extends HTMLMediaElement {
  * Detect if the browser supports the non-standard webkit fullscreen API on the
  * given element (looking at you, Safari).
  */
-const supportsWebkitFullscreenAPI = (element: HTMLMediaElement): element is WebkitFullscreenElement =>
-  'webkitEnterFullScreen' in element;
+const supportsWebkitFullscreenAPI = (
+  element: HTMLMediaElement
+): element is WebkitFullscreenElement => 'webkitEnterFullScreen' in element;
 
 interface IEFullscreenElement extends HTMLMediaElement {
   msRequestFullscreen?(): void;

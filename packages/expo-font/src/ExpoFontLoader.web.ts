@@ -173,7 +173,7 @@ export default {
 
     return new FontObserver(fontFamilyName, {
       // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
-      display: resource.display
+      display: resource.display,
     }).load(null, 6000);
   },
 };
