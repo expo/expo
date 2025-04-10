@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { getIsolatedModulesPath } from '../autolinking/utils';
 import { fileExistsAsync } from '../fileUtils';
@@ -33,6 +34,18 @@ export async function createReactNativeConfigAsync({
     ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
+
+  // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
+  // has also included it as a project dependency, we have to autolink it (transitive non-expo module dependencies are not autolinked).
+  const shouldAutolinkEdgeToEdge =
+    platform === 'android' && !('react-native-edge-to-edge' in dependencyRoots);
+
+  if (shouldAutolinkEdgeToEdge) {
+    const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
+    if (edgeToEdgeRoot) {
+      dependencyRoots['react-native-edge-to-edge'] = edgeToEdgeRoot;
+    }
+  }
 
   // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
   // the Cocoapods resolution will detect path mismatches and generate nonsensical
@@ -164,6 +177,18 @@ export async function resolveDependencyConfigAsync(
       [platform]: platformData,
     },
   };
+}
+
+export function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | null {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const edgeToEdgePath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'react-native-edge-to-edge/package.json'
+  );
+  if (edgeToEdgePath) {
+    return path.dirname(edgeToEdgePath);
+  }
+  return null;
 }
 
 export async function resolveAppProjectConfigAsync(

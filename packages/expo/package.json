@@ -86,6 +86,7 @@
     "expo-keep-awake": "~14.1.1",
     "expo-modules-autolinking": "2.1.2",
     "expo-modules-core": "2.3.2",
+    "react-native-edge-to-edge": "1.5.1",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
