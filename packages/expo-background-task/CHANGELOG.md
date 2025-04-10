@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Added warning about Background Tasks not being supported in Expo Go
+- Added warning about Background Tasks not being supported in Expo Go ([#36063](https://github.com/expo/expo/pull/36063) by [@chrfalch](https://github.com/chrfalch))
 
 ## 0.2.2 — 2025-04-09
 
