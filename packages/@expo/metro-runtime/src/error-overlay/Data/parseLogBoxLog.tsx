@@ -341,48 +341,85 @@ export function tagError(error: any) {
 export function isError(err: any): err is Error {
   return typeof err === 'object' && err !== null && 'name' in err && 'message' in err;
 }
-
-const REACT_ERROR_STACK_BOTTOM_FRAME = 'react-stack-bottom-frame';
-const REACT_ERROR_STACK_BOTTOM_FRAME_REGEX = new RegExp(
-  `(at ${REACT_ERROR_STACK_BOTTOM_FRAME} )|(${REACT_ERROR_STACK_BOTTOM_FRAME}\\@)`
+const REACT_STACK_BOTTOM_MARKER = 'react-stack-bottom-marker';
+const REACT_STACK_BOTTOM_MARKER_REGEX = new RegExp(
+  `(at ${REACT_STACK_BOTTOM_MARKER} )|(${REACT_STACK_BOTTOM_MARKER}\\@)`
 );
+/**
+ * Extracts and processes React error details from the provided input error.
+ * This function ensures that the error stack is cleaned up and includes only relevant frames.
+ * It also appends the owner stack if available and tags the error for identification.
+ *
+ * @param inputError - The error object or any other type to process.
+ * @returns A new Error object with updated stack and properties, or the original input if not an error.
+ */
+function processReactErrorDetails<T = unknown>(inputError: T): Error | T {
+  const isInputErrorInstance = isError(inputError);
 
-function getReactStitchedError<T = unknown>(err: T): Error | T {
-  const isErrorInstance = isError(err);
-  tagError(isErrorInstance);
-  const originStack = isErrorInstance ? err.stack || '' : '';
-  const originMessage = isErrorInstance ? err.message : '';
-  const stackLines = originStack.split('\n');
-  const indexOfSplit = stackLines.findIndex((line) =>
-    REACT_ERROR_STACK_BOTTOM_FRAME_REGEX.test(line)
+  // Tag the input error if it's an instance of Error.
+  tagError(isInputErrorInstance);
+
+  // Extract the original stack and message from the error.
+  const originalStack = isInputErrorInstance ? inputError.stack || '' : '';
+  const originalMessage = isInputErrorInstance ? inputError.message : '';
+
+  // Split the stack into lines for processing.
+  const stackLinesArray = originalStack.split('\n');
+
+  // Find the index of the React stack bottom marker in the stack trace.
+  const splitIndex = stackLinesArray.findIndex((line) =>
+    REACT_STACK_BOTTOM_MARKER_REGEX.test(line)
   );
-  const isOriginalReactError = indexOfSplit >= 0; // has the react-stack-bottom-frame
-  const newStack = isOriginalReactError
-    ? stackLines.slice(0, indexOfSplit).join('\n')
-    : originStack;
 
-  const newError = new Error(originMessage);
-  // Copy all enumerable properties, e.g. digest
-  Object.assign(newError, err);
-  newError.stack = newStack;
-  // Avoid duplicate overriding stack frames
-  appendOwnerStack(newError);
-  tagError(newError);
+  // Determine if the stack contains the React stack bottom marker.
+  const hasReactStackMarker = splitIndex >= 0;
 
-  return newError;
+  // Update the stack to exclude frames after the React stack bottom marker.
+  const updatedStack = hasReactStackMarker
+    ? stackLinesArray.slice(0, splitIndex).join('\n')
+    : originalStack;
+
+  // Create a new Error object with the updated stack and message.
+  const updatedError = new Error(originalMessage);
+
+  // Copy all enumerable properties from the input error to the new error.
+  Object.assign(updatedError, inputError);
+
+  // Set the updated stack on the new error.
+  updatedError.stack = updatedStack;
+
+  // Append the owner stack if available.
+  appendOwnerStack(updatedError);
+
+  // Tag the updated error for identification.
+  tagError(updatedError);
+
+  return updatedError;
 }
 
+/**
+ * Appends the React owner stack to the provided error's stack trace.
+ * This ensures that the error stack includes additional context about the React component hierarchy.
+ *
+ * @param error - The error object to update.
+ */
 function appendOwnerStack(error: Error) {
+  // Check if React's captureOwnerStack function is available. React +19.1
+  // @ts-expect-error
   if (!React.captureOwnerStack) {
     return;
   }
+
+  // Get the current stack and the owner stack.
   let stack = error.stack || '';
-  // This module is only bundled in development mode so this is safe.
+  // @ts-expect-error
   const ownerStack = React.captureOwnerStack();
-  // Avoid duplicate overriding stack frames
-  if (ownerStack && stack.endsWith(ownerStack) === false) {
+
+  // Avoid appending duplicate owner stack frames.
+  if (ownerStack && !stack.endsWith(ownerStack)) {
     stack += ownerStack;
-    // Override stack
+
+    // Override the stack with the updated value.
     error.stack = stack;
   }
 }
@@ -416,7 +453,7 @@ export function parseLogBoxLog(args: any[]): {
       // @ts-expect-error
       error.stack = error.componentStack;
     } else {
-      error = getReactStitchedError(error);
+      error = processReactErrorDetails(error);
     }
     const componentStackTrace = (error as any).stack;
     return {
