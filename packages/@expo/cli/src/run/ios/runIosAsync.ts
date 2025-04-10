@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -21,6 +22,7 @@ import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { CommandError } from '../../utils/errors';
+import { resolveRemoteBuildCache } from '../remoteBuildCache';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -38,6 +40,17 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  const projectConfig = getConfig(projectRoot);
+  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache && props.isSimulator) {
+    const localPath = await resolveRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
 
   if (options.rebundle) {
     Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
