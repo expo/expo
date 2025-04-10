@@ -16,7 +16,7 @@ describe('FileSystem', () => {
       resumeData,
     };
     const callback = jest.fn();
-    let downloadResumable;
+    let downloadResumable: FileSystem.DownloadResumable;
     beforeEach(() => {
       downloadResumable = FileSystem.createDownloadResumable(
         remoteUri,
@@ -33,7 +33,7 @@ describe('FileSystem', () => {
       expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
         remoteUri,
         localUri,
-        downloadResumable._uuid,
+        (downloadResumable as any)._uuid,
         options,
         resumeData
       );
@@ -51,7 +51,7 @@ describe('FileSystem', () => {
       expect(downloadPauseState).toMatchObject(fakeObject);
 
       expect(ExponentFileSystem.downloadResumablePauseAsync).toHaveBeenCalledWith(
-        downloadResumable._uuid
+        (downloadResumable as any)._uuid,
       );
 
       unmockProperty(ExponentFileSystem, 'downloadResumablePauseAsync');
@@ -75,7 +75,7 @@ describe('FileSystem', () => {
       expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
         remoteUri,
         localUri,
-        downloadResumable._uuid,
+        (downloadResumable as any)._uuid,
         options,
         resumeData
       );
