@@ -202,7 +202,7 @@ describe(findDependencyRootsAsync, () => {
   });
 
   describe(resolveEdgeToEdgeDependencyRoot, () => {
-    beforeAll(() => {
+    beforeEach(() => {
       vol.reset();
     });
     it('should find edge-to-edge from expo package root', async () => {
