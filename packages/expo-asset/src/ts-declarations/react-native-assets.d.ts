@@ -41,3 +41,9 @@ declare module 'react-native/Libraries/Image/resolveAssetSource' {
     transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource
   ): void;
 }
+
+declare module '@react-native/assets-registry/registry' {
+  import { PackagerAsset } from '@react-native/assets/registry';
+  export function getAssetByID(assetId: number): PackagerAsset | undefined;
+  export function registerAsset(asset: PackagerAsset): number;
+}
