@@ -3,4 +3,4 @@
   "expo.sqlite.useLibSQL",
   "expo.sqlite.enableFTS",
   "expo.sqlite.customBuildFlags",
-].every { !settings.providers.gradleProperty(it).isPresent() }
+].every { !providers.gradleProperty(it).isPresent() }
