@@ -399,7 +399,10 @@ export function setVideoSource(
   }
 }
 
-export function isCapabilityAvailable(video: HTMLVideoElement, keyName: keyof MediaTrackCapabilities): boolean {
+export function isCapabilityAvailable(
+  video: HTMLVideoElement,
+  keyName: keyof MediaTrackCapabilities
+): boolean {
   const stream = video.srcObject;
 
   if (stream instanceof MediaStream) {

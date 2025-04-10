@@ -10,7 +10,7 @@ export const mountedInstances: any[] = [];
 
 async function requestLegacyUserMediaAsync(
   // TODO(@kitten): Type this properly
-  props: { audioConstraints?: any; videoConstraints?: any },
+  props: { audioConstraints?: any; videoConstraints?: any }
 ): Promise<any[]> {
   // TODO(@kitten): This is never type checked against DOM types
   const optionalSource = (id: string | string[] | null) => ({ optional: [{ sourceId: id }] });

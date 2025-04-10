@@ -23,7 +23,8 @@ export function convertNativeProps(props?: CameraViewProps): CameraNativeProps {
   for (const [key, value] of Object.entries(props)) {
     const prop = key as 'type' | 'flash' | string;
     if (typeof value === 'string' && ConversionTables[prop]) {
-      nativeProps[key as keyof CameraNativeProps] = ConversionTables[prop as 'type' | 'flash'][value as any];
+      nativeProps[key as keyof CameraNativeProps] =
+        ConversionTables[prop as 'type' | 'flash'][value as any];
     } else {
       nativeProps[key as keyof CameraNativeProps] = value;
     }
