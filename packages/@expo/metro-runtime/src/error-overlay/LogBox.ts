@@ -45,7 +45,7 @@ const LogBox = {
       };
     }
 
-    consoleErrorImpl = registerError;
+    consoleErrorImpl = consoleErrorMiddleware;
 
     if (process.env.NODE_ENV === 'test') {
       LogBoxData.setDisabled(true);
@@ -65,10 +65,6 @@ const LogBox = {
     // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
     consoleErrorImpl = originalConsoleError;
     delete (console as any).disableLogBox;
-  },
-
-  isInstalled(): boolean {
-    return isLogBoxInstalled;
   },
 
   ignoreLogs(patterns: IgnorePattern[]): void {
@@ -96,36 +92,37 @@ const LogBox = {
   },
 };
 
-const registerError = (...args: Parameters<typeof console.error>): void => {
+function consoleErrorMiddleware(...args: Parameters<typeof console.error>): void {
   // Let errors within LogBox itself fall through.
+  // TODO: Drop this in favor of a more generalized tagging solution.
   if (LogBoxData.isLogBoxErrorMessage(args[0])) {
     originalConsoleError?.(...args);
     return;
   }
 
-  try {
-    const { category, message, componentStack } = parseLogBoxLog(args);
+  const { category, message, componentStack } = parseLogBoxLog(args);
 
-    if (!LogBoxData.isMessageIgnored(message.content)) {
-      // NOTE: Unlike React Native, we'll just pass the logs directly to the console
-      originalConsoleError?.(...args);
-      // Interpolate the message so they are formatted for adb and other CLIs.
-      // This is different than the message.content above because it includes component stacks.
-      // const interpolated = parseInterpolation(args);
-      // originalConsoleError?.(interpolated.message.content);
-
-      LogBoxData.addLog({
-        // Always show the static rendering issues as full screen since they
-        // are too confusing otherwise.
-        level: /did not match\. Server:/.test(message.content) ? 'fatal' : 'error',
-        category,
-        message,
-        componentStack,
-      });
-    }
-  } catch (unexpectedError: any) {
-    LogBoxData.reportUnexpectedLogBoxError(unexpectedError);
+  if (LogBoxData.isMessageIgnored(message.content)) {
+    return;
   }
-};
+
+  // NOTE: Unlike React Native, we'll just pass the logs directly to the console
+  originalConsoleError?.(...args);
+
+  // Interpolate the message so they are formatted for adb and other CLIs.
+  // This is different than the message.content above because it includes component stacks.
+  // const interpolated = parseInterpolation(args);
+  // originalConsoleError?.(interpolated.message.content);
+
+  LogBoxData.addLog({
+    // Always show the static rendering issues as full screen since they
+    // are too confusing otherwise.
+    // TODO: We can change this with a collection of improvements from React 19.1.
+    level: /did not match\. Server:/.test(message.content) ? 'fatal' : 'error',
+    category,
+    message,
+    componentStack,
+  });
+}
 
 export default LogBox;

@@ -1,8 +1,8 @@
-.expo-log-md-visible {
+.collapseTitle {
   display: none;
 }
 @media screen and (min-width: 768px) {
-  .expo-log-md-visible {
+  .collapseTitle {
     display: block;
   }
 }
