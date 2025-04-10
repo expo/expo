@@ -4,6 +4,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../log';
+
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
 export async function resolveRemoteBuildCache(
@@ -30,6 +32,7 @@ export async function resolveRemoteBuildCache(
       return null;
     }
 
+    Log.log(`Searching builds with matching fingerprint on EAS servers`);
     try {
       const results = await spawnAsync(
         'npx',
@@ -47,6 +50,7 @@ export async function resolveRemoteBuildCache(
         }
       );
 
+      Log.log(`Successfully downloaded cached build`);
       // {
       //   "path": "/var/folders/03/lppcpcnn61q3mz5ckzmzd8w80000gn/T/eas-cli-nodejs/eas-build-run-cache/c0f9ba9c-0cf1-4c5c-8566-b28b7971050f_22f1bbfa-1c09-4b67-9e4a-721906546b58.app"
       // }
