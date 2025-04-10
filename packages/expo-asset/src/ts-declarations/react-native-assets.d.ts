@@ -55,5 +55,3 @@ declare module '@react-native/assets-registry/registry' {
 
   export function getAssetByID(input: number | VirtualAssetModule): PackagerAsset | undefined;
 }
-
-

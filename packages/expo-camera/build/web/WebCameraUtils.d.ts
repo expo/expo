@@ -27,6 +27,6 @@ export declare function capture(video: HTMLVideoElement, settings: MediaTrackSet
 export declare function syncTrackCapabilities(cameraType: CameraType, stream: MediaStream | null, settings?: WebCameraSettings): Promise<void>;
 export declare function stopMediaStream(stream: MediaStream | null): void;
 export declare function setVideoSource(video: HTMLVideoElement, stream: MediaStream | MediaSource | Blob | null): void;
-export declare function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean;
+export declare function isCapabilityAvailable(video: HTMLVideoElement, keyName: keyof MediaTrackCapabilities): boolean;
 export {};
 //# sourceMappingURL=WebCameraUtils.d.ts.map

@@ -123,6 +123,7 @@ timeout = 250) {
 // https://stackoverflow.com/a/9039885/4047926
 function isIOS() {
     const isIOSUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+    // @ts-expect-error - We don't have Internet Explorer 11 types, and would like to keep it that way
     const isIE11 = !!window['MSStream'];
     return isIOSUA && !isIE11;
 }
