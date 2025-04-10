@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for using remote builds as cache ([#36029](https://github.com/expo/expo/pull/36029) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Fix fusebox log formatting and silence migration warning. ([#35911](https://github.com/expo/expo/pull/35911) by [@EvanBacon](https://github.com/EvanBacon))
