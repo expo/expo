@@ -38,7 +38,7 @@ export async function createReactNativeConfigAsync({
   // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
   // has also included it as a project dependency, we have to autolink it (transitive non-expo module dependencies are not autolinked).
   const shouldAutolinkEdgeToEdge =
-    platform === 'android' && !Object.keys(dependencyRoots).includes('react-native-edge-to-edge');
+    platform === 'android' && !('react-native-edge-to-edge' in dependencyRoots);
 
   if (shouldAutolinkEdgeToEdge) {
     const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
