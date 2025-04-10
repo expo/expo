@@ -23,7 +23,6 @@ import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { CommandError } from '../../utils/errors';
-import { resolveRemoteBuildCache } from '../remoteBuildCache';
 
 const debug = require('debug')('expo:run:ios');
 
