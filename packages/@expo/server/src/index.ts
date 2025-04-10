@@ -18,34 +18,19 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   const parsed: ExpoRoutesManifestV1<RegExp> = {
     ...routesManifest,
     notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
-      return {
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      };
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
     apiRoutes: routesManifest.apiRoutes.map((value: any) => {
-      return {
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      };
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
     htmlRoutes: routesManifest.htmlRoutes.map((value: any) => {
-      return {
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      };
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
     redirects: routesManifest.redirects?.map((value: any) => {
-      return {
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      };
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
     rewrites: routesManifest.rewrites?.map((value: any) => {
-      return {
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      };
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
   };
 
@@ -101,16 +86,12 @@ export function createRequestHandler(
       if ('statusCode' in error && typeof error.statusCode === 'number') {
         return new Response(error.message, {
           status: error.statusCode,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+          headers: { 'Content-Type': 'text/plain' },
         });
       }
       return new Response('Internal server error', {
         status: 500,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
+        headers: { 'Content-Type': 'text/plain' },
       });
     },
   }: {
@@ -132,9 +113,7 @@ export function createRequestHandler(
         // Development error when Expo Router is not setup.
         return new Response('No routes manifest found', {
           status: 404,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+          headers: { 'Content-Type': 'text/plain' },
         });
       }
     } else if (!routesManifest) {
@@ -143,27 +122,17 @@ export function createRequestHandler(
 
     const url = new URL(request.url, 'http://expo.dev');
 
-    const sanitizedPathname = url.pathname;
+    let sanitizedPathname = url.pathname;
 
     debug('Request', sanitizedPathname);
-
-    if (routesManifest.rewrites) {
-      for (const route of routesManifest.rewrites) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
-          continue;
-        }
-
-        const url = getRedirectRewriteLocation(request, route);
-
-        if (url) {
-          request = new Request(new URL(url, new URL(request.url).origin), request);
-        }
-      }
-    }
 
     if (routesManifest.redirects) {
       for (const route of routesManifest.redirects) {
         if (!route.namedRegex.test(sanitizedPathname)) {
+          continue;
+        }
+
+        if (route.methods && !route.methods.includes(request.method)) {
           continue;
         }
 
@@ -173,13 +142,24 @@ export function createRequestHandler(
           debug('Redirecting', Location);
 
           // Get the params
-          return new Response(null, {
-            status: route.permanent ? 308 : 307,
-            headers: {
-              Location,
-            },
-          });
+          return new Response(null, { status: route.permanent ? 308 : 307, headers: { Location } });
         }
+      }
+    }
+
+    if (routesManifest.rewrites) {
+      for (const route of routesManifest.rewrites) {
+        if (!route.namedRegex.test(sanitizedPathname)) {
+          continue;
+        }
+
+        if (route.methods && !route.methods.includes(request.method)) {
+          continue;
+        }
+
+        const url = getRedirectRewriteLocation(request, route);
+        request = new Request(new URL(url, new URL(request.url).origin), request);
+        sanitizedPathname = new URL(request.url, 'http://expo.dev').pathname;
       }
     }
 
@@ -200,20 +180,13 @@ export function createRequestHandler(
         if (!contents) {
           return new Response('Not found', {
             status: 404,
-            headers: {
-              'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain' },
           });
         } else if (contents instanceof Response) {
           return contents;
         }
 
-        return new Response(contents, {
-          status: 200,
-          headers: {
-            'Content-Type': 'text/html',
-          },
-        });
+        return new Response(contents, { status: 200, headers: { 'Content-Type': 'text/html' } });
       }
     }
 
@@ -233,9 +206,7 @@ export function createRequestHandler(
       if (!routeHandler) {
         return new Response('Method not allowed', {
           status: 405,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+          headers: { 'Content-Type': 'text/plain' },
         });
       }
 
@@ -270,28 +241,19 @@ export function createRequestHandler(
       if (!contents) {
         return new Response('Not found', {
           status: 404,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+          headers: { 'Content-Type': 'text/plain' },
         });
       } else if (contents instanceof Response) {
         return contents;
       }
 
-      return new Response(contents, {
-        status: 404,
-        headers: {
-          'Content-Type': 'text/html',
-        },
-      });
+      return new Response(contents, { status: 404, headers: { 'Content-Type': 'text/html' } });
     }
 
     // 404
     const response = new Response('Not found', {
       status: 404,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
+      headers: { 'Content-Type': 'text/plain' },
     });
     return response;
   };
@@ -329,12 +291,6 @@ function updateRequestWithConfig(
 }
 
 function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) {
-  if (route.methods) {
-    if (!route.methods.includes(request.method)) {
-      return;
-    }
-  }
-
   const params = updateRequestWithConfig(request, route);
 
   const urlSearchParams = new URL(request.url).searchParams;
