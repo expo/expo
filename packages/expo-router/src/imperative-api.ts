@@ -92,7 +92,7 @@ export const router: Router = {
   replace: (href, options) => store.replace(href, options),
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
-  setParams: (params) => store.setParams(params),
+  setParams: (params) => store.setParams(params as Record<string, any>),
   reload: () => store.reload(),
   prefetch: (name) => store.prefetch(name),
 };

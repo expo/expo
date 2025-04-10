@@ -78,7 +78,7 @@ export function useRouter(): Router {
       push: store.push,
       reload: store.reload,
       replace: store.replace,
-      setParams: store.setParams,
+      setParams: store.setParams as Router['setParams'],
     }),
     []
   );

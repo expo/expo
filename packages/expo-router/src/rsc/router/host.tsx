@@ -31,6 +31,14 @@ import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
 import { getOriginFromConstants } from '../../head/url';
 
+declare namespace globalThis {
+  let __EXPO_RSC_RELOAD_LISTENERS__: undefined | (() => void)[];
+  let __EXPO_REFETCH_RSC__: undefined | (() => void);
+  let expo: undefined | {
+    modules?: { ExpoGo?: unknown };
+  };
+}
+
 const { createFromFetch, encodeReply } = RSDWClient;
 
 // TODO: Maybe this could be a bundler global instead.
@@ -275,7 +283,7 @@ export const fetchRSC = (
       fetchCache[SET_ELEMENTS]?.(() => data);
     };
     globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
-    const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_RSC__);
+    const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_RSC__!);
     if (index !== -1) {
       globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRsc);
     } else {
