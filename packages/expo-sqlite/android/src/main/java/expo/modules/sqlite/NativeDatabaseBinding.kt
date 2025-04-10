@@ -8,7 +8,7 @@ import java.io.Closeable
 
 private typealias UpdateListener = (databaseName: String, tableName: String, operationType: Int, rowID: Long) -> Unit
 
-@Suppress("KotlinJniMissingFunction")
+@Suppress("KotlinJniMissingFunction", "FunctionName")
 @DoNotStrip
 internal class NativeDatabaseBinding : Closeable {
   @DoNotStrip
@@ -35,6 +35,7 @@ internal class NativeDatabaseBinding : Closeable {
   /**
    * Disable data change notifications
    */
+  @Suppress("unused")
   fun disableUpdateHook() {
     mUpdateListener = null
     sqlite3_update_hook(false)
@@ -43,6 +44,7 @@ internal class NativeDatabaseBinding : Closeable {
   // region sqlite3 bindings
 
   external fun sqlite3_changes(): Int
+  external fun sqlite3_finalize_all_statement(): Int
   external fun sqlite3_close(): Int
   external fun sqlite3_db_filename(databaseName: String): String
   external fun sqlite3_enable_load_extension(onoff: Int): Int
@@ -55,6 +57,10 @@ internal class NativeDatabaseBinding : Closeable {
   external fun sqlite3_serialize(databaseName: String): ByteArray
   external fun sqlite3_deserialize(databaseName: String, serializedData: ByteArray): Int
   private external fun sqlite3_update_hook(enabled: Boolean) // Keeps it private internally and uses `enableUpdateHook` publicly
+
+  external fun libsql_open_remote(url: String, authToken: String): Int
+  external fun libsql_open(dbPath: String, url: String, authToken: String): Int
+  external fun libsql_sync(): Int
 
   external fun convertSqlLiteErrorToString(): String
 
@@ -76,6 +82,14 @@ internal class NativeDatabaseBinding : Closeable {
     init {
       System.loadLibrary("expo-sqlite")
     }
+
+    @JvmStatic
+    external fun sqlite3_backup(
+      destDatabase: NativeDatabaseBinding,
+      destDatabaseName: String,
+      sourceDatabase: NativeDatabaseBinding,
+      sourceDatabaseName: String
+    ): Int
 
     // These error code should be synced with sqlite3.h
     const val SQLITE_OK = 0

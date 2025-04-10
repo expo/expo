@@ -69,17 +69,30 @@ describe(RouterStore, () => {
         config: {
           initialRouteName: undefined,
           screens: {
-            '+not-found': '*not-found',
-            _sitemap: '_sitemap',
-            index: '',
+            __root: {
+              path: '',
+              screens: {
+                '+not-found': '*not-found',
+                _sitemap: '_sitemap',
+                index: '',
+              },
+            },
           },
         },
       }),
-      rootState: undefined,
-      initialState: undefined,
+      rootState: {
+        routes: [
+          { name: '__root', state: { routes: [{ name: 'index', path: 'yourscheme:///' }] } },
+        ],
+      },
+      initialState: {
+        routes: [
+          { name: '__root', state: { routes: [{ name: 'index', path: 'yourscheme:///' }] } },
+        ],
+      },
       routeInfo: {
-        unstable_globalHref: '',
-        pathname: '',
+        unstable_globalHref: '/',
+        pathname: '/',
         params: {},
         segments: [],
       },
@@ -104,16 +117,30 @@ describe(RouterStore, () => {
       rootState: {
         routes: [
           {
-            name: 'page',
-            path: '/page',
+            name: '__root',
+            state: {
+              routes: [
+                {
+                  name: 'page',
+                  path: '/page',
+                },
+              ],
+            },
           },
         ],
       },
       initialState: {
         routes: [
           {
-            name: 'page',
-            path: '/page',
+            name: '__root',
+            state: {
+              routes: [
+                {
+                  name: 'page',
+                  path: '/page',
+                },
+              ],
+            },
           },
         ],
       },

@@ -30,6 +30,7 @@ projects.push({
   rootDir: path.resolve(__dirname),
   roots: ['src'],
   clearMocks: true,
+  setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
 });
 
 const config = withWatchPlugins({

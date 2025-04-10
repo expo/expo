@@ -18,15 +18,25 @@ protocol DynamicModuleWrapperProtocol {
 public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.
-   Enforced unwrapping is required since it can be set right after the object is initialized.
    */
-  var wrappedModuleHolder: ModuleHolder!
+  weak var moduleHolder: ModuleHolder?
+  /**
+   A reference to the module definition
+   */
+  var viewDefinition: AnyViewDefinition?
+
+  /**
+   A boolean indicating if the view manager represents the default module view – the first exported definition available without specifying a view name.
+   */
+  var isDefaultModuleView: Bool = true
 
   /**
    The designated initializer. At first, we use this base class to hide `ModuleHolder` from Objective-C runtime.
    */
-  public init(_ wrappedModuleHolder: ModuleHolder) {
-    self.wrappedModuleHolder = wrappedModuleHolder
+  public init(_ moduleHolder: ModuleHolder, _ viewDefinition: AnyViewDefinition, isDefaultModuleView: Bool = false) {
+    self.moduleHolder = moduleHolder
+    self.viewDefinition = viewDefinition
+    self.isDefaultModuleView = isDefaultModuleView
   }
 
   /**
@@ -41,7 +51,8 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let module = (self as DynamicModuleWrapperProtocol).wrappedModule?() else {
       return
     }
-    self.wrappedModuleHolder = module.wrappedModuleHolder
+    self.moduleHolder = module.moduleHolder
+    self.viewDefinition = moduleHolder?.definition.views[DEFAULT_MODULE_VIEW]
   }
 
   /**
@@ -57,7 +68,32 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func name() -> String {
-    return wrappedModuleHolder.name
+    guard let moduleHolder, let viewDefinition else {
+      fatalError("Failed to create ModuleHolder or a viewDefinition")
+    }
+    return self.isDefaultModuleView ? moduleHolder.name : "\(moduleHolder.name)_\(viewDefinition.name)"
+  }
+
+  /**
+   Returns the original name of the wrapped module.
+   */
+  @objc
+  public func moduleName() -> String {
+    guard let moduleHolder else {
+      fatalError("Failed to create ModuleHolder")
+    }
+    return moduleHolder.name
+  }
+
+  /**
+   Returns the original name of the wrapped module.
+   */
+  @objc
+  public func viewName() -> String {
+    guard let moduleHolder, let viewDefinition else {
+      fatalError("Failed to create ModuleHolder or a viewDefinition")
+    }
+    return self.isDefaultModuleView ? DEFAULT_MODULE_VIEW : viewDefinition.name
   }
 
   /**
@@ -83,11 +119,11 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public override func view() -> UIView! {
-    guard let appContext = wrappedModuleHolder.appContext else {
+    guard let appContext = moduleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = wrappedModuleHolder.definition.view?.createView(appContext: appContext) else {
-      fatalError("Cannot create a view from module '\(String(describing: self.name))'")
+    guard let view = try? viewDefinition?.createView(appContext: appContext)?.toUIView() else {
+      fatalError("Cannot create a view '\(String(describing: viewDefinition?.name))' from module '\(String(describing: self.name))'")
     }
     return view
   }

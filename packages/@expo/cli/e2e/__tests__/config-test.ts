@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
+import { projectRoot, getRoot, getLoadedModulesAsync } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 
@@ -26,7 +26,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo config --help`', async () => {
-  const results = await execute('config', '--help');
+  const results = await executeExpoAsync(projectRoot, ['config', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -45,63 +45,51 @@ it('runs `npx expo config --help`', async () => {
   `);
 });
 
-it(
-  'runs `npx expo config --json`',
-  async () => {
-    const projectName = 'basic-config';
-    const projectRoot = getRoot(projectName);
-    // Create the project root aot
-    await fs.mkdir(projectRoot, { recursive: true });
-    // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-    await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
-    await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
-    // Add an environment variable file to test that it's not included in the config.
-    await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
+it('runs `npx expo config --json`', async () => {
+  const projectRoot = getRoot('basic-config');
 
-    const results = await execute('config', projectName, '--json');
-    // @ts-ignore
-    const exp = JSON.parse(results.stdout);
+  // Create the project root aot
+  await fs.mkdir(projectRoot, { recursive: true });
+  // Create a fake package.json -- this is a terminal file that cannot be overwritten.
+  await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
+  // Add an environment variable file to test that it's not included in the config.
+  await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
 
-    expect(exp.name).toEqual('foobar');
-    expect(exp.slug).toEqual('foobar');
-    expect(exp.platforms).toStrictEqual([]);
-    expect(exp.version).toBe('1.0.0');
-    expect(exp._internal.dynamicConfigPath).toBe(null);
-    expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
-  }, // Could take 45s depending on how fast npm installs
-  120 * 1000
-);
+  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
+  // @ts-ignore
+  const exp = JSON.parse(results.stdout);
 
-it(
-  'runs `npx expo config --json` with a warning',
-  async () => {
-    const projectName = 'basic-config';
-    const projectRoot = getRoot(projectName);
-    // Create the project root aot
-    await fs.mkdir(projectRoot, { recursive: true });
-    // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-    await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
-    await fs.writeFile(
-      path.join(projectRoot, 'app.json'),
-      '{ "abc": true, "expo": { "name": "foobar" } }'
-    );
+  expect(exp.name).toEqual('foobar');
+  expect(exp.slug).toEqual('foobar');
+  expect(exp.platforms).toStrictEqual([]);
+  expect(exp.version).toBe('1.0.0');
+  expect(exp._internal.dynamicConfigPath).toBe(null);
+  expect(exp._internal.staticConfigPath).toMatchPath(/\/basic-config\/app\.json$/);
+});
 
-    const results = await execute('config', projectName, '--json');
-    // @ts-ignore
-    const exp = JSON.parse(results.stdout);
+it('runs `npx expo config --json` with a warning', async () => {
+  const projectRoot = getRoot('basic-config');
 
-    expect(exp.abc).not.toBeDefined();
-    expect(exp.name).toEqual('foobar');
-  }, // Could take 45s depending on how fast npm installs
-  120 * 1000
-);
+  // Create the project root aot
+  await fs.mkdir(projectRoot, { recursive: true });
+  // Create a fake package.json -- this is a terminal file that cannot be overwritten.
+  await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  await fs.writeFile(
+    path.join(projectRoot, 'app.json'),
+    '{ "abc": true, "expo": { "name": "foobar" } }'
+  );
+
+  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
+  // @ts-ignore
+  const exp = JSON.parse(results.stdout);
+
+  expect(exp.abc).not.toBeDefined();
+  expect(exp.name).toEqual('foobar');
+});
 
 it('throws on invalid project root', async () => {
-  expect.assertions(1);
-  try {
-    await execute('config', 'very---invalid', '--json');
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['config', 'very---invalid', '--json'], { verbose: false })
+  ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });

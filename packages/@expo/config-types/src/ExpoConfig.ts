@@ -159,12 +159,6 @@ export interface ExpoConfig {
     [k: string]: any;
   };
   /**
-   * @deprecated Use a `metro.config.js` file instead. [Learn more](https://docs.expo.dev/guides/customizing-metro/)
-   */
-  packagerOpts?: {
-    [k: string]: any;
-  };
-  /**
    * Configuration for the expo-updates library
    */
   updates?: {
@@ -215,6 +209,14 @@ export interface ExpoConfig {
      * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
      */
     assetPatternsToBeBundled?: string[];
+    /**
+     * Whether to disable the built-in expo-updates anti-bricking measures. Defaults to false. If set to true, this will allow overriding certain configuration options from the JS API, which is liable to leave an app in a bricked state if not done carefully. This should not be used in production.
+     */
+    disableAntiBrickingMeasures?: boolean;
+    /**
+     * Enable debugging of native code with updates enabled. Defaults to false. If set to true, the EX_UPDATES_NATIVE_DEBUG environment variable will be set in Podfile.properties.json and gradle.properties. This causes Xcode and Android Studio debug builds to be built with expo-updates enabled, and JS debugging (with dev client or packager) disabled. This should not be used in production.
+     */
+    useNativeDebug?: boolean;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -279,13 +281,22 @@ export interface ExpoConfig {
      */
     reactCompiler?: boolean;
     /**
-     * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+     * Experimentally enable React Server Components by default in Expo Router and concurrent routing for transitions.
      */
-    reactServerComponents?: boolean;
+    reactServerComponentRoutes?: boolean;
     /**
-     * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+     * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
      */
-    reactServerActions?: boolean;
+    reactServerFunctions?: boolean;
+    /**
+     * Experimentally enable downloading cached builds from remote.
+     */
+    remoteBuildCache?: {
+      /**
+       * Service provider for remote builds.
+       */
+      provider?: 'eas';
+    };
   };
   /**
    * Internal properties for developer tools
@@ -470,6 +481,10 @@ export interface IOS {
    */
   usesAppleSignIn?: boolean;
   /**
+   *  A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability. If true, EAS CLI will use the value during capability syncing. If EAS CLI is not used, this configuration will not have any effect unless another tool is used to operate on it, so enable the capability manually on the Apple Developer Portal in that case.
+   */
+  usesBroadcastPushNotifications?: boolean;
+  /**
    * A Boolean value that indicates whether the app may access the notes stored in contacts. You must [receive permission from Apple](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) before you can submit your app for review with this capability.
    */
   accessesContactNotes?: boolean;
@@ -531,21 +546,25 @@ export interface IOS {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Your iOS app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `ios.buildNumber` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `CFBundleShortVersionString`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   */
+  version?: string;
 }
 /**
  * Configuration that is specific to the iOS platform icons.
  */
 export interface IOSIcons {
   /**
-   * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
+   * The light icon. It will appear when neither dark nor tinted icons are used, or if they are not provided.
    */
-  any?: string;
+  light?: string;
   /**
-   * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+   * The dark icon. It will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
    */
   dark?: string;
   /**
-   * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+   * The tinted icon. It will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
    */
   tinted?: string;
 }
@@ -779,6 +798,10 @@ export interface Android {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   */
+  version?: string;
 }
 export interface AndroidIntentFiltersData {
   /**

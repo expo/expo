@@ -7,10 +7,16 @@ platforms: ['android', 'ios']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native and Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
 > Migrating from Expo's `expo-payments-stripe` module? [Learn more about how to transition to the new `@stripe/stripe-react-native` library](https://github.com/expo/fyi/blob/main/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
+
+<VideoBoxLink
+  videoId="J0tyxUV_omY"
+  title="Watch: Universal Full-Stack Expo Stripe Payment Integration"
+/>
 
 ## Installation
 
@@ -72,13 +78,13 @@ urlScheme:
     : Linking.createURL(''),
 ```
 
-[`Linking.createURL()`](/versions/latest/sdk/linking/#createurloptions) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
+[`Linking.createURL()`](./linking/#createurloptions) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
 
 #### PaymentSheet localization on iOS
 
 On Android, the translation of `PaymentSheet` is automatically detected based on a device's language settings.
 
-On iOS, you must enable `CFBundleAllowMixedLocalizations` and add the preferred language using `CFBundleLocalizations` under [`ios.infoPlist`](/versions/latest/config/app/#infoplist) in the app config:
+On iOS, you must enable `CFBundleAllowMixedLocalizations` and add the preferred language using `CFBundleLocalizations` under [`ios.infoPlist`](../config/app/#infoplist) in the app config:
 
 ```json app.json
 {

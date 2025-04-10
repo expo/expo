@@ -33,7 +33,6 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import <react/config/ReactNativeConfig.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 
@@ -235,18 +234,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([devMenu respondsToSelector:@selector(show)]) {
     [((RCTDevMenu *)devMenu) show];
   }
-}
-
-- (void)disableRemoteDebuggingForHost:(id)host
-{
-  RCTDevSettings *devSettings = [self devSettings:host];
-  devSettings.isDebuggingRemotely = NO;
-}
-
-- (void)toggleRemoteDebuggingForHost:(id)host
-{
-  RCTDevSettings *devSettings = [self devSettings:host];
-  devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
 }
 
 - (void)togglePerformanceMonitorForHost:(id)host

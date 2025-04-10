@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.downloadImage = exports.downloadOrUseCachedImage = void 0;
-const fs_extra_1 = __importDefault(require("fs-extra"));
+exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
+exports.downloadImage = downloadImage;
+const fs_1 = __importDefault(require("fs"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
 const path_1 = __importDefault(require("path"));
@@ -19,7 +20,7 @@ function stripQueryParams(url) {
 }
 function temporaryDirectory() {
     const directory = path_1.default.join(temp_dir_1.default, (0, unique_string_1.default)());
-    fs_extra_1.default.mkdirSync(directory);
+    fs_1.default.mkdirSync(directory, { recursive: true });
     return directory;
 }
 async function downloadOrUseCachedImage(url) {
@@ -34,7 +35,6 @@ async function downloadOrUseCachedImage(url) {
     }
     return cacheDownloadedKeys[url];
 }
-exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
 async function downloadImage(url) {
     const outputPath = temporaryDirectory();
     const response = await fetch(url);
@@ -49,16 +49,20 @@ async function downloadImage(url) {
     const localPath = path_1.default.join(outputPath, path_1.default.basename(stripQueryParams(url)));
     // Type casting is required, see: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
     const readableBody = stream_1.default.Readable.fromWeb(response.body);
-    await streamPipeline(readableBody, fs_extra_1.default.createWriteStream(localPath));
+    await streamPipeline(readableBody, fs_1.default.createWriteStream(localPath));
     // If an image URL doesn't have a name, get the mime type and move the file.
     const img = await jimp_compact_1.default.read(localPath);
     const mime = img.getMIME().split('/').pop();
     if (!localPath.endsWith(mime)) {
         const newPath = path_1.default.join(outputPath, `image.${mime}`);
-        await fs_extra_1.default.move(localPath, newPath);
+        const parentPath = path_1.default.dirname(newPath);
+        if (!fs_1.default.existsSync(parentPath)) {
+            await fs_1.default.promises.mkdir(parentPath, { recursive: true });
+        }
+        // NOTE: EXDEV can't happen since we're just renaming the file in the same directory
+        await fs_1.default.promises.rename(localPath, newPath);
         return newPath;
     }
     return localPath;
 }
-exports.downloadImage = downloadImage;
 //# sourceMappingURL=Download.js.map

@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStaticUrlFromExpoRouter = void 0;
+exports.getOriginFromConstants = getOriginFromConstants;
+exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
@@ -33,10 +34,12 @@ function sanitizeUrl(url) {
     return parsed.toString().replace(/\/$/, '');
 }
 const memoSanitizeUrl = memoize(sanitizeUrl);
-function getUrlFromConstants() {
+function getHeadOriginFromConstants() {
     // This will require a rebuild in bare-workflow to update.
     const manifest = expo_constants_1.default.expoConfig;
-    const origin = manifest?.extra?.router?.headOrigin ?? manifest?.extra?.router?.origin;
+    const origin = manifest?.extra?.router?.headOrigin ??
+        manifest?.extra?.router?.origin ??
+        manifest?.extra?.router?.generatedOrigin;
     if (!origin) {
         throwOrAlert(`Expo Head: Add the handoff origin to the Expo Config (requires rebuild). Add the Config Plugin ${protocolWarningString}, where \`origin\` is the hosted URL.`);
         // Fallback value that shouldn't be used for real.
@@ -45,6 +48,20 @@ function getUrlFromConstants() {
     // Without this, the URL will go to an IP address which is not allowed.
     if (!origin.match(/^http(s)?:\/\//)) {
         console.warn(`Expo Head: origin "${origin}" is missing a \`https://\` protocol. ${protocolWarningString}.`);
+    }
+    // Return the development URL last so the user gets all production warnings first.
+    return memoSanitizeUrl(origin);
+}
+function getOriginFromConstants() {
+    // This will require a rebuild in bare-workflow to update.
+    const manifest = expo_constants_1.default.expoConfig;
+    const origin = manifest?.extra?.router?.headOrigin ??
+        manifest?.extra?.router?.origin ??
+        manifest?.extra?.router?.generatedOrigin;
+    if (!origin) {
+        throwOrAlert(`Expo RSC: Add the origin to the Expo Config (requires rebuild). Add the Config Plugin ${protocolWarningString}, where \`origin\` is the hosted URL.`);
+        // Fallback value that shouldn't be used for real.
+        return 'http://localhost:3000';
     }
     // Return the development URL last so the user gets all production warnings first.
     return memoSanitizeUrl(origin);
@@ -64,7 +81,6 @@ function throwOrAlert(msg) {
 function getStaticUrlFromExpoRouter(pathname) {
     // const host = "https://expo.io";
     // Append the URL we'd find in context
-    return getUrlFromConstants() + pathname;
+    return getHeadOriginFromConstants() + pathname;
 }
-exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 //# sourceMappingURL=url.js.map

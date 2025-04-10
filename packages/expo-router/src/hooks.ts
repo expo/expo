@@ -5,9 +5,7 @@ import React from 'react';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
-
-type SearchParams = Record<string, string | string[]>;
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -72,6 +70,7 @@ export function useRouter(): Router {
       push: store.push,
       dismiss: store.dismiss,
       dismissAll: store.dismissAll,
+      dismissTo: store.dismissTo,
       canDismiss: store.canDismiss,
       back: store.goBack,
       replace: store.replace,
@@ -128,12 +127,14 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<
-  TSegments extends Routes | RouteSegments<Routes> = Routes,
->(): TSegments extends string ? RouteSegments<TSegments> : TSegments {
-  return useStoreRouteInfo().segments as TSegments extends string
-    ? RouteSegments<TSegments>
-    : TSegments;
+export function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+
+/**
+ *  @hidden
+ */
+export function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
+export function useSegments() {
+  return useStoreRouteInfo().segments;
 }
 
 /**
@@ -143,13 +144,13 @@ export function useSegments<
  * @example
  * ```tsx app/profile/[user].tsx
  * import { Text } from 'react-native';
- * import { useSegments } from 'expo-router';
+ * import { usePathname } from 'expo-router';
  *
  * export default function Route() {
- *   // segments = ["profile", "[user]"]
- *   const segments = useSegments();
+ *   // pathname = "/profile/baconbrix"
+ *   const pathname = usePathname();
  *
- *   return <Text>Hello</Text>;
+ *   return <Text>User: {user}</Text>;
  * }
  * ```
  */
@@ -161,8 +162,14 @@ export function usePathname(): string {
  * @hidden
  */
 export function useGlobalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+
+/**
+ * @hidden
+ */
+export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+
 /**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
@@ -190,22 +197,25 @@ export function useGlobalSearchParams<
  * ```
  */
 export function useGlobalSearchParams<
-  TRoute extends Routes,
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
-export function useGlobalSearchParams<
-  TParams1 extends SearchParams | Routes = UnknownOutputParams,
-  TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
-  return useStoreRouteInfo().params as RouteParams<TParams1, TParams2>;
+  TRoute extends Route,
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): RouteParams<TRoute> & TParams;
+export function useGlobalSearchParams() {
+  return useStoreRouteInfo().params;
 }
 
 /**
  * @hidden
  */
 export function useLocalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+
+/**
+ * @hidden
+ */
+export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
  * that changes the query parameters.  For dynamic routes, both the route parameters and the search parameters are returned.
@@ -230,13 +240,10 @@ export function useLocalSearchParams<
  * }
  */
 export function useLocalSearchParams<
-  TRoute extends Routes,
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
-export function useLocalSearchParams<
-  TParams1 extends SearchParams | Routes = UnknownOutputParams,
-  TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
+  TRoute extends Route,
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): RouteParams<TRoute> & TParams;
+export function useLocalSearchParams() {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
@@ -259,7 +266,7 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as RouteParams<TParams1, TParams2>;
+  ) as any;
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {

@@ -17,31 +17,12 @@ export declare function transformCssModuleWeb(props: {
     }[];
     code: string;
     dependencies: Readonly<{
-        data: Readonly<{
-            key: string;
-            asyncType: import("./collect-dependencies").AsyncDependencyType | null;
-            isOptional?: boolean | undefined;
-            locs: readonly import("@babel/types").SourceLocation[];
-            contextParams?: Readonly<{
-                recursive: boolean;
-                filter: Readonly<Readonly<{
-                    pattern: string;
-                    flags: string;
-                }>>;
-                mode: "sync" | "eager" | "lazy" | "lazy-once";
-            }> | undefined;
-            exportNames: string[];
-            css?: {
-                url: string;
-                supports: string | null;
-                media: string | null;
-            } | undefined;
-        }>;
+        data: import("./collect-dependencies").DependencyData;
         name: string;
     }>[];
     output: string;
     css: string;
-    map: void | Uint8Array;
+    map: void | Uint8Array<ArrayBufferLike>;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
     styles: Record<string, string>;
@@ -58,26 +39,7 @@ export declare function collectCssImports(filename: string, originalCode: string
     }[];
     code: string;
     dependencies: Readonly<{
-        data: Readonly<{
-            key: string;
-            asyncType: import("./collect-dependencies").AsyncDependencyType | null;
-            isOptional?: boolean | undefined;
-            locs: readonly import("@babel/types").SourceLocation[];
-            contextParams?: Readonly<{
-                recursive: boolean;
-                filter: Readonly<Readonly<{
-                    pattern: string;
-                    flags: string;
-                }>>;
-                mode: "sync" | "eager" | "lazy" | "lazy-once";
-            }> | undefined;
-            exportNames: string[];
-            css?: {
-                url: string;
-                supports: string | null;
-                media: string | null;
-            } | undefined;
-        }>;
+        data: import("./collect-dependencies").DependencyData;
         name: string;
     }>[];
 };

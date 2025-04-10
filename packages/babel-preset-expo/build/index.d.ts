@@ -1,5 +1,10 @@
 import { ConfigAPI, TransformOptions } from '@babel/core';
 type BabelPresetExpoPlatformOptions = {
+    /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
+    decorators?: false | {
+        legacy?: boolean;
+        version?: number;
+    };
     /** Enable or disable adding the Reanimated plugin by default. @default `true` */
     reanimated?: boolean;
     /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
@@ -62,6 +67,14 @@ type BabelPresetExpoPlatformOptions = {
     };
     /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
     minifyTypeofWindow?: boolean;
+    /**
+     * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
+     *
+     * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+     *
+     * @default `false`
+     */
+    unstable_transformImportMeta?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */

@@ -1,6 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import assert from 'assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
 
 import { Table, Row as TableRow, Cell as TableCell } from '~/ui/components/Table';
@@ -25,9 +24,11 @@ interface MetadataPropertyProps {
   property: MetadataProperty;
 }
 
-export function MetadataTable(props: MetadataTableProps) {
+export function MetadataTable({
+  headers = ['Property', 'Type', 'Description'],
+  children = [],
+}: MetadataTableProps) {
   const id = useId();
-  const { headers = ['Property', 'Type', 'Description'], children = [] } = props;
 
   return (
     <div className="mb-2 mt-1">
@@ -36,7 +37,10 @@ export function MetadataTable(props: MetadataTableProps) {
           <TableRow key={`${id}-${property.name}`}>
             {headers.map(column => {
               const Property = metadataProperties[column];
-              assert(Property, `No metadata property renderer found for ${column}`);
+              if (!Property) {
+                console.error(`No metadata property renderer found for ${column}`);
+                return null;
+              }
               return <Property key={`${id}-${property.name}-${column}`} property={property} />;
             })}
           </TableRow>

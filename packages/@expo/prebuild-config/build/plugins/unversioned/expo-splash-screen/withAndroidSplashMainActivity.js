@@ -25,8 +25,10 @@ function _generateCode() {
   };
   return data;
 }
-const withAndroidSplashMainActivity = (config, props) => {
-  if (!props) {
+const withAndroidSplashMainActivity = (config, {
+  isLegacyConfig
+}) => {
+  if (isLegacyConfig) {
     return config;
   }
   return (0, _configPlugins().withMainActivity)(config, config => {

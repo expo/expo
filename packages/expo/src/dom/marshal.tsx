@@ -70,8 +70,8 @@ export function getActionsObject(): Record<string, (...args: any[]) => void | Pr
   return new Proxy(
     {},
     {
-      get(target, prop) {
-        return async (...args) => {
+      get(_target, prop) {
+        return async (...args: any[]) => {
           const resolvedProps = await Promise.all(
             args.map((arg, index) => {
               if (arg instanceof Promise) {

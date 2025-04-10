@@ -7,6 +7,9 @@ const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
 const autolinking_1 = require("./autolinking");
 const reactNativeConfig_1 = require("./reactNativeConfig");
+function hasCoreFeatures(module) {
+    return module.coreFeatures !== undefined;
+}
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -96,11 +99,34 @@ module.exports = async function (args) {
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
         const extraDependencies = await (0, autolinking_1.resolveExtraBuildDependenciesAsync)(options);
+        const configuration = (0, autolinking_1.getConfiguration)(options);
+        const coreFeatures = [
+            ...modules.reduce((acc, module) => {
+                if (hasCoreFeatures(module)) {
+                    const features = module.coreFeatures ?? [];
+                    for (const feature of features) {
+                        acc.add(feature);
+                    }
+                    return acc;
+                }
+                return acc;
+            }, new Set()),
+        ];
         if (options.json) {
-            console.log(JSON.stringify({ extraDependencies, modules }));
+            console.log(JSON.stringify({
+                extraDependencies,
+                coreFeatures,
+                modules,
+                ...(configuration ? { configuration } : {}),
+            }));
         }
         else {
-            console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
+            console.log(require('util').inspect({
+                extraDependencies,
+                coreFeatures,
+                modules,
+                ...(configuration ? { configuration } : {}),
+            }, false, null, true));
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.

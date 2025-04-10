@@ -12,6 +12,7 @@ import {
   getCoreAutolinkingSourcesFromExpoAndroid,
   getCoreAutolinkingSourcesFromExpoIos,
   getCoreAutolinkingSourcesFromRncCliAsync,
+  getGitIgnoreSourcesAsync,
 } from '../Bare';
 import { SourceSkips } from '../SourceSkips';
 
@@ -61,6 +62,30 @@ describe(getPackageJsonScriptSourcesAsync, () => {
           contents: JSON.stringify({ web: 'expo start --web' }),
         })
       );
+    });
+  });
+
+  it('should return empty sources when SourceSkips.PackageJsonScriptsAll is set', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const scripts = {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+        web: 'expo start --web',
+      };
+      jest.doMock(
+        '/app/package.json',
+        () => ({
+          scripts: { ...scripts },
+        }),
+        {
+          virtual: true,
+        }
+      );
+      const sources = await getPackageJsonScriptSourcesAsync(
+        '/app',
+        await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.PackageJsonScriptsAll })
+      );
+      expect(sources).toEqual([]);
     });
   });
 
@@ -120,6 +145,16 @@ describe(getPackageJsonScriptSourcesAsync, () => {
         })
       );
     });
+  });
+});
+
+describe('getGitIgnoreSourcesAsync', () => {
+  it('should return empty sources when SourceSkips.GitIgnore is set', async () => {
+    const sources = await getGitIgnoreSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.GitIgnore })
+    );
+    expect(sources).toEqual([]);
   });
 });
 

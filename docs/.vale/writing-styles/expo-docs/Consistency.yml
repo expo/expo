@@ -3,6 +3,7 @@ message: "Consider using '%s' instead of '%s'"
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#follow-external-product-casing'
 level: error
 ignorecase: true
+scope: ~text.frontmatter
 swap:
   '\b & \b': and
   amazon appstore: Amazon Appstore
@@ -30,7 +31,6 @@ swap:
   IPhone: iPhone
   javascript: JavaScript
   javascript core: JavaScriptCore
-  linux: Linux
   mac os: macOS
   macos: macOS
   MacOS: macOS

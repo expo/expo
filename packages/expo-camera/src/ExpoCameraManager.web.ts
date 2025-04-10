@@ -64,8 +64,15 @@ function handleGetUserMediaError({ message }: { message: string }): PermissionRe
 
 async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
   try {
-    await getUserMedia({
+    const streams = await getUserMedia({
       video: true,
+    });
+    // We need to close the media stream returned by getUserMedia
+    // to avoid using the camera since we won't use these streams now
+    // https://developer.mozilla.org/fr/docs/Web/API/MediaDevices/getUserMedia
+    streams.getTracks().forEach((track) => {
+      track.stop();
+      streams.removeTrack(track);
     });
     return {
       status: PermissionStatus.GRANTED,

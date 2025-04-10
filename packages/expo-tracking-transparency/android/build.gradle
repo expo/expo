@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '5.0.0'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '5.2.1'
 
 android {
   namespace "expo.modules.trackingtransparency"
   defaultConfig {
     versionCode 1
-    versionName "5.0.0"
+    versionName "5.2.1"
   }
 }
 

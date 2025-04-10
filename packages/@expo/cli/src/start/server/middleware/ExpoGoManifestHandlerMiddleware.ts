@@ -2,11 +2,11 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
-import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import { ServerHeaders, ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
@@ -16,6 +16,11 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
+import {
+  encodeMultipartMixed,
+  FormDataField,
+  EncodedFormData,
+} from '../../../utils/multipartMixed';
 import { stripPort } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
@@ -102,11 +107,19 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     const { exp, hostUri, expoGoConfig, bundleUrl } =
       await this._resolveProjectSettingsAsync(requestOptions);
 
-    const runtimeVersion = await Updates.getRuntimeVersionAsync(
-      this.projectRoot,
-      { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-      requestOptions.platform
-    );
+    const runtimeVersion =
+      (await resolveRuntimeVersionWithExpoUpdatesAsync({
+        projectRoot: this.projectRoot,
+        platform: requestOptions.platform,
+      })) ??
+      // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
+      // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
+      // expo-updates is not installed.
+      (await Updates.getRuntimeVersionAsync(
+        this.projectRoot,
+        { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
+        requestOptions.platform
+      ));
     if (!runtimeVersion) {
       throw new CommandError(
         'MANIFEST_MIDDLEWARE',
@@ -172,14 +185,14 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     switch (requestOptions.responseContentType) {
       case ResponseContentType.MULTIPART_MIXED: {
-        const form = this.getFormData({
+        const encoded = await this.encodeFormDataAsync({
           stringifiedManifest,
           manifestPartHeaders,
           certificateChainBody,
         });
-        headers.set('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
+        headers.set('content-type', `multipart/mixed; boundary=${encoded.boundary}`);
         return {
-          body: form.getBuffer().toString(),
+          body: encoded.body,
           version: runtimeVersion,
           headers,
         };
@@ -223,7 +236,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     }
   }
 
-  private getFormData({
+  private encodeFormDataAsync({
     stringifiedManifest,
     manifestPartHeaders,
     certificateChainBody,
@@ -231,20 +244,23 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     stringifiedManifest: string;
     manifestPartHeaders: { 'expo-signature': string } | null;
     certificateChainBody: string | null;
-  }): FormData {
-    const form = new FormData();
-    form.append('manifest', stringifiedManifest, {
-      contentType: 'application/json',
-      header: {
-        ...manifestPartHeaders,
+  }): Promise<EncodedFormData> {
+    const fields: FormDataField[] = [
+      {
+        name: 'manifest',
+        value: stringifiedManifest,
+        contentType: 'application/json',
+        partHeaders: manifestPartHeaders,
       },
-    });
+    ];
     if (certificateChainBody && certificateChainBody.length > 0) {
-      form.append('certificate_chain', certificateChainBody, {
+      fields.push({
+        name: 'certificate_chain',
+        value: certificateChainBody,
         contentType: 'application/x-pem-file',
       });
     }
-    return form;
+    return encodeMultipartMixed(fields);
   }
 
   private static async getScopeKeyAsync({

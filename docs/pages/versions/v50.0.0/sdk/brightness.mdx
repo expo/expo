@@ -27,7 +27,11 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-brightness` repository](https://github.com/expo/expo/tree/main/packages/expo-brightness#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the `android.permission.WRITE_SETTINGS` permission to the **AndroidManifest.xml** file:
+
+```xml android/app/src/main/AndroidManifest.xml
+<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+```
 
 </ConfigReactNative>
 
@@ -103,7 +107,7 @@ An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['WRITE_SETTINGS']} />
 

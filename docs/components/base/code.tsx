@@ -7,10 +7,9 @@ import tippy, { roundArrow } from 'tippy.js';
 
 import {
   cleanCopyValue,
-  getRootCodeBlockProps,
   getCodeData,
-  parseValue,
   getCollapseHeight,
+  getCodeBlockDataFromChildren,
 } from '~/common/code-utilities';
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
@@ -22,7 +21,7 @@ import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
 import { TextTheme } from '~/ui/components/Text/types';
 
-// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
+// @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
 const attributes = {
@@ -38,20 +37,24 @@ export function Code({ className, children, title }: CodeProps) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
 
-  const rootProps = getRootCodeBlockProps(children, className);
-  const codeBlockData = parseValue(rootProps?.children?.toString() ?? '');
-  const codeBlockTitle = codeBlockData?.title ?? title;
+  const {
+    language,
+    value,
+    params,
+    title: blockTitle,
+  } = getCodeBlockDataFromChildren(children, className);
+  const codeBlockTitle = blockTitle ?? title;
 
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
 
-  const collapseHeight = getCollapseHeight(codeBlockData.params);
+  const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
-  const highlightedHtml = getCodeData(codeBlockData.value, rootProps.className);
+  const highlightedHtml = getCodeData(value, language);
 
   useEffect(() => {
-    const tippyFunc = testTippy || tippy;
+    const tippyFunc = testTippy ?? tippy;
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
@@ -86,14 +89,14 @@ export function Code({ className, children, title }: CodeProps) {
   }
 
   const commonClasses = mergeClasses(
-    wordWrap && '!whitespace-pre-wrap !break-words',
+    wordWrap && '!break-words !whitespace-pre-wrap',
     showExpand && !isExpanded && `!overflow-hidden`
   );
 
   return codeBlockTitle ? (
     <Snippet>
       <SnippetHeader title={codeBlockTitle} Icon={getIconForFile(codeBlockTitle)}>
-        <CopyAction text={cleanCopyValue(codeBlockData.value)} />
+        <CopyAction text={cleanCopyValue(value)} />
         <SettingsAction />
       </SnippetHeader>
       <SnippetContent className="p-0">
@@ -102,7 +105,7 @@ export function Code({ className, children, title }: CodeProps) {
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative p-4 whitespace-pre', commonClasses)}
+          className={mergeClasses('relative whitespace-pre p-4', commonClasses)}
           {...attributes}>
           <code
             className="text-2xs text-default"
@@ -119,7 +122,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md overflow-x-auto',
+        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle p-4',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
@@ -144,7 +147,7 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      className={mergeClasses('whitespace-pre m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
+      className={mergeClasses('m-0 whitespace-pre px-1 py-1.5', inline && 'inline-flex !p-0')}
       {...attributes}>
       <CODE
         className={mergeClasses(

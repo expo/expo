@@ -1,12 +1,32 @@
-.cache
-.next
+# general
 node_modules
-out/
 *.tsbuildinfo
 .eslintcache
 
 # copied in next.config.js
-pages/versions/latest/
+pages/versions/latest
 
 # staticly generated constants
 public/static/constants
+
+# next.js
+.cache
+.next
+.swc
+out
+
+# yarn berry
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# generated file(s) for llms
+public/llms.txt
+public/llms-full.txt
+public/llms-eas.txt
+public/llms-sdk.txt
+scripts/generate-llms/talks.js

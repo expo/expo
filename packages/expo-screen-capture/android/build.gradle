@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '7.0.0'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '7.1.1'
 
 android {
   namespace "expo.modules.screencapture"
   defaultConfig {
     versionCode 7
-    versionName '7.0.0'
+    versionName '7.1.1'
   }
 }
 

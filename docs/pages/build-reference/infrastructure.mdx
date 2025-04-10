@@ -17,7 +17,7 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 ## Configuring build environment
 
-Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
+Images for each platform have one specific version of Node.js, Yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
 When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-52`.
 
@@ -27,7 +27,6 @@ When selecting an image for the build you can use the full name provided below o
 - The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
 - The `sdk-51` alias will be assigned to the image best suited for SDK 51 builds.
 - The `sdk-50` alias will be assigned to the image best suited for SDK 50 builds.
-- The `sdk-49` alias will be assigned to the image best suited for SDK 49 builds.
 - SDK aliases will be updated with every new SDK release.
 - The `latest` alias will be updated with every new image release.
 
@@ -249,12 +248,6 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 iOS builder VMs run on Mac mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [iOS-specific resource classes](/eas/json/#resourceclass-2).
 
-- Hardware:
-
-  - M1 3.2GHz 8-Core, 16 GB RAM
-  - M2 3.9GHz 8-Core, 24 GB RAM
-  - M2 Pro 3.9GHz 12-Core, 32 GB RAM
-
 - Build resources:
 
   <BuildResourceList platform="ios" />
@@ -291,7 +284,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - pnpm 9.12.3
 - npm 9.8.1
 - fastlane 2.225.0
-- CocoaPods 1.16.0
+- CocoaPods 1.16.2
 - Ruby 3.2
 - node-gyp 10.2.0
 

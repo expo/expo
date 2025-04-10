@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 4.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.0 — 2025-04-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.4 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2024-10-22
 
 ### 🎉 New features

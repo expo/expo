@@ -28,7 +28,7 @@ final class HomeAppLoader: AppLoader {
     completionQueue: DispatchQueue
   ) {
     self.manifestAndAssetRequestHeaders = manifestAndAssetRequestHeaders
-    self.downloader = FileDownloader(config: config)
+    self.downloader = FileDownloader(config: config, logger: logger)
     self.completionQueue = completionQueue
     super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
@@ -71,7 +71,7 @@ final class HomeAppLoader: AppLoader {
     }
   }
 
-  override func downloadAsset(_ asset: UpdateAsset) {
+  override func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {
@@ -93,7 +93,7 @@ final class HomeAppLoader: AppLoader {
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
-          extraHeaders: asset.extraRequestHeaders ?? [:]
+          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current }
         ) { data, response, _ in
           DispatchQueue.global().async {
             self.handleAssetDownload(withData: data, response: response, asset: asset)

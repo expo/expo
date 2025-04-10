@@ -104,7 +104,7 @@ const RouterContext = createContext<{
 const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
   const refetch = useRefetch();
 
-  const initialRouteRef = useRef<RouteProps>();
+  const initialRouteRef = useRef<RouteProps>(null);
   if (!initialRouteRef.current) {
     initialRouteRef.current = parseRoute(new URL(getHref()));
   }
@@ -286,7 +286,7 @@ function getHistory() {
 export function useRouter_UNSTABLE(): ClassicExpoRouterType &
   RouteProps & {
     forward: () => void;
-    prefetch: <T extends string | object>(href: Href<T>) => void;
+    prefetch: (href: Href) => void;
   } {
   const router = useContext(RouterContext);
   if (!router) {
@@ -294,7 +294,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
   }
   const { route, changeRoute, prefetchRoute } = router;
   const push: ClassicExpoRouterType['push'] = useCallback(
-    <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
+    (href: Href, options?: NavigationOptions) => {
       if (options) {
         // TODO(Bacon): Implement options
         console.warn(
@@ -316,7 +316,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     [changeRoute]
   );
   const replace: ClassicExpoRouterType['replace'] = useCallback(
-    <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
+    (href: Href, options?: NavigationOptions) => {
       if (options) {
         // TODO(Bacon): Implement options
         console.warn(
@@ -343,7 +343,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     getHistory().forward();
   }, []);
   const prefetch = useCallback(
-    <T extends string | object>(href: Href<T>) => {
+    (href: Href) => {
       const url = new URL(resolveHref(href), getHref());
       prefetchRoute(parseRoute(url));
     },
@@ -359,6 +359,9 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     },
     dismiss() {
       throw new Error('router.dismiss() is not supported in React Server Components yet');
+    },
+    dismissTo() {
+      throw new Error('router.dismissTo() is not supported in React Server Components yet');
     },
     dismissAll() {
       throw new Error('router.dismissAll() is not supported in React Server Components yet');
@@ -481,7 +484,7 @@ export function ServerRouter({ children, route }: { children: ReactNode; route: 
   );
 }
 
-export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
+export type LinkProps = ClassicLinkProps & {
   href: string;
   // pending?: ReactNode;
   // notPending?: ReactNode;
@@ -511,7 +514,7 @@ function ExpoRouterLink(
     // unstable_prefetchOnView,
     children,
     ...props
-  }: LinkProps<any>,
+  }: LinkProps,
   ref: ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.

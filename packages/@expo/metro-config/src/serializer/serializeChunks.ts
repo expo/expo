@@ -31,6 +31,7 @@ import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
+import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -85,7 +86,9 @@ export async function graphToSerialAssetsAsync(
     {
       test: pathToRegex(entryFile),
     },
-  ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+  ].map((chunkSettings) =>
+    gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true)
+  );
 
   // Get the common modules and extract them into a separate chunk.
   const entryChunk = [...chunks.values()].find(
@@ -93,7 +96,7 @@ export async function graphToSerialAssetsAsync(
   );
   if (entryChunk) {
     for (const chunk of chunks.values()) {
-      if (chunk !== entryChunk && chunk.isAsync) {
+      if (!chunk.isEntry && chunk.isAsync) {
         for (const dep of chunk.deps.values()) {
           if (entryChunk.deps.has(dep)) {
             // Remove the dependency from the async chunk since it will be loaded in the main chunk.
@@ -145,12 +148,19 @@ export async function graphToSerialAssetsAsync(
     // TODO: Optimize this pass more.
     // Remove all dependencies from async chunks that are already in the common chunk.
     for (const chunk of [...chunks.values()]) {
-      if (chunk !== entryChunk) {
+      if (!chunk.isEntry) {
         for (const dep of chunk.deps) {
           if (entryChunk.deps.has(dep)) {
             chunk.deps.delete(dep);
           }
         }
+      }
+    }
+
+    // Remove empty chunks
+    for (const chunk of [...chunks.values()]) {
+      if (!chunk.isEntry && chunk.deps.size === 0) {
+        chunks.delete(chunk);
       }
     }
   }
@@ -201,7 +211,8 @@ export class Chunk {
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
     public isAsync: boolean = false,
-    public isVendor: boolean = false
+    public isVendor: boolean = false,
+    public isEntry: boolean = false
   ) {
     this.deps = new Set(entries);
   }
@@ -244,13 +255,15 @@ export class Chunk {
 
   private serializeToCodeWithTemplates(
     serializerConfig: Partial<SerializerConfigT>,
-    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> = {}
+    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> & {
+      preModules?: Set<Module>;
+    } = {}
   ) {
     const entryFile = this.name;
 
     // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
 
-    const preModules = [...this.preModules.values()];
+    const preModules = [...(options.preModules ?? this.preModules).values()];
     const dependencies = [...this.deps];
 
     const jsSplitBundle = baseJSBundleWithDependencies(entryFile, preModules, dependencies, {
@@ -259,8 +272,8 @@ export class Chunk {
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
-      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
-      modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
+      runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
+      modulesOnly: this.options.modulesOnly || preModules.length === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: !!this.options.serializerOptions?.splitChunks,
@@ -297,6 +310,7 @@ export class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
+
           // NOTE(kitten): We shouldn't have any async imports on non-async chunks
           // However, due to how chunks merge, some async imports may now be pointing
           // at entrypoint (or vendor) chunks. We omit the path so that the async import
@@ -367,19 +381,20 @@ export class Chunk {
 
   private serializeToCode(
     serializerConfig: Partial<SerializerConfigT>,
-    { debugId, chunks }: { debugId: string; chunks: Chunk[] }
+    { debugId, chunks, preModules }: { debugId: string; chunks: Chunk[]; preModules: Set<Module> }
   ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
       debugId,
+      preModules,
     });
   }
 
   private boolishTransformOption(name: string) {
     const value = this.graph.transformOptions?.customTransformOptions?.[name];
-    return value === true || value === 'true';
+    return value === true || value === 'true' || value === '1';
   }
 
   async serializeToAssetsAsync(
@@ -388,22 +403,26 @@ export class Chunk {
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    let outputFile = this.getFilenameForConfig(serializerConfig);
+    const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
-    let premodules = [...this.preModules];
+    let finalPreModules = [...this.preModules];
     if (unstable_beforeAssetSerializationPlugins) {
       for (const plugin of unstable_beforeAssetSerializationPlugins) {
-        premodules = plugin({ graph: this.graph, premodules, debugId });
+        finalPreModules = plugin({
+          graph: this.graph,
+          premodules: finalPreModules,
+          debugId,
+        });
       }
-      this.preModules = new Set(premodules);
-
-      // If the premodules have changed, we need to recompute the output file hash.
-      outputFile = this.getFilenameForConfig(serializerConfig);
     }
 
-    const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
+    const jsCode = this.serializeToCode(serializerConfig, {
+      chunks,
+      debugId,
+      preModules: new Set(finalPreModules),
+    });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
 
@@ -498,7 +517,7 @@ export class Chunk {
       this.options.sourceMapUrl
     ) {
       const modules = [
-        ...this.preModules,
+        ...finalPreModules,
         ...getSortedModules([...this.deps], {
           createModuleId: this.options.createModuleId,
         }),
@@ -506,11 +525,14 @@ export class Chunk {
         // TODO: Make this user-configurable.
 
         // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        if (module.path.startsWith('/')) {
+        if (path.isAbsolute(module.path)) {
           return {
             ...module,
             path:
-              '/' + path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path),
+              '/' +
+              toPosixPath(
+                path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path)
+              ),
           };
         }
         return module;
@@ -615,12 +637,14 @@ function chunkIdForModules(modules: Module[]) {
 }
 
 function gatherChunks(
+  runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions<MixedOutput>,
-  isAsync: boolean = false
+  isAsync: boolean = false,
+  isEntry: boolean = false
 ): Set<Chunk> {
   let entryModules = getEntryModulesForChunkSettings(graph, settings);
 
@@ -640,7 +664,9 @@ function gatherChunks(
     entryModules,
     graph,
     options,
-    isAsync
+    isAsync,
+    false,
+    isEntry
   );
 
   // Add all the pre-modules to the first chunk.
@@ -660,13 +686,17 @@ function gatherChunks(
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
+        const isEntry = dependency.data.data.asyncType === 'worker';
+
         gatherChunks(
+          runtimePremodules,
           chunks,
           { test: pathToRegex(dependency.absolutePath) },
-          [],
+          isEntry ? runtimePremodules : [],
           graph,
           options,
-          true
+          true,
+          isEntry
         );
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);

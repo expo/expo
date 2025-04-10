@@ -24,7 +24,7 @@ export interface NotificationHandler {
      */
     handleSuccess?: (notificationId: string) => void;
     /**
-     * A function called whenever handling of an incoming notification fails.
+     * A function called whenever calling `handleNotification()` for an incoming notification fails.
      * @param notificationId Identifier of the notification.
      * @param error An error which occurred in form of `NotificationHandlingError` object.
      */

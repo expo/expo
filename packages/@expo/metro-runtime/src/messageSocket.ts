@@ -14,6 +14,9 @@ messageSocket.onmessage = (message) => {
           window.location.reload();
           break;
         case 'rsc-reload':
+          if (data.params.platform && data.params.platform !== process.env.EXPO_OS) {
+            return;
+          }
           globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.forEach((l) => l());
           break;
         // Inject CSS modules from server components into the root client bundle in development.

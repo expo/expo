@@ -57,12 +57,14 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const record = () => audioRecorder.record();
 
-  const renderOptionsButton = (title: string, options: RecordingOptions) => (
-    <Button
-      onPress={() => setRecorderOptions(options)}
-      title={`${recorderOptions === options ? '✓ ' : ''}${title}`}
-    />
-  );
+  const renderOptionsButton = (title: string, options: RecordingOptions) => {
+    return (
+      <Button
+        onPress={() => setRecorderOptions(options)}
+        title={`${recorderOptions === options ? '✓ ' : ''}${title}`}
+      />
+    );
+  };
 
   const togglePause = () => {
     if (audioRecorder.isRecording) {

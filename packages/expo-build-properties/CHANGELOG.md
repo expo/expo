@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 0.14.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add `android.useDayNightTheme` to enable overriding the templates use of a light theme. ([#33989](https://github.com/expo/expo/pull/33989) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed generating falsy properties to overwrite existing props. ([#35771](https://github.com/expo/expo/pull/35771) by [@kudo](https://github.com/kudo))
+
+## 0.13.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.13.1 — 2024-10-24
 
 _This version does not introduce any user-facing changes._

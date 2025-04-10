@@ -24,7 +24,7 @@ class FileDownloaderSpec : ExpoSpec {
       
       db = UpdatesDatabase()
       db.databaseQueue.sync {
-        try! db.openDatabase(inDirectory: testDatabaseDir)
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
 
       logger = UpdatesLogger()
@@ -44,7 +44,7 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://exp.host/@test/test")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -55,7 +55,7 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://u.expo.dev/00000000-0000-0000-0000-000000000000")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -68,7 +68,7 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,
@@ -94,8 +94,8 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
           "expo-platform": "android"
@@ -200,8 +200,8 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
           "expo-platform": "android"
@@ -218,7 +218,7 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,

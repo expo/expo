@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findGitHubUserFromEmailByCommits = exports.findGitHubUserFromEmail = exports.guessRepoUrl = void 0;
+exports.guessRepoUrl = guessRepoUrl;
+exports.findGitHubUserFromEmail = findGitHubUserFromEmail;
+exports.findGitHubUserFromEmailByCommits = findGitHubUserFromEmailByCommits;
 const fetch_1 = require("./fetch");
 /** Guesses the repository URL based on the author profile URL and the package slug. */
 async function guessRepoUrl(authorUrl, slug) {
@@ -10,7 +12,6 @@ async function guessRepoUrl(authorUrl, slug) {
     }
     return '';
 }
-exports.guessRepoUrl = guessRepoUrl;
 /** Search GitHub to resolve an email to a GitHub account */
 async function findGitHubUserFromEmail(email) {
     const params = new URLSearchParams({ q: `${email} in:email` });
@@ -28,7 +29,6 @@ async function findGitHubUserFromEmail(email) {
     }
     return await findGitHubUserFromEmailByCommits(email);
 }
-exports.findGitHubUserFromEmail = findGitHubUserFromEmail;
 /** Search GitHub to resolve an email to a GitHub account, by searching commits instead of users */
 async function findGitHubUserFromEmailByCommits(email) {
     const params = new URLSearchParams({
@@ -42,10 +42,10 @@ async function findGitHubUserFromEmailByCommits(email) {
         },
     });
     const json = (await response.json());
-    if (json.data.total_count > 0) {
-        return json.data.items[0].author?.login ?? null;
+    const data = json.data ?? json;
+    if (data?.total_count > 0) {
+        return data.items[0].author?.html_url ?? null;
     }
     return null;
 }
-exports.findGitHubUserFromEmailByCommits = findGitHubUserFromEmailByCommits;
 //# sourceMappingURL=github.js.map

@@ -1,7 +1,8 @@
 import { registerRootComponent } from 'expo';
-import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { View } from 'react-native';
+
+import * as SplashScreen from './utils/splash';
 
 function isBaseObject(obj: any) {
   if (Object.prototype.toString.call(obj) !== '[object Object]') {
@@ -53,7 +54,6 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
   try {
     // This must be delayed so the user has a chance to call it first.
     setTimeout(() => {
-      // @ts-expect-error: This function is native-only and for internal-use only.
       SplashScreen._internal_preventAutoHideAsync?.();
     });
 

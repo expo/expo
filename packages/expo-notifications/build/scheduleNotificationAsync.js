@@ -19,6 +19,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -33,6 +34,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },
@@ -43,15 +45,18 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule
@@ -98,7 +103,7 @@ export function parseTrigger(userFacingTrigger) {
         return timeIntervalTrigger;
     }
     return Platform.select({
-        default: null,
+        default: null, // There's no notion of channels on platforms other than Android.
         android: {
             type: 'channel',
             channelId: typeof userFacingTrigger === 'object' &&
@@ -115,20 +120,22 @@ function parseCalendarTrigger(trigger) {
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.CALENDAR) {
         const { repeats, ...calendarTrigger } = trigger;
-        return { type: 'calendar', value: calendarTrigger, repeats };
+        return { ...calendarTrigger, repeats: !!repeats, type: 'calendar' };
     }
     return undefined;
 }
 function parseDateTrigger(trigger) {
     if (trigger instanceof Date || typeof trigger === 'number') {
+        // TODO @vonovak this branch is not be used by people using TS
+        // but was part of the public api previously so we keep it for a bit for JS users
+        console.warn(`You are using a deprecated parameter type (${trigger}) for the notification trigger. Use "{ type: 'date', date: someValue }" instead.`);
         return { type: 'date', timestamp: toTimestamp(trigger) };
     }
     else if (typeof trigger === 'object' &&
         trigger !== null &&
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.DATE &&
-        'date' in trigger &&
-        trigger.date instanceof Date) {
+        'date' in trigger) {
         const result = {
             type: 'date',
             timestamp: toTimestamp(trigger.date),

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRootComponent = void 0;
+exports.getRootComponent = getRootComponent;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -22,5 +22,4 @@ function getRootComponent() {
     }
     return exp.default;
 }
-exports.getRootComponent = getRootComponent;
 //# sourceMappingURL=getRootComponent.js.map

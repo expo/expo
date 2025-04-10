@@ -1,9 +1,11 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
+import android.os.Build
 import android.view.View
 import android.view.ViewTreeObserver.OnPreDrawListener
 import android.view.animation.AccelerateInterpolator
+import android.window.SplashScreenView
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.react.bridge.ReactMarker
@@ -23,16 +25,28 @@ object SplashScreenManager {
   }
 
   private fun configureSplashScreen(options: SplashScreenOptions = SplashScreenOptions()) {
+    // If loaded in a headless JS context we might not have initialized the splash screen
+    // lateinit variable, so let's check to be nice citizens
+    if (!::splashScreen.isInitialized) {
+      return
+    }
+
     val duration = options.duration
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-      splashScreenViewProvider.view
+      val splashScreenView = splashScreenViewProvider.view
+      splashScreenView
         .animate()
         .setDuration(duration)
         .alpha(0.0f)
         .setInterpolator(AccelerateInterpolator())
         .withEndAction {
-          splashScreenViewProvider.remove()
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            splashScreenViewProvider.remove();
+          } else {
+            // Avoid calling applyThemesSystemBarAppearance
+            (splashScreenView as SplashScreenView).remove();
+          }
         }.start()
     }
   }

@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'expo.modules.audio'
-version = '0.2.3'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '0.4.1'
 
 android {
   namespace "expo.modules.audio"
   defaultConfig {
     versionCode 1
-    versionName "0.2.3"
+    versionName "0.4.1"
   }
 
   compileOptions {
@@ -27,6 +23,7 @@ repositories {
 }
 
 dependencies {
+  implementation 'androidx.appcompat:appcompat:1.7.0'
   implementation("androidx.media3:media3-exoplayer:1.4.0")
   implementation("androidx.media3:media3-exoplayer-dash:1.4.0")
   implementation("androidx.media3:media3-datasource-okhttp:1.4.0")

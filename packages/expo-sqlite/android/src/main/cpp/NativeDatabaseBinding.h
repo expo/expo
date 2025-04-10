@@ -21,6 +21,7 @@ public:
 
   // sqlite3 bindings
   int sqlite3_changes();
+  int sqlite3_finalize_all_statement();
   int sqlite3_close();
   std::string sqlite3_db_filename(const std::string &databaseName);
   int sqlite3_enable_load_extension(int onoff);
@@ -39,8 +40,17 @@ public:
                           jni::alias_ref<jni::JArrayByte> serializedData);
   void sqlite3_update_hook(bool enabled);
 
+  static int sqlite3_backup(
+      jni::alias_ref<jni::JClass> clazz,
+      jni::alias_ref<NativeDatabaseBinding::jhybridobject> destDatabase,
+      const std::string &destDatabaseName,
+      jni::alias_ref<NativeDatabaseBinding::jhybridobject> sourceDatabase,
+      const std::string &sourceDatabaseName);
+
   // helpers
   jni::local_ref<jni::JString> convertSqlLiteErrorToString();
+
+  sqlite3 *rawdb() { return db; }
 
 private:
   explicit NativeDatabaseBinding(
@@ -59,26 +69,6 @@ private:
 
   jni::global_ref<NativeDatabaseBinding::javaobject> javaPart_;
   sqlite3 *db;
-};
-
-/**
- * A convenient wrapper for the Kotlin SQLiteErrorException.
- */
-class SQLiteErrorException
-    : public jni::JavaClass<SQLiteErrorException, CodedException> {
-public:
-  static auto constexpr kJavaDescriptor =
-      "Lexpo/modules/sqlite/SQLiteErrorException;";
-
-  static jni::local_ref<SQLiteErrorException>
-  create(const std::string &message) {
-    return SQLiteErrorException::newInstance(jni::make_jstring(message));
-  }
-
-  static jni::local_ref<SQLiteErrorException>
-  create(jni::alias_ref<jni::JString> message) {
-    return SQLiteErrorException::newInstance(message);
-  }
 };
 
 } // namespace expo

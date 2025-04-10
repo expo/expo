@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 6.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.0 — 2025-04-04
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.3 - 2025-01-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 - 2024-11-29
+
+### 💡 Others
+
+- Allow `prompt` parameter of `AuthRequest` to accept multiple values as an array ([#32373](https://github.com/expo/expo/pull/32373) by [@Nkzn](https://github.com/Nkzn))
+
 ## 6.0.0 — 2024-10-22
 
 ### 🐛 Bug fixes

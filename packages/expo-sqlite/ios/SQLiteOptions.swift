@@ -4,9 +4,6 @@ import ExpoModulesCore
 
 struct OpenDatabaseOptions: Record, Equatable {
   @Field
-  var enableCRSQLite: Bool = false
-
-  @Field
   var enableChangeListener: Bool = false
 
   @Field
@@ -15,12 +12,23 @@ struct OpenDatabaseOptions: Record, Equatable {
   @Field
   var finalizeUnusedStatementsBeforeClosing: Bool = true
 
+  @Field
+  var libSQLUrl: URL?
+
+  @Field
+  var libSQLAuthToken: String?
+
+  @Field
+  var libSQLRemoteOnly: Bool = false
+
   // MARK: - Equatable
 
   static func == (lhs: OpenDatabaseOptions, rhs: OpenDatabaseOptions) -> Bool {
-    return lhs.enableCRSQLite == rhs.enableCRSQLite &&
-      lhs.enableChangeListener == rhs.enableChangeListener &&
+    return lhs.enableChangeListener == rhs.enableChangeListener &&
       lhs.useNewConnection == rhs.useNewConnection &&
-      lhs.finalizeUnusedStatementsBeforeClosing == rhs.finalizeUnusedStatementsBeforeClosing
+      lhs.finalizeUnusedStatementsBeforeClosing == rhs.finalizeUnusedStatementsBeforeClosing &&
+      lhs.libSQLUrl == rhs.libSQLUrl &&
+      lhs.libSQLAuthToken == rhs.libSQLAuthToken &&
+      lhs.libSQLRemoteOnly == rhs.libSQLRemoteOnly
   }
 }

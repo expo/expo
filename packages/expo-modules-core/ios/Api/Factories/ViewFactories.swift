@@ -1,5 +1,9 @@
 /// Here we implement factories for the definitions exclusive for native views.
 
+// Function names should start with a lowercase character, but in this one case
+// we want it to be uppercase for Expo Modules DSL
+// swiftlint:disable identifier_name
+
 /**
  Creates a view definition describing the native view exported to React.
  */
@@ -13,10 +17,17 @@ public func View<ViewType: UIView>(
 /**
  Creates a view definition describing the native SwiftUI view exported to React.
  */
-public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View>(
   _ viewType: ViewType.Type
 ) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
   return ExpoSwiftUI.ViewDefinition(ViewType.self)
+}
+
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View>(
+  _ viewType: ViewType.Type,
+  @ExpoSwiftUI.ViewDefinitionBuilder<ViewType> _ elements: @escaping () -> [AnyViewDefinitionElement]
+) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
+  return ExpoSwiftUI.ViewDefinition(ViewType.self, elements: elements())
 }
 
 // MARK: Props
@@ -45,3 +56,12 @@ public func OnViewDidUpdateProps<ViewType: UIView>(
 ) -> ViewLifecycleMethod<ViewType> {
   return ViewLifecycleMethod(type: .didUpdateProps, closure: closure)
 }
+
+/**
+ Sets the name of the view that is exported to the JavaScript world.
+ */
+public func ViewName(_ name: String) -> ViewNameDefinition {
+  return ViewNameDefinition(name: name)
+}
+
+// swiftlint:enable identifier_name

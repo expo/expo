@@ -23,6 +23,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private var skipForwardTarget: Any?
   private var skipBackwardTarget: Any?
   private var playbackPositionTarget: Any?
+  private var updateNowPlayingTask: Task<(), Never>?
 
   init() {
     let commandCenter = MPRemoteCommandCenter.shared()
@@ -36,7 +37,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     player.observer?.registerDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == nil {
-      setMostRecentInteractionPlayer(player: player.pointer)
+      setMostRecentInteractionPlayer(player: player.ref)
     }
   }
 
@@ -44,15 +45,15 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     players.remove(player)
     player.observer?.unregisterDelegate(delegate: self)
 
-    if mostRecentInteractionPlayer == player.pointer {
+    if mostRecentInteractionPlayer == player.ref {
       let newPlayer = players.allObjects.first(where: { $0.playbackRate != 0 })
-      setMostRecentInteractionPlayer(player: newPlayer?.pointer)
+      setMostRecentInteractionPlayer(player: newPlayer?.ref)
     }
 
     if players.allObjects.isEmpty {
       let commandCenter = MPRemoteCommandCenter.shared()
 
-      removeExistingTargets(commandCenter: commandCenter)
+      removeNowPlayingTargets(commandCenter: commandCenter)
       MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
     }
   }
@@ -61,6 +62,8 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     if player == mostRecentInteractionPlayer {
       return
     }
+    // Cancel existing update task, since the mostRecentInteractionPlayer will change
+    updateNowPlayingTask?.cancel()
 
     if let timeObserver {
       mostRecentInteractionPlayer?.removeTimeObserver(timeObserver)
@@ -69,8 +72,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     artworkDataTask = nil
 
     self.mostRecentInteractionPlayer = player
-    self.setupNowPlayingControls()
-    self.updateNowPlayingInfo()
+    refreshNowPlaying()
 
     timeObserver = player?.addPeriodicTimeObserver(
       forInterval: CMTimeMake(value: 1, timescale: 4),
@@ -83,61 +85,12 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private func setupNowPlayingControls() {
     let commandCenter = MPRemoteCommandCenter.shared()
 
-    removeExistingTargets(commandCenter: commandCenter)
+    removeNowPlayingTargets(commandCenter: commandCenter)
 
-    playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
-      guard let self, let player = self.mostRecentInteractionPlayer else {
-        return .commandFailed
-      }
-
-      if player.rate == 0.0 {
-        player.play()
-      }
-      return .success
+    guard self.mostRecentInteractionPlayer != nil else {
+      return
     }
-
-    pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
-      guard let self, let player = self.mostRecentInteractionPlayer else {
-        return .commandFailed
-      }
-
-      for player in players.allObjects {
-        player.pointer.pause()
-      }
-      return .success
-    }
-
-    skipBackwardTarget = commandCenter.skipBackwardCommand.addTarget { [weak self] _ in
-      guard let self, let player = self.mostRecentInteractionPlayer else {
-        return .commandFailed
-      }
-      let newTime = player.currentTime() - CMTime(seconds: skipTimeInterval, preferredTimescale: .max)
-      player.seek(to: newTime)
-      return .success
-    }
-
-    skipForwardTarget = commandCenter.skipForwardCommand.addTarget { [weak self] _ in
-      guard let self, let player = self.mostRecentInteractionPlayer else {
-        return .commandFailed
-      }
-
-      let newTime = player.currentTime() + CMTime(seconds: skipTimeInterval, preferredTimescale: .max)
-      player.seek(to: newTime)
-      return .success
-    }
-
-    playbackPositionTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
-      guard let self, let player = self.mostRecentInteractionPlayer else {
-        return .commandFailed
-      }
-      if let event = event as? MPChangePlaybackPositionCommandEvent {
-        player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: .max)) { _ in
-          player.play()
-        }
-        return .success
-      }
-      return .commandFailed
-    }
+    addNowPlayingTargets(commandCenter: commandCenter)
   }
 
   private func updateNowPlayingInfo() {
@@ -149,7 +102,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     // Metadata explicitly specified by the user
     let userMetadata = videoPlayerItem?.videoSource.metadata
 
-    Task {
+    updateNowPlayingTask = Task {
       // Metadata fetched with the video
       let assetMetadata = try? await loadMetadata(for: currentItem)
 
@@ -211,23 +164,90 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
   }
 
-  private func removeExistingTargets(commandCenter: MPRemoteCommandCenter) {
-    commandCenter.playCommand.removeTarget(playTarget)
-    commandCenter.pauseCommand.removeTarget(pauseTarget)
-    commandCenter.skipForwardCommand.removeTarget(skipForwardTarget)
-    commandCenter.skipBackwardCommand.removeTarget(skipBackwardTarget)
-    commandCenter.changePlaybackPositionCommand.removeTarget(playbackPositionTarget)
+  private func addNowPlayingTargets(commandCenter: MPRemoteCommandCenter) {
+    // Adding and removing targets has to be dispatched from the main queue.
+    // Otherwise they enter race conditions when addTargets is called right after calling removeExistingTargets
+    // swiftlint:disable:next closure_body_length
+    DispatchQueue.main.async { [weak self] in
+      guard let self else {
+        return
+      }
+
+      playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
+        guard let self, let player = self.mostRecentInteractionPlayer else {
+          return .commandFailed
+        }
+
+        if player.rate == 0.0 {
+          player.play()
+        }
+        return .success
+      }
+
+      pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
+        guard let self, let player = self.mostRecentInteractionPlayer else {
+          return .commandFailed
+        }
+
+        for player in players.allObjects {
+          player.ref.pause()
+        }
+        return .success
+      }
+
+      skipBackwardTarget = commandCenter.skipBackwardCommand.addTarget { [weak self] _ in
+        guard let self, let player = self.mostRecentInteractionPlayer else {
+          return .commandFailed
+        }
+        let newTime = player.currentTime() - CMTime(seconds: skipTimeInterval, preferredTimescale: .max)
+        player.seek(to: newTime)
+        return .success
+      }
+
+      skipForwardTarget = commandCenter.skipForwardCommand.addTarget { [weak self] _ in
+        guard let self, let player = self.mostRecentInteractionPlayer else {
+          return .commandFailed
+        }
+
+        let newTime = player.currentTime() + CMTime(seconds: skipTimeInterval, preferredTimescale: .max)
+        player.seek(to: newTime)
+        return .success
+      }
+
+      playbackPositionTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+        guard let self, let player = self.mostRecentInteractionPlayer else {
+          return .commandFailed
+        }
+        if let event = event as? MPChangePlaybackPositionCommandEvent {
+          player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: .max)) { _ in
+            player.play()
+          }
+          return .success
+        }
+        return .commandFailed
+      }
+    }
+  }
+
+  private func removeNowPlayingTargets(commandCenter: MPRemoteCommandCenter) {
+    // Use the main queue to avoid race conditions with adding the targets (see comment in `addNowPlayingTargets`)
+    DispatchQueue.main.async { [weak self] in
+      commandCenter.playCommand.removeTarget(self?.playTarget)
+      commandCenter.pauseCommand.removeTarget(self?.pauseTarget)
+      commandCenter.skipForwardCommand.removeTarget(self?.skipForwardTarget)
+      commandCenter.skipBackwardCommand.removeTarget(self?.skipBackwardTarget)
+      commandCenter.changePlaybackPositionCommand.removeTarget(self?.playbackPositionTarget)
+    }
   }
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
-    setupNowPlayingControls()
-    updateNowPlayingInfo()
+    refreshNowPlaying()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
     if newRate == 0 && mostRecentInteractionPlayer == player {
-      if let newPlayer = players.allObjects.first(where: { $0.pointer.rate != 0 }) {
-        setMostRecentInteractionPlayer(player: newPlayer.pointer)
+      if let newPlayer = players.allObjects.first(where: { $0.ref.rate != 0 }) {
+        setMostRecentInteractionPlayer(player: newPlayer.ref)
       }
     } else if newRate != 0 && mostRecentInteractionPlayer != player {
       setMostRecentInteractionPlayer(player: player)
@@ -237,9 +257,13 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {
     // The player can be registered before it's item has loaded. We have to re-update the notification when item data is loaded
     if player == mostRecentInteractionPlayer && newStatus == .readyToPlay {
-      setupNowPlayingControls()
-      updateNowPlayingInfo()
+      refreshNowPlaying()
     }
+  }
+
+  func refreshNowPlaying() {
+    setupNowPlayingControls()
+    updateNowPlayingInfo()
   }
 }
 

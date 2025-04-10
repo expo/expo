@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import execa from 'execa';
-import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { createStaticServe } from '../../utils/server';
+import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -14,86 +14,50 @@ describe('exports static', () => {
   const outputName = 'dist-static-rendering';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'static-rendering',
-            E2E_ROUTER_ASYNC: '',
-            EXPO_USE_FAST_RESOLVER: 'true',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
+      {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: '',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
+  });
 
   xdescribe('server', () => {
-    let server: execa.ExecaChildProcess<string> | undefined;
-    const serverUrl = 'http://localhost:3000';
-
-    beforeAll(
-      async () => {
-        await ensurePortFreeAsync(3000);
-        // Start a server instance that we can test against then kill it.
-        server = execa('npx', ['serve', outputName, '-l', '3000'], {
-          cwd: projectRoot,
-
-          stderr: 'inherit',
-
-          env: {
-            NODE_ENV: 'production',
-            TEST_SECRET_KEY: 'test-secret-key',
-          },
-        });
-        // Wait for the server to start
-        await new Promise((resolve) => {
-          const listener = server!.stdout?.on('data', (data) => {
-            if (data.toString().includes('Accepting connections at')) {
-              resolve(null);
-              listener?.removeAllListeners();
-            }
-          });
-        });
+    const server = createStaticServe({
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        TEST_SECRET_KEY: 'test-secret-key',
       },
-      // 5 seconds to drop a port and start a server.
-      5 * 1000
-    );
+    });
 
+    beforeAll(async () => {
+      // Start a server instance that we can test against then kill it.
+      await server.startAsync([outputName]);
+    });
     afterAll(async () => {
-      if (server) {
-        server.kill();
-        await server;
-      }
+      await server.stopAsync();
     });
 
     it(`can serve up index html`, async () => {
-      expect(await fetch(serverUrl).then((res) => res.text())).toMatch(/<div id="root">/);
+      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
     });
+
     it(`gets a 404`, async () => {
-      expect(await fetch(serverUrl + '/missing-route').then((res) => res.status)).toBe(404);
+      expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
     });
   });
 
   it('has expected files', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // The wrapper should not be included as a route.
     expect(files).not.toContain('+html.html');
@@ -115,17 +79,7 @@ describe('exports static', () => {
   });
 
   it('has source maps', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
     expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/)]);
@@ -138,10 +92,10 @@ describe('exports static', () => {
         expect.arrayContaining([
           '__prelude__',
           // NOTE: No `/Users/evanbacon/`...
-          '/node_modules/metro-runtime/src/polyfills/require.js',
+          expect.pathMatching(/\/node_modules\/metro-runtime\/src\/polyfills\/require\.js/),
 
           // NOTE: relative to the server root for optimal source map support
-          '/apps/router-e2e/__e2e__/static-rendering/app/[post].tsx',
+          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
         ])
       );
     }
@@ -295,7 +249,7 @@ describe('exports static', () => {
   });
 
   it('supports usePathname in +html files', async () => {
-    const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
+    const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
 

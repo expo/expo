@@ -1,14 +1,14 @@
-import React, { ReactNode } from 'react';
-import type { ErrorBoundaryProps } from './exports';
+import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
     deep: boolean;
     notFound?: boolean;
 };
 export type LoadedRoute = {
-    ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
-    default?: React.ComponentType<any>;
+    ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+    default?: ComponentType<any>;
     unstable_settings?: Record<string, any>;
     getNavOptions?: (args: any) => any;
     generateStaticParams?: (props: {
@@ -17,12 +17,12 @@ export type LoadedRoute = {
 };
 export type RouteNode = {
     /** The type of RouteNode */
-    type: 'route' | 'api' | 'layout';
+    type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
     /** Load a route into memory. Returns the exports from a route. */
     loadRoute: () => Partial<LoadedRoute>;
     /** Loaded initial route name. */
     initialRouteName?: string;
-    /** nested routes */
+    /** Nested routes */
     children: RouteNode[];
     /** Is the route a dynamic path */
     dynamic: null | DynamicConvention[];
@@ -30,24 +30,30 @@ export type RouteNode = {
     route: string;
     /** Context Module ID, used for matching children. */
     contextKey: string;
+    /** Redirect Context Module ID, used for matching children. */
+    destinationContextKey?: string;
+    /** Is the redirect permanent. */
+    permanent?: boolean;
     /** Added in-memory */
     generated?: boolean;
     /** Internal screens like the directory or the auto 404 should be marked as internal. */
     internal?: boolean;
     /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
     entryPoints?: string[];
+    /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
+    methods?: string[];
 };
-export declare const LocalRouteParamsContext: React.Context<Record<string, string | undefined> | undefined>;
+export declare const LocalRouteParamsContext: import("react").Context<Record<string, string | undefined> | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
-/** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node, route, }: {
-    children: ReactNode;
+export type RouteProps = PropsWithChildren<{
     node: RouteNode;
     route?: {
         params: Record<string, string | undefined>;
     };
-}): React.JSX.Element;
+}>;
+/** Provides the matching routes and filename to the children. */
+export declare function Route({ children, node, route }: RouteProps): import("react").JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

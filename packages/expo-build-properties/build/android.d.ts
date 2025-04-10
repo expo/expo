@@ -20,3 +20,4 @@ export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
 export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null, updateMode: 'append' | 'overwrite'): string;
 export declare const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidQueries: ConfigPlugin<PluginConfigType>;
+export declare const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType>;

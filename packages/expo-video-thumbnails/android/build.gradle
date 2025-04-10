@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '9.0.0'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '9.1.0'
 
 android {
   namespace "expo.modules.videothumbnails"
   defaultConfig {
     versionCode 14
-    versionName '9.0.0'
+    versionName '9.1.0'
   }
 }
 

@@ -8,7 +8,7 @@ export type SplashScreenOptions = {
   duration?: number;
   /**
    * Whether to hide the splash screen with a fade out animation.
-   * @ios
+   * @platform ios
    * @default false
    */
   fade?: boolean;
@@ -19,4 +19,8 @@ export interface SplashScreenNativeModule extends NativeModule {
   preventAutoHideAsync: () => Promise<boolean>;
   hide: () => void;
   hideAsync: () => Promise<void>;
+  // @private
+  _internal_maybeHideAsync: () => Promise<void>;
+  // @private
+  _internal_preventAutoHideAsync: () => Promise<boolean>;
 }

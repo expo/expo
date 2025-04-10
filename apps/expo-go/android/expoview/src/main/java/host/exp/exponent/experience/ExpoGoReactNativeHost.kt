@@ -5,19 +5,25 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
 import host.exp.exponent.ExponentManifest
-import host.exp.exponent.kernel.KernelConfig
 import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.ExpoReanimatedPackage
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
 
+interface ExpoNativeHost {
+  var devSupportEnabled: Boolean
+  var mainModuleName: String?
+}
+
 class ExpoGoReactNativeHost(
   application: Application,
-  private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties,
-  private val mainModuleName: String? = null
-) : DefaultReactNativeHost(application) {
+  private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties
+) : DefaultReactNativeHost(application), ExpoNativeHost {
+  override var devSupportEnabled = false
+  override var mainModuleName: String? = null
+
   override fun getUseDeveloperSupport(): Boolean {
-    return true
+    return devSupportEnabled
   }
 
   override fun getJSMainModuleName(): String {
@@ -62,11 +68,9 @@ class KernelReactNativeHost(
   application: Application,
   private val exponentManifest: ExponentManifest,
   private val data: KernelData?
-) : DefaultReactNativeHost(application) {
-  val devSupportEnabled
-    get() =
-      !KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+) : DefaultReactNativeHost(application), ExpoNativeHost {
+  override var devSupportEnabled = false
+  override var mainModuleName: String? = null
 
   override fun getUseDeveloperSupport(): Boolean {
     return devSupportEnabled
@@ -84,7 +88,7 @@ class KernelReactNativeHost(
     return if (devSupportEnabled) {
       exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
     } else {
-      super.getJSMainModuleName()
+      mainModuleName ?: super.getJSMainModuleName()
     }
   }
 

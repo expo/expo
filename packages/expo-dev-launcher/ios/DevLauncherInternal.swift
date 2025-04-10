@@ -20,7 +20,7 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
         "clientUrlScheme": findClientUrlScheme,
         "installationID": EXDevLauncherController.sharedInstance().installationIDHelper().getOrCreateInstallationID(),
         "isDevice": isDevice,
-        "updatesConfig": EXDevLauncherController.sharedInstance().getUpdatesConfig()
+        "updatesConfig": EXDevLauncherController.sharedInstance().getUpdatesConfig(appContext?.constants?.constants())
       ]
     }
 

@@ -3,21 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveAppProjectConfigAsync = exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
+exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
+exports.findDependencyRootsAsync = findDependencyRootsAsync;
+exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
+exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../autolinking/utils");
+const fileUtils_1 = require("../fileUtils");
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
-const utils_1 = require("../autolinking/utils");
-const fileUtils_1 = require("../fileUtils");
 /**
  * Create config for react-native core autolinking.
  */
 async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, }) {
     const projectConfig = await (0, config_1.loadConfigAsync)(projectRoot);
-    const dependencyRoots = await findDependencyRootsAsync(projectRoot, searchPaths);
-    const reactNativePath = dependencyRoots['react-native'];
+    const dependencyRoots = {
+        ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
+        ...findProjectLocalDependencyRoots(projectConfig),
+    };
+    // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
+    // the Cocoapods resolution will detect path mismatches and generate nonsensical
+    // relative paths that won't resolve
+    let reactNativePath;
+    try {
+        reactNativePath = await promises_1.default.realpath(dependencyRoots['react-native']);
+    }
+    catch {
+        reactNativePath = dependencyRoots['react-native'];
+    }
     const dependencyConfigs = await Promise.all(Object.entries(dependencyRoots).map(async ([name, packageRoot]) => {
         const config = await resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig);
         return [name, config];
@@ -31,7 +46,6 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
         project: projectData,
     };
 }
-exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 /**
  * Find all dependencies and their directories from the project.
  */
@@ -60,7 +74,21 @@ async function findDependencyRootsAsync(projectRoot, searchPaths) {
     }
     return results;
 }
-exports.findDependencyRootsAsync = findDependencyRootsAsync;
+/**
+ * Find local dependencies that specified in the `react-native.config.js` file.
+ */
+function findProjectLocalDependencyRoots(projectConfig) {
+    if (!projectConfig?.dependencies) {
+        return {};
+    }
+    const results = {};
+    for (const [name, config] of Object.entries(projectConfig.dependencies)) {
+        if (typeof config.root === 'string') {
+            results[name] = config.root;
+        }
+    }
+    return results;
+}
 async function resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig) {
     const libraryConfig = await (0, config_1.loadConfigAsync)(packageRoot);
     const reactNativeConfig = {
@@ -72,7 +100,7 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
         // The rnc-cli will skip this package.
         return null;
     }
-    if (name === 'react-native') {
+    if (name === 'react-native' || name === 'react-native-macos') {
         // Starting from version 0.76, the `react-native` package only defines platforms
         // when @react-native-community/cli-platform-android/ios is installed.
         // Therefore, we need to manually filter it out.
@@ -96,7 +124,6 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
         },
     };
 }
-exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
 async function resolveAppProjectConfigAsync(projectRoot, platform) {
     if (platform === 'android') {
         const androidDir = path_1.default.join(projectRoot, 'android');
@@ -121,5 +148,4 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
     }
     return {};
 }
-exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 //# sourceMappingURL=reactNativeConfig.js.map

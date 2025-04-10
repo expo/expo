@@ -41,6 +41,11 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
+  void registerConstant(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<JNINoArgsFunctionBody::javaobject> getter
+  );
+
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,

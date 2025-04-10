@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveHrefStringWithSegments = exports.resolveHref = void 0;
+exports.resolveHref = void 0;
+exports.resolveHrefStringWithSegments = resolveHrefStringWithSegments;
 /** Resolve an href object into a fully qualified, relative href. */
 const resolveHref = (href) => {
     if (typeof href === 'string') {
@@ -17,7 +18,7 @@ const resolveHref = (href) => {
     return pathname + (paramsString ? `?${paramsString}` : '');
 };
 exports.resolveHref = resolveHref;
-function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}, relativeToDirectory = false) {
+function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}, { relativeToDirectory } = {}) {
     if (href.startsWith('.')) {
         // Resolve base path by merging the current segments with the params
         let base = segments
@@ -44,11 +45,11 @@ function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}
         if (relativeToDirectory) {
             base = `${base}/`;
         }
-        href = new URL(href, `http://hostname/${base}`).pathname;
+        const url = new URL(href, `http://hostname/${base}`);
+        href = `${url.pathname}${url.search}`;
     }
     return href;
 }
-exports.resolveHrefStringWithSegments = resolveHrefStringWithSegments;
 function createQualifiedPathname(pathname, params) {
     for (const [key, value = ''] of Object.entries(params)) {
         const dynamicKey = `[${key}]`;

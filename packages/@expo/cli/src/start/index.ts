@@ -82,6 +82,12 @@ export const expoStart: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
+
+  // NOTE(cedric): `./resolveOptions` loads the expo config when using dev clients, this needs to be initialized before that
+  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
+  setNodeEnv(!args['--no-dev'] ? 'development' : 'production');
+  loadEnvFiles(projectRoot);
+
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 

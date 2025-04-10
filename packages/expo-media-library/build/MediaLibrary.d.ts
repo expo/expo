@@ -13,7 +13,7 @@ export type PermissionResponse = EXPermissionResponse & {
  * @platform android 13+
  */
 export type GranularPermission = 'audio' | 'photo' | 'video';
-export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown' | 'pairedVideo';
 /**
  * Represents the possible types of media that the app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
  * @platform android 14+
@@ -115,6 +115,12 @@ export type AssetInfo = Asset & {
      * @platform ios
      */
     orientation?: number;
+    /**
+     * Contains information about the video paired with the image file.
+     * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
+     * @platform ios
+     */
+    pairedVideoAsset?: Asset | null;
 };
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
@@ -307,8 +313,8 @@ export declare function getPermissionsAsync(writeOnly?: boolean, granularPermiss
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
-    granularPermissions?: GranularPermission[] | undefined;
+    writeOnly?: boolean;
+    granularPermissions?: GranularPermission[];
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Allows the user to update the assets that your app has access to.
@@ -336,9 +342,12 @@ export declare function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilt
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export declare function createAssetAsync(localUri: string): Promise<Asset>;
+export declare function createAssetAsync(localUri: string, album?: AlbumRef): Promise<Asset>;
 /**
  * Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri),
  * This method doesn't return created asset.

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 2.2.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.6 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.4 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

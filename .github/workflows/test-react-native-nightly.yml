@@ -22,7 +22,7 @@ jobs:
       fail-fast: true
       matrix:
         build-type: [debug, release]
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
-        run: gem install 'cocoapods:1.14.3' xcpretty
+        run: gem install cocoapods xcpretty
       - name: ♻️ Restore workspace node modules
         # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
         uses: actions/cache/restore@v3
@@ -54,8 +54,8 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: ⭐️ Create test-nightlies Project
-        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
+      - name: ⭐️ Create test-nightlies Project (New Architecture)
+        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
         working-directory: packages/create-expo-nightly
       - name: 🍏 Query available simulator device ID
         run: |
@@ -63,7 +63,7 @@ jobs:
           xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0)'
           DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0) | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")) | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
-      - name: 🍏 Build iOS Project
+      - name: 🍏 Build iOS Project (New Architecture)
         run: |
           pod install --project-directory=ios
           xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
@@ -78,12 +78,12 @@ jobs:
         with:
           name: ios-builds-oldArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
-      - name: 🍏 Build iOS Project (New Architecture)
+      - name: 🍏 Build iOS Project (Old Architecture)
         run: |
-          jq '.expo.plugins[] |= (if (type == "array" and .[0] == "expo-build-properties") then .[1].ios.newArchEnabled = true else . end)' app.json > app.json.tmp
+          jq '.expo.newArchEnabled = false' app.json > app.json.tmp
           mv -f app.json.tmp app.json
           cat app.json
-          npx expo prebuild -p ios --no-install --template expo-template-bare-minimum-*.tgz
+          npx expo prebuild -p ios --no-install --clean --template .expo/expo-template-bare-minimum-*.tgz
           pod install --project-directory=ios
           xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
         shell: bash
@@ -146,10 +146,10 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: ⭐️ Create test-nightlies Project
-        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
+      - name: ⭐️ Create test-nightlies Project (New Architecture)
+        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
         working-directory: packages/create-expo-nightly
-      - name: 🤖 Build Android project
+      - name: 🤖 Build Android project (New Architecture)
         run: |
           cd android && ./gradlew ":app:assemble$VARIANT"
         shell: bash
@@ -163,12 +163,12 @@ jobs:
         with:
           name: android-builds-oldArch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
-      - name: 🤖 Build Android project (New Architecture)
+      - name: 🤖 Build Android project (Old Architecture)
         run: |
-          jq '.expo.plugins[] |= (if (type == "array" and .[0] == "expo-build-properties") then .[1].android.newArchEnabled = true else . end)' app.json > app.json.tmp
+          jq '.expo.newArchEnabled = false' app.json > app.json.tmp
           mv -f app.json.tmp app.json
           cat app.json
-          npx expo prebuild -p ios --no-install --template expo-template-bare-minimum-*.tgz
+          npx expo prebuild -p android --no-install --clean --template .expo/expo-template-bare-minimum-*.tgz
           cd android && ./gradlew ":app:assemble$VARIANT"
         shell: bash
         working-directory: ${{ runner.temp }}/test-nightlies

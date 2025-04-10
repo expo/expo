@@ -30,7 +30,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.ReactNativeHostWrapper
@@ -203,10 +202,6 @@ abstract class ReactNativeActivity :
 
   // Loop until a view is added to the ReactRootView and once it happens run callback
   private fun waitForReactRootViewToHaveChildrenAndRunCallback(callback: Runnable) {
-    if (reactSurface == null) {
-      return
-    }
-
     if ((reactSurface?.view?.childCount ?: 0) > 0) {
       callback.run()
     } else {
@@ -297,6 +292,7 @@ abstract class ReactNativeActivity :
 
   override fun onDestroy() {
     super.onDestroy()
+    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
@@ -317,9 +313,9 @@ abstract class ReactNativeActivity :
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  open fun destroyReactHost() {
+  open fun destroyReactHost(reason: String = "Destroy Activity") {
     if (!isCrashed) {
-      reactHost?.onHostDestroy()
+      reactHost?.destroy(reason, null)
     }
   }
 
@@ -375,25 +371,30 @@ abstract class ReactNativeActivity :
       )
     )
 
+    val mainModuleName = if (delegate.isDebugModeEnabled) {
+      manifest?.getMainModuleName()
+    } else {
+      null
+    }
+
     val nativeHost = ExpoGoReactNativeHost(
       application,
-      instanceManagerBuilderProperties,
-      manifest!!.getMainModuleName()
+      instanceManagerBuilderProperties
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
     val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
-    reactNativeHost = nativeHost
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
-      val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!, nativeHost)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
     }
+
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
+    reactNativeHost = nativeHost
 
     val bundle = Bundle()
     val exponentProps = JSONObject()
@@ -445,13 +446,6 @@ abstract class ReactNativeActivity :
     val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
     if (devSettings != null) {
       devSettings.setExponentActivityId(activityId)
-      if (devSettings.isRemoteJSDebugEnabled) {
-        if (manifest?.jsEngine == "hermes") {
-          // Disable remote debugging when running on Hermes
-          devSettings.isRemoteJSDebugEnabled = false
-        }
-        waitForReactAndFinishLoading()
-      }
     }
 
     val appKey = manifest!!.getAppKey()
@@ -521,19 +515,6 @@ abstract class ReactNativeActivity :
           existingEmitter.emit(eventName, eventPayload)
         }
       }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-  }
-
-  /**
-   * Emits events to `RCTNativeAppEventEmitter`
-   */
-  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
-    try {
-      val emitter =
-        reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
-      emitter?.emit(eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }

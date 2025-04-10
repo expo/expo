@@ -1,4 +1,4 @@
-import type { NavigationState } from '@react-navigation/native';
+import type { NavigationState } from '@react-navigation/core';
 type HistoryRecord = {
     id: string;
     state: NavigationState;

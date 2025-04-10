@@ -2,9 +2,23 @@ import React from 'react';
 import {
   Appearance,
   StatusBar as NativeStatusBar,
+  Platform,
   useColorScheme,
-  ColorSchemeName,
+  type ColorSchemeName,
+  type ColorValue,
 } from 'react-native';
+import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
+
+let shouldWarnAboutEdgeToEdge = Platform.OS === 'android' && isEdgeToEdge();
+
+function potentiallyWarnAboutEdgeToEdge() {
+  if (shouldWarnAboutEdgeToEdge) {
+    shouldWarnAboutEdgeToEdge = false; // warn once
+    console.warn(
+      'Using expo-status-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: https://expo.fyi/edge-to-edge-system-bars'
+    );
+  }
+}
 
 // @docsMissing
 export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
@@ -79,6 +93,10 @@ export function StatusBar({
   backgroundColor: backgroundColorProp,
   ...props
 }: StatusBarProps) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
@@ -109,6 +127,9 @@ export function StatusBar({
  * @param animated If the transition should be animated.
  */
 export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
   NativeStatusBar.setBarStyle(styleToBarStyle(style), animated);
 }
 
@@ -118,7 +139,12 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
-export const setStatusBarHidden = NativeStatusBar.setHidden;
+export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+  NativeStatusBar.setHidden(hidden, animation);
+}
 
 // @needsAudit
 /**
@@ -127,7 +153,12 @@ export const setStatusBarHidden = NativeStatusBar.setHidden;
  * @param animated `true` to animate the background color change, `false` to change immediately.
  * @platform android
  */
-export const setStatusBarBackgroundColor = NativeStatusBar.setBackgroundColor;
+export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+  NativeStatusBar.setBackgroundColor(backgroundColor, animated);
+}
 
 // @needsAudit
 /**
@@ -135,8 +166,12 @@ export const setStatusBarBackgroundColor = NativeStatusBar.setBackgroundColor;
  * @param visible If the network activity indicator should be visible.
  * @platform ios
  */
-export const setStatusBarNetworkActivityIndicatorVisible =
-  NativeStatusBar.setNetworkActivityIndicatorVisible;
+export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+  NativeStatusBar.setNetworkActivityIndicatorVisible(visible);
+}
 
 // @needsAudit
 /**
@@ -145,7 +180,12 @@ export const setStatusBarNetworkActivityIndicatorVisible =
  * rendered under the status bar. This is always `true` on iOS and cannot be changed.
  * @platform android
  */
-export const setStatusBarTranslucent = NativeStatusBar.setTranslucent;
+export function setStatusBarTranslucent(translucent: boolean) {
+  if (__DEV__) {
+    potentiallyWarnAboutEdgeToEdge();
+  }
+  NativeStatusBar.setTranslucent(translucent);
+}
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

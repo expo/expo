@@ -1,9 +1,9 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "4.0.0-preview.0",
+  "version": "5.0.1",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
-  "main": "src",
+  "main": "src/index.ts",
   "types": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "keywords": [],
@@ -12,6 +12,7 @@
   "files": [
     "build",
     "src",
+    "rsc",
     "symbolicate",
     "async-require.js",
     "async-require.d.ts",

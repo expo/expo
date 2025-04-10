@@ -1,15 +1,17 @@
 ---
-title: Reanimated
+title: react-native-reanimated
 description: A library that provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 sourceCodeUrl: 'https://github.com/software-mansion/react-native-reanimated'
-packageName: 'react-native-reanimated'
+packageName: react-native-reanimated
 platforms: ['android', 'ios', 'tvos', 'web']
+inExpoGo: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { SnackInline } from '~/ui/components/Snippet';
 
 [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
@@ -25,7 +27,7 @@ No additional configuration is required. [Reanimated Babel plugin](https://docs.
 
 ## Usage
 
-The following example shows how to use the `react-native-reanimated` library to create a simple animation. For more information on the API and its usage, see [`react-native-reanimated` documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation).
+The following example shows how to use the `react-native-reanimated` library to create a simple animation.
 
 <SnackInline label="Using react-native-reanimated" dependencies={['react-native-reanimated']}>
 
@@ -82,3 +84,12 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+## Learn more
+
+<BoxLink
+  title="Visit offical documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation"
+/>

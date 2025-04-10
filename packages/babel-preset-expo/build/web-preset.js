@@ -13,15 +13,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 const defaultPlugins = [
-    [require('@babel/plugin-syntax-flow')],
+    // This is required for parsing React Native with RSC enabled :/
+    [require('babel-plugin-syntax-hermes-parser'), { parseLangTypes: 'flow' }],
+    //
     [require('babel-plugin-transform-flow-enums')],
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
-    // [require('@babel/plugin-syntax-dynamic-import')],
     [require('@babel/plugin-syntax-export-default-from')],
-    // [require('@babel/plugin-syntax-nullish-coalescing-operator')],
-    // [require('@babel/plugin-syntax-optional-chaining')],
-    // [require('@babel/plugin-transform-unicode-regex')],
+    [require('@babel/plugin-transform-export-namespace-from')],
 ];
 module.exports = function (babel, options) {
     const extraPlugins = [];
@@ -31,7 +30,7 @@ module.exports = function (babel, options) {
             require('@babel/plugin-transform-modules-commonjs'),
             {
                 strict: false,
-                strictMode: false,
+                strictMode: false, // prevent "use strict" injections
                 lazy: options.lazyImportExportTransform,
                 allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
             },

@@ -63,7 +63,7 @@ private val defaultFields = setOf(
   "phoneNumbers", "emails", "addresses", "note", "birthday", "dates", "instantMessageAddresses",
   "urlAddresses", "extraNames", "relationships", "phoneticFirstName", "phoneticLastName", "phoneticMiddleName",
   "namePrefix", "nameSuffix", "name", "firstName", "middleName", "lastName", "nickname", "id", "jobTitle",
-  "company", "department", "image", "imageAvailable", "note"
+  "company", "department", "image", "imageAvailable", "note", "isFavorite"
 )
 
 const val RC_EDIT_CONTACT = 2137
@@ -90,7 +90,8 @@ private val DEFAULT_PROJECTION = listOf(
   CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME,
   CommonDataKinds.Organization.COMPANY,
   CommonDataKinds.Organization.TITLE,
-  CommonDataKinds.Organization.DEPARTMENT
+  CommonDataKinds.Organization.DEPARTMENT,
+  ContactsContract.Data.STARRED
 )
 
 class ContactQuery : Record {
@@ -110,7 +111,7 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
-  val id: String? = null
+  val id: List<String>? = null
 }
 
 class QueryArguments(
@@ -154,9 +155,11 @@ class ContactsModule : Module() {
       appContext
         .backgroundCoroutineScope
         .launch {
-          if (options.id != null) {
-            val contact = getContactById(options.id, options.fields)
-            promise.resolve(contact.toBundle(options.fields))
+          if (!options.id.isNullOrEmpty()) {
+            val contacts = options.id.mapNotNull { id ->
+              getContactById(id, options.fields)
+            }
+            promise.resolve(ContactPage(data = contacts).toBundle(options.fields))
             return@launch
           }
 
@@ -323,7 +326,7 @@ class ContactsModule : Module() {
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
   private fun mutateContact(initContact: Contact?, data: Map<String, Any>): Contact {
-    val contact = initContact ?: Contact(UUID.randomUUID().toString())
+    val contact = initContact ?: Contact(UUID.randomUUID().toString(), appContext)
 
     data.safeGet<String>("firstName")?.let { contact.firstName = it }
     data.safeGet<String>("middleName")?.let { contact.middleName = it }
@@ -412,6 +415,8 @@ class ContactsModule : Module() {
     )?.let {
       contact.relationships = it
     }
+
+    data.safeGet<Boolean>("isFavorite")?.let { contact.isFavorite = it }
 
     return contact
   }
@@ -556,6 +561,8 @@ class ContactsModule : Module() {
     if (keysToFetch.contains("namePrefix")) projection.add(CommonDataKinds.StructuredName.PREFIX)
     if (keysToFetch.contains("nameSuffix")) projection.add(CommonDataKinds.StructuredName.SUFFIX)
 
+    if (keysToFetch.contains("isFavorite")) projection.add(ContactsContract.Data.STARRED)
+
     return QueryArguments(
       projection.toTypedArray(),
       selection,
@@ -653,7 +660,7 @@ class ContactsModule : Module() {
       val contactId = cursor.getString(columnIndex)
 
       // add or update existing contact for iterating data based on contact id
-      val contact = map.getOrPut(contactId) { Contact(contactId) }
+      val contact = map.getOrPut(contactId) { Contact(contactId, appContext) }
       contact.fromCursor(cursor)
     }
     return map

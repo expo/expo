@@ -10,6 +10,139 @@
 
 ### 💡 Others
 
+## 5.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
+### 🎉 New features
+
+- support react-native 0.77 ([#33379](https://github.com/expo/expo/pull/33379) by [@vonovak](https://github.com/vonovak))
+- Bump version of React Navigation ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- use custom iOS dependencyProvider ([#35321](https://github.com/expo/expo/pull/35321) by [@vonovak](https://github.com/vonovak))
+- [6/n] upgrade to react-native 0.77 - improve 0.76 compatibility ([#34078](https://github.com/expo/expo/pull/34078) by [@vonovak](https://github.com/vonovak))
+- Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Removed remote debugging dead code. ([#34977](https://github.com/expo/expo/pull/34977) by [@kudo](https://github.com/kudo))
+- [android] Migrate DevLauncherInternalModule to Expo Modules API ([#35166](https://github.com/expo/expo/pull/35166) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+- [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
+
+## 5.0.33 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.32 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.31 - 2025-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.29 - 2025-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.28 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.27 - 2025-01-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.26 - 2025-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.23 - 2025-01-10
+
+### 🐛 Bug fixes
+
+- [Android] Fixed issue with initialization of the dev client being wrong on the old architecture ([#34398](https://github.com/expo/expo/pull/34398) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fixed black stuck screen when loading an unreachable server from last opened url. ([#34067](https://github.com/expo/expo/pull/34067) by [@kudo](https://github.com/kudo))
+- [iOS] Read EAS project id and url from manifest instead of updates interface. ([#34342](https://github.com/expo/expo/pull/34342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Read EAS project id and url from AndroidManifest instead of updates interface. ([#34342](https://github.com/expo/expo/pull/34342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.22 - 2025-01-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.21 - 2024-12-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.20 - 2024-12-24
+
+### 💡 Others
+
+- Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+- Removed unused `@react-navigation/core` devDependencies. ([#33829](https://github.com/expo/expo/pull/33829) by [@kudo](https://github.com/kudo))
+
+## 5.0.19 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.18 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.17 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.16 — 2024-11-22
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33081](https://github.com/expo/expo/pull/33081) by [@kudo](https://github.com/kudo))
+
+## 5.0.15 — 2024-11-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.14 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.13 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.12 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.11 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+- Fixed build error when `EX_DEV_CLIENT_NETWORK_INSPECTOR` is false. ([#32644](https://github.com/expo/expo/pull/32644) by [@kudo](https://github.com/kudo))
+- [iOS] Fix handling deep links ([#32677](https://github.com/expo/expo/pull/32677) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.9 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.8 — 2024-10-31
 
 ### 💡 Others

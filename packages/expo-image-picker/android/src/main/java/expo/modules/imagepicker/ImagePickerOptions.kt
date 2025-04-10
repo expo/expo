@@ -2,6 +2,7 @@ package expo.modules.imagepicker
 
 import java.io.Serializable
 import android.provider.MediaStore
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import expo.modules.imagepicker.contracts.CameraContractOptions
@@ -44,6 +45,12 @@ internal class ImagePickerOptions : Record, Serializable {
 
   @Field
   var cameraType: CameraType = CameraType.BACK
+
+  @Field
+  val orderedSelection: Boolean = false
+
+  @Field
+  val defaultTab: DefaultTab = DefaultTab.PHOTOS
 
   @Field
   val legacy: Boolean = false
@@ -115,4 +122,16 @@ internal enum class MediaTypes(val value: String) : Enumerable {
 internal enum class CameraType(val value: String) : Enumerable {
   BACK("back"),
   FRONT("front")
+}
+
+internal enum class DefaultTab(val value: String) : Enumerable {
+  PHOTOS("photos"),
+  ALBUMS("albums");
+
+  fun toDefaultTab(): ActivityResultContracts.PickVisualMedia.DefaultTab {
+    return when (this) {
+      PHOTOS -> ActivityResultContracts.PickVisualMedia.DefaultTab.PhotosTab
+      ALBUMS -> ActivityResultContracts.PickVisualMedia.DefaultTab.AlbumsTab
+    }
+  }
 }

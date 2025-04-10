@@ -1,11 +1,11 @@
 import { Themes } from '@expo/styleguide';
 import { DotsVerticalIcon } from '@expo/styleguide-icons/outline/DotsVerticalIcon';
 
-import { Checkbox } from '../../Form/Checkbox';
-import { SnippetAction, SnippetActionProps } from '../SnippetAction';
-
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import * as Dropdown from '~/ui/components/Dropdown';
+
+import { Checkbox } from '../../Form/Checkbox';
+import { SnippetAction, SnippetActionProps } from '../SnippetAction';
 
 export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
   const { preferredTheme, setPreferredTheme, wordWrap, setWordWrap } =
@@ -28,8 +28,9 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
       trigger={
         <div>
           <SnippetAction
-            className="px-3 min-w-[44px]"
-            leftSlot={<DotsVerticalIcon className="shrink-0 icon-md text-icon-secondary" />}
+            className="min-w-[44px] px-3"
+            aria-label="Show settings"
+            leftSlot={<DotsVerticalIcon className="icon-md shrink-0 text-icon-secondary" />}
             {...rest}
           />
         </div>

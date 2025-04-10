@@ -10,6 +10,48 @@
 
 ### 💡 Others
 
+## 1.12.9 — 2025-04-08
+
+### 💡 Others
+
+- Added `.env` support. ([#33988](https://github.com/expo/expo/pull/33988) by [@kudo](https://github.com/kudo))
+
+## 1.12.8 — 2025-03-13
+
+### 💡 Others
+
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+- Output formatting improvements ([#35483](https://github.com/expo/expo/pull/35483) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.7 — 2025-02-14
+
+### 💡 Others
+
+- Fix false positives on Metro config check ([#34934](https://github.com/expo/expo/pull/34934) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.6 — 2025-02-13
+
+### 🐛 Bug fixes
+
+- Handle gitignore checks when git is unavailable. e.g. EAS Build. ([#32130](https://github.com/expo/expo/pull/32833) by [@betomoedano](https://github.com/betomoedano))
+
+### 💡 Others
+
+- Change metro.config check to look for custom transformer key instead of asset plugin. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
+- Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
+- Only show errors by default, add --verbose flag to see all passed checks. ([#34729](https://github.com/expo/expo/pull/34729) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.4 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.3 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
+
 ## 1.12.2 — 2024-10-31
 
 ### 🐛 Bug fixes

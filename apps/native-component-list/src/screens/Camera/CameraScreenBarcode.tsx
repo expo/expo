@@ -1,7 +1,7 @@
 import { CameraView, ScanningResult, ScanningOptions } from 'expo-camera';
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
-import { View, Button, Platform, Text, StyleSheet } from 'react-native';
+import { View, Button, Text, StyleSheet } from 'react-native';
 
 export default function CameraScreenNextBarcode() {
   const [result, setResult] = useState<ScanningResult | null>(null);
@@ -27,14 +27,6 @@ export default function CameraScreenNextBarcode() {
     if (CameraView.isModernBarcodeScannerAvailable) {
       await CameraView.launchScanner(options);
     }
-  }
-
-  if (Platform.OS === 'android') {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>This API is unavailable on Android</Text>
-      </View>
-    );
   }
 
   return (

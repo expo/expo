@@ -33,12 +33,13 @@ class SuspendFunctionComponent(
         )
       }
 
-      val queue = when (queue) {
+      val scope = when (val queue = queue) {
         Queues.MAIN -> appContext.mainQueue
         Queues.DEFAULT -> appContext.modulesQueue
+        is CustomQueue -> queue.scope
       }
 
-      queue.launch {
+      scope.launch {
         try {
           exceptionDecorator({
             FunctionCallException(name, moduleName, it)

@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '15.0.1'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '16.0.1'
 
 android {
   namespace "expo.modules.localauthentication"
   defaultConfig {
     versionCode 30
-    versionName "15.0.1"
+    versionName "16.0.1"
   }
 }
 

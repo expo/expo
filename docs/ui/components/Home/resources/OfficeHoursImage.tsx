@@ -1,6 +1,6 @@
 export const OfficeHoursImage = () => (
   <svg
-    className="absolute right-2 bottom-2.5"
+    className="absolute bottom-2.5 right-2"
     width="109"
     height="109"
     viewBox="0 0 119 119"

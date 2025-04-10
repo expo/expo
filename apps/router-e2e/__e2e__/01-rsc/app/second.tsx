@@ -1,9 +1,13 @@
 import { Link } from 'expo-router';
+import { unstable_headers } from 'expo-router/rsc/headers';
 import { Image, Text, View } from 'react-native';
 
 import { Counter } from '../components/counter';
 
-export default function IndexRoute({ path, query }) {
+export default async function IndexRoute({ path, query }) {
+  const headers = await unstable_headers();
+  console.log('Headers:', headers);
+
   return (
     <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
       <Text testID="second-text">Second</Text>
@@ -13,6 +17,7 @@ export default function IndexRoute({ path, query }) {
       <Text>Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
+      <Text testID="second-header-platform">expo-platform: {headers.get('expo-platform')}</Text>
 
       <Image
         testID="main-image"

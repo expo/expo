@@ -4,5 +4,6 @@ export declare function createRecordingOptions(options: RecordingOptions): {
     sampleRate: number;
     numberOfChannels: number;
     bitRate: number;
+    isMeteringEnabled: boolean;
 };
 //# sourceMappingURL=options.d.ts.map

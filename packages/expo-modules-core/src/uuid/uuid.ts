@@ -1,10 +1,9 @@
 import bytesToUuid from './lib/bytesToUuid';
 import { UUID, Uuidv5Namespace } from './uuid.types';
 
-const nativeUuidv4 = globalThis?.expo?.uuidv4;
-const nativeUuidv5 = globalThis?.expo?.uuidv5;
-
 function uuidv4(): string {
+  const nativeUuidv4 = globalThis?.expo?.uuidv4;
+
   if (!nativeUuidv4) {
     throw Error(
       "Native UUID version 4 generator implementation wasn't found in `expo-modules-core`"
@@ -22,6 +21,8 @@ function uuidv5(name: string, namespace: string | number[]) {
   if (Array.isArray(parsedNamespace)) {
     throw new Error('`namespace` must be a valid UUID string or an Array of 16 byte values');
   }
+
+  const nativeUuidv5 = globalThis?.expo?.uuidv5;
 
   if (!nativeUuidv5) {
     throw Error("Native UUID type 5 generator implementation wasn't found in `expo-modules-core`");

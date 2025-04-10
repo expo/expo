@@ -76,7 +76,11 @@ export declare class Asset {
      * network URL
      * @return The [`Asset`](#asset) instance for the asset.
      */
-    static fromModule(virtualAssetModule: number | string): Asset;
+    static fromModule(virtualAssetModule: number | string | {
+        uri: string;
+        width: number;
+        height: number;
+    }): Asset;
     static fromMetadata(meta: AssetMetadata): Asset;
     static fromURI(uri: string): Asset;
     /**

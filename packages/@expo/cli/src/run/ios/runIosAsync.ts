@@ -1,6 +1,11 @@
+import { getConfig } from '@expo/config';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
 
 import * as Log from '../../log';
+import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -8,6 +13,7 @@ import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { uploadRemoteBuildCache, resolveRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
@@ -15,6 +21,8 @@ import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
+import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
+import { CommandError } from '../../utils/errors';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -31,9 +39,70 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   // Resolve the CLI arguments into useable options.
-  const props = await resolveOptionsAsync(projectRoot, options);
+  const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  const projectConfig = getConfig(projectRoot);
+  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache && props.isSimulator) {
+    const localPath = await resolveRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
+
+  if (options.rebundle) {
+    Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
+    // Get the existing binary path to re-bundle the app.
+
+    let binaryPath: string;
+    if (!options.binary) {
+      if (!props.isSimulator) {
+        throw new Error('Re-bundling on physical devices requires the --binary flag.');
+      }
+      const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
+      const possibleBinaryPath = await getContainerPathAsync(props.device, {
+        appId,
+      });
+      if (!possibleBinaryPath) {
+        throw new CommandError(
+          `Cannot rebundle because no --binary was provided and no existing binary was found on the device for ID: ${appId}.`
+        );
+      }
+      binaryPath = possibleBinaryPath;
+      Log.log('Re-using existing binary path:', binaryPath);
+      // Set the binary path to the existing binary path.
+      options.binary = binaryPath;
+    }
+
+    Log.log('Rebundling the Expo config file');
+    // Re-bundle the config file the same way the app was originally bundled.
+    await spawnAsync('node', [
+      path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
+      projectRoot,
+      path.join(options.binary, 'EXConstants.bundle'),
+    ]);
+    // Re-bundle the app.
+
+    const possibleBundleOutput = path.join(options.binary, 'main.jsbundle');
+
+    if (fs.existsSync(possibleBundleOutput)) {
+      Log.log('Rebundling the app...');
+      await exportEagerAsync(projectRoot, {
+        resetCache: false,
+        dev: false,
+        platform: 'ios',
+        assetsDest: path.join(options.binary, 'assets'),
+        bundleOutput: possibleBundleOutput,
+      });
+    } else {
+      Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
+    }
+  }
 
   let binaryPath: string;
+  let shouldUpdateBuildCache = false;
   if (options.binary) {
     binaryPath = await getValidBinaryPathAsync(options.binary, props);
     Log.log('Using custom binary path:', binaryPath);
@@ -58,6 +127,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     // Find the path to the built app binary, this will be used to install the binary
     // on a device.
     binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+    shouldUpdateBuildCache = true;
   }
   debug('Binary path:', binaryPath);
 
@@ -68,6 +138,16 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
   const isCustomBinary = !!options.binary;
+
+  // Always close the app before launching on a simulator. Otherwise certain cached resources like the splashscreen will not be available.
+  if (props.isSimulator) {
+    try {
+      await simctlAsync(['terminate', props.device.udid, launchInfo.bundleId]);
+    } catch (error) {
+      // If we failed it's likely that the app was not running to begin with and we will get an `invalid device` error
+      debug('Failed to terminate app (possibly because it was not running):', error);
+    }
+  }
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
@@ -100,6 +180,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     logProjectLogsLocation();
   } else {
     await manager.stopAsync();
+  }
+
+  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
+    await uploadRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+    });
   }
 }
 

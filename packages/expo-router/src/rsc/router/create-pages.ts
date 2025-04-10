@@ -272,7 +272,7 @@ export function createPages(
       }
       wildcardPagePathMap.set(page.path, [pathSpec, page.component]);
     } else {
-      throw new Error('Invalid page configuration');
+      throw new Error('Invalid page configuration: ' + page.path);
     }
   };
 

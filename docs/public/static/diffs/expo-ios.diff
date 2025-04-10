@@ -20,7 +20,7 @@ index 6bb6b6f..8c3834c 100644
  # Resolve react_native_pods.rb with node to allow for hoisting
  require Pod::Executable.execute_command('node', ['-p',
    'require.resolve(
-@@ -26,6 +27,14 @@ if linkage != nil
+@@ -15,6 +16,14 @@ if linkage != nil
  end
 
  target 'myapp' do

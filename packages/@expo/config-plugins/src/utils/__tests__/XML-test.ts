@@ -72,6 +72,33 @@ describe('read and write', () => {
   });
 });
 
+describe('throws when invalid due to empty tags', () => {
+  // reading removes
+  // <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+  const example = `<resources>
+  <string name="app_name">exp\\'o</string>
+  <string name="empty1" />
+  <string name="empty2"></string>
+</resources>`;
+  beforeAll(async () => {
+    const directoryJSON = {
+      './android/app/src/main/res/values/strings.xml': example,
+    };
+    vol.fromJSON(directoryJSON, '/app');
+  });
+
+  afterAll(async () => {
+    vol.reset();
+  });
+
+  it(`throws correct error`, async () => {
+    const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+    await expect(readResourcesXMLAsync({ path: stringsPath })).rejects.toThrow(
+      'Empty string resource not supported'
+    );
+  });
+});
+
 describe(escapeAndroidString, () => {
   it(`can escape Android strings`, () => {
     expect(escapeAndroidString(`@`)).toBe(`\\@`);

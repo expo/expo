@@ -1,6 +1,10 @@
 import GithubSlugger from 'github-slugger';
 import React from 'react';
 
+import versions from '~/public/static/constants/versions.json';
+
+const { BETA_VERSION, LATEST_VERSION } = versions;
+
 function hasChildren(node: React.ReactNode): node is React.ReactElement {
   return (node as React.ReactElement)?.props?.children !== undefined;
 }
@@ -75,15 +79,17 @@ export const pathStartsWith = (name: string, path: string) => {
 
 export const chunkArray = (array: any[], chunkSize: number) => {
   return array.reduce((acc, _, i) => {
-    if (i % chunkSize === 0) acc.push(array.slice(i, i + chunkSize));
+    if (i % chunkSize === 0) {
+      acc.push(array.slice(i, i + chunkSize));
+    }
     return acc;
   }, []);
 };
 
 export function listMissingHashLinkTargets(apiName?: string) {
-  const contentLinks = document.querySelectorAll(
+  const contentLinks = document.querySelectorAll<HTMLAnchorElement>(
     `div.size-full.overflow-x-hidden.overflow-y-auto a`
-  ) as NodeListOf<HTMLAnchorElement>;
+  );
 
   const wantedHashes = Array.from(contentLinks)
     .map(link => {
@@ -98,8 +104,26 @@ export function listMissingHashLinkTargets(apiName?: string) {
   const missingEntries = wantedHashes.filter(hash => !availableIDs.includes(hash));
 
   if (missingEntries.length) {
+    /* eslint-disable no-console */
     console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
     console.table(missingEntries);
     console.groupEnd();
+    /* eslint-enable no-console */
   }
+}
+
+export function versionToText(version: string): string {
+  if (version === 'unversioned') {
+    return 'Next (unversioned)';
+  } else if (version === 'latest') {
+    return `${formatSdkVersion(LATEST_VERSION)} (latest)`;
+  } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
+    return `${formatSdkVersion(BETA_VERSION.toString())} (beta)`;
+  }
+
+  return formatSdkVersion(version);
+}
+
+function formatSdkVersion(version: string): string {
+  return version.includes('v') ? `SDK ${version.substring(1, 3)}` : `SDK ${version}`;
 }

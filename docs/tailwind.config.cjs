@@ -20,10 +20,19 @@ module.exports = {
     './node_modules/@expo/styleguide-search-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   ...getExpoTheme({
+    backgroundColor: {
+      'launch-party-red': '#D22323',
+      'launch-party-blue': '#006CFF',
+      'launch-party-yellow': '#F3AD0D',
+    },
+    borderColor: {
+      'palette-orange3.5': 'hsl(from var(--orange-4) h calc(s - 5) calc(l + 5));',
+    },
     backgroundImage: () => ({
       'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
       'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
-      appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
+      'launch-party-banner': "url('/static/images/launch-party-banner-bg.svg')",
+      'launch-party-banner-mobile': "url('/static/images/launch-party-banner-bg.svg') 200px",
     }),
     keyframes: {
       wave: {
@@ -48,9 +57,6 @@ module.exports = {
     animation: {
       slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
       wave: 'wave 0.25s ease-in-out 4',
-    },
-    boxShadow: {
-      kbd: '0 .1rem 0 1px var(--expo-theme-border-default)',
     },
   }),
 };

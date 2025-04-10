@@ -59,6 +59,8 @@ This command performs checks and analyzes your project's codebase for common iss
 
 If Expo Doctor finds an issue, it provides a description of the problem along with advice on how to fix it or where to find help.
 
+By default, Expo Doctor validates your project's packages against the [React Native directory](https://reactnative.directory/) and checks if app config properties are properly synced when native directories exist. You can configure these checks in your project's **package.json** file. See [`reactNativeDirectoryCheck`](/versions/latest/config/package-json/#reactnativedirectorycheck) and [`appConfigFieldsNotSyncedCheck`](/versions/latest/config/package-json/#appconfigfieldsnotsynced) for more details.
+
 You can also use `npx expo-doctor --help` to display usage information.
 
 ## Orbit

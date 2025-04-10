@@ -1,11 +1,11 @@
 import { CommandMenu, CommandMenuTrigger } from '@expo/styleguide-search-ui';
 import { ReactNode, useState } from 'react';
 
-import { ExpoDashboardItem } from './ExpoDashboardItem';
-import { entries } from './expoEntries';
-
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+
+import { ExpoDashboardItem } from './ExpoDashboardItem';
+import { entries } from './expoEntries';
 
 const { LATEST_VERSION } = versions;
 const isDev = process.env.NODE_ENV === 'development';
@@ -15,14 +15,14 @@ export const Search = () => {
   const [open, setOpen] = useState(false);
   const [expoDashboardItems, setExpoDashboardItems] = useState<ReactNode[]>([]);
 
-  const getExpoItems = async (query: string) => {
+  async function getExpoItemsAsync(query: string) {
     const filteredEntries = entries.filter(entry =>
       entry.label.toLowerCase().includes(query.toLowerCase())
     );
     setExpoDashboardItems(
       filteredEntries.map(item => <ExpoDashboardItem item={item} query={query} key={item.url} />)
     );
-  };
+  }
 
   return (
     <>
@@ -34,7 +34,7 @@ export const Search = () => {
           {
             heading: 'Expo dashboard',
             items: expoDashboardItems,
-            getItemsAsync: getExpoItems,
+            getItemsAsync: getExpoItemsAsync,
             sectionIndex: 1,
           },
         ]}

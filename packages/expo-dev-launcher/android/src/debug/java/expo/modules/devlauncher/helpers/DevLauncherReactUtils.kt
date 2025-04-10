@@ -19,9 +19,9 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devlauncher.react.DevLauncherBridgeDevSupportManager
+import expo.modules.devlauncher.react.DevLauncherBridgelessDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgelessDevSupportManager
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import okhttp3.HttpUrl
@@ -227,11 +227,17 @@ fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager
     devSettings = devSettings,
     packagerConnection = devSettings.public_getPackagerConnectionSettings()
   )
+  val oldDevServerHelper: DevServerHelper = DevSupportManagerBase::class.java.getProtectedFieldValue(
+    devSupportManager,
+    "mDevServerHelper"
+  )
   DevSupportManagerBase::class.java.setProtectedDeclaredField(
     devSupportManager,
     "mDevServerHelper",
     devLauncherDevServerHelper
   )
+  oldDevServerHelper.closePackagerConnection()
+  oldDevServerHelper.closeInspectorConnection()
 }
 
 fun findDevMenuPackage(): ReactPackage? {

@@ -9,6 +9,7 @@ module.exports = {
   },
   web: {
     bundler: 'metro',
+    output: process.env.E2E_USE_STATIC ?? 'single',
   },
   experiments: {
     typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined,

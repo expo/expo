@@ -26,11 +26,11 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 30000
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -45,7 +45,7 @@ jobs:
       - name: 🧶 Yarn install
         working-directory: docs
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: 🧪 Run Docs tests
         working-directory: docs
         run: yarn test
@@ -57,6 +57,7 @@ jobs:
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
+          version: 3.11.1
           reporter: github-pr-check
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'

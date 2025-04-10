@@ -1,8 +1,8 @@
 /* eslint-env jest */
-import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 
-import { execute, getLoadedModulesAsync, projectRoot } from './utils';
+import { getLoadedModulesAsync, projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -27,7 +27,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo register --help`', async () => {
-  const results = await execute('register', '--help');
+  const results = await executeExpoAsync(projectRoot, ['register', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -43,21 +43,13 @@ it('runs `npx expo register --help`', async () => {
 });
 
 it('throws on invalid project root', async () => {
-  expect.assertions(1);
-  try {
-    await execute('very---invalid', 'register');
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['very---invalid', 'register'], { verbose: false })
+  ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
 
 it('runs `npx expo register` and throws due to CI', async () => {
-  expect.assertions(1);
-  try {
-    console.log(await execute('register'));
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Cannot register an account in CI/);
-  }
+  await expect(executeExpoAsync(projectRoot, ['register'], { verbose: false })).rejects.toThrow(
+    /Cannot register an account in CI/
+  );
 });

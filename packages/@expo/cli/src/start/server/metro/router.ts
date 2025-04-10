@@ -6,6 +6,7 @@ import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import { directoryExistsSync } from '../../../utils/dir';
+import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
@@ -44,7 +45,7 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
+  return toPosixPath(exp.extra?.router?.root ?? getRouterDirectory(projectRoot));
 }
 
 let hasWarnedAboutSrcDir = false;
@@ -56,9 +57,9 @@ const logSrcDir = () => {
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
-  if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
+  if (directoryExistsSync(path.join(projectRoot, 'src', 'app'))) {
     logSrcDir();
-    return 'src/app';
+    return path.join('src', 'app');
   }
 
   debug('Using app as the root directory for Expo Router.');

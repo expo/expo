@@ -37,11 +37,13 @@ class ExpoUpdatesModule extends NativeModule<UpdatesEvents> implements UpdatesMo
     lastCheckForUpdateTimeString?: string | undefined;
     rollbackString?: string | undefined;
   } = {
+    isStartupProcedureRunning: false,
     isUpdateAvailable: false,
     isUpdatePending: false,
     isChecking: false,
     isDownloading: false,
     isRestarting: false,
+    restartCount: 0,
     sequenceNumber: 0,
   };
 

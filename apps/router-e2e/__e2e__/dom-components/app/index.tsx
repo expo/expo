@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Actions from '../components/02-actions';
 import LocalAsset from '../components/03-local-asset';
@@ -75,6 +75,10 @@ export default function Page() {
         <Button
           title="Update color using webView ref"
           onPress={() => {
+            if (process.env.EXPO_OS === 'web') {
+              alert('WebView ref is not supported on Web.');
+              return;
+            }
             const hue = Math.floor(Math.random() * 360);
             const saturation = 100;
             const lightness = 85;
@@ -108,6 +112,14 @@ function TestCase({ name, children }) {
   );
 }
 
+function Button({ title, onPress }) {
+  return (
+    <Pressable style={styles.button} onPress={onPress}>
+      <Text style={styles.buttonText}>{title}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   testcaseContainer: {
     marginBottom: 24,
@@ -130,5 +142,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 12,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#007AFF',
+  },
+  buttonText: {
+    fontSize: 14,
+    color: 'white',
   },
 });

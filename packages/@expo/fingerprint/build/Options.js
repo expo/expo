@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeOptionsAsync = exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.normalizeOptionsAsync = normalizeOptionsAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const Config_1 = require("./Config");
-const ExpoVersions_1 = require("./ExpoVersions");
+const ExpoResolver_1 = require("./ExpoResolver");
 const SourceSkips_1 = require("./sourcer/SourceSkips");
 const Path_1 = require("./utils/Path");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -48,36 +49,11 @@ exports.DEFAULT_IGNORE_PATHS = [
     'app.json',
     // Ignore nested node_modules
     '**/node_modules/**/node_modules/**',
-    // Ignore default javascript files when calling `getConfig()`
-    '**/node_modules/@babel/**/*',
-    '**/node_modules/@expo/**/*',
-    '**/node_modules/@jridgewell/**/*',
-    '**/node_modules/expo/config.js',
-    '**/node_modules/expo/config-plugins.js',
-    `**/node_modules/{${[
-        'chalk',
-        'debug',
-        'escape-string-regexp',
-        'getenv',
-        'graceful-fs',
-        'has-flag',
-        'imurmurhash',
-        'js-tokens',
-        'json5',
-        'picocolors',
-        'lines-and-columns',
-        'require-from-string',
-        'resolve-from',
-        'signal-exit',
-        'sucrase',
-        'supports-color',
-        'ts-interface-checker',
-        'write-file-atomic',
-    ].join(',')}}/**/*`,
 ];
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
+    const ignorePathMatchObjects = await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options);
     return {
         // Defaults
         platforms: ['android', 'ios'],
@@ -87,16 +63,16 @@ async function normalizeOptionsAsync(projectRoot, options) {
         // Options from config
         ...config,
         // Explicit options
-        ...options,
+        ...Object.fromEntries(Object.entries(options ?? {}).filter(([_, v]) => v != null)),
         // These options are computed by both default and explicit options, so we put them last.
         enableReactImportsPatcher: options?.enableReactImportsPatcher ??
             config?.enableReactImportsPatcher ??
-            (0, ExpoVersions_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
+            (0, ExpoResolver_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
             false,
-        ignorePathMatchObjects: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
+        ignorePathMatchObjects,
+        ignoreDirMatchObjects: (0, Path_1.buildDirMatchObjects)(ignorePathMatchObjects),
     };
 }
-exports.normalizeOptionsAsync = normalizeOptionsAsync;
 async function collectIgnorePathsAsync(projectRoot, pathsFromConfig, options) {
     const ignorePaths = [
         ...exports.DEFAULT_IGNORE_PATHS,

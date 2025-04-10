@@ -115,6 +115,9 @@ class Kernel : KernelInterface() {
       }
     }
 
+  private val manifest
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
+
   private var optimisticActivity: ExperienceActivity? = null
 
   private var optimisticTaskId: Int? = null
@@ -164,7 +167,7 @@ class Kernel : KernelInterface() {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
+        manifest
       } catch (e: Throwable) {
         Exponent.instance
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
@@ -230,19 +233,23 @@ class Kernel : KernelInterface() {
               localBundlePath
             )
           )
-          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
-          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
-
-          if (nativeHost.devSupportEnabled) {
+          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
+            manifest.isDevelopmentMode()
+          ) {
             Exponent.enableDeveloperSupport(
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
+              manifest.getDebuggerHost(),
+              manifest.getMainModuleName(),
+              nativeHost
             )
           }
+
+          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
+          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
 
           reactNativeHost = nativeHost
           reactHost?.onHostResume(activityContext, null)
           isRunning = true
+
           EventBus.getDefault().postSticky(KernelStartedRunningEvent())
           EXL.d(TAG, "Kernel started running.")
 
@@ -269,7 +276,7 @@ class Kernel : KernelInterface() {
   private val bundleUrl: String?
     get() {
       return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
+        manifest.getBundleURL()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -299,7 +306,7 @@ class Kernel : KernelInterface() {
   private val kernelRevisionId: String?
     get() {
       return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
+        manifest.getRevisionId()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -505,6 +512,8 @@ class Kernel : KernelInterface() {
       }
     }
 
+    val snackChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL)
+
     // transfer the release-channel param to the built URL as this will cause Expo Go to treat
     // this as a different project
     var releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
@@ -534,6 +543,10 @@ class Kernel : KernelInterface() {
       if (queryParameterValue != null) {
         builder.appendQueryParameter(queryParameter, queryParameterValue)
       }
+    }
+
+    snackChannel?.let {
+      builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL, it)
     }
 
     // ignore fragments as well (e.g. those added by auth-session)
@@ -846,6 +859,17 @@ class Kernel : KernelInterface() {
     } else {
       manager.appTasks.find { it.taskInfo.id == activity.taskId }
     }?.also { task -> task.finishAndRemoveTask() }
+
+    // We're sure that it will be an `ExperienceActivity`. However we still need to do a cast and
+    // adding additional checks doesn't hurt
+    if (activity is ExperienceActivity) {
+      // Invalidate the experience that is not longer needed.
+      activity.reactHost?.invalidate()
+      activity.reactNativeHost?.clear()
+
+      activity.reactHost = null
+      activity.reactNativeHost = null
+    }
   }
 
   override fun reloadVisibleExperience(manifestUrl: String, forceCache: Boolean): Boolean {

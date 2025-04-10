@@ -22,6 +22,7 @@ import java.io.Serializable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.annotation.VisibleForTesting;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import kotlin.coroutines.Continuation;
@@ -316,6 +317,15 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
 
     public Builder useDefaultVibrationPattern() {
       content.mShouldUseDefaultVibrationPattern = true;
+      content.mVibrationPattern = null;
+      return this;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    Builder disableVibrations() {
+      // remote notifications can come without vibrations
+      // we use this method do emulate that in tests
+      content.mShouldUseDefaultVibrationPattern = false;
       content.mVibrationPattern = null;
       return this;
     }

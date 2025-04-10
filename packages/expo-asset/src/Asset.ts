@@ -134,9 +134,26 @@ export class Asset {
    * network URL
    * @return The [`Asset`](#asset) instance for the asset.
    */
-  static fromModule(virtualAssetModule: number | string): Asset {
+  static fromModule(
+    virtualAssetModule: number | string | { uri: string; width: number; height: number }
+  ): Asset {
     if (typeof virtualAssetModule === 'string') {
       return Asset.fromURI(virtualAssetModule);
+    }
+    if (
+      typeof virtualAssetModule === 'object' &&
+      'uri' in virtualAssetModule &&
+      typeof virtualAssetModule.uri === 'string'
+    ) {
+      const extension = AssetUris.getFileExtension(virtualAssetModule.uri);
+      return new Asset({
+        name: '',
+        type: extension.startsWith('.') ? extension.substring(1) : extension,
+        hash: null,
+        uri: virtualAssetModule.uri,
+        width: virtualAssetModule.width,
+        height: virtualAssetModule.height,
+      });
     }
 
     const meta = getAssetByID(virtualAssetModule);

@@ -23,8 +23,8 @@ export const ExpoDashboardItem = ({ item, onSelect, query }: Props) => {
       url={item.url}
       onSelect={onSelect}
       isExternalLink>
-      <div className="flex gap-3 justify-between">
-        <div className="inline-flex gap-3 items-center justify-between">
+      <div className="flex justify-between gap-3">
+        <div className="inline-flex items-center justify-between gap-3">
           <Icon className="text-icon-secondary" />
           <p
             className="text-xs font-medium"

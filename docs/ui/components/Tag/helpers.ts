@@ -2,30 +2,40 @@ import { capitalize } from '~/components/plugins/api/APISectionUtils';
 import { PlatformName } from '~/types/common';
 
 export function getPlatformName(text: string): PlatformName {
-  if (text.toLowerCase().includes('ios')) return 'ios';
-  if (text.toLowerCase().includes('android')) return 'android';
-  if (text.toLowerCase().includes('web')) return 'web';
-  if (text.toLowerCase().includes('macos')) return 'macos';
-  if (text.toLowerCase().includes('tvos')) return 'tvos';
+  if (text.toLowerCase().includes('ios')) {
+    return 'ios';
+  }
+  if (text.toLowerCase().includes('android')) {
+    return 'android';
+  }
+  if (text.toLowerCase().includes('web')) {
+    return 'web';
+  }
+  if (text.toLowerCase().includes('macos')) {
+    return 'macos';
+  }
+  if (text.toLowerCase().includes('tvos')) {
+    return 'tvos';
+  }
   return '';
 }
 
 export function getTagClasses(type: string) {
   switch (type) {
     case 'android':
-      return '!bg-palette-green3 !text-palette-green12 !border-palette-green4';
+      return 'bg-palette-green3 text-palette-green12 border-palette-green4';
     case 'ios':
-      return '!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4';
+      return 'bg-palette-blue3 text-palette-blue12 border-palette-blue4';
     case 'web':
-      return '!bg-palette-orange3 !text-palette-orange12 !border-palette-orange4';
+      return 'bg-palette-orange3 text-palette-orange12 border-palette-orange3.5 dark:bg-palette-orange4 dark:border-palette-orange5';
     case 'macos':
-      return '!bg-palette-purple3 !text-palette-purple12 !border-palette-purple4';
+      return 'bg-palette-purple3 text-palette-purple12 border-palette-purple4';
     case 'tvos':
-      return '!bg-palette-pink3 !text-palette-pink12 !border-palette-pink4';
+      return 'bg-palette-pink3 text-palette-pink12 border-palette-pink4';
     case 'deprecated':
-      return '!bg-palette-yellow2 !text-palette-yellow12 !border-palette-yellow4';
+      return 'bg-palette-yellow2 text-palette-yellow12 border-palette-yellow4';
     case 'experimental':
-      return '!bg-palette-pink3 !text-palette-pink12 !border-palette-pink4';
+      return 'bg-palette-purple3 text-palette-purple12 border-palette-purple4';
     default:
       return undefined;
   }

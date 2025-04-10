@@ -1,0 +1,21 @@
+diff --git a/metro.config.js b/metro.config.js
+index 07c9fce..c3a9b0e 100644
+--- a/metro.config.js
++++ b/metro.config.js
+@@ -4,4 +4,16 @@ const { getDefaultConfig } = require('expo/metro-config');
+ /** @type {import('expo/metro-config').MetroConfig} */
+ const config = getDefaultConfig(__dirname);
+
++// Add wasm asset support
++config.resolver.assetExts.push('wasm');
++
++// Add COEP and COOP headers to support SharedArrayBuffer
++config.server.enhanceMiddleware = (middleware) => {
++  return (req, res, next) => {
++    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
++    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
++    middleware(req, res, next);
++  };
++};
++
+ module.exports = config;

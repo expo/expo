@@ -1,3 +1,4 @@
+import { getConfig, modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
 
 import * as Security from './Security';
@@ -48,6 +49,7 @@ function assertCodeSigningSetup(): never {
  * - If multiple IDs: Ask the user to select one, then store the value to be suggested first next time (since users generally use the same ID).
  */
 export async function resolveCertificateSigningIdentityAsync(
+  projectRoot: string,
   ids: string[]
 ): Promise<Security.CertificateSigningInfo> {
   // The user has no valid code signing identities.
@@ -69,13 +71,32 @@ export async function resolveCertificateSigningIdentityAsync(
     await Security.resolveIdentitiesAsync(ids)
   );
 
-  const selected = await selectDevelopmentTeamAsync(identities, preferred);
+  // Read the config to interact with the `ios.appleTeamId` property
+  const { exp } = getConfig(projectRoot, {
+    // We don't need very many fields here, just use the lightest possible read.
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
+  const configuredTeamId = exp.ios?.appleTeamId;
 
-  // Store the last used value and suggest it as the first value
-  // next time the user has to select a code signing identity.
-  await setLastDeveloperCodeSigningIdAsync(selected.signingCertificateId);
+  const configuredIdentity = configuredTeamId
+    ? identities.find((identity) => identity.appleTeamId === configuredTeamId)
+    : undefined;
 
-  return selected;
+  const selectedIdentity =
+    configuredIdentity ?? (await selectDevelopmentTeamAsync(identities, preferred));
+
+  await Promise.all([
+    // Store the last used value and suggest it as the first value
+    // next time the user has to select a code signing identity.
+    setLastDeveloperCodeSigningIdAsync(selectedIdentity.signingCertificateId),
+    // Store the last used team id in the app manifest, when no team id has been configured yet
+    configuredTeamId || !selectedIdentity.appleTeamId
+      ? Promise.resolve()
+      : modifyConfigAsync(projectRoot, { ios: { appleTeamId: selectedIdentity.appleTeamId } }),
+  ]);
+
+  return selectedIdentity;
 }
 
 /** Prompt the user to select a development team, highlighting the preferred value based on the user history. */

@@ -11,7 +11,7 @@ import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraType
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult
 import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)
@@ -51,7 +51,18 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
             }
           }
 
-          onComplete(BarCodeScannerResult(barcode.format, barcode.displayValue, raw, cornerPoints, image.width, image.height))
+          val extra = BarCodeScannerResultSerializer.parseExtraDate(barcode)
+          onComplete(
+            BarCodeScannerResult(
+              barcode.format,
+              barcode.displayValue,
+              raw,
+              extra,
+              cornerPoints,
+              image.width,
+              image.height
+            )
+          )
         }
         .addOnFailureListener {
           Log.d("SCANNER", it.cause?.message ?: "Barcode scanning failed")

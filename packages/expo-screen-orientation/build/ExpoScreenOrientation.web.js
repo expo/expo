@@ -1,5 +1,4 @@
-import { Platform } from 'expo-modules-core';
-import { DeviceEventEmitter } from 'react-native';
+import { NativeModule, Platform, registerWebModule } from 'expo-modules-core';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 const OrientationLockAPIToWeb = {
@@ -19,27 +18,6 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
 const screen = Platform.canUseViewport ? window.screen : {};
-const orientation = Platform.canUseViewport
-    ? screen.orientation || screen.msOrientation || null
-    : null;
-async function emitOrientationEvent() {
-    const [orientationLock, orientation] = await Promise.all([
-        getOrientationLockAsync(),
-        getOrientationAsync(),
-    ]);
-    DeviceEventEmitter.emit('expoDidUpdateDimensions', {
-        orientationLock,
-        orientationInfo: { orientation },
-    });
-}
-if (Platform.canUseEventListeners) {
-    if (orientation && orientation.addEventListener) {
-        orientation.addEventListener('change', emitOrientationEvent);
-    }
-    else {
-        window.addEventListener('orientationchange', emitOrientationEvent);
-    }
-}
 function _convertToLegacyOrientationLock(orientationLock) {
     switch (orientationLock) {
         case WebOrientationLock.UNKNOWN:
@@ -77,31 +55,65 @@ async function _lockAsync(webOrientationLock) {
     }
 }
 let _lastWebOrientationLock = WebOrientationLock.UNKNOWN;
-export default {
+class ExpoScreenOrientation extends NativeModule {
+    orientation = Platform.canUseViewport
+        ? screen.orientation || screen.msOrientation || null
+        : null;
+    async emitOrientationEvent() {
+        const [orientationLock, orientation] = await Promise.all([
+            getOrientationLockAsync(),
+            getOrientationAsync(),
+        ]);
+        this.emit('expoDidUpdateDimensions', {
+            orientationLock,
+            orientationInfo: { orientation },
+        });
+    }
+    startObserving() {
+        this.listener = () => this.emitOrientationEvent();
+        if (Platform.canUseEventListeners) {
+            if (this.orientation && this.orientation.addEventListener) {
+                this.orientation.addEventListener('change', this.listener);
+            }
+            else {
+                window.addEventListener('orientationchange', this.listener);
+            }
+        }
+    }
+    stopObserving() {
+        if (Platform.canUseEventListeners) {
+            if (this.orientation && this.orientation.removeEventListener) {
+                this.orientation.removeEventListener('change', this.listener);
+            }
+            else {
+                window.removeEventListener('orientationchange', this.listener);
+            }
+        }
+    }
     async supportsOrientationLockAsync(orientationLock) {
         return orientationLock in OrientationLockAPIToWeb;
-    },
+    }
     async getPlatformOrientationLockAsync() {
         return _lastWebOrientationLock;
-    },
+    }
     async getOrientationAsync() {
         const webOrientation = screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
         if (!webOrientation) {
             return Orientation.UNKNOWN;
         }
         return OrientationWebToAPI[webOrientation];
-    },
+    }
     async lockAsync(orientationLock) {
         const webOrientationLock = OrientationLockAPIToWeb[orientationLock];
         if (!webOrientationLock) {
             throw new TypeError(`Invalid Orientation Lock: ${orientationLock}`);
         }
         await _lockAsync(webOrientationLock);
-    },
+    }
     async lockPlatformAsync(webOrientationLock) {
         await _lockAsync(webOrientationLock);
         _lastWebOrientationLock = webOrientationLock;
-    },
+    }
     async unlockAsync() {
         if (screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
@@ -121,6 +133,7 @@ export default {
         else {
             throw new Error(`expo-screen-orientation: The browser doesn't support unlocking screen orientation.`);
         }
-    },
-};
+    }
+}
+export default registerWebModule(ExpoScreenOrientation);
 //# sourceMappingURL=ExpoScreenOrientation.web.js.map

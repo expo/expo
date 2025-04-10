@@ -1,15 +1,15 @@
 import { mergeClasses } from '@expo/styleguide';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as RawRadixDropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import type { ReactNode } from 'react';
 
 import { Item } from '~/ui/components/Dropdown/Item';
 
 // note(simek): Radix Jest ESM issue workaround: https://github.com/radix-ui/primitives/issues/1848
-let sanitizedRadixDropdownMenu = { default: undefined, ...DropdownMenu };
-sanitizedRadixDropdownMenu = sanitizedRadixDropdownMenu.default ?? sanitizedRadixDropdownMenu;
-const { Trigger, Root, Portal, Content, Arrow } = sanitizedRadixDropdownMenu;
+let RadixDropdownMenuPrimitive = { default: undefined, ...RawRadixDropdownMenuPrimitive };
+RadixDropdownMenuPrimitive = RadixDropdownMenuPrimitive.default ?? RadixDropdownMenuPrimitive;
+const { Trigger, Root, Portal, Content, Arrow } = RadixDropdownMenuPrimitive;
 
-type Props = DropdownMenu.DropdownMenuContentProps & {
+type Props = RawRadixDropdownMenuPrimitive.DropdownMenuContentProps & {
   trigger: ReactNode;
 };
 

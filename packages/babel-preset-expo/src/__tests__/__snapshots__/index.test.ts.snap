@@ -260,7 +260,7 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro supports reanimated worklets 1`] = `
-"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AACA,SAAAA,sBAA6BA,CAAEC,QAAA,EAE7BC,OAAO,CAACC,GAAG,CAAC,kCAAkC,CAAC,CACjD\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
+"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
 function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
@@ -289,7 +289,7 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro+hermes supports reanimated worklets 1`] = `
-"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AACA,SAAAA,sBAA6BA,CAAEC,QAAA,EAE7BC,OAAO,CAACC,GAAG,CAAC,kCAAkC,CAAC,CACjD\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
+"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
 function(){var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");

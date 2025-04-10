@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeModulesProxy.d.ts","sourceRoot":"","sources":["../src/NativeModulesProxy.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,4BAA4B,CAAC;AAI/D;;;GAGG;;;;AACH,wBAAiE"}
+{"version":3,"file":"NativeModulesProxy.d.ts","sourceRoot":"","sources":["../src/NativeModulesProxy.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,MAAM,4BAA4B,CAAC;AAIpE;;;GAGG;wBACkB,MAAM,CAAC,MAAM,EAAE,iBAAiB,CAAC;AAAtD,wBAAuD"}

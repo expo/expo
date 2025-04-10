@@ -181,13 +181,13 @@ describe(getAppDelegate, () => {
     });
   });
 
-  it(`returns C++ (objcpp) path`, () => {
+  it(`returns Swift path`, () => {
     vol.fromJSON(rnFixture, '/');
 
     expect(getAppDelegate('/')).toStrictEqual({
       contents: expect.any(String),
-      path: '/ios/HelloWorld/AppDelegate.mm',
-      language: 'objcpp',
+      path: '/ios/HelloWorld/AppDelegate.swift',
+      language: 'swift',
     });
   });
 

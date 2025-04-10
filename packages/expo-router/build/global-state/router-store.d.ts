@@ -1,9 +1,11 @@
 import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { ComponentType } from 'react';
+import { LinkToOptions } from './routing';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
-import { RequireContext } from '../types';
+import { RedirectConfig } from '../getRoutesCore';
+import { Href, RequireContext } from '../types';
 type ResultState = any;
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -20,6 +22,8 @@ export declare class RouterStore {
     nextState?: ResultState;
     routeInfo?: UrlObject;
     splashScreenAnimationFrame?: number;
+    config: any;
+    redirects?: (readonly [RegExp, RedirectConfig, boolean])[];
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
@@ -30,6 +34,7 @@ export declare class RouterStore {
     canGoBack: any;
     push: any;
     dismiss: any;
+    dismissTo: any;
     replace: any;
     dismissAll: any;
     canDismiss: any;
@@ -47,6 +52,32 @@ export declare class RouterStore {
     rootStateSnapshot: () => any;
     routeInfoSnapshot: () => UrlObject;
     cleanup(): void;
+    getStateFromPath(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>, "stale" | "routes">> & Readonly<{
+        stale?: true;
+        routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+    }> & {
+        state?: Partial<Omit<Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>, "stale" | "routes">> & Readonly<{
+            stale?: true;
+            routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+        }> & /*elided*/ any;
+    }) | undefined;
+    applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

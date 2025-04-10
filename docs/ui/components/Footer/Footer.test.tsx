@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react';
 
+import { renderWithTestRouter } from '~/common/test-utilities';
+
 import { Footer } from './Footer';
 import { githubUrl } from './utils';
-
-import { renderWithTestRouter } from '~/common/test-utilities';
 
 describe('Footer', () => {
   test('displays default links', () => {

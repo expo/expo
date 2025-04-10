@@ -8,12 +8,20 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdatesConfigurationInstrumentationTest {
+  @Before
+  fun setUp() {
+    mockkObject(UpdatesConfigurationOverride.Companion)
+    every { UpdatesConfigurationOverride.Companion.load(any()) } returns null
+  }
+
   @Test
   fun test_runtimeVersion_stripsPrefix() {
     val testPackageName = "test"

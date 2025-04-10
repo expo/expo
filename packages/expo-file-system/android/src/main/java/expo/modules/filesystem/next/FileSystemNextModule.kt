@@ -52,6 +52,10 @@ class FileSystemNextModule : Module() {
         to.file
       }
 
+      if (destination.exists()) {
+        throw DestinationAlreadyExistsException()
+      }
+
       val body = response.body ?: throw UnableToDownloadException("response body is null")
       body.byteStream().use { input ->
         FileOutputStream(destination).use { output ->
@@ -73,8 +77,8 @@ class FileSystemNextModule : Module() {
         file.validatePath()
       }
 
-      Function("create") { file: FileSystemFile ->
-        file.create()
+      Function("create") { file: FileSystemFile, options: CreateOptions? ->
+        file.create(options ?: CreateOptions())
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
@@ -96,6 +100,10 @@ class FileSystemNextModule : Module() {
 
       Function("base64") { file: FileSystemFile ->
         file.base64()
+      }
+
+      Function("bytes") { file: FileSystemFile ->
+        file.bytes()
       }
 
       Property("exists") { file: FileSystemFile ->
@@ -129,6 +137,37 @@ class FileSystemNextModule : Module() {
           null
         }
       }
+
+      Property("type") { file ->
+        file.type
+      }
+
+      Function("open") { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+    }
+
+    Class(FileSystemFileHandle::class) {
+      Constructor { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+        fileHandle.read(bytes)
+      }
+      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("close") { fileHandle: FileSystemFileHandle ->
+        fileHandle.close()
+      }
+      Property("offset") { fileHandle: FileSystemFileHandle ->
+        fileHandle.offset
+      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
+        fileHandle.offset = offset
+      }
+      Property("size") { fileHandle: FileSystemFileHandle ->
+        fileHandle.size
+      }
     }
 
     Class(FileSystemDirectory::class) {
@@ -140,8 +179,8 @@ class FileSystemNextModule : Module() {
         directory.delete()
       }
 
-      Function("create") { directory: FileSystemDirectory ->
-        directory.create()
+      Function("create") { directory: FileSystemDirectory, options: CreateOptions? ->
+        directory.create(options ?: CreateOptions())
       }
 
       Property("exists") { directory: FileSystemDirectory ->

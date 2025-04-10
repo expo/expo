@@ -13,6 +13,7 @@ import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
 import { createMemoryHistory } from './createMemoryHistory';
+import { appendBaseUrl } from './getPathFromState';
 import { ServerContext } from '../global-state/serverLocationContext';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
@@ -73,7 +74,7 @@ const linkingHandlers: symbol[] = [];
 type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
+  ref: React.RefObject<NavigationContainerRef<ParamListBase> | null>,
   {
     enabled = true,
     config,
@@ -230,7 +231,30 @@ export function useLinking(
           return;
         }
 
-        if (index > previousIndex) {
+        if (
+          index > previousIndex ||
+          /* START FORK
+           *
+           * This is a workaround for React Navigation's handling of hashes (it doesn't handle them)
+           * When you click on <a href="#hash">, the browser will first fire a popstate event
+           * and this callback will be called.
+           *
+           * From React Navigation's perspective, it's treating the new hash change like a back/forward
+           * button press, so it thinks it should reset the state. When we should
+           * be to be pushing the new state
+           *
+           * Our fix is to check if the index is the same as the previous index
+           * and if the incoming path is the same as the old path but with the hash added,
+           * then treat it as a push instead of a reset
+           *
+           * This also works for subsequent hash changes, as internally RN
+           * doesn't store the hash in the history state.
+           *
+           * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
+           */
+          (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
+          // END FORK
+        ) {
           const action = getActionFromStateRef.current(state, configRef.current);
 
           if (action !== undefined) {
@@ -282,7 +306,10 @@ export function useLinking(
             focusedRoute.name === route.name &&
             isEqual({ ...focusedRoute.params }, { ...route.params })
           ) {
-            path = route.path;
+            // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
+            // path = route.path;
+            path = appendBaseUrl(route.path);
+            // END FORK
           }
         }
       }
@@ -291,7 +318,7 @@ export function useLinking(
         path = getPathFromStateRef.current(state, configRef.current);
       }
 
-      // START FORK - ExpoRouter manually handles hashes
+      // START FORK - ExpoRouter manually handles hashes. This code is intentionally removed
       // const previousRoute = previousStateRef.current
       //   ? findFocusedRoute(previousStateRef.current)
       //   : undefined;
@@ -420,4 +447,8 @@ export function useLinking(
   return {
     getInitialState,
   };
+}
+
+export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
+  return typeof window === 'undefined' ? '' : window.location.href;
 }

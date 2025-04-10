@@ -54,6 +54,11 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
+    if (!env.EXPO_NO_REACT_NATIVE_WEB) {
+      // use react-native-web/package.json to skip node module cache issues when the user installs
+      // the package and attempts to resolve the module in the same process.
+      requiredPackages.push({ file: 'react-native-web/package.json', pkg: 'react-native-web' });
+    }
 
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.

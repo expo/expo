@@ -22,7 +22,7 @@ export function matchGroupName(name: string): string | undefined {
 
 /** Match `(app)/(page)` -> `page` */
 export function matchLastGroupName(name: string): string | undefined {
-  return name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+  return name.match(/.*(?:\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
 }
 
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
@@ -44,9 +44,14 @@ export function getContextKey(name: string): string {
   return normal.replace(/\/?_layout$/, '');
 }
 
-/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx`, and the +api suffix */
 export function removeSupportedExtensions(name: string): string {
   return name.replace(/(\+api)?\.[jt]sx?$/g, '');
+}
+
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+export function removeFileSystemExtensions(name: string): string {
+  return name.replace(/\.[jt]sx?$/g, '');
 }
 
 // Remove any amount of `./` and `../` from the start of the string

@@ -10,6 +10,91 @@
 
 ### 💡 Others
 
+## 18.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+- [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 18.0.12 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.10 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.9 - 2025-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.8 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
+- [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.7 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.6 - 2024-12-16
+
+### 🎉 New features
+
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.5 - 2024-12-10
+
+### 🐛 Bug fixes
+
+- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
+
+## 18.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
+
 ## 18.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

@@ -7,14 +7,20 @@ import expo.modules.kotlin.records.Record
 
 internal data class OpenDatabaseOptions(
   @Field
-  val enableCRSQLite: Boolean = false,
-
-  @Field
   val enableChangeListener: Boolean = false,
 
   @Field
   val useNewConnection: Boolean = false,
 
   @Field
-  val finalizeUnusedStatementsBeforeClosing: Boolean = true
+  val finalizeUnusedStatementsBeforeClosing: Boolean = true,
+
+  @Field
+  val libSQLUrl: String? = null,
+
+  @Field
+  val libSQLAuthToken: String? = null,
+
+  @Field
+  val libSQLRemoteOnly: Boolean = false
 ) : Record

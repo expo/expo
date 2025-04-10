@@ -15,12 +15,20 @@ const ERROR_MESSAGE =
 
 export async function checkPackagesCompatibility(packages: string[]) {
   try {
+    const packagesToCheck = packages.filter(
+      (packageName) => !packageName.startsWith('@expo-google-fonts/')
+    );
+
+    if (!packagesToCheck.length) {
+      return;
+    }
+
     const response = await fetch('https://reactnative.directory/api/libraries/check', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ packages }),
+      body: JSON.stringify({ packages: packagesToCheck }),
     });
 
     if (!response.ok) {
@@ -32,7 +40,7 @@ export async function checkPackagesCompatibility(packages: string[]) {
       ReactNativeDirectoryCheckResult
     >;
 
-    const incompatiblePackages = packages.filter(
+    const incompatiblePackages = packagesToCheck.filter(
       (packageName) => packageMetadata[packageName]?.newArchitecture === 'unsupported'
     );
 

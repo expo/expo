@@ -77,6 +77,19 @@ describe(resolveTemplateOption, () => {
     vol.reset();
   });
 
+  it('resolves GitHub shorthand', () => {
+    expect(resolveTemplateOption('expo/template-repo')).toEqual({
+      type: 'repository',
+      uri: 'https://github.com/expo/template-repo',
+    });
+  });
+
+  it('resolves GitHub shorthand using repository path', () => {
+    expect(resolveTemplateOption('expo/expo/templates/expo-template-bare-minimum')).toEqual({
+      type: 'repository',
+      uri: 'https://github.com/expo/expo/templates/expo-template-bare-minimum',
+    });
+  });
   it('resolves a URL template', () => {
     expect(resolveTemplateOption('http://foo')).toEqual({
       type: 'repository',

@@ -1,15 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isTabSlot = exports.defaultTabsSlotRender = exports.useTab = exports.TabSlot = exports.useTabSlot = void 0;
+exports.useTabSlot = useTabSlot;
+exports.TabSlot = TabSlot;
+exports.defaultTabsSlotRender = defaultTabsSlotRender;
+exports.isTabSlot = isTabSlot;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const TabContext_1 = require("./TabContext");
-const useNavigation_1 = require("../useNavigation");
 const Navigator_1 = require("../views/Navigator");
-function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
-    react_native_1.Platform.OS === 'android' ||
-    react_native_1.Platform.OS === 'ios', style, renderFn = defaultTabsSlotRender, } = {}) {
+/**
+ * Returns a `ReactElement` of the current tab.
+ *
+ * @example
+ * ```tsx
+ * function MyTabSlot() {
+ *   const slot = useTabSlot();
+ *
+ *   return slot;
+ * }
+ * ```
+ */
+function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes(react_native_1.Platform.OS), style, renderFn = defaultTabsSlotRender, } = {}) {
     const { state, descriptors } = (0, Navigator_1.useNavigatorContext)();
     const focusedRouteKey = state.routes[state.index].key;
     const [loaded, setLoaded] = (0, react_1.useState)({ [focusedRouteKey]: true });
@@ -30,20 +42,27 @@ function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'we
         })}
     </react_native_screens_1.ScreenContainer>);
 }
-exports.useTabSlot = useTabSlot;
+/**
+ * Renders the current tab.
+ *
+ * @see [`useTabSlot`](#usetabslot) for a hook version of this component.
+ *
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 function TabSlot(props) {
     return useTabSlot(props);
 }
-exports.TabSlot = TabSlot;
-function useTab() {
-    const navigation = (0, useNavigation_1.useNavigation)();
-    const options = (0, react_1.useContext)(TabContext_1.TabContext);
-    return {
-        options,
-        setOptions: navigation.setOptions,
-    };
-}
-exports.useTab = useTab;
+/**
+ * @hidden
+ */
 function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveScreens }) {
     const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
     if (unmountOnBlur && !isFocused) {
@@ -57,11 +76,12 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveSc
       {descriptor.render()}
     </react_native_screens_1.Screen>);
 }
-exports.defaultTabsSlotRender = defaultTabsSlotRender;
+/**
+ * @hidden
+ */
 function isTabSlot(child) {
     return child.type === TabSlot;
 }
-exports.isTabSlot = isTabSlot;
 const styles = react_native_1.StyleSheet.create({
     screen: {
         flex: 1,

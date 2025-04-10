@@ -2,7 +2,6 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -27,8 +26,18 @@ import expo.modules.updates.procedures.StartupProcedure
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -42,7 +51,7 @@ class EnabledUpdatesController(
 ) : IUpdatesController {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
@@ -50,10 +59,13 @@ class EnabledUpdatesController(
     updatesConfiguration.getRuntimeVersion()
   )
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
+  private val startupFinishedDeferred = CompletableDeferred<Unit>()
+  private val startupFinishedMutex = Mutex()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
-    UpdatesLogReader(context).purgeLogEntries {
+    UpdatesLogReader(context.filesDir).purgeLogEntries {
       if (it != null) {
         logger.error("UpdatesLogReader: error in purgeLogEntries", it, UpdatesErrorCode.Unknown)
       }
@@ -67,9 +79,15 @@ class EnabledUpdatesController(
 
   @Synchronized
   private fun onStartupProcedureFinished() {
+    controllerScope.launch {
+      startupFinishedMutex.withLock {
+        if (!startupFinishedDeferred.isCompleted) {
+          startupFinishedDeferred.complete(Unit)
+        }
+      }
+    }
     isStartupFinished = true
     startupEndTimeMillis = System.currentTimeMillis()
-    (this@EnabledUpdatesController as java.lang.Object).notify()
   }
 
   private val startupProcedure = StartupProcedure(
@@ -100,18 +118,14 @@ class EnabledUpdatesController(
   private val localAssetFiles
     get() = startupProcedure.localAssetFiles
 
-  @get:Synchronized
   override val launchAssetFile: String?
     get() {
-      while (!isStartupFinished) {
-        try {
-          (this as java.lang.Object).wait()
-        } catch (e: InterruptedException) {
-          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
-        }
+      runBlocking {
+        startupFinishedDeferred.await()
       }
       return startupProcedure.launchAssetFile
     }
+
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
@@ -144,7 +158,6 @@ class EnabledUpdatesController(
     purgeUpdatesLogsOlderThanOneDay()
 
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
-    databaseHolder.releaseDatabase()
 
     stateMachine.queueExecution(startupProcedure)
   }
@@ -184,48 +197,47 @@ class EnabledUpdatesController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
+  override suspend fun relaunchReactApplicationForModule() = suspendCancellableCoroutine { continuation ->
     val canRelaunch = launchedUpdate != null
     if (!canRelaunch) {
-      callback.onFailure(object : CodedException("ERR_UPDATES_RELOAD", "Cannot relaunch without a launched update.", null) {})
+      continuation.resumeWithException(object : CodedException("ERR_UPDATES_RELOAD", "Cannot relaunch without a launched update.", null) {})
     } else {
       relaunchReactApplication(
         shouldRunReaper = true,
         object : LauncherCallback {
           override fun onFailure(e: Exception) {
-            callback.onFailure(e.toCodedException())
+            continuation.resumeWithException(e.toCodedException())
           }
 
           override fun onSuccess() {
-            callback.onSuccess(Unit)
+            continuation.resume(Unit)
           }
         }
       )
     }
   }
 
-  override fun checkForUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>) {
+  override suspend fun checkForUpdate() = suspendCancellableCoroutine { continuation ->
     val procedure = CheckForUpdateProcedure(context, updatesConfiguration, databaseHolder, logger, fileDownloader, selectionPolicy, launchedUpdate) {
-      callback.onSuccess(it)
+      continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
   }
 
-  override fun fetchUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>) {
+  override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
     val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
-      callback.onSuccess(it)
+      continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    AsyncTask.execute {
+  override suspend fun getExtraParams() = suspendCancellableCoroutine { continuation ->
+    controllerScope.launch {
       try {
         val result = ManifestMetadata.getExtraParams(
           databaseHolder.database,
           updatesConfiguration
         )
-        databaseHolder.releaseDatabase()
         val resultMap = when (result) {
           null -> Bundle()
           else -> {
@@ -236,30 +248,34 @@ class EnabledUpdatesController(
             }
           }
         }
-        callback.onSuccess(resultMap)
+        continuation.resume(resultMap)
       } catch (e: Exception) {
-        databaseHolder.releaseDatabase()
-        callback.onFailure(e.toCodedException())
+        continuation.resumeWithException(e.toCodedException())
       }
     }
   }
 
-  override fun setExtraParam(key: String, value: String?, callback: IUpdatesController.ModuleCallback<Unit>) {
-    AsyncTask.execute {
-      try {
+  override suspend fun setExtraParam(key: String, value: String?) = suspendCancellableCoroutine { continuation ->
+    controllerScope.launch {
+      runCatching {
         ManifestMetadata.setExtraParam(
           databaseHolder.database,
           updatesConfiguration,
           key,
           value
         )
-        databaseHolder.releaseDatabase()
-        callback.onSuccess(Unit)
-      } catch (e: Exception) {
-        databaseHolder.releaseDatabase()
-        callback.onFailure(e.toCodedException())
+        continuation.resume(Unit)
+      }.onFailure { e ->
+        continuation.resumeWithException(e.toCodedException())
       }
     }
+  }
+
+  override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    if (!updatesConfiguration.disableAntiBrickingMeasures) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
+    }
+    UpdatesConfigurationOverride.save(context, configOverride)
   }
 
   companion object {

@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostcssConfigHash = exports.resolvePostcssConfig = exports.pluginFactory = exports.transformPostCssModule = void 0;
+exports.transformPostCssModule = transformPostCssModule;
+exports.pluginFactory = pluginFactory;
+exports.resolvePostcssConfig = resolvePostcssConfig;
+exports.getPostcssConfigHash = getPostcssConfigHash;
 /**
  * Copyright © 2023 650 Industries.
  * Copyright JS Foundation and other contributors
@@ -18,7 +21,7 @@ const require_1 = require("./utils/require");
 const CONFIG_FILE_NAME = 'postcss.config';
 const debug = require('debug')('expo:metro:transformer:postcss');
 async function transformPostCssModule(projectRoot, { src, filename }) {
-    const inputConfig = resolvePostcssConfig(projectRoot);
+    const inputConfig = await resolvePostcssConfig(projectRoot);
     if (!inputConfig) {
         return { src, hasPostcss: false };
     }
@@ -31,7 +34,6 @@ async function transformPostCssModule(projectRoot, { src, filename }) {
         hasPostcss: true,
     };
 }
-exports.transformPostCssModule = transformPostCssModule;
 async function processWithPostcssInputConfigAsync(projectRoot, { src, filename, inputConfig }) {
     const { plugins, processOptions } = await parsePostcssConfigAsync(projectRoot, {
         config: inputConfig,
@@ -174,13 +176,14 @@ function pluginFactory() {
         return listOfPlugins;
     };
 }
-exports.pluginFactory = pluginFactory;
-function resolvePostcssConfig(projectRoot) {
-    // TODO: Maybe support platform-specific postcss config files in the future.
-    const jsConfigPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + '.js');
-    if (fs_1.default.existsSync(jsConfigPath)) {
-        debug('load file:', jsConfigPath);
-        return (0, require_1.requireUncachedFile)(jsConfigPath);
+async function resolvePostcssConfig(projectRoot) {
+    for (const ext of ['.mjs', '.js']) {
+        const configPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + ext);
+        if (fs_1.default.existsSync(configPath)) {
+            debug('load file:', configPath);
+            const config = await (0, require_1.tryRequireThenImport)(configPath);
+            return 'default' in config ? config.default : config;
+        }
     }
     const jsonConfigPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + '.json');
     if (fs_1.default.existsSync(jsonConfigPath)) {
@@ -189,13 +192,14 @@ function resolvePostcssConfig(projectRoot) {
     }
     return null;
 }
-exports.resolvePostcssConfig = resolvePostcssConfig;
 function getPostcssConfigHash(projectRoot) {
     // TODO: Maybe recurse plugins and add versions to the hash in the future.
     const { stableHash } = require('metro-cache');
-    const jsConfigPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + '.js');
-    if (fs_1.default.existsSync(jsConfigPath)) {
-        return stableHash(fs_1.default.readFileSync(jsConfigPath, 'utf8')).toString('hex');
+    for (const ext of ['.mjs', '.js']) {
+        const configPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + ext);
+        if (fs_1.default.existsSync(configPath)) {
+            return stableHash(fs_1.default.readFileSync(configPath, 'utf8')).toString('hex');
+        }
     }
     const jsonConfigPath = path_1.default.join(projectRoot, CONFIG_FILE_NAME + '.json');
     if (fs_1.default.existsSync(jsonConfigPath)) {
@@ -203,5 +207,4 @@ function getPostcssConfigHash(projectRoot) {
     }
     return null;
 }
-exports.getPostcssConfigHash = getPostcssConfigHash;
 //# sourceMappingURL=postcss.js.map

@@ -3,7 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.withAndroidNavigationBarExpoGoManifest = exports.resolveProps = void 0;
+exports.withAndroidNavigationBarExpoGoManifest = void 0;
+exports.resolveProps = resolveProps;
+exports.setStrings = setStrings;
+exports.setNavigationBarColors = setNavigationBarColors;
+exports.setNavigationBarStyles = setNavigationBarStyles;
 // @ts-ignore: uses flow
 const normalize_colors_1 = __importDefault(require("@react-native/normalize-colors"));
 // @ts-ignore
@@ -61,7 +65,6 @@ function resolveProps(config, _props) {
     }
     return props;
 }
-exports.resolveProps = resolveProps;
 /**
  * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
  * of the static values that Expo Go reads from (`androidNavigationBar`).
@@ -120,7 +123,6 @@ function setStrings(strings, { borderColor, visibility, position, behavior, lega
     }
     return config_plugins_1.AndroidConfig.Strings.setStringItem(stringItems, strings);
 }
-exports.setStrings = setStrings;
 const withNavigationBarColors = (config, props) => {
     return (0, config_plugins_1.withAndroidColors)(config, (config) => {
         config.modResults = setNavigationBarColors(props, config.modResults);
@@ -142,7 +144,6 @@ function setNavigationBarColors({ backgroundColor }, colors) {
     }
     return colors;
 }
-exports.setNavigationBarColors = setNavigationBarColors;
 function setNavigationBarStyles({ backgroundColor, barStyle }, styles) {
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
         add: !!backgroundColor,
@@ -160,5 +161,4 @@ function setNavigationBarStyles({ backgroundColor, barStyle }, styles) {
     });
     return styles;
 }
-exports.setNavigationBarStyles = setNavigationBarStyles;
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withNavigationBar, pkg.name, pkg.version);

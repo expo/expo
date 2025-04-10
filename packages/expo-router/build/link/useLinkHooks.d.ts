@@ -1,6 +1,7 @@
 import { MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 /**
  * @platform web
  */
@@ -46,7 +47,7 @@ export type WebAnchorProps = {
      *
      * @example
      * ```jsx
-     * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>`
+     * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>
      * ```
      */
     rel?: string;
@@ -65,10 +66,7 @@ export type WebAnchorProps = {
      */
     download?: string;
 };
-/**
- *
- */
-export interface LinkProps<T extends string | object> extends Omit<TextProps, 'href'>, WebAnchorProps {
+export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     /**
      * The path of the route to navigate to. It can either be:
      * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
@@ -97,7 +95,7 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
      *}
      * ```
      */
-    href: Href<T>;
+    href: Href;
     /**
      * Used to customize the `Link` component. It will forward all props to the
      * first child of the `Link`. Note that the child component must accept
@@ -162,6 +160,25 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
      */
     push?: boolean;
     /**
+     * While in a stack, this will dismiss screens until the provided href is reached. If the href is not found,
+     * it will instead replace the current screen with the provided href.
+     *
+     * @example
+     *```tsx
+     * import { Link } from 'expo-router';
+     * import { View } from 'react-native';
+     *
+     * export default function Route() {
+     *  return (
+     *   <View>
+     *     <Link dismissTo href="/feed">Close modal</Link>
+     *   </View>
+     *  );
+     *}
+     * ```
+     */
+    dismissTo?: boolean;
+    /**
      * On native, this can be used with CSS interop tools like Nativewind.
      * On web, this sets the HTML `class` directly.
      */
@@ -178,6 +195,13 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
      * Replaces the initial screen with the current route.
      */
     withAnchor?: boolean;
+    /**
+     * When navigating in a Stack, if the target is valid then screens in the history that matches
+     * the uniqueness constraint will be removed.
+     *
+     * If used with `push`, the history will be filtered even if no navigation occurs.
+     */
+    dangerouslySingular?: SingularOptions;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
@@ -186,7 +210,7 @@ export declare function useInteropClassName(props: {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;
-export declare const useHrefAttrs: (props: Partial<LinkProps<any>>) => {
+export declare const useHrefAttrs: (props: Partial<LinkProps>) => {
     hrefAttrs?: any;
-} & Partial<LinkProps<any>>;
+} & Partial<LinkProps>;
 //# sourceMappingURL=useLinkHooks.d.ts.map

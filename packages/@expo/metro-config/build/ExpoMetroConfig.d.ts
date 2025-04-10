@@ -30,6 +30,10 @@ export interface DefaultConfigOptions {
         debugId?: string;
     }) => Module[])[];
 }
+export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
+    platform: string;
+    environment?: string;
+}) => number;
 export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export declare const EXPO_DEBUG: boolean;

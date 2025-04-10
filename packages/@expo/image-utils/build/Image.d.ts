@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { ImageOptions } from './Image.types';
 export declare function getMimeType(srcPath: string): string | null;
 export declare function generateImageBackgroundAsync(imageOptions: Omit<ImageOptions, 'src'>): Promise<Buffer>;

@@ -1,2 +1,2 @@
-export * as SplashScreen from 'expo-splash-screen';
+export * from '../utils/splash';
 //# sourceMappingURL=Splash.d.ts.map

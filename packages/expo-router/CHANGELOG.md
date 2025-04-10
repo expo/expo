@@ -10,6 +10,218 @@
 
 ### 💡 Others
 
+## 5.0.2-preview.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.0 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1-preview.1 — 2025-04-08
+
+### 🐛 Bug fixes
+
+- Unpack default exports correctly from server actions using `expo-router/_async-server-import` ([#35948](https://github.com/expo/expo/pull/35948) by [@byCedric](https://github.com/byCedric))
+
+## 5.0.1-preview.0 — 2025-04-05
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Wrap app in root `<Slot />` navigator ([#35613](https://github.com/expo/expo/pull/35613) by [@marklawlor](https://github.com/marklawlor))
+- Use UNSTABLE_router & add 'dangerouslySingular' prop ([#35595](https://github.com/expo/expo/pull/35595) by [@marklawlor](https://github.com/marklawlor))
+
+### 🎉 New features
+
+- Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Improve route `displayName` for debugging component stacks. ([#35867](https://github.com/expo/expo/pull/35867) by [@EvanBacon](https://github.com/EvanBacon))
+- Temporarily Remove RSC dependency. ([#34505](https://github.com/expo/expo/pull/34505) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `expo-linking` to synchronously get the initial URL. This fixes App Clips and improves RSC support. ([#34328](https://github.com/expo/expo/pull/34328) by [@EvanBacon](https://github.com/EvanBacon))
+- Polyfill relative fetch requests and `window.location` by default. ([#34169](https://github.com/expo/expo/pull/34169) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix linting errors ([#34033](https://github.com/expo/expo/pull/34033) by [@marklawlor](https://github.com/marklawlor))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Add Sitemap to exported views ([#34144](https://github.com/expo/expo/pull/34144) by [@davidavz](https://github.com/davidavz))
+- Fix tests after dependency update ([#35035](https://github.com/expo/expo/pull/35035) by [@marklawlor](https://github.com/marklawlor))
+- Update TypeScript for React 19 ([#35217](https://github.com/expo/expo/pull/35217) by [@marklawlor](https://github.com/marklawlor))
+- Removed vendored `react-helmet-async` package.json ([#35746](https://github.com/expo/expo/pull/35746) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
+- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
+
+## 4.0.20 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.20-rc.0 - 2025-04-02
+
+### 🐛 Bug fixes
+
+- Fix `this.config` crash on startup. ([#35833](https://github.com/expo/expo/pull/35833) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.19 - 2025-03-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.18 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fix Fast Refresh not detecting file system updates. ([#34509](https://github.com/expo/expo/pull/34509) by [@marklawlor](https://github.com/marklawlor))
+- Fix getPathFromState generating an invalid path for hoisted index routes. ([#34668](https://github.com/expo/expo/pull/34668) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.17 - 2025-01-19
+
+### 🎉 New features
+
+- Add partial support for `generateStaticParams` in React Server Components router. ([#34093](https://github.com/expo/expo/pull/34093) by [@EvanBacon](https://github.com/EvanBacon))
+- Add server error handling to error boundary. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.16 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
+- Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Add less aggressive babel plugin migration warning. ([#33640](https://github.com/expo/expo/pull/33640) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.15 - 2024-12-24
+
+### 💡 Others
+
+- Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+- Add `withLayoutContext` example. ([#34346](https://github.com/expo/expo/pull/34346) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 4.0.14 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- Prevent base url from being appended to external links. ([#31420](https://github.com/expo/expo/pull/31420) by [@6TELOIV](https://github.com/6teloiv)) ([#31420](https://github.com/expo/expo/pull/31420) by [@6teloiv](https://github.com/6teloiv))
+- Fix baseURL being removed when refreshing the app on web. ([#33481](https://github.com/expo/expo/pull/33481) by [@marklawlor](https://github.com/marklawlor))
+- Fix navigation when using browser back/forward ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))
+- Fix `useNavigation` hook unable to find parent navigator for hoisted routes and relative hrefs ([#33035](https://github.com/expo/expo/pull/33035) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.13 - 2024-12-16
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.12 - 2024-12-10
+
+### 🐛 Bug fixes
+
+- Fix `fileURLtoFilePath` returning valid UNIX os paths to resolve client and server boundary entries on Windows. ([#33540](https://github.com/expo/expo/pull/33540) by [@byCedric](https://github.com/byCedric))
+
+## 4.0.10 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.9 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix using style arrays on `expo-router/ui` `<Tab>` components ([#32887](https://github.com/expo/expo/pull/32887) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.8 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix typed route using `\` instead of `/` in windows ([#33146](https://github.com/expo/expo/pull/33146) by [@imranbarbhuiya](https://github.com/imranbarbhuiya))
+- Fix hash links causing page reload when there is no history with a starting hash ([#33161](https://github.com/expo/expo/pull/33161) by [@marklawlor](https://github.com/marklawlor))
+- Change `react-native-screens` to have its version managed by the SDK ([#33167](https://github.com/expo/expo/pull/33167) by [@marklawlor](https://github.com/marklawlor))
+- Change CLI doctor integration to only validate `@react-navigation/*` packages ([#33168](https://github.com/expo/expo/pull/33168) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.7 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fix `<Link>` using a hash href causing a full page reload on web. ([#32645](https://github.com/expo/expo/pull/32645) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.6 — 2024-11-15
+
+### 🎉 New features
+
+- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`. ([#32847](https://github.com/expo/expo/pull/32847) by [@marklawlor](https://github.com/marklawlor))
+- Add `router.dismissTo(<href>)` and `<Link dismissTo href={} />` ([#32933](https://github.com/expo/expo/pull/32933) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Add missing dependency for React Server environments. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
+- Fix relative Hrefs not including search params ([#32931](https://github.com/expo/expo/pull/32931) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.5 — 2024-11-13
+
+- Prevent from disabling edge-to-edge ([#32854](https://github.com/expo/expo/pull/32854) by [@zoontek](https://github.com/zoontek))
+
+## 4.0.4 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-11-13
+
+### 💡 Others
+
+- Rename `experiments.reactServerActions` -> `experiments.reactServerFunctions` and other RSC flags. ([#32791](https://github.com/expo/expo/pull/32791) by [@EvanBacon](https://github.com/EvanBacon))
+- Appearance tweaks for the Unmatched route internal page. ([#32817](https://github.com/expo/expo/pull/32817) by [@Simek](https://github.com/Simek))
+
+## 4.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-11-10
+
+### 🎉 New features
+
+- Add `expo-router` integration with `@expo/cli install` command. ([#32679](https://github.com/expo/expo/pull/32679) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.14 — 2024-11-07
+
+### 💡 Others
+
+- Tweaks and fixes for the internal Sitemap page. ([#29756](https://github.com/expo/expo/pull/29756) by [@Simek](https://github.com/Simek))
+- Appearance tweaks for the Onboard welcome page. ([#32620](https://github.com/expo/expo/pull/32620), [#32653](https://github.com/expo/expo/pull/32653)) by [@Simek](https://github.com/Simek)
+
+## 4.0.0-preview.13 — 2024-11-05
+
+### 🎉 New features
+
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove `expo-splash-screen` dependency without changing behavior ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
+## 4.0.0-preview.12 — 2024-11-04
+
+### 🛠 Breaking changes
+
+- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
+- Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+- Add `anchor` to `unstable_settings` ([#28644](https://github.com/expo/expo/pull/28644) by [@marklawlor](https://github.com/marklawlor))
+
 ## 4.0.0-preview.11 — 2024-10-31
 
 _This version does not introduce any user-facing changes._
@@ -81,6 +293,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add `expo-router/rsc/headers` for accessing request headers in server components. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
 - Add aliases for bridge modules in RSC. ([#32095](https://github.com/expo/expo/pull/32095) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))

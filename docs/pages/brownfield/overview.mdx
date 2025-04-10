@@ -5,6 +5,8 @@ hideTOC: true
 description: An overview of how you can integrate Expo tools into existing native apps ("brownfield" apps).
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
 An existing native app that was built using another technology, whose main entry point is _not_ a React Native view, is commonly referred to as a "brownfield" app. For example, if your app was built using UIKit and Swift, and you want to use React Native for a single screen then that is considered an "existing native app" and "brownfield".
@@ -17,7 +19,7 @@ By these definitions, if you have an "existing native app" for Android or iOS an
 
 > **info** Support for integrating Expo modules into existing native projects is still experimental. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues). Not all features of the tools and services below will be available when used in the context of an existing native app.
 
-Expo is primarily built with greenfield apps in mind. Not all Expo tools and services are compatible with existing native projects.
+Expo is primarily built with greenfield apps in mind, but we are increasingly investing in brownfield scenarios. Not all Expo tools and services are compatible with existing native projects yet. Additionally, comprehensive documentation for brownfield integrations may not yet available, and you may need to adapt other related documentation to your context.
 
 | Tool/Service                                                                                         | Supports brownfield? |
 | ---------------------------------------------------------------------------------------------------- | -------------------- |
@@ -28,7 +30,7 @@ Expo is primarily built with greenfield apps in mind. Not all Expo tools and ser
 | [Expo Dev Client](/versions/latest/sdk/dev-client/) - adds in-app developer tooling to Debug builds  | No                   |
 | [EAS Build](/build/introduction/) - a CI/CD service built specifically for Expo/React Native         | Yes                  |
 | [EAS Submit](/submit/introduction/) - a hosted service that uploads your app to stores               | Yes                  |
-| [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | No                   |
+| [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | Yes                  |
 
 ## Next steps
 
@@ -36,10 +38,12 @@ Expo is primarily built with greenfield apps in mind. Not all Expo tools and ser
   title="Integrating your first React Native view"
   description="Learn how to add a React Native root view to your existing native app in the React Native docs."
   href="https://reactnative.dev/docs/integration-with-existing-apps"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Install Expo modules"
   description="Install the Expo Modules API and use it to add existing Expo modules or write your own native extensions."
   href="/brownfield/installing-expo-modules/"
+  Icon={BookOpen02Icon}
 />

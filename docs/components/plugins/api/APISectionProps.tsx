@@ -1,32 +1,34 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
+import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+
 import {
+  CommentTagData,
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
   TypeDefinitionData,
+  TypeDocKind,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
-  BoxSectionHeader,
-  CommentTextBlock,
   extractDefaultPropValue,
+  getAllTagData,
   getCommentOrSignatureComment,
-  getH3CodeWithBaseNestingLevel,
-  getTagNamesList,
-  renderTypeOrSignatureType,
+  getTagData,
   resolveTypeName,
-  TypeDocKind,
 } from './APISectionUtils';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
-
-import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { ELEMENT_SPACING, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
   sdkVersion: string;
   defaultProps?: DefaultPropsDefinitionData;
+  parentPlatforms?: CommentTagData[];
   header?: string;
 };
 
@@ -54,10 +56,10 @@ const renderInheritedProps = (
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
-      <>
+      <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
-        <UL>{inheritedProps.map(i => renderInheritedProp(i, sdkVersion))}</UL>
-      </>
+        <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
+      </div>
     );
   }
   return undefined;
@@ -79,6 +81,7 @@ const renderProps = (
   def: PropsDefinitionData,
   sdkVersion: string,
   defaultValues?: DefaultPropsDefinitionData,
+  parentPlatforms?: CommentTagData[],
   exposeInSidebar?: boolean
 ): JSX.Element => {
   const propsDeclarations = getPropsBaseTypes(def)
@@ -86,12 +89,18 @@ const renderProps = (
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
 
   return (
-    <div key={`props-definition-${def.name}`} className="[&>*:last-child]:!mb-0">
+    <div key={`props-definition-${def.name}`} className="[&>*]:last:!mb-0">
       {propsDeclarations?.map(prop =>
         prop
-          ? renderProp(prop, sdkVersion, extractDefaultPropValue(prop, defaultValues), {
-              exposeInSidebar,
-            })
+          ? renderProp(
+              prop,
+              sdkVersion,
+              extractDefaultPropValue(prop, defaultValues),
+              parentPlatforms,
+              {
+                exposeInSidebar,
+              }
+            )
           : null
       )}
       {renderInheritedProps(def, sdkVersion, exposeInSidebar)}
@@ -103,43 +112,59 @@ export const renderProp = (
   propData: PropData,
   sdkVersion: string,
   defaultValue?: string,
+  parentPlatforms?: CommentTagData[],
   { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
-  const extractedSignatures = signatures || type?.declaration?.signatures;
+  const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
+  const platforms = getAllTagData('platform', extractedComment);
 
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
-      <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <HeaderComponent tags={getTagNamesList(comment)}>
-        <MONOSPACE
-          weight="medium"
-          className={mergeClasses(
-            'wrap-anywhere',
-            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
-          )}>
-          {name}
-        </MONOSPACE>
-      </HeaderComponent>
-      <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
-        {flags?.isOptional && <span className={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-        {flags?.isReadonly && <span className={STYLES_SECONDARY}>Read Only&emsp;&bull;&emsp;</span>}
-        <span className={STYLES_SECONDARY}>Type:</span>{' '}
-        {renderTypeOrSignatureType({ type, signatures: extractedSignatures, sdkVersion })}
-        {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
-          <span>
-            <span className={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
-            <CODE>{defaultValue}</CODE>
-          </span>
-        ) : null}
-      </P>
-      <CommentTextBlock comment={extractedComment} includePlatforms={false} />
+      className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
+      <APISectionDeprecationNote comment={extractedComment} className="mx-4 mb-0 mt-3" />
+      <APIBoxHeader
+        name={name}
+        comment={extractedComment}
+        baseNestingLevel={baseNestingLevel}
+        deprecated={Boolean(getTagData('deprecated', extractedComment))}
+        platforms={platforms.length ? platforms : parentPlatforms}
+      />
+      <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
+        {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
+        {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
+        Type:{' '}
+        <APITypeOrSignatureType
+          type={type}
+          signatures={extractedSignatures}
+          sdkVersion={sdkVersion}
+        />
+        {defaultValue && defaultValue !== UNKNOWN_VALUE && (
+          <>
+            &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
+          </>
+        )}
+      </div>
+      <APICommentTextBlock comment={extractedComment} includePlatforms={false} inlineHeaders />
+      {extractedSignatures?.length &&
+        extractedSignatures[0].parameters?.map(param => (
+          <div
+            className={mergeClasses(
+              STYLES_SECONDARY,
+              VERTICAL_SPACING,
+              ELEMENT_SPACING,
+              'flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5 font-normal'
+            )}
+            key={param.name}>
+            <MONOSPACE>
+              {param.name}: {resolveTypeName(param.type, sdkVersion)}
+            </MONOSPACE>
+            <APICommentTextBlock comment={param.comment} />
+          </div>
+        ))}
     </div>
   );
 };
@@ -147,6 +172,7 @@ export const renderProp = (
 const APISectionProps = ({
   data,
   defaultProps,
+  parentPlatforms,
   header = 'Props',
   sdkVersion,
 }: APISectionPropsProps) => {
@@ -163,17 +189,14 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <BoxSectionHeader
-            text={header}
-            className="!text-secondary !font-medium"
-            exposeInSidebar
-            baseNestingLevel={99}
-          />
-          {baseProp && baseProp.comment && <CommentTextBlock comment={baseProp.comment} />}
+          {baseProp?.comment && (
+            <APICommentTextBlock comment={baseProp.comment} includePlatforms={!parentPlatforms} />
+          )}
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(propsDefinition, sdkVersion, defaultProps, header === 'Props')
+        renderProps(propsDefinition, sdkVersion, defaultProps, parentPlatforms, header === 'Props')
       )}
     </>
   );

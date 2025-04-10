@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add `textZoom` option to override font scaling applied by the user’s Android device settings. ([#33784](https://github.com/expo/expo/pull/33784) by [@BatDroid](https://github.com/BatDroid))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 14.0.3 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.2 — 2024-10-25
 
 _This version does not introduce any user-facing changes._

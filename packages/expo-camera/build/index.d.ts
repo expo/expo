@@ -55,6 +55,7 @@ export declare const useMicrophonePermissions: (options?: import("expo-modules-c
  */
 export declare function scanFromURLAsync(url: string, barcodeTypes?: BarcodeType[]): Promise<BarcodeScanningResult[]>;
 export * from './Camera.types';
+export * from './PictureRef';
 /**
  * @hidden
  */

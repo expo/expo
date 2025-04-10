@@ -19,6 +19,7 @@ import {
   ResponseContentType,
 } from '../ExpoGoManifestHandlerMiddleware';
 import { ManifestMiddlewareOptions } from '../ManifestMiddleware';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from '../resolveRuntimeVersionWithExpoUpdatesAsync';
 import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
@@ -74,6 +75,7 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
+jest.mock('../resolveRuntimeVersionWithExpoUpdatesAsync');
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
@@ -690,5 +692,22 @@ describe('_getManifestResponseAsync', () => {
         })
       )
     );
+  });
+
+  it('delegates runtime version resolution to expo-updates if possible', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(JSON.parse(body)).toMatchObject({
+      runtimeVersion: 'testrtv',
+    });
   });
 });

@@ -57,10 +57,7 @@ export async function getVirtualFaviconAssetsAsync(
     if (!html.includes('</head>')) {
       return html;
     }
-    return html.replace(
-      '</head>',
-      `<link rel="shortcut icon" href="${baseUrl}/favicon.ico" /></head>`
-    );
+    return html.replace('</head>', `<link rel="icon" href="${baseUrl}/favicon.ico" /></head>`);
   }
 
   return injectFaviconTag;

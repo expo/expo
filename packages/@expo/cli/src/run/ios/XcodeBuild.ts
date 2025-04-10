@@ -17,6 +17,26 @@ export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
 
+export function matchEstimatedBinaryPath(buildOutput: string): string | null {
+  // Match the full path that contains `/(.*)/Developer/Xcode/DerivedData/(.*)/Build/Products/(.*)/(.*).app`
+  const appBinaryPathMatch = buildOutput.match(
+    /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:Debug|Release)-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
+  );
+  if (!appBinaryPathMatch?.length) {
+    throw new CommandError(
+      'XCODE_BUILD',
+      `Malformed xcodebuild results: app binary path was not generated in build output. Please report this issue and run your project with Xcode instead.`
+    );
+  } else {
+    // Sort for the shortest
+    const shortestPath = (appBinaryPathMatch.filter((a) => typeof a === 'string' && a) as string[])
+      .sort((a: string, b: string) => a.length - b.length)[0]
+      .trim();
+
+    Log.debug(`Found app binary path: ${shortestPath}`);
+    return shortestPath;
+  }
+}
 /**
  *
  * @returns '/Users/evanbacon/Library/Developer/Xcode/DerivedData/myapp-gpgjqjodrxtervaufttwnsgimhrx/Build/Products/Debug-iphonesimulator/myapp.app'
@@ -25,31 +45,41 @@ export function getAppBinaryPath(buildOutput: string) {
   // Matches what's used in "Bundle React Native code and images" script.
   // Requires that `-hideShellScriptEnvironment` is not included in the build command (extra logs).
 
-  // Like `\=/Users/evanbacon/Library/Developer/Xcode/DerivedData/Exponent-anpuosnglkxokahjhfszejloqfvo/Build/Products/Debug-iphonesimulator`
-  const CONFIGURATION_BUILD_DIR = extractEnvVariableFromBuild(
-    buildOutput,
-    'CONFIGURATION_BUILD_DIR'
-  ).sort(
-    // Longer name means more suffixes, we want the shortest possible one to be first.
-    // Massive projects (like Expo Go) can sometimes print multiple different sets of environment variables.
-    // This can become an issue with some
-    (a, b) => a.length - b.length
-  );
-  // Like `Exponent.app`
-  const UNLOCALIZED_RESOURCES_FOLDER_PATH = extractEnvVariableFromBuild(
-    buildOutput,
-    'UNLOCALIZED_RESOURCES_FOLDER_PATH'
-  );
+  try {
+    // Like `\=/Users/evanbacon/Library/Developer/Xcode/DerivedData/Exponent-anpuosnglkxokahjhfszejloqfvo/Build/Products/Debug-iphonesimulator`
+    const CONFIGURATION_BUILD_DIR = extractEnvVariableFromBuild(
+      buildOutput,
+      'CONFIGURATION_BUILD_DIR'
+    ).sort(
+      // Longer name means more suffixes, we want the shortest possible one to be first.
+      // Massive projects (like Expo Go) can sometimes print multiple different sets of environment variables.
+      // This can become an issue with some
+      (a, b) => a.length - b.length
+    );
+    // Like `Exponent.app`
+    const UNLOCALIZED_RESOURCES_FOLDER_PATH = extractEnvVariableFromBuild(
+      buildOutput,
+      'UNLOCALIZED_RESOURCES_FOLDER_PATH'
+    );
 
-  const binaryPath = path.join(
-    // Use the shortest defined env variable (usually there's just one).
-    CONFIGURATION_BUILD_DIR[0],
-    // Use the last defined env variable.
-    UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]
-  );
+    const binaryPath = path.join(
+      // Use the shortest defined env variable (usually there's just one).
+      CONFIGURATION_BUILD_DIR[0],
+      // Use the last defined env variable.
+      UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]
+    );
 
-  // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
-  return getEscapedPath(binaryPath);
+    // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
+    return getEscapedPath(binaryPath);
+  } catch (error) {
+    if (error instanceof CommandError && error.code === 'XCODE_BUILD') {
+      const possiblePath = matchEstimatedBinaryPath(buildOutput);
+      if (possiblePath) {
+        return possiblePath;
+      }
+    }
+    throw error;
+  }
 }
 
 export function getEscapedPath(filePath: string): string {

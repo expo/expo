@@ -15,15 +15,27 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBaseUrl = exports.getPathDataFromState = exports.getPathFromState = void 0;
+exports.getPathFromState = getPathFromState;
+exports.getPathDataFromState = getPathDataFromState;
+exports.appendBaseUrl = appendBaseUrl;
 const queryString = __importStar(require("query-string"));
 const expo = __importStar(require("./getPathFromState-forks"));
 // END FORK
@@ -72,7 +84,6 @@ let cachedNormalizedConfigs = [
 function getPathFromState(state, options) {
     return getPathDataFromState(state, options).path;
 }
-exports.getPathFromState = getPathFromState;
 function getPathDataFromState(state, options) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
@@ -143,14 +154,36 @@ function getPathDataFromState(state, options) {
             // If there is no `screens` property or no nested state, we return pattern
             if (!currentOptions[route.name].screens || route.state === undefined) {
                 // START FORK
-                // Expo Router can end up in some configs that React Navigation doesn't seem to support
-                // We can get around this by providing a fake state
+                // Expo Router allows you to navigate to a (group) and not specify a target screen
+                // This is different from React Navigation, which requires a target screen
+                // We need to handle this case here, by selecting either the index screen or the first screen of the group
+                // IMPORTANT: This does not affect groups that use _layout files with initialRouteNames
+                // Layout files create a new route config. This only affects groups without layouts that have their screens
+                // hoisted.
+                // Example:
+                // - /home/_layout
+                // - /home/(a|b|c)/index          --> Hoisted to /home/_layout navigator
+                // - /home/(a|b|c)/other          --> Hoisted to /home/_layout navigator
+                // - /home/(profile)/me           --> Hoisted to /home/_layout navigator
+                //
+                // route.push('/home/(a)')        --> This should navigate to /home/(a)/index
+                // route.push('/home/(profile)')  --> This should navigate to /home/(profile)/me
                 const screens = currentOptions[route.name].screens;
-                const screen = route.params && 'screen' in route.params
-                    ? route.params.screen?.toString()
-                    : screens
-                        ? Object.keys(screens)[0]
-                        : undefined;
+                // Determine what screen the user wants to navigate to. If no screen is specified, assume there is an index screen
+                // In the examples above, this ensures that /home/(a) navigates to /home/(a)/index
+                const targetScreen = 
+                // This is typed as unknown, so we need to add these extra assertions
+                route.params && 'screen' in route.params && typeof route.params.screen === 'string'
+                    ? route.params.screen
+                    : 'index';
+                // If the target screen is not in the screens object, default to the first screen
+                // In the examples above, this ensures that /home/(profile) navigates to /home/(profile)/me
+                // As there is no index screen in the group
+                const screen = screens
+                    ? screens[targetScreen]
+                        ? targetScreen
+                        : Object.keys(screens)[0]
+                    : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
                     route = { ...screens[screen], name: screen, key: screen };
                     currentOptions = screens;
@@ -261,7 +294,6 @@ function getPathDataFromState(state, options) {
     return { path, params: allParams };
     // END FORK
 }
-exports.getPathDataFromState = getPathDataFromState;
 // const getParamName = (pattern: string) => pattern.replace(/^:/, '').replace(/\?$/, '');
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
@@ -299,5 +331,4 @@ function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

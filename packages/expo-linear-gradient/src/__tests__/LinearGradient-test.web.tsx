@@ -15,7 +15,7 @@ it(`renders`, () => {
 
   expect(view).toMatchInlineSnapshot(`
     <div
-      class="css-view-175oi2r"
+      class="css-view-g5y9jx"
       data-testid="gradient"
     />
   `);

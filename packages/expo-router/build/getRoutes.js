@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = exports.getExactRoutes = exports.getRoutes = void 0;
+exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = void 0;
+exports.getRoutes = getRoutes;
+exports.getExactRoutes = getExactRoutes;
 const getRoutesCore_1 = require("./getRoutesCore");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -16,7 +18,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }) {
+        getSystemRoute({ route, type }, defaults) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -62,19 +64,25 @@ function getRoutes(contextModule, options = {}) {
                     children: [],
                 };
             }
+            else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return require('./getRoutesRedirects').getRedirectModule(route);
+                    },
+                };
+            }
             throw new Error(`Unknown system route: ${route} and type: ${type}`);
         },
         ...options,
     });
 }
-exports.getRoutes = getRoutes;
 function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
-exports.getExactRoutes = getExactRoutes;
 var getRoutesCore_2 = require("./getRoutesCore");
 Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
 Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });

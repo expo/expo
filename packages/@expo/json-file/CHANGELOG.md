@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 9.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.0 — 2025-04-04
+
+### 💡 Others
+
+- Replace internal atomic file writing logic. ([#35316](https://github.com/expo/expo/pull/35316) by [@kitten](https://github.com/kitten))
+
+## 9.0.2 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.0 — 2024-10-22
 
 ### 🎉 New features

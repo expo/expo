@@ -1,33 +1,26 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
+expoModule {
+  canBePublished false
+}
+
+group = "host.exp.exponent"
+version = "5.1.1"
 
 android {
   namespace "expo.modules.devclient"
   defaultConfig {
     versionCode 1
-    versionName "5.0.0-preview.6"
+    versionName "5.1.1"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildTypes {
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
-    }
-
-    releaseWithDevLauncher {
-      initWith release
-      matchingFallbacks = ['release', 'debug']
-    }
-  }
-
-  sourceSets {
-    releaseWithDevLauncher {
-      setRoot 'src/debug'
     }
   }
 

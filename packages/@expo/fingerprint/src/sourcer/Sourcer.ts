@@ -17,7 +17,7 @@ import {
   getExpoConfigSourcesAsync,
   getExpoCNGPatchSourcesAsync,
 } from './Expo';
-import { resolveExpoAutolinkingVersion } from '../ExpoVersions';
+import { resolveExpoAutolinkingVersion } from '../ExpoResolver';
 import { getDefaultPackageSourcesAsync } from './Packages';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';

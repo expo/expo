@@ -149,4 +149,7 @@ export type OrientationChangeEvent = {
      */
     orientationInfo: ScreenOrientationInfo;
 };
+export type ExpoOrientationEvents = {
+    expoDidUpdateDimensions: OrientationChangeListener;
+};
 //# sourceMappingURL=ScreenOrientation.types.d.ts.map

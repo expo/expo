@@ -10,6 +10,89 @@
 
 ### 💡 Others
 
+## 2.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- [Android][iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta)), ([#33712](https://github.com/expo/expo/pull/33712) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add support for listing available video tracks and currently played video track. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add `sourceLoad` event. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add caching functionality. ([#31781](https://github.com/expo/expo/pull/31781) by [@behenate](https://github.com/behenate))
+- Add `onFirstFrameRender` event to the `VideoView`. ([#35346](https://github.com/expo/expo/pull/35346) by [@behenate](https://github.com/behenate))
+- Add `useExoShutter` property to the `VideoView`. ([#35366](https://github.com/expo/expo/pull/35366) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Web] Fix `playbackRate` not being applied in the setup function.([#34182](https://github.com/expo/expo/pull/34182) by [@behenate](https://github.com/behenate))
+- Fix safe area insets not updating for native controls on iOS. ([#32864](https://github.com/expo/expo/pull/32864) by [@behenate](https://github.com/behenate))
+- [iOS] Fix the Now Playing notification disappearing after the video is paused. ([#35273](https://github.com/expo/expo/pull/35273) by [@behenate](https://github.com/behenate))
+- [iOS] Fix a race condition in setting the targets for the Now Playing controls causing the controls to sometimes not work. ([#35274](https://github.com/expo/expo/pull/35274) by [@behenate](https://github.com/behenate))
+- [iOS] Fix disabling the Now Playing controls for multiple players at the same time causing the notification to break. ([#35275](https://github.com/expo/expo/pull/35275) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
+- Run VideoManager.setAppropriateAudioSessionOrWarn on a different queue for a lower load on the main thread. ([#33127](https://github.com/expo/expo/pull/33127) by [@behenate](https://github.com/behenate))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] SharedRef: migrate from `pointer` to `ref` ([#30359](https://github.com/expo/expo/pull/30359) by [@behenate](https://github.com/behenate))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+
+## 2.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.4 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `AVPlayer` not deallocating when the player is unmounted. ([#33922](https://github.com/expo/expo/pull/33922) by [@behenate](https://github.com/behenate))
+
+## 2.0.3 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix empty notification showing on iOS when `showNowPlayingNotification` is set to false. ([#33698](https://github.com/expo/expo/pull/33698) by [@behenate](https://github.com/behenate))
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
+
+## 2.0.2 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.1 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `border` related props weren't applied correctly. ([#33075](https://github.com/expo/expo/pull/33075) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix controls sometimes flashing on initial display of the view, when `useNativeControls` is `false` ([#33238](https://github.com/expo/expo/pull/33238) by [@behenate](https://github.com/behenate))
+
+## 2.0.0 — 2024-11-11
+
+### 💡 Others
+
+- [Android] Modify aspect ratio coverage of Android PiP to be more specific ([#32551](https://github.com/expo/expo/pull/32551) by [@YangJonghun](https://github.com/YangJonghun))
+
+## 2.0.0-preview.2 — 2024-11-07
+
+### 🎉 New features
+
+- [Android][iOS] Add support for listing and selecting closed captions. ([#32582](https://github.com/expo/expo/pull/32582) by [@behenate](https://github.com/behenate))
+
+## 2.0.0-preview.1 — 2024-11-05
+
+### 🎉 New features
+
+- [Android][iOS] Add `audioMixingMode` property to control how the player interacts with other audio in the system. ([#32428](https://github.com/expo/expo/pull/32428) by [@behenate](https://github.com/behenate))
+- Add support for creating a direct instance of `VideoPlayer`. ([#32228](https://github.com/expo/expo/pull/32228) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Fix errors when passing a source with an `undefined` `uri` field. ([#32585](https://github.com/expo/expo/pull/32585) by [@behenate](https://github.com/behenate))
+
 ## 2.0.0-preview.0 — 2024-10-22
 
 ### 🛠 Breaking changes

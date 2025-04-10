@@ -7,10 +7,11 @@ description: A guide for building an Expo app for an Android TV or Apple TV targ
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **Warning** TV development is available only in SDK 50 and later. Not all Expo features and SDK modules are available on TV. See the [**Limitations**](#limitations) section for details.
+> **Warning** TV development is available only in SDK 50 and above. Not all Expo features and SDK libraries are available on TV. For more details, check the [See which libraries are supported](#see-which-libraries-are-supported).
 
 React Native is supported on Android TV and Apple TV through the [React Native TV project](https://github.com/react-native-tvos/react-native-tvos). This technology extends beyond TV, offering a comprehensive core repo fork with support for phone and TV targets, including Hermes and Fabric.
 
@@ -60,9 +61,9 @@ For SDK 51 and later, you can start with the [TV Router example](https://github.
 
 This creates a new project that uses [Expo Router](/router/introduction/) for file-based navigation, modeled after the [**create-expo-app** default template](/get-started/create-a-project/).
 
-## Supported modules
+<Collapsible summary="See which libraries are supported">
 
-At this time, TV applications work with the following packages and APIs listed in our Expo API docs.
+At this time, TV applications work with the following libraries and APIs listed below:
 
 - [AppleAuthentication](/versions/latest/sdk/apple-authentication/)
 - [Application](/versions/latest/sdk/application/)
@@ -91,18 +92,18 @@ At this time, TV applications work with the following packages and APIs listed i
 - [Updates](/versions/latest/sdk/updates/)
 - [Video](/versions/latest/sdk/video/)
 
-TV also works with [react-navigation](https://reactnavigation.org/), [react-native-video](https://github.com/react-native-video/react-native-video), and many other commonly used third-party React Native libraries.
+TV also works with [`react-navigation`](https://reactnavigation.org/), [`react-native-video`](https://github.com/react-native-video/react-native-video), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
 
-## Limitations
+#### Limitations
 
-- The [Expo DevClient](/versions/latest/sdk/dev-client/) package is not supported at this time.
-- The [Expo Router](/router/introduction/) package is only supported in SDK 51 and later.
+- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is not supported at this time.
+- The [Expo Router](/router/introduction/) library is only supported in SDK 51 and later.
+
+</Collapsible>
 
 ## Integration with an existing Expo project
 
-If you have an existing Expo project using SDK 50 or later, the following walkthrough describes the steps required to modify an Expo project for TV.
-
-> **Info** If you are starting with an SDK 49 project, you will need to [upgrade to SDK 50 or higher](/workflow/upgrading-expo-sdk-walkthrough/) before proceeding through the following steps.
+The following walkthrough describes the steps required to modify an Expo project for TV.
 
 <Step label="1">
 

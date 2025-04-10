@@ -7,7 +7,9 @@ private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 
 public final class FileSystemModule: Module {
-  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(sessionHandler: ExpoAppDelegate.getSubscriberOfType(FileSystemBackgroundSessionHandler.self))
+  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
+    sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+  )
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 

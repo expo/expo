@@ -20,6 +20,7 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
   internal var sharedObjectId: SharedObjectId = SharedObjectId(0)
 
   // Used by JNI
+  @DoNotStrip
   private fun getSharedObjectId(): Int {
     return sharedObjectId.value
   }

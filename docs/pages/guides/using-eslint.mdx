@@ -1,5 +1,5 @@
 ---
-title: Use ESLint and Prettier
+title: Using ESLint and Prettier
 description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
@@ -17,9 +17,11 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 ### Setup
 
-To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **.eslintrc.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
+To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **eslint.config.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
 <Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
+
+> **info** From **SDK 53** onwards, the created ESLint config file will use the [Flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. However, legacy config will also be supported.
 
 <Collapsible summary="Setup instructions for SDK 50 and below">
 
@@ -27,17 +29,21 @@ To set up ESLint in your Expo project, you can use the Expo CLI to install the n
 
 Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo) in your project.
 
-<Terminal
-  cmd={[
-    '# Install required ESLint configuration manually',
-    '',
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint@8 eslint-config-expo',
-    '',
-    '# For yarn only',
-    '$ yarn add -D eslint eslint-config-expo',
-  ]}
-/>
+<Tabs>
+
+<Tab label="macOS/Linux">
+
+<Terminal cmd={['$ npx expo install eslint@8 eslint-config-expo --dev']} />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal cmd={['$ npx expo install eslint@8 eslint-config-expo "--" --dev']} />
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -127,7 +133,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(
-  /* @info This will no longer assert linting errors */ __dirname /* @end */
+  /* @info This will no longer assert linting errors. */ __dirname /* @end */
 );
 
 module.exports = config;
@@ -139,17 +145,51 @@ module.exports = config;
 
 To install Prettier in your project:
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
-  cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev prettier eslint-config-prettier eslint-plugin-prettier',
-    '',
-    '# For yarn only',
-    '$ yarn add -D prettier eslint-config-prettier eslint-plugin-prettier',
-  ]}
+  cmd={['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier --dev']}
 />
 
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev']}
+/>
+
+</Tab>
+
+</Tabs>
+
 ### Setup
+
+<Tabs>
+
+<Tab label="Flat config">
+
+To integrate Prettier with ESLint, update your **eslint.config.js**:
+
+```js eslint.config.js
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
+
+module.exports = defineConfig([
+  expoConfig,
+  eslintPluginPrettierRecommended,
+  {
+    ignores: ['dist/*'],
+  },
+]);
+```
+
+</Tab>
+
+<Tab label="Legacy config">
 
 To integrate Prettier with ESlint, update your **.eslintrc.js**:
 
@@ -163,9 +203,13 @@ module.exports = {
 };
 ```
 
-Now, when you run `npx expo lint`, anything that is not aligned with Prettier formatting will be caught as an error.
-
 > **Note:** In the above configuration, you can use `"prettier/prettier": "warn"` if you prefer these formatting issues as warnings instead of errors.
+
+</Tab>
+
+</Tabs>
+
+Now, when you run `npx expo lint`, anything that is not aligned with Prettier formatting will be caught as an error.
 
 To customize Prettier settings, create a **.prettierrc** file at the root of your project and add your configuration.
 
@@ -192,59 +236,30 @@ ESLint can be slow to run on large projects. The easiest way to speed up the pro
 node_modules
 ```
 
-## Migration to `eslint-config-expo`
+## Migration to Flat config
 
-If you're migrating from an older version of Expo SDK that has `eslint-config-universe` installed, install `eslint-config-expo` library and update your ESLint configuration to extend it from the new library.
+> **info** **Note:** Flat config is supported in Expo SDK 53 and above.
 
-<Step label="1">
+Upgrade ESLint and `eslint-config-expo`:
 
-Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
+<Tabs>
 
-<Terminal
-  cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint-config-expo',
-    '',
-    '# For yarn only',
-    '$ yarn add -D eslint-config-expo',
-  ]}
-/>
+<Tab label="macOS/Linux">
 
-</Step>
+<Terminal cmd={['$ npx expo install eslint eslint-config-expo  --dev']} />
 
-<Step label="2">
+</Tab>
 
-Update your ESLint configuration to extend the `eslint-config-expo`:
+<Tab label="Windows">
 
-```js .eslintrc.js
-module.exports = {
-  /* @info Replace the extends key with the new configuration. */
-  extends: 'expo',
-  /* @end */
-  /* @hide ...*/ /* @end */
-};
-```
+<Terminal cmd={['$ npx expo install eslint eslint-config-expo "--" --dev']} />
 
-You can continue using your existing ESLint configuration with the new library and the `lint` script in your **package.json**. If your project uses SDK 51 and above, you can switch to using `npx expo lint` by following the next step.
+</Tab>
 
-</Step>
+</Tabs>
 
-<Step label="3">
+If you haven't customized your ESLint config at all, delete your **.eslintrc.js** and generate the new config with:
 
-To use `npx expo lint` command to lint your code, update the `lint` script in your **package.json**:
+<Terminal cmd={['$ npx expo lint']} />
 
-```json package.json
-{
-  "scripts": {
-    /* @info */
-    "lint": "expo lint"
-    /* @end */
-  }
-}
-```
-
-> **Note:** The above configuration will work only for SDK 51 and above.
-
-Now you can run `npx expo lint` to lint your code.
-
-</Step>
+Alternatively, migrate your config based on the [ESLint's migration guide](https://eslint.org/docs/latest/use/configure/migration-guide). `npx expo lint` supports both legacy and flat config, so the new config will automatically be picked up by the CLI.

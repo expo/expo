@@ -11,6 +11,11 @@ private var fontFamilyAliases = [String: String]()
 private var hasSwizzled = false
 
 /**
+ Queue to protect shared resources
+ */
+private let queue = DispatchQueue(label: "expo.fontfamilyaliasmanager", attributes: .concurrent)
+
+/**
  Manages the font family aliases and swizzles the `UIFont` class.
  */
 internal struct FontFamilyAliasManager {
@@ -18,7 +23,9 @@ internal struct FontFamilyAliasManager {
    Whether the given alias has already been set.
    */
   internal static func hasAlias(_ familyNameAlias: String) -> Bool {
-    return fontFamilyAliases[familyNameAlias] != nil
+    return queue.sync {
+      fontFamilyAliases[familyNameAlias] != nil
+    }
   }
 
   /**
@@ -27,14 +34,18 @@ internal struct FontFamilyAliasManager {
    */
   internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
     maybeSwizzleUIFont()
-    fontFamilyAliases[familyNameAlias] = font
+    queue.sync(flags: .barrier) {
+      fontFamilyAliases[familyNameAlias] = font
+    }
   }
 
   /**
    Returns the family name for the given alias or `nil` when it's not set yet.
    */
   internal static func familyName(forAlias familyNameAlias: String) -> String? {
-    return fontFamilyAliases[familyNameAlias]
+    return queue.sync {
+      fontFamilyAliases[familyNameAlias]
+    }
   }
 }
 

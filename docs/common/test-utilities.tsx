@@ -6,7 +6,7 @@ import { type NextRouter } from 'next/router';
 import { type PropsWithChildren, type ReactElement } from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
-import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { HeadingsContext } from '~/common/withHeadingManager';
 
 const Wrapper = ({ children }: PropsWithChildren) => (
   <TooltipProvider>
@@ -25,6 +25,8 @@ export function renderWithHeadings(
 
 export function renderWithTestRouter(element: ReactElement, router: Partial<NextRouter> = {}) {
   return render(
-    <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
+    <TooltipProvider>
+      <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
+    </TooltipProvider>
   );
 }

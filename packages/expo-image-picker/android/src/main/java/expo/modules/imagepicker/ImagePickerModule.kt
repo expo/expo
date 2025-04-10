@@ -70,11 +70,16 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(cacheDirectory, options.nativeMediaTypes.toFileExtension())
-      val uri = mediaFile.toContentUri(context)
-      val contractOptions = options.toCameraContractOptions(uri.toString())
+      val tempFile = createOutputFile(cacheDirectory, options.nativeMediaTypes.toFileExtension())
 
-      launchContract({ cameraLauncher.launch(contractOptions) }, options)
+      try {
+        val uri = tempFile.toContentUri(context)
+        val contractOptions = options.toCameraContractOptions(uri.toString())
+
+        launchContract({ cameraLauncher.launch(contractOptions) }, options)
+      } finally {
+        tempFile.delete()
+      }
     }
 
     AsyncFunction("launchImageLibraryAsync") Coroutine { options: ImagePickerOptions ->

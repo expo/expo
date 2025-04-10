@@ -39,6 +39,11 @@ public struct Exceptions {
       "Unable to find the '\(param.type)' view with tag '\(param.tag)'"
     }
   }
+  public final class SwiftUIViewNotFound<ViewType: ExpoSwiftUIView>: GenericException<(tag: Int, type: ViewType.Type)> {
+    override public var reason: String {
+      "Unable to find the '\(param.type)' view with tag '\(param.tag)'"
+    }
+  }
 
   /**
    An exception to throw when there is no module implementing the `EXFileSystemInterface` interface.

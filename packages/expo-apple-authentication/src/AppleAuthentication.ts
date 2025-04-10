@@ -7,6 +7,8 @@ import {
   AppleAuthenticationRefreshOptions,
   AppleAuthenticationSignInOptions,
   AppleAuthenticationSignOutOptions,
+  AppleAuthenticationFullName,
+  AppleAuthenticationFullNameFormatStyle,
 } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
@@ -99,7 +101,7 @@ export async function refreshAsync(
  *
  * It is not recommended to use this method to sign out the user as it works counterintuitively.
  * Instead of using this method it is recommended to simply clear all the user's data collected
- * from using [`signInAsync`](./#signinasync) or [`refreshAsync`](./#refreshasync) methods.
+ * from using [`signInAsync`](#appleauthenticationsigninasyncoptions) or [`refreshAsync`](#appleauthenticationrefreshasyncoptions) methods.
  *
  * @param options An [`AppleAuthenticationSignOutOptions`](#appleauthenticationsignoutoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
@@ -136,6 +138,24 @@ export async function getCredentialStateAsync(
     throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
   return ExpoAppleAuthentication.getCredentialStateAsync(user);
+}
+
+// @needsAudit @docsMissing
+/**
+ * Creates a locale-aware string representation of a person's name from an object representing the tokenized portions of a user's full name
+ *
+ * @param fullName The full name object with the tokenized portions
+ * @param formatStyle The style in which the name should be formatted
+ * @returns A locale-aware string representation of a person's name
+ */
+export function formatFullName(
+  fullName: AppleAuthenticationFullName,
+  formatStyle?: AppleAuthenticationFullNameFormatStyle
+): string {
+  if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.formatFullName) {
+    throw new UnavailabilityError('expo-apple-authentication', 'formatFullName');
+  }
+  return ExpoAppleAuthentication.formatFullName(fullName, formatStyle);
 }
 
 // @docsMissing

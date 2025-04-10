@@ -1,5 +1,4 @@
 {
-  "name": "expo-dev-launcher",
   "platforms": ["apple", "android"],
   "apple": {
     "podspecPath": "expo-dev-launcher.podspec",
@@ -10,6 +9,7 @@
     "debugOnly": true
   },
   "android": {
+    "modules": ["expo.modules.devlauncher.modules.DevLauncherInternalModule"],
     "gradlePlugins": [
       {
         "id": "expo-dev-launcher-gradle-plugin",

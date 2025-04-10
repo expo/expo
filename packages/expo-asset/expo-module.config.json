@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "android", "web", "tvos"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["AssetModule"]
   },
   "android": {

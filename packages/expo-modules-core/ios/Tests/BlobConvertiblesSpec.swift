@@ -46,7 +46,7 @@ final class DataUint8ArrayConvertiblesSpec: ExpoSpec {
         .eval(
           "expo.modules.BlobModule.echoAsync(new Uint8Array([0x00, 0xff])).then((result) => { globalThis.result = result; })"
         )
-      expect(try runtime.eval("globalThis.result instanceof Uint8Array").getBool()).toEventually(beTrue())
+      expect(safeBoolEval("globalThis.result instanceof Uint8Array")).toEventually(beTrue(), timeout: .milliseconds(2000))
       let array = try runtime.eval("Array.from(globalThis.result)").asArray()
       expect(array[0]?.getInt()) == 0x00
       expect(array[1]?.getInt()) == 0xff
@@ -57,11 +57,29 @@ final class DataUint8ArrayConvertiblesSpec: ExpoSpec {
         .eval(
           "expo.modules.BlobModule.echoMapAsync({ key: new Uint8Array([0x00, 0xff]) }).then((result) => { globalThis.result = result; })"
         )
-      expect(try runtime.eval("globalThis.result != null && globalThis.result.key instanceof Uint8Array").getBool()).toEventually(beTrue())
+      expect(safeBoolEval("globalThis.result != null && globalThis.result.key instanceof Uint8Array")).toEventually(beTrue(), timeout: .milliseconds(2000))
       let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
       expect(array[0]?.getInt()) == 0x00
       expect(array[1]?.getInt()) == 0xff
     }
+
+    // For async tests, this is a safe way to repeatedly evaluate JS
+    // and catch both Swift and ObjC exceptions
+    func safeBoolEval(_ js: String) -> Bool {
+      var result = false
+      do {
+        try EXUtilities.catchException {
+          guard let jsResult = try? runtime.eval(js) else {
+            return
+          }
+          result = jsResult.getBool()
+        }
+      } catch {
+        return false
+      }
+      return result
+    }
+
   }
 }
 

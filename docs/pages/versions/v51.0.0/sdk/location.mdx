@@ -17,7 +17,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
-import { PlatformTag } from '~/ui/components/Tag';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -25,7 +25,7 @@ import { PlatformTag } from '~/ui/components/Tag';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -95,7 +95,16 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-location` repository](https://github.com/expo/expo/tree/main/packages/expo-location#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **ios** project manually, then you need to add the `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescription` and `NSLocationWhenInUseUsageDescription` keys to your project's **ios/[app]/Info.plist**:
+
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+```
 
 </ConfigReactNative>
 
@@ -109,7 +118,7 @@ To use Background Location methods, the following requirements apply:
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
   specified in **Info.plist** file. See [background tasks configuration
-  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
+  guide](./task-manager/#configuration-in-appjsonappconfigjs).
 
 ### Geofencing methods
 
@@ -226,7 +235,7 @@ import * as Location from 'expo-location';
 
 ### Android
 
-> **Note**: Foreground and background services are not available in Expo Go for Android.
+> **Note:** Foreground and background services are not available in Expo Go for Android.
 
 When you install the `expo-location` module, it automatically adds the following permissions:
 

@@ -10,6 +10,52 @@
 
 ### 💡 Others
 
+## 5.0.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Remove global polyfill for deprecated `setImmediate` function. ([#35373](https://github.com/expo/expo/pull/35373) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Parse errors with Babel code frames as syntax errors on Windows. ([#34017](https://github.com/expo/expo/pull/34017) by [@byCedric](https://github.com/byCedric))
+- Fixed broken async import. ([#34824](https://github.com/expo/expo/pull/34824) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Remove unused log. ([#35894](https://github.com/expo/expo/pull/35894) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.1 - 2025-01-19
+
+### 🐛 Bug fixes
+
+- Only reload RSC for a given platform. ([#34216](https://github.com/expo/expo/pull/34216) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- fix: add e2e testing to server function errors ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `window.location` polyfill for server requests. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.2 — 2024-11-05
+
+### 💡 Others
+
+- Use `window.location` polyfill for server requests. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.1 — 2024-11-04
+
+### 💡 Others
+
+- Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 4.0.0-preview.0 — 2024-10-22
 
 ### 🎉 New features

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Build
 import android.util.Rational
 import android.view.View
@@ -12,31 +12,18 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.common.Format
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.modules.i18nmanager.I18nUtil
-import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.Spacing
-import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
-import com.facebook.react.uimanager.style.BorderRadiusProp
-import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.delegates.IgnoreSameSet
-import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
 import expo.modules.video.utils.applyAutoEnterPiP
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculateRectHint
-import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -48,6 +35,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onPictureInPictureStop by EventDispatcher<Unit>()
   val onFullscreenEnter by EventDispatcher<Unit>()
   val onFullscreenExit by EventDispatcher<Unit>()
+  val onFirstFrameRender by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
 
@@ -66,31 +54,19 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
   private var pictureInPictureHelperTag: String? = null
 
-  private var shouldInvalided = false
+  // We need to keep track of the target surface view visibility, but only apply it when `useExoShutter` is false.
+  var shouldHideSurfaceView: Boolean = true
 
-  private val outlineProvider = OutlineProvider(context)
-
-  @UnstableReactNativeAPI
-  private val borderDrawableLazyHolder = lazy {
-    CSSBackgroundDrawable(context).apply {
-      callback = this@VideoView
-
-      outlineProvider.borderRadiiConfig
-        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
-        .withIndex()
-        .forEach { (i, radius) ->
-          if (i == 0) {
-            setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
-          } else {
-            setBorderRadius(BorderRadiusProp.entries[i - 1], LengthPercentage(radius, LengthPercentageType.POINT))
-          }
-        }
+  var useExoShutter: Boolean? = null
+    set(value) {
+      if (value == false) {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+      } else {
+        playerView.setShutterBackgroundColor(Color.BLACK)
+      }
+      applySurfaceViewVisibility()
+      field = value
     }
-  }
-
-  @UnstableReactNativeAPI
-  private val borderDrawable
-    get() = borderDrawableLazyHolder.value
 
   var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
     applyAutoEnterPiP(currentActivity, new)
@@ -109,8 +85,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       videoPlayer?.removeListener(this)
       newPlayer?.addListener(this)
-      playerView.player = newPlayer?.player
       field = newPlayer
+      shouldHideSurfaceView = true
+      attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
@@ -147,6 +124,13 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   init {
     VideoManager.registerVideoView(this)
     playerView.setFullscreenButtonClickListener { enterFullscreen() }
+    // The prop `useNativeControls` prop is sometimes applied after the view is created, and sometimes there is a visible
+    // flash of controls event when they are set to off. Initially we set it to `false` and apply it in `onAttachedToWindow` to avoid this.
+    this.playerView.useController = false
+
+    // Start with the SurfaceView being transparent to avoid any flickers when the prop value is delivered.
+    this.playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+    this.playerView.videoSurfaceView?.alpha = 0f
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -154,6 +138,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         ViewGroup.LayoutParams.MATCH_PARENT
       )
     )
+  }
+
+  fun applySurfaceViewVisibility() {
+    if (useExoShutter == false && shouldHideSurfaceView) {
+      playerView.videoSurfaceView?.alpha = 0f
+    } else {
+      playerView.videoSurfaceView?.alpha = 1f
+    }
   }
 
   fun enterFullscreen() {
@@ -203,11 +195,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       } else {
         Rational(width, height)
       }
-      // Android PiP doesn't support aspect ratios lower than 0.4184 or higher than 2.39
-      if (aspectRatio.toFloat() > 2.39) {
-        aspectRatio = Rational(239, 100)
-      } else if (aspectRatio.toFloat() < 0.4184) {
-        aspectRatio = Rational(10000, 4184)
+      // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
+      // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
+      val maximumRatio = Rational(239, 100)
+      val minimumRatio = Rational(100, 239)
+      if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
+        aspectRatio = maximumRatio
+      } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
+        aspectRatio = minimumRatio
       }
 
       currentActivity.setPictureInPictureParams(
@@ -254,22 +249,15 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
-    showsSubtitlesButton = hasSubtitles(tracks)
+    showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
   }
 
-  private fun hasSubtitles(tracks: Tracks): Boolean {
-    for (group in tracks.groups) {
-      for (i in 0..<group.length) {
-        val format: Format = group.getTrackFormat(i)
-
-        if (MimeTypes.isText(format.sampleMimeType)) {
-          return true
-        }
-      }
-    }
-    return false
+  override fun onRenderedFirstFrame(player: VideoPlayer) {
+    shouldHideSurfaceView = false
+    applySurfaceViewVisibility()
+    onFirstFrameRender(Unit)
   }
 
   override fun requestLayout() {
@@ -287,31 +275,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // We need to disable it to keep scrubbing impossible.
     playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
     applyRectHint(currentActivity, calculateRectHint(playerView))
-  }
-
-  @UnstableReactNativeAPI
-  override fun draw(canvas: Canvas) {
-    // When the border-radii are not all the same, a convex-path
-    // is used for the Outline. Unfortunately clipping is not supported
-    // for convex-paths and we fallback to Canvas clipping.
-    outlineProvider.clipCanvasIfNeeded(canvas, this)
-
-    super.draw(canvas)
-
-    // Draw borders on top of the video
-    if (borderDrawableLazyHolder.isInitialized()) {
-      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
-        LAYOUT_DIRECTION_RTL
-      } else {
-        LAYOUT_DIRECTION_LTR
-      }
-
-      borderDrawable.apply {
-        layoutDirection = newLayoutDirection
-        setBounds(0, 0, width, height)
-        draw(canvas)
-      }
-    }
   }
 
   override fun onAttachedToWindow() {
@@ -336,78 +299,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .commitAllowingStateLoss()
     }
     applyAutoEnterPiP(currentActivity, false)
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderRadius(position: Int, borderRadius: Float) {
-    val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
-    if (isInvalidated) {
-      invalidateOutline()
-      if (!outlineProvider.hasEqualCorners()) {
-        shouldInvalided = true
-      }
-    }
-
-    // Setting the border-radius doesn't necessarily mean that a border
-    // should to be drawn. Only update the border-drawable when needed.
-    if (borderDrawableLazyHolder.isInitialized()) {
-      shouldInvalided = true
-      val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-      borderDrawableLazyHolder.value.apply {
-        if (position == 0) {
-          setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
-        } else {
-          setBorderRadius(BorderRadiusProp.entries[position - 1], LengthPercentage(radius, LengthPercentageType.POINT))
-        }
-      }
-    }
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderWidth(position: Int, width: Float) {
-    borderDrawable.setBorderWidth(position, width)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderColor(position: Int, rgb: Int) {
-    borderDrawable.setBorderColor(position, rgb)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderStyle(style: String?) {
-    borderDrawable.setBorderStyle(style)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  fun didUpdateProps() {
-    val hasBorder = if (borderDrawableLazyHolder.isInitialized()) {
-      val spacings = listOf(
-        Spacing.ALL,
-        Spacing.LEFT,
-        Spacing.RIGHT,
-        Spacing.TOP,
-        Spacing.BOTTOM,
-        Spacing.START,
-        Spacing.END
-      )
-      spacings
-        .any {
-          val boarderWidth = borderDrawable.getBorderWidthOrDefaultTo(YogaConstants.UNDEFINED, it)
-          boarderWidth != YogaConstants.UNDEFINED && boarderWidth > 0f
-        }
-    } else {
-      false
-    }
-
-    // We need to enable drawing on the view to draw the border or background
-    setWillNotDraw(!isOpaque && !hasBorder)
-    if (shouldInvalided) {
-      shouldInvalided = false
-      invalidate()
-    }
   }
 
   companion object {

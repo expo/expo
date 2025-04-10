@@ -5,10 +5,10 @@ import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
 import path from 'path';
 
-import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+import { isAndroidUsingHermes, isIosUsingHermes } from '../exportHermes';
 
 export interface Options {
   assetsDest?: string;
@@ -29,6 +29,7 @@ export interface Options {
   verbose: boolean;
   unstableTransformProfile?: string;
   eager?: boolean;
+  bytecode?: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -79,6 +80,7 @@ export function resolveOptions(
     dev,
     minify: parsed.args['--minify'] as boolean | undefined,
     eager: !!parsed.args['--eager'],
+    bytecode: parsed.args['--bytecode'] as boolean | undefined,
   };
 
   if (commonOptions.eager) {
@@ -159,6 +161,7 @@ export function getExportEmbedOptionsKey({
   bundleOutput,
   verbose,
   maxWorkers,
+  eager,
   ...options
 }: Options) {
   // Create a sorted key for the options, removing values that won't change the Metro results.

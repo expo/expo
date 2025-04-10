@@ -7,7 +7,7 @@ function LazyTabs({
   renderScreen,
 }: {
   active: string;
-  renderScreen: (key: string) => JSX.Element;
+  renderScreen: (key: string) => React.ReactElement;
 }) {
   const [screens, setScreens] = useState<string[]>(['azure']);
 

@@ -1,13 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffFingerprints = exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
+exports.createFingerprintAsync = createFingerprintAsync;
+exports.createProjectHashAsync = createProjectHashAsync;
+exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
+exports.diffFingerprints = diffFingerprints;
 const Dedup_1 = require("./Dedup");
 const Options_1 = require("./Options");
 const Sort_1 = require("./Sort");
 const Hash_1 = require("./hash/Hash");
 const Sourcer_1 = require("./sourcer/Sourcer");
 /**
- * Create a fingerprint from project
+ * Create a fingerprint for a project.
+ * @example
+ * ```js
+ * const fingerprint = await createFingerprintAsync('/app');
+ * console.log(fingerprint);
+ * ```
  */
 async function createFingerprintAsync(projectRoot, options) {
     const opts = await (0, Options_1.normalizeOptionsAsync)(projectRoot, options);
@@ -16,17 +24,33 @@ async function createFingerprintAsync(projectRoot, options) {
     const fingerprint = await (0, Hash_1.createFingerprintFromSourcesAsync)(normalizedSources, projectRoot, opts);
     return fingerprint;
 }
-exports.createFingerprintAsync = createFingerprintAsync;
 /**
- * Create a native hash value from project
+ * Create a native hash value for a project.
+ *
+ * @example
+ * ```ts
+ * const hash = await createProjectHashAsync('/app');
+ * console.log(hash);
+ * ```
  */
 async function createProjectHashAsync(projectRoot, options) {
     const fingerprint = await createFingerprintAsync(projectRoot, options);
     return fingerprint.hash;
 }
-exports.createProjectHashAsync = createProjectHashAsync;
 /**
- * Differentiate given `fingerprint` with the current project fingerprint state
+ * Diff the fingerprint with the fingerprint of the provided project.
+ *
+ * @example
+ * ```ts
+ * // Create a fingerprint for the project
+ * const fingerprint = await createFingerprintAsync('/app');
+ *
+ * // Make some changes to the project
+ *
+ * // Calculate the diff
+ * const diff = await diffFingerprintChangesAsync(fingerprint, '/app');
+ * console.log(diff);
+ * ```
  */
 async function diffFingerprintChangesAsync(fingerprint, projectRoot, options) {
     const newFingerprint = await createFingerprintAsync(projectRoot, options);
@@ -35,10 +59,21 @@ async function diffFingerprintChangesAsync(fingerprint, projectRoot, options) {
     }
     return diffFingerprints(fingerprint, newFingerprint);
 }
-exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
 /**
- * Differentiate two fingerprints with operation type.
- * The implementation is assumed that the sources are sorted.
+ * Diff two fingerprints. The implementation assumes that the sources are sorted.
+ *
+ * @example
+ * ```ts
+ * // Create a fingerprint for the project
+ * const fingerprint = await createFingerprintAsync('/app');
+ *
+ * // Make some changes to the project
+ *
+ * // Create a fingerprint again
+ * const fingerprint2 = await createFingerprintAsync('/app');
+ * const diff = await diffFingerprints(fingerprint, fingerprint2);
+ * console.log(diff);
+ * ```
  */
 function diffFingerprints(fingerprint1, fingerprint2) {
     let index1 = 0;
@@ -74,5 +109,4 @@ function diffFingerprints(fingerprint1, fingerprint2) {
     }
     return diff;
 }
-exports.diffFingerprints = diffFingerprints;
 //# sourceMappingURL=Fingerprint.js.map

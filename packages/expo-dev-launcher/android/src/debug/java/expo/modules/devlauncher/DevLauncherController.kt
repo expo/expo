@@ -85,7 +85,7 @@ class DevLauncherController private constructor() :
   override val devClientHost by lazy {
     ReactHostWrapper(
       reactNativeHost = DevLauncherReactNativeHost(context as Application, DEV_LAUNCHER_HOST),
-      reactHost = DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST)
+      reactHostProvider = { DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST) }
     )
   }
 
@@ -148,7 +148,7 @@ class DevLauncherController private constructor() :
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
-      internalUpdatesInterface?.reset()
+      DevLauncherKoinContext.app.koin.getOrNull<UpdatesInterface>()?.reset()
 
       val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
       val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)
@@ -435,7 +435,7 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, reactApplication.reactHost))
+      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }

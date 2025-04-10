@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useTabTrigger = exports.isTabTrigger = exports.TabTrigger = void 0;
+exports.TabTrigger = TabTrigger;
+exports.isTabTrigger = isTabTrigger;
+exports.useTabTrigger = useTabTrigger;
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -11,6 +13,23 @@ const useLinkToPathProps_1 = require("../link/useLinkToPathProps");
 const matchers_1 = require("../matchers");
 const Navigator_1 = require("../views/Navigator");
 const TabTriggerSlot = react_slot_1.Slot;
+/**
+ * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
+ * functionality slightly changes since the `href` prop is required,
+ * and the trigger also defines what routes are present in the `Tabs`.
+ *
+ * When used outside of `TabList`, this component no longer requires an `href`.
+ *
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
     const { trigger, triggerProps } = useTabTrigger({
         name,
@@ -31,13 +50,18 @@ function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
       </react_native_1.Pressable>);
     }
 }
-exports.TabTrigger = TabTrigger;
+/**
+ * @hidden
+ */
 function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
-exports.isTabTrigger = isTabTrigger;
-function useTabTrigger({ name, reset, onPress, onLongPress }) {
+/**
+ * Utility hook creating custom `TabTrigger`.
+ */
+function useTabTrigger(options) {
     const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
+    const { name, reset, onPress, onLongPress } = options;
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
@@ -120,7 +144,6 @@ function useTabTrigger({ name, reset, onPress, onLongPress }) {
         triggerProps,
     };
 }
-exports.useTabTrigger = useTabTrigger;
 const styles = react_native_1.StyleSheet.create({
     tabTrigger: {
         flexDirection: 'row',

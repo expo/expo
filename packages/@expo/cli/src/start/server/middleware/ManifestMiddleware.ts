@@ -44,7 +44,9 @@ export function getEntryWithServerRoot(
       `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
     );
   }
-  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
+  return convertPathToModuleSpecifier(
+    path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props))
+  );
 }
 
 /** Get the main entry module ID (file) relative to the project root. */
@@ -337,17 +339,19 @@ export abstract class ManifestMiddleware<
    * to an `index.html`, this enables the web platform to load JavaScript from the server.
    */
   private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
+    res.setHeader('Content-Type', 'text/html');
+
+    res.end(await this.getSingleHtmlTemplateAsync());
+  }
+
+  getSingleHtmlTemplateAsync() {
     // Read from headers
     const bundleUrl = this.getWebBundleUrl();
 
-    res.setHeader('Content-Type', 'text/html');
-
-    res.end(
-      await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
-        exp: this.initialProjectConfig.exp,
-        scripts: [bundleUrl],
-      })
-    );
+    return createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
+      exp: this.initialProjectConfig.exp,
+      scripts: [bundleUrl],
+    });
   }
 
   /** Exposed for testing. */

@@ -8,13 +8,24 @@ type TableProps = PropsWithChildren<{
   headers?: string[];
   headersAlign?: TextAlign[];
   className?: string;
+  containerClassName?: string;
 }>;
 
-export const Table = ({ children, headers = [], headersAlign, className }: TableProps) => (
-  <div className="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs">
+export const Table = ({
+  children,
+  headers = [],
+  headersAlign,
+  className,
+  containerClassName,
+}: TableProps) => (
+  <div
+    className={mergeClasses(
+      'table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs',
+      containerClassName
+    )}>
     <table
       className={mergeClasses(
-        'w-full border-0 rounded-none text-xs text-default',
+        'w-full rounded-none border-0 text-xs text-default',
         '[&_p]:text-xs',
         '[&_li]:text-xs',
         '[&_span]:text-xs',

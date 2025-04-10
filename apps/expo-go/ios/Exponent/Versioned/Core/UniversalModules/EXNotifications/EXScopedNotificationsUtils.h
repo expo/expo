@@ -19,6 +19,8 @@ typedef struct {
 
 + (BOOL)isId:(NSString *)identifier scopedByExperience:(NSString *)scopeKey;
 
++ (NSString *)getUnscopedIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier;
+
 + (ScopedIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier;
 
 + (BOOL)isLegacyCategoryId:(NSString *)scopedCategoryId scopedByScopeKey:(NSString *)scopeKey;

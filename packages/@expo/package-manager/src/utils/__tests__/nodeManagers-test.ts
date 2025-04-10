@@ -9,6 +9,7 @@ import {
   resolvePackageManager,
   resolveWorkspaceRoot,
   BUN_LOCK_FILE,
+  BUN_TEXT_LOCK_FILE,
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
   YARN_LOCK_FILE,
@@ -79,11 +80,49 @@ describe(createForProject, () => {
     expect(createForProject(projectRoot)).toBeInstanceOf(PnpmPackageManager);
   });
 
-  it(`creates bun package manager from project`, () => {
+  it(`creates bun package manager from project with text lockfile`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [BUN_TEXT_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(BunPackageManager);
+  });
+
+  it(`creates bun package manager from project with binary lockfile`, () => {
     vol.fromJSON(
       {
         'package.json': JSON.stringify({ name: 'project' }),
         [BUN_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(BunPackageManager);
+  });
+
+  it(`creates bun package manager from project with both lockfiles`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [BUN_LOCK_FILE]: '',
+        [BUN_TEXT_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(BunPackageManager);
+  });
+
+  it(`creates bun package manager from project using "yarn.lock" and "bun.lock"`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [BUN_TEXT_LOCK_FILE]: '',
+        [YARN_LOCK_FILE]: '',
       },
       projectRoot
     );
@@ -185,7 +224,28 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
   });
 
-  it(`resolves bun from monorepo workspace`, () => {
+  it(`resolves bun from monorepo workspace with text lockfile`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [BUN_TEXT_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+  });
+
+  it(`resolves bun from monorepo workspace with binary lockfile`, () => {
     vol.fromJSON(
       {
         'packages/test/package.json': JSON.stringify({ name: 'project' }),
@@ -204,6 +264,53 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+  });
+
+  it(`resolves bun from monorepo workspace with both lockfiles`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [BUN_LOCK_FILE]: '',
+        [BUN_TEXT_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+  });
+
+  it(`resolves bun from monorepo workspace using "yarn.lock" and "bun.lock"`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [BUN_TEXT_LOCK_FILE]: '',
+        [YARN_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+
+    // Due to the `yarn.lock` file being present when running `bun install --yarn`,
+    // yarn can be returned as package manager when prefering `yarn`.
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
   });
 
   it(`resolves bun from monorepo workspace using "yarn.lock" and "bun.lockb"`, () => {

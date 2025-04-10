@@ -14,12 +14,14 @@ import {
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
+import { PictureRef } from './PictureRef';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
 
 const _PICTURE_SAVED_CALLBACKS = {};
 
+let loggedRenderingChildrenWarning = false;
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
@@ -90,7 +92,7 @@ export default class CameraView extends Component<CameraViewProps> {
       throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
     }
 
-    return await CameraManager.isAvailableAsync();
+    return CameraManager.isAvailableAsync();
   }
 
   // @needsAudit
@@ -104,7 +106,7 @@ export default class CameraView extends Component<CameraViewProps> {
       throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
     }
 
-    return await CameraManager.getAvailableVideoCodecsAsync();
+    return CameraManager.getAvailableVideoCodecsAsync();
   }
 
   /**
@@ -114,6 +116,19 @@ export default class CameraView extends Component<CameraViewProps> {
    */
   async getAvailablePictureSizesAsync(): Promise<string[]> {
     return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
+  }
+
+  /**
+   * Returns an object with the supported features of the camera on the current device.
+   */
+  getSupportedFeatures(): {
+    isModernBarcodeScannerAvailable: boolean;
+    toggleRecordingAsyncAvailable: boolean;
+  } {
+    return {
+      isModernBarcodeScannerAvailable: CameraManager.isModernBarcodeScannerAvailable,
+      toggleRecordingAsyncAvailable: CameraManager.toggleRecordingAsyncAvailable,
+    };
   }
 
   /**
@@ -168,6 +183,8 @@ export default class CameraView extends Component<CameraViewProps> {
    *
    * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
    */
+  async takePictureAsync(options: CameraPictureOptions & { pictureRef: true }): Promise<PictureRef>;
+  async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
@@ -175,24 +192,27 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
-   * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+   * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
+   * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+   * @platform android
    * @platform ios
    */
   static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
       options = { barcodeTypes: [] };
     }
-    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+    if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.launchScanner(options);
     }
   }
 
   /**
    * Dismiss the scanner presented by `launchScanner`.
+   * > **info** On Android, the scanner is dismissed automatically when a barcode is scanned.
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
-    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+    if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.dismissScanner();
     }
   }
@@ -204,6 +224,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
    *
    * @platform ios
+   * @platform android
    */
   static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription {
     return CameraManager.addListener('onModernBarcodeScanned', listener);
@@ -221,6 +242,24 @@ export default class CameraView extends Component<CameraViewProps> {
   async recordAsync(options?: CameraRecordingOptions) {
     const recordingOptions = ensureRecordingOptions(options);
     return this._cameraRef.current?.record(recordingOptions);
+  }
+
+  /**
+   * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+   *
+   * @example
+   * ```ts
+   * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+   *
+   * return (
+   *  {toggleRecordingAsyncAvailable && (
+   *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+   *  )}
+   * )
+   * ```
+   */
+  async toggleRecordingAsync() {
+    return this._cameraRef.current?.toggleRecording();
   }
 
   /**
@@ -286,6 +325,14 @@ export default class CameraView extends Component<CameraViewProps> {
     const onBarcodeScanned = this.props.onBarcodeScanned
       ? this._onObjectDetected(this.props.onBarcodeScanned)
       : undefined;
+
+    // @ts-expect-error
+    if (nativeProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <CameraView> component does not support children. This may lead to inconsistent behaviour or crashes. If you want to render content on top of the Camera, consider using absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
+    }
 
     return (
       <ExpoCamera

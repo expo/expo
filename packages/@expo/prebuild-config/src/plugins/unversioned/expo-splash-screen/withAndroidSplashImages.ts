@@ -5,7 +5,7 @@ import {
   compositeImagesAsync,
   generateImageBackgroundAsync,
 } from '@expo/image-utils';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -20,6 +20,8 @@ type THEME = 'light' | 'dark';
 
 const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
+const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
+
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
     modes: {
@@ -33,10 +35,10 @@ const DRAWABLES_CONFIGS: {
   default: {
     modes: {
       light: {
-        path: `./res/drawable/${SPLASH_SCREEN_FILENAME}`,
+        path: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`,
       },
       dark: {
-        path: `./res/drawable-night/${SPLASH_SCREEN_FILENAME}`,
+        path: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`,
       },
     },
     dimensionsMultiplier: 1,
@@ -98,16 +100,21 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig | null> = (
+  config,
+  splash
+) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(
-        config,
-        props,
-        config.modRequest.projectRoot,
-        props?.logoWidth ?? 100
-      );
+      if (splash) {
+        await setSplashImageDrawablesAsync(
+          config,
+          splash,
+          config.modRequest.projectRoot,
+          splash?.imageWidth ?? 200
+        );
+      }
       return config;
     },
   ]);
@@ -124,7 +131,7 @@ export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
   props: AndroidSplashConfig | null,
   projectRoot: string,
-  logoWidth: number
+  imageWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
@@ -132,8 +139,8 @@ export async function setSplashImageDrawablesAsync(
   const darkSplash = getAndroidDarkSplashConfig(config, props);
 
   await Promise.all([
-    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth),
-    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth),
+    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth),
+    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth),
   ]);
 }
 
@@ -144,9 +151,10 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
     Object.values(DRAWABLES_CONFIGS).map(async ({ modes }) => {
       await Promise.all(
         Object.values(modes).map(async ({ path: filePath }) => {
-          if (await fs.pathExists(path.resolve(androidMainPath, filePath))) {
-            await fs.remove(path.resolve(androidMainPath, filePath));
-          }
+          await fs.promises.rm(path.resolve(androidMainPath, filePath), {
+            force: true,
+            recursive: true,
+          });
         })
       );
     })
@@ -157,10 +165,15 @@ export async function setSplashImageDrawablesForThemeAsync(
   config: SplashScreenConfig | null,
   theme: 'dark' | 'light',
   projectRoot: string,
-  logoWidth: number
+  imageWidth: number = 100
 ) {
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
+
+  if (config.drawable) {
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
+    return;
+  }
 
   const sizes: DRAWABLE_SIZE[] = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
 
@@ -171,7 +184,7 @@ export async function setSplashImageDrawablesForThemeAsync(
 
       if (image) {
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-        const size = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+        const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
         const canvasSize = 288 * multiplier;
 
         const background = await generateImageBackgroundAsync({
@@ -209,10 +222,33 @@ export async function setSplashImageDrawablesForThemeAsync(
 
         const folder = path.dirname(outputPath);
         // Ensure directory exists.
-        await fs.ensureDir(folder);
-        await fs.writeFile(outputPath, composedImage);
+        await fs.promises.mkdir(folder, { recursive: true });
+        await fs.promises.writeFile(outputPath, composedImage);
       }
       return null;
     })
   );
+}
+
+async function writeSplashScreenDrawablesAsync(
+  drawablePath: string,
+  projectRoot: string,
+  drawable: SplashScreenConfig['drawable']
+) {
+  if (!drawable) {
+    return;
+  }
+
+  const lightDrawablePath = path.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
+  const darkDrawablePath = path.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
+
+  const lightFolder = path.dirname(lightDrawablePath);
+  await fs.promises.mkdir(lightFolder, { recursive: true });
+  await fs.promises.copyFile(path.join(projectRoot, drawable.icon), lightDrawablePath);
+
+  if (drawable.darkIcon) {
+    const darkFolder = path.dirname(darkDrawablePath);
+    await fs.promises.mkdir(darkFolder, { recursive: true });
+    await fs.promises.copyFile(path.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+  }
 }

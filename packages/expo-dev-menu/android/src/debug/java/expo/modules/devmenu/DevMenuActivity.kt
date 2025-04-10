@@ -14,13 +14,13 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactRootView
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.util.UUID
 
 /**
@@ -47,9 +47,10 @@ class DevMenuActivity : ReactActivity() {
         // and cache the rootView for reuse
         if (!appWasLoaded) {
           super.loadApp(appKey)
-          if (!rootViewWasInitialized()) {
-            rootView = reactDelegate.reactRootView
-            if (ReactFeatureFlags.enableBridgelessArchitecture) {
+          val reactRootView = reactDelegate.reactRootView
+          if (!rootViewWasInitialized() && reactRootView != null) {
+            rootView = reactRootView
+            if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
               reactSurface = reactDelegate::class.java.getPrivateDeclaredFieldValue(
                 "mReactSurface", reactDelegate
               )
@@ -63,7 +64,7 @@ class DevMenuActivity : ReactActivity() {
           .setPrivateDeclaredFieldValue("mFabricEnabled", reactDelegate, fabricEnabled)
         ReactDelegate::class.java
           .setPrivateDeclaredFieldValue("mReactRootView", reactDelegate, rootView)
-        if (ReactFeatureFlags.enableBridgelessArchitecture) {
+        if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
           ReactDelegate::class.java
             .setPrivateDeclaredFieldValue("mReactSurface", reactDelegate, reactSurface)
         }
@@ -164,7 +165,7 @@ class DevMenuActivity : ReactActivity() {
     private lateinit var reactSurface: ReactSurface
 
     private fun rootViewWasInitialized(): Boolean {
-      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
         return ::rootView.isInitialized && ::reactSurface.isInitialized
       }
       return ::rootView.isInitialized

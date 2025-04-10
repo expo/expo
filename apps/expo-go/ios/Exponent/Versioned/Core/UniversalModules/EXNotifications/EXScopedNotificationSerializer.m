@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXScopedNotificationSerializer
 
-+ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSDictionary *serializedResponse = [super serializedNotificationResponse:response];
   NSMutableDictionary *serializedResponseMutable = [serializedResponse mutableCopy];
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
   return [serializedResponseMutable copy];
 }
 
-+ (NSDictionary *)serializedNotification:(UNNotification *)notification
++ (NSDictionary<NSString *, NSObject *> *)serializedNotification:(UNNotification *)notification
 {
   NSDictionary *serializedNotification = [super serializedNotification:notification];
   NSMutableDictionary *serializedNotificationMutable = [serializedNotification mutableCopy];
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
   return [serializedNotificationMutable copy];
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationContent:(UNNotificationRequest *)request
 {
   NSDictionary *serializedContent = [super serializedNotificationContent:request];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
   return [serializedContentMutable copy];
 }
 
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationRequest:(UNNotificationRequest *)request
 {
   NSDictionary* serializedRequest = [super serializedNotificationRequest:request];
   NSMutableDictionary *serializedRequestMutable = [serializedRequest mutableCopy];

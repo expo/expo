@@ -4,6 +4,7 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
+    "resolveJsonModule": true,
     "types": [
       "jest",
       "jest-require",
@@ -13,7 +14,6 @@
   "include": [
     "./src",
     "./types/expect.d.ts",
-    "./types/react-navigation.d.ts",
     "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],

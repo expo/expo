@@ -5,19 +5,19 @@ import { NotificationMessageDuotoneIcon } from '@expo/styleguide-icons/duotone/N
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { type ReactNode } from 'react';
 
-import { HeaderDescription } from '~/ui/components/Home';
-import { RawH3, A, LABEL } from '~/ui/components/Text';
+import { Header } from '~/ui/components/Home/components';
+import { A, LABEL } from '~/ui/components/Text';
 
 export function ExploreAPIs() {
   return (
     <>
-      <RawH3>Explore APIs</RawH3>
-      <HeaderDescription>
-        Expo supplies a vast array of SDK modules. You can also create your own.
-      </HeaderDescription>
+      <Header
+        title="Explore APIs"
+        description="Expo supplies a vast array of SDK modules. You can also create your own."
+      />
       <div
         className={mergeClasses(
-          'inline-grid w-full grid-cols-4 gap-8 my-4',
+          'my-4 inline-grid w-full grid-cols-4 gap-8',
           'max-xl-gutters:grid-cols-2',
           'max-lg-gutters:grid-cols-4',
           'max-md-gutters:grid-cols-2',
@@ -60,16 +60,16 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
     <A
       href={link}
       className={mergeClasses(
-        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group shadow-xs',
+        'group relative block min-h-[200px] overflow-hidden rounded-lg border border-default bg-subtle shadow-xs transition',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className
       )}
       isStyled>
-      <div className="flex min-h-[142px] justify-center items-center transition-transform group-hover:scale-105">
+      <div className="flex min-h-[142px] items-center justify-center transition-transform group-hover:scale-105">
         {icon}
       </div>
-      <LABEL className="flex justify-between items-center bg-default min-h-[30px] p-4">
+      <LABEL className="flex min-h-[30px] items-center justify-between bg-default p-4">
         {title}
         <ArrowRightIcon className="text-icon-secondary" />
       </LABEL>

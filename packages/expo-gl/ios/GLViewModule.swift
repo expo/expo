@@ -6,7 +6,7 @@ public final class GLViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExponentGLView")
 
-    View(EXGLView.self) {
+    View(GLView.self) {
       Events("onSurfaceCreate")
 
       Prop("msaaSamples") { (view, msaaSamples: Int) in

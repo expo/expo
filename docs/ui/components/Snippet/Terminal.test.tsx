@@ -18,7 +18,7 @@ describe(Terminal, () => {
     await user.click(screen.getByRole('textbox'));
     await user.paste();
 
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe(
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe(
       'expo install expo-updates'
     );
   });
@@ -44,7 +44,7 @@ describe(Terminal, () => {
     await user.click(screen.getByRole('textbox'));
     await user.paste();
 
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe(
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe(
       'expo install expo-dev-client'
     );
   });

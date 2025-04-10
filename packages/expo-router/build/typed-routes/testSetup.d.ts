@@ -1,2 +1,2 @@
-export default function (): Promise<void>;
+export {};
 //# sourceMappingURL=testSetup.d.ts.map

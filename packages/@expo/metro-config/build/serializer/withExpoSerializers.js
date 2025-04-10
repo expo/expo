@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSerializerFromSerialProcessors = exports.createDefaultExportCustomSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
+exports.withExpoSerializers = withExpoSerializers;
+exports.withSerializerPlugins = withSerializerPlugins;
+exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
+exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -35,7 +38,6 @@ function withExpoSerializers(config, options = {}) {
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
-exports.withExpoSerializers = withExpoSerializers;
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 function withSerializerPlugins(config, processors, options = {}) {
@@ -48,12 +50,26 @@ function withSerializerPlugins(config, processors, options = {}) {
         },
     };
 }
-exports.withSerializerPlugins = withSerializerPlugins;
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
-    return async (entryPoint, preModules, graph, options) => {
+    return async (entryPoint, preModules, graph, inputOptions) => {
         const isPossiblyDev = graph.transformOptions.hot;
         // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
-        const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
+        const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
+        const context = {
+            platform: graph.transformOptions?.platform,
+            environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
+        };
+        const options = {
+            ...inputOptions,
+            createModuleId: (moduleId, ...props) => {
+                if (props.length > 0) {
+                    return inputOptions.createModuleId(moduleId, ...props);
+                }
+                return inputOptions.createModuleId(moduleId, 
+                // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
+                context);
+            },
+        };
         let debugId;
         const loadDebugId = () => {
             if (!enableDebugId || debugId) {
@@ -148,12 +164,25 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         };
     };
 }
-exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
-    return async (...props) => {
-        const [, , , options] = props;
-        const customSerializerOptions = options.serializerOptions;
+    return async (entryPoint, preModules, graph, inputOptions) => {
+        const context = {
+            platform: graph.transformOptions?.platform,
+            environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
+        };
+        const options = {
+            ...inputOptions,
+            createModuleId: (moduleId, ...props) => {
+                if (props.length > 0) {
+                    return inputOptions.createModuleId(moduleId, ...props);
+                }
+                return inputOptions.createModuleId(moduleId, 
+                // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
+                context);
+            },
+        };
+        const customSerializerOptions = inputOptions.serializerOptions;
         // Custom options can only be passed outside of the dev server, meaning
         // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
         const supportsNonSerialReturn = !!customSerializerOptions?.output;
@@ -181,7 +210,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             return null;
         })();
         if (serializerOptions?.outputMode !== 'static') {
-            return defaultSerializer(...props);
+            return defaultSerializer(entryPoint, preModules, graph, options);
         }
         // Mutate the serializer options with the parsed options.
         options.serializerOptions = {
@@ -192,7 +221,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             includeSourceMaps: !!serializerOptions.includeSourceMaps,
             splitChunks: !!serializerOptions.splitChunks,
             ...configOptions,
-        }, ...props);
+        }, entryPoint, preModules, graph, options);
         if (supportsNonSerialReturn) {
             // @ts-expect-error: this is future proofing for adding assets to the output as well.
             return assets;
@@ -211,5 +240,4 @@ function createSerializerFromSerialProcessors(config, processors, originalSerial
         return finalSerializer(...props);
     };
 }
-exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 //# sourceMappingURL=withExpoSerializers.js.map

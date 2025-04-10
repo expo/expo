@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { render, Screen, screen } from '@testing-library/react';
 import fs from 'fs-extra';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { DiffBlock } from '.';
 

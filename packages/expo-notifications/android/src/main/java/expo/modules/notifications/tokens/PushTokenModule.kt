@@ -1,24 +1,32 @@
 package expo.modules.notifications.tokens
 
-import android.os.Bundle
 import com.google.firebase.messaging.FirebaseMessaging
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
-import expo.modules.notifications.tokens.interfaces.PushTokenListener
-import expo.modules.notifications.tokens.interfaces.PushTokenManager
+import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.addTokenListener
+import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
 
 private const val NEW_TOKEN_EVENT_NAME = "onDevicePushToken"
 private const val NEW_TOKEN_EVENT_TOKEN_KEY = "devicePushToken"
 private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
-class PushTokenModule : Module(), PushTokenListener {
-  private val tokenManager: PushTokenManager? get() = appContext.legacyModuleRegistry
-    .getSingletonModule("PushTokenManager", PushTokenManager::class.java)
-  private var eventEmitter: EventEmitter? = null
+class PushTokenModule : Module(), FirebaseTokenListener {
+  /**
+   * Callback called when [FirebaseMessagingDelegate] gets notified of a new token.
+   * Emits a [NEW_TOKEN_EVENT_NAME] event.
+   *
+   * @param token New push token.
+   */
+  override fun onNewToken(token: String) {
+    sendEvent(
+      NEW_TOKEN_EVENT_NAME,
+      mapOf(
+        NEW_TOKEN_EVENT_TOKEN_KEY to token
+      )
+    )
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoPushTokenManager")
@@ -26,16 +34,7 @@ class PushTokenModule : Module(), PushTokenListener {
     Events("onDevicePushToken")
 
     OnCreate {
-      eventEmitter = appContext.legacyModule()
-        ?: throw ModuleNotFoundException(EventEmitter::class)
-
-      // Register the module as a listener in PushTokenManager singleton module.
-      // Deregistration happens in onDestroy callback.
-      tokenManager?.addListener(this@PushTokenModule)
-    }
-
-    OnDestroy {
-      tokenManager?.removeListener(this@PushTokenModule)
+      addTokenListener(this@PushTokenModule)
     }
 
     /**
@@ -44,15 +43,15 @@ class PushTokenModule : Module(), PushTokenListener {
      * @param promise Promise to be resolved with the token.
      */
     AsyncFunction("getDevicePushTokenAsync") { promise: Promise ->
-      FirebaseMessaging.getInstance().token
+      val instance = getFirebaseMessagingInstance(promise) ?: return@AsyncFunction
+      instance.token
         .addOnCompleteListener { task ->
           if (!task.isSuccessful) {
             val exception = task.exception
             promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed: ${exception?.message ?: "unknown"}", exception)
             return@addOnCompleteListener
           }
-          val token = task.result
-          if (token == null) {
+          val token = task.result ?: run {
             promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed. Invalid token.", null)
             return@addOnCompleteListener
           }
@@ -63,7 +62,8 @@ class PushTokenModule : Module(), PushTokenListener {
     }
 
     AsyncFunction("unregisterForNotificationsAsync") { promise: Promise ->
-      FirebaseMessaging.getInstance().deleteToken()
+      val instance = getFirebaseMessagingInstance(promise) ?: return@AsyncFunction
+      instance.deleteToken()
         .addOnCompleteListener { task ->
           if (!task.isSuccessful) {
             val exception = task.exception
@@ -75,17 +75,16 @@ class PushTokenModule : Module(), PushTokenListener {
     }
   }
 
-  /**
-   * Callback called when [PushTokenManager] gets notified of a new token.
-   * Emits a [NEW_TOKEN_EVENT_NAME] event.
-   *
-   * @param token New push token.
-   */
-  override fun onNewToken(token: String) {
-    eventEmitter?.let {
-      val eventBody = Bundle()
-      eventBody.putString(NEW_TOKEN_EVENT_TOKEN_KEY, token)
-      it.emit(NEW_TOKEN_EVENT_NAME, eventBody)
+  private fun getFirebaseMessagingInstance(promise: Promise): FirebaseMessaging? {
+    return try {
+      FirebaseMessaging.getInstance()
+    } catch (e: IllegalStateException) {
+      promise.reject(
+        REGISTRATION_FAIL_CODE,
+        "Make sure to complete the guide at https://docs.expo.dev/push-notifications/fcm-credentials/ : ${e.message}",
+        e
+      )
+      null
     }
   }
 }

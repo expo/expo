@@ -11,9 +11,13 @@ import path from 'path';
 import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
-import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
+import { parseErrorStack, StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
+import { LogBoxLog } from './metro/log-box/LogBoxLog';
+import { getStackAsFormattedLog } from './metro/metroErrorInterface';
+
+const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 const groupStack: any = [];
 let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
@@ -64,10 +68,9 @@ export function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = chalk.bold`${platform}`;
+    const modePrefix = platform === '' ? '' : chalk.bold`${platform} `;
     originalLogFunction(
       modePrefix +
-        ' ' +
         color.bold(` ${logFunction.toUpperCase()} `) +
         ''.padEnd(groupStack.length * 2, ' '),
       ...data
@@ -79,6 +82,64 @@ const escapedPathSep = path.sep === '\\' ? '\\\\' : path.sep;
 const SERVER_STACK_MATCHER = new RegExp(
   `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
 );
+
+export async function maybeSymbolicateAndFormatReactErrorLogAsync(
+  projectRoot: string,
+  level: 'error' | 'warn',
+  error: {
+    message: string;
+    stack: StackFrame[];
+  }
+): Promise<string> {
+  const log = new LogBoxLog({
+    level: level as 'error' | 'warn',
+    message: {
+      content: error.message,
+      substitutions: [],
+    },
+    isComponentError: false,
+    stack: error.stack,
+    category: 'static',
+    componentStack: [],
+  });
+
+  await new Promise((res) => log.symbolicate('stack', res));
+
+  const symbolicatedErrorMessageAndStackLog = [
+    log.message.content,
+    getStackAsFormattedLog(projectRoot, {
+      stack: log.symbolicated?.stack?.stack ?? [],
+      codeFrame: log.codeFrame,
+    }),
+  ].join('\n\n');
+
+  return symbolicatedErrorMessageAndStackLog;
+}
+
+/** Attempt to parse an error message string to an unsymbolicated stack.  */
+export function parseErrorStringToObject(errorString: string) {
+  // Find the first line of the possible stack trace
+  const stackStartIndex = errorString.indexOf('\n    at ');
+  if (stackStartIndex === -1) {
+    // No stack trace found, return the original error string
+    return null;
+  }
+  const message = errorString.slice(0, stackStartIndex).trim();
+  const stack = errorString.slice(stackStartIndex + 1);
+
+  try {
+    const parsedStack = parseErrorStack(stack);
+
+    return {
+      message,
+      stack: parsedStack,
+    };
+  } catch (e) {
+    // If parsing fails, return the original error string
+    debug('Failed to parse error stack:', e);
+    return null;
+  }
+}
 
 function augmentLogsInternal(projectRoot: string) {
   const augmentLog = (name: string, fn: typeof console.log) => {

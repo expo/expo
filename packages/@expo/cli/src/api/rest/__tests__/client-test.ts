@@ -14,6 +14,7 @@ jest.mock('../../user/UserSettings', () => ({
   getSession: jest.fn(),
 }));
 jest.mock('../../../utils/fetch', () => ({
+  ...jest.requireActual('../../../utils/fetch'),
   fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
 }));
 
@@ -28,11 +29,12 @@ it('converts Expo APIv2 error to ApiV2Error', async () => {
           stack: 'line 1: hello',
           details: { who: 'world' },
           metadata: { an: 'object' },
+          requestId: '123',
         },
       ],
     });
 
-  expect.assertions(6);
+  expect.assertions(7);
 
   try {
     await fetchAsync('test', { method: 'POST' });
@@ -43,6 +45,7 @@ it('converts Expo APIv2 error to ApiV2Error', async () => {
     expect(error.expoApiV2ErrorDetails).toEqual({ who: 'world' });
     expect(error.expoApiV2ErrorMetadata).toEqual({ an: 'object' });
     expect(error.expoApiV2ErrorServerStack).toEqual('line 1: hello');
+    expect(error.expoApiV2RequestId).toEqual('123');
   }
 });
 
@@ -55,11 +58,12 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
           code: 'AUTHENTICATION_ERROR',
           message: 'Your username, email, or password was incorrect.',
           isTransient: false,
+          requestId: '123',
         },
       ],
     });
 
-  expect.assertions(3);
+  expect.assertions(4);
 
   try {
     await fetchAsync('test', { method: 'POST' });
@@ -67,6 +71,7 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
     expect(error).toBeInstanceOf(ApiV2Error);
     expect(error.message).toEqual('Your username, email, or password was incorrect.');
     expect(error.expoApiV2ErrorCode).toEqual('AUTHENTICATION_ERROR');
+    expect(error.expoApiV2RequestId).toEqual('123');
   }
 });
 
@@ -190,18 +195,36 @@ it('switches to offline mode when node-fetch network errors are thrown', async (
   expect(disableNetwork).toHaveBeenCalled();
 });
 
-it('switches to offline mode when undici network errors are thrown', async () => {
-  const undiciNetworkError = new Error('fetch failed');
-  const undiciNetworkCause = new Error('getaddrinfo ENOTFOUND api.expo.dev');
+describe('switches to offline mode when undici network errors are thrown', () => {
+  it('detects when ENOTFOUND is thrown', async () => {
+    const undiciNetworkError = new Error('fetch failed');
+    const undiciNetworkCause = new Error('getaddrinfo ENOTFOUND api.expo.dev');
 
-  Object.defineProperty(undiciNetworkError, 'cause', { value: undiciNetworkCause });
-  Object.defineProperty(undiciNetworkCause, 'code', { value: 'ENOTFOUND' });
+    Object.defineProperty(undiciNetworkError, 'cause', { value: undiciNetworkCause });
+    Object.defineProperty(undiciNetworkCause, 'code', { value: 'ENOTFOUND' });
 
-  jest.mocked(fetch).mockRejectedValueOnce(undiciNetworkError);
+    jest.mocked(fetch).mockRejectedValueOnce(undiciNetworkError);
 
-  await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
-    'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
-  );
+    await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+      'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+    );
 
-  expect(disableNetwork).toHaveBeenCalled();
+    expect(disableNetwork).toHaveBeenCalled();
+  });
+
+  it('detects when UND_ERR_CONNECT_TIMEOUT is thrown', async () => {
+    const undiciNetworkError = new Error('fetch failed');
+    const undiciNetworkCause = new Error('getaddrinfo UND_ERR_CONNECT_TIMEOUT api.expo.dev');
+
+    Object.defineProperty(undiciNetworkError, 'cause', { value: undiciNetworkCause });
+    Object.defineProperty(undiciNetworkCause, 'code', { value: 'UND_ERR_CONNECT_TIMEOUT' });
+
+    jest.mocked(fetch).mockRejectedValueOnce(undiciNetworkError);
+
+    await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+      'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+    );
+
+    expect(disableNetwork).toHaveBeenCalled();
+  });
 });

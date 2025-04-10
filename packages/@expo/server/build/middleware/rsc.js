@@ -9,7 +9,8 @@
  * https://github.com/dai-shi/waku/blob/f9111ed7d96c95d7e128b37e8f7ae2d80122218e/packages/waku/src/lib/middleware/rsc.ts#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRscMiddleware = exports.decodeInput = void 0;
+exports.decodeInput = void 0;
+exports.getRscMiddleware = getRscMiddleware;
 const decodeInput = (encodedInput) => {
     if (encodedInput === 'index.txt') {
         return '';
@@ -82,6 +83,7 @@ function getRscMiddleware(options) {
                 contentType: req.headers.get('Content-Type') ?? '',
                 decodedBody: req.headers.get('X-Expo-Params'),
                 onError: options.onError,
+                headers: headersToRecord(req.headers),
             };
             const readable = await options.renderRsc(args);
             return new Response(readable, {
@@ -94,6 +96,9 @@ function getRscMiddleware(options) {
         catch (err) {
             if (err instanceof Response) {
                 return err;
+            }
+            if (process.env.NODE_ENV !== 'development') {
+                throw err;
             }
             console.error(err);
             return new Response(`Unexpected server error rendering RSC: ` + err.message, {
@@ -109,5 +114,11 @@ function getRscMiddleware(options) {
         POST: getOrPostAsync,
     };
 }
-exports.getRscMiddleware = getRscMiddleware;
+function headersToRecord(headers) {
+    const record = {};
+    for (const [key, value] of headers.entries()) {
+        record[key] = value;
+    }
+    return record;
+}
 //# sourceMappingURL=rsc.js.map

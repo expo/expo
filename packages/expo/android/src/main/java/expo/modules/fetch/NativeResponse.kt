@@ -49,9 +49,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     state = ResponseState.STARTED
   }
 
-  fun startStreaming() {
+  fun startStreaming(): ByteArray? {
     if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
-      return
+      return null
     }
     if (state == ResponseState.RESPONSE_RECEIVED) {
       state = ResponseState.BODY_STREAMING_STARTED
@@ -59,9 +59,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
       emit("didReceiveResponseData", queuedData)
     } else if (state == ResponseState.BODY_COMPLETED) {
       val queuedData = this.sink.finalize()
-      emit("didReceiveResponseData", queuedData)
-      emit("didComplete")
+      return queuedData
     }
+    return null
   }
 
   fun cancelStreaming() {
@@ -72,7 +72,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun emitRequestCancelled() {
-    error = FetchRequestCancelledException()
+    val error = FetchRequestCancelledException()
+    this.error = error
+    if (state == ResponseState.BODY_STREAMING_STARTED) {
+      emit("didFailWithError", error)
+    }
     state = ResponseState.ERROR_RECEIVED
   }
 
@@ -93,6 +97,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   //region Callback implementations
 
   override fun onFailure(call: Call, e: IOException) {
+    // Canceled request should be handled by emitRequestCancelled
+    if (e.message === "Canceled") {
+      return
+    }
+
     if (isInvalidState(
         ResponseState.STARTED,
         ResponseState.RESPONSE_RECEIVED,
@@ -108,6 +117,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     }
     error = e
     state = ResponseState.ERROR_RECEIVED
+    emit("readyForJSFinalization")
   }
 
   override fun onResponse(call: Call, response: Response) {
@@ -123,6 +133,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         emit("didComplete")
       }
       this@NativeResponse.state = ResponseState.BODY_COMPLETED
+      emit("readyForJSFinalization")
     }
   }
 
@@ -158,22 +169,30 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   private fun pumpResponseBodyStream(stream: BufferedSource) {
-    while (!stream.exhausted()) {
-      if (isInvalidState(
-          ResponseState.RESPONSE_RECEIVED,
-          ResponseState.BODY_STREAMING_STARTED,
-          ResponseState.BODY_STREAMING_CANCELLED
-        )
-      ) {
-        break
+    try {
+      while (!stream.exhausted()) {
+        if (isInvalidState(
+            ResponseState.RESPONSE_RECEIVED,
+            ResponseState.BODY_STREAMING_STARTED,
+            ResponseState.BODY_STREAMING_CANCELLED
+          )
+        ) {
+          break
+        }
+        if (state == ResponseState.RESPONSE_RECEIVED) {
+          sink.appendBufferBody(stream.buffer.readByteArray())
+        } else if (state == ResponseState.BODY_STREAMING_STARTED) {
+          emit("didReceiveResponseData", stream.buffer.readByteArray())
+        } else {
+          break
+        }
       }
-      if (state == ResponseState.RESPONSE_RECEIVED) {
-        sink.appendBufferBody(stream.buffer.readByteArray())
-      } else if (state == ResponseState.BODY_STREAMING_STARTED) {
-        emit("didReceiveResponseData", stream.buffer.readByteArray())
-      } else {
-        break
+    } catch (e: IOException) {
+      this.error = e
+      if (state == ResponseState.BODY_STREAMING_STARTED) {
+        emit("didFailWithError", e)
       }
+      state = ResponseState.ERROR_RECEIVED
     }
   }
 

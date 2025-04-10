@@ -1,8 +1,8 @@
-import { glob, stream as globStream } from 'fast-glob';
+import { glob } from 'glob';
 import { vol } from 'memfs';
-import { Readable } from 'stream';
 
 import {
+  matchNativePackageClassName,
   parseComponentDescriptorsAsync,
   parseLibraryNameAsync,
   parseNativePackageClassNameAsync,
@@ -10,13 +10,18 @@ import {
   resolveDependencyConfigImplAndroidAsync,
 } from '../androidResolver';
 
-jest.mock('fast-glob');
 jest.mock('fs/promises');
+jest.mock('glob');
+
+const mockGlob = glob as jest.MockedFunction<typeof glob>;
+const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
+
+function registerGlobStreamMockOnce(results: string[]) {
+  // NOTE: Cast to any since any async iterable is accepted here
+  mockGlobStream.mockReturnValueOnce(results as any);
+}
 
 describe(resolveDependencyConfigImplAndroidAsync, () => {
-  const mockGlob = glob as jest.MockedFunction<typeof glob>;
-  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
-
   afterEach(() => {
     jest.resetAllMocks();
     vol.reset();
@@ -27,10 +32,8 @@ describe(resolveDependencyConfigImplAndroidAsync, () => {
     mockGlob.mockResolvedValueOnce(['src/main/AndroidManifest.xml']);
     // build.gradle
     mockGlob.mockResolvedValueOnce(['build.gradle']);
-    // parseNativePackageClassNameAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
-    // parseComponentDescriptorsAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java'] as any); // parseNativePackageClassNameAsync()
+    registerGlobStreamMockOnce([] as any); // parseComponentDescriptorsAsync()
 
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
@@ -76,10 +79,8 @@ public class TestPackage implements ReactPackage {
     mockGlob.mockResolvedValueOnce([]);
     // build.gradle
     mockGlob.mockResolvedValueOnce(['build.gradle']);
-    // parseNativePackageClassNameAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
-    // parseComponentDescriptorsAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
+    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
 
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
@@ -107,15 +108,49 @@ public class TestPackage implements ReactPackage {
     expect(result).not.toBeNull();
   });
 
+  it('should return android config from custom sourceDir', async () => {
+    // AndroidManifest.xml
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle
+    mockGlob.mockResolvedValueOnce(['build.gradle']);
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
+    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/custom/android/build.gradle': `
+android {
+    namespace "com.test"
+    defaultConfig {
+        applicationId "com.test"
+    }
+}
+`,
+      '/app/node_modules/react-native-test/custom/android/src/main/com/test/TestPackage.java': `\
+package com.test;
+
+import com.facebook.react.ReactPackage;
+
+public class TestPackage implements ReactPackage {
+}
+`,
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      {
+        sourceDir: './custom/android',
+      }
+    );
+    expect(result?.sourceDir).toBe('/app/node_modules/react-native-test/custom/android');
+  });
+
   it('should return null if gradle found but without namespace', async () => {
     // AndroidManifest.xml
     mockGlob.mockResolvedValueOnce([]);
     // build.gradle
     mockGlob.mockResolvedValueOnce(['build.gradle']);
-    // parseNativePackageClassNameAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
-    // parseComponentDescriptorsAsync()
-    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
+    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
 
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
@@ -202,15 +237,13 @@ android {
 });
 
 describe(parseNativePackageClassNameAsync, () => {
-  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
-
   afterEach(() => {
     jest.resetAllMocks();
     vol.reset();
   });
 
   it('should parse component descriptors from java file', async () => {
-    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']);
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
@@ -230,7 +263,7 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should parse component descriptors from kotlin file', async () => {
-    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.kt']));
+    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.kt']);
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.kt': `\
 package com.test
@@ -290,23 +323,19 @@ ext {
 });
 
 describe(parseComponentDescriptorsAsync, () => {
-  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
-
   afterEach(() => {
     jest.resetAllMocks();
     vol.reset();
   });
 
   it('should parse component descriptors', async () => {
-    mockGlobStream.mockReturnValueOnce(
-      Readable.from([
-        'Test.ts',
-        'SearchBarNativeComponent.js',
-        'ScreenNativeComponent.ts',
-        'specs/SpecComponent.ts',
-        'node_modules/ScreenNested.tsx',
-      ])
-    );
+    registerGlobStreamMockOnce([
+      'Test.ts',
+      'SearchBarNativeComponent.js',
+      'ScreenNativeComponent.ts',
+      'specs/SpecComponent.ts',
+      'node_modules/ScreenNested.tsx',
+    ]);
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,
@@ -334,5 +363,92 @@ export default codegenNativeComponent<NativeProps>('RNSSearchBar', {});
 
     const results = await parseComponentDescriptorsAsync('/app/node_modules/test', {});
     expect(results).toEqual(['RNSSearchBarComponentDescriptor', 'RNSpecComponentDescriptor']);
+  });
+
+  describe(matchNativePackageClassName, () => {
+    const path = 'unused';
+
+    it.each([
+      {
+        description: 'Java class implementing ReactPackage',
+        content: `
+import com.facebook.react.ReactPackage;
+
+public class CustomReactPackage implements ReactPackage {
+}`,
+      },
+      {
+        description: 'Kotlin class implementing ReactPackage',
+        content: `
+import com.facebook.react.ReactPackage
+
+class CustomReactPackage : ReactPackage {
+}`,
+      },
+      {
+        description: 'class implementing ReactPackage with additional interfaces',
+        content: `
+import com.facebook.react.ReactPackage;
+
+public class CustomReactPackage implements ReactPackage, SomeOtherInterface {
+}`,
+      },
+      {
+        description: 'Java class extending BaseReactPackage',
+        content: `
+import com.facebook.react.BaseReactPackage;
+
+public class CustomReactPackage extends BaseReactPackage {
+}`,
+      },
+      {
+        description: 'Java class extending TurboReactPackage',
+        content: `
+import com.facebook.react.TurboReactPackage;
+
+public class CustomReactPackage extends TurboReactPackage {
+}`,
+      },
+      {
+        description: 'Kotlin class extending BaseReactPackage',
+        content: `
+import com.facebook.react.BaseReactPackage
+
+class CustomReactPackage : BaseReactPackage() {
+}`,
+      },
+      {
+        description: 'Kotlin class extending TurboReactPackage',
+        content: `
+import com.facebook.react.TurboReactPackage
+
+class CustomReactPackage : TurboReactPackage() {
+}`,
+      },
+    ])('should handle $description', ({ content }) => {
+      expect(matchNativePackageClassName(path, Buffer.from(content))).toBe('CustomReactPackage');
+    });
+
+    // these are not as exhaustive as they could be, but cover main cases
+    it.each([
+      {
+        description: 'class without any ReactPackage implementation',
+        content: `
+public class CustomReactPackage {
+}`,
+      },
+      {
+        description: 'class without any ReactPackage implementation 2',
+        content: `
+public class CustomReactPackage extends SomeOtherPackage {
+}`,
+      },
+      {
+        description: 'empty file',
+        content: '',
+      },
+    ])('should return null for $description', ({ content }) => {
+      expect(matchNativePackageClassName(path, Buffer.from(content))).toBeNull();
+    });
   });
 });

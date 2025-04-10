@@ -2,7 +2,7 @@ import React
 import UIKit
 import ExpoModulesCore
 
-public class SplashScreenManager: NSObject {
+public class SplashScreenManager: NSObject, RCTReloadListener {
   @objc public static let shared = SplashScreenManager()
   private var loadingView: UIView?
   private var rootView: UIView?
@@ -17,29 +17,8 @@ public class SplashScreenManager: NSObject {
     }
 
     self.rootView = rootView
-    if let vc = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController() {
-      loadingView = vc.view
-      loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-      if let bounds = self.rootView?.bounds {
-        loadingView?.frame = bounds
-        loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
-      }
-      loadingView?.isHidden = false
-#if RCT_NEW_ARCH_ENABLED
-      if let hostView = rootView as? RCTSurfaceHostingProxyRootView, let loadingView {
-        hostView.disableActivityIndicatorAutoHide(true)
-        hostView.loadingView = loadingView
-      }
-#else
-      if let loadingView {
-        self.rootView?.addSubview(loadingView)
-      }
-#endif
-    }
-
+    showSplashScreen()
     NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name.RCTJavaScriptDidLoad, object: nil)
   }
 
   @objc private func onAppReady() {
@@ -77,6 +56,33 @@ public class SplashScreenManager: NSObject {
     self.options = options
   }
 
+  private func showSplashScreen() {
+    if let vc = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController() {
+      loadingView = vc.view
+      loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+      if let bounds = self.rootView?.bounds {
+        loadingView?.frame = bounds
+        loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
+      }
+      loadingView?.isHidden = false
+#if RCT_NEW_ARCH_ENABLED
+      if let hostView = rootView as? RCTSurfaceHostingProxyRootView, let loadingView {
+        hostView.disableActivityIndicatorAutoHide(true)
+        hostView.loadingView = loadingView
+      }
+#else
+      if let loadingView {
+        self.rootView?.addSubview(loadingView)
+      }
+#endif
+    }
+  }
+
+  public func didReceiveReloadCommand() {
+    showSplashScreen()
+  }
+
   private func isLoadingViewVisible() -> Bool {
     guard let loadingView else {
       return false
@@ -87,6 +93,5 @@ public class SplashScreenManager: NSObject {
 
   func removeObservers() {
     NotificationCenter.default.removeObserver(self, name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
-    NotificationCenter.default.removeObserver(self, name: Notification.Name.RCTJavaScriptDidLoad, object: nil)
   }
 }

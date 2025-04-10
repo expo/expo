@@ -7,8 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedNotificationSerializer : EXNotificationSerializer
 
-+ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response;
-+ (NSDictionary *)serializedNotification:(UNNotification *)notification;
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationResponse:(UNNotificationResponse *)response;
++ (NSDictionary<NSString *, NSObject *> *)serializedNotification:(UNNotification *)notification;
 
 @end
 

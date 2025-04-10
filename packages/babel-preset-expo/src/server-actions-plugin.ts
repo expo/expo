@@ -21,8 +21,7 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import url from 'url';
+import url, { pathToFileURL } from 'node:url';
 
 import { getPossibleProjectRoot } from './common';
 
@@ -124,30 +123,87 @@ export function reactServerActionsPlugin(
     );
 
     // Create a top-level declaration for the extracted function.
-    const bindingKind = 'const';
+    const bindingKind = 'var';
     const functionDeclaration = t.exportNamedDeclaration(
       t.variableDeclaration(bindingKind, [
         t.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
       ])
     );
 
-    // TODO: this is cacheable, no need to recompute
-    const programBody = moduleScope.path.get('body');
-    const lastImportPath = findLast(
-      Array.isArray(programBody) ? programBody : [programBody],
-      (stmt) => stmt.isImportDeclaration()
-    );
+    // Insert the declaration as close to the original declaration as possible.
 
-    const [inserted] = lastImportPath!.insertAfter(functionDeclaration);
-    moduleScope.registerBinding(bindingKind, inserted);
+    const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
 
-    inserted.addComment(
-      'leading',
-      ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
-      true
-    );
+    const decl = isPathFunctionInTopLevel ? path : findImmediatelyEnclosingDeclaration(path);
+    let inserted: NodePath<types.ExportNamedDeclaration>;
+
+    const canInsertExportNextToPath = (decl: NodePath) => {
+      if (!decl) {
+        return false;
+      }
+      if (decl.parentPath?.isProgram()) {
+        return true;
+      }
+
+      return false;
+    };
+
+    const findNearestPathThatSupportsInsertBefore = (decl: NodePath) => {
+      let current = decl;
+
+      // Check if current scope is suitable for `export` insertion
+      while (current && !current.isProgram()) {
+        if (canInsertExportNextToPath(current)) {
+          return current;
+        }
+        const parentPath = current.parentPath;
+        if (!parentPath) {
+          return null;
+        }
+        current = parentPath;
+      }
+
+      if (current.isFunction()) {
+        // Don't insert exports inside functions
+        return null;
+      }
+
+      return current;
+    };
+
+    const topLevelDecl = decl ? findNearestPathThatSupportsInsertBefore(decl) : null;
+
+    if (topLevelDecl) {
+      // If it's a variable declaration, insert before its parent statement to avoid syntax errors
+      const targetPath = topLevelDecl.isVariableDeclarator()
+        ? topLevelDecl.parentPath
+        : topLevelDecl;
+      [inserted] = targetPath.insertBefore(functionDeclaration);
+      moduleScope.registerBinding(bindingKind, inserted);
+      inserted.addComment(
+        'leading',
+        ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
+        true
+      );
+    } else {
+      // Fallback to inserting after the last import if no enclosing declaration is found
+      const programBody = moduleScope.path.get('body');
+      const lastImportPath = findLast(
+        Array.isArray(programBody) ? programBody : [programBody],
+        (stmt) => stmt.isImportDeclaration()
+      );
+
+      [inserted] = lastImportPath!.insertAfter(functionDeclaration);
+      moduleScope.registerBinding(bindingKind, inserted);
+      inserted.addComment(
+        'leading',
+        ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'),
+        true
+      );
+    }
 
     return {
+      inserted,
       extractedIdentifier,
       getReplacement: () =>
         getInlineActionReplacement({
@@ -289,8 +345,7 @@ export function reactServerActionsPlugin(
           // so we can't just remove this node.
           // replace the function decl with a (hopefully) equivalent var declaration
           // `var [name] = $$INLINE_ACTION_{N}`
-          // TODO: this'll almost certainly break when using default exports,
-          // but tangle's build doesn't support those anyway
+
           const bindingKind = 'var';
           const [inserted] = path.replaceWith(
             t.variableDeclaration(bindingKind, [t.variableDeclarator(fnId, extractedIdentifier)])
@@ -386,7 +441,7 @@ export function reactServerActionsPlugin(
               const id = left;
               const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
               // Replace `export default foo = async () => {}` with `const foo = async () => {}`
-              path.replaceWith(t.variableDeclaration('const', [t.variableDeclarator(id, right)]));
+              path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(id, right)]));
               // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
               path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
             } else if (
@@ -400,7 +455,7 @@ export function reactServerActionsPlugin(
               const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
 
               // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
-              path.node.declaration = t.variableDeclaration('const', [
+              path.node.declaration = t.variableDeclaration('var', [
                 t.variableDeclarator(extractedIdentifier, path.node.declaration),
               ]);
               // Strip the `export default`
@@ -454,13 +509,16 @@ export function reactServerActionsPlugin(
         if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
           return;
         }
+        // Skip type-only exports (`export type { Foo } from '...'` or `export { type Foo }`)
+        if (path.node.exportKind === 'type') {
+          return;
+        }
 
         // This can happen with `export {};` and TypeScript types.
         if (!path.node.declaration && !path.node.specifiers.length) {
           return;
         }
 
-        const registerServerReferenceId = addReactImport();
         const actionModuleId = getActionModuleId();
 
         const createRegisterCall = (
@@ -468,7 +526,7 @@ export function reactServerActionsPlugin(
           exported: t.Identifier | t.StringLiteral = identifier
         ) => {
           const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-          const call = t.callExpression(registerServerReferenceId, [
+          const call = t.callExpression(addReactImport(), [
             identifier,
             t.stringLiteral(actionModuleId),
             t.stringLiteral(exportedName),
@@ -492,6 +550,11 @@ export function reactServerActionsPlugin(
                 'Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)'
               );
             } else if (t.isExportSpecifier(specifier)) {
+              // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
+              if (specifier.exportKind === 'type') {
+                continue;
+              }
+
               // `export { foo };`
               // `export { foo as [bar|default] };`
               const localName = specifier.local.name;
@@ -649,7 +712,7 @@ const getFreeVariables = (path: FnPath) => {
 };
 
 const getFnPathName = (path: FnPath) => {
-  return path.isArrowFunctionExpression() ? undefined : path.node!.id!.name;
+  return path.isArrowFunctionExpression() ? undefined : path.node?.id?.name;
 };
 
 const isChildScope = ({

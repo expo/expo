@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { NavigationRenderProps } from './types';
-
 import { A, CALLOUT } from '~/ui/components/Text';
+
+import { NavigationRenderProps } from './types';
 
 export function PageLink({ route, isActive }: NavigationRenderProps) {
   if (route.type !== 'page') {
@@ -12,20 +12,20 @@ export function PageLink({ route, isActive }: NavigationRenderProps) {
   return (
     <A
       className={mergeClasses(
-        'flex items-center rounded-md px-1.5 py-2 mx-1 my-4 shadow-xs bg-default',
+        'mx-1 my-4 flex items-center rounded-md bg-default px-1.5 py-2 shadow-xs',
         'dark:bg-element'
       )}
       href={route.href}>
       <i
         className={mergeClasses(
-          'shrink-0 text-icon-secondary rounded-full size-1 mr-2 invisible',
+          'invisible mr-2 size-1 shrink-0 rounded-full text-icon-secondary',
           isActive && 'visible'
         )}
       />
       <CALLOUT
         className={mergeClasses('text-secondary', isActive && 'font-medium text-default')}
         tag="span">
-        {route.sidebarTitle || route.name}
+        {route.sidebarTitle ?? route.name}
       </CALLOUT>
     </A>
   );

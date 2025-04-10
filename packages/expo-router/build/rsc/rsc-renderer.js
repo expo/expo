@@ -9,10 +9,10 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
+exports.renderRsc = renderRsc;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
-require("./runtime");
+require("@expo/metro-runtime/rsc/runtime");
 const server_1 = require("react-server-dom-webpack/server");
 const path_1 = require("./path");
 const utils_1 = require("./router/utils");
@@ -130,8 +130,8 @@ async function renderRsc(args, opts) {
     if (actionId) {
         if (!opts.isExporting &&
             // @ts-ignore
-            !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
-            throw new Error('Experimental support for React Server Actions is not enabled');
+            !process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS) {
+            throw new Error('Experimental support for React Server Functions is not enabled');
         }
         const args = Array.isArray(decodedBody) ? decodedBody : [];
         const chunkInfo = serverConfig[actionId];
@@ -148,7 +148,6 @@ async function renderRsc(args, opts) {
     // method === 'GET'
     return renderWithContext(context, input, decodedBody);
 }
-exports.renderRsc = renderRsc;
 // TODO is this correct? better to use a library?
 const parseFormData = (body, contentType) => {
     const boundary = contentType.split('boundary=')[1];

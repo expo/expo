@@ -7,8 +7,8 @@ import { LightboxImage } from './LightboxImage';
 
 const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
-const PLAYER_WIDTH = '100%' as const;
-const PLAYER_HEIGHT = '100%' as const;
+const PLAYER_WIDTH = '100%';
+const PLAYER_HEIGHT = '100%';
 
 type ContentSpotlightProps = {
   alt?: string;
@@ -37,7 +37,7 @@ export function ContentSpotlight({
   return (
     <figure
       className={mergeClasses(
-        'text-center py-2.5 my-5 rounded-lg cursor-pointer',
+        'my-5 cursor-pointer rounded-lg py-2.5 text-center',
         containerClassName,
         !isVideo && 'bg-subtle'
       )}
@@ -58,7 +58,7 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <VisibilitySensor partialVisibility>
           {({ isVisible }: { isVisible: boolean }) => (
-            <div className="relative aspect-video bg-palette-black rounded-lg overflow-hidden">
+            <div className="relative aspect-video overflow-hidden rounded-lg bg-palette-black">
               <ReactPlayer
                 url={`/static/videos/${file}`}
                 className="react-player"
@@ -83,7 +83,7 @@ export function ContentSpotlight({
       {caption && (
         <figcaption
           className={mergeClasses(
-            'mt-3.5 text-secondary text-center text-xs px-8 py-2 cursor-text',
+            'mt-3.5 cursor-text px-8 py-2 text-center text-xs text-secondary',
             isVideo && 'bg-transparent'
           )}>
           {caption}

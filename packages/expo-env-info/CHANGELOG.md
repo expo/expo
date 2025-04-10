@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.3.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add `expo-updates` to list of packages. ([#33613](https://github.com/expo/expo/pull/33613) by [@betomoedano](https://github.com/betomoedano))
+
+## 1.2.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 1.2.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

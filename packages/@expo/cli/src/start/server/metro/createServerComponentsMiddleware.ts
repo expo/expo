@@ -8,12 +8,17 @@ import { getMetroServerRoot } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
+import { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';
+import url from 'url';
 
-import { logMetroError } from './metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
+import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
+import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
+import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
@@ -45,12 +50,19 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
+    createModuleId,
+    routerOptions,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
+    createModuleId: (
+      filePath: string,
+      context: { platform: string; environment: string }
+    ) => string | number;
+    routerOptions: Record<string, any>;
   }
 ) {
   const routerModule = useClientRouter
@@ -64,11 +76,24 @@ export function createServerComponentsMiddleware(
     rscPath,
     onError: console.error,
     renderRsc: async (args) => {
+      // In development we should add simulated versions of common production headers.
+      if (args.headers['x-real-ip'] == null) {
+        args.headers['x-real-ip'] = getIpAddress();
+      }
+      if (args.headers['x-forwarded-for'] == null) {
+        args.headers['x-forwarded-for'] = args.headers['x-real-ip'];
+      }
+      if (args.headers['x-forwarded-proto'] == null) {
+        args.headers['x-forwarded-proto'] = 'http';
+      }
+
       // Dev server-only implementation.
       try {
         return await renderRscToReadableStream({
           ...args,
+          headers: new Headers(args.headers),
           body: args.body!,
+          routerOptions,
         });
       } catch (error: any) {
         // If you get a codeFrame error during SSR like when using a Class component in React Server Components, then this
@@ -85,6 +110,15 @@ export function createServerComponentsMiddleware(
 
         // TODO: Revisit all error handling now that we do direct metro bundling...
         await logMetroError(projectRoot, { error });
+
+        if (error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
+          throw new Response(JSON.stringify(error), {
+            status: isPossiblyUnableToResolveError(error) ? 404 : 500,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        }
 
         const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
         throw new Response(sanitizedServerMessage, {
@@ -103,7 +137,11 @@ export function createServerComponentsMiddleware(
   }
 
   async function exportServerActionsAsync(
-    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    {
+      platform,
+      entryPoints,
+      domRoot,
+    }: { platform: string; entryPoints: string[]; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     clientBoundaries: string[];
@@ -111,11 +149,13 @@ export function createServerComponentsMiddleware(
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
     // TODO: Support multiple entry points in a single split server bundle...
-    const serverRoot = getMetroServerRootMemo(projectRoot);
-
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
-    for (const entryPoint of uniqueEntryPoints) {
+    const nestedServerBoundaries: string[] = [];
+    const processedEntryPoints = new Set<string>();
+    async function processEntryPoint(entryPoint: string) {
+      processedEntryPoints.add(entryPoint);
+
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
         platform,
@@ -123,6 +163,8 @@ export function createServerComponentsMiddleware(
         modulesOnly: true,
         // Required
         runModule: true,
+        // Required to ensure assets load as client boundaries.
+        domRoot,
       });
 
       const reactClientReferences = contents.artifacts
@@ -132,6 +174,13 @@ export function createServerComponentsMiddleware(
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
+      const reactServerReferences = contents.artifacts
+        .filter((a) => a.type === 'js')[0]
+        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+
+      if (reactServerReferences) {
+        nestedServerBoundaries.push(...reactServerReferences!);
+      }
 
       // Naive check to ensure the module runtime is not included in the server action bundle.
       if (contents.src.includes('The experimental Metro feature')) {
@@ -140,7 +189,11 @@ export function createServerComponentsMiddleware(
             entryPoint
         );
       }
-      const relativeName = path.relative(serverRoot, entryPoint);
+
+      const relativeName = createModuleId(entryPoint, {
+        platform,
+        environment: 'react-server',
+      });
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
@@ -151,8 +204,32 @@ export function createServerComponentsMiddleware(
       });
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [relativeName, outputName];
+      manifest[entryPoint] = [String(relativeName), outputName];
     }
+
+    async function processEntryPoints(entryPoints: string[], recursions = 0) {
+      // Arbitrary recursion limit to prevent infinite loops.
+      if (recursions > 10) {
+        throw new Error('Recursion limit exceeded while processing server boundaries');
+      }
+
+      for (const entryPoint of entryPoints) {
+        await processEntryPoint(entryPoint);
+      }
+
+      // When a server action has other server actions inside of it, we need to process those as well to ensure all entry points are in the manifest and accounted for.
+      let uniqueNestedServerBoundaries = [...new Set(nestedServerBoundaries)];
+      // Filter out values that have already been processed.
+      uniqueNestedServerBoundaries = uniqueNestedServerBoundaries.filter(
+        (value) => !processedEntryPoints.has(value)
+      );
+      if (uniqueNestedServerBoundaries.length) {
+        debug('bundling nested server action boundaries', uniqueNestedServerBoundaries);
+        return processEntryPoints(uniqueNestedServerBoundaries, recursions + 1);
+      }
+    }
+
+    await processEntryPoints(uniqueEntryPoints);
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
     files.set(`_expo/rsc/${platform}/action-manifest.js`, {
@@ -164,7 +241,7 @@ export function createServerComponentsMiddleware(
   }
 
   async function getExpoRouterClientReferencesAsync(
-    { platform }: { platform: string },
+    { platform, domRoot }: { platform: string; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     reactClientReferences: string[];
@@ -174,6 +251,8 @@ export function createServerComponentsMiddleware(
     const contents = await ssrLoadModuleArtifacts(routerModule, {
       environment: 'react-server',
       platform,
+      modulesOnly: true,
+      domRoot,
     });
 
     // Extract the global CSS modules that are imported from the router.
@@ -211,24 +290,55 @@ export function createServerComponentsMiddleware(
     return { reactClientReferences, reactServerReferences, cssModules };
   }
 
-  async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
-    return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
+  const routerCache = new Map<string, EntriesDev>();
+
+  async function getExpoRouterRscEntriesGetterAsync({
+    platform,
+    routerOptions,
+  }: {
+    platform: string;
+    routerOptions: Record<string, any>;
+  }) {
+    await ensureMemo();
+    // We can only cache this if we're using the client router since it doesn't change or use HMR
+    if (routerCache.has(platform) && useClientRouter) {
+      return routerCache.get(platform)!;
+    }
+
+    const router = await ssrLoadModule<
+      typeof import('expo-router/build/rsc/router/expo-definedRouter')
+    >(
       routerModule,
       {
         environment: 'react-server',
+        modulesOnly: true,
         platform,
       },
       {
-        hot: true,
+        hot: !useClientRouter,
       }
     );
+
+    const entries = router.default({
+      redirects: routerOptions?.redirects,
+      rewrites: routerOptions?.rewrites,
+    });
+
+    routerCache.set(platform, entries);
+    return entries;
   }
 
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
     ssrManifest?: Map<string, string>;
-  }) {
+  }): (
+    file: string,
+    isServer: boolean
+  ) => {
+    id: string;
+    chunks: string[];
+  } {
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
@@ -255,7 +365,7 @@ export function createServerComponentsMiddleware(
     return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = path.relative(serverRoot, file);
+        const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
 
         assert(
           context.ssrManifest.has(relativeFilePath),
@@ -265,11 +375,12 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: relativeFilePath,
+          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
           chunks: chunk != null ? [chunk] : [],
         };
       }
 
+      const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -286,7 +397,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
-        environment: isServer ? 'react-server' : 'client',
+        environment,
         modulesOnly: true,
         runModule: false,
       });
@@ -301,6 +412,7 @@ export function createServerComponentsMiddleware(
       clientReferenceUrl.search = searchParams.toString();
 
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
       const relativeFilePath = path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
@@ -311,15 +423,36 @@ export function createServerComponentsMiddleware(
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+      const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      return { id: relativeFilePath, chunks: [id] };
+      return {
+        id: String(createModuleId(filePath, { platform: context.platform, environment })),
+        chunks: [chunkName],
+      };
     };
   }
 
   const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
+  let ensurePromise: Promise<any> | null = null;
+  async function ensureSSRReady() {
+    // TODO: Extract CSS Modules / Assets from the bundler process
+    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
+      'metro-runtime/src/modules/empty-module.js',
+      {
+        environment: 'react-server',
+        platform: 'web',
+      }
+    );
+    return runtime;
+  }
+  const ensureMemo = () => {
+    ensurePromise ??= ensureSSRReady();
+    return ensurePromise;
+  };
+
   async function getRscRendererAsync(platform: string) {
+    await ensureMemo();
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
     if (rscRendererCache.has(platform)) {
       return rscRendererCache.get(platform)!;
@@ -355,7 +488,7 @@ export function createServerComponentsMiddleware(
   async function renderRscToReadableStream(
     {
       input,
-      searchParams,
+      headers,
       method,
       platform,
       body,
@@ -363,9 +496,10 @@ export function createServerComponentsMiddleware(
       contentType,
       ssrManifest,
       decodedBody,
+      routerOptions,
     }: {
       input: string;
-      searchParams: URLSearchParams;
+      headers: Headers;
       method: 'POST' | 'GET';
       platform: string;
       body?: ReadableStream<Uint8Array>;
@@ -373,6 +507,7 @@ export function createServerComponentsMiddleware(
       contentType?: string;
       ssrManifest?: Map<string, string>;
       decodedBody?: unknown;
+      routerOptions: Record<string, any>;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -385,20 +520,24 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
+    const context = getRscRenderContext(platform);
+
+    context['__expo_requestHeaders'] = headers;
+
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
       {
         body,
         decodedBody,
-        context: getRscRenderContext(platform),
+        context,
         config: {},
         input,
         contentType,
       },
       {
         isExporting,
-        entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
+        entries: await getExpoRouterRscEntriesGetterAsync({ platform, routerOptions }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
         async loadServerModuleRsc(urlFragment) {
           const serverRoot = getMetroServerRootMemo(projectRoot);
@@ -407,7 +546,9 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
+            hot: true,
+          });
         },
       }
     );
@@ -422,14 +563,18 @@ export function createServerComponentsMiddleware(
       {
         platform,
         ssrManifest,
+        routerOptions,
       }: {
         platform: string;
         ssrManifest: Map<string, string>;
+        routerOptions: Record<string, any>;
       },
       files: ExportAssetMap
     ) {
       // TODO: When we add web SSR support, we need to extract CSS Modules / Assets from the bundler process to prevent FLOUC.
-      const { getBuildConfig } = (await getExpoRouterRscEntriesGetterAsync({ platform })).default;
+      const { getBuildConfig } = (
+        await getExpoRouterRscEntriesGetterAsync({ platform, routerOptions })
+      ).default;
 
       // Get all the routes to render.
       const buildConfig = await getBuildConfig!(async () =>
@@ -451,8 +596,9 @@ export function createServerComponentsMiddleware(
                 input,
                 method: 'GET',
                 platform,
-                searchParams: new URLSearchParams(),
+                headers: new Headers(),
                 ssrManifest,
+                routerOptions,
               },
               true
             );
@@ -477,11 +623,11 @@ export function createServerComponentsMiddleware(
       },
       rscMiddleware
     ),
-    onReloadRscEvent: () => {
+    onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
-      // Clear the render context to ensure that the next render is a fresh start.
-      rscRenderContext.clear();
+      rscRendererCache.delete(platform);
+      routerCache.delete(platform);
     },
   };
 }
@@ -495,10 +641,7 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
+  return url.fileURLToPath(fileURL);
 };
 
 const encodeInput = (input: string) => {

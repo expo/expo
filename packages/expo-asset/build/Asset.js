@@ -109,6 +109,19 @@ export class Asset {
         if (typeof virtualAssetModule === 'string') {
             return Asset.fromURI(virtualAssetModule);
         }
+        if (typeof virtualAssetModule === 'object' &&
+            'uri' in virtualAssetModule &&
+            typeof virtualAssetModule.uri === 'string') {
+            const extension = AssetUris.getFileExtension(virtualAssetModule.uri);
+            return new Asset({
+                name: '',
+                type: extension.startsWith('.') ? extension.substring(1) : extension,
+                hash: null,
+                uri: virtualAssetModule.uri,
+                width: virtualAssetModule.width,
+                height: virtualAssetModule.height,
+            });
+        }
         const meta = getAssetByID(virtualAssetModule);
         if (!meta) {
             throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);

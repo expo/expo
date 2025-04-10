@@ -1,4 +1,6 @@
-import { Resources } from '.';
+import { ExpoConfig } from '@expo/config-types';
+
+import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -7,12 +9,14 @@ import {
   removeMetaDataItemFromMainApplication,
 } from './Manifest';
 import { buildResourceItem, ResourceXML } from './Resources';
+import * as Resources from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
+  getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
   getUpdatesCheckOnLaunch,
@@ -36,14 +40,32 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'expo.modules.updates.HAS_EMBEDDED_UPDATE',
   CODE_SIGNING_CERTIFICATE = 'expo.modules.updates.CODE_SIGNING_CERTIFICATE',
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
+  DISABLE_ANTI_BRICKING_MEASURES = 'expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin = (config) => {
-  return withPlugins(config, [withUpdatesManifest, withRuntimeVersionResource]);
+  return withPlugins(config, [
+    withUpdatesManifest,
+    withRuntimeVersionResource,
+    withUpdatesNativeDebugGradleProps,
+  ]);
 };
+
+/**
+ * A config-plugin to update `android/gradle.properties` from the `updates.useNativeDebug` in expo config
+ */
+const withUpdatesNativeDebugGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'EX_UPDATES_NATIVE_DEBUG',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug === true ? 'true' : undefined),
+    },
+  ],
+  'withUpdatesNativeDebugGradleProps'
+);
 
 const withUpdatesManifest: ConfigPlugin = (config) => {
   return withAndroidManifest(config, async (config) => {
@@ -161,6 +183,17 @@ export async function setUpdatesConfigAsync(
       mainApplication,
       Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
     );
+  }
+
+  const disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(config);
+  if (disableAntiBrickingMeasures) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.DISABLE_ANTI_BRICKING_MEASURES,
+      'true'
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
   }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);

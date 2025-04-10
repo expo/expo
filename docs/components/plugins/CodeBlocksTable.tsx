@@ -25,12 +25,11 @@ type Props = PropsWithChildren<{
 
 export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
-  const codeBlocks = childrenArray.filter(
-    ({ props }) =>
-      props.children.props.className && props.children.props.className.startsWith('language-')
+  const codeBlocks = childrenArray.filter(({ props }) =>
+    props.children.props.className?.startsWith('language-')
   );
   const tabNames =
-    tabs ||
+    tabs ??
     codeBlocks.map(child => {
       const className = child.props.children.props.className;
       return MDX_CLASS_NAME_TO_TAB_NAME[className] || className.replace('language-', '');
@@ -40,11 +39,11 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
     <div
       className={mergeClasses(
         'grid grid-cols-2 gap-4',
-        connected && 'lg-gutters:gap-0 lg-gutters:mb-4',
+        connected && 'lg-gutters:mb-4 lg-gutters:gap-0',
         connected &&
-          '[&>div:nth-child(odd)>div]:lg-gutters:border-r-0 [&>div:nth-child(odd)>div]:lg-gutters:!rounded-r-none',
+          '[&>div:nth-child(odd)>div]:lg-gutters:!rounded-r-none [&>div:nth-child(odd)>div]:lg-gutters:border-r-0',
         connected && '[&>div:nth-child(even)>div]:lg-gutters:!rounded-l-none',
-        '[&_pre]:border-0 [&_pre]:m-0',
+        '[&_pre]:m-0 [&_pre]:border-0',
         'max-lg-gutters:grid-cols-1'
       )}
       {...rest}>
@@ -53,7 +52,7 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
           <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
             <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
           </SnippetHeader>
-          <SnippetContent className="p-0 h-full">{codeBlock}</SnippetContent>
+          <SnippetContent className="h-full p-0">{codeBlock}</SnippetContent>
         </Snippet>
       ))}
     </div>

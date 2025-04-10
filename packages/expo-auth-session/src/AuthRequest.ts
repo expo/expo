@@ -61,7 +61,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   readonly redirectUri: string;
   readonly scopes?: string[];
   readonly clientSecret?: string;
-  readonly prompt?: Prompt;
+  readonly prompt?: Prompt | Prompt[];
 
   constructor(request: AuthRequestConfig) {
     this.responseType = request.responseType ?? ResponseType.Code;
@@ -257,7 +257,8 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     }
 
     if (request.prompt) {
-      params.prompt = request.prompt;
+      params.prompt =
+        typeof request.prompt === 'string' ? request.prompt : request.prompt.join(' ');
     }
 
     // These overwrite any extra params

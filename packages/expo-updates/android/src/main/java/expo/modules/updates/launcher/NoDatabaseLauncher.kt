@@ -1,10 +1,11 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
-import android.os.AsyncTask
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.logging.UpdatesLogger
-import org.apache.commons.io.FileUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 /**
@@ -18,7 +19,8 @@ import java.io.File
 class NoDatabaseLauncher @JvmOverloads constructor(
   private val context: Context,
   private val logger: UpdatesLogger,
-  fatalException: Exception? = null
+  fatalException: Exception? = null,
+  launcherScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : Launcher {
   override val bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME
   override val launchedUpdate = null
@@ -30,7 +32,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
     try {
       val errorLogFile = File(context.filesDir, ERROR_LOG_FILENAME)
       val exceptionString = fatalException.toString()
-      FileUtils.writeStringToFile(errorLogFile, exceptionString, "UTF-8", true)
+      errorLogFile.appendText(exceptionString, Charsets.UTF_8)
     } catch (e: Exception) {
       logger.error("Failed to write fatal error to log", e)
     }
@@ -47,7 +49,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
         if (!errorLogFile.exists()) {
           return null
         }
-        val logContents = FileUtils.readFileToString(errorLogFile, "UTF-8")
+        val logContents = errorLogFile.readText(Charsets.UTF_8)
         errorLogFile.delete()
         logContents
       } catch (e: Exception) {
@@ -59,7 +61,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
 
   init {
     if (fatalException != null) {
-      AsyncTask.execute { writeErrorToLog(fatalException) }
+      launcherScope.launch { writeErrorToLog(fatalException) }
     }
   }
 }

@@ -15,19 +15,36 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resize = exports.getJimpImageAsync = exports.createSquareAsync = exports.circleAsync = exports.isFolderAsync = exports.jimpAsync = exports.convertFormat = exports.resizeBufferAsync = void 0;
-const fs_extra_1 = __importDefault(require("fs-extra"));
+exports.resizeBufferAsync = resizeBufferAsync;
+exports.convertFormat = convertFormat;
+exports.jimpAsync = jimpAsync;
+exports.isFolderAsync = isFolderAsync;
+exports.circleAsync = circleAsync;
+exports.createSquareAsync = createSquareAsync;
+exports.getJimpImageAsync = getJimpImageAsync;
+exports.resize = resize;
+const fs_1 = __importDefault(require("fs"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
 const path = __importStar(require("path"));
@@ -40,7 +57,6 @@ async function resizeBufferAsync(buffer, sizes) {
         return jimpImage.resize(size, size).getBufferAsync(mime);
     }));
 }
-exports.resizeBufferAsync = resizeBufferAsync;
 function convertFormat(format) {
     if (typeof format === 'undefined')
         return format;
@@ -55,7 +71,6 @@ function convertFormat(format) {
     }
     return undefined;
 }
-exports.convertFormat = convertFormat;
 async function jimpAsync(options, commands = []) {
     if (commands.length) {
         const command = commands.shift();
@@ -79,32 +94,34 @@ async function jimpAsync(options, commands = []) {
     const imgBuffer = await image.getBufferAsync(mime);
     if (typeof options.output === 'string') {
         if (await isFolderAsync(options.output)) {
-            await fs_extra_1.default.writeFile(path.join(options.output, path.basename(options.originalInput)), imgBuffer);
+            await fs_1.default.promises.writeFile(path.join(options.output, path.basename(options.originalInput)), imgBuffer);
         }
         else {
-            await fs_extra_1.default.writeFile(options.output, imgBuffer);
+            await fs_1.default.promises.writeFile(options.output, imgBuffer);
         }
     }
     return imgBuffer;
 }
-exports.jimpAsync = jimpAsync;
 async function isFolderAsync(path) {
     try {
-        return (await fs_extra_1.default.stat(path)).isDirectory();
+        return (await fs_1.default.promises.stat(path)).isDirectory();
     }
     catch {
         return false;
     }
 }
-exports.isFolderAsync = isFolderAsync;
 function circleAsync(jimp) {
-    const radius = Math.min(jimp.bitmap.width, jimp.bitmap.height) / 2;
+    const diameter = Math.min(jimp.bitmap.width, jimp.bitmap.height);
     const center = {
         x: jimp.bitmap.width / 2,
         y: jimp.bitmap.height / 2,
     };
     return new Promise((resolve) => {
-        jimp.scanQuiet(0, 0, jimp.bitmap.width, jimp.bitmap.height, (x, y, idx) => {
+        jimp
+            .resize(diameter, diameter)
+            .crop((jimp.bitmap.width - diameter) / 2, (jimp.bitmap.height - diameter) / 2, diameter, diameter)
+            .scanQuiet(0, 0, diameter, diameter, (x, y, idx) => {
+            const radius = diameter / 2;
             const curR = Math.sqrt(Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2));
             if (radius - curR <= 0.0) {
                 jimp.bitmap.data[idx + 3] = 0;
@@ -112,11 +129,10 @@ function circleAsync(jimp) {
             else if (radius - curR < 1.0) {
                 jimp.bitmap.data[idx + 3] = 255 * (radius - curR);
             }
-            resolve(jimp);
         });
+        resolve(jimp);
     });
 }
-exports.circleAsync = circleAsync;
 /**
  * Create a square image of a given size and color. Defaults to a white PNG.
  */
@@ -125,14 +141,12 @@ async function createSquareAsync({ size, color = '#FFFFFF', mime = jimp_compact_
     // Convert Jimp image to a Buffer
     return await image.getBufferAsync(mime);
 }
-exports.createSquareAsync = createSquareAsync;
 async function getJimpImageAsync(input) {
     // @ts-ignore: Jimp types are broken
     if (typeof input === 'string' || input instanceof Buffer)
         return await jimp_compact_1.default.read(input);
     return input;
 }
-exports.getJimpImageAsync = getJimpImageAsync;
 async function resize({ input, quality = 100 }, { background, position, fit, width, height }) {
     let initialImage = await getJimpImageAsync(input);
     if (width && !height) {
@@ -165,7 +179,6 @@ async function resize({ input, quality = 100 }, { background, position, fit, wid
     }
     return await initialImage.quality(jimpQuality);
 }
-exports.resize = resize;
 async function flatten({ input, quality = 100 }, { background }) {
     const initialImage = await getJimpImageAsync(input);
     const jimpQuality = typeof quality !== 'number' ? 100 : quality;

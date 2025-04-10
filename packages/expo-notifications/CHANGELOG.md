@@ -10,6 +10,123 @@
 
 ### 💡 Others
 
+## 0.30.2 — 2025-04-09
+
+### 🐛 Bug fixes
+
+- [Android] Defer calling `addTokenListener` until `OnCreate`. ([#36052](https://github.com/expo/expo/pull/36052) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.30.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- improve notification response handling ([#36027](https://github.com/expo/expo/pull/36027) by [@vonovak](https://github.com/vonovak))
+- remove unneeded Long conversions on Android ([#35976](https://github.com/expo/expo/pull/35976) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix data serialization ([#35975](https://github.com/expo/expo/pull/35975) by [@vonovak](https://github.com/vonovak))
+- simplify push token event management ([#35944](https://github.com/expo/expo/pull/35944) by [@vonovak](https://github.com/vonovak))
+- fix Android `NotificationContent` not containing JSON data object ([#35942](https://github.com/expo/expo/pull/35942) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix regressions in `CalendarTriggerRecord` ([#35937](https://github.com/expo/expo/pull/35937) by [@vonovak](https://github.com/vonovak))
+- remove deprecated `presentNotificationAsync` ([#35900](https://github.com/expo/expo/pull/35900) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] UNTextInputNotificationAction wasn't provided with options ([#35903](https://github.com/expo/expo/pull/35903) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] event emitter should not influence notification presentation ([#35858](https://github.com/expo/expo/pull/35858) by [@vonovak](https://github.com/vonovak))
+- correctly serialize `null` trigger on iOS ([#35672](https://github.com/expo/expo/pull/35672) by [@vonovak](https://github.com/vonovak))
+- restore `useLastNotificationResponse` return value behavior ([#35504](https://github.com/expo/expo/pull/35504) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+- [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] fix notification response listener emitting duplicate response events ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
+
+### 💡 Others
+
+- update Push Notification deprecation message for Expo Go ([#35577](https://github.com/expo/expo/pull/35577) by [@vonovak](https://github.com/vonovak))
+- simplify `nextTriggerDate` in `TimeIntervalTrigger` ([#35559](https://github.com/expo/expo/pull/35559) by [@vonovak](https://github.com/vonovak))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+### ⚠️ Notices
+
+- [iOS] Swift conversion 1: badge and server registration. ([#32069](https://github.com/expo/expo/pull/32069) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 2: push token module. ([#32612](https://github.com/expo/expo/pull/32612) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 3: scheduling, notification builder. ([#33253](https://github.com/expo/expo/pull/33253) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 4: Categories. ([#33976](https://github.com/expo/expo/pull/33976) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 5: Fix categories, Expo Go changes. ([#34409](https://github.com/expo/expo/pull/34409) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 6: refactor Record classes. ([#34413](https://github.com/expo/expo/pull/34413) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 7: Handler and Emitter. ([#35564](https://github.com/expo/expo/pull/35564) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 8: Background module. ([#35695](https://github.com/expo/expo/pull/35695) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 9: Permissions module. ([#35719](https://github.com/expo/expo/pull/35719) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 10: Refactor for Expo Go. ([#35862](https://github.com/expo/expo/pull/35862) by [@douglowder](https://github.com/douglowder))
+
+## 0.29.14 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- fix non-repeating scheduled notifications ([#35393](https://github.com/expo/expo/pull/35393) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Add better error when Firebase is not set up ([#34694](https://github.com/expo/expo/pull/34694) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.13 - 2025-01-27
+
+### 🛠 Breaking changes
+
+- `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.12 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.11 - 2024-12-05
+
+### 🐛 Bug fixes
+
+- [android] fix data serialization for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
+- Add additional fallback value for project ID in `getExpoPushTokenAsync` ([#33359](https://github.com/expo/expo/pull/33359) by [@bradjones1](https://github.com/bradjones1))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.29.10 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- [android] fix notifications with custom sounds treated as silent ([#33311](https://github.com/expo/expo/pull/33311) by [@pennersr](https://github.com/pennersr))
+
+## 0.29.9 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.8 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.6 — 2024-11-10
+
+### 🎉 New features
+
+- [android] run notification tasks from killed state ([#32531](https://github.com/expo/expo/pull/32531) by [@vonovak](https://github.com/vonovak))
+- add `enableBackgroundRemoteNotifications` option to config plugin ([#32716](https://github.com/expo/expo/pull/32716) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.5 — 2024-11-07
+
+### 🛠 Breaking changes
+
+- remove two deprecated exports ([#32660](https://github.com/expo/expo/pull/32660) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
+
 ## 0.29.4 — 2024-10-29
 
 _This version does not introduce any user-facing changes._

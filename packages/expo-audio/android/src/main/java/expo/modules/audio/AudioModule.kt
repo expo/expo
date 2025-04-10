@@ -11,7 +11,6 @@ import androidx.media3.common.C.CONTENT_TYPE_DASH
 import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
 import androidx.media3.common.C.CONTENT_TYPE_SS
-import androidx.media3.common.C.VOLUME_FLAG_ALLOW_RINGER_MODES
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -33,7 +32,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import java.io.File
 import kotlin.math.min
+import androidx.core.net.toUri
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
@@ -58,8 +59,7 @@ class AudioModule : Module() {
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       staysActiveInBackground = mode.shouldPlayInBackground
-      shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
+      updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -87,14 +87,14 @@ class AudioModule : Module() {
       if (!appIsPaused) {
         appIsPaused = true
         if (!staysActiveInBackground) {
-          for (player in players.values) {
+          players.values.forEach { player ->
             if (player.player.isPlaying) {
               player.isPaused = true
               player.ref.pause()
             }
           }
 
-          for (recorder in recorders.values) {
+          recorders.values.forEach { recorder ->
             if (recorder.isRecording) {
               recorder.pauseRecording()
             }
@@ -107,14 +107,14 @@ class AudioModule : Module() {
       if (appIsPaused) {
         appIsPaused = false
         if (!staysActiveInBackground) {
-          for (player in players.values) {
+          players.values.forEach { player ->
             if (player.isPaused) {
               player.isPaused = false
               player.ref.play()
             }
           }
 
-          for (recorder in recorders.values) {
+          recorders.values.forEach { recorder ->
             if (recorder.isPaused) {
               recorder.record()
             }
@@ -128,31 +128,20 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
-      for (player in players.values) {
-        player.player.stop()
-      }
+      appContext.mainQueue.launch {
+        for (player in players.values) {
+          player.player.stop()
+        }
 
-      for (recorder in recorders.values) {
-        recorder.stopRecording()
+        for (recorder in recorders.values) {
+          recorder.stopRecording()
+        }
       }
     }
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource?, updateInterval: Double ->
-        val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
-        val factory = if (isLocal) {
-          DefaultDataSource.Factory(context)
-        } else {
-          OkHttpDataSource.Factory(httpClient).apply {
-            source?.headers?.let {
-              setDefaultRequestProperties(it)
-            }
-            DefaultDataSource.Factory(context, this)
-          }
-        }
-
-        val item = MediaItem.fromUri(source?.uri ?: "")
-        val mediaSource = buildMediaSourceFactory(factory, item)
+        val mediaSource = createMediaItem(source)
         runOnMain {
           val player = AudioPlayer(
             context,
@@ -190,7 +179,7 @@ class AudioModule : Module() {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
         }
       }.set { ref, isLooping: Boolean ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.repeatMode = if (isLooping) {
             Player.REPEAT_MODE_ONE
           } else {
@@ -211,14 +200,12 @@ class AudioModule : Module() {
         }
       }
 
-      Property("mute") { ref ->
-        runOnMain {
-          ref.player.isDeviceMuted
-        }
-      }.set { ref, muted: Boolean ->
-        appContext.mainQueue.launch {
-          ref.player.setDeviceMuted(muted, VOLUME_FLAG_ALLOW_RINGER_MODES)
-        }
+      Property("muted") { ref ->
+        ref.isMuted
+      }.set { ref, muted: Boolean? ->
+        val newMuted = muted ?: false
+        ref.isMuted = newMuted
+        ref.setVolume(if (newMuted) 0f else ref.previousVolume)
       }
 
       Property("shouldCorrectPitch") { ref ->
@@ -229,13 +216,13 @@ class AudioModule : Module() {
 
       Property("currentTime") { ref ->
         runOnMain {
-          ref.player.currentPosition
+          ref.currentTime
         }
       }
 
       Property("duration") { ref ->
         runOnMain {
-          ref.player.duration
+          ref.duration
         }
       }
 
@@ -249,10 +236,8 @@ class AudioModule : Module() {
         runOnMain {
           ref.player.volume
         }
-      }.set { ref, volume: Float ->
-        appContext.mainQueue.launch {
-          ref.player.volume = volume
-        }
+      }.set { ref, volume: Float? ->
+        ref.setVolume(volume)
       }
 
       Function("play") { ref: AudioPlayer ->
@@ -260,23 +245,40 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.play()
         }
       }
 
       Function("pause") { ref: AudioPlayer ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.pause()
         }
       }
 
+      Function("replace") { ref: AudioPlayer, source: AudioSource ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaSource = createMediaItem(source)
+            val wasPlaying = ref.player.isPlaying
+            mediaSource?.let {
+              ref.setMediaSource(it)
+              if (wasPlaying) {
+                ref.player.play()
+              }
+            }
+          }
+        }
+      }
+
       Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
-        ref.setSamplingEnabled(enabled)
+        runOnMain {
+          ref.setSamplingEnabled(enabled)
+        }
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
-        ref.player.seekTo(seekTime.toLong())
+        ref.player.seekTo((seekTime * 1000L).toLong())
       }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->
@@ -308,7 +310,7 @@ class AudioModule : Module() {
       }
 
       Property("uri") { ref ->
-        ref.uri
+        ref.filePath
       }
 
       Property("isRecording") { ref ->
@@ -316,16 +318,19 @@ class AudioModule : Module() {
       }
 
       Property("currentTime") { ref ->
-        ref.uptime
+        ref.startTime
       }
 
       AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
+        checkRecordingPermission()
         ref.prepareRecording(options)
       }
 
       Function("record") { ref: AudioRecorder ->
         checkRecordingPermission()
-        ref.record()
+        if (ref.isPrepared) {
+          ref.record()
+        }
       }
 
       Function("pause") { ref: AudioRecorder ->
@@ -339,8 +344,11 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { ref: AudioRecorder ->
-        checkRecordingPermission()
-        ref.getAudioRecorderStatus()
+        try {
+          return@Function ref.getAudioRecorderStatus()
+        } catch (e: Exception) {
+          throw e
+        }
       }
 
       AsyncFunction("getCurrentInput") { ref: AudioRecorder ->
@@ -357,8 +365,37 @@ class AudioModule : Module() {
     }
   }
 
+  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uri ->
+    val factory = createDataSourceFactory(source)
+    val sourceUri = if (Util.isLocalFileUri(uri.toUri())) {
+      Uri.fromFile(File(source.uri))
+    } else {
+      source.uri.toUri()
+    }
+    val item = MediaItem.fromUri(sourceUri)
+    buildMediaSourceFactory(factory, item)
+  }
+
+  private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
+    val uri = if (Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
+      Uri.fromFile(File(audioSource.uri))
+    } else {
+      Uri.parse(audioSource.uri)
+    }
+    val isLocal = Util.isLocalFileUri(uri)
+    return if (isLocal) {
+      DefaultDataSource.Factory(context)
+    } else {
+      OkHttpDataSource.Factory(httpClient).apply {
+        audioSource.headers?.let { headers ->
+          setDefaultRequestProperties(headers)
+        }
+      }
+    }
+  }
+
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
-    audioManager.setMode(if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL)
+    audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 
@@ -369,14 +406,13 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    val newFactory = when (val type = retrieveStreamType(uri!!)) {
+    return when (val type = uri?.let { retrieveStreamType(it) }) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
       else -> throw IllegalStateException("Unsupported type: $type")
-    }
-    return newFactory.createMediaSource(MediaItem.fromUri(uri))
+    }.createMediaSource(mediaItem)
   }
 
   private fun <T> runOnMain(block: () -> T): T =

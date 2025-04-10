@@ -17,12 +17,11 @@
 
 @interface EXGLContext : NSObject
 
-- (nullable instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate
-                        andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
-- (void)initialize;
+- (nonnull instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate
+                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
 - (void)prepare:(nullable void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport;
 - (BOOL)isInitialized;
-- (nullable EAGLContext *)createSharedEAGLContext;
+- (nonnull EAGLContext *)createSharedEAGLContext;
 - (void)runAsync:(nonnull void(^)(void))callback;
 - (void)runInEAGLContext:(nonnull EAGLContext*)context callback:(nonnull void(^)(void))callback;
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(nonnull EXPromiseResolveBlock)resolve reject:(nonnull EXPromiseRejectBlock)reject;

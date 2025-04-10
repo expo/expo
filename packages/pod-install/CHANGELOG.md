@@ -10,6 +10,38 @@
 
 ### 💡 Others
 
+## 0.3.6 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.5 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.3 - 2025-01-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.2 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- Do not treat unknown opts as possible project path. ([#32919](https://github.com/expo/expo/pull/32919) by [@Simek](https://github.com/Simek))
+
+## 0.3.1 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Fix missing fallback to `process.cwd()` while no argument has been passed. ([#32848](https://github.com/expo/expo/pull/32848) by [@Simek](https://github.com/Simek))
+
+### 💡 Others
+
+- Improve console messages and errors. ([#32848](https://github.com/expo/expo/pull/32848) by [@Simek](https://github.com/Simek))
+
 ## 0.3.0 — 2024-10-22
 
 ### 💡 Others

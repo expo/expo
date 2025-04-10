@@ -346,7 +346,7 @@ module.exports = config => config;
 ### app.plugin.js
 
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
-If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
+If an **app.plugin.js** file is present in the root of a Node module's directory, it'll be used instead of the package's `main` file.
 
 <FileTree
   files={[
@@ -392,7 +392,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 ]}
 />
 
-### Project folder
+### Project directory
 
 This is different to how Config Plugins in Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 

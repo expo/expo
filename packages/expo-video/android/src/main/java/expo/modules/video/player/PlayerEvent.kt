@@ -1,18 +1,26 @@
 package expo.modules.video.player
 
 import androidx.annotation.OptIn
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.records.AvailableSubtitleTracksChangedEventPayload
 import expo.modules.video.records.IsPlayingEventPayload
 import expo.modules.video.records.MutedChangedEventPayload
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.PlaybackRateChangedEventPayload
 import expo.modules.video.records.SourceChangedEventPayload
 import expo.modules.video.records.StatusChangedEventPayload
+import expo.modules.video.records.SubtitleTrack
+import expo.modules.video.records.SubtitleTrackChangedEventPayload
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoEventPayload
 import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoSourceLoadedEventPayload
+import expo.modules.video.records.VideoTrack
+import expo.modules.video.records.VideoTrackChangedEventPayload
 import expo.modules.video.records.VolumeChangedEventPayload
 
 @OptIn(UnstableApi::class)
@@ -56,9 +64,59 @@ sealed class PlayerEvent {
     override val emitToJS = false
   }
 
+  data class TrackSelectionParametersChanged(val trackSelectionParameters: TrackSelectionParameters) : PlayerEvent() {
+    override val name = "trackSelectionParametersChange"
+    override val emitToJS = false
+  }
+
+  data class SubtitleTrackChanged(val subtitleTrack: SubtitleTrack?, val oldSubtitleTrack: SubtitleTrack?) : PlayerEvent() {
+    override val name = "subtitleTrackChange"
+    override val jsEventPayload = SubtitleTrackChangedEventPayload(subtitleTrack, oldSubtitleTrack)
+  }
+
+  data class VideoTrackChanged(val videoTrack: VideoTrack?, val oldVideoTrack: VideoTrack?) : PlayerEvent() {
+    override val name = "videoTrackChange"
+    override val jsEventPayload = VideoTrackChangedEventPayload(videoTrack, oldVideoTrack)
+  }
+
+  class RenderedFirstFrame : PlayerEvent() {
+    override val name = "renderFirstFrame"
+
+    // This Event is emitted through the view (we are matching the AVKit API behavior)
+    override val emitToJS = false
+  }
+
+  data class AvailableSubtitleTracksChanged(
+    val availableSubtitleTracks: List<SubtitleTrack>,
+    val oldAvailableSubtitleTracks: List<SubtitleTrack>
+  ) : PlayerEvent() {
+    override val name = "availableSubtitleTracksChange"
+    override val jsEventPayload = AvailableSubtitleTracksChangedEventPayload(availableSubtitleTracks, oldAvailableSubtitleTracks)
+  }
+
+  data class VideoSourceLoaded(
+    val videoSource: VideoSource?,
+    val duration: Double,
+    val availableVideoTracks: List<VideoTrack>,
+    val availableSubtitleTracks: List<SubtitleTrack>
+  ) : PlayerEvent() {
+    override val name = "sourceLoad"
+    override val jsEventPayload = VideoSourceLoadedEventPayload(
+      videoSource,
+      duration,
+      availableVideoTracks,
+      availableSubtitleTracks
+    )
+  }
+
   data class TimeUpdated(val timeUpdate: TimeUpdate) : PlayerEvent() {
     override val name = "timeUpdate"
     override val jsEventPayload = timeUpdate
+  }
+
+  data class AudioMixingModeChanged(val audioMixingMode: AudioMixingMode, val oldAudioMixingMode: AudioMixingMode?) : PlayerEvent() {
+    override val name = "audioMixingModeChange"
+    override val emitToJS = false
   }
 
   class PlayedToEnd : PlayerEvent() {
@@ -73,9 +131,15 @@ sealed class PlayerEvent {
       is SourceChanged -> listeners.forEach { it.onSourceChanged(player, source, oldSource) }
       is PlaybackRateChanged -> listeners.forEach { it.onPlaybackRateChanged(player, rate, oldRate) }
       is TracksChanged -> listeners.forEach { it.onTracksChanged(player, tracks) }
+      is TrackSelectionParametersChanged -> listeners.forEach { it.onTrackSelectionParametersChanged(player, trackSelectionParameters) }
       is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, timeUpdate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
       is MutedChanged -> listeners.forEach { it.onMutedChanged(player, muted, oldMuted) }
+      is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
+      is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
+      is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
+      // JS-only events - VideoSourceLoaded, SubtitleTrackChanged - In the native events the TracksChanged can be used instead
+      else -> Unit
     }
   }
 }

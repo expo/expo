@@ -1,5 +1,7 @@
 import { NotificationContentInput } from './Notifications.types';
 /**
+ * @hidden
+ *
  * Schedules a notification for immediate trigger.
  * @param content An object representing the notification content.
  * @param identifier

@@ -4,7 +4,7 @@ sidebar_title: Testing
 description: Learn how to create integration tests for your app when using Expo Router.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
 Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quickly create in-memory Expo Router apps that are pre-configured for testing.
 
@@ -12,7 +12,7 @@ Expo Router relies on your file system, which can present challenges when settin
 
 Before you proceed, ensure you have set up `jest-expo` according to the [Unit testing with Jest](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/start/quick-start) in your project.
 
-> **Note**: When using Expo Router, do not put your test files inside the **app** directory. All files inside your **app** folder must be either routes or layout files. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing with Jest](/develop/unit-testing/#structure-your-tests).
+> **Note**: When using Expo Router, do not put your test files inside the **app** directory. All files inside your **app** directory must be either routes or layout files. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing with Jest](/develop/unit-testing/#structure-your-tests).
 
 ### Jest Native Matchers (optional)
 
@@ -24,7 +24,7 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 `renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
-<APIBox header="Inline file system">
+<PaddedAPIBox header="Inline file system">
 
 `renderRouter(mock: Record<string, ReactComponent>, options: RenderOptions)`
 
@@ -51,9 +51,9 @@ it('my-test', async () => {
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="Inline file system with `null` components">
+<PaddedAPIBox header="Inline file system with `null` components">
 
 `renderRouter(mock: string[], options: RenderOptions)`
 
@@ -71,9 +71,9 @@ it('my-test', async () => {
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="Path to fixture">
+<PaddedAPIBox header="Path to fixture">
 
 `renderRouter(fixturePath: string, options: RenderOptions)`
 
@@ -86,9 +86,9 @@ it('my-test', async () => {
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="Path to the fixture with overrides">
+<PaddedAPIBox header="Path to the fixture with overrides">
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
@@ -106,13 +106,13 @@ it('my-test', async () => {
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Jest matchers
 
 The following matches have been added to `expect` and can be used to assert values on `screen`.
 
-<APIBox header="toHavePathname()">
+<PaddedAPIBox header="toHavePathname()">
 
 Assert the current pathname against a given string. The matcher uses the value of the [`usePathname`](/router/reference/hooks/#usepathname) hook on the current `screen`.
 
@@ -120,9 +120,9 @@ Assert the current pathname against a given string. The matcher uses the value o
 expect(screen).toHavePathname('/my-router');
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="toHavePathnameWithParams()">
+<PaddedAPIBox header="toHavePathnameWithParams()">
 
 Assert the current pathname, including URL parameters, against a given string. This is useful to assert the appearance of URL in a web browser.
 
@@ -130,9 +130,9 @@ Assert the current pathname, including URL parameters, against a given string. T
 expect(screen).toHavePathnameWithParams('/my-router?hello=world');
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="toHaveSegments()">
+<PaddedAPIBox header="toHaveSegments()">
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
 
@@ -140,8 +140,8 @@ Assert the current segments against an array of strings. The matcher uses the va
 expect(screen).toHaveSegments(['[id]']);
 ```
 
-</APIBox>
-<APIBox header="useLocalSearchParams()">
+</PaddedAPIBox>
+<PaddedAPIBox header="useLocalSearchParams()">
 
 Assert the current local URL parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
@@ -149,8 +149,8 @@ Assert the current local URL parameters against an object. The matcher uses the 
 expect(screen).useLocalSearchParams({ first: 'abc' });
 ```
 
-</APIBox>
-<APIBox header="useGlobalSearchParams()">
+</PaddedAPIBox>
+<PaddedAPIBox header="useGlobalSearchParams()">
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 
@@ -160,9 +160,9 @@ Assert the current global URL parameters against an object. The matcher uses the
 expect(screen).useGlobalSearchParams({ first: 'abc' });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="toHaveRouterState()">
+<PaddedAPIBox header="toHaveRouterState()">
 
 An advanced matcher that asserts the current router state against an object.
 
@@ -172,4 +172,4 @@ expect(screen).toHaveRouterState({
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>

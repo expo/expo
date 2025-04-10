@@ -53,6 +53,8 @@ internal class ImageLibraryContract(
           }
         }
       )
+      .setOrderedSelection(input.options.orderedSelection)
+      .setDefaultTab(input.options.defaultTab.toDefaultTab())
       .build()
 
     if (input.options.allowsMultipleSelection) {

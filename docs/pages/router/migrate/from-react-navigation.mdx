@@ -66,7 +66,7 @@ On web, returning `null` from the root will cause [static rendering](/router/ref
 Expo Router automatically adds `react-native-safe-area-context` support.
 
 ```diff
-- import { SafeAreaProvider } from "react-native-safe-area-context";
+- import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
@@ -83,7 +83,7 @@ Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'l
 
 Create an **app** directory at the root of your repo, or in a root **src** directory.
 
-Layout the structure of your app by creating files according to the [creating pages guide](/router/create-pages/). Kebab-case and lowercase letters are considered best practice for route filenames.
+Layout the structure of your app by creating files according to the [application of Expo Router rules](/router/basics/core-concepts/#the-rules-of-expo-router-applied). Kebab-case and lowercase letters are considered best practice for route filenames.
 
 Replace navigators with directories, for example:
 
@@ -209,7 +209,7 @@ export default function Page({
 }
 ```
 
-To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-prop/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
 
 ```diff
 + import { useNavigation } from 'expo-router';
@@ -225,7 +225,7 @@ export default function Page({
 
 ### Migrate the Link component
 
-React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props#to).
+React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props/#to).
 
 ```jsx
 // React Navigation
@@ -331,11 +331,11 @@ Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()
 In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
 
 - See the [Screen Tracking guide](/router/reference/screen-tracking/) for info on migrating analytics from React Navigation.
-- See the [Splash Screen feature](/router/appearance/#splash-screen) for info on handling the splash screen.
+- See the [Splash Screen feature](/develop/user-interface/splash-screen-and-app-icon/) for info on handling the splash screen.
 
 #### `onUnhandledAction`
 
-Actions are always handled in Expo Router. Use [dynamic routes](/router/create-pages/#dynamic-routes) and [404 screens](/router/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
+Actions are always handled in Expo Router. Use [dynamic routes](/router/basics/notation/#square-brackets) and [404 screens](/router/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
 
 #### `linking`
 
@@ -343,7 +343,7 @@ The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) 
 
 #### `fallback`
 
-The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/router/appearance/#splash-screen) guide.
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/versions/latest/sdk/splash-screen/) reference.
 
 #### `theme`
 

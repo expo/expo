@@ -2,8 +2,10 @@
 package host.exp.exponent.experience
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Debug
+import androidx.activity.enableEdgeToEdge
 import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
@@ -18,7 +20,6 @@ import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderModule
@@ -49,6 +50,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
@@ -91,7 +93,7 @@ open class HomeActivity : BaseExperienceActivity() {
    * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
    * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
    */
-  override fun destroyReactHost() {}
+  override fun destroyReactHost(reason: String) {}
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost
@@ -114,13 +116,18 @@ open class HomeActivity : BaseExperienceActivity() {
     kernel.setHasError()
   }
 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    // Will update the navigation bar colors if the system theme has changed. This is only relevant for the three button navigation bar.
+    enableEdgeToEdge()
+    super.onConfigurationChanged(newConfig)
+  }
+
   companion object : ModulesProvider {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
         FileSystemPackage(),
         KeepAwakePackage(),
-        FaceDetectorPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()

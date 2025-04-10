@@ -5,7 +5,7 @@ description: A library that provides the same interface as the React Native Stat
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-51/packages/expo-status-bar'
 packageName: 'expo-status-bar'
 iconUrl: '/static/images/packages/expo-status-bar.png'
-platforms: ['android', 'ios', 'web']
+platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -14,9 +14,11 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
 
-> **Web support**
+> **tvOS and web support**
 >
-> There is no API available on the web for controlling the operating system status bar, so `expo-status-bar` will no-op, so it will do nothing and will **not** error.
+> For **tvOS**, the `expo-status-bar` code will compile and run, but no status bar will show.
+>
+> For **web**, there is no API available to control the operating system's status bar, so `expo-status-bar` will do nothing and won't throw an error.
 
 ## Installation
 

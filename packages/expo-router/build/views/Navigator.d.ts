@@ -1,5 +1,6 @@
-import { RouterFactory, StackRouter, useNavigationBuilder } from '@react-navigation/native';
+import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
+import { StackRouter } from '../layouts/StackClient';
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
     contextKey: string;
     router: RouterFactory<any, any, any>;
@@ -44,7 +45,7 @@ export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): Reac
 /**
  * Render the current navigator content.
  */
-declare function NavigatorSlot(): JSX.Element;
+declare function NavigatorSlot(): React.JSX.Element;
 /**
  * The default navigator for the app when no root _layout is provided.
  */

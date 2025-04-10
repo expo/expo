@@ -1,5 +1,7 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
+
+// @ts-ignore: PolyfillFunctions does not have types exported
 import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 import { installFormDataPatch } from './FormData';
@@ -27,6 +29,8 @@ install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+
+install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
 
 installFormDataPatch(FormData);
 

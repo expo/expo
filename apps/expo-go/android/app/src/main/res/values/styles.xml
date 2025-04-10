@@ -23,6 +23,15 @@
     <item name="android:theme">@style/DevAppTheme</item>
   </style>
 
+  <style name="Theme.Exponent.Translucent" parent="Theme.AppCompat.NoActionBar">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    <item name="windowNoTitle">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+  </style>
+
   <style name="ExponentButton">
     <item name="android:theme">@style/DevAppTheme</item>
     <item name="android:textColor">@color/colorPrimaryDark</item>

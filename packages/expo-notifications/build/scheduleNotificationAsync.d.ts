@@ -18,6 +18,7 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -32,6 +33,7 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },
@@ -42,15 +44,18 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule

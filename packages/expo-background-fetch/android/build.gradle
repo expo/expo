@@ -1,19 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '13.0.1'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+version = '13.1.1'
 
 android {
   namespace "expo.modules.backgroundfetch"
   defaultConfig {
     versionCode 23
-    versionName "13.0.1"
+    versionName "13.1.1"
+    consumerProguardFiles("proguard-rules.pro")
   }
 }

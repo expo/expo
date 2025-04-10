@@ -3,13 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getImprovedPodInstallError = exports.getPodRepoUpdateMessage = exports.getPodUpdateMessage = exports.CocoaPodsPackageManager = exports.extractMissingDependencyError = exports.CocoaPodsError = void 0;
+exports.CocoaPodsPackageManager = exports.CocoaPodsError = void 0;
+exports.extractMissingDependencyError = extractMissingDependencyError;
+exports.getPodUpdateMessage = getPodUpdateMessage;
+exports.getPodRepoUpdateMessage = getPodRepoUpdateMessage;
+exports.getImprovedPodInstallError = getImprovedPodInstallError;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = require("fs");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
-const spawn_1 = require("../utils/spawn");
 class CocoaPodsError extends Error {
     code;
     cause;
@@ -30,7 +33,6 @@ function extractMissingDependencyError(errorOutput) {
     }
     return null;
 }
-exports.extractMissingDependencyError = extractMissingDependencyError;
 class CocoaPodsPackageManager {
     options;
     silent;
@@ -59,7 +61,8 @@ class CocoaPodsPackageManager {
                 throw new CocoaPodsError('Failed to install CocoaPods CLI with gem (recommended)', 'COMMAND_FAILED', error);
             }
             // If the user doesn't have permission then we can prompt them to use sudo.
-            await (0, spawn_1.spawnSudoAsync)(['gem', ...options], spawnOptions);
+            console.log('Your password might be needed to install CocoaPods CLI: https://guides.cocoapods.org/using/getting-started.html#installation');
+            await (0, spawn_async_1.default)('sudo', ['gem', ...options], spawnOptions);
         }
     }
     static async brewLinkCLIAsync(spawnOptions = { stdio: 'inherit' }) {
@@ -314,7 +317,6 @@ function getPodUpdateMessage(output) {
         shouldUpdateRepo: !props?.[2],
     };
 }
-exports.getPodUpdateMessage = getPodUpdateMessage;
 function getPodRepoUpdateMessage(errorOutput) {
     const warningInfo = extractMissingDependencyError(errorOutput);
     const brokenPackage = getPodUpdateMessage(errorOutput);
@@ -331,7 +333,6 @@ function getPodRepoUpdateMessage(errorOutput) {
     message += ` Updating the Pods project and trying again...`;
     return { message, ...brokenPackage };
 }
-exports.getPodRepoUpdateMessage = getPodRepoUpdateMessage;
 /**
  * Format the CocoaPods CLI install error.
  *
@@ -400,5 +401,4 @@ function getImprovedPodInstallError(error, { cwd = process.cwd() }) {
     }
     return new CocoaPodsError('Command `pod install` failed.', 'COMMAND_FAILED', error);
 }
-exports.getImprovedPodInstallError = getImprovedPodInstallError;
 //# sourceMappingURL=CocoaPodsPackageManager.js.map

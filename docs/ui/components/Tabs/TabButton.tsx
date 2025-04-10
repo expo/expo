@@ -4,9 +4,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 import { ComponentType, ReactElement } from 'react';
 
-import { P } from '../Text';
-
 import { TextComponentProps } from '~/ui/components/Text/types';
+
+import { P } from '../Text';
 
 export type TabProps = {
   label: string;

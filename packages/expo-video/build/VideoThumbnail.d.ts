@@ -2,6 +2,7 @@ import { SharedRef } from 'expo';
 /**
  * Represents a video thumbnail that references a native image.
  * Instances of this class can be passed as a source to the `Image` component from `expo-image`.
+ * @platform android
  * @platform ios
  */
 export declare class VideoThumbnail extends SharedRef<'image'> {

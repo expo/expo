@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoFaceDetector.js","sourceRoot":"","sources":["../src/ExpoFaceDetector.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AAExD,eAAe,mBAAmB,CAAC,kBAAkB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\n\nexport default requireNativeModule('ExpoFaceDetector');\n"]}

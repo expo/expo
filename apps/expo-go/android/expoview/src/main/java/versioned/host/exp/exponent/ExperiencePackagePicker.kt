@@ -7,6 +7,7 @@ import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
+import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
@@ -22,8 +23,6 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.facedetector.FaceDetectorModule
-import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
@@ -91,7 +90,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ConstantsPackage(),
-    FaceDetectorPackage(),
     FileSystemPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
@@ -144,6 +142,7 @@ object ExperiencePackagePicker : ModulesProvider {
     // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
+    BackgroundTaskModule::class.java,
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
@@ -158,7 +157,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoFetchModule::class.java,
     ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
-    FaceDetectorModule::class.java,
     FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,

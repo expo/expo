@@ -4,6 +4,7 @@ import {
   History,
   WarningAggregator,
   withAndroidManifest,
+  withAndroidStyles,
   withDangerousMod,
 } from 'expo/config-plugins';
 import fs from 'fs';
@@ -85,7 +86,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'expo.useLegacyPackaging',
-      propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+      propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
     },
     {
       propName: 'android.extraMavenRepos',
@@ -96,8 +97,12 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
           }
           return item;
         });
-        return JSON.stringify(extraMavenRepos);
+        return extraMavenRepos.length > 0 ? JSON.stringify(extraMavenRepos) : undefined;
       },
+    },
+    {
+      propName: 'android.useDayNightTheme',
+      propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -258,6 +263,37 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     };
 
     config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};
+
+export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidStyles(config, (config) => {
+    if (!props.android?.useDayNightTheme) {
+      return config;
+    }
+
+    const { style = [] } = config.modResults.resources;
+    if (!style.length) {
+      return config;
+    }
+
+    // Replace `AppTheme` and remove `ResetEditText`
+    const excludedStyles = ['AppTheme', 'ResetEditText'];
+    // Remove the hardcoded colors.
+    const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
+
+    config.modResults.resources.style = [
+      {
+        $: {
+          name: 'AppTheme',
+          parent: 'Theme.AppCompat.DayNight.NoActionBar',
+        },
+        item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+      },
+      ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
+    ];
+
     return config;
   });
 };

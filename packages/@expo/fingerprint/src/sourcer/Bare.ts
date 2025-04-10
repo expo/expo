@@ -1,12 +1,15 @@
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
+import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -42,6 +45,9 @@ export async function getPackageJsonScriptSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ) {
+  if (options.sourceSkips & SourceSkips.PackageJsonScriptsAll) {
+    return [];
+  }
   let packageJson;
   try {
     packageJson = require(resolveFrom(path.resolve(projectRoot), './package.json'));
@@ -64,6 +70,9 @@ export async function getPackageJsonScriptSourcesAsync(
 }
 
 export async function getGitIgnoreSourcesAsync(projectRoot: string, options: NormalizedOptions) {
+  if (options.sourceSkips & SourceSkips.GitIgnore) {
+    return [];
+  }
   const result = await getFileBasedHashSourceAsync(projectRoot, '.gitignore', 'bareGitIgnore');
   if (result != null) {
     debug(`Adding file - ${chalk.dim('.gitignore')}`);
@@ -105,8 +114,14 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
   }
   try {
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'android'],
+      'node',
+      [
+        resolveExpoAutolinkingCliPath(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'android',
+      ],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);
@@ -133,8 +148,14 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
   }
   try {
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'react-native-config', '--json', '--platform', 'ios'],
+      'node',
+      [
+        resolveExpoAutolinkingCliPath(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'ios',
+      ],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);
@@ -171,7 +192,7 @@ async function parseCoreAutolinkingSourcesAsync({
   for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
     try {
       stripRncoreAutolinkingAbsolutePaths(depData, root);
-      const filePath = depData.root;
+      const filePath = toPosixPath(depData.root);
       debug(`Adding ${logTag} - ${chalk.dim(filePath)}`);
       results.push({ type: 'dir', filePath, reasons });
 
@@ -193,10 +214,29 @@ async function parseCoreAutolinkingSourcesAsync({
 function stripRncoreAutolinkingAbsolutePaths(dependency: any, root: string): void {
   assert(dependency.root);
   const dependencyRoot = dependency.root;
-  dependency.root = path.relative(root, dependencyRoot);
+  const cmakeDepRoot =
+    process.platform === 'win32' ? dependencyRoot.replace(/\\/g, '/') : dependencyRoot;
+
+  dependency.root = toPosixPath(path.relative(root, dependencyRoot));
   for (const platformData of Object.values<any>(dependency.platforms)) {
     for (const [key, value] of Object.entries<any>(platformData ?? {})) {
-      platformData[key] = value?.startsWith?.(dependencyRoot) ? path.relative(root, value) : value;
+      let newValue;
+      if (
+        process.platform === 'win32' &&
+        ['cmakeListsPath', 'cxxModuleCMakeListsPath'].includes(key)
+      ) {
+        // CMake paths on Windows are serving in slashes,
+        // we have to check startsWith with the same slashes.
+        newValue = value?.startsWith?.(cmakeDepRoot)
+          ? toPosixPath(path.relative(root, value))
+          : value;
+      } else {
+        newValue = value?.startsWith?.(dependencyRoot)
+          ? toPosixPath(path.relative(root, value))
+          : value;
+      }
+
+      platformData[key] = newValue;
     }
   }
 }

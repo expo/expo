@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import { getIsolatedModulesPath } from '../autolinking/utils';
+import { fileExistsAsync } from '../fileUtils';
+import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
   parsePackageNameAsync,
@@ -16,9 +19,6 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { getIsolatedModulesPath } from '../autolinking/utils';
-import { fileExistsAsync } from '../fileUtils';
-import type { SupportedPlatform } from '../types';
 
 /**
  * Create config for react-native core autolinking.
@@ -29,8 +29,20 @@ export async function createReactNativeConfigAsync({
   searchPaths,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
-  const dependencyRoots = await findDependencyRootsAsync(projectRoot, searchPaths);
-  const reactNativePath = dependencyRoots['react-native'];
+  const dependencyRoots = {
+    ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
+    ...findProjectLocalDependencyRoots(projectConfig),
+  };
+
+  // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
+  // the Cocoapods resolution will detect path mismatches and generate nonsensical
+  // relative paths that won't resolve
+  let reactNativePath: string;
+  try {
+    reactNativePath = await fs.realpath(dependencyRoots['react-native']);
+  } catch {
+    reactNativePath = dependencyRoots['react-native'];
+  }
 
   const dependencyConfigs = await Promise.all(
     Object.entries(dependencyRoots).map(async ([name, packageRoot]) => {
@@ -88,6 +100,24 @@ export async function findDependencyRootsAsync(
   return results;
 }
 
+/**
+ * Find local dependencies that specified in the `react-native.config.js` file.
+ */
+function findProjectLocalDependencyRoots(
+  projectConfig: RNConfigReactNativeProjectConfig | null
+): Record<string, string> {
+  if (!projectConfig?.dependencies) {
+    return {};
+  }
+  const results: Record<string, string> = {};
+  for (const [name, config] of Object.entries(projectConfig.dependencies)) {
+    if (typeof config.root === 'string') {
+      results[name] = config.root;
+    }
+  }
+  return results;
+}
+
 export async function resolveDependencyConfigAsync(
   platform: SupportedPlatform,
   name: string,
@@ -105,7 +135,7 @@ export async function resolveDependencyConfigAsync(
     // The rnc-cli will skip this package.
     return null;
   }
-  if (name === 'react-native') {
+  if (name === 'react-native' || name === 'react-native-macos') {
     // Starting from version 0.76, the `react-native` package only defines platforms
     // when @react-native-community/cli-platform-android/ios is installed.
     // Therefore, we need to manually filter it out.

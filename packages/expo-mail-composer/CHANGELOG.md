@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add get mail client functionality. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+
+### 🐛 Bug fixes
+
+- [Android] Improve isAvailableAsync ([#35480](https://github.com/expo/expo/pull/35480) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 14.0.2 - 2025-01-10
+
+### 🐛 Bug fixes
+
+- [iOS] Fix mail modal callback when dismissing the composer through multitasking controls on iPad. ([#34040](https://github.com/expo/expo/pull/34040) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 14.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

@@ -1,4 +1,3 @@
-#import "EXApiUtil.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -74,7 +73,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 }
 
 - (id)reactHost {
-  return _reactAppInstance.rootViewFactory.reactHost;
+  return _expoAppInstance.reactNativeFactory.rootViewFactory.reactHost;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -127,7 +126,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
-      _reactRootView = [self.reactAppInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self setupWebSocketControls];
@@ -142,9 +141,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     EXReactAppManager *strongSelf = weakSelf;
     [strongSelf loadSourceForHost:sourceURL onComplete:loadCallback];
   }];
-  
-  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
-  _reactAppInstance = appInstance;
+
+  _expoAppInstance = appInstance;
 }
 
 - (NSDictionary *)extraParams
@@ -198,8 +196,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [_reactRootView removeFromSuperview];
     _reactRootView = nil;
   }
-  if (_reactAppInstance) {
-    _reactAppInstance = nil;
+  if (_expoAppInstance) {
+    _expoAppInstance = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidInvalidate:self];
       if (clearDelegate) {
@@ -426,20 +424,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   }
 }
 
-- (void)disableRemoteDebugging
-{
-  if ([self enablesDeveloperTools]) {
-    [self.versionManager disableRemoteDebuggingForHost:self.reactHost];
-  }
-}
-
-- (void)toggleRemoteDebugging
-{
-  if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleRemoteDebuggingForHost:self.reactHost];
-  }
-}
-
 - (void)togglePerformanceMonitor
 {
   if ([self enablesDeveloperTools]) {
@@ -451,18 +435,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   if ([self enablesDeveloperTools]) {
     [self.versionManager toggleElementInspectorForHost:self.reactHost];
-  }
-}
-
-- (void)reconnectReactDevTools
-{
-  if ([self enablesDeveloperTools]) {
-    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
-    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"RCTDevMenuShown" body:nil];
-#pragma clang diagnostic pop
   }
 }
 
@@ -490,14 +462,10 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
               [[EXKernel sharedInstance] reloadVisibleApp];
             } else if ([name isEqualToString:@"toggleDevMenu"]) {
               [weakSelf toggleDevMenu];
-            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
-              [weakSelf toggleRemoteDebugging];
             } else if ([name isEqualToString:@"toggleElementInspector"]) {
               [weakSelf toggleElementInspector];
             } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
               [weakSelf togglePerformanceMonitor];
-            } else if ([name isEqualToString:@"reconnectReactDevTools"]) {
-              [weakSelf reconnectReactDevTools];
             }
           }
         }

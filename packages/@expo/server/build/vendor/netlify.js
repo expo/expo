@@ -1,24 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isBinaryType = exports.convertRequest = exports.createHeaders = exports.respond = exports.createRequestHandler = void 0;
-const node_1 = require("@remix-run/node");
+exports.createRequestHandler = createRequestHandler;
+exports.respond = respond;
+exports.createHeaders = createHeaders;
+exports.convertRequest = convertRequest;
+exports.isBinaryType = isBinaryType;
 const abort_controller_1 = require("abort-controller");
-const __1 = require("..");
+const index_1 = require("../index");
 function createRequestHandler({ build }) {
-    const handleRequest = (0, __1.createRequestHandler)(build);
+    const handleRequest = (0, index_1.createRequestHandler)(build);
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);
     };
 }
-exports.createRequestHandler = createRequestHandler;
+async function readableStreamToString(stream, encoding) {
+    const reader = stream.getReader();
+    const chunks = [];
+    let chunk;
+    try {
+        do {
+            chunk = await reader.read();
+            if (chunk.value)
+                chunks.push(chunk.value);
+        } while (!chunk.done);
+    }
+    finally {
+        reader.releaseLock();
+    }
+    return Buffer.concat(chunks).toString(encoding);
+}
 async function respond(res) {
     const contentType = res.headers.get('Content-Type');
     let body;
     const isBase64Encoded = isBinaryType(contentType);
     if (res.body) {
         if (isBase64Encoded) {
-            body = await (0, node_1.readableStreamToString)(res.body, 'base64');
+            body = await readableStreamToString(res.body, 'base64');
         }
         else {
             body = await res.text();
@@ -35,7 +53,6 @@ async function respond(res) {
         isBase64Encoded,
     };
 }
-exports.respond = respond;
 function createHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
@@ -47,7 +64,6 @@ function createHeaders(requestHeaders) {
     }
     return headers;
 }
-exports.createHeaders = createHeaders;
 // `netlify dev` doesn't return the full url in the event.rawUrl, so we need to create it ourselves
 function getRawPath(event) {
     let rawPath = event.path;
@@ -100,7 +116,6 @@ function convertRequest(event) {
     }
     return new Request(url.href, init);
 }
-exports.convertRequest = convertRequest;
 /**
  * Common binary MIME types
  * @see https://github.com/architect/functions/blob/45254fc1936a1794c185aac07e9889b241a2e5c6/src/http/helpers/binary-types.js
@@ -170,5 +185,4 @@ function isBinaryType(contentType) {
     const [test] = contentType.split(';');
     return binaryTypes.includes(test);
 }
-exports.isBinaryType = isBinaryType;
 //# sourceMappingURL=netlify.js.map

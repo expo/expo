@@ -13,7 +13,7 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    var status: CalendarPermissionsStatus
+    var status: EXPermissionStatus
     var permissions: EKAuthorizationStatus
 
     let description = {
@@ -31,14 +31,14 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     }
 
     switch permissions {
-    case .restricted, .denied:
-      status = .denied
+    case .restricted, .denied, .writeOnly:
+      status = EXPermissionStatusDenied
     case .notDetermined:
-      status = .notDetermined
+      status = EXPermissionStatusUndetermined
     case .fullAccess:
-      status = .granted
+      status = EXPermissionStatusGranted
     @unknown default:
-      status = .unknown
+      status = EXPermissionStatusUndetermined
     }
 
     return ["status": status.rawValue]

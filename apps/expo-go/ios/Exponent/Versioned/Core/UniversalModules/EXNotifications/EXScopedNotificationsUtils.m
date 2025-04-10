@@ -31,6 +31,12 @@
   return [scopeFromCategoryId isEqualToString:scopeKey];
 }
 
++ (NSString *)getUnscopedIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
+{
+  ScopedIdentifierComponents components = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:scopedIdentifier];
+  return components.identifier;
+}
+
 + (ScopedIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
 {
   NSString *scope = @"";

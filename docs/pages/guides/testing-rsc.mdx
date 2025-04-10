@@ -17,9 +17,9 @@ React Server Components run on Node.js. This means Jest on its own can closely e
 
 ### Setup
 
-While standard server rendering is web-only, Expo's universal RSC bundles custom server renderers for each platform. This means platform-specific file extensions are supported. For example, when writing server components for an iOS app, platform-specific extensions such as **\*.ios.js** and **\*.native.ts** will be resolved.
+While standard server rendering is web-only, Expo's universal RSC bundles custom server renderers for each platform. This means platform-specific file extensions are supported. For example, when writing Server Components for an iOS app, platform-specific extensions such as **\*.ios.js** and **\*.native.ts** will be resolved.
 
-`jest-expo` provides a couple different presets for testing server components:
+`jest-expo` provides a couple different presets for testing Server Components:
 
 | Runner                  | Description                                                                                    |
 | ----------------------- | ---------------------------------------------------------------------------------------------- |
@@ -116,4 +116,4 @@ RSC supports package exports by default. You can use the `react-server` conditio
 
 When bundling for RSC, all modules are bundled in React Server mode and you can opt out with the `"use client"` directive. When `"use client"` is found, the module becomes an async reference to the client module.
 
-`"use server"` is not the opposite of `"use client"`. It is instead used to define React Server Actions.
+`"use server"` is not the opposite of `"use client"`. It is instead used to define a React Server Functions file.

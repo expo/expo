@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 9.0.1 — 2025-04-08
+
+### 🐛 Bug fixes
+
+- Wrap exported config in `defineConfig`. ([#34371](https://github.com/expo/expo/pull/34371) by [@kadikraman](https://github.com/kadikraman))
+
+## 9.0.0 — 2025-04-04
+
+### 🎉 New features
+
+- Support flat config. ([#34653](https://github.com/expo/expo/pull/34653) by [@kadikraman](https://github.com/kadikraman))
+
+### 💡 Others
+
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+- Update `eslint-plugin-react-hooks` dependency to new major version. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+
 ## 8.0.1 — 2024-10-22
 
 ### 🐛 Bug fixes

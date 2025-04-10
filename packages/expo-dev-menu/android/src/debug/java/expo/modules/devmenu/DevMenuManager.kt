@@ -93,7 +93,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = ReactHostWrapper(
         reactNativeHost = DevMenuReactNativeHost(application, useDeveloperSupport),
-        reactHost = DevMenuReactHost.create(application, useDeveloperSupport)
+        reactHostProvider = { DevMenuReactHost.create(application, useDeveloperSupport) }
       )
       UiThreadUtil.runOnUiThread {
         devMenuHost.start()
@@ -358,11 +358,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   fun toggleInspector() {
     val devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleElementInspector()
-  }
-
-  fun toggleRemoteDebug() {
-    val devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.toggleRemoteDebugging()
   }
 
   fun openJSInspector() {

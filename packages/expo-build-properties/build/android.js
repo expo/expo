@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.updateAndroidProguardRules = updateAndroidProguardRules;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -74,7 +75,7 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'expo.useLegacyPackaging',
-        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+        propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
     },
     {
         propName: 'android.extraMavenRepos',
@@ -85,8 +86,12 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
                 }
                 return item;
             });
-            return JSON.stringify(extraMavenRepos);
+            return extraMavenRepos.length > 0 ? JSON.stringify(extraMavenRepos) : undefined;
         },
+    },
+    {
+        propName: 'android.useDayNightTheme',
+        propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -174,7 +179,6 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     }
     return newContents;
 }
-exports.updateAndroidProguardRules = updateAndroidProguardRules;
 const withAndroidCleartextTraffic = (config, props) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         if (props.android?.usesCleartextTraffic == null) {
@@ -212,3 +216,30 @@ const withAndroidQueries = (config, props) => {
     });
 };
 exports.withAndroidQueries = withAndroidQueries;
+const withAndroidDayNightTheme = (config, props) => {
+    return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
+        if (!props.android?.useDayNightTheme) {
+            return config;
+        }
+        const { style = [] } = config.modResults.resources;
+        if (!style.length) {
+            return config;
+        }
+        // Replace `AppTheme` and remove `ResetEditText`
+        const excludedStyles = ['AppTheme', 'ResetEditText'];
+        // Remove the hardcoded colors.
+        const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
+        config.modResults.resources.style = [
+            {
+                $: {
+                    name: 'AppTheme',
+                    parent: 'Theme.AppCompat.DayNight.NoActionBar',
+                },
+                item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+            },
+            ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
+        ];
+        return config;
+    });
+};
+exports.withAndroidDayNightTheme = withAndroidDayNightTheme;

@@ -28,6 +28,7 @@ export function resolvePluginForModule(
     const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
     if (pluginScriptFile) {
       return {
+        // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
         isPluginFile: pluginScriptFile.endsWith(path.sep + pluginFileName),
         filePath: pluginScriptFile,
       };
@@ -49,7 +50,7 @@ export function resolvePluginForModule(
   }
 
   throw new PluginError(
-    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`,
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
     'PLUGIN_NOT_FOUND'
   );
 }
@@ -65,7 +66,7 @@ export function moduleNameIsDirectFileReference(name: string): boolean {
     return true;
   }
 
-  const slashCount = name.split(path.sep)?.length;
+  const slashCount = name.split('/')?.length;
   // Orgs (like @expo/config ) should have more than one slash to be a direct file.
   if (name.startsWith('@')) {
     return slashCount > 2;

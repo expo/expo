@@ -1,3 +1,4 @@
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import {
   DefaultNavigatorOptions,
   NavigationAction,
@@ -46,7 +47,10 @@ export type ExpoTabsNavigationProp<
   TabNavigationEventMap
 >;
 
-export type ExpoTabsScreenOptions = ExpoTabsNavigatorScreenOptions & {
+export type ExpoTabsScreenOptions = Pick<
+  BottomTabNavigationOptions,
+  'title' | 'lazy' | 'freezeOnBlur'
+> & {
   params?: object;
   title: string;
   action: NavigationAction;
@@ -63,6 +67,11 @@ export type TabNavigationEventMap = {
   tabLongPress: { data: undefined };
 };
 
+/**
+ * The React Navigation custom navigator.
+ *
+ * @see [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder) hook from React Navigation for more information.
+ */
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<
     TabNavigationState<any>,
@@ -76,7 +85,31 @@ export type TabsContextValue = ReturnType<
 export type TabContextValue = TabsDescriptor['options'];
 
 export const TabContext = createContext<TabContextValue>({});
+/**
+ * @hidden
+ */
 export const TabTriggerMapContext = createContext<TriggerMap>({});
+/**
+ * @hidden
+ */
+export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
+/**
+ * @hidden
+ */
+export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
+/**
+ * @hidden
+ */
+export const TabsStateContext = createContext<TabsContextValue['state']>({
+  type: 'tab',
+  preloadedRouteKeys: [],
+  history: [],
+  index: -1,
+  key: '',
+  stale: false,
+  routeNames: [],
+  routes: [],
+});
 
 export type Route = TabNavigationState<ParamListBase>['routes'][number];
 export type TabsDescriptor = TabsContextValue['descriptors'][number];

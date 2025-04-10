@@ -156,7 +156,7 @@ public class CalendarModule: Module {
       return serialize(attendees: attendees)
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String?], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String?, endDateStr: String?, calendarIds: [String?], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars = [EKCalendar]()
       let startDate = parse(date: startDateStr)
@@ -398,6 +398,13 @@ public class CalendarModule: Module {
       calendarEvent.endDate = parse(date: endDate)
     }
 
+    if let calendarId = event.calendarId {
+      guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+        throw CalendarIdNotFoundException(calendarId)
+      }
+      calendarEvent.calendar = calendar
+    }
+
     calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes
@@ -434,12 +441,14 @@ public class CalendarModule: Module {
       throw PermissionsManagerNotFoundException()
     }
 
-    var requester: AnyClass?
+    var requester: EXPermissionsRequester.Type?
     switch entity {
     case .event:
       requester = CalendarPermissionsRequester.self
     case .reminder:
       requester = RemindersPermissionRequester.self
+    @unknown default:
+      requester = nil
     }
     if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
       let message = requester.permissionType().uppercased()
@@ -466,7 +475,9 @@ public class CalendarModule: Module {
   }
 
   private func maybeSetUrl(_ url: String?) -> URL? {
-    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+    var allowedQueryParamAndKey = CharacterSet.urlHostAllowed
+    allowedQueryParamAndKey.insert(charactersIn: ":/")
+    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: allowedQueryParamAndKey), let url = URL(string: urlString) {
       return url
     }
     return nil

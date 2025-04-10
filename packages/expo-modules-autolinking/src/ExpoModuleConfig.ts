@@ -1,6 +1,7 @@
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
+  AndroidPublication,
   RawExpoModuleConfig,
   RawModuleConfigApple,
   SupportedPlatform,
@@ -11,6 +12,21 @@ function arrayize<T>(value: T[] | T | undefined): T[] {
     return value;
   }
   return value != null ? [value] : [];
+}
+
+export class ExpoAndroidProjectConfig {
+  constructor(
+    public name: string,
+    public path: string,
+    public modules?: string[],
+    public publication?: AndroidPublication,
+    public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
+    public shouldUsePublicationScriptPath?: string,
+    /**
+     * Whether this project is the root one.
+     */
+    public isDefault: boolean = false
+  ) {}
 }
 
 /**
@@ -46,9 +62,7 @@ export class ExpoModuleConfig {
    */
   appleModules() {
     const appleConfig = this.getAppleConfig();
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+    return appleConfig?.modules ?? [];
   }
 
   /**
@@ -87,20 +101,38 @@ export class ExpoModuleConfig {
   }
 
   /**
-   * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+   * Returns information about Android projects defined by the module author.
    */
-  androidModules() {
-    const androidConfig = this.rawConfig.android;
+  androidProjects(defaultProjectName: string): ExpoAndroidProjectConfig[] {
+    const androidProjects: ExpoAndroidProjectConfig[] = [];
 
-    // `modulesClassNames` is a legacy name for the same config.
-    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
-  }
+    // Adding the "root" Android project - it might not be valide.
+    androidProjects.push(
+      new ExpoAndroidProjectConfig(
+        this.rawConfig.android?.name ?? defaultProjectName,
+        this.rawConfig.android?.path ?? 'android',
+        this.rawConfig.android?.modules,
+        this.rawConfig.android?.publication,
+        this.rawConfig.android?.gradleAarProjects,
+        this.rawConfig.android?.shouldUsePublicationScriptPath,
+        !this.rawConfig.android?.path // it's default project because path is not defined
+      )
+    );
 
-  /**
-   * Returns build.gradle file paths defined by the module author.
-   */
-  androidGradlePaths(): string[] {
-    return arrayize(this.rawConfig.android?.gradlePath ?? []);
+    this.rawConfig.android?.projects?.forEach((project) => {
+      androidProjects.push(
+        new ExpoAndroidProjectConfig(
+          project.name,
+          project.path,
+          project.modules,
+          project.publication,
+          project.gradleAarProjects,
+          project.shouldUsePublicationScriptPath
+        )
+      );
+    });
+
+    return androidProjects;
   }
 
   /**
@@ -115,6 +147,20 @@ export class ExpoModuleConfig {
    */
   androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[] {
     return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+  }
+
+  /**
+   * Returns the publication config for Android.
+   */
+  androidPublication(): AndroidPublication | undefined {
+    return this.rawConfig.android?.publication;
+  }
+
+  /**
+   * Returns core features required by the module author.
+   */
+  coreFeatures(): string[] {
+    return arrayize(this.rawConfig.coreFeatures ?? []);
   }
 
   /**

@@ -10,7 +10,7 @@ export function Trigger({ children, asChild, ...rest }: TooltipPrimitive.Tooltip
         typeof child.type === 'object' &&
         (child.type as NamedExoticComponent)?.displayName === 'Button'
       ) {
-        throw Error(
+        throw new Error(
           'If wrapping button with tooltip trigger use `asChild` prop to prevent hydration issues'
         );
       }

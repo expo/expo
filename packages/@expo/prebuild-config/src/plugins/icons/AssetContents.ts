@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import { join } from 'path';
 
 export type ContentsJsonImageIdiom =
@@ -9,9 +9,9 @@ export type ContentsJsonImageIdiom =
   | 'ios-marketing'
   | 'universal';
 
-export type ContentsJsonImageAppearanceLuminosityType = 'dark' | 'tinted';
+export type ContentsJsonImageAppearanceLuminosityType = 'light' | 'dark' | 'tinted';
 
-export type ContentsJsonImageAppearance = {
+export type ContentsJsonAppearance = {
   appearance: 'luminosity';
   value: ContentsJsonImageAppearanceLuminosityType;
 };
@@ -19,7 +19,7 @@ export type ContentsJsonImageAppearance = {
 export type ContentsJsonImageScale = '1x' | '2x' | '3x';
 
 export interface ContentsJsonImage {
-  appearances?: ContentsJsonImageAppearance[];
+  appearances?: ContentsJsonAppearance[];
   idiom: ContentsJsonImageIdiom;
   size?: string;
   scale?: ContentsJsonImageScale;
@@ -27,8 +27,23 @@ export interface ContentsJsonImage {
   platform?: ContentsJsonImageIdiom;
 }
 
+export interface ContentsJsonColor {
+  appearances?: ContentsJsonAppearance[];
+  idiom: ContentsJsonImageIdiom;
+  color: {
+    'color-space': 'srgb';
+    components: {
+      alpha: string;
+      blue: string;
+      green: string;
+      red: string;
+    };
+  };
+}
+
 export interface ContentsJson {
   images: ContentsJsonImage[];
+  colors: ContentsJsonColor[];
   info: {
     version: number;
     author: string;
@@ -49,9 +64,8 @@ export async function writeContentsJsonAsync(
   directory: string,
   { images }: Pick<ContentsJson, 'images'>
 ): Promise<void> {
-  await fs.ensureDir(directory);
-
-  await fs.writeFile(
+  await fs.promises.mkdir(directory, { recursive: true });
+  await fs.promises.writeFile(
     join(directory, 'Contents.json'),
     JSON.stringify(
       {

@@ -8,12 +8,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
+import expo.modules.camera.CameraExceptions.WriteImageException
+import expo.modules.camera.PictureFormat
 import expo.modules.camera.PictureOptions
+import expo.modules.camera.PictureRef
 import expo.modules.camera.utils.CameraViewHelper.addExifData
 import expo.modules.camera.utils.CameraViewHelper.getExifData
 import expo.modules.camera.utils.CameraViewHelper.setExifData
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.RuntimeContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
@@ -30,13 +34,13 @@ private const val OUT_OF_MEMORY_EXCEPTION_MSG = "Cannot allocate enough space to
 private const val ERROR_TAG = "E_TAKING_PICTURE_FAILED"
 private const val OUT_OF_MEMORY_TAG = "ERR_CAMERA_OUT_OF_MEMORY"
 private const val DIRECTORY_NAME = "Camera"
-private const val EXTENSION = ".jpg"
 private const val BASE64_KEY = "base64"
 private const val HEIGHT_KEY = "height"
 private const val WIDTH_KEY = "width"
 private const val EXIF_KEY = "exif"
 private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
+private const val FORMAT_KEY = "format"
 private const val ID_KEY = "id"
 
 fun getMirroredOrientation(orientation: Int): Int {
@@ -58,6 +62,7 @@ class ResolveTakenPicture(
   private var promise: Promise,
   private var options: PictureOptions,
   private var mirror: Boolean,
+  private val runtimeContext: RuntimeContext,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) {
@@ -66,7 +71,9 @@ class ResolveTakenPicture(
 
   suspend fun resolve() = withContext(Dispatchers.IO) {
     val bundle = processImage()
-    onComplete(bundle)
+    if (!options.pictureRef) {
+      onComplete(bundle)
+    }
   }
 
   private fun processImage(): Bundle? {
@@ -132,20 +139,27 @@ class ResolveTakenPicture(
           putInt(HEIGHT_KEY, bitmap.height)
         }
 
+        if (options.pictureRef) {
+          promise.resolve(PictureRef(bitmap, runtimeContext))
+          return response
+        }
+
         // Cache compressed image in imageStream
         ByteArrayOutputStream().use { imageStream ->
-          bitmap.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
+          val format = if (options.imageType == PictureFormat.PNG) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
+          bitmap.compress(format, quality, imageStream)
           // Write compressed image to file in cache directory
-          val filePath = writeStreamToFile(imageStream)
+          val filePath = writeStreamToFile(directory, imageStream, options.imageType.toExtension())
           bitmap.recycle()
           // Save Exif data to the image if requested
           if (options.exif) {
-            val exifFromFile = ExifInterface(filePath!!)
+            val exifFromFile = ExifInterface(filePath)
             addExifData(exifFromFile, exifInterface)
           }
           val imageFile = File(filePath)
           val fileUri = Uri.fromFile(imageFile).toString()
           response.putString(URI_KEY, fileUri)
+          response.putString(FORMAT_KEY, options.imageType.toExtension())
 
           // Write base64-encoded image to the response if requested
           if (options.base64) {
@@ -159,6 +173,7 @@ class ResolveTakenPicture(
         is Resources.NotFoundException -> promise.reject(ERROR_TAG, DIRECTORY_NOT_FOUND_MSG, e)
         is IOException -> promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
         is IllegalArgumentException -> promise.reject(ERROR_TAG, PARAMETER_EXCEPTION_MSG, e)
+        is WriteImageException -> promise.reject(e)
         else -> promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
       }
       e.printStackTrace()
@@ -174,14 +189,14 @@ class ResolveTakenPicture(
         imageStream.write(imageData)
 
         // write compressed image to file in cache directory
-        val filePath = writeStreamToFile(imageStream)
-        val imageFile = filePath?.let { File(it) }
+        val filePath = writeStreamToFile(directory, imageStream, options.imageType.toExtension())
+        val imageFile = File(filePath)
 
         // handle image uri
         val fileUri = Uri.fromFile(imageFile).toString()
 
         // read exif information
-        val exifInterface = ExifInterface(filePath!!)
+        val exifInterface = ExifInterface(filePath)
 
         return Bundle().apply {
           putString(URI_KEY, fileUri)
@@ -224,21 +239,6 @@ class ResolveTakenPicture(
     }
   }
 
-  // Write stream to file in cache directory
-  @Throws(Exception::class)
-  private fun writeStreamToFile(inputStream: ByteArrayOutputStream): String? {
-    try {
-      val outputPath = FileSystemUtils.generateOutputPath(directory, DIRECTORY_NAME, EXTENSION)
-      FileOutputStream(outputPath).use { outputStream ->
-        inputStream.writeTo(outputStream)
-      }
-      return outputPath
-    } catch (e: IOException) {
-      e.printStackTrace()
-    }
-    return null
-  }
-
   private fun decodeBitmap(imageData: ByteArray, orientation: Int, options: PictureOptions, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
     return if (!options.exif) {
@@ -269,5 +269,18 @@ class ResolveTakenPicture(
     ExifInterface.ORIENTATION_ROTATE_270 -> 270
     ExifInterface.ORIENTATION_TRANSVERSE -> 270
     else -> 0
+  }
+}
+
+@Throws(Exception::class)
+fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream, extension: String = PictureFormat.JPEG.toExtension()): String {
+  try {
+    val outputPath = FileSystemUtils.generateOutputPath(directory, DIRECTORY_NAME, extension)
+    FileOutputStream(outputPath).use { outputStream ->
+      inputStream.writeTo(outputStream)
+    }
+    return outputPath
+  } catch (e: IOException) {
+    throw WriteImageException(e.message)
   }
 }

@@ -7,8 +7,13 @@ export async function installDependencies(
   appPath: string,
   ...args: string[]
 ) {
-  await spawnAsync(packageManager, ['install', ...args], {
-    cwd: appPath,
-    stdio: 'ignore',
-  });
+  try {
+    return await spawnAsync(packageManager, ['install', ...args], {
+      cwd: appPath,
+    });
+  } catch (error: any) {
+    throw new Error(
+      `${packageManager} install exited with non-zero code: ${error?.status}\n\nError stack:\n${error?.stderr}`
+    );
+  }
 }

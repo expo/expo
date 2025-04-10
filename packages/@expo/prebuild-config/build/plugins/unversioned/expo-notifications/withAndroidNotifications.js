@@ -24,9 +24,9 @@ function _imageUtils() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -130,7 +130,9 @@ async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
   }) => {
     const drawableFolderName = folderName.replace('mipmap', 'drawable');
     const dpiFolderPath = _path().default.resolve(projectRoot, _withAndroidIcons().ANDROID_RES_PATH, drawableFolderName);
-    await _fsExtra().default.ensureDir(dpiFolderPath);
+    await _fs().default.promises.mkdir(dpiFolderPath, {
+      recursive: true
+    });
     const iconSizePx = BASELINE_PIXEL_SIZE * scale;
     try {
       const resizedIcon = (await (0, _imageUtils().generateImageAsync)({
@@ -143,7 +145,7 @@ async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
         resizeMode: 'cover',
         backgroundColor: 'transparent'
       })).source;
-      await _fsExtra().default.writeFile(_path().default.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'), resizedIcon);
+      await _fs().default.promises.writeFile(_path().default.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'), resizedIcon);
     } catch (e) {
       throw new Error('Encountered an issue resizing Android notification icon: ' + e);
     }
@@ -155,7 +157,9 @@ async function removeNotificationIconImageFilesAsync(projectRoot) {
   }) => {
     const drawableFolderName = folderName.replace('mipmap', 'drawable');
     const dpiFolderPath = _path().default.resolve(projectRoot, _withAndroidIcons().ANDROID_RES_PATH, drawableFolderName);
-    await _fsExtra().default.remove(_path().default.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'));
+    await _fs().default.promises.rm(_path().default.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'), {
+      force: true
+    });
   }));
 }
 //# sourceMappingURL=withAndroidNotifications.js.map

@@ -1,2 +1,2 @@
-import { SharedObject } from 'expo-modules-core';
+export {};
 //# sourceMappingURL=AudioModule.types.js.map

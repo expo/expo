@@ -19,18 +19,27 @@ prepare_react_native_project!
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 9.0'
-  pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
   # transitive dependency of React-Core and we use it to get the `RCTInspectorPackagerConnection` state
   pod 'SocketRocket'
 
+  # Required by react-native-maps
+  # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
+  pod 'react-native-google-maps', :path => '../../../node_modules/react-native-maps'
+
   # Required by firebase core versions 9.x / 10.x (included with SDK 47)
   # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
   pod 'FirebaseCore', :modular_headers => true
+  pod 'FirebaseCrashlytics', :modular_headers => true
+  pod 'FirebaseAnalytics', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
+
+  pod 'FirebaseInstallations', :modular_headers => true
+  pod 'GoogleDataTransport', :modular_headers => true
+  pod 'nanopb', :modular_headers => true
+  pod 'FirebaseCoreExtension', :modular_headers => true
 
   # Expo modules
   use_expo_modules!({
@@ -47,8 +56,9 @@ target 'Expo Go' do
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
-      'expo-face-detector',
       'expo-splash-screen',
+      'expo-audio',
+      '@expo/ui'
     ],
     includeTests: true,
     flags: {
@@ -60,10 +70,8 @@ target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   config_command = [
-    'node',
-    '--no-warnings',
-    '--eval',
-    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+    'npx',
+    'expo-modules-autolinking',
     'react-native-config',
     '--json',
     '--platform',
@@ -71,12 +79,14 @@ target 'Expo Go' do
   ]
   config = use_native_modules!(config_command)
 
+  react_native_path = '../../../react-native-lab/react-native/packages/react-native'
+
   use_react_native!(
-    :path => '../../../react-native-lab/react-native/packages/react-native',
+    :path => react_native_path,
     :hermes_enabled => true,
   )
   setup_jsc!(
-    :react_native_path => '../../../react-native-lab/react-native/packages/react-native',
+    :react_native_path => react_native_path,
   )
 
   post_install do |installer|
@@ -84,7 +94,7 @@ target 'Expo Go' do
     if installer.pods_project
       react_native_post_install(
         installer,
-        config[:reactNativePath],
+        react_native_path,
         :mac_catalyst_enabled => false
       )
     end
@@ -97,7 +107,7 @@ target 'Expo Go' do
       .each do |pod_name, target_installation_result|
 
       # Enable hermes debugger even on release builds
-      if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
+      if ['React-hermes', 'hermes-engine', 'React-RuntimeHermes'].include?(pod_name)
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
@@ -106,25 +116,11 @@ target 'Expo Go' do
 
       # Set `REACT_NATIVE_PATH` to react-native submodule
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", '../../../react-native-lab/react-native/packages/react-native')
-      end
-
-      # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-        resource_bundle_target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
       end
 
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
-      end
-
-      if pod_name == 'Branch'
-        target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
-        end
       end
 
       # On iOS, the Stripe dependency StripePaymentsUI can't seem to find a header that should be there.

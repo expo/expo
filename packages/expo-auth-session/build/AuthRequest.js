@@ -204,7 +204,8 @@ export class AuthRequest {
             params.client_secret = request.clientSecret;
         }
         if (request.prompt) {
-            params.prompt = request.prompt;
+            params.prompt =
+                typeof request.prompt === 'string' ? request.prompt : request.prompt.join(' ');
         }
         // These overwrite any extra params
         params.redirect_uri = request.redirectUri;

@@ -16,20 +16,18 @@ internal final class FileSystemDirectory: FileSystemPath {
     }
   }
 
-  func create() throws {
-    try validateType()
+  func create(_ options: CreateOptions) throws {
     try validatePermission(.write)
-    guard !exists else {
-      throw UnableToCreateDirectoryException("directory already exists")
-    }
+    try validateType()
+    try validateCanCreate(options)
     do {
-      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
+      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
     } catch {
-      throw UnableToCreateDirectoryException(error.localizedDescription)
+      throw UnableToCreateException(error.localizedDescription)
     }
   }
 
-  var exists: Bool {
+  override var exists: Bool {
     do {
       try validatePermission(.read)
     } catch {

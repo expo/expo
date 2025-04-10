@@ -34,7 +34,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -44,7 +44,7 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: 🧪 Run Docs tests
         run: yarn test
       - name: 🚨 Lint Docs website code
@@ -54,6 +54,7 @@ jobs:
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
+          version: 3.11.1
           reporter: github-pr-check
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'
@@ -81,6 +82,9 @@ jobs:
 
           # Set bucket policy to public
           aws s3api put-bucket-policy --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::docs.expo.dev-pr-${{ github.event.pull_request.number }}/*\"}]}"
+
+          # Tag bucket to tell compliance monitoring that it is intended to be public
+          aws s3api put-bucket-tagging --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --tagging "{\"TagSet\":[{\"Key\":\"DrataExclude\",\"Value\":\"This is a test instance of our public docs page and is intended to be public.\"}]}"
 
           # Set up static website hosting
           aws s3 website s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}/ --index-document index.html

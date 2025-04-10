@@ -22,9 +22,10 @@ abstract class StateMachineProcedure {
     fun getCurrentState(): UpdatesStateValue
 
     /**
-     * Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
+     * Reset the machine to its starting state after a restart.
+     * Should only be called after the app restarts (reloadAsync()).
      */
-    fun resetState()
+    fun resetStateAfterRestart()
   }
 
   interface ProcedureContext : StateMachineProcedureContext {
@@ -35,7 +36,7 @@ abstract class StateMachineProcedure {
     fun onComplete()
   }
 
-  abstract fun run(procedureContext: ProcedureContext)
+  abstract suspend fun run(procedureContext: ProcedureContext)
 
   abstract val loggerTimerLabel: String
 }

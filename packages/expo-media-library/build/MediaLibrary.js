@@ -1,6 +1,12 @@
 import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExpoMediaLibrary';
+const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+let loggedExpoGoWarning = false;
+if (isExpoGo && !loggedExpoGoWarning) {
+    console.warn('Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build');
+    loggedExpoGoWarning = true;
+}
 export { PermissionStatus, };
 function arrayize(item) {
     if (Array.isArray(item)) {
@@ -81,7 +87,7 @@ export async function isAvailableAsync() {
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function requestPermissionsAsync(writeOnly = false, granularPermissions = ['audio', 'photo', 'video']) {
+export async function requestPermissionsAsync(writeOnly = false, granularPermissions) {
     if (!MediaLibrary.requestPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
     }
@@ -98,7 +104,7 @@ export async function requestPermissionsAsync(writeOnly = false, granularPermiss
  * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function getPermissionsAsync(writeOnly = false, granularPermissions = ['audio', 'photo', 'video']) {
+export async function getPermissionsAsync(writeOnly = false, granularPermissions) {
     if (!MediaLibrary.getPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
     }
@@ -138,6 +144,9 @@ export const usePermissions = createPermissionHook({
  * @platform ios
  */
 export async function presentPermissionsPickerAsync(mediaTypes = ['photo', 'video']) {
+    if (Platform.OS === 'android' && isExpoGo) {
+        throw new UnavailabilityError('MediaLibrary', 'presentPermissionsPickerAsync is unavailable in Expo Go');
+    }
     if (Platform.OS === 'android' && Platform.Version >= 34) {
         await MediaLibrary.requestPermissionsAsync(false, mediaTypes);
         return;
@@ -159,16 +168,20 @@ export async function presentPermissionsPickerAsync(mediaTypes = ['photo', 'vide
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export async function createAssetAsync(localUri) {
+export async function createAssetAsync(localUri, album) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
     }
+    const albumId = getId(album);
     if (!localUri || typeof localUri !== 'string') {
         throw new Error('Invalid argument "localUri". It must be a string!');
     }
-    const asset = await MediaLibrary.createAssetAsync(localUri);
+    const asset = await MediaLibrary.createAssetAsync(localUri, albumId);
     if (Array.isArray(asset)) {
         // Android returns an array with asset, we need to pick the first item
         return asset[0];

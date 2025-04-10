@@ -72,7 +72,11 @@ export default (program: Command) => {
       false
     )
     .option('-C, --canary', 'Whether to publish all packages as canary versions.', false)
-
+    .option(
+      '-A, --skip-android-artifacts',
+      'Whether to build and publish Android artifacts to the local NPM registry.',
+      false
+    )
     /* debug options */
     .option(
       '-S, --skip-repo-checks',

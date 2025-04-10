@@ -50,6 +50,9 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
     return "moment"
   case .smartAlbum:
     return "smartAlbum"
+  @unknown default:
+    log.error("Unhandled `PHAssetCollectionType` value: \(type), returning `album` as fallback. Add the missing case as soon as possible.")
+    return "album"
   }
 }
 
@@ -80,7 +83,8 @@ func exportAsset(asset: PHAsset?) -> [String: Any?]? {
     "creationTime": exportDate(asset.creationDate),
     // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
-    "duration": asset.duration
+    "duration": asset.duration,
+    "pairedVideoAsset": nil
   ]
 }
 
@@ -260,6 +264,41 @@ func createAlbum(with title: String, completion: @escaping (PHAssetCollection?, 
   }
 }
 
+func createAsset(uri: URL, appContext: AppContext?, completion: @escaping (PHAsset?, Error?) -> Void) {
+  let assetType = assetType(for: uri)
+
+  if uri.pathExtension.isEmpty {
+    completion(nil, EmptyFileExtensionException())
+    return
+  }
+
+  if assetType == .unknown || assetType == .audio {
+    completion(nil, UnsupportedAssetTypeException(uri.absoluteString))
+    return
+  }
+
+  if !FileSystemUtilities.permissions(appContext, for: uri).contains(.read) {
+    completion(nil, UnreadableAssetException(uri.absoluteString))
+    return
+  }
+
+  var assetPlaceholder: PHObjectPlaceholder?
+  PHPhotoLibrary.shared().performChanges {
+    let changeRequest = assetType == .video
+    ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
+    : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
+
+    assetPlaceholder = changeRequest?.placeholderForCreatedAsset
+  } completionHandler: { success, error in
+    if success {
+      let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
+      completion(asset, nil)
+    } else {
+      completion(nil, SaveAssetException(error))
+    }
+  }
+}
+
 func assetType(for localUri: URL) -> PHAssetMediaType {
   guard let type = UTType(filenameExtension: localUri.pathExtension) else {
     return assetTypeExtension(for: localUri.pathExtension)
@@ -267,9 +306,15 @@ func assetType(for localUri: URL) -> PHAssetMediaType {
   switch type {
   case .image:
     return .image
-  case .video:
+  case .video, .movie:
     return .video
   case .audio:
+    return .audio
+  case _ where type.conforms(to: .image):
+    return .image
+  case _ where type.conforms(to: .video) || type.conforms(to: .movie):
+    return .video
+  case _ where type.conforms(to: .audio):
     return .audio
   default:
     return .unknown
@@ -508,4 +553,18 @@ func requesterClass(_ writeOnly: Bool) -> EXPermissionsRequester.Type {
     return MediaLibraryWriteOnlyPermissionRequester.self
   }
   return MediaLibraryPermissionRequester.self
+}
+
+func readSizeFrom(url: URL) -> CGSize? {
+  let asset = AVURLAsset(url: url)
+  guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+    return nil
+  }
+  // The video could be rotated and the resulting transform can result in a negative width/height.
+  let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
+  return CGSize(width: abs(size.width), height: abs(size.height))
+}
+
+func getFileExtension(from fileName: String) -> String {
+  return ".\(URL(fileURLWithPath: fileName).pathExtension)"
 }

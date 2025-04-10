@@ -1,6 +1,6 @@
 // @needsAudit
 
-import { SplashScreenOptions } from './SplashScreen.types';
+import type { SplashScreenOptions } from './SplashScreen.types';
 
 /**
  * Makes the native splash screen (configured in `app.json`) remain visible until `hideAsync` is called.
@@ -24,6 +24,11 @@ export async function preventAutoHideAsync(): Promise<boolean> {
   return false;
 }
 
+/**
+ *
+ * Configures the splashscreens default animation behavior.
+ *
+ */
 export function setOptions(options: SplashScreenOptions): void {}
 
 // @needsAudit
@@ -34,4 +39,10 @@ export function setOptions(options: SplashScreenOptions): void {}
  */
 export function hide(): void {}
 
+/**
+ * Hides the native splash screen immediately. This method is provided for backwards compatability. See the
+ * ["Usage"](#usage) section for an example.
+ */
 export async function hideAsync(): Promise<void> {}
+
+export { SplashScreenOptions };

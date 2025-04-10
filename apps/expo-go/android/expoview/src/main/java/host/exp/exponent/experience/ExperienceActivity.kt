@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.RemoteViews
+import androidx.activity.enableEdgeToEdge
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -133,12 +135,13 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
     }
 
-    /*
-     *
-     * Lifecycle
-     *
-     */
+  /*
+   *
+   * Lifecycle
+   *
+   */
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
 
     isLoadExperienceAllowedToRun = true
@@ -223,6 +226,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         forceCache
       ).start(this)
     }
+    ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel()
     kernel.setOptimisticActivity(this, taskId)
   }
 
@@ -249,6 +253,12 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         )
       }
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    // Will update the navigation bar colors if the system theme has changed. This is only relevant for the three button navigation bar.
+    enableEdgeToEdge()
+    super.onConfigurationChanged(newConfig)
   }
 
   private fun soLoaderInit() {
@@ -344,11 +354,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-    /*
-     *
-     * Experience Loading
-     *
-     */
+  /*
+   *
+   * Experience Loading
+   *
+   */
   fun startLoading() {
     isLoading = true
     showOrReconfigureManagedAppSplashScreen(manifest)
@@ -636,11 +646,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     PushNotificationHelper.instance.removeNotifications(this, unreadNotifications)
   }
 
-    /*
-     *
-     * Notification
-     *
-     */
+  /*
+   *
+   * Notification
+   *
+   */
   private fun addNotification() {
     if (manifestUrl == null || manifest == null) {
       return
@@ -684,7 +694,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID)
 
-    ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel()
     notificationBuilder =
       NotificationCompat.Builder(
         this,
@@ -717,7 +726,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    * @param isFromNotification true if this is the result of the user taking an
    * action in the notification view.
    */
-  fun dismissNuxViewIfVisible(isFromNotification: Boolean) {
+  private fun dismissNuxViewIfVisible(isFromNotification: Boolean) {
     if (nuxOverlayView == null) {
       return
     }
@@ -742,11 +751,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-    /*
-     *
-     * Errors
-     *
-     */
+  /*
+   *
+   * Errors
+   *
+   */
   override fun onError(intent: Intent) {
     if (manifestUrl != null) {
       intent.putExtra(ErrorActivity.MANIFEST_URL_KEY, manifestUrl)

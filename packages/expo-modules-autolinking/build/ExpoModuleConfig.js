@@ -1,12 +1,36 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = void 0;
+exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
+exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
     }
     return value != null ? [value] : [];
 }
+class ExpoAndroidProjectConfig {
+    name;
+    path;
+    modules;
+    publication;
+    gradleAarProjects;
+    shouldUsePublicationScriptPath;
+    isDefault;
+    constructor(name, path, modules, publication, gradleAarProjects, shouldUsePublicationScriptPath, 
+    /**
+     * Whether this project is the root one.
+     */
+    isDefault = false) {
+        this.name = name;
+        this.path = path;
+        this.modules = modules;
+        this.publication = publication;
+        this.gradleAarProjects = gradleAarProjects;
+        this.shouldUsePublicationScriptPath = shouldUsePublicationScriptPath;
+        this.isDefault = isDefault;
+    }
+}
+exports.ExpoAndroidProjectConfig = ExpoAndroidProjectConfig;
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -39,8 +63,7 @@ class ExpoModuleConfig {
      */
     appleModules() {
         const appleConfig = this.getAppleConfig();
-        // `modulesClassNames` is a legacy name for the same config.
-        return appleConfig?.modules ?? appleConfig?.modulesClassNames ?? [];
+        return appleConfig?.modules ?? [];
     }
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
@@ -73,18 +96,17 @@ class ExpoModuleConfig {
         return this.getAppleConfig()?.debugOnly ?? false;
     }
     /**
-     * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+     * Returns information about Android projects defined by the module author.
      */
-    androidModules() {
-        const androidConfig = this.rawConfig.android;
-        // `modulesClassNames` is a legacy name for the same config.
-        return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
-    }
-    /**
-     * Returns build.gradle file paths defined by the module author.
-     */
-    androidGradlePaths() {
-        return arrayize(this.rawConfig.android?.gradlePath ?? []);
+    androidProjects(defaultProjectName) {
+        const androidProjects = [];
+        // Adding the "root" Android project - it might not be valide.
+        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
+        ));
+        this.rawConfig.android?.projects?.forEach((project) => {
+            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules, project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
+        });
+        return androidProjects;
     }
     /**
      * Returns gradle plugins descriptors defined by the module author.
@@ -97,6 +119,18 @@ class ExpoModuleConfig {
      */
     androidGradleAarProjects() {
         return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+    }
+    /**
+     * Returns the publication config for Android.
+     */
+    androidPublication() {
+        return this.rawConfig.android?.publication;
+    }
+    /**
+     * Returns core features required by the module author.
+     */
+    coreFeatures() {
+        return arrayize(this.rawConfig.coreFeatures ?? []);
     }
     /**
      * Returns serializable raw config.
@@ -114,5 +148,4 @@ function requireAndResolveExpoModuleConfig(path) {
     // TODO: Support for `*.js` files, not only static `*.json`.
     return new ExpoModuleConfig(require(path));
 }
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 //# sourceMappingURL=ExpoModuleConfig.js.map

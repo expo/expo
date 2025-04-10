@@ -14,7 +14,7 @@ import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Li
 import type { Href } from '../../types.js';
 export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {
     forward: () => void;
-    prefetch: <T extends string | object>(href: Href<T>) => void;
+    prefetch: (href: Href) => void;
 };
 type ShouldSkip = (readonly [
     string,
@@ -30,22 +30,22 @@ type RouterData = [
 export declare function Router({ routerData }: {
     routerData?: RouterData | undefined;
 }): import("react").FunctionComponentElement<Omit<{
-    initialInput?: string | undefined;
+    initialInput?: string;
     initialParams?: unknown;
     fetchCache?: {
         e?: [input: string, params: unknown, elements: Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
-        }] | undefined;
-        s?: ((updater: (Promise<Record<string, ReactNode>> & {
+        }];
+        s?: (updater: (Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
         }) | ((prev: Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
         }) => Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
-        })) => void) | undefined;
+        })) => void;
         o?: ((data: unknown) => void) | undefined;
-    } | undefined;
-    unstable_onFetchData?: ((data: unknown) => void) | undefined;
+    };
+    unstable_onFetchData?: (data: unknown) => void;
     children: ReactNode;
 }, "children">>;
 /**
@@ -56,9 +56,9 @@ export declare function ServerRouter({ children, route }: {
     children: ReactNode;
     route: RouteProps;
 }): import("react").FunctionComponentElement<{
-    children?: ReactNode;
+    children?: ReactNode | undefined;
 }>;
-export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
+export type LinkProps = ClassicLinkProps & {
     href: string;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 export declare const Link: LinkComponent;

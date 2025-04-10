@@ -15,14 +15,6 @@
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
 
-#import "EXScopedNotificationsEmitter.h"
-#import "EXScopedNotificationsHandlerModule.h"
-#import "EXScopedNotificationBuilder.h"
-#import "EXScopedNotificationSchedulerModule.h"
-#import "EXScopedNotificationPresentationModule.h"
-#import "EXScopedNotificationCategoriesModule.h"
-#import "EXScopedServerRegistrationModule.h"
-
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
 #endif
@@ -71,44 +63,6 @@ if (params[@"fileSystemDirectories"]) {
   EXTaskManager *taskManagerModule = [[EXTaskManager alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
-  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:notificationsEmmitter];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:notificationsHandler];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithScopeKey:scopeKey
-                                                                                                  andConstantsBinding:constantsBinding];
-  [moduleRegistry registerInternalModule:notificationsBuilder];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
-  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:schedulerModule];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
-  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:notificationPresentationModule];
-#endif
-
-#if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:scopedCategoriesModule];
-  [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId
-                                                                                                           scopeKey:scopeKey];
-#endif
-
-#if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
-  EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:serverRegistrationModule];
 #endif
 
   return moduleRegistry;

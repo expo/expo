@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
 
 export enum IosAlertStyle {
   NONE = 0,
@@ -19,8 +19,6 @@ export enum IosAuthorizationStatus {
   PROVISIONAL = 3,
   EPHEMERAL = 4,
 }
-
-export { PermissionHookOptions };
 
 // @docsMissing
 export interface NotificationPermissionsStatus extends PermissionResponse {

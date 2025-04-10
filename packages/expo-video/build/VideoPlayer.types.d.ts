@@ -22,6 +22,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     allowsExternalPlayback: boolean;
     /**
+     * Determines how the player will interact with other audio playing in the system.
+     *
+     * @default 'auto'
+     * @platform android
+     * @platform ios
+     */
+    audioMixingMode: AudioMixingMode;
+    /**
      * Boolean value whether the player is currently muted.
      * Setting this property to `true`/`false` will mute/unmute the player.
      * @default false
@@ -34,6 +42,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * at which playback will begin once the `play()` method is called.
      *
      * Setting `currentTime` to a new value seeks the player to the given time.
+     * Note that frame accurate seeking may incur additional decoding delay which can impact seeking performance.
+     * Consider using the [`seekBy`](#seekbyseconds) function if the time does not have to be set precisely.
      */
     currentTime: number;
     /**
@@ -123,6 +133,38 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     bufferOptions: BufferOptions;
     /**
+     * Specifies the subtitle track which is currently displayed by the player. `null` when no subtitles are displayed.
+     *
+     * > To ensure a valid subtitle track, always assign one of the subtitle tracks from the [`availableSubtitleTracks`](#availablesubtitletracks) array.
+     *
+     * @default null
+     * @platform android
+     * @platform ios
+     */
+    subtitleTrack: SubtitleTrack | null;
+    /**
+     * An array of subtitle tracks available for the current video.
+     *
+     * @platform android
+     * @platform ios
+     */
+    readonly availableSubtitleTracks: SubtitleTrack[];
+    /**
+     * Specifies the video track currently played by the player. `null` when no video is displayed.
+     *
+     * @default null
+     * @platform android
+     * @platform ios
+     */
+    readonly videoTrack: VideoTrack | null;
+    /**
+     * An array of video tracks available for the current video.
+     *
+     * @platform android
+     * @platform ios
+     */
+    readonly availableVideoTracks: VideoTrack[];
+    /**
      * Initializes a new video player instance with the given source.
      * @hidden
      */
@@ -140,7 +182,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     replace(source: VideoSource): void;
     /**
-     * Seeks the playback by the given number of seconds.
+     * Seeks the playback by the given number of seconds. The time to which the player seeks may differ from the specified requested time for efficiency,
+     * depending on the encoding and what is currently buffered by the player. Use this function to implement playback controls that seek by specific amount of time,
+     * in which case, the actual time usually does not have to be precise. For frame accurate seeking, use the [`currentTime`](#currenttime) property.
      */
     seekBy(seconds: number): void;
     /**
@@ -150,10 +194,28 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     /**
      * Generates thumbnails from the currently played asset. The thumbnails are references to native images,
      * thus they can be used as a source of the `Image` component from `expo-image`.
+     * @platform android
      * @platform ios
      */
-    generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
+    generateThumbnailsAsync(times: number | number[], options?: VideoThumbnailOptions): Promise<VideoThumbnail[]>;
 }
+/**
+ * Additional options for video thumbnails generation.
+ */
+export type VideoThumbnailOptions = {
+    /**
+     * If provided, the generated thumbnail will not exceed this width in pixels, preserving its aspect ratio.
+     * @platform android
+     * @platform ios
+     */
+    maxWidth?: number;
+    /**
+     * If provided, the generated thumbnail will not exceed this height in pixels, preserving its aspect ratio.
+     * @platform android
+     * @platform ios
+     */
+    maxHeight?: number;
+};
 /**
  * Describes the current status of the player.
  * - `idle`: The player is not playing or loading any videos.
@@ -192,6 +254,14 @@ export type VideoSource = string | number | null | {
      * @platform ios
      */
     headers?: Record<string, string>;
+    /**
+     * Specifies whether the player should use caching for the video.
+     * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+     * @default false
+     * @platform android
+     * @platform ios
+     */
+    useCaching?: boolean;
 };
 /**
  * Contains information about any errors that the player encountered during the playback
@@ -317,5 +387,79 @@ export type BufferOptions = {
      * @platform android
      */
     readonly prioritizeTimeOverSizeThreshold?: boolean;
+};
+/**
+ * Specifies the audio mode that the player should use. Audio mode is set on per-app basis, if there are multiple players playing and
+ * have different a `AudioMode` specified, the highest priority mode will be used. Priority order: 'doNotMix' > 'auto' > 'duckOthers' > 'mixWithOthers'.
+ *
+ * - `mixWithOthers`: The player will mix its audio output with other apps.
+ * - `duckOthers`: The player will lower the volume of other apps if any of the active players is outputting audio.
+ * - `auto`: The player will allow other apps to keep playing audio only when it is muted. On iOS it will always interrupt other apps when `showNowPlayingNotification` is `true` due to system requirements.
+ * - `doNotMix`: The player will pause playback in other apps, even when it's muted.
+ *
+ * > On iOS, the Now Playing notification is dependent on the audio mode. If the audio mode is different from `doNotMix` or `auto` this feature will not work.
+ */
+export type AudioMixingMode = 'mixWithOthers' | 'duckOthers' | 'auto' | 'doNotMix';
+export type SubtitleTrack = {
+    /**
+     * A string used by `expo-video` to identify the subtitle track.
+     *
+     * @platform android
+     */
+    id: string;
+    /**
+     * Language of the subtitle track. For example, `en`, `pl`, `de`.
+     */
+    language: string;
+    /**
+     * Label of the subtitle track in the language of the device.
+     */
+    label: string;
+};
+/**
+ * Specifies a VideoTrack loaded from a [`VideoSource`](#videosource).
+ */
+export type VideoTrack = {
+    /**
+     * The id of the video track.
+     *
+     * > This field is platform-specific and may return different depending on the operating system.
+     */
+    id: string;
+    /**
+     * Size of the video track.
+     */
+    size: VideoSize;
+    /**
+     * MimeType of the video track or null if unknown.
+     */
+    mimeType: string | null;
+    /**
+     * Indicates whether the video track format is supported by the device.
+     *
+     * @platform android
+     */
+    isSupported: boolean;
+    /**
+     * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+     */
+    bitrate: number | null;
+    /**
+     * Specifies the frame rate of the video track in frames per second.
+     */
+    frameRate: number | null;
+};
+/**
+ * Specifies the size of a video track.
+ */
+export type VideoSize = {
+    /**
+     * Width of the video track in pixels.
+     */
+    width: number;
+    /**
+     * Height of the video track in pixels.
+     */
+    height: number;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

@@ -480,12 +480,58 @@ it('can navigate to hoisted groups', () => {
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to nested groups', () => {
+it('can navigate to the index of a nested groups', () => {
   renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
     'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/index': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)'));
+
+  expect(screen).toHavePathname('/example/folder');
+  expect(screen.getByTestId('index')).toBeTruthy();
+});
+
+it('can navigate to the first route of a nested group when there is not an index route', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to the index of a hoisted nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/index': () => <Text testID="index" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)'));
+
+  expect(screen).toHavePathname('/example/folder');
+  expect(screen.getByTestId('index')).toBeTruthy();
+});
+
+it('can navigate to the first route of a hoisted nested group when there is not an index route', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
     'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
   });
 
@@ -1058,6 +1104,51 @@ it('can navigation to a relative route without losing path params', async () => 
   act(() => router.push('./three'));
   expect(screen).toHavePathname('/apple/banana/three');
   expect(screen.getByTestId('three')).toBeOnTheScreen();
+});
+
+it('can navigation to a relative route with query params without losing path params', async () => {
+  renderRouter(
+    {
+      _layout: () => <Slot />,
+      '(group)/[value]/one': () => <Text testID="one" />,
+      '(group)/[value]/two': () => <Text testID="two" />,
+      '(group)/[...value]/three': () => <Text testID="three" />,
+      '(group)/[...value]/four': () => <Text testID="four" />,
+    },
+    {
+      initialUrl: '/test/one',
+    }
+  );
+
+  expect(screen).toHavePathname('/test/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two?hello=world'));
+  expect(screen).toHavePathname('/test/two');
+  expect(screen).toHavePathnameWithParams('/test/two?hello=world');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    hello: 'world',
+  });
+
+  act(() => router.push('./one?foo=bar'));
+  expect(screen).toHavePathname('/test/one');
+  expect(screen).toHavePathnameWithParams('/test/one?foo=bar');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    foo: 'bar',
+  });
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/test/two');
+  expect(screen).toHavePathnameWithParams('/test/two?hello=world');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    hello: 'world',
+  });
 });
 
 describe('shared routes with tabs', () => {

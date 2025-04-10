@@ -5,6 +5,22 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const VideoScreens = [
   {
+    name: 'Audio Options',
+    route: 'video/audio',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioScreen'));
+    },
+  },
+  {
+    name: 'Cache',
+    route: 'video/cache',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoCacheScreen'));
+    },
+  },
+  {
     name: 'DRM',
     route: 'video/drm',
     options: {},
@@ -53,12 +69,36 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Subtitles',
+    route: 'video/subtitles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSubtitlesScreen'));
+    },
+  },
+  {
     // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
     name: 'Video Events',
     route: 'video/events',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoEventsScreen'));
+    },
+  },
+  {
+    name: 'FlatList of videos',
+    route: 'video/flat-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoFlatListScreen'));
+    },
+  },
+  {
+    name: 'FlashList of videos',
+    route: 'video/flash-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoFlashListScreen'));
     },
   },
   {

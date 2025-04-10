@@ -1,5 +1,4 @@
-import type { NativeModule, SharedRef } from 'expo';
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { NativeModule, SharedRef, SharedRefType } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -60,6 +59,18 @@ export type ImageSource = {
      * @platform ios
      */
     isAnimated?: boolean;
+    /**
+     * Whether to use the Apple system WebP codec.
+     *
+     * When set to `true`, use the Apple system WebP codec from `SDWebImageAWebPCoder`.
+     * When set to `false`, use the libwebp codec from `SDWebImageWebPCoder`.
+     * The Apple system WebP codec is faster and uses less memory, but it has some issues with animated WebP images.
+     * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+     *
+     * @default true
+     * @platform ios
+     */
+    useAppleWebpCodec?: boolean;
 };
 /**
  * @hidden
@@ -80,7 +91,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends Omit<ViewProps, 'style'> {
+export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
     /** @hidden */
     style?: StyleProp<RNImageStyle>;
     /**
@@ -91,6 +102,10 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
     source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
+     *
+     * > **Note**: The default value for placeholder's content fit is 'scale-down', which differs from the source image's default value.
+     * > Using a lower-resolution placeholder may cause flickering due to scaling differences between it and the final image.
+     * > To prevent this, you can set the [`placeholderContentFit`](#placeholdercontentfit) to match the [`contentFit`](#contentfit) value.
      */
     placeholder?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**

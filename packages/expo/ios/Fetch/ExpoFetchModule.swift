@@ -27,8 +27,8 @@ public final class ExpoFetchModule: Module {
         return NativeResponse(dispatchQueue: fetchRequestQueue)
       }
 
-      AsyncFunction("startStreaming") { (response: NativeResponse) in
-        response.startStreaming()
+      AsyncFunction("startStreaming") { (response: NativeResponse) -> Data? in
+        return response.startStreaming()
       }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("cancelStreaming") { (response: NativeResponse, _ reason: String) in

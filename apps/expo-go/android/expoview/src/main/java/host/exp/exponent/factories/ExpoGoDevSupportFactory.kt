@@ -5,14 +5,14 @@ import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.BridgeDevSupportManager
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.ReactInstanceDevHelper
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.runtime.ReactHostImpl
-import com.facebook.react.runtime.BridgelessDevSupportManager
+import com.facebook.react.devsupport.BridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
 class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
@@ -45,7 +45,6 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
   }
 
   override fun create(
-    host: ReactHostImpl,
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
     packagerPathForJSBundleName: String?,
@@ -59,8 +58,11 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
     useDevSupport: Boolean
   ): DevSupportManager {
+    if (!useDevSupport) {
+      return ReleaseDevSupportManager()
+    }
+
     return BridgelessDevSupportManager(
-      host,
       applicationContext,
       reactInstanceManagerHelper,
       packagerPathForJSBundleName,

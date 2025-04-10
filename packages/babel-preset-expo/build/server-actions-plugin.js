@@ -24,25 +24,31 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reactServerActionsPlugin = void 0;
+exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const core_1 = require("@babel/core");
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
-const node_url_1 = require("node:url");
-const url_1 = __importDefault(require("url"));
+const node_url_1 = __importStar(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
@@ -97,17 +103,62 @@ function reactServerActionsPlugin(api) {
             ? t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true)
             : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name);
         // Create a top-level declaration for the extracted function.
-        const bindingKind = 'const';
+        const bindingKind = 'var';
         const functionDeclaration = t.exportNamedDeclaration(t.variableDeclaration(bindingKind, [
             t.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
         ]));
-        // TODO: this is cacheable, no need to recompute
-        const programBody = moduleScope.path.get('body');
-        const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
-        const [inserted] = lastImportPath.insertAfter(functionDeclaration);
-        moduleScope.registerBinding(bindingKind, inserted);
-        inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
+        // Insert the declaration as close to the original declaration as possible.
+        const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
+        const decl = isPathFunctionInTopLevel ? path : findImmediatelyEnclosingDeclaration(path);
+        let inserted;
+        const canInsertExportNextToPath = (decl) => {
+            if (!decl) {
+                return false;
+            }
+            if (decl.parentPath?.isProgram()) {
+                return true;
+            }
+            return false;
+        };
+        const findNearestPathThatSupportsInsertBefore = (decl) => {
+            let current = decl;
+            // Check if current scope is suitable for `export` insertion
+            while (current && !current.isProgram()) {
+                if (canInsertExportNextToPath(current)) {
+                    return current;
+                }
+                const parentPath = current.parentPath;
+                if (!parentPath) {
+                    return null;
+                }
+                current = parentPath;
+            }
+            if (current.isFunction()) {
+                // Don't insert exports inside functions
+                return null;
+            }
+            return current;
+        };
+        const topLevelDecl = decl ? findNearestPathThatSupportsInsertBefore(decl) : null;
+        if (topLevelDecl) {
+            // If it's a variable declaration, insert before its parent statement to avoid syntax errors
+            const targetPath = topLevelDecl.isVariableDeclarator()
+                ? topLevelDecl.parentPath
+                : topLevelDecl;
+            [inserted] = targetPath.insertBefore(functionDeclaration);
+            moduleScope.registerBinding(bindingKind, inserted);
+            inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
+        }
+        else {
+            // Fallback to inserting after the last import if no enclosing declaration is found
+            const programBody = moduleScope.path.get('body');
+            const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
+            [inserted] = lastImportPath.insertAfter(functionDeclaration);
+            moduleScope.registerBinding(bindingKind, inserted);
+            inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
+        }
         return {
+            inserted,
             extractedIdentifier,
             getReplacement: () => getInlineActionReplacement({
                 id: extractedIdentifier,
@@ -211,8 +262,6 @@ function reactServerActionsPlugin(api) {
                     // so we can't just remove this node.
                     // replace the function decl with a (hopefully) equivalent var declaration
                     // `var [name] = $$INLINE_ACTION_{N}`
-                    // TODO: this'll almost certainly break when using default exports,
-                    // but tangle's build doesn't support those anyway
                     const bindingKind = 'var';
                     const [inserted] = path.replaceWith(t.variableDeclaration(bindingKind, [t.variableDeclarator(fnId, extractedIdentifier)]));
                     tlb.scope.registerBinding(bindingKind, inserted);
@@ -294,7 +343,7 @@ function reactServerActionsPlugin(api) {
                             const id = left;
                             const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
                             // Replace `export default foo = async () => {}` with `const foo = async () => {}`
-                            path.replaceWith(t.variableDeclaration('const', [t.variableDeclarator(id, right)]));
+                            path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(id, right)]));
                             // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
                             path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
                         }
@@ -306,7 +355,7 @@ function reactServerActionsPlugin(api) {
                             const moduleScope = path.scope.getProgramParent();
                             const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
                             // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
-                            path.node.declaration = t.variableDeclaration('const', [
+                            path.node.declaration = t.variableDeclaration('var', [
                                 t.variableDeclarator(extractedIdentifier, path.node.declaration),
                             ]);
                             // Strip the `export default`
@@ -347,15 +396,18 @@ function reactServerActionsPlugin(api) {
                 if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
                     return;
                 }
+                // Skip type-only exports (`export type { Foo } from '...'` or `export { type Foo }`)
+                if (path.node.exportKind === 'type') {
+                    return;
+                }
                 // This can happen with `export {};` and TypeScript types.
                 if (!path.node.declaration && !path.node.specifiers.length) {
                     return;
                 }
-                const registerServerReferenceId = addReactImport();
                 const actionModuleId = getActionModuleId();
                 const createRegisterCall = (identifier, exported = identifier) => {
                     const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-                    const call = t.callExpression(registerServerReferenceId, [
+                    const call = t.callExpression(addReactImport(), [
                         identifier,
                         t.stringLiteral(actionModuleId),
                         t.stringLiteral(exportedName),
@@ -375,6 +427,10 @@ function reactServerActionsPlugin(api) {
                             throw path.buildCodeFrameError('Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)');
                         }
                         else if (t.isExportSpecifier(specifier)) {
+                            // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
+                            if (specifier.exportKind === 'type') {
+                                continue;
+                            }
                             // `export { foo };`
                             // `export { foo as [bar|default] };`
                             const localName = specifier.local.name;
@@ -456,13 +512,12 @@ function reactServerActionsPlugin(api) {
                 // This can happen in tests or systems that use Babel standalone.
                 throw new Error('[Babel] Expected a filename to be set in the state');
             }
-            const outputKey = url_1.default.pathToFileURL(filePath).href;
+            const outputKey = node_url_1.default.pathToFileURL(filePath).href;
             file.metadata.reactServerActions = payload;
             file.metadata.reactServerReference = outputKey;
         },
     };
 }
-exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const getFreeVariables = (path) => {
     const freeVariablesSet = new Set();
     const programScope = path.scope.getProgramParent();
@@ -510,7 +565,7 @@ const getFreeVariables = (path) => {
     return [...freeVariablesSet].sort();
 };
 const getFnPathName = (path) => {
-    return path.isArrowFunctionExpression() ? undefined : path.node.id.name;
+    return path.isArrowFunctionExpression() ? undefined : path.node?.id?.name;
 };
 const isChildScope = ({ root, parent, child, }) => {
     let curScope = child;

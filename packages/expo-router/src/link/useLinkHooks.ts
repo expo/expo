@@ -4,6 +4,7 @@ import { useMemo, MouseEvent } from 'react';
 import { TextProps, GestureResponderEvent, Platform } from 'react-native';
 
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 
 // docsMissing
 /**
@@ -52,7 +53,7 @@ export type WebAnchorProps = {
    *
    * @example
    * ```jsx
-   * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>`
+   * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>
    * ```
    */
   rel?: string;
@@ -74,12 +75,7 @@ export type WebAnchorProps = {
 };
 
 // @docsMissing
-/**
- *
- */
-export interface LinkProps<T extends string | object>
-  extends Omit<TextProps, 'href'>,
-    WebAnchorProps {
+export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
   /**
    * The path of the route to navigate to. It can either be:
    * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
@@ -108,7 +104,7 @@ export interface LinkProps<T extends string | object>
    *}
    * ```
    */
-  href: Href<T>;
+  href: Href;
 
   // TODO(EvanBacon): This may need to be extracted for React Native style support.
   /**
@@ -175,6 +171,25 @@ export interface LinkProps<T extends string | object>
    * ```
    */
   push?: boolean;
+  /**
+   * While in a stack, this will dismiss screens until the provided href is reached. If the href is not found,
+   * it will instead replace the current screen with the provided href.
+   *
+   * @example
+   *```tsx
+   * import { Link } from 'expo-router';
+   * import { View } from 'react-native';
+   *
+   * export default function Route() {
+   *  return (
+   *   <View>
+   *     <Link dismissTo href="/feed">Close modal</Link>
+   *   </View>
+   *  );
+   *}
+   * ```
+   */
+  dismissTo?: boolean;
 
   /**
    * On native, this can be used with CSS interop tools like Nativewind.
@@ -196,6 +211,14 @@ export interface LinkProps<T extends string | object>
    * Replaces the initial screen with the current route.
    */
   withAnchor?: boolean;
+
+  /**
+   * When navigating in a Stack, if the target is valid then screens in the history that matches
+   * the uniqueness constraint will be removed.
+   *
+   * If used with `push`, the history will be filtered even if no navigation occurs.
+   */
+  dangerouslySingular?: SingularOptions;
 }
 
 // Mutate the style prop to add the className on web.
@@ -222,9 +245,9 @@ export function useInteropClassName(props: { style?: TextProps['style']; classNa
 }
 
 export const useHrefAttrs = Platform.select<
-  (props: Partial<LinkProps<any>>) => { hrefAttrs?: any } & Partial<LinkProps<any>>
+  (props: Partial<LinkProps>) => { hrefAttrs?: any } & Partial<LinkProps>
 >({
-  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps<any>>) {
+  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps>) {
     return useMemo(() => {
       const hrefAttrs = {
         rel,

@@ -10,6 +10,56 @@
 
 ### 💡 Others
 
+## 17.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- [iOS] Adding `pairedVideoAsset` for Live Photo support. ([#33274](https://github.com/expo/expo/pull/33274) by [@entiendoNull](https://github.com/entiendoNull))
+- Add `album` parameter to `createAssetAsync`. ([#35686](https://github.com/expo/expo/pull/35686) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+- [iOS] Add `preventAutomaticLimitedAccessAlert` option to config plugin. ([#35515](https://github.com/expo/expo/pull/35515) by [@fobos531](https://github.com/fobos531))
+
+## 17.0.6 - 2025-02-14
+
+### 💡 Others
+
+- Add guards when using the module in expo go. ([#34738](https://github.com/expo/expo/pull/34738) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 17.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.4 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `unknown` file type being returned for video files. ([#33589](https://github.com/expo/expo/pull/33589) by [@behenate](https://github.com/behenate))
+
+## 17.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Add back image loader to handle `ph://` and `assets-library://` scheme for New Architecture. ([#30116](https://github.com/expo/expo/issues/30116)) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler) ([#33097](https://github.com/expo/expo/pull/33097) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
+## 17.0.2 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fixes asset types not returned correctly. ([#32621](https://github.com/expo/expo/pull/32621) by [@aleqsio](https://github.com/aleqsio))
+
+## 17.0.1 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 17.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

@@ -5,14 +5,17 @@ public class AudioModule: Module {
 
   // MARK: Properties
   private var recordingSettings = [String: Any]()
+  private var shouldPlayInBackground = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
 
     OnCreate {
+      #if os(iOS)
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -24,29 +27,58 @@ public class AudioModule: Module {
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
+      #if os(iOS)
       appContext?.permissions?.askForPermission(
         usingRequesterClass: AudioRecordingRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
+      #else
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      #endif
     }
 
     AsyncFunction("getRecordingPermissionsAsync") { (promise: Promise) in
+      #if os(iOS)
       appContext?.permissions?.getPermissionUsingRequesterClass(
         AudioRecordingRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
+      #else
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      #endif
     }
 
     OnDestroy {
       AudioComponentRegistry.shared.removeAll()
     }
 
+    OnAppEntersBackground {
+      if !shouldPlayInBackground {
+        AudioComponentRegistry.shared.players.values.forEach { player in
+          if player.isPlaying {
+            player.wasPlaying = true
+            player.ref.pause()
+          }
+        }
+      }
+    }
+
+    OnAppEntersForeground {
+      if !shouldPlayInBackground {
+        AudioComponentRegistry.shared.players.values.forEach { player in
+          if player.wasPlaying {
+            player.ref.play()
+          }
+        }
+      }
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(source: source)
+        let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         AudioComponentRegistry.shared.add(player)
         return player
@@ -75,10 +107,10 @@ public class AudioModule: Module {
       }
 
       Property("playing") { player in
-        player.playing
+        player.isPlaying
       }
 
-      Property("mute") { player in
+      Property("muted") { player in
         player.ref.isMuted
       }.set { (player, isMuted: Bool) in
         player.ref.isMuted = isMuted
@@ -91,15 +123,11 @@ public class AudioModule: Module {
       }
 
       Property("currentTime") { player in
-        player.ref.currentItem?.currentTime().seconds
+        player.currentTime
       }
 
       Property("duration") { player in
-        if player.ref.status == .readyToPlay {
-          (player.ref.currentItem?.duration.seconds ?? 0.0) * 1000
-        } else {
-          0.0
-        }
+        player.ref.status == .readyToPlay ? player.duration : 0.0
       }
 
       Property("playbackRate") { player in
@@ -107,7 +135,7 @@ public class AudioModule: Module {
       }
 
       Property("paused") { player in
-        return player.ref.rate == 0.0
+        player.isPaused
       }
 
       Property("volume") { player in
@@ -130,14 +158,16 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if player.playing {
-          player.ref.rate = playerRate
-        }
+        player.ref.rate = playerRate
         player.currentRate = playerRate
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
+      }
+
+      Function("replace") { (player, source: AudioSource) in
+        player.replaceCurrentSource(source: source)
       }
 
       Function("pause") { player in
@@ -149,19 +179,22 @@ public class AudioModule: Module {
       }
 
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
-        player.setSamplingEnabled(enabled: enabled)
+        if player.samplingEnabled != enabled {
+          player.setSamplingEnabled(enabled: enabled)
+        }
       }
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.ref.currentItem?.seek(
           to: CMTime(
-            seconds: seconds / 1000,
+            seconds: seconds,
             preferredTimescale: CMTimeScale(NSEC_PER_SEC)
           )
         )
       }
     }
 
+    #if os(iOS)
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
@@ -234,6 +267,7 @@ public class AudioModule: Module {
         try RecordingUtils.setInput(input)
       }
     }
+    #endif
   }
 
   private func recordingDirectory() throws -> URL {
@@ -260,9 +294,12 @@ public class AudioModule: Module {
 
   private func setAudioMode(mode: AudioMode) throws {
     try AudioUtils.validateAudioMode(mode: mode)
-    var category: AVAudioSession.Category = .soloAmbient
-    var options: AVAudioSession.CategoryOptions = []
+    let session = AVAudioSession.sharedInstance()
+    var category: AVAudioSession.Category = session.category
+    var options: AVAudioSession.CategoryOptions = session.categoryOptions
+    self.shouldPlayInBackground = mode.shouldPlayInBackground
 
+    #if os(iOS)
     if !mode.allowsRecording {
       AudioComponentRegistry.shared.recorders.values.forEach { recorder in
         if recorder.isRecording {
@@ -270,7 +307,12 @@ public class AudioModule: Module {
           recorder.allowsRecording = false
         }
       }
+    } else {
+      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+        recorder.allowsRecording = true
+      }
     }
+    #endif
 
     if !mode.playsInSilentMode {
       if mode.interruptionMode == .doNotMix {
@@ -284,9 +326,9 @@ public class AudioModule: Module {
       case .doNotMix:
         break
       case .duckOthers:
-        options = .duckOthers
+        options = [.duckOthers]
       case .mixWithOthers:
-        options = .mixWithOthers
+        options = [.mixWithOthers]
       }
     }
 
@@ -294,6 +336,7 @@ public class AudioModule: Module {
   }
 
   private func checkPermissions() throws {
+    #if os(iOS)
     if #available(iOS 17.0, *) {
       switch AVAudioApplication.shared.recordPermission {
       case .denied, .undetermined:
@@ -309,5 +352,6 @@ public class AudioModule: Module {
         break
       }
     }
+    #endif
   }
 }

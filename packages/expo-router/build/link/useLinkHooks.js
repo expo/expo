@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useHrefAttrs = exports.useInteropClassName = void 0;
+exports.useHrefAttrs = void 0;
+exports.useInteropClassName = useInteropClassName;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 const react_1 = require("react");
@@ -25,7 +26,6 @@ function useInteropClassName(props) {
         return [props.style, cssStyle];
     }, [props.style, props.className]);
 }
-exports.useInteropClassName = useInteropClassName;
 exports.useHrefAttrs = react_native_1.Platform.select({
     web: function useHrefAttrs({ asChild, rel, target, download }) {
         return (0, react_1.useMemo)(() => {

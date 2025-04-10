@@ -3,7 +3,7 @@ title: Static Rendering
 description: Learn how to render routes to static HTML and CSS files with Expo Router.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -155,7 +155,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <FileTree files={['dist/blog/alpha.html', 'dist/blog/beta.html']} />
 
-<APIBox header="generateStaticParams">
+<PaddedAPIBox header="generateStaticParams">
 
 A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 
@@ -195,7 +195,7 @@ export async function generateStaticParams(params: {
 }
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
 ### Read files using `process.cwd()`
 
@@ -226,7 +226,7 @@ By default, every page is wrapped with some small HTML boilerplate, this is know
 
 You can customize the root HTML file by creating an **app/+html.tsx** file in your project. This file exports a React component that only ever runs in Node.js, which means global CSS cannot be imported inside of it. The component will wrap all routes in the **app** directory. This is useful for adding global `<head>` elements or disabling body scrolling.
 
-> **Note**: Global context providers should go in the [Root Layout](/router/advanced/root-layout) component, not the Root HTML component.
+> **Note**: Global context providers should go in the [Root Layout](/router/basics/layout/#root-layout) component, not the Root HTML component.
 
 ```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
@@ -261,7 +261,7 @@ export default function Root({ children }: PropsWithChildren) {
 - The `children` prop comes with the root `<div id="root" />` tag included inside.
 - The JavaScript scripts are appended after the static render.
 - React Native web styles are statically injected automatically.
-- Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/advanced/root-layout) component.
+- Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/basics/layout/#root-layout) component.
 - Browser APIs like `window.location` are unavailable in this component as it only runs in Node.js during static rendering.
 
 ### `expo-router/html`
@@ -295,13 +295,13 @@ The head elements can be updated dynamically using the same API. However, it's u
 
 ## Static Files
 
-Expo CLI supports a root **public** directory that gets copied to the **dist** folder during static rendering. This is useful for adding static files like images, fonts, and other assets.
+Expo CLI supports a root **public** directory that gets copied to the **dist** directory during static rendering. This is useful for adding static files like images, fonts, and other assets.
 
 <FileTree
   files={['public/favicon.ico', 'public/logo.png', 'public/.well-known/apple-app-site-association']}
 />
 
-These files will be copied to the **dist** folder during static rendering:
+These files will be copied to the **dist** directory during static rendering:
 
 <FileTree
   files={[

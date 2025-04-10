@@ -1,5 +1,3 @@
-import { EventEmitter as JsEventEmitter } from 'fbemitter';
-
 import ExpoUpdatesModule from './ExpoUpdates';
 import type {
   UpdatesNativeStateChangeEvent,
@@ -10,7 +8,11 @@ export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.
 
 ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
 
-const _jsEventEmitter = new JsEventEmitter();
+interface UpdatesStateChangeSubscription {
+  remove(): void;
+}
+
+const _updatesStateChangeListeners = new Set<(event: UpdatesNativeStateChangeEvent) => void>();
 
 // Reemits native state change events
 function _handleNativeStateChangeEvent(params: any) {
@@ -24,7 +26,7 @@ function _handleNativeStateChangeEvent(params: any) {
 
   newParams.context = transformedContext;
   latestContext = transformedContext;
-  _jsEventEmitter.emit('Expo.updatesStateChangeEvent', newParams);
+  _updatesStateChangeListeners.forEach((listener) => listener(newParams));
 }
 
 /**
@@ -33,8 +35,13 @@ function _handleNativeStateChangeEvent(params: any) {
  */
 export const addUpdatesStateChangeListener = (
   listener: (event: UpdatesNativeStateChangeEvent) => void
-) => {
-  return _jsEventEmitter.addListener('Expo.updatesStateChangeEvent', listener);
+): UpdatesStateChangeSubscription => {
+  _updatesStateChangeListeners.add(listener);
+  return {
+    remove() {
+      _updatesStateChangeListeners.delete(listener);
+    },
+  };
 };
 
 /**

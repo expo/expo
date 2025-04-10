@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import fs from 'fs-extra';
+import fs from 'fs';
 import os from 'os';
 import { join } from 'path';
 
@@ -20,33 +20,32 @@ const monorepoConfig = {
 const apps = ['ejected', 'managed', 'with-sentry'];
 const testCases = combinations('app', apps, 'platform', ['android', 'apple']);
 
+jest.setTimeout(5 * 60 * 1000);
+
 describe('monorepo', () => {
   let monorepoProject: string | undefined;
 
   function removeProjectPath(str: string | undefined): string | undefined {
-    return str?.replace(monorepoProject, 'monorepo');
+    return str?.replace(monorepoProject!, 'monorepo');
   }
 
   function projectPath(app: string): string {
-    return join(monorepoProject, 'apps', app);
+    return join(monorepoProject!, 'apps', app);
   }
 
-  beforeAll(
-    async () => {
-      const temp = join(tempDirectory(), 'monorepo');
-      console.log(`Cloning monorepo into: ${temp}`);
-      await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
-      console.log('Yarning');
-      yarnSync({ cwd: temp });
-      monorepoProject = temp;
-    },
-    5 * 60 * 1000
-  );
+  beforeAll(async () => {
+    const temp = join(tempDirectory(), 'monorepo');
+    console.log(`Cloning monorepo into: ${temp}`);
+    await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
+    console.log('Yarning');
+    yarnSync({ cwd: temp });
+    monorepoProject = temp;
+  });
 
   afterAll(async () => {
     if (monorepoProject) {
       console.log(`Removing: ${monorepoProject}`);
-      await fs.remove(monorepoProject);
+      await fs.promises.rm(monorepoProject, { recursive: true, force: true });
     }
   });
 
@@ -123,7 +122,7 @@ describe('monorepo', () => {
       );
 
       expect(generatePackageListResult.status).toBe(0);
-      const generatedFile = await fs.readFile(target, 'utf-8');
+      const generatedFile = await fs.promises.readFile(target, 'utf-8');
       expect(generatedFile).toMatchSnapshot();
     });
   });

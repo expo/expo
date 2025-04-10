@@ -1,22 +1,16 @@
-diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 76e93e401a..64764d0cd9 100644
---- a/templates/expo-template-bare-minimum/package.json
-+++ b/templates/expo-template-bare-minimum/package.json
-@@ -2,7 +2,7 @@
-   "name": "expo-template-bare-minimum",
-   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
-   "license": "0BSD",
--  "version": "52.0.2",
-+  "version": "52.0.3",
-   "main": "index.js",
-   "scripts": {
-     "start": "expo start --dev-client",
-@@ -11,7 +11,7 @@
-     "web": "expo start --web"
-   },
-   "dependencies": {
--    "expo": "~52.0.0-preview.2",
-+    "expo": "~52.0.0-preview.3",
-     "expo-status-bar": "~2.0.0",
-     "react": "18.3.1",
-     "react-native": "0.76.0"
+diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
+index e34231b2ff..e119b72df9 100644
+--- a/templates/expo-template-bare-minimum/android/build.gradle
++++ b/templates/expo-template-bare-minimum/android/build.gradle
+@@ -6,9 +6,9 @@ buildscript {
+         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
+         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '2.0.21'
+ 
+-        ndkVersion = "26.1.10909125"
++        ndkVersion = "27.1.12297006"
+     }
+     repositories {
+         google()

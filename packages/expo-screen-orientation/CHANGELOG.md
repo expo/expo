@@ -10,6 +10,41 @@
 
 ### 💡 Others
 
+## 8.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+
+## 8.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.3 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed ScreenOrientation.addOrientationChangeListener() Freezes iOS Devices in Expo SDK 52, issue 33853 ([#33867](https://github.com/expo/expo/pull/33867) by [@pjdemers](https://github.com/pjdemers)
+
+## 8.0.2 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed crash when multiple threads access same member in swift ([#33572](https://github.com/expo/expo/pull/33572) by [@chrfalch](https://github.com/chrfalch))
+
+## 8.0.1 - 2024-12-05
+
+### 🐛 Bug fixes
+
+- Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
+
 ## 8.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

@@ -19,7 +19,7 @@ export type PermissionExpiration = 'never' | number;
 /**
  * An object obtained by permissions get and request functions.
  */
-export interface PermissionResponse {
+export type PermissionResponse = {
     /**
      * Determines the status of the permission.
      */
@@ -38,5 +38,5 @@ export interface PermissionResponse {
      * in order to enable/disable the permission.
      */
     canAskAgain: boolean;
-}
+};
 //# sourceMappingURL=PermissionsInterface.d.ts.map

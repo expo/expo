@@ -1,10 +1,21 @@
 /* eslint-disable no-global-assign */
-import { installFormDataPatch } from '../FormData';
+import { type ExpoFormData } from '../FormData';
 
+const { installFormDataPatch } = jest.requireActual('../FormData');
 const jestFormDataPolyfill = FormData;
 
+// NOTE(@kitten): We need to overload the `append` method additions on the NodeJS type as well,
+// since it'll be available in this TypeScript environment
+declare global {
+  interface FormData {
+    // React Native proprietary local file
+    append(name: string, value: { uri: string; name?: string; type?: string }): void;
+    set(name: string, value: { uri: string; name?: string; type?: string }): void;
+  }
+}
+
 beforeAll(() => {
-  FormData = installFormDataPatch(require('react-native/Libraries/Network/FormData'));
+  FormData = installFormDataPatch(require('react-native/Libraries/Network/FormData').default);
 });
 
 afterAll(() => {
@@ -47,6 +58,16 @@ describe('FormData', () => {
       expect(a.get('a')).toBe('d');
       a.delete('a');
       expect(a.get('a')).toBe(null);
+    });
+
+    it(`supports react-native local uri`, () => {
+      const a = new FormData() as ExpoFormData;
+      a.append('a', { uri: 'file:///path/to/test.jpg', type: 'image/jpeg', name: 'test.jpg' });
+      expect(a.get('a')).toEqual({
+        uri: 'file:///path/to/test.jpg',
+        type: 'image/jpeg',
+        name: 'test.jpg',
+      });
     });
   });
 

@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTBridge.h>
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
 
 @class EXDevMenuManager;
 
@@ -17,7 +17,7 @@
 /**
  * Returns the app delegate of the currently shown app. It is a context of what the dev menu displays.
  */
-- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(nonnull EXDevMenuManager *)manager;
+- (nullable RCTReactNativeFactory *)appDelegateForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 @optional
 

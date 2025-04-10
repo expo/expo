@@ -1,5 +1,5 @@
 import { EventSubscription } from 'expo-modules-core';
-import { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions } from './AppleAuthentication.types';
+import { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions, AppleAuthenticationFullName, AppleAuthenticationFullNameFormatStyle } from './AppleAuthentication.types';
 /**
  * Determine if the current device's operating system supports Apple authentication.
  * @return A promise that fulfills with `true` if the system supports Apple authentication, and `false` otherwise.
@@ -41,7 +41,7 @@ export declare function refreshAsync(options: AppleAuthenticationRefreshOptions)
  *
  * It is not recommended to use this method to sign out the user as it works counterintuitively.
  * Instead of using this method it is recommended to simply clear all the user's data collected
- * from using [`signInAsync`](./#signinasync) or [`refreshAsync`](./#refreshasync) methods.
+ * from using [`signInAsync`](#appleauthenticationsigninasyncoptions) or [`refreshAsync`](#appleauthenticationrefreshasyncoptions) methods.
  *
  * @param options An [`AppleAuthenticationSignOutOptions`](#appleauthenticationsignoutoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
@@ -59,6 +59,14 @@ export declare function signOutAsync(options: AppleAuthenticationSignOutOptions)
  * value depending on the state of the credential.
  */
 export declare function getCredentialStateAsync(user: string): Promise<AppleAuthenticationCredentialState>;
+/**
+ * Creates a locale-aware string representation of a person's name from an object representing the tokenized portions of a user's full name
+ *
+ * @param fullName The full name object with the tokenized portions
+ * @param formatStyle The style in which the name should be formatted
+ * @returns A locale-aware string representation of a person's name
+ */
+export declare function formatFullName(fullName: AppleAuthenticationFullName, formatStyle?: AppleAuthenticationFullNameFormatStyle): string;
 export declare function addRevokeListener(listener: () => void): EventSubscription;
 export { EventSubscription as Subscription };
 //# sourceMappingURL=AppleAuthentication.d.ts.map

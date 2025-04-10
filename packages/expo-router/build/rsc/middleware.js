@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRscAsync = exports.renderRscWithImportsAsync = void 0;
+exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
+exports.renderRscAsync = renderRscAsync;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const _async_server_import_1 = require("expo-router/_async-server-import");
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");
@@ -37,12 +39,18 @@ async function getSSRManifest(distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
-async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
+async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
+    globalThis.__expo_platform_header = platform;
     if (method === 'POST' && !body) {
         throw new Error('Server request must be provided when method is POST (server actions)');
     }
     const context = getRscRenderContext(platform);
-    const entries = await imports.router();
+    context['__expo_requestHeaders'] = headers;
+    const router = await imports.router();
+    const entries = router.default({
+        redirects: expo_constants_1.default.expoConfig?.extra?.router?.redirects,
+        rewrites: expo_constants_1.default.expoConfig?.extra?.router?.rewrites,
+    });
     const ssrManifest = await getSSRManifest(distFolder, platform);
     const actionManifest = await getServerActionManifest(distFolder, platform);
     return (0, rsc_renderer_1.renderRsc)({
@@ -88,7 +96,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         entries: entries,
     });
 }
-exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
 async function renderRscAsync(distFolder, args) {
     const platform = args.platform;
     return renderRscWithImportsAsync(distFolder, {
@@ -99,5 +106,4 @@ async function renderRscAsync(distFolder, args) {
         },
     }, args);
 }
-exports.renderRscAsync = renderRscAsync;
 //# sourceMappingURL=middleware.js.map

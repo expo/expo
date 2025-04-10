@@ -16,8 +16,6 @@ describe(openJsInspector, () => {
 
     // The URL parameters that should be sent for the inspectable target
     const params = new URLSearchParams();
-    params.set('appId', app.description);
-    params.set('device', app.reactNative!.logicalDeviceId!);
     params.set('target', app.id);
 
     const scope = nock('http://localhost:8081').post(`/open-debugger?${params}`).reply(200);
@@ -33,7 +31,7 @@ describe(queryAllInspectorAppsAsync, () => {
       .get('/json/list')
       .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(pageIsSupported);
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(pageIsSupported).reverse();
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
 
@@ -50,7 +48,9 @@ describe(queryAllInspectorAppsAsync, () => {
       .get('/json/list')
       .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter((app) => pageIsSupported(app));
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter((app) =>
+      pageIsSupported(app)
+    ).reverse();
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
     expect(result.length).toBe(entities.length);
@@ -71,7 +71,7 @@ describe(queryInspectorAppAsync, () => {
     const appId = 'io.expo.test.devclient';
     const result = await queryInspectorAppAsync('http://localhost:8081', appId);
 
-    expect(result?.description).toBe(appId);
+    expect(result?.appId).toBe(appId);
     expect(scope.isDone()).toBe(true);
   });
 });

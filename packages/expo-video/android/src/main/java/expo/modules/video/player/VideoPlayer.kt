@@ -2,19 +2,25 @@ package expo.modules.video.player
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.view.SurfaceView
 import androidx.media3.common.C
 import android.webkit.URLUtil
+import androidx.annotation.OptIn
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Timeline
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -22,6 +28,7 @@ import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
 import expo.modules.video.VideoManager
 import expo.modules.video.delegates.IgnoreSameSet
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
@@ -30,6 +37,8 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
+import expo.modules.video.utils.MutableWeakReference
+import expo.modules.video.records.VideoTrack
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -42,7 +51,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
+  val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
+  val trackSelector = DefaultTrackSelector(context)
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
@@ -50,6 +62,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
+  private val firstFrameEventGenerator = createFirstFrameEventGenerator()
   val serviceConnection = PlaybackServiceConnection(WeakReference(this))
   val intervalUpdateClock = IntervalUpdateClock(this)
 
@@ -58,7 +71,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   var uncommittedSource: VideoSource? = source
-  private var lastLoadedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
+  private var commitedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
     sendEvent(PlayerEvent.SourceChanged(new, old))
   }
 
@@ -140,14 +153,70 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       return player.bufferedPosition / 1000.0
     }
 
+  var audioMixingMode: AudioMixingMode = AudioMixingMode.AUTO
+    set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.AudioMixingModeChanged(value, old))
+    }
+
+  var isLoadingNewSource = false
+    private set
+
+  var currentVideoTrack: VideoTrack? = null
+    private set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.VideoTrackChanged(value, old))
+    }
+
+  var availableVideoTracks: List<VideoTrack> = emptyList()
+    private set
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
     }
 
     override fun onTracksChanged(tracks: Tracks) {
+      val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
+      val oldCurrentTrack = subtitles.currentSubtitleTrack
+
+      // Emit the tracks change event to update the subtitles
       sendEvent(PlayerEvent.TracksChanged(tracks))
+
+      val newSubtitleTracks = subtitles.availableSubtitleTracks
+      val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
+      availableVideoTracks = tracks.toVideoTracks()
+
+      if (isLoadingNewSource) {
+        sendEvent(
+          PlayerEvent.VideoSourceLoaded(
+            commitedSource,
+            this@VideoPlayer.player.duration / 1000.0,
+            availableVideoTracks,
+            newSubtitleTracks
+          )
+        )
+        isLoadingNewSource = false
+      }
+
+      if (!oldSubtitleTracks.toArray().contentEquals(newSubtitleTracks.toArray())) {
+        sendEvent(PlayerEvent.AvailableSubtitleTracksChanged(newSubtitleTracks, oldSubtitleTracks))
+      }
+      if (oldCurrentTrack != newCurrentSubtitleTrack) {
+        sendEvent(PlayerEvent.SubtitleTrackChanged(newCurrentSubtitleTrack, oldCurrentTrack))
+      }
       super.onTracksChanged(tracks)
+    }
+
+    override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+      val oldTrack = subtitles.currentSubtitleTrack
+      sendEvent(PlayerEvent.TrackSelectionParametersChanged(parameters))
+
+      val newTrack = subtitles.currentSubtitleTrack
+      sendEvent(PlayerEvent.SubtitleTrackChanged(newTrack, oldTrack))
+      super.onTrackSelectionParametersChanged(parameters)
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -156,6 +225,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEvent(PlayerEvent.PlayedToEnd())
       }
+      subtitles.setSubtitlesEnabled(false)
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -195,10 +265,23 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
+  private val analyticsListener = object : AnalyticsListener {
+    override fun onVideoInputFormatChanged(eventTime: AnalyticsListener.EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
+      currentVideoTrack = availableVideoTracks.firstOrNull { it.format?.id == format.id }
+      super.onVideoInputFormatChanged(eventTime, format, decoderReuseEvaluation)
+    }
+  }
+
   init {
     ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
+    player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
+
+    // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
+    appContext.mainQueue.launch {
+      subtitles.setSubtitlesEnabled(false)
+    }
   }
 
   override fun close() {
@@ -211,7 +294,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       player.release()
     }
     uncommittedSource = null
-    lastLoadedSource = null
+    commitedSource = null
   }
 
   override fun deallocate() {
@@ -219,22 +302,28 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     close()
   }
 
-  fun changePlayerView(playerView: PlayerView) {
-    player.clearVideoSurface()
-    player.setVideoSurfaceView(playerView.videoSurfaceView as SurfaceView?)
-    playerView.player = player
+  fun changePlayerView(playerView: PlayerView?) {
+    PlayerView.switchTargetView(player, currentPlayerView.get(), playerView)
+    currentPlayerView.set(playerView)
   }
 
   fun prepare() {
-    uncommittedSource?.let { videoSource ->
-      val mediaSource = videoSource.toMediaSource(context)
-      player.setMediaSource(mediaSource)
+    availableVideoTracks = listOf()
+    currentVideoTrack = null
+
+    val newSource = uncommittedSource
+    val mediaSource = newSource?.toMediaSource(context)
+
+    mediaSource?.let {
+      player.setMediaSource(it)
       player.prepare()
-      lastLoadedSource = videoSource
+      commitedSource = newSource
       uncommittedSource = null
+      isLoadingNewSource = true
     } ?: run {
       player.clearMediaItems()
       player.prepare()
+      isLoadingNewSource = false
     }
   }
 
@@ -298,6 +387,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
+  private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
+    return FirstFrameEventGenerator(player, currentPlayerView) {
+      sendEvent(PlayerEvent.RenderedFirstFrame())
+    }
+  }
+
   // IntervalUpdateEmitter
   override fun emitTimeUpdate() {
     appContext?.mainQueue?.launch {
@@ -307,7 +402,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun toMetadataRetriever(): MediaMetadataRetriever {
-    val source = uncommittedSource ?: lastLoadedSource
+    val source = uncommittedSource ?: commitedSource
     val uri = source?.uri ?: throw IllegalStateException("Video source is not set")
     val stringUri = uri.toString()
 
@@ -325,4 +420,23 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     return mediaMetadataRetriever
   }
+}
+
+// Extension functions
+
+@OptIn(UnstableApi::class)
+private fun Tracks.toVideoTracks(): List<VideoTrack> {
+  val videoTracks = mutableListOf<VideoTrack?>()
+  for (group in this.groups) {
+    for (i in 0 until group.length) {
+      val format = group.getTrackFormat(i)
+      val isSupported = group.isTrackSupported(i)
+
+      if (!MimeTypes.isVideo(format.sampleMimeType)) {
+        continue
+      }
+      videoTracks.add(VideoTrack.fromFormat(format, isSupported))
+    }
+  }
+  return videoTracks.filterNotNull()
 }

@@ -53,6 +53,7 @@ export async function transform(
 
   // Is bundling for webview.
   const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
+  const useMd5Filename = options.customTransformOptions?.useMd5Filename;
   const isExport = options.publicPath.includes('?export_path=');
   const isReactServer = options.customTransformOptions?.environment === 'react-server';
   const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
@@ -63,7 +64,9 @@ export async function transform(
     isReactServer ? url.pathToFileURL(absolutePath).href : undefined;
 
   if (
-    options.platform !== 'web' &&
+    (options.platform !== 'web' ||
+      // React Server DOM components should use the client reference in order to local embedded assets.
+      isDomComponent) &&
     // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
     isReactServer
@@ -98,9 +101,14 @@ export async function transform(
 
   if (isServerEnv || options.platform === 'web') {
     const type = !data.type ? '' : `.${data.type}`;
-    const assetPath = !isExport
-      ? data.httpServerLocation + '/' + data.name + type
-      : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+    let assetPath: string;
+    if (useMd5Filename) {
+      assetPath = data.hash + type;
+    } else if (!isExport) {
+      assetPath = data.httpServerLocation + '/' + data.name + type;
+    } else {
+      assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+    }
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {

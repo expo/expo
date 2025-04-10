@@ -42,7 +42,9 @@ export function LogBoxInspectorMessageHeader(props: Props) {
   return (
     <View style={styles.body}>
       <View style={styles.heading}>
-        <Text style={[styles.headingText, styles[props.level]]}>{props.title}</Text>
+        <Text testID="logbox_title" style={[styles.headingText, styles[props.level]]}>
+          {props.title}
+        </Text>
       </View>
       <Text style={styles.bodyText}>
         <LogBoxMessage

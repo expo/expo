@@ -14,7 +14,7 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
             ? project.rootProject.ext.get("kotlinVersion")
-            : "1.9.24"
+            : "2.0.21"
       }
 
       project.ext.kspVersion = {
@@ -24,16 +24,18 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           "1.7.22": "1.7.22-1.0.8",
           "1.8.0": "1.8.0-1.0.9",
           "1.8.10": "1.8.10-1.0.9",
+          "1.8.20": "1.8.20-1.0.11",
           "1.8.22": "1.8.22-1.0.11",
           "1.9.23": "1.9.23-1.0.20",
-          "1.9.24": "1.9.24-1.0.20"
+          "1.9.24": "1.9.24-1.0.20",
+          "2.0.21": "2.0.21-1.0.28"
         ]
 
         project.rootProject.ext.has("kspVersion")
           ? project.rootProject.ext.get("kspVersion")
           : kspVersionsMap.containsKey(project.ext.kotlinVersion())
           ? kspVersionsMap.get(project.ext.kotlinVersion())
-          : "1.9.24-1.0.20"
+          : "2.0.21-1.0.28"
       }
     }
   }
@@ -48,6 +50,13 @@ ext.applyKotlinExpoModulesCorePlugin = {
   } catch (e) {}
 
   apply plugin: KotlinExpoModulesCorePlugin
+}
+
+// Apply JVM Toolchain version for KSP
+ext.applyKspJvmToolchain = {
+  project.ksp {
+    kotlin.jvmToolchain(17)
+  }
 }
 
 // Setup build options that are common for all modules

@@ -101,7 +101,6 @@ export function removeNotificationSubscription(subscription) {
  *
  * - `null` - if no notification response has been received yet
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
- * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export async function getLastNotificationResponseAsync() {
     if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
@@ -111,7 +110,8 @@ export async function getLastNotificationResponseAsync() {
     const mappedResponse = response ? mapNotificationResponse(response) : response;
     return mappedResponse;
 }
-/* Clears the notification response that was received most recently. May be used
+/**
+ * Clears the notification response that was received most recently. May be used
  * when an app selects a route based on the notification response, and it is undesirable
  * to continue selecting the route after the response has already been handled.
  *

@@ -1,18 +1,9 @@
-import GithubSlugger from 'github-slugger';
-import {
-  Children,
-  FC,
-  createContext,
-  isValidElement,
-  ReactNode,
-  useContext,
-  PropsWithChildren,
-} from 'react';
+import { Children, FC, isValidElement, ReactNode, useContext, PropsWithChildren } from 'react';
 
-import { A } from '.';
+import { A } from '~/ui/components/Text';
+
+import { AnchorContext } from './AnchorContext';
 import { TextComponentProps } from './types';
-
-export const AnchorContext = createContext<GithubSlugger | null>(null);
 
 /**
  * Render the component with anchor elements and properties.
@@ -26,7 +17,7 @@ export function withAnchor(Component: FC<PropsWithChildren<TextComponentProps>>)
     const slug = useSlug(id, children);
     return (
       <Component className="relative" data-id={slug} {...rest}>
-        <span className="relative top-[-100px] invisible" id={slug} />
+        <span className="invisible relative top-[-100px]" id={slug} />
         <A href={`#${slug}`}>{children}</A>
       </Component>
     );
@@ -39,10 +30,8 @@ function useSlug(id: string | undefined, children: ReactNode) {
   const slugger = useContext(AnchorContext)!;
   let slugText = id;
 
-  if (!slugText) {
-    slugText = getTextFromChildren(children);
-    /** Eventually, we want to get rid of the auto-generating ID */
-  }
+  // Eventually, we want to get rid of the auto-generating ID
+  slugText ??= getTextFromChildren(children);
 
   return slugger.slug(slugText);
 }

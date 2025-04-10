@@ -40,7 +40,7 @@ class <%- project.moduleName %> : Module() {
     // the view definition: Prop, Events.
     View(<%- project.viewName %>::class) {
       // Defines a setter for the `url` prop.
-      Prop("url") { view: <%- project.viewName %>, url: Url ->
+      Prop("url") { view: <%- project.viewName %>, url: URL ->
         view.webView.loadUrl(url.toString())
       }
       // Defines an event that the view can send to JavaScript.

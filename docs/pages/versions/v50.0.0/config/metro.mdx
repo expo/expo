@@ -273,8 +273,8 @@ module.exports = {
   content: [
     // Ensure this points to your source code...
     './app/**/*.{js,tsx,ts,jsx}',
-    // If you use a `src` folder, add: './src/**/*.{js,tsx,ts,jsx}'
-    // Do the same with `components`, `hooks`, `styles`, or any other top-level folders...
+    // If you use a `src` directory, add: './src/**/*.{js,tsx,ts,jsx}'
+    // Do the same with `components`, `hooks`, `styles`, or any other top-level directories...
   ],
   theme: {
     extend: {},
@@ -487,7 +487,7 @@ This can be used to emulate `externals` with custom imports. For example, if you
 
 > Transformations are heavily cached in Metro. If you update something, use the `--clear` flag to see updates. For example, `npx expo start --clear`.
 
-Metro doesn't have a very expressive plugin system for transforming files, instead opt to use the `babel.config.js` and caller object to customize the transformation.
+Metro doesn't have a very expressive plugin system for transforming files, instead opt to use the [**babel.config.js**](../config/babel/) and caller object to customize the transformation.
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -695,7 +695,7 @@ By default, React Native only supports using a root `index.js` file as the entry
 
 #### Development
 
-Development mode entry files can be enabled by using the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. Alternatively you can add the following configuration:
+Development mode entry files can be enabled by using the [`expo-dev-client`](../sdk/dev-client/) package. Alternatively you can add the following configuration:
 
 In the `ios/[project]/AppDelegate.mm` file:
 

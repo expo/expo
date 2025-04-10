@@ -6,7 +6,7 @@ import assert from 'node:assert';
 export type MetroPrivateServer = import('metro').Server & {
   _bundler: import('metro/src/IncrementalBundler').default;
   _config: ConfigT;
-  _createModuleId: (path: string) => number;
+  _createModuleId: (path: string, context?: { environment?: string; platform: string }) => number;
   _isEnded: boolean;
   _nextBundleBuildNumber: number;
   _platforms: Set<string>;

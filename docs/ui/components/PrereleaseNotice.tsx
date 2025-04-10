@@ -1,12 +1,12 @@
 import { PropsWithChildren } from 'react';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
-import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { A, CODE } from '~/ui/components/Text';
 
 export default function PrereleaseNotice({ children }: PropsWithChildren) {
   return (
-    <Callout>
+    <InlineHelp>
       {children}
       <Collapsible
         summary={
@@ -22,6 +22,6 @@ export default function PrereleaseNotice({ children }: PropsWithChildren) {
         </A>{' '}
         GitHub repository.
       </Collapsible>
-    </Callout>
+    </InlineHelp>
   );
 }

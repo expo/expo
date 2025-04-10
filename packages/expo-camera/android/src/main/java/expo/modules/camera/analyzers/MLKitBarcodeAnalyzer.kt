@@ -7,7 +7,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -31,20 +31,7 @@ class MLKitBarCodeScanner {
         return@withContext results
       }
       for (barcode in result) {
-        val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
-        val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-          raw
-        } else {
-          barcode.displayValue
-        }
-        val cornerPoints = mutableListOf<Int>()
-        barcode.cornerPoints?.let { points ->
-          for (point in points) {
-            cornerPoints.addAll(listOf(point.x, point.y))
-          }
-        }
-
-        results.add(BarCodeScannerResult(barcode.format, value, raw, cornerPoints, inputImage.height, inputImage.width))
+        results.add(BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode, inputImage))
       }
       return@withContext results
     } catch (e: Exception) {

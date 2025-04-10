@@ -1,8 +1,10 @@
 import {
+  DefaultNavigatorOptions,
   LinkingContext,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
+  TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
 import {
@@ -14,14 +16,15 @@ import {
   isValidElement,
   useContext,
   useMemo,
+  PropsWithChildren,
 } from 'react';
 import { StyleSheet, ViewProps, View } from 'react-native';
 
 import {
-  ExpoTabsProps,
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabTriggerMapContext,
+  TabsContextValue,
 } from './TabContext';
 import { isTabList } from './TabList';
 import { ExpoTabRouter, ExpoTabRouterOptions } from './TabRouter';
@@ -39,47 +42,115 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
+export { ExpoTabsResetValue } from './TabRouter';
 
-export type UseTabsOptions = Omit<ExpoTabsProps, 'children'> &
-  Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
+/**
+ * Options to provide to the Tab Router.
+ */
+export type UseTabsOptions = Omit<
+  DefaultNavigatorOptions<
+    ParamListBase,
+    any,
+    TabNavigationState<any>,
+    ExpoTabsScreenOptions,
+    TabNavigationEventMap,
+    any
+  >,
+  'children'
+> & {
+  backBehavior?: TabRouterOptions['backBehavior'];
+};
 
 export type TabsProps = ViewProps & {
+  /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
 };
 
-export function Tabs({ children, asChild, options, ...props }: TabsProps) {
+/**
+ * Root component for the headless tabs.
+ *
+ * @see [`useTabsWithChildren`](#usetabswithchildrenoptions) for a hook version of this component.
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
+export function Tabs(props: TabsProps) {
+  const { children, asChild, options, ...rest } = props;
   const Comp = asChild ? SafeAreaViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
     // asChild adds an extra layer, so we need to process the child's children
-    children: asChild && isValidElement(children) ? children.props.children : children,
+    children:
+      asChild &&
+      isValidElement(children) &&
+      children.props &&
+      typeof children.props === 'object' &&
+      'children' in children.props
+        ? (children.props.children as ReactNode)
+        : children,
     ...options,
   });
 
   return (
-    <Comp style={styles.tabsRoot} {...props}>
+    <Comp style={styles.tabsRoot} {...rest}>
       <NavigationContent>{children}</NavigationContent>
     </Comp>
   );
 }
 
-export type UseTabsWithChildrenOptions = UseTabsOptions & {
-  children: ReactNode;
+// @docsMissing
+export type UseTabsWithChildrenOptions = PropsWithChildren<UseTabsOptions>;
+
+// @docsMissing
+export type UseTabsWithTriggersOptions = UseTabsOptions & {
+  triggers: ScreenTrigger[];
 };
 
-export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptions & {
-  triggers: ScreenTrigger<T>[];
-};
-
-export function useTabsWithChildren({ children, ...options }: UseTabsWithChildrenOptions) {
-  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
+/**
+ * Hook version of `Tabs`. The returned NavigationContent component
+ * should be rendered. Using the hook requires using the `<TabList />`
+ * and `<TabTrigger />` components exported from Expo Router.
+ *
+ * The `useTabsWithTriggers()` hook can be used for custom components.
+ *
+ * @see [`Tabs`](#tabs) for the component version of this hook.
+ * @example
+ * ```tsx
+ * export function MyTabs({ children }) {
+ *  const { NavigationContent } = useTabsWithChildren({ children })
+ *
+ *  return <NavigationContent />
+ * }
+ * ```
+ */
+export function useTabsWithChildren(options: UseTabsWithChildrenOptions) {
+  const { children, ...rest } = options;
+  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
 
-export function useTabsWithTriggers<T extends string | object>({
-  triggers,
-  ...options
-}: UseTabsWithTriggersOptions<T>) {
+/**
+ * Alternative hook version of `Tabs` that uses explicit triggers
+ * instead of `children`.
+ *
+ * @see [`Tabs`](#tabs) for the component version of this hook.
+ * @example
+ * ```tsx
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+ *
+ *   return <NavigationContent />
+ * }
+ * ```
+ */
+export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsContextValue {
+  const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = useContext(TabTriggerMapContext);
   const routeNode = useRouteNode();
@@ -111,7 +182,7 @@ export function useTabsWithTriggers<T extends string | object>({
     TabNavigationEventMap
   >(ExpoTabRouter, {
     children,
-    ...options,
+    ...rest,
     triggerMap,
     id: contextKey,
     initialRouteName,
@@ -121,6 +192,7 @@ export function useTabsWithTriggers<T extends string | object>({
     state,
     descriptors,
     navigation,
+    describe,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
@@ -139,14 +211,14 @@ export function useTabsWithTriggers<T extends string | object>({
         <RNNavigationContent>{children}</RNNavigationContent>
       </NavigatorContext.Provider>
     </TabTriggerMapContext.Provider>
-  ));
+  )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent };
+  return { state, descriptors, navigation, NavigationContent, describe };
 }
 
 function parseTriggersFromChildren(
   children: ReactNode,
-  screenTriggers: ScreenTrigger<any>[] = [],
+  screenTriggers: ScreenTrigger[] = [],
   isInTabList = false
 ) {
   Children.forEach(children, (child) => {
@@ -166,8 +238,14 @@ function parseTriggersFromChildren(
       let children = child.props.children;
 
       // <TabList asChild /> adds an extra layer. We need to parse the child's children
-      if (child.props.asChild && isValidElement(children)) {
-        children = children.props.children;
+      if (
+        child.props.asChild &&
+        isValidElement(children) &&
+        children.props &&
+        typeof children.props === 'object' &&
+        'children' in children.props
+      ) {
+        children = children.props.children as ReactNode;
       }
 
       return parseTriggersFromChildren(children, screenTriggers, isInTabList || isTabList(child));
@@ -183,7 +261,7 @@ function parseTriggersFromChildren(
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
         console.warn(
-          `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have a href.`
+          `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have an href.`
         );
       }
       return;

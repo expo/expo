@@ -1,10 +1,10 @@
 {
-  "name": "expo-sqlite",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["SQLiteModule"]
   },
   "android": {
-    "modules": ["expo.modules.sqlite.SQLiteModule"]
+    "modules": ["expo.modules.sqlite.SQLiteModule"],
+    "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy"
   }
 }

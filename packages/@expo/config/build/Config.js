@@ -136,7 +136,7 @@ let hasWarnedAboutRootConfig = false;
  * @param config Input config object to reduce
  */
 function reduceExpoObject(config) {
-  if (!config) return config === undefined ? null : config;
+  if (!config) return config || null;
   if (config.expo && !hasWarnedAboutRootConfig) {
     const keys = Object.keys(config).filter(key => key !== 'expo');
     if (keys.length) {
@@ -214,7 +214,7 @@ function getConfig(projectRoot, options = {}) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
-        exp: config.expo,
+        exp: config.expo || {},
         pkg: packageJson,
         skipSDKVersionRequirement: options.skipSDKVersionRequirement,
         paths,
@@ -264,7 +264,7 @@ function getConfig(projectRoot, options = {}) {
   function getContextConfig(config) {
     return ensureConfigHasDefaultValues({
       projectRoot,
-      exp: config.expo,
+      exp: config.expo || {},
       pkg: packageJson,
       skipSDKVersionRequirement: true,
       paths,
@@ -362,7 +362,8 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
-  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function' && !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  ) {
     const outputConfig = mergeConfigModifications(config, modifications);
     if (isDryRun) {
       return {

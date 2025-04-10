@@ -14,8 +14,12 @@ export declare class MetroServerError extends Error {
 export declare class ReactServerError extends Error {
     url: string;
     statusCode: number;
+    /** Response headers from the server. */
+    headers: Headers;
     code: string;
-    constructor(message: string, url: string, statusCode: number);
+    constructor(message: string, url: string, statusCode: number, 
+    /** Response headers from the server. */
+    headers: Headers);
 }
 export declare class NetworkError extends Error {
     url: string;

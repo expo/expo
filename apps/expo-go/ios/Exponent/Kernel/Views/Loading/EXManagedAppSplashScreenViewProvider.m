@@ -67,7 +67,10 @@
           // despite the fact the RCTImageView is mounted in the view hierarchy
           RCTBridge *bridge = [RCTBridge currentBridge];
           self.splashImageView = [[RCTImageView alloc] initWithBridge:bridge];
-          self.splashImageView.frame = splashScreenView.bounds;
+          // 200 is the default width we use in the expo-splash-screen plugin when using the legacy config.
+          self.splashImageView.frame = CGRectMake(0, 0, 200, 200);
+          self.splashImageView.center = CGPointMake(self.splashScreenView.bounds.size.width / 2, self.splashScreenView.bounds.size.height / 2);
+          self.splashImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
           self.splashImageView.imageSources = @[imageSource];
           self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;
           [splashScreenView addSubview:self.splashImageView];

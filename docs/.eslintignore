@@ -7,3 +7,4 @@ out
 node_modules
 pages/versions/latest
 public
+scripts/generate-llms/talks.js

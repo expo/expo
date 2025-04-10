@@ -7,27 +7,28 @@ export declare function useLinking(ref: React.RefObject<NavigationContainerRef<P
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
+        history?: unknown[];
         routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
-        stale?: true | undefined;
+        stale?: true;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
-        state?: (Partial<Omit<Readonly<{
+        state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
-            history?: unknown[] | undefined;
+            history?: unknown[];
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
-            stale?: true | undefined;
+            stale?: true;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-        }> & any) | undefined;
+        }> & /*elided*/ any;
     }) | undefined>;
 };
+export declare function getInitialURLWithTimeout(): string | null | Promise<string | null>;
 export {};
 //# sourceMappingURL=useLinking.native.d.ts.map

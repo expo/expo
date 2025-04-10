@@ -10,6 +10,108 @@
 
 ### 💡 Others
 
+## 5.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
+
+## 5.0.18 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.17 - 2025-04-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.16 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.15 - 2025-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.14 - 2025-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.13 - 2025-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.12 - 2025-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.11 - 2025-01-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.10 - 2025-01-20
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.9 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 - 2024-12-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.7 - 2024-12-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.3 — 2024-11-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.9 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.8 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 5.0.0-preview.7 — 2024-11-05
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.0-preview.6 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

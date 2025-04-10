@@ -91,7 +91,7 @@ abstract class Manifest(protected val json: JSONObject) {
   abstract fun getSlug(): String?
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
-  fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
+  fun getMainModuleName(): String = getExpoGoConfigRootObject()?.require("mainModuleName") ?: "main"
   fun getHostUri(): String? = getExpoClientConfigRootObject()?.getNullable("hostUri")
 
   fun isVerified(): Boolean = json.getNullable("isVerified") ?: false

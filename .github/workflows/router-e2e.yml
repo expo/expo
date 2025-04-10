@@ -9,7 +9,7 @@ on:
 
 jobs:
   expo-go-dev-maestro-router:
-    runs-on: macos-12
+    runs-on: macos-latest
     env:
       E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
       E2E_ROUTER_SRC: expo-go-dev-maestro-router
@@ -45,7 +45,7 @@ jobs:
 
       - name: Install Maestro
         run: |
-          export MAESTRO_VERSION=1.36.0
+          export MAESTRO_VERSION=1.39.9
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 

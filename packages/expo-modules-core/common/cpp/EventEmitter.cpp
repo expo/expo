@@ -211,8 +211,13 @@ void installClass(jsi::Runtime &runtime) {
     // To provide backwards compatibility with the old EventEmitter where the native module object was passed as an argument.
     // We're checking if the argument is already an instance of the new emitter and if so, just return it without unnecessarily wrapping it.
     if (count > 0) {
-      jsi::Object firstArg = args[0].asObject(runtime);
-      jsi::Function constructor = thisValue.asObject(runtime).getPropertyAsFunction(runtime, "constructor");
+      // We need the tmp object to correctly unwrap the lazy object.
+      // For some reason, if we inline the retrieval of the first argument, the instanceOf check fails on Android.
+      // This is probably because the object is copied somewhere in the process.
+      const jsi::Object &tmp = args[0].asObject(runtime);
+      const jsi::Object &firstArg = LazyObject::unwrapObjectIfNecessary(runtime, tmp);
+
+      jsi::Function constructor = thisValue.getObject(runtime).getPropertyAsFunction(runtime, "constructor");
 
       if (firstArg.instanceOf(runtime, constructor)) {
         return jsi::Value(runtime, args[0]);

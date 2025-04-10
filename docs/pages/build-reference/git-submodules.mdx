@@ -1,6 +1,8 @@
 ---
-title: Use Git Submodules
+title: Using Git submodules
+sidebar_title: Git submodules
 description: Learn how to configure EAS Build to use git submodules.
+hideTOC: true
 ---
 
 import { Step } from '~/ui/components/Step';
@@ -33,8 +35,9 @@ mkdir -p ~/.ssh
 # git remote set-url origin git@github.com:example/repo.git
 
 # restore private key from env variable and generate public key
+umask 0177
 echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
-chmod 0600 ~/.ssh/id_rsa
+umask 0022
 ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 
 # add your git provider to the list of known hosts

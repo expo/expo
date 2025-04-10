@@ -1,14 +1,19 @@
-import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { Beaker02Icon } from '@expo/styleguide-icons/outline/Beaker02Icon';
 
+import { versionToText } from '~/common/utilities';
 import packageJson from '~/package.json';
-
-const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
+import { Select } from '~/ui/components/Select';
 
 export type VersionSelectorProps = {
-  version?: string | undefined;
+  version?: string;
   setVersion: (version: string) => void;
   availableVersions: string[];
 };
+
+export const BETA_MAJOR_VERSION =
+  'betaVersion' in packageJson && typeof packageJson.betaVersion === 'string'
+    ? packageJson.betaVersion.split('.')[0]
+    : undefined;
 
 export const VersionSelector = ({
   version,
@@ -16,21 +21,17 @@ export const VersionSelector = ({
   availableVersions,
 }: VersionSelectorProps) => {
   return (
-    <div className="relative">
-      <select
-        id="version-menu"
-        className="text-xs text-default m-0 mt-1 px-3 py-2 min-h-[40px] w-full border border-default shadow-xs rounded-md cursor-pointer appearance-none bg-default"
-        value={version}
-        onChange={e => setVersion(e.target.value)}>
-        {availableVersions.map(version => (
-          <option key={version} value={version}>
-            {version === 'unversioned'
-              ? 'unversioned'
-              : `SDK ${version}${version === BETA_MAJOR_VERSION ? '  (beta)' : ''}`}
-          </option>
-        ))}
-      </select>
-      <ChevronDownIcon className="icon-sm text-icon-secondary absolute right-3 top-4 pointer-events-none" />
-    </div>
+    <Select
+      className="min-w-full"
+      value={version}
+      onValueChange={setVersion}
+      options={availableVersions.map(version => ({
+        id: version,
+        label: versionToText(version),
+        Icon: version === 'unversioned' ? Beaker02Icon : undefined,
+      }))}
+      optionsLabel="SDK version"
+      ariaLabel="SDK version selector"
+    />
   );
 };

@@ -314,6 +314,11 @@ export type LocationObjectCoords = {
  */
 export type LocationCallback = (location: LocationObject) => any;
 
+/**
+ * Error callback for location methods.
+ */
+export type LocationErrorCallback = (reason: string) => void;
+
 // @needsAudit
 /**
  * Represents the object containing details about location provider.

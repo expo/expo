@@ -1,5 +1,5 @@
 import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
-import path from 'path';
+import path from 'node:path';
 
 export function hasModule(name: string): boolean {
   try {

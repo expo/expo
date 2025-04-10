@@ -12,7 +12,9 @@ on:
       - packages/expo-eas-client/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
+      - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
+      - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
@@ -25,7 +27,9 @@ on:
       - packages/expo-eas-client/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
+      - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
+      - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
@@ -40,15 +44,15 @@ jobs:
     timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m -Dorg.gradle.daemon=false
     strategy:
       matrix:
-        api-level: [33]
+        api-level: [34]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: 👀 Check out repository
         uses: actions/checkout@v4
         with:

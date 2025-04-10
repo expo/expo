@@ -52,16 +52,6 @@ class DevMenuDevToolsDelegate(
     reactDevManager?.toggleElementInspector()
   }
 
-  fun toggleRemoteDebugging() = runWithDevSupportEnabled {
-    val reactDevManager = reactDevManager ?: return
-    val devSettings = devSettings ?: return
-    manager.closeMenu()
-    UiThreadUtil.runOnUiThread {
-      devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-      reactDevManager.handleReloadJS()
-    }
-  }
-
   fun togglePerformanceMonitor(context: Context) {
     val reactDevManager = reactDevManager ?: return
     val devSettings = devSettings ?: return

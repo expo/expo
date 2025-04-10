@@ -34,7 +34,7 @@ export function PlatformAndDeviceForm() {
     setPlatform(platform);
     setDevice(device);
 
-    router.push(
+    void router.push(
       {
         query: {
           ...query,
@@ -56,7 +56,9 @@ export function PlatformAndDeviceForm() {
           title="Android device"
           alt="Android device"
           isSelected={platform === 'android' && device === 'physical'}
-          onClick={() => onRadioChange('android', 'physical')}
+          onClick={() => {
+            onRadioChange('android', 'physical');
+          }}
         />
         <SelectCard
           imgSrc="/static/images/get-started/ios-device.png"
@@ -64,7 +66,9 @@ export function PlatformAndDeviceForm() {
           title="iOS device"
           alt="iOS device"
           isSelected={platform === 'ios' && device === 'physical'}
-          onClick={() => onRadioChange('ios', 'physical')}
+          onClick={() => {
+            onRadioChange('ios', 'physical');
+          }}
         />
       </div>
       <div className="flex flex-wrap gap-4">
@@ -74,7 +78,9 @@ export function PlatformAndDeviceForm() {
           title="Android Emulator"
           alt="Android Emulator"
           isSelected={platform === 'android' && device === 'simulated'}
-          onClick={() => onRadioChange('android', 'simulated')}
+          onClick={() => {
+            onRadioChange('android', 'simulated');
+          }}
         />
         <SelectCard
           imgSrc="/static/images/get-started/ios-simulator.png"
@@ -82,7 +88,9 @@ export function PlatformAndDeviceForm() {
           title="iOS Simulator"
           alt="iOS Simulator"
           isSelected={platform === 'ios' && device === 'simulated'}
-          onClick={() => onRadioChange('ios', 'simulated')}
+          onClick={() => {
+            onRadioChange('ios', 'simulated');
+          }}
         />
       </div>
     </div>

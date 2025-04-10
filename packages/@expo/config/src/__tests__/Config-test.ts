@@ -562,6 +562,34 @@ describe(modifyConfigAsync, () => {
   });
 
   describe('plugins modifications', () => {
+    it('warns when modifying static config to add a plugin when dynamic config is present', async () => {
+      createProject('/static-config-modify-plugin.dynamic-config', {
+        'app.json': JSON.stringify(appFile),
+        'app.config.js': `module.exports = ({ config }) => ({
+          ...config,
+        });`,
+      });
+
+      await expect(
+        modifyConfigAsync('/static-config-modify-plugin.dynamic-config', {
+          plugins: ['expo-router'],
+        })
+      ).resolves.toMatchObject({
+        type: 'warn',
+        config: null,
+        message: expect.stringMatching(/dynamic config/),
+      });
+
+      // Ensure the config was not changed
+      expect(appFile).toMatchObject(
+        JSON.parse(
+          vol.readFileSync('/static-config-modify-plugin.dynamic-config/app.json', {
+            encoding: 'utf-8',
+          }) as string
+        )
+      );
+    });
+
     it('adds plugin entry without props', async () => {
       createProject('/plugins-modification-add-simple', {
         'app.json': JSON.stringify(appFile),

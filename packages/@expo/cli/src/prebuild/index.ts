@@ -36,7 +36,7 @@ export const expoPrebuild: Command = async (argv) => {
         `--clean                                  Delete the native folders and regenerate them before applying changes`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
-        chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lockb exists}`,
+        chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,
         chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,

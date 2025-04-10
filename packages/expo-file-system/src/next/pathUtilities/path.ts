@@ -19,7 +19,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-function isPathSeparator(code) {
+function isPathSeparator(code: string) {
   return code === '/';
 }
 
@@ -85,7 +85,7 @@ function normalizeString(path: string, allowAboveRoot: boolean, separator: strin
   return res;
 }
 
-function formatExt(ext) {
+function formatExt(ext?: string) {
   return ext ? `${ext[0] === '.' ? '' : '.'}${ext}` : '';
 }
 

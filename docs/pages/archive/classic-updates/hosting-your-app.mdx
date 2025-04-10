@@ -5,7 +5,7 @@ title: Hosting Updates on Your Servers
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
-> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
+> This doc was archived in August 2022 and will not receive any further updates. Use EAS Update instead. [Learn more](/eas-update/introduction)
 
 Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo's CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo's CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
@@ -13,7 +13,7 @@ For simplicity, the rest of this article will refer to hosting an update for the
 
 ## Exporting the update
 
-First, you'll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app's static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
+First, you'll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app's static files to a directory named **dist**. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
 
 <FileTree
   files={[
@@ -27,7 +27,7 @@ First, you'll need to export all the static files of your update so they can be 
 
 ## Hosting your static files
 
-Once you have exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
+Once you have exported your update's static files, you can host the contents on your own server. For example, in your **dist** output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
 
 <Terminal
   cmd={[
@@ -138,7 +138,7 @@ When Expo CLI bundles your update, minification is always enabled. To see the or
 
 1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the **bundles** directory.
 2. A **debug.html** file will also be created at the root of your output directory.
-3. In Chrome, open up **debug.html** and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
+3. In Chrome, open up **debug.html** and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red directory containing the reconstructed source code from your bundle.
 
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
 

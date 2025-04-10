@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 // @ts-ignore
 import Jimp from 'jimp-compact';
 import * as path from 'path';
@@ -66,16 +66,16 @@ export async function jimpAsync(
 
   const image = await getJimpImageAsync(options.input);
   const mime = typeof options.format === 'string' ? options.format : image.getMIME();
-  const imgBuffer = await image.getBufferAsync(mime);
+  const imgBuffer: Buffer = await image.getBufferAsync(mime);
 
   if (typeof options.output === 'string') {
     if (await isFolderAsync(options.output)) {
-      await fs.writeFile(
+      await fs.promises.writeFile(
         path.join(options.output, path.basename(options.originalInput)),
         imgBuffer
       );
     } else {
-      await fs.writeFile(options.output, imgBuffer);
+      await fs.promises.writeFile(options.output, imgBuffer);
     }
   }
   return imgBuffer;
@@ -83,14 +83,14 @@ export async function jimpAsync(
 
 export async function isFolderAsync(path: string): Promise<boolean> {
   try {
-    return (await fs.stat(path)).isDirectory();
+    return (await fs.promises.stat(path)).isDirectory();
   } catch {
     return false;
   }
 }
 
 export function circleAsync(jimp: Jimp): Promise<Jimp> {
-  const radius = Math.min(jimp.bitmap.width, jimp.bitmap.height) / 2;
+  const diameter = Math.min(jimp.bitmap.width, jimp.bitmap.height);
 
   const center = {
     x: jimp.bitmap.width / 2,
@@ -98,12 +98,16 @@ export function circleAsync(jimp: Jimp): Promise<Jimp> {
   };
 
   return new Promise((resolve) => {
-    jimp.scanQuiet(
-      0,
-      0,
-      jimp.bitmap.width,
-      jimp.bitmap.height,
-      (x: number, y: number, idx: number) => {
+    jimp
+      .resize(diameter, diameter)
+      .crop(
+        (jimp.bitmap.width - diameter) / 2,
+        (jimp.bitmap.height - diameter) / 2,
+        diameter,
+        diameter
+      )
+      .scanQuiet(0, 0, diameter, diameter, (x: number, y: number, idx: number) => {
+        const radius = diameter / 2;
         const curR = Math.sqrt(Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2));
 
         if (radius - curR <= 0.0) {
@@ -111,9 +115,9 @@ export function circleAsync(jimp: Jimp): Promise<Jimp> {
         } else if (radius - curR < 1.0) {
           jimp.bitmap.data[idx + 3] = 255 * (radius - curR);
         }
-        resolve(jimp);
-      }
-    );
+      });
+
+    resolve(jimp);
   });
 }
 

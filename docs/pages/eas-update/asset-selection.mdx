@@ -11,8 +11,6 @@ import { CODE } from '~/ui/components/Text';
 
 > **info** Available for SDK 50 and above ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.23.0).
 
-In SDK 49 and earlier, all assets resolved in the Metro bundler are included in every update and are uploaded to the update server.
-
 SDK 50 added the experimental **asset selection feature**, which allows the developer to specify that only certain assets should be included in updates. This can greatly reduce the number of assets that need to be uploaded to and downloaded from the updates server. This feature will work with the EAS Update server or any custom server that complies with the [`expo-updates` protocol](/technical-specs/expo-updates-1).
 
 SDK 52 launched this feature to general availability.
@@ -47,7 +45,7 @@ To use asset selection in SDK 52 and above, include the property `updates.assetP
   }
 ```
 
-After adding this configuration all **.png** files in all subdirectories of **app/images** will be included in updates. You have to also ensure that these assets need to be required in your JavaScript code
+After adding this configuration all **.png** files in all subdirectories of **app/images** will be included in updates. You have to also ensure that these assets need to be required in your JavaScript code.
 
 If `assetPatternsToBeBundled` isn't included in the app config, all assets resolved by the bundler will be included in updates (as per SDK 49 and earlier behavior).
 

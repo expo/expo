@@ -1,5 +1,6 @@
 ---
-title: New Architecture
+title: React Native's New Architecture
+sidebar_title: New Architecture
 description: Learn about React Native's "New Architecture" and how and why to migrate to it.
 ---
 
@@ -11,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **info** We recommend using SDK 51 or newer for the best experience with the New Architecture.
+> **info** We recommend using SDK 52 or newer for the best experience with the New Architecture.
 
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
@@ -70,15 +71,13 @@ You can configure the React Native Directory check in your **package.json** file
 
 ## Initialize a new project with the New Architecture
 
-**As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default. To create a new project using SDK 52 beta:
+**As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default.
 
-<Terminal cmd={['$ npx create-expo-app@latest -t default@sdk-52']} />
-
-**For SDK 51 and below**, the easiest way to get started with the New Architecture is to use the `with-new-arch` template when creating a new project:
-
-<Terminal cmd={['$ npx create-expo-app@latest -e with-new-arch']} />
+<Terminal cmd={['$ npx create-expo-app@latest']} />
 
 ## Enable the New Architecture in an existing project
+
+**As of SDK 53**, the New Architecture is enabled by default in all new projects. In older projects, you can enable it by setting the `newArchEnabled` property to `true` in app config.
 
 <Step label="1">
 
@@ -99,6 +98,8 @@ Set `newArchEnabled` on target platforms:
   </Tab>
 
   <Tab label="SDK 51 and below">
+    To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
+
     ```json app.json
     {
       "expo": {
@@ -106,10 +107,10 @@ Set `newArchEnabled` on target platforms:
           [
             "expo-build-properties",
             {
-              "ios": {
+              "android": {
                 "newArchEnabled": true
               },
-              "android": {
+              "ios": {
                 "newArchEnabled": true
               }
             }
@@ -118,6 +119,7 @@ Set `newArchEnabled` on target platforms:
       }
     }
     ```
+
   </Tab>
 </Tabs>
 
@@ -125,7 +127,7 @@ Set `newArchEnabled` on target platforms:
 
 <Step label="2">
 
-Create a new build.
+Create a new build:
 
 <Tabs tabs={['Android', 'iOS']}>
   <Tab>
@@ -158,8 +160,31 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
+If you are using Expo SDK 53 or higher, it will be enabled by default. The following instructions apply to older projects.
+
 - **Android**: Set `newArchEnabled=true` in the **gradle.properties** file.
-- **iOS**: If your project has a **Podfile.properties.json** file (it was created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"true"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
+- **iOS**: If your project has a **Podfile.properties.json** file (which is created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"true"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
+
+</Collapsible>
+
+## Disable the New Architecture in an existing project
+
+Starting SDK 52, Expo Go only supports the New Architecture since all Expo libraries and third-party libraries included in Expo Go support the New Architecture. Note that [the Go app is not intended to be used as a development environment for real-world apps](https://expo.fyi/expo-go-usage).
+
+If you want to opt out of using the New Architecture, whether you are using Expo Go or a development build, set the `newArchEnabled` property to `false` in app config and create a [development build](/develop/development-builds/introduction/).
+
+```json app.json
+{
+  "expo": {
+    "newArchEnabled": false
+  }
+}
+```
+
+<Collapsible summary="Are you disabling the New Architecture in a bare React Native app?">
+
+- **Android**: Set `newArchEnabled=false` in the **gradle.properties** file.
+- **iOS**: If your project has a **Podfile.properties.json** file (which is created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"false"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
 
 </Collapsible>
 
@@ -173,13 +198,9 @@ You may be able to try the New Architecture in your app even if some of the libr
 
 </Collapsible>
 
-<Collapsible summary="Known issues in Expo SDK libraries">
+<Collapsible summary="Known issues in Expo SDK and recommended libraries">
 
-As of SDK 52, the following are the known issues with the New Architecture in the Expo SDK:
-
-- **expo-notifications**: handling notifications in the background is not yet supported.
-- **expo-task-manager** and **expo-background-fetch**: not yet supported.
-- **expo-location**: background location is not yet supported.
+- **react-native-maps**: Does not yet support the New Architecture. [Follow along with progress](https://github.com/react-native-maps/react-native-maps/discussions/5355). If your app can force a minimum version of iOS 17, or does not need to support maps on iOS, then consider [`expo-maps`](versions/latest/sdk/maps/).
 
 You may encounter other issues in older SDK releases. We recommend upgrading to the latest SDK version.
 
@@ -195,14 +216,14 @@ Refer to the [issues labeled with "Type: New Architecture" on the React Native G
 
 Since React Native 0.74, there are various Interop Layers enabled by default. This allows many libraries built for the old architecture to work on the New Architecture without any changes. However, the interop is not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third-party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
 
-Refer to [React Native Directory](https://reactnative.directory/) a more complete list of libraries and their compatibility with the New Architecture. The following libraries were found to popular among Expo apps and are known to be incompatible:
+Refer to [React Native Directory](https://reactnative.directory/) a more complete list of libraries and their compatibility with the New Architecture. The following libraries were found to be popular among Expo apps and are known to be incompatible:
 
-- **@react-native-community/masked-view**: use `@react-native-masked-view/masked-view` instead.
-- **@react-native-community/clipboard**: use `@react-native-clipboard/clipboard` instead.
-- **rn-fetch-blob**: use `react-native-blob-util` instead.
-- **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
-- **react-native-geolocation-service**: use `expo-location` instead.
-- **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
+- **@react-native-community/masked-view**: Use `@react-native-masked-view/masked-view` instead.
+- **@react-native-community/clipboard**: Use `@react-native-clipboard/clipboard` instead.
+- **rn-fetch-blob**: Use `react-native-blob-util` instead.
+- **react-native-fs**: Use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
+- **react-native-geolocation-service**: Use `expo-location` instead.
+- **react-native-datepicker**: Use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
 
 </Collapsible>
 

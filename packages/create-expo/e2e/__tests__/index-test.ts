@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
 
 import {
   createTestPath,
@@ -58,22 +59,32 @@ it('creates a full basic project by default', async () => {
   expect(packageJson.name).toBe('defaults-to-basic');
 });
 
-it('throws when fetch is disabled', async () => {
-  const projectName = 'throws-when-fetch-disabled';
-  let result: Awaited<ReturnType<typeof execute>>;
+// TODO: drop this test when the oldest supported Node version is >=23
+(semver.major(process.versions.node) >= 23 ? it.skip : it)(
+  'throws when fetch is disabled',
+  async () => {
+    const [major] = process.versions.node.split('.').map(Number);
+    if (major >= 23) {
+      expect(true).toBe(true);
+      // `--no-experimental-fetch` is a legacy flag fetch it not experimental in Node.js 23+
+      return;
+    }
+    const projectName = 'throws-when-fetch-disabled';
+    let result: Awaited<ReturnType<typeof execute>>;
 
-  try {
-    result = await execute([projectName, '--example', 'with-router'], {
-      env: { NODE_OPTIONS: '--no-experimental-fetch' },
+    try {
+      result = await execute([projectName, '--example', 'with-router'], {
+        env: { NODE_OPTIONS: '--no-experimental-fetch' },
+      });
+    } catch (error: any) {
+      result = error;
+    }
+
+    expect(result).toMatchObject({
+      stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
     });
-  } catch (error: any) {
-    result = error;
   }
-
-  expect(result).toMatchObject({
-    stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
-  });
-});
+);
 
 it('uses pnpm', async () => {
   const projectName = 'uses-pnpm';
@@ -292,6 +303,26 @@ xdescribe('templates', () => {
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'app/_layout.tsx');
+    expectFileExists(projectName, '.gitignore');
+    // Check if it skipped install
+    expectFileNotExists(projectName, 'node_modules');
+  });
+
+  it('downloads a github repo with shorthand', async () => {
+    const projectName = 'github-shorthand-url';
+    const results = await executePassing([
+      projectName,
+      '--no-install',
+      '--template',
+      'expo/examples/tree/master/blank',
+    ]);
+
+    // Test that the user was warned about deps
+    expect(results.stdout).toMatch(/make sure you have modules installed/);
+    expect(results.stdout).toMatch(/yarn/);
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, 'README.md');
     expectFileExists(projectName, '.gitignore');
     // Check if it skipped install
     expectFileNotExists(projectName, 'node_modules');

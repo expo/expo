@@ -8,7 +8,7 @@ import {
 } from '@expo/config-plugins';
 import JsonFile from '@expo/json-file';
 import plist from '@expo/plist';
-import fs from 'fs-extra';
+import fsMock from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 import xcode from 'xcode';
@@ -24,7 +24,7 @@ import {
 const { withOrientation } = IOSConfig.Orientation;
 
 const { readXMLAsync } = XML;
-const fsReal = jest.requireActual('fs') as typeof fs;
+const fsReal = jest.requireActual<typeof import('fs')>('fs');
 
 jest.setTimeout(30 * 1000);
 
@@ -124,6 +124,7 @@ function getLargeConfig(): ExportedConfig {
       associatedDomains: ['applinks:https://pillarvalley.netlify.app'],
       usesIcloudStorage: true,
       usesAppleSignIn: true,
+      usesBroadcastPushNotifications: true,
       accessesContactNotes: true,
     },
     android: {
@@ -345,27 +346,23 @@ describe('built-in plugins', () => {
       [
         'node_modules/react-native-maps/package.json',
         'ios/.xcode.env',
-        'ios/HelloWorld/AppDelegate.h',
-        'ios/HelloWorld/AppDelegate.mm',
+        'ios/HelloWorld/AppDelegate.swift',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
         'ios/HelloWorld/Images.xcassets/Contents.json',
+        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.colorset/Contents.json',
         'ios/HelloWorld/Info.plist',
         'ios/HelloWorld/SplashScreen.storyboard',
         'ios/HelloWorld/Supporting/Expo.plist',
         'ios/HelloWorld/Supporting/en.lproj/InfoPlist.strings',
         'ios/HelloWorld/Supporting/es.lproj/InfoPlist.strings',
-        'ios/HelloWorld/main.m',
         'ios/HelloWorld/GoogleService-Info.plist',
-        'ios/HelloWorld/noop-file.swift',
         'ios/HelloWorld/HelloWorld-Bridging-Header.h',
         'ios/HelloWorld/mycoolapp.entitlements',
         'ios/HelloWorld.xcodeproj/project.pbxproj',
         'ios/HelloWorld.xcodeproj/project.xcworkspace/contents.xcworkspacedata',
         'ios/HelloWorld.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
         'ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-        'ios/HelloWorld.xcworkspace/contents.xcworkspacedata',
-        'ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
         'ios/Podfile',
         'ios/Podfile.properties.json',
         'ios/gitignore',
@@ -439,12 +436,12 @@ describe('built-in plugins', () => {
 
     // Ensure the infoPlist object is merged correctly
     const infoPlist = await plist.parse(
-      fs.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
+      fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
     );
     expect(infoPlist.bar).toStrictEqual({ val: ['foo'] });
     // Ensure the entitlements object is merged correctly
     const entitlements = await plist.parse(
-      fs.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
+      fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
     );
     expect(entitlements.foo).toStrictEqual('bar');
 
@@ -515,21 +512,18 @@ describe('built-in plugins', () => {
     expect(Object.keys(after)).toEqual([
       'node_modules/react-native-maps/package.json',
       'ios/.xcode.env',
-      'ios/HelloWorld/AppDelegate.h',
-      'ios/HelloWorld/AppDelegate.mm',
+      'ios/HelloWorld/AppDelegate.swift',
+      'ios/HelloWorld/HelloWorld-Bridging-Header.h',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
       'ios/HelloWorld/Info.plist',
       'ios/HelloWorld/SplashScreen.storyboard',
       'ios/HelloWorld/Supporting/Expo.plist',
-      'ios/HelloWorld/main.m',
       'ios/HelloWorld/HelloWorld.entitlements',
       'ios/HelloWorld.xcodeproj/project.pbxproj',
       'ios/HelloWorld.xcodeproj/project.xcworkspace/contents.xcworkspacedata',
       'ios/HelloWorld.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
       'ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-      'ios/HelloWorld.xcworkspace/contents.xcworkspacedata',
-      'ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist',
       'ios/Podfile',
       'ios/Podfile.properties.json',
       'ios/gitignore',
@@ -540,6 +534,7 @@ describe('built-in plugins', () => {
       'android/app/src/main/AndroidManifest.xml',
       'android/app/src/main/java/com/helloworld/MainActivity.kt',
       'android/app/src/main/java/com/helloworld/MainApplication.kt',
+      'android/app/src/main/res/drawable/ic_launcher_background.xml',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/mipmap-hdpi/ic_launcher.webp',
       'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp',

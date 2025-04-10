@@ -111,7 +111,7 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<*>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, reactApplication.reactHost))
+      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
     }
 
     @JvmStatic
@@ -124,5 +124,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
     @JvmStatic
     fun wasInitialized(): Boolean = false
+
+    @JvmStatic
+    fun getMetadataValue(context: Context, key: String, defaultValue: String = ""): String {
+      throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+    }
   }
 }

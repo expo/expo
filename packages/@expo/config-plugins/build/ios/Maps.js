@@ -43,7 +43,7 @@ function _generateCode() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:config-plugins:ios:maps');
-const MATCH_INIT = exports.MATCH_INIT = /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
+const MATCH_INIT = exports.MATCH_INIT = /\bsuper\.application\(\w+?, didFinishLaunchingWithOptions: \w+?\)/g;
 const withGoogleMapsKey = (0, _iosPlugins().createInfoPlistPlugin)(setGoogleMapsApiKey, 'withGoogleMapsKey');
 const withMaps = config => {
   config = withGoogleMapsKey(config);
@@ -79,14 +79,13 @@ function setGoogleMapsApiKey(config, {
   };
 }
 function addGoogleMapsAppDelegateImport(src) {
-  const newSrc = [];
-  newSrc.push('#if __has_include(<GoogleMaps/GoogleMaps.h>)', '#import <GoogleMaps/GoogleMaps.h>', '#endif');
+  const newSrc = ['#if canImport(GoogleMaps)', 'import GoogleMaps', '#endif'];
   return (0, _generateCode().mergeContents)({
     tag: 'react-native-maps-import',
     src,
     newSrc: newSrc.join('\n'),
-    anchor: /#import "AppDelegate\.h"/,
-    offset: 1,
+    anchor: /@UIApplicationMain/,
+    offset: 0,
     comment: '//'
   });
 }
@@ -97,14 +96,13 @@ function removeGoogleMapsAppDelegateImport(src) {
   });
 }
 function addGoogleMapsAppDelegateInit(src, apiKey) {
-  const newSrc = [];
-  newSrc.push('#if __has_include(<GoogleMaps/GoogleMaps.h>)', `  [GMSServices provideAPIKey:@"${apiKey}"];`, '#endif');
+  const newSrc = ['#if canImport(GoogleMaps)', `GMSServices.provideAPIKey("${apiKey}")`, '#endif'];
   return (0, _generateCode().mergeContents)({
     tag: 'react-native-maps-init',
     src,
     newSrc: newSrc.join('\n'),
     anchor: MATCH_INIT,
-    offset: 2,
+    offset: 0,
     comment: '//'
   });
 }
@@ -187,23 +185,22 @@ const withGoogleMapsAppDelegate = (config, {
   apiKey
 }) => {
   return (0, _iosPlugins().withAppDelegate)(config, config => {
-    if (['objc', 'objcpp'].includes(config.modResults.language)) {
-      if (apiKey && isReactNativeMapsAutolinked(config) && isReactNativeMapsInstalled(config.modRequest.projectRoot)) {
-        try {
-          config.modResults.contents = addGoogleMapsAppDelegateImport(config.modResults.contents).contents;
-          config.modResults.contents = addGoogleMapsAppDelegateInit(config.modResults.contents, apiKey).contents;
-        } catch (error) {
-          if (error.code === 'ERR_NO_MATCH') {
-            throw new Error(`Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`);
-          }
-          throw error;
-        }
-      } else {
-        config.modResults.contents = removeGoogleMapsAppDelegateImport(config.modResults.contents).contents;
-        config.modResults.contents = removeGoogleMapsAppDelegateInit(config.modResults.contents).contents;
-      }
-    } else {
+    if (!apiKey || !isReactNativeMapsAutolinked(config) || !isReactNativeMapsInstalled(config.modRequest.projectRoot)) {
+      config.modResults.contents = removeGoogleMapsAppDelegateImport(config.modResults.contents).contents;
+      config.modResults.contents = removeGoogleMapsAppDelegateInit(config.modResults.contents).contents;
+      return config;
+    }
+    if (config.modResults.language !== 'swift') {
       throw new Error(`Cannot setup Google Maps because the project AppDelegate is not a supported language: ${config.modResults.language}`);
+    }
+    try {
+      config.modResults.contents = addGoogleMapsAppDelegateImport(config.modResults.contents).contents;
+      config.modResults.contents = addGoogleMapsAppDelegateInit(config.modResults.contents, apiKey).contents;
+    } catch (error) {
+      if (error.code === 'ERR_NO_MATCH') {
+        throw new Error(`Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`);
+      }
+      throw error;
     }
     return config;
   });

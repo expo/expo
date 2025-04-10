@@ -65,13 +65,17 @@ function TextInputButton({ text }: { text: string }) {
 }
 
 export default function LinkingScreen() {
-  const url = Linking.useURL();
+  const useURL = Linking.useURL();
+  const useLinkingURL = Linking.useLinkingURL();
+  const [eventListenerURL, setEventListenerURL] = React.useState<string>();
 
   React.useEffect(() => {
-    if (url) {
-      alert(`Linking url event: ${url}`);
-    }
-  });
+    const listener = Linking.addEventListener('url', ({ url }) => {
+      setEventListenerURL(url);
+    });
+
+    return listener.remove;
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -81,7 +85,18 @@ export default function LinkingScreen() {
           Linking.openSettings();
         }}
       />
-      {url && <TextInputButton text={Linking.createURL('deep-link')} />}
+      {useURL && <TextInputButton text={Linking.createURL('deep-link')} />}
+      <View>
+        <MonoText containerStyle={styles.itemText}>Linking.useURL: {useURL}</MonoText>
+      </View>
+      <View>
+        <MonoText containerStyle={styles.itemText}>Linking.useLinkingURL: {useLinkingURL}</MonoText>
+      </View>
+      <View>
+        <MonoText containerStyle={styles.itemText}>
+          Linking.addEventListener: {eventListenerURL}
+        </MonoText>
+      </View>
       <TextInputButton text="https://github.com/search?q=Expo" />
       <TextInputButton text="https://www.expo.dev" />
       <TextInputButton text="http://www.expo.dev" />

@@ -19,7 +19,7 @@ type Props = PropsWithChildren<TabsProps> & {
 
 const generateTabLabels = (children: ReactNode) => {
   return Children.map(children, child =>
-    isValidElement(child) ? child?.props?.label : child || '[untitled]'
+    isValidElement(child) ? child?.props?.label : (child ?? '[untitled]')
   );
 };
 
@@ -51,16 +51,17 @@ const InnerTabs = ({
     <ReachTabs
       index={tabIndex}
       onChange={setIndex}
-      className="border border-default rounded-md shadow-xs my-4">
-      <TabList className="flex px-4 py-3 gap-1 flex-wrap border-b border-secondary">
+      className="my-4 rounded-md border border-default shadow-xs">
+      <TabList className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
         {tabTitles.map((title, index) => (
           <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
         ))}
       </TabList>
       <TabPanels
         className={mergeClasses(
-          'py-4 px-5',
-          '[&_ul]:mb-3 [&_pre]:first-of-type:mt-1',
+          'px-5 py-4',
+          '[&_ul]:mb-3',
+          'first:[&_figure]:mt-1 first:[&_pre]:mt-1',
           'last:[&>div>*]:!mb-0'
         )}>
         {children}

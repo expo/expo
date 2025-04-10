@@ -11,14 +11,14 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
   /**
    Weak pointer to the holder of a module that the component data was created for.
    */
-  weak var moduleHolder: ModuleHolder?
+  weak var viewModuleWrapper: ViewModuleWrapper?
 
   /**
    Initializer that additionally takes the original view module to have access to its definition.
    */
   @objc
   public init(viewModule: ViewModuleWrapper, managerClass: ViewModuleWrapper.Type, bridge: RCTBridge) {
-    self.moduleHolder = viewModule.wrappedModuleHolder
+    self.viewModuleWrapper = viewModule
     super.init(managerClass: managerClass, bridge: bridge, eventDispatcher: bridge.eventDispatcher())
   }
 
@@ -35,7 +35,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     }
 
     // If the prop is defined as an event, create our own event setter.
-    if moduleHolder?.definition.view?.eventNames.contains(propName) == true {
+    if viewModuleWrapper?.viewDefinition?.eventNames.contains(propName) == true {
       return createEventSetter(eventName: propName, bridge: self.manager?.bridge)
     }
 
@@ -48,11 +48,11 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
       log.warn("Given view is not an UIView")
       return
     }
-    guard let viewDefinition = moduleHolder?.definition.view else {
+    guard let viewDefinition = viewModuleWrapper?.viewDefinition else {
       log.warn("View manager '\(self.name)' not found")
       return
     }
-    guard let appContext = moduleHolder?.appContext else {
+    guard let appContext = viewModuleWrapper?.moduleHolder?.appContext else {
       log.warn("App context has been lost")
       return
     }
@@ -86,7 +86,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     // Let the base class `RCTComponentData` handle all remaining props.
     super.setProps(remainingProps, forView: view)
 
-    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: AppleView.uikit(view))
   }
 
   /**
@@ -98,7 +98,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     var directEvents: [String] = []
     let superClass: AnyClass? = managerClass.superclass()
 
-    if let viewDefinition = moduleHolder?.definition.view {
+    if let viewDefinition = viewModuleWrapper?.viewDefinition {
       for propName in viewDefinition.getSupportedPropNames() {
         // `id` allows every type to be passed in
         propTypes[propName] = "id"
@@ -122,7 +122,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
  Creates a setter for the event prop. Used only by Paper.
  */
 private func createEventSetter(eventName: String, bridge: RCTBridge?) -> RCTPropBlockAlias {
-  return { [weak bridge] (target: RCTComponent, value: Any) in
+  return { [weak bridge] (target: RCTComponent, _: Any) in
     installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
       if let target = target {
         let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: body)

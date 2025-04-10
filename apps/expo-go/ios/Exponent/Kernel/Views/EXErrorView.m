@@ -115,10 +115,11 @@
   }
 
   UIFont *font = _txtErrorDetail.font;
-  NSAttributedString *attributedErrorString =[[NSAttributedString alloc] initWithString:errorDetail];
-  attributedErrorString = [EXManifestResource parseUrlsAndBoldInAttributedString:attributedErrorString withFont:font];
-
-  _txtErrorDetail.attributedText = attributedErrorString;
+  if (errorDetail != nil) {
+    NSAttributedString *attributedErrorString =[[NSAttributedString alloc] initWithString:errorDetail];
+    attributedErrorString = [EXManifestResource parseUrlsAndBoldInAttributedString:attributedErrorString withFont:font];
+    _txtErrorDetail.attributedText = attributedErrorString;
+  }
   _txtErrorDetail.textColor = [UIColor colorNamed:@"textDefault"];
 
   if (errorFixInstructions != nil) {

@@ -27,7 +27,7 @@ export type ExpoTabActionType =
       payload: {
         name: string;
         reset?: ExpoTabsResetValue;
-        params?: object | undefined;
+        params?: object;
       };
     };
 

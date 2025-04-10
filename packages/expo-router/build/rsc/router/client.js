@@ -10,7 +10,10 @@
 'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
+exports.Link = void 0;
+exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
+exports.Router = Router;
+exports.ServerRouter = ServerRouter;
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -56,7 +59,7 @@ const equalRouteProps = (a, b) => {
 const RouterContext = (0, react_1.createContext)(null);
 const InnerRouter = ({ routerData }) => {
     const refetch = (0, host_js_1.useRefetch)();
-    const initialRouteRef = (0, react_1.useRef)();
+    const initialRouteRef = (0, react_1.useRef)(null);
     if (!initialRouteRef.current) {
         initialRouteRef.current = parseRoute(new URL(getHref()));
     }
@@ -253,6 +256,9 @@ function useRouter_UNSTABLE() {
         dismiss() {
             throw new Error('router.dismiss() is not supported in React Server Components yet');
         },
+        dismissTo() {
+            throw new Error('router.dismissTo() is not supported in React Server Components yet');
+        },
         dismissAll() {
             throw new Error('router.dismissAll() is not supported in React Server Components yet');
         },
@@ -269,7 +275,6 @@ function useRouter_UNSTABLE() {
         prefetch,
     };
 }
-exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {
     // const unstable_shouldRenderPrev = (_err: unknown) => {
     //   const shouldSkip = routerData[0];
@@ -306,7 +311,6 @@ function Router({ routerData = DEFAULT_ROUTER_DATA }) {
     const unstable_onFetchData = () => { };
     return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialParams, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter, { routerData }));
 }
-exports.Router = Router;
 const notAvailableInServer = (name) => () => {
     throw new Error(`${name} is not in the server`);
 };
@@ -323,7 +327,6 @@ function ServerRouter({ children, route }) {
         },
     }, children));
 }
-exports.ServerRouter = ServerRouter;
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, 

@@ -96,6 +96,7 @@ export async function getTemplateAsync(): Promise<IBSplashScreenDocument> {
                               <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerY" secondItem="EXPO-ContainerView" secondAttribute="centerY" id="0VC-Wk-OaO"/>
                               <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerX" secondItem="EXPO-ContainerView" secondAttribute="centerX" id="zR4-NK-mVN"/>
                           </constraints>
+                          <color key="backgroundColor" name="SplashScreenBackground"/>
                       </view>
                   </viewController>
                   <placeholder placeholderIdentifier="IBFirstResponder" id="EXPO-PLACEHOLDER-1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -105,6 +106,9 @@ export async function getTemplateAsync(): Promise<IBSplashScreenDocument> {
       </scenes>
       <resources>
           <image name="SplashScreenLogo" width="100" height="90.333335876464844"/>
+          <namedColor name="SplashScreenBackground">
+            <color alpha="1.000" blue="1.00000000000000" green="1.00000000000000" red="1.00000000000000" customColorSpace="sRGB" colorSpace="custom"/>
+          </namedColor>
       </resources>
   </document>`;
   return await new Parser().parseStringPromise(contents);

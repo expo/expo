@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig, Platform } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs';
 import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
@@ -13,6 +14,7 @@ import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -34,6 +36,12 @@ import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
+
+export type StrictResolver = (moduleName: string) => Resolution;
+export type StrictResolverFactory = (
+  context: ResolutionContext,
+  platform: string | null
+) => StrictResolver;
 
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
@@ -147,16 +155,13 @@ export function withExtendedResolver(
   }
 ) {
   if (isReactServerComponentsEnabled) {
-    Log.warn(
-      `Experimental React Server Components is enabled. Production exports are not supported yet.`
-    );
+    Log.warn(`React Server Components (beta) is enabled.`);
+  }
+  if (isReactCanaryEnabled) {
+    Log.warn(`Experimental React 19 canary is enabled.`);
   }
   if (isFastResolverEnabled) {
-    Log.warn(`Experimental module resolution is enabled.`);
-  }
-
-  if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Canary version is enabled.`);
+    Log.log(chalk.dim`Fast resolver is enabled.`);
   }
 
   const defaultResolver = metroResolver.resolve;
@@ -258,14 +263,14 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  function getStrictResolver(
-    { resolveRequest, ...context }: ResolutionContext,
-    platform: string | null
-  ) {
+  const getStrictResolver: StrictResolverFactory = (
+    { resolveRequest, ...context },
+    platform
+  ): StrictResolver => {
     return function doResolve(moduleName: string): Resolution {
       return resolver(context, moduleName, platform);
     };
-  }
+  };
 
   function getOptionalResolver(context: ResolutionContext, platform: string | null) {
     const doResolve = getStrictResolver(context, platform);
@@ -286,8 +291,12 @@ export function withExtendedResolver(
   }
 
   // TODO: This is a hack to get resolveWeak working.
-  const idFactory =
-    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+  const idFactory = (config.serializer?.createModuleIdFactory?.() ??
+    ((id: number | string, context: { platform: string; environment?: string }): number | string =>
+      id)) as (
+    id: number | string,
+    context: { platform: string; environment?: string }
+  ) => number | string;
 
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
@@ -325,9 +334,14 @@ export function withExtendedResolver(
           );
         }
 
+        // TODO: Windows doesn't support externals somehow.
+        if (process.platform === 'win32') {
+          return /^(source-map-support(\/.*)?)$/.test(moduleName);
+        }
+
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
-        return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+        return /^(source-map-support(\/.*)?|react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
           moduleName
         );
       },
@@ -353,10 +367,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
-            moduleName
-          ) ||
-          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+          /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           // TODO: Add more
@@ -370,7 +381,11 @@ export function withExtendedResolver(
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestDevMockProdReact(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev) return null;
 
@@ -398,7 +413,11 @@ export function withExtendedResolver(
       return null;
     },
     // tsconfig paths
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestTsconfigPaths(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       return (
         tsConfigResolve?.(
           {
@@ -411,7 +430,11 @@ export function withExtendedResolver(
     },
 
     // Node.js externals support
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestNodeExternals(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       const isServer =
         context.customResolverOptions?.environment === 'node' ||
         context.customResolverOptions?.environment === 'react-server';
@@ -456,11 +479,21 @@ export function withExtendedResolver(
     },
 
     // Custom externals support
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestCustomExternals(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       // We don't support this in the resolver at the moment.
       if (moduleName.endsWith('/package.json')) {
         return null;
       }
+      // Skip applying JS externals for CSS files.
+      if (/\.(s?css|sass)$/.test(context.originModulePath)) {
+        return null;
+      }
+
+      const environment = context.customResolverOptions?.environment;
 
       const strictResolve = getStrictResolver(context, platform);
 
@@ -475,7 +508,10 @@ export function withExtendedResolver(
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
-            const opaqueId = idFactory(realPath);
+            const opaqueId = idFactory(realPath, {
+              platform: platform!,
+              environment,
+            });
 
             const contents =
               typeof opaqueId === 'number'
@@ -516,7 +552,7 @@ export function withExtendedResolver(
     },
 
     // Basic moduleId aliases
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
       if (platform && platform in aliases && aliases[platform][moduleName]) {
@@ -541,7 +577,11 @@ export function withExtendedResolver(
     },
 
     // Polyfill for asset registry
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestStableAssetRegistry(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
@@ -559,7 +599,11 @@ export function withExtendedResolver(
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestPostRewrites(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       const doResolve = getStrictResolver(context, platform);
 
       const result = doResolve(moduleName);
@@ -609,7 +653,7 @@ export function withExtendedResolver(
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
           if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
-            console.log('Shimming out InitializeCore for React Native in native SSR bundle');
+            debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return {
               type: 'empty',
             };
@@ -636,6 +680,13 @@ export function withExtendedResolver(
 
       return result;
     },
+
+    // If at this point, we haven't resolved a module yet, if it's a module specifier for a known dependency
+    // of either `expo` or `expo-router`, attempt to resolve it from these origin modules instead
+    createFallbackModuleResolver({
+      originModuleNames: ['expo', 'expo-router'],
+      getStrictResolver,
+    }),
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
@@ -699,9 +750,9 @@ export function withExtendedResolver(
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
-          context.unstable_conditionNames = ['node', 'require', 'react-server', 'workerd'];
+          context.unstable_conditionNames = ['node', 'react-server', 'workerd'];
         } else {
-          context.unstable_conditionNames = ['node', 'require'];
+          context.unstable_conditionNames = ['node'];
         }
       } else {
         // Non-server changes
@@ -785,6 +836,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+    );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));

@@ -54,6 +54,11 @@ export async function getCombinedKnownVersionsAsync({
     Log.warn('Dependency validation might be unreliable when using canary SDK versions');
   }
 
+  if (env.EXPO_NO_DEPENDENCY_VALIDATION) {
+    debug('Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1');
+    return {};
+  }
+
   const bundledNativeModules = sdkVersion
     ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion, { skipRemoteVersions })
     : {};

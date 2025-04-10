@@ -15,10 +15,16 @@ class SplashScreenView(
   context: Context
 ) : RelativeLayout(context) {
   val imageView: ImageView = ImageView(context).also { view ->
-    view.layoutParams = LayoutParams(
-      LayoutParams.MATCH_PARENT,
-      LayoutParams.MATCH_PARENT
-    )
+    val width = 200
+    val height = 200
+
+    val density = context.resources.displayMetrics.density
+    val pixelWidth = (width * density).toInt()
+    val pixelHeight = (height * density).toInt()
+
+    val layoutParams = LayoutParams(pixelWidth, pixelHeight)
+    layoutParams.addRule(CENTER_IN_PARENT)
+    view.layoutParams = layoutParams
   }
 
   init {

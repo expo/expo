@@ -15,18 +15,28 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transform = void 0;
+exports.transform = transform;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -40,6 +50,7 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
 function getStringArray(value) {
     if (!value)
@@ -58,15 +69,16 @@ function getStringArray(value) {
 }
 async function transform(config, projectRoot, filename, data, options) {
     const reactServer = options.customTransformOptions?.environment === 'react-server';
+    const posixFilename = (0, filePath_1.toPosixPath)(filename);
     if (typeof options.customTransformOptions?.dom === 'string' &&
-        filename.match(/expo\/dom\/entry\.js/)) {
+        posixFilename.match(/expo\/dom\/entry\.js/)) {
         // TODO: Find some method to do this without invalidating the cache between different DOM components.
         // Inject source for DOM component entry.
         const relativeDomComponentEntry = JSON.stringify(decodeURI(options.customTransformOptions.dom));
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -78,14 +90,12 @@ async function transform(config, projectRoot, filename, data, options) {
                 const src = 'module.exports = {\n' +
                     clientBoundaries
                         .map((boundary) => {
-                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                        const serializedBoundary = JSON.stringify(boundary);
+                        return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
                     })
                         .join('\n') +
                     '\n};';
                 return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
-            }
-            else if (!options.dev) {
-                console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
             }
         }
     }
@@ -141,7 +151,9 @@ async function transform(config, projectRoot, filename, data, options) {
     // in development and a static CSS file in production.
     if ((0, css_modules_1.matchCssModule)(filename)) {
         const results = await (0, css_modules_1.transformCssModuleWeb)({
-            filename,
+            // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+            // This affects the content hashes, which should be stable across platforms.
+            filename: posixFilename,
             src: code,
             options: {
                 reactServer,
@@ -229,7 +241,6 @@ async function transform(config, projectRoot, filename, data, options) {
         output,
     };
 }
-exports.transform = transform;
 /**
  * A custom Metro transformer that adds support for processing Expo-specific bundler features.
  * - Global CSS files on web.

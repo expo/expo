@@ -107,6 +107,7 @@ open class Either<FirstType : Any, SecondType : Any>(
 }
 
 @EitherType
+@DoNotStrip
 open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
@@ -122,6 +123,7 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
 }
 
 @EitherType
+@DoNotStrip
 class EitherOfFour<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,

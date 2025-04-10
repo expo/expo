@@ -44,6 +44,7 @@ type ManifestServiceAttributes = AndroidManifestAttributes & {
     'android:enabled'?: StringBoolean;
     'android:exported'?: StringBoolean;
     'android:permission'?: string;
+    'android:foregroundServiceType'?: string;
 };
 type ManifestService = {
     $: ManifestServiceAttributes;

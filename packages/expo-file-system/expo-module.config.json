@@ -1,16 +1,8 @@
 {
-  "platforms": [
-    "apple",
-    "android"
-  ],
+  "platforms": ["apple", "android"],
   "apple": {
-    "modules": [
-      "FileSystemModule",
-      "FileSystemNextModule"
-    ],
-    "appDelegateSubscribers": [
-      "FileSystemBackgroundSessionHandler"
-    ]
+    "modules": ["FileSystemModule", "FileSystemNextModule"],
+    "appDelegateSubscribers": ["FileSystemBackgroundSessionHandler"]
   },
   "android": {
     "modules": [

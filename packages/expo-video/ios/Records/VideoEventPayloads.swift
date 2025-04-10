@@ -33,11 +33,33 @@ internal struct PlaybackRateChangedEventPayload: Record {
   @Field var oldPlaybackRate: Float? = nil
 }
 
+internal struct SubtitleTracksChangedEventPayload: Record {
+  @Field var availableSubtitleTracks: [SubtitleTrack] = []
+  @Field var oldAvailableSubtitleTracks: [SubtitleTrack] = []
+}
+
+internal struct SubtitleTrackChangedEventPayload: Record {
+  @Field var subtitleTrack: SubtitleTrack? = nil
+  @Field var oldSubtitleTrack: SubtitleTrack? = nil
+}
+
 internal struct TimeUpdate: Record {
   @Field var currentTime: Double = 0
   @Field var currentLiveTimestamp: Double? = nil
   @Field var currentOffsetFromLive: Double? = nil
   @Field var bufferedPosition: Double = -1
+}
+
+internal struct  VideoTrackChangedEventPayload: Record {
+  @Field var videoTrack: VideoTrack? = nil
+  @Field var oldVideoTrack: VideoTrack? = nil
+}
+
+internal struct VideoSourceLoadedEventPayload: Record {
+  @Field var videoSource: VideoSource? = nil
+  @Field var duration: Double? = nil
+  @Field var availableVideoTracks: [VideoTrack]? = nil
+  @Field var availableSubtitleTracks: [SubtitleTrack]? = nil
 }
 
 // swiftlint:enable redundant_optional_initialization

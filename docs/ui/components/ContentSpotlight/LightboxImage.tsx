@@ -13,12 +13,18 @@ export function LightboxImage({ src, alt, ...rest }: Props) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(true);
+        }}>
         <img src={src} alt={alt} {...rest} />
       </button>
       <Lightbox
         open={open}
-        close={() => setOpen(false)}
+        close={() => {
+          setOpen(false);
+        }}
         slides={[{ src }]}
         styles={{ container: { backgroundColor: 'rgba(0, 0, 0, .8)' } }}
         controller={{

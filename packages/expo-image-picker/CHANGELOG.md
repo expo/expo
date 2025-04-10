@@ -8,9 +8,58 @@
 
 ### 🐛 Bug fixes
 
-- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+### 💡 Others
+
+## 16.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
+- Add support for cameraType in web implementation ([#35221](https://github.com/expo/expo/pull/35221) by [@RyogaK](https://github.com/RyogaK))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+- [iOS] Use preferred representation mode to support heic ([#35840](https://github.com/expo/expo/pull/35840) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 16.0.6 - 2025-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.5 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- [ios] fixed concurrency freeze on low-end iOS devices when selecting multiple images. ([#34585](https://github.com/expo/expo/pull/34585) by [@chrfalch](https://github.com/chrfalch))
+- [android] fixed removal of temporary file after picking image using camera ([#34797](https://github.com/expo/expo/pull/34797) by [@chrfalch](https://github.com/chrfalch))
+
+## 16.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
 
 ## 16.0.0 — 2024-10-22
 
@@ -89,6 +138,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
+- Fixed cancelled picker dialog not resolving with expected result on web. ([#11847](https://github.com/expo/expo/pull/27454) by [@raqso](https://github.com/raqso))
 
 ### 💡 Others
 

@@ -16,6 +16,10 @@ import getDevServer from '../getDevServer';
 const manifest = Constants.expoConfig as Record<string, any> | null;
 
 function getOrigin() {
+  if (process.env.NODE_ENV !== 'production') {
+    // e.g. http://localhost:8081
+    return getDevServer().url;
+  }
   return (
     manifest?.extra?.router?.origin ??
     // Written automatically during release builds.
@@ -26,11 +30,6 @@ function getOrigin() {
 // TODO: This would be better if native and tied as close to the JS engine as possible, i.e. it should
 // reflect the exact location of the JS file that was executed.
 function getBaseUrl() {
-  if (process.env.NODE_ENV !== 'production') {
-    // e.g. http://localhost:19006
-    return getDevServer().url?.replace(/\/$/, '');
-  }
-
   // TODO: Make it official by moving out of `extra`
   const productionBaseUrl = getOrigin();
 

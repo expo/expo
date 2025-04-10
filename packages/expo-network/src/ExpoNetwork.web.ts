@@ -1,8 +1,7 @@
-import { EventEmitter } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import { type NetworkEvents, NetworkState, NetworkStateType } from './Network.types';
+import { NetworkEvents, NetworkState, NetworkStateType } from './Network.types';
 
-const emitter = new EventEmitter<NetworkEvents>();
 const onNetworkStateEventName = 'onNetworkStateChanged';
 
 function getNetworkState(): NetworkState {
@@ -14,12 +13,13 @@ function getNetworkState(): NetworkState {
   };
 }
 
-function updateNetworkState() {
-  const state = getNetworkState();
-  emitter.emit(onNetworkStateEventName, state);
-}
+class ExpoNetworkModule extends NativeModule<NetworkEvents> {
+  eventListener?: () => void;
+  updateNetworkState() {
+    const state = getNetworkState();
+    this.emit(onNetworkStateEventName, state);
+  }
 
-export default {
   async getIpAddressAsync(): Promise<string> {
     try {
       const resp = await fetch('https://api.ipify.org?format=json');
@@ -28,16 +28,24 @@ export default {
     } catch (e) {
       throw e;
     }
-  },
+  }
   async getNetworkStateAsync(): Promise<NetworkState> {
     return getNetworkState();
-  },
+  }
+  async isAirplaneModeEnabledAsync(): Promise<boolean> {
+    return false;
+  }
   startObserving() {
-    window.addEventListener('online', updateNetworkState);
-    window.addEventListener('offline', updateNetworkState);
-  },
+    this.eventListener = () => this.updateNetworkState();
+    window.addEventListener('online', this.eventListener);
+    window.addEventListener('offline', this.eventListener);
+  }
   stopObserving() {
-    window.removeEventListener('online', updateNetworkState);
-    window.removeEventListener('offline', updateNetworkState);
-  },
-};
+    if (this.eventListener) {
+      window.removeEventListener('online', this.eventListener);
+      window.removeEventListener('offline', this.eventListener);
+    }
+  }
+}
+
+export default registerWebModule(ExpoNetworkModule);

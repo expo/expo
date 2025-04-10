@@ -1,26 +1,25 @@
-apply plugin: 'com.android.library'
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
 
 group = 'host.exp.exponent'
-version = '1.9.0'
+version = '1.10.0'
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
+expoModule {
+  canBePublished false
+}
 
 android {
   namespace "expo.interfaces.devmenu"
   defaultConfig {
     versionCode 6
-    versionName '1.9.0'
+    versionName '1.10.0'
   }
 }
 
 dependencies {
   implementation 'com.facebook.react:react-android'
-
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
 }

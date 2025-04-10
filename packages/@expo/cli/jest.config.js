@@ -2,6 +2,7 @@ const path = require('path');
 
 const roots = ['__mocks__', 'src', 'metro-require'];
 
+/** @type {import('jest').Config} */
 module.exports = {
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
   projects: [
@@ -11,7 +12,7 @@ module.exports = {
       rootDir: path.resolve(__dirname),
       displayName: require('./package').name,
       roots,
-      setupFiles: ['<rootDir>/e2e/setup.ts'],
+      setupFiles: ['<rootDir>/jest.setup.ts'],
       clearMocks: true,
     },
   ],

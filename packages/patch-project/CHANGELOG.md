@@ -10,6 +10,98 @@
 
 ### 💡 Others
 
+## 0.2.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0 — 2025-04-04
+
+### 💡 Others
+
+- Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+
+## 0.1.27 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.26 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.25 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.24 - 2024-12-19
+
+### 💡 Others
+
+- Uses `*` version for the `expo` peerDependencies. ([#33763](https://github.com/expo/expo/pull/33763) by [@kudo](https://github.com/kudo))
+
+## 0.1.23 - 2024-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.22 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.21 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.20 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.19 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.18 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.17 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.16 — 2024-11-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.15 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.14 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.13 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.12 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.11 — 2024-11-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.10 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.9 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.8 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.7 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

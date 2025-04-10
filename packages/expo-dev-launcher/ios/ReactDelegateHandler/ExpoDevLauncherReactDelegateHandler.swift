@@ -5,6 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
+  private weak var reactNativeFactory: RCTReactNativeFactory?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -36,25 +37,38 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     return self.deferredRootView
   }
 
+  @objc
+  public func isReactInstanceValid() -> Bool {
+    return self.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
+  }
+
+  @objc
+  public func destroyReactInstance() {
+    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
+  }
+
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
-      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
+    self.reactNativeFactory = appDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if rctAppDelegate.bridgelessEnabled() {
-      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
+      self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "bridge")
+      self.reactNativeFactory?.bridge = nil
+      self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
-    let rootView = rctAppDelegate.recreateRootView(
+    let rootView = appDelegate.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
-      launchOptions: self.launchOptions
+      launchOptions: developmentClientController.getLaunchOptions()
     )
     developmentClientController.appBridge = RCTBridge.current()
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white

@@ -1,6 +1,5 @@
-/// <reference types="node" />
 import * as http from 'http';
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 type NextFunction = (err?: any) => void;
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
 /**

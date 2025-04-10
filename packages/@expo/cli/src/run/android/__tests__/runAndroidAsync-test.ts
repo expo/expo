@@ -42,7 +42,16 @@ describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`runs android`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runAndroidAsync('/', {});
 

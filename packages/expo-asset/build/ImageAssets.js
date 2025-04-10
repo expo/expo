@@ -1,11 +1,10 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
 import { getFilename } from './AssetUris';
 export function isImageType(type) {
     return /^(jpeg|jpg|gif|png|bmp|webp|heic)$/i.test(type);
 }
 export function getImageInfoAsync(url) {
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined') {
         return Promise.resolve({ name: getFilename(url), width: 0, height: 0 });
     }
     return new Promise((resolve, reject) => {
