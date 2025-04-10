@@ -188,6 +188,11 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
 
 private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
   val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
+  // If the path to the script is not defined, we assume that we can publish the module.
+  if (shouldUsePublicationScript == null) {
+    return
+  }
+
   val binding = Binding()
   binding.setVariable("providers", project.providers)
   val shell = GroovyShell(javaClass.classLoader, binding)
