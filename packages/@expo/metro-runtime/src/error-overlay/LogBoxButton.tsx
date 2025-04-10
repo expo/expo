@@ -17,7 +17,7 @@ import {
 
 import * as LogBoxStyle from './LogBoxStyle';
 
-type Props = {
+export function LogBoxButton(props: {
   backgroundColor: {
     default: string;
     pressed: string;
@@ -26,9 +26,7 @@ type Props = {
   hitSlop?: Insets;
   onPress?: ((event: GestureResponderEvent) => void) | null;
   style?: ViewStyle;
-};
-
-export function LogBoxButton(props: Props) {
+}) {
   const [pressed, setPressed] = useState(false);
 
   let backgroundColor = props.backgroundColor;

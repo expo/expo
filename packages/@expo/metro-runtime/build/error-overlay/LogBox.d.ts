@@ -1,6 +1,6 @@
 import type { IgnorePattern, LogData } from './Data/LogBoxData';
 import { type ExtendedExceptionData } from './Data/parseLogBoxLog';
-export { LogData, ExtendedExceptionData, IgnorePattern };
+export { ExtendedExceptionData, IgnorePattern, LogData };
 declare const LogBox: {
     install(): void;
     uninstall(): void;

@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import { type GestureResponderEvent, type Insets, ViewStyle } from 'react-native';
-type Props = {
+export declare function LogBoxButton(props: {
     backgroundColor: {
         default: string;
         pressed: string;
@@ -16,7 +16,5 @@ type Props = {
     hitSlop?: Insets;
     onPress?: ((event: GestureResponderEvent) => void) | null;
     style?: ViewStyle;
-};
-export declare function LogBoxButton(props: Props): React.JSX.Element;
-export {};
+}): React.JSX.Element;
 //# sourceMappingURL=LogBoxButton.d.ts.map

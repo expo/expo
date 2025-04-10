@@ -8,12 +8,12 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
-import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
 import { useSelectedLog } from '../Data/LogContext';
 import * as LogBoxStyle from '../LogBoxStyle';
 import { openFileInEditor, type MetroStackFrame } from '../devServerEndpoints';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
+import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 
 export function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean): string {
   if (stackFrames.length === 0) {

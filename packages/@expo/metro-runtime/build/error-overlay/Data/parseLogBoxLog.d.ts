@@ -34,7 +34,6 @@ export declare function parseInterpolation(args: readonly any[]): {
     category: Category;
     message: Message;
 };
-export declare function hasComponentStack(args: any[]): boolean;
 export declare function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogData;
 export declare function hasTaggedError(error: any): boolean;
 export declare function tagError(error: any): any;

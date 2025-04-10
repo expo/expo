@@ -7,10 +7,8 @@
  */
 import React from 'react';
 import type { Message } from './Data/parseLogBoxLog';
-type Props = {
+export declare function LogBoxMessage(props: {
     message: Message;
     maxLength?: number;
-};
-export declare function LogBoxMessage(props: Props): React.ReactElement;
-export {};
+}): React.ReactElement;
 //# sourceMappingURL=LogBoxMessage.d.ts.map

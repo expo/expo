@@ -1,13 +1,13 @@
 import type { IgnorePattern, LogData } from './Data/LogBoxData';
-import { type ExtendedExceptionData } from './Data/parseLogBoxLog';
 import * as LogBoxData from './Data/LogBoxData';
+import { type ExtendedExceptionData } from './Data/parseLogBoxLog';
+import { parseLogBoxLog } from './Data/parseLogBoxLog';
 
-export { LogData, ExtendedExceptionData, IgnorePattern };
+export { ExtendedExceptionData, IgnorePattern, LogData };
 
 /**
  * LogBox displays logs in the app.
  */
-import { parseLogBoxLog } from './Data/parseLogBoxLog';
 
 let originalConsoleError: typeof console.error | undefined;
 let consoleErrorImpl: typeof console.error | undefined;

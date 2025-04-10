@@ -10,16 +10,11 @@ import { StyleProp, TextStyle } from 'react-native';
 
 import type { Message } from './Data/parseLogBoxLog';
 
-type Props = {
-  message: Message;
-  maxLength?: number;
-};
-
 const cleanContent = (content: string) => content;
 // const cleanContent = (content: string) =>
 //   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 
-export function LogBoxMessage(props: Props): React.ReactElement {
+export function LogBoxMessage(props: { message: Message; maxLength?: number }): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;

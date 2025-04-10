@@ -7,11 +7,9 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 
-import type { CodeFrame } from '../Data/parseLogBoxLog';
 import { Ansi } from '../AnsiHighlight';
-import { openFileInEditor, formatProjectFilePath } from '../devServerEndpoints';
-
-declare const process: any;
+import type { CodeFrame } from '../Data/parseLogBoxLog';
+import { formatProjectFilePath, openFileInEditor } from '../devServerEndpoints';
 
 //@ts-expect-error unexpected css import by ts
 import styles from './ErrorCodeFrame.module.css';
