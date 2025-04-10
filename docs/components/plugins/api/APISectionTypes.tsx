@@ -4,6 +4,7 @@ import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, CODE, MONOSPACE, CALLOUT, RawH4, DEMI } from '~/ui/components/Text';
 
@@ -109,8 +110,10 @@ const renderTypeMethodEntry = (
   return null;
 };
 
-const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => {
-  const { name, flags, type, comment, defaultValue, signatures, kind } = x;
+const renderTypePropertyRow = (
+  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -148,14 +151,12 @@ const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => 
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
         {params?.map(param => (
-          <div
-            className="mt-2 flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5"
-            key={param.name}>
-            <MONOSPACE>
-              {param.name}: {resolveTypeName(param.type, sdkVersion)}
-            </MONOSPACE>
-            <APICommentTextBlock comment={param.comment} />
-          </div>
+          <APIParamDetailsBlock
+            key={param.name}
+            param={param}
+            sdkVersion={sdkVersion}
+            className="mt-2"
+          />
         ))}
       </Cell>
     </Row>
