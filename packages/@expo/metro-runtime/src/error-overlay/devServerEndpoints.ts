@@ -38,7 +38,17 @@ function getBaseUrl() {
 }
 
 export function openFileInEditor(file: string, lineNumber: number): void {
-  fetch(new URL('/open-stack-frame', getBaseUrl()).href, {
+  const url = new URL('/open-stack-frame', getBaseUrl()).href;
+
+  if (globalThis.__polyfill_dom_fetch) {
+    globalThis.__polyfill_dom_fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ file, lineNumber }),
+    });
+    return;
+  }
+
+  fetch(url, {
     method: 'POST',
     body: JSON.stringify({ file, lineNumber }),
   });
@@ -49,14 +59,31 @@ export async function fetchProjectMetadataAsync(): Promise<{
   serverRoot: string;
   sdkVersion: string;
 }> {
-  const response = await fetch(new URL('/_expo/error-overlay-meta', getBaseUrl()).href, {
+  const url = new URL('/_expo/error-overlay-meta', getBaseUrl()).href;
+
+  if (globalThis.__polyfill_dom_fetchJsonAsync) {
+    return await globalThis.__polyfill_dom_fetchJsonAsync(url, {
+      method: 'GET',
+    });
+  }
+
+  const response = await fetch(url, {
     method: 'GET',
   });
   return await response.json();
 }
 
 async function symbolicateStackTrace(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace> {
-  const response = await fetch(new URL('/symbolicate', getBaseUrl()).href, {
+  const url = new URL('/symbolicate', getBaseUrl()).href;
+
+  if (globalThis.__polyfill_dom_fetchJsonAsync) {
+    return await globalThis.__polyfill_dom_fetchJsonAsync(url, {
+      method: 'POST',
+      body: JSON.stringify({ stack }),
+    });
+  }
+
+  const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({ stack }),
   });
