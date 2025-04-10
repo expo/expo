@@ -747,9 +747,9 @@ export default function App() {
 - Scopes must be joined with `:` so just create one long string.
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
 
-  **Web dev**: `https://localhost:19006`
+  **Web dev**: public temporary domain like `https://xxxxxxx.bacon.19000.exp.direct:80`
 
-  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+  - Run `npx expo start --tunnel` to run with **https**. Learn more about [tunneling in Expo](/more/expo-cli/#tunneling).
   - Adding a slash to the end of the URL doesn't matter.
 
   **Standalone / development build**: `your-scheme://`
@@ -1636,10 +1636,10 @@ export default function App() {
 
 - Setup your redirect URIs: **Your project > Edit Settings > Redirect URIs**, be sure to save after making changes.
 
-  **Web dev**: `https://localhost:19006`
+  **Web dev**: public temporary domain like `https://xxxxxxx.bacon.19000.exp.direct:80`
 
   - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+  - Run `npx expo start --tunnel` to run with **https**. Learn more about [tunneling in Expo](/more/expo-cli/#tunneling).
 
   **Standalone / development build**: `your-scheme://`
 
@@ -1962,7 +1962,7 @@ export default function App() {
 - Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
 - Example redirects:
   - Standalone / development build: `com.your.app://`
-  - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
+  - Web (dev `npx expo start --tunnel`): `https://xxxxxxx.bacon.19000.exp.direct:80` the hash will change between runs, use the `EXPO_TUNNEL_SUBDOMAIN` environment variable to create a stable URL.
 - The `redirectUri` requires two slashes (`://`).
 
 {/* prettier-ignore */}

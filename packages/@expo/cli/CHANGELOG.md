@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Mark `--https` as deprecated in favor of `--tunnel`. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.23.3 — 2025-04-10
 
 ### 🎉 New features
