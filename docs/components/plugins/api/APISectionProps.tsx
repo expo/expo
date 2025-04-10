@@ -150,11 +150,11 @@ export const renderProp = (
               signatures={extractedSignatures}
               sdkVersion={sdkVersion}
             />
-            {defaultValue && defaultValue !== UNKNOWN_VALUE && (
-              <>
-                &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
-              </>
-            )}
+          </>
+        )}
+        {defaultValue && defaultValue !== UNKNOWN_VALUE && (
+          <>
+            &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
           </>
         )}
       </div>
