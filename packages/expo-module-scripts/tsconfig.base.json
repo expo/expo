@@ -31,5 +31,10 @@
     // TODO: Enable in the future
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
+
+    // Best practice warnings
+    "noUnusedLocals": true,
+    // TODO: Enable in the future
+    "noUnusedParameters": false,
   }
 }

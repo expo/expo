@@ -39,17 +39,11 @@ module.exports = {
         'no-redeclare': 'off',
         '@typescript-eslint/no-redeclare': 'off',
 
+        // NOTE: Handled by TypeScript
         'no-unused-expressions': 'off',
-        '@typescript-eslint/no-unused-expressions': [
-          'warn',
-          { allowShortCircuit: true, enforceForJSX: true },
-        ],
-
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': [
-          'warn',
-          { vars: 'all', args: 'none', ignoreRestSiblings: true, caughtErrors: 'all' },
-        ],
+        '@typescript-eslint/no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
 
         'no-useless-constructor': 'off',
         '@typescript-eslint/no-useless-constructor': 'warn',
