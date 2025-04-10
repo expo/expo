@@ -40,6 +40,6 @@ it(`should throw an error when trying to transform import.meta by default`, () =
 
   const sourceCode = `var url = import.meta.url;`;
   expect(() => babel.transform(sourceCode, options)).toThrow(
-    /Your code uses `import.meta` which is not supported in the React Native runtime yet. Please enable the `unstable_transformImportMeta` option in babel-preset-expo to use import.meta./
+    /Your code uses `import.meta` which is not supported in the React Native runtime yet. Enable the `unstable_transformImportMeta` option in babel-preset-expo to use `import.meta`./
   );
 });
