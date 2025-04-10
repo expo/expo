@@ -7,4 +7,8 @@ class AutolinkingIntegrationImpl : AutolinkingIntegration {
     return project.rootProject.findProject(":$name")
       ?: throw IllegalStateException("Couldn't find project with name $name.")
   }
+
+  override fun getShouldUsePublicationScriptPath(project: Project): File? {
+    return null
+  }
 }
