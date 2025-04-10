@@ -43,7 +43,17 @@ declare module 'react-native/Libraries/Image/resolveAssetSource' {
 }
 
 declare module '@react-native/assets-registry/registry' {
-  import { PackagerAsset } from '@react-native/assets/registry';
-  export function getAssetByID(assetId: number): PackagerAsset | undefined;
-  export function registerAsset(asset: PackagerAsset): number;
+  import type { PackagerAsset } from '@react-native/assets/registry';
+  export * from '@react-native/assets/registry';
+
+  // NOTE(@kitten): Custom override supported in Expo only
+  interface VirtualAssetModule {
+    uri: string;
+    width: number;
+    height: number;
+  }
+
+  export function getAssetByID(input: number | VirtualAssetModule): PackagerAsset | undefined;
 }
+
+
