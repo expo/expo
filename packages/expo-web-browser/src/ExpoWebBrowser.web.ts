@@ -281,7 +281,7 @@ function generateRandom(size: number): string {
   return bufferToString(array);
 }
 
-function bufferToString(buffer): string {
+function bufferToString(buffer: Uint8Array<ArrayBufferLike>): string {
   const state: string[] = [];
   for (let i = 0; i < buffer.byteLength; i += 1) {
     const index = buffer[i] % CHARSET.length;
