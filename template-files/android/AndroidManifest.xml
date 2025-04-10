@@ -283,22 +283,6 @@
             android:value="true" />
         <!-- END GOOGLE MOBILE ADS CONFIG -->
 
-        <!-- ADD BRANCH CONFIG HERE -->
-
-        <!-- ADD FACEBOOK APP ID CONFIG HERE -->
-        <!-- ADD FACEBOOK APP DISPLAY NAME CONFIG HERE -->
-        <!-- Tags below need to be in one line with no whitespace after android:value -->
-        <!-- in order for XDL to be able to replace values in them -->
-        <meta-data
-            android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
-            android:value="false" />
-        <meta-data
-            android:name="com.facebook.sdk.AutoInitEnabled"
-            android:value="false" />
-        <meta-data
-            android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled"
-            android:value="false" />
-
     </application>
-
 </manifest>
+
