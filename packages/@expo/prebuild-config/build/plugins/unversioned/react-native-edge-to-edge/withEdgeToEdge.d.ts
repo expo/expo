@@ -8,6 +8,8 @@ export type EdgeToEdgePlugin = ConfigPlugin<{
 }>;
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 export type GradlePropertiesConfig = ExportedConfigWithProps<AndroidConfig.Properties.PropertiesItem[]>;
-export declare const withEdgeToEdge: ConfigPlugin;
-export declare function applyEdgeToEdge(config: ExpoConfig): ExpoConfig;
+export declare const withEdgeToEdge: ConfigPlugin<{
+    projectRoot: string;
+}>;
+export declare function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoConfig;
 export default withEdgeToEdge;

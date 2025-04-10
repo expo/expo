@@ -6,8 +6,6 @@
 
 ### 🎉 New features 
 
-- [Android] Add support `edgeToEdgeEnabled` field in app config. ([#35958](https://github.com/expo/expo/pull/35958) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others

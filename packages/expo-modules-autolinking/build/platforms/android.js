@@ -102,8 +102,10 @@ async function resolveModuleAsync(packageName, revision) {
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     const extraMavenReposString = await resolveGradlePropertyAsync(projectNativeRoot, ANDROID_EXTRA_BUILD_DEPS_KEY);
     if (extraMavenReposString) {
-        const extraMavenRepos = JSON.parse(extraMavenReposString);
-        return extraMavenRepos;
+        try {
+            return JSON.parse(extraMavenReposString);
+        }
+        catch { }
     }
     return null;
 }

@@ -730,7 +730,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
           },
           {
             "key": "expo.edgeToEdgeEnabled",
@@ -1682,7 +1682,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "gradleProperties": [
           {
             "type": "comment",
-            "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
           },
           {
             "key": "expo.edgeToEdgeEnabled",

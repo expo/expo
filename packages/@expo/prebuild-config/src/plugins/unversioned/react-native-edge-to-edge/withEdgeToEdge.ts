@@ -25,11 +25,11 @@ export type GradlePropertiesConfig = ExportedConfigWithProps<
   AndroidConfig.Properties.PropertiesItem[]
 >;
 
-export const withEdgeToEdge: ConfigPlugin = (config) => {
-  return applyEdgeToEdge(config);
+export const withEdgeToEdge: ConfigPlugin<{ projectRoot: string }> = (config, { projectRoot }) => {
+  return applyEdgeToEdge(config, projectRoot);
 };
 
-export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
+export function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoConfig {
   // Check if someone has manually configured the config plugin
   const pluginIndex = edgeToEdgePluginIndex(config);
   if (config.android?.edgeToEdgeEnabled === undefined && pluginIndex === null) {
@@ -45,7 +45,8 @@ export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
       'https://expo.fyi/edge-to-edge-rollout'
     );
   }
-  const edgeToEdgeConfigPlugin = loadEdgeToEdgeConfigPlugin();
+
+  const edgeToEdgeConfigPlugin = loadEdgeToEdgeConfigPlugin(projectRoot);
 
   if (edgeToEdgeConfigPlugin === null) {
     WarningAggregator.addWarningAndroid(

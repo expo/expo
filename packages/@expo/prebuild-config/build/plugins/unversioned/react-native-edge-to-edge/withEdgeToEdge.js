@@ -41,11 +41,13 @@ function _withRestoreDefaultTheme() {
   return data;
 }
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
-const withEdgeToEdge = config => {
-  return applyEdgeToEdge(config);
+const withEdgeToEdge = (config, {
+  projectRoot
+}) => {
+  return applyEdgeToEdge(config, projectRoot);
 };
 exports.withEdgeToEdge = withEdgeToEdge;
-function applyEdgeToEdge(config) {
+function applyEdgeToEdge(config, projectRoot) {
   // Check if someone has manually configured the config plugin
   const pluginIndex = (0, _helpers().edgeToEdgePluginIndex)(config);
   if (config.android?.edgeToEdgeEnabled === undefined && pluginIndex === null) {
@@ -53,7 +55,7 @@ function applyEdgeToEdge(config) {
   } else if (config.android?.edgeToEdgeEnabled === false && pluginIndex === null) {
     _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it will no longer be possible to disable edge-to-edge. Learn more:', 'https://expo.fyi/edge-to-edge-rollout');
   }
-  const edgeToEdgeConfigPlugin = (0, _helpers().loadEdgeToEdgeConfigPlugin)();
+  const edgeToEdgeConfigPlugin = (0, _helpers().loadEdgeToEdgeConfigPlugin)(projectRoot);
   if (edgeToEdgeConfigPlugin === null) {
     _configPlugins().WarningAggregator.addWarningAndroid(TAG, 'Failed to load the react-native-edge-to-edge config plugin, edge to edge functionality will be disabled. ' + 'To enable edge-to-edge make sure that `react-native-edge-to-edge` is installed in your project.');
 

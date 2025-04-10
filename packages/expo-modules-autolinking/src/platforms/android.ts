@@ -129,8 +129,9 @@ export async function resolveExtraBuildDependenciesAsync(
     ANDROID_EXTRA_BUILD_DEPS_KEY
   );
   if (extraMavenReposString) {
-    const extraMavenRepos = JSON.parse(extraMavenReposString);
-    return extraMavenRepos;
+    try {
+      return JSON.parse(extraMavenReposString);
+    } catch {}
   }
   return null;
 }

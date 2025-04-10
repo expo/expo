@@ -75,11 +75,11 @@ export const withIosExpoPlugins: ConfigPlugin<{
  */
 export const withAndroidExpoPlugins: ConfigPlugin<{
   package: string;
+  projectRoot: string;
 }> = (config, props) => {
   // Set the package name ahead of time.
   if (!config.android) config.android = {};
   config.android.package = props.package;
-
   return withPlugins(config, [
     // gradle.properties
     AndroidConfig.BuildProperties.withJsEngineGradleProps,
@@ -118,7 +118,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
     AndroidConfig.PrimaryColor.withPrimaryColor,
-    withEdgeToEdge,
+    (config) => withEdgeToEdge(config, props),
 
     withAndroidIcons,
     // If we renamed the package, we should also move it around and rename it in source files

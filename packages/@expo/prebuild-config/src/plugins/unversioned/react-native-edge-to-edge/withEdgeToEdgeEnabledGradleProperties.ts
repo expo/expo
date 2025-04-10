@@ -5,7 +5,7 @@ import { GradlePropertiesConfig } from './withEdgeToEdge';
 
 const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
 const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_COMMENT =
-  'Whether the app is configured to use edge-to-edge via the application config or `react-native-edge-to-edge` plugin';
+  'Whether the app is configured to use edge-to-edge via the app config or `react-native-edge-to-edge` plugin';
 
 export function withEdgeToEdgeEnabledGradleProperties(
   config: ExpoConfig,

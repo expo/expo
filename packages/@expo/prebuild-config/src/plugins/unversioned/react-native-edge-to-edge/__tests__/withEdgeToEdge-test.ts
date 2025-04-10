@@ -374,7 +374,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
         },
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
@@ -397,7 +397,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
       [
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
@@ -416,7 +416,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
         {
           type: 'comment',
           value:
-            'Whether the app is configured to use edge-to-edge via the application config or `react-native-edge-to-edge` plugin',
+            'Whether the app is configured to use edge-to-edge via the app config or `react-native-edge-to-edge` plugin',
         },
         { type: 'property', key: 'expo.edgeToEdgeEnabled', value: 'false' }, // Existing false
         { type: 'property', key: 'another.prop', value: 'hello' },
@@ -438,7 +438,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
         },
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
@@ -456,7 +456,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
         {
           type: 'comment',
           value:
-            'Whether the app is configured to use edge-to-edge via the application config or `react-native-edge-to-edge` plugin',
+            'Whether the app is configured to use edge-to-edge via the app config or `react-native-edge-to-edge` plugin',
         },
         { type: 'property', key: 'expo.edgeToEdgeEnabled', value: 'true' }, // Existing true
       ],
@@ -468,7 +468,7 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
       [
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the application config or \`react-native-edge-to-edge\` plugin",
+          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
@@ -605,7 +605,7 @@ describe('applyEdgeToEdge', () => {
       slug: 'test',
       android: { edgeToEdgeEnabled: undefined },
     };
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('No configuration found for `edgeToEdgeEnabled`'),
@@ -630,7 +630,7 @@ describe('applyEdgeToEdge', () => {
       slug: 'test',
       android: { edgeToEdgeEnabled: false },
     };
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('`edgeToEdgeEnabled` field is explicitly set to false'),
@@ -651,7 +651,7 @@ describe('applyEdgeToEdge', () => {
 
   it('should not add enablement warnings when edgeToEdgeEnabled is true', () => {
     const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } };
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
     expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('No configuration found'),
@@ -684,7 +684,7 @@ describe('applyEdgeToEdge', () => {
       android: { edgeToEdgeEnabled: false },
       plugins: ['react-native-edge-to-edge/app.plugin.js'],
     };
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_CONFLICT',
       expect.stringContaining('configured the `react-native-edge-to-edge` plugin')
@@ -714,7 +714,7 @@ describe('applyEdgeToEdge', () => {
       android: { edgeToEdgeEnabled: true },
       plugins: ['react-native-edge-to-edge/app.plugin.js'],
     };
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
     expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       // No conflict warning needed here
       'EDGE_TO_EDGE_CONFLICT',
@@ -736,7 +736,7 @@ describe('applyEdgeToEdge', () => {
     mockLoadEdgeToEdgeConfigPlugin.mockReturnValue(null); // Simulate load failure
     const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } }; // Try to enable
 
-    applyEdgeToEdge(config);
+    applyEdgeToEdge(config, '/app');
 
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
