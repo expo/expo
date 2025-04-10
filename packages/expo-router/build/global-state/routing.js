@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.navigate = navigate;
 exports.reload = reload;
+exports.prefetch = prefetch;
 exports.push = push;
 exports.dismiss = dismiss;
 exports.dismissTo = dismissTo;
@@ -64,6 +65,9 @@ function navigate(url, options) {
 function reload() {
     // TODO(EvanBacon): add `reload` support.
     throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+function prefetch(href, options) {
+    return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
 }
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });

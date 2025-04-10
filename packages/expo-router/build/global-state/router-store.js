@@ -96,6 +96,7 @@ class RouterStore {
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
     reload = routing_1.reload.bind(this);
+    prefetch = routing_1.prefetch.bind(this);
     initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;
@@ -141,7 +142,7 @@ class RouterStore {
             this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
             // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
             // This will cause static rendering to fail, which once performs a single pass.
-            // If the initialURL is a string, we can preload the state and routeInfo, skipping React Navigation's async behavior.
+            // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
             const initialURL = this.linking?.getInitialURL?.();
             if (typeof initialURL === 'string') {
                 this.rootState = this.linking.getStateFromPath?.(initialURL, this.linking.config);
