@@ -10,9 +10,8 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog } from './Data/LogBoxLog';
 import { useLogs } from './Data/LogContext';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { LogBoxMessage } from './LogBoxMessage';
-import * as LogBoxStyle from './LogBoxStyle';
 
 import './ErrorOverlay.css';
 
@@ -126,7 +125,16 @@ export function ErrorToast(props: {
     <button data-expo-log-toast onClick={props.onPressOpen}>
       <Count count={totalLogCount} />
 
-      <Text numberOfLines={1} style={styles.text}>
+      <Text
+        numberOfLines={1}
+        style={{
+          userSelect: 'none',
+          paddingLeft: 8,
+          color: 'var(--expo-log-color-label)',
+          flex: 1,
+          fontSize: 14,
+          lineHeight: 22,
+        }}>
         {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
       </Text>
 
@@ -149,12 +157,12 @@ function Count({ count }: { count: number }) {
       }}>
       <Text
         style={{
-          color: LogBoxStyle.getTextColor(1),
+          color: 'var(--expo-log-color-label)',
           fontSize: 14,
           lineHeight: 18,
           textAlign: 'center',
           fontWeight: '600',
-          textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+          textShadow: `0px 0px 3px rgba(51, 51, 51, 0.8)`,
         }}>
         {count <= 1 ? '!' : count}
       </Text>
@@ -273,19 +281,5 @@ function useRejectionHandler() {
 
   return hasError;
 }
-
-const styles = StyleSheet.create({
-  text: {
-    userSelect: 'none',
-    paddingLeft: 8,
-    color: LogBoxStyle.getTextColor(1),
-    flex: 1,
-    fontSize: 14,
-    lineHeight: 22,
-  },
-  substitutionText: {
-    color: LogBoxStyle.getTextColor(0.6),
-  },
-});
 
 export default LogBoxData.withSubscription(ErrorToastContainer);

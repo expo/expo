@@ -7,8 +7,9 @@
  */
 
 import React from 'react';
-import type { LogBoxLogData } from './LogBoxLog';
+
 import { parseErrorStack } from '../devServerEndpoints';
+import type { LogBoxLogData } from './LogBoxLog';
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -124,23 +125,6 @@ export function parseInterpolation(args: readonly any[]): {
       substitutions: substitutionOffsets,
     },
   };
-}
-
-export function hasComponentStack(args: any[]): boolean {
-  for (const arg of args) {
-    if (typeof arg === 'string' && isComponentStack(arg)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function isComponentStack(consoleArgument: string) {
-  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
-  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
-  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
-
-  return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
 }
 
 // TODO: Why are we returning a code frame?
@@ -430,77 +414,40 @@ export function parseLogBoxLog(args: any[]): {
   category: Category;
   message: Message;
 } {
-  const message = args[0];
-  let argsWithoutComponentStack: any[] = [];
-  let componentStack: ComponentStack = [];
-
-  // Handle React 19 errors which have a custom format, come through console.error, and include a raw error object.
-  // @ts-expect-error
-  if (React.captureOwnerStack != null) {
-    // See https://github.com/facebook/react/blob/d50323eb845c5fde0d720cae888bf35dedd05506/packages/react-reconciler/src/ReactFiberErrorLogger.js#L78
-    let error: Error | undefined;
-    for (const arg of args) {
-      if (isError(arg)) {
-        error = arg;
-        break;
-      }
-    }
-    const message = interpolateLikeConsole(...args);
-    if (!isError(error)) {
-      error = new Error(message);
-    }
-    // Use the official stack from componentDidCatch
-    if ('componentStack' in error) {
-      // @ts-expect-error
-      error.stack = error.componentStack;
-    } else {
-      error = processReactErrorDetails(error);
-    }
-    const componentStackTrace = (error as any).stack;
-    return {
-      componentStack: parseComponentStack(componentStackTrace),
-      category: error.message,
-      message: {
-        content: message,
-        substitutions: [],
-      },
-    };
-  }
-
-  // Extract component stack from warnings like "Some warning%s".
-  if (typeof message === 'string' && message.slice(-2) === '%s' && args.length > 0) {
-    const lastArg = args[args.length - 1];
-    if (typeof lastArg === 'string' && isComponentStack(lastArg)) {
-      argsWithoutComponentStack = args.slice(0, -1);
-      argsWithoutComponentStack[0] = message.slice(0, -2);
-      componentStack = parseComponentStack(lastArg);
+  // React will pass a full error object to the console.error function.
+  // https://github.com/facebook/react/blob/c44e4a250557e53b120e40db8b01fb5fd93f1e35/packages/react-reconciler/src/ReactFiberErrorLogger.js#L105
+  // But we can't be sure at which order, so we'll check all arguments.
+  let error: Error | undefined;
+  for (const arg of args) {
+    if (isError(arg)) {
+      error = arg;
+      break;
     }
   }
 
-  if (componentStack.length === 0) {
-    // Try finding the component stack elsewhere.
-    for (const arg of args) {
-      if (typeof arg === 'string' && isComponentStack(arg)) {
-        // Strip out any messages before the component stack.
-        let messageEndIndex = arg.search(/\n {4}(in|at) /);
-        if (messageEndIndex < 0) {
-          // Handle JSC component stacks.
-          messageEndIndex = arg.search(/\n/);
-        }
-        if (messageEndIndex > 0) {
-          argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
-        }
+  // Create a string representation of the error arguments.
+  const message = interpolateLikeConsole(...args);
+  // If no error was passed, create a new Error object with the message.
+  if (!isError(error)) {
+    error = new Error(message);
+  }
 
-        componentStack = parseComponentStack(arg);
-      } else {
-        argsWithoutComponentStack.push(arg);
-      }
-    }
+  // Use the official stack from componentDidCatch
+  if ('componentStack' in error) {
+    // @ts-expect-error
+    error.stack = error.componentStack;
+  } else {
+    // If the error is a React error, process it to clean up the stack.
+    error = processReactErrorDetails(error);
   }
 
   return {
-    ...parseInterpolation(argsWithoutComponentStack),
-    componentStack,
+    componentStack: parseComponentStack(error.stack ?? ''),
+    category: error.message,
+    message: {
+      content: message,
+      substitutions: [],
+    },
   };
 }
 

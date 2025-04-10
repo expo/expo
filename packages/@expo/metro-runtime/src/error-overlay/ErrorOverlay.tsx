@@ -10,15 +10,15 @@ import React, { useCallback, useEffect, useState } from 'react';
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, type LogLevel, type StackType } from './Data/LogBoxLog';
 import { useLogs } from './Data/LogContext';
-import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { ErrorCodeFrame } from './overlay/ErrorCodeFrame';
+import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { StackTraceList } from './overlay/StackTraceList';
 
-import type { Message } from './Data/parseLogBoxLog';
-import { LogBoxMessage } from './LogBoxMessage';
-import styles from './ErrorOverlay.module.css';
 import ReactDOM from 'react-dom/client';
+import type { Message } from './Data/parseLogBoxLog';
 import { fetchProjectMetadataAsync, getFormattedStackTrace } from './devServerEndpoints';
+import styles from './ErrorOverlay.module.css';
+import { LogBoxMessage } from './LogBoxMessage';
 
 const HEADER_TITLE_MAP = {
   warn: 'Console Warning',

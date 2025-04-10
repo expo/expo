@@ -11,14 +11,14 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import { LogBoxLog, StackType } from './LogBoxLog';
-import type { LogLevel } from './LogBoxLog';
-import { LogContext } from './LogContext';
-import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
-import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 import { parseErrorStack } from '../devServerEndpoints';
 import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
+import type { LogLevel } from './LogBoxLog';
+import { LogBoxLog, StackType } from './LogBoxLog';
+import { LogContext } from './LogContext';
+import type { Category, ComponentStack, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -372,14 +372,6 @@ const emitter = new NativeEventEmitter({
   addListener() {},
   removeListeners() {},
 });
-
-function isComponentStack(consoleArgument: string) {
-  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
-  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
-  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
-
-  return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
-}
 
 export function withSubscription(WrappedComponent: React.FC<object>) {
   class RootDevErrorBoundary extends React.Component<React.PropsWithChildren<Props>, State> {

@@ -7,8 +7,7 @@
  */
 
 export function getBackgroundColor(opacity?: number): string {
-  return `rgba(0, 0, 0, ${opacity == null ? 1 : opacity})`;
-  // return `rgba(51, 51, 51, ${opacity == null ? 1 : opacity})`;
+  return `rgba(51, 51, 51, ${opacity == null ? 1 : opacity})`;
 }
 
 export function getTextColor(opacity?: number): string {
