@@ -84,7 +84,7 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
       .publications
       .createReleasePublication(publicationInfo)
 
-    createExpoPublishToMavenLocalTask(publicationInfo)
+    createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
     val npmLocalRepositoryRelativePath = "local-maven-repo"
     val npmLocalRepository = URI("file://${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
@@ -93,7 +93,7 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
       mavenRepo.url = npmLocalRepository
     }
 
-    createExpoPublishTask(publicationInfo, npmLocalRepositoryRelativePath)
+    createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
   }
 }
 
