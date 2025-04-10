@@ -53,7 +53,7 @@ struct ListView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         print(selection)
         handleSelectionChange(selection: selection)
       }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.selectEnabled))
+      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
       .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)
