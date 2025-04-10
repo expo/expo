@@ -25,7 +25,7 @@ export function edgeToEdgePluginIndex(config: ExpoConfig): number | null {
 }
 
 export function hasEnabledEdgeToEdge(config: ExpoConfig) {
-  return config.edgeToEdgeEnabled === true || edgeToEdgePluginIndex(config) != null;
+  return config.android?.edgeToEdgeEnabled === true || edgeToEdgePluginIndex(config) != null;
 }
 
 export function loadEdgeToEdgeConfigPlugin(): EdgeToEdgePlugin | null {

@@ -32,13 +32,13 @@ export const withEdgeToEdge: ConfigPlugin = (config) => {
 export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
   // Check if someone has manually configured the config plugin
   const pluginIndex = edgeToEdgePluginIndex(config);
-  if (config.edgeToEdgeEnabled === undefined && pluginIndex === null) {
+  if (config.android?.edgeToEdgeEnabled === undefined && pluginIndex === null) {
     WarningAggregator.addWarningAndroid(
       TAG,
       'No configuration found for `edgeToEdgeEnabled` field in the project app config, falling back to false. In Android 16+ (targetSdkVersion 36) it will no longer be possible to disable edge-to-edge. Learn more:',
       'https://expo.fyi/edge-to-edge-rollout'
     );
-  } else if (config.edgeToEdgeEnabled === false && pluginIndex === null) {
+  } else if (config.android?.edgeToEdgeEnabled === false && pluginIndex === null) {
     WarningAggregator.addWarningAndroid(
       TAG,
       '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it will no longer be possible to disable edge-to-edge. Learn more:',
@@ -79,7 +79,7 @@ export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
     return config;
   }
 
-  if (config.edgeToEdgeEnabled !== true) {
+  if (config.android?.edgeToEdgeEnabled !== true) {
     return withRestoreDefaultTheme(config);
   }
 
@@ -98,10 +98,10 @@ function constructWarning(pluginIndex: number | null, config: ExpoConfig): strin
     return null;
   }
 
-  if (hasEnabledEdgeToEdge(config) && config.edgeToEdgeEnabled === false) {
+  if (hasEnabledEdgeToEdge(config) && config?.android?.edgeToEdgeEnabled === false) {
     return (
-      `You have configured the \`react-native-edge-to-edge\` plugin in your config file, while also setting the \`edgeToEdgeEnabled\` ` +
-      `field to \`false\`. The value of \`edgeToEdgeEnabled\` field will be ignored`
+      `You have configured the \`react-native-edge-to-edge\` plugin in your config file, while also setting the \`android.edgeToEdgeEnabled\` ` +
+      `field to \`false\`. The value of \`android.edgeToEdgeEnabled\` field will be ignored`
     );
   }
   return null;

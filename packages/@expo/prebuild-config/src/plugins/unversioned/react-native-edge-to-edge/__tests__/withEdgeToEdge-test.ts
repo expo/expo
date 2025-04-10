@@ -486,17 +486,22 @@ describe('hasEnabledEdgeToEdge', () => {
   const pluginArray: [string, object] = [pluginString, {}];
 
   it('returns true if edgeToEdgeEnabled is true, regardless of plugin', () => {
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', edgeToEdgeEnabled: true })).toBe(
-      true
-    );
     expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', edgeToEdgeEnabled: true, plugins: [] })
+      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } })
     ).toBe(true);
     expect(
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: true,
+        android: { edgeToEdgeEnabled: true },
+        plugins: [],
+      })
+    ).toBe(true);
+    expect(
+      hasEnabledEdgeToEdge({
+        name: 'test',
+        slug: 'test',
+        android: { edgeToEdgeEnabled: true },
         plugins: [pluginString],
       })
     ).toBe(true);
@@ -504,7 +509,7 @@ describe('hasEnabledEdgeToEdge', () => {
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: true,
+        android: { edgeToEdgeEnabled: true },
         plugins: [pluginArray],
       })
     ).toBe(true);
@@ -515,7 +520,7 @@ describe('hasEnabledEdgeToEdge', () => {
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: false,
+        android: { edgeToEdgeEnabled: false },
         plugins: [pluginString],
       })
     ).toBe(true);
@@ -523,7 +528,7 @@ describe('hasEnabledEdgeToEdge', () => {
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: undefined,
+        android: { edgeToEdgeEnabled: undefined },
         plugins: [pluginString],
       })
     ).toBe(true);
@@ -537,7 +542,7 @@ describe('hasEnabledEdgeToEdge', () => {
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: false,
+        android: { edgeToEdgeEnabled: false },
         plugins: [pluginArray],
       })
     ).toBe(true);
@@ -545,7 +550,7 @@ describe('hasEnabledEdgeToEdge', () => {
       hasEnabledEdgeToEdge({
         name: 'test',
         slug: 'test',
-        edgeToEdgeEnabled: undefined,
+        android: { edgeToEdgeEnabled: undefined },
         plugins: [pluginArray],
       })
     ).toBe(true);
@@ -562,12 +567,16 @@ describe('hasEnabledEdgeToEdge', () => {
   });
 
   it('returns false if edgeToEdgeEnabled is false or undefined and plugin is not present', () => {
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', edgeToEdgeEnabled: false })).toBe(
-      false
-    );
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', edgeToEdgeEnabled: undefined })).toBe(
-      false
-    );
+    expect(
+      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', android: { edgeToEdgeEnabled: false } })
+    ).toBe(false);
+    expect(
+      hasEnabledEdgeToEdge({
+        name: 'test',
+        slug: 'test',
+        android: { edgeToEdgeEnabled: undefined },
+      })
+    ).toBe(false);
     expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test' })).toBe(false);
     expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: [] })).toBe(false);
     expect(
@@ -591,7 +600,11 @@ describe('applyEdgeToEdge', () => {
   });
 
   it('should add warnings when edgeToEdgeEnabled is undefined and plugin not configured', () => {
-    const config: ExpoConfig = { name: 'test', slug: 'test', edgeToEdgeEnabled: undefined };
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      android: { edgeToEdgeEnabled: undefined },
+    };
     applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
@@ -612,7 +625,11 @@ describe('applyEdgeToEdge', () => {
   });
 
   it('should add warnings when edgeToEdgeEnabled is false and plugin not configured', () => {
-    const config: ExpoConfig = { name: 'test', slug: 'test', edgeToEdgeEnabled: false };
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      android: { edgeToEdgeEnabled: false },
+    };
     applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
@@ -633,7 +650,7 @@ describe('applyEdgeToEdge', () => {
   });
 
   it('should not add enablement warnings when edgeToEdgeEnabled is true', () => {
-    const config: ExpoConfig = { name: 'test', slug: 'test', edgeToEdgeEnabled: true };
+    const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } };
     applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
@@ -664,7 +681,7 @@ describe('applyEdgeToEdge', () => {
     const config: ExpoConfig = {
       name: 'test',
       slug: 'test',
-      edgeToEdgeEnabled: false,
+      android: { edgeToEdgeEnabled: false },
       plugins: ['react-native-edge-to-edge/app.plugin.js'],
     };
     applyEdgeToEdge(config);
@@ -694,7 +711,7 @@ describe('applyEdgeToEdge', () => {
     const config: ExpoConfig = {
       name: 'test',
       slug: 'test',
-      edgeToEdgeEnabled: true,
+      android: { edgeToEdgeEnabled: true },
       plugins: ['react-native-edge-to-edge/app.plugin.js'],
     };
     applyEdgeToEdge(config);
@@ -717,7 +734,7 @@ describe('applyEdgeToEdge', () => {
 
   it('should warn, disable enforcement, and restore theme if edge-to-edge plugin cannot be loaded', () => {
     mockLoadEdgeToEdgeConfigPlugin.mockReturnValue(null); // Simulate load failure
-    const config: ExpoConfig = { name: 'test', slug: 'test', edgeToEdgeEnabled: true }; // Try to enable
+    const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } }; // Try to enable
 
     applyEdgeToEdge(config);
 

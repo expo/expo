@@ -11,12 +11,6 @@ export interface ExpoConfig {
      */
     description?: string;
     /**
-     * On Android, determines if your app will launch in edge-to-edge mode.
-     * Falls back to `false` if undefined.
-     * @platform android
-     */
-    edgeToEdgeEnabled?: boolean;
-    /**
      * A URL-friendly name for your project that is unique across your account.
      */
     slug: string;
@@ -639,6 +633,11 @@ export interface Android {
      * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
      */
     googleServicesFile?: string;
+    /**
+     * Determines if the app will launch in edge-to-edge mode.
+     * Falls back to `false` if undefined.
+     */
+    edgeToEdgeEnabled?: boolean;
     /**
      * Note: This property key is not included in the production manifest and will evaluate to `undefined`. It is used internally only in the build process, because it contains API keys that some may want to keep private.
      */

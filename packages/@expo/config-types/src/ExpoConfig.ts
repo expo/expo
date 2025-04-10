@@ -638,6 +638,11 @@ export interface Android {
    */
   googleServicesFile?: string;
   /**
+   * Determines if the app will launch in edge-to-edge mode.
+   * Falls back to `false` if undefined.
+   */
+  edgeToEdgeEnabled?: boolean;
+  /**
    * Note: This property key is not included in the production manifest and will evaluate to `undefined`. It is used internally only in the build process, because it contains API keys that some may want to keep private.
    */
   config?: {
@@ -760,11 +765,6 @@ export interface Android {
        *  `Scale 4x`
        */
       xxxhdpi?: string;
-      /**
-       * Determines if your app will launch in edge-to-edge mode.
-       * Falls back to `false` if undefined.
-       */
-      edgeToEdgeEnabled?: boolean;
       [k: string]: any;
     };
     [k: string]: any;
