@@ -1,6 +1,8 @@
 .overlay {
   position: fixed;
-  top: 3vh;
+
+  /* Add top safe area */
+  top: calc(1vh + env(safe-area-inset-top, 2vh));
   right: 0;
   bottom: 0;
   left: 0;
