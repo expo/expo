@@ -163,6 +163,13 @@ export interface PluginConfigTypeAndroid {
    * @see [Android documentation](https://developer.android.com/develop/ui/views/theming/darktheme)
    */
   useDayNightTheme?: boolean;
+
+  /**
+   * Enable JavaScript Bundle compression. Turning this on will result in a smaller APK but may cause significantly slower app startup times.
+   *
+   * @default false
+   */
+  enableBundleCompression?: boolean;
 }
 
 // @docsMissing
@@ -601,6 +608,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
+        enableBundleCompression: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
