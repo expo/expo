@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "53.0.5",
+  "version": "53.0.6",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -20,7 +20,7 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
-    "expo": "~53.0.0-preview.2",
+    "expo": "~53.0.0-preview.3",
     "expo-blur": "~14.1.1",
     "expo-constants": "~17.1.1",
     "expo-font": "~13.1.1",
