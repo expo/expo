@@ -35,9 +35,6 @@ declare const _default: {
         render(): React.JSX.Element;
         componentDidMount(): void;
         componentWillUnmount(): void;
-        _handleDismiss: () => void;
-        _handleMinimize: () => void;
-        _handleSetSelectedLog: (index: number) => void;
         context: unknown;
         setState<K extends keyof {
             logs: LogBoxData.LogBoxLogs;

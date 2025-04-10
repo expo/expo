@@ -31,9 +31,14 @@ export default function LogBoxPolyfillDOM({
   onDismiss,
   onMinimize,
   onChangeSelectedIndex,
-  logs,
+
   selectedIndex,
+  platform,
+  fetchJsonAsync,
+  ...props
 }: {
+  fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
+  platform: string;
   onDismiss: () => void;
   onMinimize: () => void;
   onChangeSelectedIndex: (index: number) => void;
@@ -41,6 +46,12 @@ export default function LogBoxPolyfillDOM({
   selectedIndex: number;
   dom?: import('expo/dom').DOMProps;
 }) {
+  const logs = React.useMemo(() => {
+    return Array.from(props.logs.map((log) => new LogBoxLog(log)));
+  }, []);
+
+  globalThis.__polyfill_platform = platform;
+  globalThis.__polyfill_dom_fetchJsonAsync = fetchJsonAsync;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
 
   return (
@@ -48,7 +59,7 @@ export default function LogBoxPolyfillDOM({
       value={{
         selectedLogIndex: selectedIndex,
         isDisabled: false,
-        logs: Array.from(logs.map((log) => new LogBoxLog(log))),
+        logs,
       }}>
       <LogBoxInspectorContainer />
     </LogContext.Provider>

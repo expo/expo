@@ -80,9 +80,6 @@ export declare function withSubscription(WrappedComponent: React.FC<object>): {
         render(): React.JSX.Element;
         componentDidMount(): void;
         componentWillUnmount(): void;
-        _handleDismiss: () => void;
-        _handleMinimize: () => void;
-        _handleSetSelectedLog: (index: number) => void;
         context: unknown;
         setState<K extends keyof State>(state: State | ((prevState: Readonly<State>, props: Readonly<React.PropsWithChildren<object>>) => State | Pick<State, K> | null) | Pick<State, K> | null, callback?: (() => void) | undefined): void;
         forceUpdate(callback?: (() => void) | undefined): void;

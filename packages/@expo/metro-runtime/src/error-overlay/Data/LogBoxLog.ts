@@ -259,7 +259,7 @@ function ensureStackFilesHaveParams(stack: MetroStackFrame[]): MetroStackFrame[]
   const currentParams = currentSrc
     ? new URLSearchParams(currentSrc)
     : new URLSearchParams({
-        platform: 'web',
+        platform: globalThis.__polyfill_platform ?? process.env.EXPO_OS,
         dev: String(__DEV__),
       });
 
