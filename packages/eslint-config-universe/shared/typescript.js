@@ -34,8 +34,10 @@ module.exports = {
         'no-dupe-class-members': 'off',
         '@typescript-eslint/no-dupe-class-members': 'warn',
 
+        // NOTE: This is already handled by TypeScript itself
+        // Turning this on blocks legitimate type overloads
         'no-redeclare': 'off',
-        '@typescript-eslint/no-redeclare': 'warn',
+        '@typescript-eslint/no-redeclare': 'off',
 
         'no-unused-expressions': 'off',
         '@typescript-eslint/no-unused-expressions': [
