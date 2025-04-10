@@ -51,7 +51,7 @@ describe('FileSystem', () => {
       expect(downloadPauseState).toMatchObject(fakeObject);
 
       expect(ExponentFileSystem.downloadResumablePauseAsync).toHaveBeenCalledWith(
-        (downloadResumable as any)._uuid,
+        (downloadResumable as any)._uuid
       );
 
       unmockProperty(ExponentFileSystem, 'downloadResumablePauseAsync');
