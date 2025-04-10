@@ -92,7 +92,7 @@ export default function ExpoImage({
   );
 
   // TODO(@kitten): This should narrow before accessing `placeholder?.[0]`
-  const firstPlaceholder = (placeholder as typeof placeholder & ImageSource[] | undefined)?.[0];
+  const firstPlaceholder = (placeholder as (typeof placeholder & ImageSource[]) | undefined)?.[0];
   const initialNodeAnimationKey = getAnimationKey(firstPlaceholder, recyclingKey);
   const initialNode: AnimationManagerNode | null = firstPlaceholder?.uri
     ? [
