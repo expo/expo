@@ -413,7 +413,7 @@ export function parseLogBoxLog(args: any[]): {
     }
     // Use the official stack from componentDidCatch
     if ('componentStack' in error) {
-      // @ts-ignore
+      // @ts-expect-error
       error.stack = error.componentStack;
     } else {
       error = getReactStitchedError(error);
@@ -427,23 +427,6 @@ export function parseLogBoxLog(args: any[]): {
         substitutions: [],
       },
     };
-
-    // const message = interpolateLikeConsole(...args);
-
-    // else if (
-    //   // TODO: This is the naive approach from RN. This can probably be removed.
-    //   // This is also used for "Each child in a list should have a unique key prop."
-    //   !hasComponentStack(args)
-    // ) {
-    //   error = args[0];
-    //   console.log('OBJ', Object.entries(args));
-
-    //   const stack = React.captureOwnerStack();
-    //   if (stack != null && stack !== '') {
-    //     args[0] = args[0] += '%s';
-    //     args.push(stack);
-    //   }
-    // }
   }
 
   // Extract component stack from warnings like "Some warning%s".

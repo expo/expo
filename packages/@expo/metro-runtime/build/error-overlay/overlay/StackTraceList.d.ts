@@ -8,8 +8,9 @@ import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
 import { type MetroStackFrame } from '../devServerEndpoints';
 import './StackTraceList.css';
-export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, }: {
+export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }: {
     type: StackType;
+    projectRoot?: string;
     onRetry: () => void;
     stack: MetroStackFrame[] | null;
     symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';

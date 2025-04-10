@@ -6,7 +6,8 @@
  */
 import React from 'react';
 import type { CodeFrame } from '../Data/parseLogBoxLog';
-export declare function ErrorCodeFrame({ codeFrame }: {
+export declare function ErrorCodeFrame({ projectRoot, codeFrame, }: {
+    projectRoot?: string;
     codeFrame?: CodeFrame;
 }): React.JSX.Element | null;
 export declare function FileIcon(): React.JSX.Element;

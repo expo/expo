@@ -22,8 +22,10 @@ export function StackTraceList({
   type,
   stack,
   symbolicationStatus,
+  projectRoot,
 }: {
   type: StackType;
+  projectRoot?: string;
   onRetry: () => void;
   stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
@@ -179,6 +181,7 @@ export function StackTraceList({
           return (
             <StackTraceItem
               key={index}
+              projectRoot={projectRoot}
               frame={frame}
               onPress={
                 symbolicationStatus === 'COMPLETE' && file != null && lineNumber != null
@@ -196,8 +199,10 @@ export function StackTraceList({
 function StackTraceItem({
   frame,
   onPress,
+  projectRoot,
 }: {
   frame: MetroStackFrame;
+  projectRoot?: string;
   onPress?: (event: GestureResponderEvent) => void;
 }) {
   return (
@@ -233,7 +238,7 @@ function StackTraceItem({
               fontWeight: '300',
               opacity: 0.7,
             }}>
-            {getStackFormattedLocation(process.env.EXPO_PROJECT_ROOT, frame)}
+            {getStackFormattedLocation(projectRoot ?? '', frame)}
           </code>
         </div>
       )}

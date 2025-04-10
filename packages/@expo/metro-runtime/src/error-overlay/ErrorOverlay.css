@@ -85,6 +85,8 @@
   background-color: var(--expo-log-secondary-system-background);
   padding: 2px;
   transition: background-color 0.2s;
+  justify-content: center;
+  
   cursor: pointer;
 }
 
