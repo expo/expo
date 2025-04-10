@@ -98,7 +98,11 @@ const renderInterfacePropertyRow = (
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        {type ? (
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        ) : (
+          <CODE>undefined</CODE>
+        )}
       </Cell>
       <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>

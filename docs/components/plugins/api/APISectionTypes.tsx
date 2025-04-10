@@ -26,6 +26,7 @@ import {
   renderIndexSignature,
   getCommentContent,
   listParams,
+  defineLiteralType,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
@@ -36,24 +37,6 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
-};
-
-const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
-  const uniqueTypes = Array.from(
-    new Set(
-      types.map((t: TypeDefinitionData) => {
-        if ('head' in t) {
-          return t.head;
-        } else if ('value' in t) {
-          return t.value && typeof t.value;
-        }
-      })
-    )
-  );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
-    return <CODE>{uniqueTypes[0]}</CODE>;
-  }
-  return null;
 };
 
 const renderTypeDeclarationTable = (
@@ -283,7 +266,7 @@ const renderType = (
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
-                <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
+                <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
                 {index + 1 !== literalTypes.length ? (
                   <span className="text-quaternary"> | </span>
                 ) : null}

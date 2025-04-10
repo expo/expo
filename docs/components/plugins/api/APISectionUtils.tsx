@@ -302,15 +302,20 @@ export const resolveTypeName = (
       return (
         <>
           <span className="text-quaternary">{'{\n'}</span>
-          {declaration?.children.map((child: PropData, i) => (
-            <span key={`reflection-${name}-${i}`}>
-              {'  '}
-              {child.name + ': '}
-              {resolveTypeName(child.type, sdkVersion)}
-              {i + 1 !== declaration?.children?.length ? ', ' : null}
-              {'\n'}
-            </span>
-          ))}
+          {declaration?.children.map((child: PropData, i) => {
+            if (!child.type) {
+              return null;
+            }
+            return (
+              <span key={`reflection-${name}-${i}`}>
+                {'  '}
+                {child.name + ': '}
+                {resolveTypeName(child.type, sdkVersion)}
+                {i + 1 !== declaration?.children?.length ? ', ' : null}
+                {'\n'}
+              </span>
+            );
+          })}
           <span className="text-quaternary">{'}'}</span>
         </>
       );
@@ -583,4 +588,22 @@ export function extractDefaultPropValue(
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
   )[0]?.defaultValue;
+}
+
+export function defineLiteralType(types: TypeDefinitionData[]) {
+  const uniqueTypes = Array.from(
+    new Set(
+      types.map((td: TypeDefinitionData) => {
+        if ('head' in td) {
+          return td.head;
+        } else if ('value' in td) {
+          return td.value && typeof td.value;
+        }
+      })
+    )
+  );
+  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
+    return <CODE>{uniqueTypes[0]}</CODE>;
+  }
+  return null;
 }
