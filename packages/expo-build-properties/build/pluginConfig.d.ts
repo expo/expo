@@ -140,7 +140,9 @@ export interface PluginConfigTypeAndroid {
      */
     useDayNightTheme?: boolean;
     /**
-     * Enable JavaScript Bundle compression. Turning this on will result in a smaller APK but may cause significantly slower app startup times.
+     * Enable JavaScript Bundle compression. Turning this on will result in a smaller APK size but may have slower app startup times.
+     *
+     * @see [Faster App Startup](https://reactnative.dev/blog/2025/04/08/react-native-0.79#android-faster-app-startup)
      *
      * @default false
      */
