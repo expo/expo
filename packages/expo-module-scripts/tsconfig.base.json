@@ -1,26 +1,35 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    // Typings
     "lib": ["dom", "DOM.Iterable", "esnext"],
-    "jsx": "react-native",
-    "moduleResolution": "bundler",
-    "module": "esnext",
-    "esModuleInterop": true,
     "types": ["jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",
       "./node_modules/@types",
       "../../node_modules/@types",
     ],
+
+    // Target and resolution options
+    "jsx": "react-native",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "moduleDetection": "force",
+    "esModuleInterop": true,
+
+    // Output options
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
+
     "skipLibCheck": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true
+
+    // Strictness flags
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    // TODO: Enable in the future
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
   }
 }
