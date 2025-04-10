@@ -100,16 +100,11 @@ async function resolveModuleAsync(packageName, revision) {
     };
 }
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
-    const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
-    try {
-        const contents = await fs_1.default.promises.readFile(propsFile, 'utf8');
-        const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
-        if (extraMavenReposString) {
-            const extraMavenRepos = JSON.parse(extraMavenReposString);
-            return extraMavenRepos;
-        }
+    const extraMavenReposString = await resolveGradlePropertyAsync(projectNativeRoot, ANDROID_EXTRA_BUILD_DEPS_KEY);
+    if (extraMavenReposString) {
+        const extraMavenRepos = JSON.parse(extraMavenReposString);
+        return extraMavenRepos;
     }
-    catch { }
     return null;
 }
 async function resolveGradlePropertyAsync(projectNativeRoot, propertyKey) {

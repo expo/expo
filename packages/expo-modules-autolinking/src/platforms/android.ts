@@ -124,15 +124,14 @@ export async function resolveModuleAsync(
 export async function resolveExtraBuildDependenciesAsync(
   projectNativeRoot: string
 ): Promise<ExtraDependencies | null> {
-  const propsFile = path.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
-  try {
-    const contents = await fs.promises.readFile(propsFile, 'utf8');
-    const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
-    if (extraMavenReposString) {
-      const extraMavenRepos = JSON.parse(extraMavenReposString);
-      return extraMavenRepos;
-    }
-  } catch {}
+  const extraMavenReposString = await resolveGradlePropertyAsync(
+    projectNativeRoot,
+    ANDROID_EXTRA_BUILD_DEPS_KEY
+  );
+  if (extraMavenReposString) {
+    const extraMavenRepos = JSON.parse(extraMavenReposString);
+    return extraMavenRepos;
+  }
   return null;
 }
 
