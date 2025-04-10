@@ -34,16 +34,20 @@ module.exports = {
         'no-dupe-class-members': 'off',
         '@typescript-eslint/no-dupe-class-members': 'warn',
 
-        // NOTE: This is already handled by TypeScript itself
-        // Turning this on blocks legitimate type overloads
         'no-redeclare': 'off',
-        '@typescript-eslint/no-redeclare': 'off',
+        '@typescript-eslint/no-redeclare': 'warn',
 
-        // NOTE: Handled by TypeScript
         'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [
+          'warn',
+          { allowShortCircuit: true, enforceForJSX: true },
+        ],
+
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-expressions': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': [
+          'warn',
+          { vars: 'all', args: 'none', ignoreRestSiblings: true, caughtErrors: 'all' },
+        ],
 
         'no-useless-constructor': 'off',
         '@typescript-eslint/no-useless-constructor': 'warn',
