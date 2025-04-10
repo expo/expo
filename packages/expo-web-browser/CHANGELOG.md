@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update doc comment about `--https` flag.
+- Update doc comment about `--https` flag. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.1.1 — 2025-04-09
 
