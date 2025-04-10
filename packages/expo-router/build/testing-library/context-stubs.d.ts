@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import requireContext from './require-context-ponyfill';
 import { NativeIntent } from '../types';
 export type ReactComponent = () => React.ReactElement<any, any> | null;
@@ -13,7 +12,7 @@ export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
 export { requireContext };
 export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntent | ReactComponent | (Record<string, unknown> & {
     default: ReactComponent;
-    unstable_settings?: Record<string, any> | undefined;
+    unstable_settings?: Record<string, any>;
 }) | {
     default: NativeIntent | FileStub;
 }) & {

@@ -17,7 +17,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
+exports.testRouter = exports.getMockContext = exports.getMockConfig = void 0;
+exports.renderRouter = renderRouter;
 require("./expect");
 require("./mocks");
 const react_native_1 = require("@testing-library/react-native");
@@ -64,7 +65,6 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
         },
     });
 }
-exports.renderRouter = renderRouter;
 exports.testRouter = {
     /** Navigate to the provided pathname and the pathname */
     navigate(path) {

@@ -33,7 +33,7 @@ export declare function requestMediaLibraryPermissionsAsync(writeOnly?: boolean)
  * ```
  */
 export declare const useMediaLibraryPermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
+    writeOnly?: boolean;
 }> | undefined) => [MediaLibraryPermissionResponse | null, () => Promise<MediaLibraryPermissionResponse>, () => Promise<MediaLibraryPermissionResponse>];
 /**
  * Check or request permissions to access the camera.

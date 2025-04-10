@@ -5,6 +5,7 @@ import { NativeRequest, NativeRequestInit } from './NativeRequest';
 import { normalizeBodyInitAsync, normalizeHeadersInit, overrideHeaders } from './RequestUtils';
 import type { FetchRequestInit } from './fetch.types';
 
+// TODO(@kitten): Do we really want to use our own types for web standards?
 export async function fetch(url: string, init?: FetchRequestInit): Promise<FetchResponse> {
   let abortSubscription: AbortSubscriptionCleanupFunction | null = null;
 

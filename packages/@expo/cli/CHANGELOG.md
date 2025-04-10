@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.23.2 — 2025-04-09
+
+### 🐛 Bug fixes
+
+- Ensure fast resolver is enabled when react canary is enabled. ([#36053](https://github.com/expo/expo/pull/36053) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.23.1 — 2025-04-08
 
 ### 🎉 New features
@@ -25,8 +31,7 @@
 ### 💡 Others
 
 - Add backup stack trace ([#35913](https://github.com/expo/expo/pull/35913) by [@EvanBacon](https://github.com/EvanBacon))
-- Add helpful recommendation to the standard "Xcode not installed" error message to avoid developer frustration by ([#36024](https://github.com/expo/expo/pull/36024) [@quantizor]
-(https://github.com/quantizor)
+- Add helpful recommendation to the standard "Xcode not installed" error message. ([#36024](https://github.com/expo/expo/pull/36024) by [@quantizor](https://github.com/quantizor)
 
 ## 0.23.0 — 2025-04-04)
 

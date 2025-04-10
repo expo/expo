@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateToAction = exports.triggersToScreens = exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
+exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
+exports.triggersToScreens = triggersToScreens;
+exports.stateToAction = stateToAction;
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
@@ -108,7 +110,6 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         triggerMap,
     };
 }
-exports.triggersToScreens = triggersToScreens;
 function stateToAction(state, startAtRoute) {
     const rootPayload = {};
     let payload = rootPayload;
@@ -143,5 +144,4 @@ function stateToAction(state, startAtRoute) {
         payload: rootPayload,
     };
 }
-exports.stateToAction = stateToAction;
 //# sourceMappingURL=common.js.map

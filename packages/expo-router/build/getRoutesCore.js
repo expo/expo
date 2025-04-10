@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getRoutes = void 0;
+exports.getRoutes = getRoutes;
+exports.getIgnoreList = getIgnoreList;
+exports.extrapolateGroups = extrapolateGroups;
+exports.generateDynamic = generateDynamic;
 const matchers_1 = require("./matchers");
 const url_1 = require("./utils/url");
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -28,7 +31,6 @@ function getRoutes(contextModule, options) {
     }
     return rootNode;
 }
-exports.getRoutes = getRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -180,7 +182,7 @@ function getDirectoryTree(contextModule, options) {
                 return routeModule;
             },
             contextKey: filePath,
-            route: '',
+            route: '', // This is overwritten during hoisting based upon the _layout
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
@@ -450,7 +452,6 @@ function getIgnoreList(options) {
     }
     return ignore;
 }
-exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
@@ -476,7 +477,6 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-exports.extrapolateGroups = extrapolateGroups;
 function generateDynamic(path) {
     const dynamic = path
         .split('/')
@@ -497,7 +497,6 @@ function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
-exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory, options) {
     if (!directory.files.has('_sitemap') && options.getSystemRoute) {
         directory.files.set('_sitemap', [
@@ -553,7 +552,7 @@ function getLayoutNode(node, options) {
     return {
         ...node,
         route: node.route.replace(/\/?_layout$/, ''),
-        children: [],
+        children: [], // Each layout should have its own children
         initialRouteName: anchor,
     };
 }

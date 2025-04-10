@@ -3,17 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.moveAsync = exports.ensureDirectoryAsync = exports.directoryExistsAsync = void 0;
+exports.directoryExistsAsync = directoryExistsAsync;
+exports.ensureDirectoryAsync = ensureDirectoryAsync;
+exports.moveAsync = moveAsync;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 async function directoryExistsAsync(file) {
     return (await fs_1.default.promises.stat(file).catch(() => null))?.isDirectory() ?? false;
 }
-exports.directoryExistsAsync = directoryExistsAsync;
 async function ensureDirectoryAsync(path) {
     await fs_1.default.promises.mkdir(path, { recursive: true });
 }
-exports.ensureDirectoryAsync = ensureDirectoryAsync;
 async function moveAsync(src, dest) {
     // First, remove target, so there are no conflicts (explicit overwrite)
     await fs_1.default.promises.rm(dest, { force: true, recursive: true });
@@ -34,5 +34,4 @@ async function moveAsync(src, dest) {
         }
     }
 }
-exports.moveAsync = moveAsync;
 //# sourceMappingURL=dir.js.map

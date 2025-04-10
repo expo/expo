@@ -66,3 +66,10 @@ export type PlatformName =
   | 'macos'
   | 'tvos'
   | string;
+
+export type WithTestRequire = {
+  /**
+   * @internal For test usage only.
+   */
+  testRequire?: any;
+};

@@ -1,7 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { hardcodedTypeLinks } from '~/components/plugins/api/APIStaticData';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
-import { H2, DEMI, CODE, CALLOUT } from '~/ui/components/Text';
+import { H2, DEMI, CODE, CALLOUT, A } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -33,7 +34,12 @@ const getComponentType = ({ signatures }: Partial<GeneratedData>) => {
   if (signatures?.length && signatures[0].type.types) {
     return 'React.' + signatures[0].type.types.filter(t => t.type === 'reference')[0]?.name;
   }
-  return 'React.Element';
+  return (
+    <>
+      React.
+      <A href={hardcodedTypeLinks.Element}>Element</A>
+    </>
+  );
 };
 
 const getComponentTypeParameters = ({
@@ -73,7 +79,10 @@ const renderComponent = (
               <>React.{resolveTypeName(resolvedTypeParameters, sdkVersion)}</>
             ) : (
               <>
-                {resolvedType}&lt;{resolveTypeName(resolvedTypeParameters, sdkVersion)}&gt;
+                {resolvedType}
+                <span className="text-quaternary">&lt;</span>
+                {resolveTypeName(resolvedTypeParameters, sdkVersion)}
+                <span className="text-quaternary">&gt;</span>
               </>
             )}
           </CODE>

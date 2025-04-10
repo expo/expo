@@ -18,7 +18,7 @@ export type LabelProps = {
     style?: StyleProp<ViewStyle>;
 };
 /**
- * Renders a native label view, which could be used in a list or section.
+ * Renders a native label view, which could be used in a [`List`](#list) or [`Section`](#section).
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compareSource = exports.sortSources = void 0;
+exports.sortSources = sortSources;
+exports.compareSource = compareSource;
 function sortSources(sources) {
     return sources.sort(compareSource);
 }
-exports.sortSources = sortSources;
 const typeOrder = {
     file: 0,
     dir: 1,
@@ -33,5 +33,4 @@ function compareSource(a, b) {
     }
     return typeResult;
 }
-exports.compareSource = compareSource;
 //# sourceMappingURL=Sort.js.map

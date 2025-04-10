@@ -1,2 +1,2 @@
-import { SharedObject } from 'expo';
+export {};
 //# sourceMappingURL=VideoPlayer.types.js.map

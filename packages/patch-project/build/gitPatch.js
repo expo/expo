@@ -15,18 +15,33 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPatchChangedLinesAsync = exports.applyPatchAsync = exports.diffAsync = exports.commitAsync = exports.addAllToGitIndexAsync = exports.initializeGitRepoAsync = void 0;
+exports.initializeGitRepoAsync = initializeGitRepoAsync;
+exports.addAllToGitIndexAsync = addAllToGitIndexAsync;
+exports.commitAsync = commitAsync;
+exports.diffAsync = diffAsync;
+exports.applyPatchAsync = applyPatchAsync;
+exports.getPatchChangedLinesAsync = getPatchChangedLinesAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -39,11 +54,9 @@ async function initializeGitRepoAsync(repoRoot) {
     await runGitAsync(['init'], { cwd: repoRoot });
     await generateDefaultGitignoreAsync(repoRoot);
 }
-exports.initializeGitRepoAsync = initializeGitRepoAsync;
 async function addAllToGitIndexAsync(repoRoot) {
     await runGitAsync(['add', '-A'], { cwd: repoRoot });
 }
-exports.addAllToGitIndexAsync = addAllToGitIndexAsync;
 async function commitAsync(repoRoot, message) {
     await runGitAsync(['commit', '-m', message], {
         cwd: repoRoot,
@@ -56,7 +69,6 @@ async function commitAsync(repoRoot, message) {
         },
     });
 }
-exports.commitAsync = commitAsync;
 async function diffAsync(repoRoot, outputPatchFilePath, options) {
     await runGitAsync([
         'diff',
@@ -72,11 +84,9 @@ async function diffAsync(repoRoot, outputPatchFilePath, options) {
         cwd: repoRoot,
     });
 }
-exports.diffAsync = diffAsync;
 async function applyPatchAsync(projectRoot, patchFilePath) {
     return await runGitAsync(['apply', patchFilePath], { cwd: projectRoot });
 }
-exports.applyPatchAsync = applyPatchAsync;
 async function getPatchChangedLinesAsync(patchFilePath) {
     const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);
     const lines = stdout.split(/\r?\n/);
@@ -90,7 +100,6 @@ async function getPatchChangedLinesAsync(patchFilePath) {
     }
     return changedLines;
 }
-exports.getPatchChangedLinesAsync = getPatchChangedLinesAsync;
 async function runGitAsync(args, options) {
     try {
         const { stdout, stderr } = await (0, spawn_async_1.default)('git', args, options);

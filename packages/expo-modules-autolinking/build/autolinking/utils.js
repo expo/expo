@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIsolatedModulesPath = exports.getLinkingImplementationForPlatform = void 0;
+exports.getLinkingImplementationForPlatform = getLinkingImplementationForPlatform;
+exports.getIsolatedModulesPath = getIsolatedModulesPath;
 const path_1 = __importDefault(require("path"));
 function getLinkingImplementationForPlatform(platform) {
     switch (platform) {
@@ -18,7 +19,6 @@ function getLinkingImplementationForPlatform(platform) {
             return require('../platforms/devtools');
     }
 }
-exports.getLinkingImplementationForPlatform = getLinkingImplementationForPlatform;
 /**
  * Get the possible path to the pnpm isolated modules folder.
  */
@@ -36,5 +36,4 @@ function getIsolatedModulesPath(packagePath, packageName) {
     const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
     return isIsolatedModulesPath ? maybeIsolatedModulesPath : null;
 }
-exports.getIsolatedModulesPath = getIsolatedModulesPath;
 //# sourceMappingURL=utils.js.map

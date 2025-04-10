@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.syncConfigurationToNativeAsync = void 0;
+exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
@@ -26,10 +26,9 @@ async function syncConfigurationToNativeAsync(options) {
             break;
     }
 }
-exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
 async function syncConfigurationToNativeAndroidAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: false,
+        isPublicConfig: false, // This must be false or it will drop codesigning config
         skipSDKVersionRequirement: true,
     });
     const packageVersion = require('../../package.json').version;
@@ -51,7 +50,7 @@ async function syncConfigurationToNativeAndroidAsync(options) {
 }
 async function syncConfigurationToNativeIosAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: false,
+        isPublicConfig: false, // This must be false or it will drop codesigning config
         skipSDKVersionRequirement: true,
     });
     const packageVersion = require('../../package.json').version;

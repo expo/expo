@@ -1,7 +1,10 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { WithTestRequire } from '~/types/common';
 import { H1, P } from '~/ui/components/Text';
 
+import { PagePackageVersion } from './PagePackageVersion';
+import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
 
 type Props = {
@@ -10,9 +13,18 @@ type Props = {
   packageName?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
-};
+  platforms?: string[];
+} & WithTestRequire;
 
-export const PageTitle = ({ title, description, packageName, iconUrl, sourceCodeUrl }: Props) => {
+export function PageHeader({
+  title,
+  description,
+  packageName,
+  iconUrl,
+  sourceCodeUrl,
+  platforms,
+  testRequire,
+}: Props) {
   return (
     <>
       <div
@@ -31,7 +43,7 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="flex gap-1 max-xl-gutters:hidden">
+        <span className="-mt-0.5 flex gap-1 max-xl-gutters:hidden">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         </span>
       </div>
@@ -43,6 +55,15 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
       <span className="mb-1 mt-3 hidden gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
       </span>
+      <div
+        className={mergeClasses(
+          'mt-3 flex items-center justify-between',
+          'max-md-gutters:flex-col-reverse max-md-gutters:items-start max-md-gutters:gap-3',
+          'empty:hidden'
+        )}>
+        {platforms && <PagePlatformTags platforms={platforms} />}
+        {packageName && <PagePackageVersion packageName={packageName} testRequire={testRequire} />}
+      </div>
     </>
   );
-};
+}

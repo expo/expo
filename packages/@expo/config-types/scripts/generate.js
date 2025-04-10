@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
-import { Command } from 'commander';
-import fs from 'fs';
-import { compile } from 'json-schema-to-typescript';
-import path from 'path';
-import semver from 'semver';
 
-let version: string = '';
+const chalk = require('chalk');
+const { Command } = require('commander');
+const { compile } = require('json-schema-to-typescript');
+const fs = require('node:fs');
+const path = require('node:path');
+const semver = require('semver');
 
-const packageJSON = require('../package.json');
+let version = '';
+
+const packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
@@ -16,13 +17,17 @@ const program = new Command(packageJSON.name)
   .usage(`${chalk.green('[version]')} [options]`)
   .description('Generate TypeScript types from the Expo config JSON schema.')
   .option('-p, --path <schema-path>', 'Path to a local JSON schema to use.')
-  .action((inputVersion: string, options: any) => {
+  .action(/** @param {string} inputVersion */ (inputVersion, _options) => {
     version = inputVersion;
   })
   .allowUnknownOption()
   .parse(process.argv);
 
-async function fetchSchemaAsync(version: string): Promise<Record<string, any>> {
+/**
+  * @param {string} version
+  * @returns {Promise<Record<string, any>>}
+  */
+async function fetchSchemaAsync(version) {
   const url = `http://exp.host/--/api/v2/project/configuration/schema/${version}`;
 
   const response = await fetch(url);
@@ -72,7 +77,7 @@ async function fetchSchemaAsync(version: string): Promise<Record<string, any>> {
     schema = await fetchSchemaAsync(parsedVersion);
   }
 
-  const ts = await compile(schema as any, 'ExpoConfig', {
+  const ts = await compile(schema, 'ExpoConfig', {
     bannerComment: `/* tslint:disable */\n/**\n* The standard Expo config object defined in \`app.config.js\` files.\n*/`,
     unknownAny: false,
   });
