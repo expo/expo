@@ -14,11 +14,11 @@ export async function getThumbnailAsync(sourceFilename, options = {}) {
     return await ExpoVideoThumbnails.getThumbnail(sourceFilename, options);
 }
 /**
- * Create an image thumbnail and pass the result as a native image reference
+ * Create an image thumbnail and pass the result as a native image reference.
  *
  * @param sourceFilename An URI of the video, local or remote.
  * @param options A map defining how modified thumbnail should be created.
- * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail)
+ * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail).
  */
 export async function getNativeThumbnailAsync(sourceFilename, options = {}) {
     return await ExpoVideoThumbnails.getNativeThumbnail(sourceFilename, options);

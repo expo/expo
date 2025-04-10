@@ -112,20 +112,18 @@ public class VideoThumbnailsModule: Module {
       .reduce(into: [NativeVideoThumbnail]()) { thumbnails, thumbnail in
         thumbnails.append(thumbnail)
       }
-    return legacyResult.first;
+    return legacyResult.first
   }
 
   /**
     A replacement for the `AVAssetImageGenerator.images(for:)` async iterator that is available only as of iOS 16.
     */
   private struct VideoThumbnailLegacyGenerator: AsyncSequence, AsyncIteratorProtocol {
-    typealias Element = NativeVideoThumbnail
-
     let generator: AVAssetImageGenerator
     let times: [CMTime]
     var currentIndex: Int = 0
 
-    mutating func next() async throws -> Element? {
+    mutating func next() async throws -> NativeVideoThumbnail? {
       guard currentIndex < times.count, !Task.isCancelled else {
         return nil
       }
@@ -142,5 +140,4 @@ public class VideoThumbnailsModule: Module {
       return self
     }
   }
-
 }
