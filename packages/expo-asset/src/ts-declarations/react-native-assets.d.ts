@@ -3,8 +3,8 @@ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
 
   export type ResolvedAssetSource = {
     __packager_asset: boolean;
-    width: number | null;
-    height: number | null;
+    width?: number | null;
+    height?: number | null;
     uri: string;
     scale: number;
   };
