@@ -10,11 +10,11 @@ export { VideoThumbnailsOptions, VideoThumbnailsResult, NativeVideoThumbnail };
  */
 export declare function getThumbnailAsync(sourceFilename: string, options?: VideoThumbnailsOptions): Promise<VideoThumbnailsResult>;
 /**
- * Create an image thumbnail and pass the result as a native image reference
+ * Create an image thumbnail and pass the result as a native image reference.
  *
  * @param sourceFilename An URI of the video, local or remote.
  * @param options A map defining how modified thumbnail should be created.
- * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail)
+ * @returns Returns a promise which fulfills with ['NativeVideoThumbnail'](#nativevideothumbnail).
  */
 export declare function getNativeThumbnailAsync(sourceFilename: string, options?: VideoThumbnailsOptions): Promise<NativeVideoThumbnail | null>;
 //# sourceMappingURL=VideoThumbnails.d.ts.map
