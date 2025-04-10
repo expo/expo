@@ -32,12 +32,14 @@ it(`transforms import.meta.url to globalThis.__ExpoImportMetaRegistry.url when u
   );
 });
 
-it(`should not transform import.meta by default`, () => {
+it(`should throw an error when trying to transform import.meta by default`, () => {
   const options = {
     ...DEF_OPTIONS,
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
   };
 
   const sourceCode = `var url = import.meta.url;`;
-  expect(babel.transform(sourceCode, options)!.code).toEqual(sourceCode);
+  expect(() => babel.transform(sourceCode, options)).toThrow(
+    /Your code uses `import.meta` which is not supported in the React Native runtime yet. Please enable the `unstable_transformImportMeta` option in babel-preset-expo to use import.meta./
+  );
 });
