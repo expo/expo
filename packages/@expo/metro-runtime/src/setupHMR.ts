@@ -7,12 +7,12 @@ if (
 ) {
   // Sets up developer tools for web platforms when running in a webview. This ensures that logs are visible in the terminal.
   // We assume full control over the console and send JavaScript logs to Metro.
-  ['trace', 'info', 'warn', 'error', 'log', 'group', 'groupCollapsed', 'groupEnd', 'debug'].forEach(
+  const LEVELS = ['trace', 'info', 'warn', 'error', 'log', 'group', 'groupCollapsed', 'groupEnd', 'debug'] as const;
+  LEVELS.forEach(
     (level) => {
       const originalFunction = console[level];
-      console[level] = function (...args: readonly any[]) {
+      console[level] = function (...args: any[]) {
         HMRClient.log(
-          // @ts-expect-error
           level,
           args
         );
