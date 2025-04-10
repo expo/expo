@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { StyleProp, TextStyle } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 
 import type { Message } from './Data/parseLogBoxLog';
 

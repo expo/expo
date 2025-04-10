@@ -11,8 +11,6 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
 
-import * as LogBoxStyle from '../LogBoxStyle';
-
 import {
   GestureResponderEvent,
   type Insets,
@@ -21,6 +19,14 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+
+function getBackgroundColor(opacity?: number): string {
+  return `rgba(51, 51, 51, ${opacity == null ? 1 : opacity})`;
+}
+
+function getTextColor(opacity?: number): string {
+  return `rgba(255, 255, 255, ${opacity == null ? 1 : opacity})`;
+}
 
 function LogBoxButton(props: {
   backgroundColor: {
@@ -37,8 +43,8 @@ function LogBoxButton(props: {
   let backgroundColor = props.backgroundColor;
   if (!backgroundColor) {
     backgroundColor = {
-      default: LogBoxStyle.getBackgroundColor(0.95),
-      pressed: LogBoxStyle.getBackgroundColor(0.6),
+      default: getBackgroundColor(0.95),
+      pressed: getBackgroundColor(0.6),
     };
   }
 
@@ -146,14 +152,14 @@ export function LogBoxInspectorSourceMapStatus(props: {
     <LogBoxButton
       backgroundColor={{
         default: 'transparent',
-        pressed: LogBoxStyle.getBackgroundColor(1),
+        pressed: getBackgroundColor(1),
       }}
       hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
       onPress={props.onPress}
       style={styles.root}>
       <Animated.Image
         source={image}
-        tintColor={color ?? LogBoxStyle.getTextColor(0.4)}
+        tintColor={color ?? getTextColor(0.4)}
         style={[
           styles.image,
           state.rotate == null || props.status !== 'PENDING'
