@@ -1,28 +1,37 @@
 import {
   ConfigPlugin,
+  ExportedConfigWithProps,
   WarningAggregator,
-  withAndroidStyles,
-  withGradleProperties,
+  AndroidConfig,
 } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { type ExpoConfig } from '@expo/config-types';
 
-const OPT_OUT_EDGE_TO_EDGE_ATTRIBUTE = 'android:windowOptOutEdgeToEdgeEnforcement';
+import { edgeToEdgePluginIndex, hasEnabledEdgeToEdge, loadEdgeToEdgeConfigPlugin } from './helpers';
+import { withConfigureEdgeToEdgeEnforcement } from './withConfigureEdgeToEdgeEnforcement';
+import { withEdgeToEdgeEnabledGradleProperties } from './withEdgeToEdgeEnabledGradleProperties';
+import { withRestoreDefaultTheme } from './withRestoreDefaultTheme';
+
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
-const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
-const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_COMMENT =
-  'Whether the app is configured to use edge-to-edge via the application config or `react-native-edge-to-edge` plugin';
 
-type EdgeToEdgePlugin = ConfigPlugin<{
+export type EdgeToEdgePlugin = ConfigPlugin<{
   android: {
     parentTheme?: string;
     enforceNavigationBarContrast?: boolean;
   };
 }>;
 
+export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
+export type GradlePropertiesConfig = ExportedConfigWithProps<
+  AndroidConfig.Properties.PropertiesItem[]
+>;
+
 export const withEdgeToEdge: ConfigPlugin = (config) => {
+  return applyEdgeToEdge(config);
+};
+
+export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
   // Check if someone has manually configured the config plugin
   const pluginIndex = edgeToEdgePluginIndex(config);
-
   if (config.edgeToEdgeEnabled === undefined && pluginIndex === null) {
     WarningAggregator.addWarningAndroid(
       TAG,
@@ -82,127 +91,6 @@ export const withEdgeToEdge: ConfigPlugin = (config) => {
       enforceNavigationBarContrast: true,
     },
   });
-};
-
-export const withConfigureEdgeToEdgeEnforcement: ConfigPlugin<{
-  disableEdgeToEdgeEnforcement: boolean;
-}> = (config, { disableEdgeToEdgeEnforcement }) => {
-  return withAndroidStyles(config, (config) => {
-    const { style = [] } = config.modResults.resources;
-
-    const disableEdgeToEdgeEnforcementItem = {
-      _: 'true',
-      $: {
-        name: OPT_OUT_EDGE_TO_EDGE_ATTRIBUTE,
-        'tools:targetApi': '35',
-      },
-    };
-
-    const mainThemeIndex = style.findIndex(({ $ }) => $.name === 'AppTheme');
-
-    if (mainThemeIndex === -1) {
-      return config;
-    }
-
-    const existingItem = style[mainThemeIndex].item.filter(
-      ({ $ }) => $.name !== OPT_OUT_EDGE_TO_EDGE_ATTRIBUTE
-    );
-
-    if (disableEdgeToEdgeEnforcement) {
-      existingItem.push(disableEdgeToEdgeEnforcementItem);
-    }
-    if (!config.modResults.resources.style) {
-      return config;
-    }
-
-    config.modResults.resources.style[mainThemeIndex].item = existingItem;
-    return config;
-  });
-};
-
-export function withEdgeToEdgeEnabledGradleProperties(
-  config: ExpoConfig,
-  props: {
-    edgeToEdgeEnabled: boolean;
-  }
-) {
-  return withGradleProperties(config, (config) => {
-    const propertyIndex = config.modResults.findIndex(
-      (item) => item.type === 'property' && item.key === EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY
-    );
-    if (propertyIndex !== -1) {
-      config.modResults.splice(propertyIndex, 1);
-    }
-    const commentIndex = config.modResults.findIndex(
-      (item) =>
-        item.type === 'comment' && item.value === EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_COMMENT
-    );
-    if (commentIndex !== -1) {
-      config.modResults.splice(commentIndex, 1);
-    }
-
-    config.modResults.push({
-      type: 'comment',
-      value: EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_COMMENT,
-    });
-    config.modResults.push({
-      type: 'property',
-      key: EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY,
-      value: props.edgeToEdgeEnabled ? 'true' : 'false',
-    });
-
-    return config;
-  });
-}
-
-export const withRestoreDefaultTheme: ConfigPlugin = (config) => {
-  // Default theme for SDK 53 and onwards projects
-  const DEFAULT_THEME = 'Theme.AppCompat.DayNight.NoActionBar';
-
-  return withAndroidStyles(config, (config) => {
-    const { style = [] } = config.modResults.resources;
-    const mainThemeIndex = style.findIndex(({ $ }) => $.name === 'AppTheme');
-    if (mainThemeIndex === -1) {
-      return config;
-    }
-
-    if (style[mainThemeIndex].$?.parent.includes('EdgeToEdge')) {
-      config.modResults.resources.style = [
-        {
-          $: {
-            name: 'AppTheme',
-            parent: DEFAULT_THEME,
-          },
-          item: style[mainThemeIndex].item,
-        },
-        ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-      ];
-    }
-    return config;
-  });
-};
-
-function edgeToEdgePluginIndex(config: ExpoConfig): number | null {
-  const noArgumentPluginIndex =
-    config.plugins?.findIndex(
-      (plugin) => typeof plugin === 'string' && plugin.includes('react-native-edge-to-edge')
-    ) ?? -1;
-
-  const argumentPluginIndex =
-    config.plugins?.findIndex(
-      (plugin) => typeof plugin[0] === 'string' && plugin[0].includes('react-native-edge-to-edge')
-    ) ?? -1;
-
-  const pluginIndex = Math.max(noArgumentPluginIndex, argumentPluginIndex);
-
-  if (pluginIndex === -1) {
-    return null;
-  }
-  return pluginIndex;
-}
-
-export function hasEnabledEdgeToEdge(config: ExpoConfig) {
-  return config.edgeToEdgeEnabled === true || edgeToEdgePluginIndex(config) != null;
 }
 
 function constructWarning(pluginIndex: number | null, config: ExpoConfig): string | null {
@@ -217,16 +105,6 @@ function constructWarning(pluginIndex: number | null, config: ExpoConfig): strin
     );
   }
   return null;
-}
-
-function loadEdgeToEdgeConfigPlugin(): EdgeToEdgePlugin | null {
-  try {
-    // @ts-ignore <-- edge-to-edge plugin doesn't export a type definition
-    const { default: plugin } = require('react-native-edge-to-edge/app.plugin.js');
-    return plugin as EdgeToEdgePlugin;
-  } catch {
-    return null;
-  }
 }
 
 export default withEdgeToEdge;

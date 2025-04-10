@@ -13,12 +13,6 @@ export interface ExpoConfig {
    */
   description?: string;
   /**
-   * On Android, determines if your app will launch in edge-to-edge mode.
-   * Falls back to `false` if undefined.
-   * @platform android
-   */
-  edgeToEdgeEnabled?: boolean;
-  /**
    * A URL-friendly name for your project that is unique across your account.
    */
   slug: string;
@@ -766,6 +760,11 @@ export interface Android {
        *  `Scale 4x`
        */
       xxxhdpi?: string;
+      /**
+       * Determines if your app will launch in edge-to-edge mode.
+       * Falls back to `false` if undefined.
+       */
+      edgeToEdgeEnabled?: boolean;
       [k: string]: any;
     };
     [k: string]: any;
