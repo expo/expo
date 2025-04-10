@@ -23,7 +23,7 @@ interface NativeBlobModule {
 }
 interface TurboBlobModule {
   getConstants(): {
-    BLOB_URI_SCHEME: string
+    BLOB_URI_SCHEME: string;
     BLOB_URI_HOST: string;
   };
 }
@@ -40,9 +40,9 @@ function getBlobUrlPrefix() {
   const BlobModule =
     globalThis.RN$Bridgeless !== true
       ? // Legacy RN implementation
-        globalThis.nativeModuleProxy['BlobModule'] as NativeBlobModule
+        (globalThis.nativeModuleProxy['BlobModule'] as NativeBlobModule)
       : // Newer RN implementation
-        globalThis.__turboModuleProxy('BlobModule') as TurboBlobModule;
+        (globalThis.__turboModuleProxy('BlobModule') as TurboBlobModule);
 
   const constants = 'BLOB_URI_SCHEME' in BlobModule ? BlobModule : BlobModule.getConstants();
 
@@ -57,7 +57,7 @@ function getBlobUrlPrefix() {
 
 declare module 'whatwg-url-without-unicode' {
   // TODO(@kitten): Clarify where this came from
-  type BlobLike = Blob & { data?: { blobId: string, offset: number } };
+  type BlobLike = Blob & { data?: { blobId: string; offset: number } };
 
   interface URLConstructor {
     createObjectURL(blob: BlobLike): string;
