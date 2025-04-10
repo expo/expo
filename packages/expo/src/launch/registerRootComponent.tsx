@@ -3,6 +3,11 @@ import '../Expo.fx';
 import { type ComponentType } from 'react';
 import { AppRegistry, Platform } from 'react-native';
 
+declare namespace globalThis {
+  // TODO(@kitten): What's the proper type here? What would AppRegistry need to accept?
+  const __EXPO_ROUTER_HYDRATE__: unknown;
+}
+
 type InitialProps = {
   exp?: {
     notification?: any;

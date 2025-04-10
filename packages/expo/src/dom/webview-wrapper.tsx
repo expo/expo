@@ -17,14 +17,21 @@ import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
 import { useDebugZeroHeight } from './webview/useDebugZeroHeight';
 
+type RawWebViewProps =
+  & React.ComponentProps<Exclude<typeof ExpoDomWebView, undefined>>
+  & React.ComponentProps<Exclude<typeof RNWebView, undefined>>;
+
 interface Props {
   children?: any;
   dom?: DOMProps;
   filePath: string;
+  ref: React.Ref<object>;
+  [propName: string]: unknown;
 }
 
 const RawWebView = React.forwardRef<object, Props>(
-  ({ children, dom, filePath, ...marshalProps }, ref) => {
+  (props, ref) => {
+    const { children, dom, filePath, ref: _ref, ...marshalProps } = props as Props;
     if (__DEV__) {
       if (children !== undefined) {
         throw new Error(
@@ -38,9 +45,9 @@ const RawWebView = React.forwardRef<object, Props>(
         {},
         {
           get(_, prop) {
-            const propName = String(prop);
+            const propName = String(prop) as keyof WebViewRef;
             if (domImperativeHandlePropsRef.current?.includes(propName)) {
-              return function (...args) {
+              return function (...args: any[]) {
                 const serializedArgs = args.map((arg) => JSON.stringify(arg)).join(',');
                 webviewRef.current?.injectJavaScript(
                   `window._domRefProxy.${propName}(${serializedArgs})`
@@ -48,8 +55,8 @@ const RawWebView = React.forwardRef<object, Props>(
               };
             }
             if (typeof webviewRef.current?.[propName] === 'function') {
-              return function (...args) {
-                return webviewRef.current?.[propName](...args);
+              return function (...args: any[]) {
+                return (webviewRef.current?.[propName] as any)(...args);
               };
             }
             return undefined;
@@ -137,6 +144,7 @@ const RawWebView = React.forwardRef<object, Props>(
       ]
         .filter(Boolean)
         .join('\n'),
+      // @ts-expect-error: TODO(@kitten): untyped ref for now
       ref: webviewRef,
       source,
       style: [
@@ -172,7 +180,7 @@ const RawWebView = React.forwardRef<object, Props>(
             throw new Error(`Native action "${data.actionId}" is not a function.`);
           }
 
-          const emitError = (error) => {
+          const emitError = (error: any) => {
             emit({
               type: NATIVE_ACTION_RESULT,
               data: {
@@ -211,6 +219,7 @@ const RawWebView = React.forwardRef<object, Props>(
             return emitError(error);
           }
         } else {
+          // @ts-expect-error: TODO(@kitten): The two types for this event will never match up, but we know they do
           dom?.onMessage?.(event);
         }
         _emitGlobalEvent({ type, data });
@@ -234,7 +243,9 @@ function serializeError(error: any) {
   return error;
 }
 
-export function resolveWebView(useExpoDOMWebView: boolean) {
+export function resolveWebView(
+  useExpoDOMWebView: boolean
+): React.ForwardRefExoticComponent<RawWebViewProps> {
   const webView = useExpoDOMWebView ? ExpoDomWebView : RNWebView;
   if (webView == null) {
     const moduleName = useExpoDOMWebView ? '@expo/dom-webview' : 'react-native-webview';
@@ -242,7 +253,7 @@ export function resolveWebView(useExpoDOMWebView: boolean) {
       `Unable to resolve the '${moduleName}' module. Make sure to install it with 'npx expo install ${moduleName}'.`
     );
   }
-  return webView;
+  return webView as React.ForwardRefExoticComponent<RawWebViewProps>;
 }
 
 export default RawWebView;
