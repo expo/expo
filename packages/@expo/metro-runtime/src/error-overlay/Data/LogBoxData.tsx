@@ -11,8 +11,8 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import { parseErrorStack } from '../devServerEndpoints';
 import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
+import { parseErrorStack } from '../devServerEndpoints';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
 import { LogBoxLog, StackType } from './LogBoxLog';

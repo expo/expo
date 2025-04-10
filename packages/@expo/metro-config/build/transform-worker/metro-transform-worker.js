@@ -15,32 +15,18 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.minifyCode = exports.InvalidRequireCallError = void 0;
-exports.applyImportSupport = applyImportSupport;
-exports.transform = transform;
-exports.getCacheKey = getCacheKey;
-exports.collectDependenciesForShaking = collectDependenciesForShaking;
+exports.collectDependenciesForShaking = exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.minifyCode = exports.InvalidRequireCallError = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -214,6 +200,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     }
     return { ast };
 }
+exports.applyImportSupport = applyImportSupport;
 function performConstantFolding(ast, { filename }) {
     // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
     // references, and hence the `constantFoldingPlugin` below will remove them.
@@ -582,6 +569,7 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     return transformJSWithBabel(file, context);
 }
+exports.transform = transform;
 function getCacheKey(config) {
     const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
     const filesKey = (0, metro_cache_key_1.default)([
@@ -602,6 +590,7 @@ function getCacheKey(config) {
         babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
     ].join('$');
 }
+exports.getCacheKey = getCacheKey;
 /**
  * Produces a Babel template that transforms an "import(...)" call into a
  * "require(...)" call to the asyncRequire specified.
@@ -643,4 +632,5 @@ function collectDependenciesForShaking(ast, options) {
         dependencyTransformer: disabledDependencyTransformer,
     });
 }
+exports.collectDependenciesForShaking = collectDependenciesForShaking;
 //# sourceMappingURL=metro-transform-worker.js.map

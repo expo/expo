@@ -13,11 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapModule = wrapModule;
-exports.getModuleParams = getModuleParams;
-exports.getJsOutput = getJsOutput;
-exports.isJsModule = isJsModule;
-exports.isJsOutput = isJsOutput;
+exports.isJsOutput = exports.isJsModule = exports.getJsOutput = exports.getModuleParams = exports.wrapModule = void 0;
 const assert_1 = __importDefault(require("assert"));
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
 const metro_transform_plugins_1 = require("metro-transform-plugins");
@@ -31,6 +27,7 @@ function wrapModule(module, options) {
     const src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
     return { src, paths };
 }
+exports.wrapModule = wrapModule;
 function getModuleParams(module, options) {
     const moduleId = options.createModuleId(module.path);
     const paths = {};
@@ -103,6 +100,7 @@ function getModuleParams(module, options) {
     }
     return { params, paths };
 }
+exports.getModuleParams = getModuleParams;
 function getJsOutput(module) {
     const jsModules = module.output.filter(({ type }) => type.startsWith('js/'));
     (0, assert_1.default)(jsModules.length === 1, `Modules must have exactly one JS output, but ${module.path ?? 'unknown module'} has ${jsModules.length} JS outputs.`);
@@ -110,10 +108,13 @@ function getJsOutput(module) {
     (0, assert_1.default)(Number.isFinite(jsOutput.data.lineCount), `JS output must populate lineCount, but ${module.path ?? 'unknown module'} has ${jsOutput.type} output with lineCount '${jsOutput.data.lineCount}'`);
     return jsOutput;
 }
+exports.getJsOutput = getJsOutput;
 function isJsModule(module) {
     return module.output.filter(isJsOutput).length > 0;
 }
+exports.isJsModule = isJsModule;
 function isJsOutput(output) {
     return output.type.startsWith('js/');
 }
+exports.isJsOutput = isJsOutput;
 //# sourceMappingURL=js.js.map

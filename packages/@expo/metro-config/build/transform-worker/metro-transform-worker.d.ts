@@ -1,3 +1,5 @@
+/// <reference types="node" />
+/// <reference types="node" />
 import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
 import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
@@ -14,7 +16,7 @@ export declare class InvalidRequireCallError extends Error {
     filename: string;
     constructor(innerError: InternalInvalidRequireCallError, filename: string);
 }
-export declare const minifyCode: (config: Pick<JsTransformerConfig, "minifierPath" | "minifierConfig">, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
+export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
     code: string;
     map: MetroSourceMapSegmentTuple[];
 }>;
@@ -34,7 +36,27 @@ export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t
     ast: babylon.ParseResult<t.File>;
     dependencyMapName: string;
     dependencies: readonly Readonly<{
-        data: import("./collect-dependencies").DependencyData;
+        data: Readonly<{
+            key: string;
+            asyncType: import("./collect-dependencies").AsyncDependencyType | null;
+            isESMImport: boolean;
+            isOptional?: boolean | undefined;
+            locs: readonly t.SourceLocation[];
+            contextParams?: Readonly<{
+                recursive: boolean;
+                filter: Readonly<Readonly<{
+                    pattern: string;
+                    flags: string;
+                }>>;
+                mode: "sync" | "eager" | "lazy" | "lazy-once";
+            }> | undefined;
+            exportNames: string[];
+            css?: {
+                url: string;
+                supports: string | null;
+                media: string | null;
+            } | undefined;
+        }>;
         name: string;
     }>[];
 }>;

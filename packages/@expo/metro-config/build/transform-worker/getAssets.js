@@ -3,8 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUniversalAssetData = getUniversalAssetData;
-exports.default = getAssets;
+exports.getUniversalAssetData = void 0;
 const Assets_1 = require("metro/src/Assets");
 const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
@@ -74,6 +73,7 @@ async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, pla
     }
     return data;
 }
+exports.getUniversalAssetData = getUniversalAssetData;
 async function getAssets(dependencies, options) {
     const promises = [];
     const { processModuleFilter } = options;
@@ -87,4 +87,5 @@ async function getAssets(dependencies, options) {
     }
     return await Promise.all(promises);
 }
+exports.default = getAssets;
 //# sourceMappingURL=getAssets.js.map

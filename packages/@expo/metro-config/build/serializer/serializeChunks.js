@@ -3,9 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Chunk = void 0;
-exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
-exports.getSortedModules = getSortedModules;
+exports.getSortedModules = exports.Chunk = exports.graphToSerialAssetsAsync = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -128,7 +126,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         processModuleFilter: options.processModuleFilter,
         assetPlugins: config.transformer?.assetPlugins ?? [],
         platform: (0, baseJSBundle_1.getPlatformOption)(graph, options) ?? 'web',
-        projectRoot: options.projectRoot, // this._getServerRootDir(),
+        projectRoot: options.projectRoot,
         publicPath,
     }));
     return {
@@ -136,6 +134,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         assets: metroAssets,
     };
 }
+exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
     name;
     entries;
@@ -536,4 +535,5 @@ function getSortedModules(modules, { createModuleId, }) {
     // Sort by IDs
     return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
 }
+exports.getSortedModules = getSortedModules;
 //# sourceMappingURL=serializeChunks.js.map

@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processModules = processModules;
+exports.processModules = void 0;
 const js_1 = require("./js");
 function processModules(modules, { filter = () => true, createModuleId, dev, includeAsyncPaths, projectRoot, serverRoot, sourceUrl, splitChunks, skipWrapping, computedAsyncModulePaths, }) {
     return [...modules]
@@ -28,4 +28,5 @@ function processModules(modules, { filter = () => true, createModuleId, dev, inc
         }),
     ]);
 }
+exports.processModules = processModules;
 //# sourceMappingURL=processModules.js.map

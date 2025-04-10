@@ -3,10 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withExpoSerializers = withExpoSerializers;
-exports.withSerializerPlugins = withSerializerPlugins;
-exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
-exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
+exports.createSerializerFromSerialProcessors = exports.createDefaultExportCustomSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -38,6 +35,7 @@ function withExpoSerializers(config, options = {}) {
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
+exports.withExpoSerializers = withExpoSerializers;
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 function withSerializerPlugins(config, processors, options = {}) {
@@ -50,6 +48,7 @@ function withSerializerPlugins(config, processors, options = {}) {
         },
     };
 }
+exports.withSerializerPlugins = withSerializerPlugins;
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
     return async (entryPoint, preModules, graph, inputOptions) => {
         const isPossiblyDev = graph.transformOptions.hot;
@@ -164,6 +163,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         };
     };
 }
+exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
     return async (entryPoint, preModules, graph, inputOptions) => {
@@ -240,4 +240,5 @@ function createSerializerFromSerialProcessors(config, processors, originalSerial
         return finalSerializer(...props);
     };
 }
+exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 //# sourceMappingURL=withExpoSerializers.js.map

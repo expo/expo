@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove broken debug stack trace from default ErrorBoundary.
+
 ## 5.0.2-preview.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

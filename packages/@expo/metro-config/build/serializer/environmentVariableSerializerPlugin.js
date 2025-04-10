@@ -3,10 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTransformEnvironment = getTransformEnvironment;
-exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
-exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
-exports.getEnvVarDevString = getEnvVarDevString;
+exports.getEnvVarDevString = exports.environmentVariableSerializerPlugin = exports.serverPreludeSerializerPlugin = exports.getTransformEnvironment = void 0;
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
@@ -14,6 +11,7 @@ function getTransformEnvironment(url) {
     const match = url.match(/[&?]transform\.environment=([^&]+)/);
     return match ? match[1] : null;
 }
+exports.getTransformEnvironment = getTransformEnvironment;
 function getAllExpoPublicEnvVars(inputEnv = process.env) {
     // Create an object containing all environment variables that start with EXPO_PUBLIC_
     const env = {};
@@ -51,6 +49,7 @@ function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
     }
     return [entryPoint, preModules, graph, options];
 }
+exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
 function environmentVariableSerializerPlugin(entryPoint, preModules, graph, options) {
     // Skip replacement in Node.js environments.
     if (isServerEnvironment(graph, options)) {
@@ -80,6 +79,7 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
     1, 0, getEnvPrelude(code));
     return [entryPoint, preModules, graph, options];
 }
+exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 function getEnvVarDevString(env = process.env) {
     // Set the process.env object to the current environment variables object
     // ensuring they aren't iterable, settable, or enumerable.
@@ -95,6 +95,7 @@ function getEnvVarDevString(env = process.env) {
     }
     return code;
 }
+exports.getEnvVarDevString = getEnvVarDevString;
 function getEnvPrelude(code) {
     const name = `\0polyfill:environment-variables`;
     return {

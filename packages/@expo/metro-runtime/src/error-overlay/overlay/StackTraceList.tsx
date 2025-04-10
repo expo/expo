@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useState } from 'react';
-import { Pressable } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
+import { Pressable } from 'react-native';
 
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import type { StackType } from '../Data/LogBoxLog';
 import {
-  openFileInEditor,
   getStackFormattedLocation,
+  openFileInEditor,
   type MetroStackFrame,
 } from '../devServerEndpoints';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 
 import './StackTraceList.css';
 export function StackTraceList({

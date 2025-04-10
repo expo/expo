@@ -10,10 +10,67 @@
 
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
 
-import { LogBoxButton } from '../LogBoxButton';
 import * as LogBoxStyle from '../LogBoxStyle';
+
+import {
+  GestureResponderEvent,
+  type Insets,
+  Platform,
+  Pressable,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+function LogBoxButton(props: {
+  backgroundColor: {
+    default: string;
+    pressed: string;
+  };
+  children?: any;
+  hitSlop?: Insets;
+  onPress?: ((event: GestureResponderEvent) => void) | null;
+  style?: ViewStyle;
+}) {
+  const [pressed, setPressed] = useState(false);
+
+  let backgroundColor = props.backgroundColor;
+  if (!backgroundColor) {
+    backgroundColor = {
+      default: LogBoxStyle.getBackgroundColor(0.95),
+      pressed: LogBoxStyle.getBackgroundColor(0.6),
+    };
+  }
+
+  const content = (
+    <View
+      style={[
+        {
+          backgroundColor: pressed ? backgroundColor.pressed : backgroundColor.default,
+          ...Platform.select({
+            web: {
+              cursor: 'pointer',
+            },
+          }),
+        },
+        props.style,
+      ]}>
+      {props.children}
+    </View>
+  );
+
+  return props.onPress == null ? (
+    content
+  ) : (
+    <Pressable
+      hitSlop={props.hitSlop}
+      onPress={props.onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}>
+      {content}
+    </Pressable>
+  );
+}
 
 export function LogBoxInspectorSourceMapStatus(props: {
   onPress?: ((event: GestureResponderEvent) => void) | null;

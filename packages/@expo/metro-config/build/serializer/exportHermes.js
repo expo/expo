@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildHermesBundleAsync = buildHermesBundleAsync;
+exports.buildHermesBundleAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
@@ -56,6 +56,7 @@ async function buildHermesBundleAsync(options) {
     currentHermesBuild = directlyBuildHermesBundleAsync(options);
     return await currentHermesBuild;
 }
+exports.buildHermesBundleAsync = buildHermesBundleAsync;
 async function directlyBuildHermesBundleAsync({ code, map, minify = false, filename, }) {
     const tempDir = path_1.default.join(os_1.default.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
     await fs_1.default.promises.mkdir(tempDir, { recursive: true });

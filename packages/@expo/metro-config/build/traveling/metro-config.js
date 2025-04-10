@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.importMetroConfig = importMetroConfig;
+exports.importMetroConfig = void 0;
 const resolve_from_1 = __importDefault(require("resolve-from"));
 // ensure that Metro can bundle the project's assets (see: `watchFolders`).
 function importMetroConfig(projectRoot) {
@@ -14,4 +14,5 @@ function importMetroConfig(projectRoot) {
     }
     return require(modulePath);
 }
+exports.importMetroConfig = importMetroConfig;
 //# sourceMappingURL=metro-config.js.map
