@@ -15,9 +15,7 @@ import {
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {
     const customSerializer = jest.fn();
-
     const customProcessor = jest.fn((...res) => res);
-
     const config = withSerializerPlugins(
       {
         serializer: {
@@ -36,6 +34,45 @@ describe(withSerializerPlugins, () => {
 
     expect(customProcessor).toBeCalledWith('a', 'b', 'c', options);
     expect(customSerializer).toBeCalledWith('a', 'b', 'c', options);
+  });
+
+  it('does not lose the original config object reference', async () => {
+    // Create the `getRunBeforeMainModules` default and (user) override function
+    const defaultGetMainModules = jest.fn(() => ['default/module']);
+    const overrideGetMainModules = jest.fn(() => ['override/module']);
+    
+    // Create a fake serializer, running `getRunBeforeMainModules` from the config
+    const customProcessor = jest.fn((...res) => res);
+    const customSerializer = jest.fn((_entryPoint, _preModules, _graph, options) => {
+      // Mimick serializer behavior where we call getModulesRunBeforeMainModule
+      options.getModulesRunBeforeMainModule('path/to/entry.js');
+    });
+
+    // Create the Metro config, already containing the serializer options (source URL)
+    // This is added through a mutation later on in the process
+    const config = {
+      serializer: {
+        getModulesRunBeforeMainModule: defaultGetMainModules,
+        customSerializer,
+        createModuleId: expect.any(Function),
+        sourceUrl: 'https://localhost:8081/index.bundle?platform=ios&dev=true&minify=false',
+      },
+    };
+    // @ts-expect-error
+    const configWithSerializer = withSerializerPlugins(config, [customProcessor as any]);
+
+    // Modify the original config, which should also modify the function in the serializer config
+    config.serializer.getModulesRunBeforeMainModule = overrideGetMainModules;
+
+    // @ts-expect-error
+    await configWithSerializer.serializer.customSerializer('a', 'b', 'c', configWithSerializer.serializer);
+
+    // Ensure the serializer was invoked correctly
+    expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
+    expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
+    // Ensure the serializer invoked the overriden config property
+    expect(defaultGetMainModules).not.toHaveBeenCalled();
+    expect(overrideGetMainModules).toHaveBeenCalled();
   });
 });
 
