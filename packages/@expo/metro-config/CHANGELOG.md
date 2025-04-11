@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `withSerializerPlugins` maintaining original Metro config reference - receiving serializer customization changes. ([#36099](https://github.com/expo/expo/pull/36099) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.20.2 — 2025-04-09
