@@ -6,9 +6,9 @@ const globals = require('globals');
 const { jsExtensions } = require('./extensions');
 
 module.exports = defineConfig([
+  importPlugin.flatConfigs.recommended,
   {
     plugins: {
-      import: importPlugin,
       n: nodePlugin,
     },
 

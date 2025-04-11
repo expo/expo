@@ -1,13 +1,12 @@
-const { fixupPluginRules } = require('@eslint/compat');
 const { defineConfig } = require('eslint/config');
 const react = require('eslint-plugin-react');
-const reactHooks = require('eslint-plugin-react-hooks');
+const hooksPlugin = require('eslint-plugin-react-hooks');
 
 module.exports = defineConfig([
   {
     plugins: {
       react,
-      'react-hooks': fixupPluginRules(reactHooks),
+      'react-hooks': hooksPlugin,
     },
 
     languageOptions: {
@@ -29,6 +28,7 @@ module.exports = defineConfig([
     },
 
     rules: {
+      ...hooksPlugin.configs.recommended.rules,
       'react/jsx-boolean-value': ['warn', 'never'],
 
       'react/jsx-closing-bracket-location': [
