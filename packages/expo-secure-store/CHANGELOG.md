@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for access groups. ([#36056](https://github.com/expo/expo/pull/36056) by [@chrsmys](https://github.com/chrsmys))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
