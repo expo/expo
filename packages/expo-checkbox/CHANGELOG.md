@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
+- Fixed: Addressed an issue where accessibilityState was not updating correctly on value changes. by [@brtsyf](https://github.com/brtsyf)) ([#33664](https://github.com/expo/expo/pull/33664) by [@brtsyf](https://github.com/brtsyf))
 ### 💡 Others
 
 ## 4.1.1 — 2025-04-09
