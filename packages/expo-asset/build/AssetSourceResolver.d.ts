@@ -1,4 +1,4 @@
-import type { PackagerAsset } from '@react-native/assets/registry';
+import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import type { AssetMetadata } from './AssetSources';
 export type ResolvedAssetSource = {
     __packager_asset: boolean;
