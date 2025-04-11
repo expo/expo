@@ -438,12 +438,13 @@ export interface PluginConfigTypeAndroidQueries {
    * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
    * These intents have restrictions compared to typical intent filter signatures.
    *
-   * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
+   * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for more information.
    */
   intent?: PluginConfigTypeAndroidQueriesIntent[];
   /**
    * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
-   * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the `android:authorities` attribute.
+   * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element.
+   * You may only specify the `android:authorities` attribute.
    */
   provider?: string[];
 }
@@ -454,7 +455,9 @@ export interface PluginConfigTypeAndroidQueries {
  */
 export interface PluginConfigTypeAndroidQueriesIntent {
   /**
-   * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
+   * A string naming the action to perform. Usually one of the platform-defined values, such as `SEND` or `VIEW`.
+   *
+   * @see [Android documentation](https://developer.android.com/guide/topics/manifest/action-element) for more information.
    */
   action?: string;
   /**
