@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Support `android.enableEdgeToEdge` field in app config. ([#35958](https://github.com/expo/expo/pull/35958) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.1.3 — 2025-04-11
+
+### 🎉 New features
+
+- [Android] Support `android.enableEdgeToEdge` field in app config. ([#35958](https://github.com/expo/expo/pull/35958) by [@behenate](https://github.com/behenate))
 
 ## 8.1.2 — 2025-04-09
 

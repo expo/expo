@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Update React Compiler support for React 19. ([#36081](https://github.com/expo/expo/pull/36081) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.2 — 2025-04-11
+
+### 🎉 New features
+
+- Update React Compiler support for React 19. ([#36081](https://github.com/expo/expo/pull/36081) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 13.1.1 — 2025-04-09
 

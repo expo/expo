@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `android.enableBundleCompression` option ([#36071](https://github.com/expo/expo/pull/36071) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.14.2 — 2025-04-11
+
+### 🎉 New features
+
+- Add `android.enableBundleCompression` option ([#36071](https://github.com/expo/expo/pull/36071) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.14.1 — 2025-04-09
 

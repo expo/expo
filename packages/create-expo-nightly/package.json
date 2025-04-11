@@ -1,6 +1,6 @@
 {
   "name": "create-expo-nightly",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "description": "A tool to create an Expo app for react-native nightlies testing",
   "keywords": [
