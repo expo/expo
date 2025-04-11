@@ -960,6 +960,24 @@ describe('Asset deletion recovery tests', () => {
         };
       })
     );
+
+    // Append a new asset that is not embedded and should be re-downloaded
+    async function createNewAssetAsync(file: string = 'patrick-untersee-XJjsuuDwWas-unsplash.jpg') {
+      const newAsset = path.join(__dirname, 'assets', file);
+      const filename = path.basename(newAsset);
+      const mimeType = 'image/jpg';
+      const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
+      const hash = await Update.copyAssetToStaticFolder(newAsset, filename);
+      return {
+        hash,
+        key,
+        contentType: mimeType,
+        fileExtension: '.jpg',
+        url: `http://${Update.serverHost}:${Update.serverPort}/static/${filename}`,
+      };
+    }
+    assets.push(await createNewAssetAsync());
+
     const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       bundleHash,
@@ -976,20 +994,16 @@ describe('Asset deletion recovery tests', () => {
     await device.launchApp({ newInstance: true });
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
-    // When copy embedded assets is enabled, the number of downloaded assets is 0.
-    // Because the assets are copied from embedded resources to file system already.
-    const downloadedEmbeddedAssetCount = shouldCopyEmbeddedAssets ? 0 : manifest.assets.length;
     // give the app time to load the new update in the background
     await waitForExpectationAsync(
-      () =>
-        jestExpect(Server.getRequestedStaticFilesLength()).toBe(1 + downloadedEmbeddedAssetCount),
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(2),
       {
         timeout: 10000,
         interval: 1000,
       }
     );
-    // When copy embedded assets is disabled, only the bundle should be new.
-    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1 + downloadedEmbeddedAssetCount);
+    // only the bundle and the new asset should be requested
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(2);
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to
     // clear internal storage while also verifying the new update is running.
@@ -1018,14 +1032,18 @@ describe('Asset deletion recovery tests', () => {
     // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
     // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
+    let expectedNumAssets = 2;
+    if (shouldCopyEmbeddedAssets) {
+      expectedNumAssets += manifest.assets.length;
+    }
     if (platform === 'ios') {
-      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+      jestExpect(numAssets).toBe(expectedNumAssets);
     } else {
-      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+      jestExpect(numAssets).toBeGreaterThanOrEqual(expectedNumAssets);
     }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
-    // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary or cache
-    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
+    // should have re-downloaded only the JS bundle and the new asset; the rest should have been copied from the app binary.
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(2);
   });
 });
