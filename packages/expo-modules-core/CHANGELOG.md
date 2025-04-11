@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `UnwrappedChildren` not get the unwrapped content view for SwiftUI integration. ([#36112](https://github.com/expo/expo/pull/36112) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.3.4 — 2025-04-11
