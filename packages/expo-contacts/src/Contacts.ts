@@ -9,6 +9,16 @@ import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
 
+export type ContactsPermissionResponse = PermissionResponse & {
+  /**
+   * Indicates if your app has access to the whole or only part of the contact library. Possible values are:
+   * - `'all'` if the user granted your app access to the whole contact library
+   * - `'limited'` if the user granted your app access only to selected contacts (only available on iOS 18+)
+   * - `'none'`
+   */
+  accessPrivileges?: 'all' | 'limited' | 'none';
+};
+
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
@@ -1003,9 +1013,9 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
 
 /**
  * Checks user's permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export async function getPermissionsAsync(): Promise<PermissionResponse> {
+export async function getPermissionsAsync(): Promise<ContactsPermissionResponse> {
   if (!ExpoContacts.getPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
   }
@@ -1015,9 +1025,9 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 
 /**
  * Asks the user to grant permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+export async function requestPermissionsAsync(): Promise<ContactsPermissionResponse> {
   if (!ExpoContacts.requestPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
   }
