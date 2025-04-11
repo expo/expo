@@ -163,6 +163,24 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     }
   }
 
+  function renderSubtitleTrack() {
+    if (!props.player?.subtitleTrack) {
+      return null;
+    }
+
+    return (
+      <track
+        key={props.player.subtitleTrack.id}
+        id={props.player.subtitleTrack.id}
+        kind="subtitles"
+        src={props.player.subtitleTrack.uri}
+        srcLang={props.player.subtitleTrack.language}
+        label={props.player.subtitleTrack.label}
+        default
+      />
+    );
+  }
+
   useEffect(() => {
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
@@ -205,8 +223,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         }
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
-      src={getSourceUri(props.player?.src) ?? ''}
-    />
+      src={getSourceUri(props.player?.src) ?? ''}>
+      {renderSubtitleTrack()}
+    </video>
   );
 });
 

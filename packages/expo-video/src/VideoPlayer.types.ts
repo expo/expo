@@ -162,6 +162,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * @default null
    * @platform android
    * @platform ios
+   * @platform web
    */
   subtitleTrack: SubtitleTrack | null;
 
@@ -170,6 +171,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @platform android
    * @platform ios
+   * @platform web
    */
   readonly availableSubtitleTracks: SubtitleTrack[];
 
@@ -482,6 +484,12 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * URI to the subtitle file (WebVTT, SRT, etc.).
+   * If not provided, subtitles will be extracted from the video container.
+   */
+  uri?: string;
 };
 
 /**
