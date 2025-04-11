@@ -50,6 +50,17 @@ function _convertToLegacyOrientationLock(orientationLock: WebOrientationLock) {
   }
 }
 
+declare global {
+  interface Screen {
+    msOrientation?: Screen['orientation']['type'];
+    mozOrientation?: Screen['orientation'];
+
+    mozUnlockOrientation?(): boolean | undefined;
+    msUnlockOrientation?(): boolean | undefined;
+    unlockOrientation?(): boolean | undefined;
+  }
+}
+
 async function _lockAsync(webOrientationLock: WebOrientationLock): Promise<void> {
   if (webOrientationLock === WebOrientationLock.UNKNOWN) {
     throw new Error(
@@ -136,7 +147,6 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
   }
   async getOrientationAsync(): Promise<Orientation> {
     const webOrientation =
-      // @ts-expect-error - msOrientation and mozOrientation are legacy and removed from the types
       screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
     if (!webOrientation) {
       return Orientation.UNKNOWN;
@@ -167,8 +177,7 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
     }
 
     // See: https://developer.mozilla.org/en-US/docs/Web/API/Screen/unlockOrientation
-    const _legacyUnlockUniversal: undefined | (() => boolean) =
-      // @ts-expect-error - These legacy APIs are removed from the types
+    const _legacyUnlockUniversal: undefined | (() => boolean | undefined) =
       screen.unlockOrientation || screen.mozUnlockOrientation || screen.msUnlockOrientation;
 
     // Fallback to outdated legacy web API
