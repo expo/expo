@@ -12,6 +12,8 @@ Not every app needs to use emojis for icons. You can use a popular icon set thro
 
 The `@expo/vector-icons` library is installed by default on the template project using `npx create-expo-app` and is part of the `expo` package. It is built on top of [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) and uses a similar API. It includes popular icon sets you can browse at [icons.expo.fyi](https://icons.expo.fyi).
 
+`@expo/vector-icons` doesn't require any setup because the fonts are loaded at runtime but if you want to optimize the runtime cost a tiny bit, you can use the `expo-font` config plugin to bundle the fonts at build time, similar to [these instructions](https://docs.expo.dev/develop/user-interface/fonts/#with-expo-font-config-plugin-1), where the path to a font file would be (for example) `node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf`.
+
 The component loads the `Ionicons` font and renders a checkmark icon in the following example:
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
