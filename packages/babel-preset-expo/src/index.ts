@@ -17,6 +17,7 @@ import {
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
+import { expoImportMetaTransformPluginFactory } from './import-meta-transform-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
@@ -327,9 +328,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (platformOptions.disableImportExportTransform) {
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
-  if (platformOptions.unstable_transformImportMeta === true) {
-    extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
-  }
+  extraPlugins.push(
+    expoImportMetaTransformPluginFactory(platformOptions.unstable_transformImportMeta === true)
+  );
 
   return {
     presets: [
