@@ -102,8 +102,8 @@
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
-    "react": "*",
-    "react-native": "*",
+    "react": "19.0.0",
+    "react-native": "0.79.0",
     "react-native-webview": "*"
   },
   "peerDependenciesMeta": {
