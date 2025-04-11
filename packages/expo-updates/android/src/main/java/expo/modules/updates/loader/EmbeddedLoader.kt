@@ -10,6 +10,7 @@ import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -80,7 +81,7 @@ class EmbeddedLoader internal constructor(
   ) {
     if (!shouldCopyEmbeddedAssets) {
       assetEntity.downloadTime = Date()
-      assetEntity.relativePath = UpdatesUtils.createEmbeddedFilenameForAsset(assetEntity)
+      assetEntity.relativePath = AndroidResourceAssetUtils.createEmbeddedFilenameForAsset(assetEntity)
       // Passing `isNew=true` aka `AssetLoadResult.FINISHED` to the callback,
       // because we assume embedded asset is always existed without filesystem out of sync.
       callback.onSuccess(assetEntity, true)
@@ -90,7 +91,7 @@ class EmbeddedLoader internal constructor(
     val filename = UpdatesUtils.createFilenameForAsset(assetEntity)
     val destination = File(updatesDirectory, filename)
 
-    if (loaderFiles.fileExists(destination)) {
+    if (loaderFiles.fileExists(context, updatesDirectory, filename)) {
       assetEntity.relativePath = filename
       callback.onSuccess(assetEntity, false)
     } else {

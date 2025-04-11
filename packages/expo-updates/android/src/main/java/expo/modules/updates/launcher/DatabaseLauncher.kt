@@ -20,6 +20,7 @@ import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import org.json.JSONObject
 import java.io.File
 
@@ -117,7 +118,6 @@ class DatabaseLauncher(
     }
 
     val assetEntities = database.assetDao().loadAssetsForUpdate(launchedUpdate!!.id)
-    val isEmbeddedLaunch = embeddedUpdate != null && launchedUpdate?.id?.equals(embeddedUpdate.updateEntity.id) ?: false
 
     localAssetFiles = embeddedAssetFileMap().apply {
       for (asset in assetEntities) {
@@ -126,7 +126,7 @@ class DatabaseLauncher(
           continue
         }
         val filename = asset.relativePath ?: continue
-        if (!isEmbeddedLaunch || shouldCopyEmbeddedAssets) {
+        if (!AndroidResourceAssetUtils.isAndroidResourceAsset(filename)) {
           val assetFile = ensureAssetExists(asset, database, embeddedUpdate, extraHeaders)
           if (assetFile != null) {
             this[asset] = Uri.fromFile(assetFile).toString()
@@ -177,7 +177,7 @@ class DatabaseLauncher(
         }
 
         if (!shouldCopyEmbeddedAssets) {
-          val filename = UpdatesUtils.createEmbeddedFilenameForAsset(asset)
+          val filename = AndroidResourceAssetUtils.createEmbeddedFilenameForAsset(asset)
           if (filename != null) {
             asset.relativePath = filename
             this[asset] = filename

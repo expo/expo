@@ -166,8 +166,8 @@ class EmbeddedLoaderTest {
   @Throws(IOException::class, NoSuchAlgorithmException::class)
   fun testEmbeddedLoaderWithCopyAssets_AssetExists_BothDbAndDisk() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } answers {
-      firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
     }
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
@@ -194,7 +194,7 @@ class EmbeddedLoaderTest {
   @Throws(IOException::class, NoSuchAlgorithmException::class)
   fun testEmbeddedLoaderWithCopyAssets_AssetExists_DbOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } returns false
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } returns false
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
@@ -222,8 +222,8 @@ class EmbeddedLoaderTest {
   @Throws(IOException::class, NoSuchAlgorithmException::class)
   fun testEmbeddedLoaderWithCopyAssets_AssetExists_DiskOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } answers {
-      firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
     }
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
