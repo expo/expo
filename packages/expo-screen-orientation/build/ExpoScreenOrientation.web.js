@@ -101,9 +101,7 @@ class ExpoScreenOrientation extends NativeModule {
         return _lastWebOrientationLock;
     }
     async getOrientationAsync() {
-        const webOrientation = 
-        // @ts-expect-error - msOrientation and mozOrientation are legacy and removed from the types
-        screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
+        const webOrientation = screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
         if (!webOrientation) {
             return Orientation.UNKNOWN;
         }
@@ -130,9 +128,7 @@ class ExpoScreenOrientation extends NativeModule {
             return;
         }
         // See: https://developer.mozilla.org/en-US/docs/Web/API/Screen/unlockOrientation
-        const _legacyUnlockUniversal = 
-        // @ts-expect-error - These legacy APIs are removed from the types
-        screen.unlockOrientation || screen.mozUnlockOrientation || screen.msUnlockOrientation;
+        const _legacyUnlockUniversal = screen.unlockOrientation || screen.mozUnlockOrientation || screen.msUnlockOrientation;
         // Fallback to outdated legacy web API
         // See: https://developer.mozilla.org/en-US/docs/Web/API/Screen/unlockOrientation
         if (typeof _legacyUnlockUniversal === 'function') {
