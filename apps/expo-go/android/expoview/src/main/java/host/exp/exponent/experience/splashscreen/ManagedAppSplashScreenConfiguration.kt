@@ -18,6 +18,8 @@ class ManagedAppSplashScreenConfiguration private constructor() {
     private set
   var imageUrl: String? = null
     private set
+  var appName: String? = null
+    private set
 
   companion object {
     @JvmStatic
@@ -25,15 +27,19 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       val mode: SplashScreenImageResizeMode? = parseResizeMode(manifest)
       val backgroundColor = parseBackgroundColor(manifest)
       val imageUrl = parseImageUrl(manifest)
+      val name = manifest.getName()
       val config = ManagedAppSplashScreenConfiguration()
-      if (mode != null) {
-        config.resizeMode = mode
+      mode?.let {
+        config.resizeMode = it
       }
-      if (backgroundColor != null) {
-        config.backgroundColor = backgroundColor
+      backgroundColor?.let {
+        config.backgroundColor = it
       }
-      if (imageUrl != null) {
-        config.imageUrl = imageUrl
+      imageUrl?.let {
+        config.imageUrl = it
+      }
+      name?.let {
+        config.appName = it
       }
       return config
     }

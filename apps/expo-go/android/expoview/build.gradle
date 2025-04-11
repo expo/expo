@@ -15,6 +15,7 @@ plugins {
    alias libs.plugins.android.library
    alias libs.plugins.kotlin.android
    alias libs.plugins.download
+   id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
@@ -55,6 +56,10 @@ android {
     buildConfig = true
   }
 
+  composeOptions {
+    kotlinCompilerExtensionVersion = "1.5.14"
+  }
+
   // Used to override the NDK path/version on internal CI or by allowing
   // users to customize the NDK path/version from their root project (e.g. for M1 support)
   if (rootProject.hasProperty("ndkPath")) {
@@ -66,6 +71,7 @@ android {
 
   buildFeatures {
     viewBinding true
+    compose true
   }
 
   defaultConfig {
@@ -125,6 +131,13 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation "androidx.lifecycle:lifecycle-process:2.8.7"
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+
+  implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+  implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+  implementation("androidx.compose.material3:material3:1.4.0-alpha10")
+  implementation 'androidx.core:core-splashscreen:1.0.1'
+
 
   testImplementation 'junit:junit:4.13.2'
 

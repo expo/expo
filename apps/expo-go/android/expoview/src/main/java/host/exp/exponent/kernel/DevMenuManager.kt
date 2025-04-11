@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +24,7 @@ import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.ShakeDetector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import java.util.*
@@ -45,7 +44,7 @@ class DevMenuManager {
   private var orientationBeforeShowingDevMenu: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
   private val devMenuModulesRegistry = WeakHashMap<ExperienceActivity, DevMenuModuleInterface>()
 
-  val managerScope = CoroutineScope(Dispatchers.Main)
+  private val managerScope = CoroutineScope(Dispatchers.Main)
 
   @Inject
   internal lateinit var kernel: Kernel
@@ -279,7 +278,10 @@ class DevMenuManager {
       // @tsapeta: We need a small delay to allow the experience to be fully rendered.
       // Without the delay we were having some weird issues with style props being set on nonexistent shadow views.
       // From the other side, it's good that we don't show it immediately so the user can see his app first.
-      Handler(Looper.getMainLooper()).postDelayed({ showInActivity(activity) }, 2000)
+      managerScope.launch {
+        delay(2000)
+        showInActivity(activity)
+      }
     }
   }
 

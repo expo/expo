@@ -13,9 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
 import host.exp.expoview.BuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val KEEP_ALIVE_MS = (1000 * 60).toLong()
@@ -48,28 +52,26 @@ class LauncherActivity : AppCompatActivity() {
     kernel.handleIntent(this, intent)
 
     // Delay to prevent race condition where finish() is called before service starts.
-    Handler(mainLooper).postDelayed(
-      Runnable {
-        try {
-          // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
-          RecentTaskInfo::class.java.getDeclaredField("numActivities")
-          for (task in kernel.tasks) {
-            if (task.taskInfo.id == taskId) {
-              if (task.taskInfo.numActivities == 1) {
-                finishAndRemoveTask()
-                return@Runnable
-              } else {
-                break
-              }
+    // [Alan]: I would like to know some background on this 👇and why it's needed??
+    lifecycleScope.launch(Dispatchers.Main) {
+      delay(100)
+      try {
+        // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
+        RecentTaskInfo::class.java.getDeclaredField("numActivities")
+        for (task in kernel.tasks) {
+          if (task.taskInfo.id == taskId) {
+            if (task.taskInfo.numActivities == 1) {
+              finishAndRemoveTask()
+              return@launch
+            } else {
+              break
             }
           }
-        } catch (e: Exception) {
-          // just go straight to finish()
         }
+      } finally {
         finish()
-      },
-      100
-    )
+      }
+    }
   }
 
   override fun onStop() {

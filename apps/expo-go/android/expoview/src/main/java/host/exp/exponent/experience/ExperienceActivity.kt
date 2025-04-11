@@ -116,6 +116,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             done,
             total
           )
+          managedAppSplashScreenViewProvider?.updateProgress(status, done, total)
         }
       }
 
@@ -390,7 +391,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(
-        this,
         manifest!!
       )
     }
