@@ -1,32 +1,23 @@
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import { mockAppearance, renderedPropValue } from './Helpers';
-import { StatusBar as ExpoStatusBar } from '../StatusBar';
+import { StatusBar as ExpoStatusBar } from '../NativeStatusBarWrapper';
 
 describe('StatusBar', () => {
-  if (Platform.OS === 'android') {
-    describe('translucent', () => {
-      it('defaults to translucent', () => {
-        expect(renderedPropValue(<ExpoStatusBar />, 'translucent')).toBe(true);
-      });
-
-      it('respects the translucent value passed in', () => {
-        expect(renderedPropValue(<ExpoStatusBar translucent={false} />, 'translucent')).toBe(false);
-      });
-    });
-  }
-
   describe('style', () => {
+    jest.useFakeTimers();
+
     it('uses light-content instead of default when dark mode', () => {
       mockAppearance('dark', () => {
         expect(renderedPropValue(<ExpoStatusBar style="auto" />, 'barStyle')).toBe('light-content');
+        jest.runAllTimers();
       });
     });
 
     it('uses dark-content instead of default when light mode', () => {
       mockAppearance('light', () => {
         expect(renderedPropValue(<ExpoStatusBar style="auto" />, 'barStyle')).toBe('dark-content');
+        jest.runAllTimers();
       });
     });
 
@@ -35,6 +26,7 @@ describe('StatusBar', () => {
         expect(renderedPropValue(<ExpoStatusBar style="inverted" />, 'barStyle')).toBe(
           'light-content'
         );
+        jest.runAllTimers();
       });
     });
 
@@ -43,6 +35,7 @@ describe('StatusBar', () => {
         expect(renderedPropValue(<ExpoStatusBar style="inverted" />, 'barStyle')).toBe(
           'dark-content'
         );
+        jest.runAllTimers();
       });
     });
 

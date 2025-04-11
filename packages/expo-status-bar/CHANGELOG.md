@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use react-native-edge-to-edge system bars when edge-to-edge is enabled ([#36087](https://github.com/expo/expo/pull/36087) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
