@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for custom headers in downloadFileAsync
+- Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
 
 ### 🐛 Bug fixes
 
