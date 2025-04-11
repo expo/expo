@@ -7,7 +7,7 @@ import { IssuerOrDiscovery } from './Discovery';
  * Cancels an active `AuthSession` if there is one.
  */
 export declare function dismiss(): void;
-export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Omit<Linking.CreateURLOptions, "queryParams"> | undefined) => string;
+export declare const getDefaultReturnUrl: (urlPath?: string, options?: Omit<Linking.CreateURLOptions, "queryParams">) => string;
 /**
  * Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
  * > **Note** This method will throw an exception if you're using the bare workflow on native.

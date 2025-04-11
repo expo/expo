@@ -535,23 +535,24 @@ export async function test(t) {
     t.describe('Notification Categories', () => {
       const vanillaButton = {
         identifier: 'vanillaButton',
-        buttonTitle: 'Plain Option',
+        buttonTitle: 'Destructive Option',
         options: {
           isDestructive: true,
           isAuthenticationRequired: true,
           opensAppToForeground: false,
         },
-      };
+      } satisfies Notifications.NotificationAction;
+
       const textResponseButton = {
         identifier: 'textResponseButton',
         buttonTitle: 'Click to Respond with Text',
         options: {
-          isDestructive: true,
+          isDestructive: false,
           isAuthenticationRequired: true,
           opensAppToForeground: true,
         },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
-      };
+      } satisfies Notifications.NotificationAction;
 
       type CategoryParams = {
         identifier: string;
@@ -559,7 +560,7 @@ export async function test(t) {
         options?: NotificationCategoryOptions;
       };
 
-      const testCategory1: CategoryParams = {
+      const testCategory1 = {
         identifier: 'testNotificationCategory1',
         actions: [vanillaButton],
         options: {
@@ -572,13 +573,13 @@ export async function test(t) {
           categorySummaryFormat: '',
           intentIdentifiers: [],
         },
-      };
-      const testCategory2: CategoryParams = {
+      } as const satisfies CategoryParams;
+      const testCategory2 = {
         identifier: 'testNotificationCategory2',
         actions: [vanillaButton, textResponseButton],
         options: {
           customDismissAction: false,
-          allowInCarPlay: false,
+          allowInCarPlay: true,
           showTitle: true,
           showSubtitle: true,
           allowAnnouncement: false,
@@ -586,7 +587,7 @@ export async function test(t) {
           previewPlaceholder: 'exPreview',
           intentIdentifiers: [],
         },
-      };
+      } as const satisfies CategoryParams;
 
       const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
 
@@ -631,45 +632,105 @@ export async function test(t) {
             await Notifications.deleteNotificationCategoryAsync(id);
           }
         });
-        t.it('creates a category with one action successfully', async () => {
-          const resultCategory = await Notifications.setNotificationCategoryAsync(
-            testCategory1.identifier,
-            testCategory1.actions,
-            testCategory1.options
-          );
 
-          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
-          testCategory1.actions.forEach((action, i) => {
-            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
-            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
-            t.expect(action.options).toEqual(
-              t.jasmine.objectContaining(resultCategory.actions[i].options)
+        t.it(
+          'given a category with two actions, presents notifications with the category, and asserts the response',
+          async () => {
+            const resultCategory = await Notifications.setNotificationCategoryAsync(
+              testCategory2.identifier,
+              testCategory2.actions,
+              testCategory2.options
             );
-          });
-          t.expect(testCategory1.options).toEqual(
-            t.jasmine.objectContaining(resultCategory.options)
-          );
-        });
 
-        t.it('creates a category with two actions successfully', async () => {
-          const resultCategory = await Notifications.setNotificationCategoryAsync(
-            testCategory2.identifier,
-            testCategory2.actions,
-            testCategory2.options
-          );
+            function attachResponseListener() {
+              return new Promise<Notifications.NotificationResponse>((resolve) => {
+                const listener = Notifications.addNotificationResponseReceivedListener((event) => {
+                  responseEvents.push(event);
+                  listener.remove();
+                  resolve(event);
+                });
+              });
+            }
 
-          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
-          testCategory2.actions.forEach((action, i) => {
-            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
-            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
-            t.expect(action.options).toEqual(
-              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            t.expect(resultCategory).toEqual({
+              identifier: testCategory2.identifier,
+              actions: [
+                {
+                  identifier: testCategory2.actions[0].identifier,
+                  buttonTitle: testCategory2.actions[0].buttonTitle,
+                  options: {
+                    opensAppToForeground: testCategory2.actions[0].options.opensAppToForeground,
+                    ...(Platform.OS === 'ios' && testCategory2.actions[0].options),
+                  },
+                  textInput: null,
+                },
+                {
+                  identifier: testCategory2.actions[1].identifier,
+                  buttonTitle: testCategory2.actions[1].buttonTitle,
+                  options: {
+                    opensAppToForeground: testCategory2.actions[1].options.opensAppToForeground,
+                    ...(Platform.OS === 'ios' && testCategory2.actions[1].options),
+                  },
+                  textInput: {
+                    placeholder: testCategory2.actions[1].textInput.placeholder,
+                    ...(Platform.OS === 'ios' && {
+                      submitButtonTitle: testCategory2.actions[1].textInput.submitButtonTitle,
+                      title: testCategory2.actions[1].buttonTitle,
+                    }),
+                  },
+                },
+              ],
+              options:
+                Platform.OS === 'ios'
+                  ? testCategory2.options
+                  : {
+                      // options are iOS-only
+                    },
+            });
+
+            const responseEvents: Notifications.NotificationResponse[] = [];
+            const responsePromise = attachResponseListener();
+
+            Notifications.setNotificationHandler({
+              handleNotification: async () => behaviorEnableAll,
+            });
+
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Press the destructive action button',
+                categoryIdentifier: testCategory2.identifier,
+              },
+              trigger: null,
+            });
+
+            const firstResponse = await responsePromise;
+            t.expect(firstResponse).toEqual(
+              t.jasmine.objectContaining({
+                actionIdentifier: vanillaButton.identifier,
+              })
             );
-          });
-          t.expect(testCategory2.options).toEqual(
-            t.jasmine.objectContaining(resultCategory.options)
-          );
-        });
+
+            // Wait for the second response
+            const secondResponsePromise = attachResponseListener();
+
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Enter some response text',
+                categoryIdentifier: testCategory2.identifier,
+              },
+              trigger: null,
+            });
+
+            const secondResponse = await secondResponsePromise;
+            t.expect(secondResponse).toEqual(
+              t.jasmine.objectContaining({
+                actionIdentifier: textResponseButton.identifier,
+                userText: t.jasmine.stringMatching(/.+/),
+              })
+            );
+          },
+          15000
+        );
       });
 
       t.describe('deleteNotificationCategoriesAsync()', () => {

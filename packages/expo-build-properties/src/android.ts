@@ -104,6 +104,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.useDayNightTheme',
       propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
+    {
+      propName: 'android.enableBundleCompression',
+      propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
+    },
   ],
   'withAndroidBuildProperties'
 );

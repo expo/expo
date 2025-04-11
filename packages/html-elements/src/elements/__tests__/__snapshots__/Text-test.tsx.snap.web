@@ -20,7 +20,7 @@ exports[`renders BR 1`] = `
 
 exports[`renders BlockQuote 1`] = `
 <div
-  className="css-view-175oi2r r-marginBlock-11nzuo4"
+  className="css-view-g5y9jx r-marginBlock-11nzuo4"
   dir={null}
   ref={[Function]}
 />

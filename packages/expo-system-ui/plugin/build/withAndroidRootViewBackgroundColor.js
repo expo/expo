@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRootViewBackgroundColor = exports.withRootViewBackgroundColorStyles = exports.withRootViewBackgroundColorColors = exports.withAndroidRootViewBackgroundColor = void 0;
+exports.withRootViewBackgroundColorStyles = exports.withRootViewBackgroundColorColors = exports.withAndroidRootViewBackgroundColor = void 0;
+exports.getRootViewBackgroundColor = getRootViewBackgroundColor;
 const config_plugins_1 = require("expo/config-plugins");
 const { assignColorValue } = config_plugins_1.AndroidConfig.Colors;
 const { assignStylesValue, getAppThemeGroup } = config_plugins_1.AndroidConfig.Styles;
@@ -37,4 +38,3 @@ exports.withRootViewBackgroundColorStyles = withRootViewBackgroundColorStyles;
 function getRootViewBackgroundColor(config) {
     return config.android?.backgroundColor || config.backgroundColor || null;
 }
-exports.getRootViewBackgroundColor = getRootViewBackgroundColor;

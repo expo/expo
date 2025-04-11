@@ -110,14 +110,22 @@ exports[`APISection expo-apple-authentication 1`] = `
         data-text="true"
       >
         React.Element
-        &lt;
+        <span
+          class="text-quaternary"
+        >
+          &lt;
+        </span>
         <a
           class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
         </a>
-        &gt;
+        <span
+          class="text-quaternary"
+        >
+          &gt;
+        </span>
       </code>
     </p>
     <div
@@ -3764,7 +3772,7 @@ for more details.
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'default'
@@ -3775,7 +3783,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'short'
@@ -3786,7 +3794,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'medium'
@@ -3797,7 +3805,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'long'
@@ -3808,7 +3816,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'abbreviated'
@@ -8352,7 +8360,7 @@ On iOS, the
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'never'
@@ -8363,7 +8371,7 @@ On iOS, the
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         number

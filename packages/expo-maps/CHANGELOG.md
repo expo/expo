@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Add zoom, tilt, bearing to StreetView position ([#35938](https://github.com/expo/expo/pull/35938) by [@jakex7](https://github.com/jakex7))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.9.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2025-04-08
+
+### 🛠 Breaking changes
+
+- [Android] Add zoom, tilt, bearing to StreetView position ([#35938](https://github.com/expo/expo/pull/35938) by [@jakex7](https://github.com/jakex7))
 
 ## 0.8.0 — 2025-04-04
 

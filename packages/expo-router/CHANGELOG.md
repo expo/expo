@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 5.0.2-preview.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.0 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1-preview.1 — 2025-04-08
+
+### 🐛 Bug fixes
+
+- Unpack default exports correctly from server actions using `expo-router/_async-server-import` ([#35948](https://github.com/expo/expo/pull/35948) by [@byCedric](https://github.com/byCedric))
+
 ## 5.0.1-preview.0 — 2025-04-05
 
 _This version does not introduce any user-facing changes._
@@ -24,6 +42,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+- Add `router.preload(<href>)` and `<Link preload href={}>` to error boundary. ([#34558](https://github.com/expo/expo/pull/34558) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

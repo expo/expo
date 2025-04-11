@@ -3,7 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSourceId = exports.createContentsHashResultsAsync = exports.createDirHashResultsAsync = exports.createFileHashResultsAsync = exports.createFingerprintSourceAsync = exports.createFingerprintFromSourcesAsync = void 0;
+exports.createFingerprintFromSourcesAsync = createFingerprintFromSourcesAsync;
+exports.createFingerprintSourceAsync = createFingerprintSourceAsync;
+exports.createFileHashResultsAsync = createFileHashResultsAsync;
+exports.createDirHashResultsAsync = createDirHashResultsAsync;
+exports.createContentsHashResultsAsync = createContentsHashResultsAsync;
+exports.createSourceId = createSourceId;
 const crypto_1 = require("crypto");
 const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
@@ -34,7 +39,6 @@ async function createFingerprintFromSourcesAsync(sources, projectRoot, options) 
         hash,
     };
 }
-exports.createFingerprintFromSourcesAsync = createFingerprintFromSourcesAsync;
 /**
  * Create a `FingerprintSource` from a `HashSource`
  * This function will get a hash value and merge back to original source
@@ -60,7 +64,6 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
         ...(options.debug ? { debugInfo: result?.debugInfo } : undefined),
     };
 }
-exports.createFingerprintSourceAsync = createFingerprintSourceAsync;
 /**
  * Create a `HashResult` from a file
  */
@@ -144,7 +147,6 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
         });
     });
 }
-exports.createFileHashResultsAsync = createFileHashResultsAsync;
 /**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
@@ -184,7 +186,6 @@ async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options,
         ...(options.debug ? { debugInfo: { path: dirPath, children, hash: hex } } : undefined),
     };
 }
-exports.createDirHashResultsAsync = createDirHashResultsAsync;
 /**
  * Create `HashResult` for a `HashSourceContents`
  */
@@ -214,7 +215,6 @@ async function createContentsHashResultsAsync(source, options) {
         ...(debugInfo ? { debugInfo } : undefined),
     };
 }
-exports.createContentsHashResultsAsync = createContentsHashResultsAsync;
 /**
  * Create id from given source
  */
@@ -230,5 +230,4 @@ function createSourceId(source) {
             throw new Error('Unsupported source type');
     }
 }
-exports.createSourceId = createSourceId;
 //# sourceMappingURL=Hash.js.map

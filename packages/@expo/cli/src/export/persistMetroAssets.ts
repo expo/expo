@@ -220,7 +220,7 @@ export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
   });
 }
 
-function copy(src: string, dest: string, callback: (error: NodeJS.ErrnoException) => void): void {
+function copy(src: string, dest: string, callback: (error?: NodeJS.ErrnoException) => void): void {
   fs.mkdir(path.dirname(dest), { recursive: true }, (err?) => {
     if (err) {
       callback(err);

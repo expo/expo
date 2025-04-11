@@ -34,11 +34,11 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "~11.0.0",
+    "@expo/config": "~11.0.1",
     "expo-json-utils": "~0.15.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.0"
+    "expo-module-scripts": "^4.1.1"
   },
   "peerDependencies": {
     "expo": "*"

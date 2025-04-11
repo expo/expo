@@ -696,6 +696,7 @@ export type NotificationCategoryOptions = {
      */
     showSubtitle?: boolean;
     /**
+     * @deprecated the option is ignored by iOS. This option will be removed in a future release.
      * Indicates whether to allow notifications to be automatically read by Siri when the user is using AirPods.
      * @default false
      */

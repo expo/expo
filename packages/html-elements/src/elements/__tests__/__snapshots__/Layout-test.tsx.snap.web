@@ -2,7 +2,7 @@
 
 exports[`renders Article 1`] = `
 <article
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="article"
@@ -11,7 +11,7 @@ exports[`renders Article 1`] = `
 
 exports[`renders Aside 1`] = `
 <aside
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="complementary"
@@ -20,7 +20,7 @@ exports[`renders Aside 1`] = `
 
 exports[`renders Footer 1`] = `
 <footer
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="contentinfo"
@@ -29,7 +29,7 @@ exports[`renders Footer 1`] = `
 
 exports[`renders Header 1`] = `
 <header
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="banner"
@@ -38,7 +38,7 @@ exports[`renders Header 1`] = `
 
 exports[`renders Main 1`] = `
 <main
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="main"
@@ -47,7 +47,7 @@ exports[`renders Main 1`] = `
 
 exports[`renders Nav 1`] = `
 <nav
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="navigation"
@@ -56,7 +56,7 @@ exports[`renders Nav 1`] = `
 
 exports[`renders Section 1`] = `
 <section
-  className="css-view-175oi2r"
+  className="css-view-g5y9jx"
   dir={null}
   ref={[Function]}
   role="region"

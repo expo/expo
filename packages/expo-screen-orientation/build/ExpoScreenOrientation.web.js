@@ -135,5 +135,5 @@ class ExpoScreenOrientation extends NativeModule {
         }
     }
 }
-export default registerWebModule(ExpoScreenOrientation);
+export default registerWebModule(ExpoScreenOrientation, 'ExpoScreenOrientation');
 //# sourceMappingURL=ExpoScreenOrientation.web.js.map

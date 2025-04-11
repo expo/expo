@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Screen = void 0;
+exports.Screen = Screen;
 const react_1 = __importDefault(require("react"));
 const useNavigation_1 = require("../useNavigation");
 const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
@@ -21,5 +21,4 @@ function Screen({ name, options }) {
     }, [navigation, options]);
     return null;
 }
-exports.Screen = Screen;
 //# sourceMappingURL=Screen.js.map

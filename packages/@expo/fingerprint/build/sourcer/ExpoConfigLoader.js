@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExpoConfigLoaderPath = void 0;
+exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 const promises_1 = __importDefault(require("fs/promises"));
 const module_1 = __importDefault(require("module"));
 const node_assert_1 = __importDefault(require("node:assert"));
@@ -88,7 +88,6 @@ async function loadIgnoredPathsAsync(ignoredFile) {
 function getExpoConfigLoaderPath() {
     return path_1.default.join(__dirname, 'ExpoConfigLoader.js');
 }
-exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 /**
  * Set the environment to production or development
  * Replicates the code from `@expo/cli` to ensure the same environment is set.

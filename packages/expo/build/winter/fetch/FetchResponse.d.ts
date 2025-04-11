@@ -19,6 +19,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     blob(): Promise<Blob>;
     formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
+    bytes(): Promise<Uint8Array>;
     toString(): string;
     toJSON(): object;
     clone(): Response;

@@ -38,7 +38,7 @@ class SettingsManager(
 
   private val groovyShell by lazy {
     val binding = Binding()
-    binding.setVariable("settings", settings)
+    binding.setVariable("providers", settings.providers)
     GroovyShell(javaClass.classLoader, binding)
   }
 

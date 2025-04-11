@@ -5,6 +5,7 @@ const common_1 = require("./common");
 const environment_restricted_imports_1 = require("./environment-restricted-imports");
 const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
 const expo_router_plugin_1 = require("./expo-router-plugin");
+const import_meta_transform_plugin_1 = require("./import-meta-transform-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
@@ -78,8 +79,7 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
-                // TODO: Update when we bump React to 19.
-                target: '18',
+                target: '19',
                 environment: {
                     enableResetCacheOnSourceFileChanges: !isProduction,
                     ...(platformOptions['react-compiler']?.environment ?? {}),
@@ -181,9 +181,7 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
-    if (platformOptions.unstable_transformImportMeta === true) {
-        extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
-    }
+    extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(platformOptions.unstable_transformImportMeta === true));
     return {
         presets: [
             (() => {

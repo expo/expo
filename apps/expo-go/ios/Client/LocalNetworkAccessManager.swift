@@ -90,7 +90,10 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
         case let .waiting(error):
           switch error {
           case .dns(DNSServiceErrorType(kDNSServiceErr_PolicyDenied)):
-            resume(with: .success(false))
+            // On iOS simulator Local Network Privacy is not available so we need to
+            // just complete and return true when we see this policy error
+            // https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy
+            resume(with: .success(true))
           default:
             resume(with: .failure(error))
           }

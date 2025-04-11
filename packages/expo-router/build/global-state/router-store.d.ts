@@ -41,6 +41,7 @@ export declare class RouterStore {
     setParams: any;
     navigate: any;
     reload: any;
+    prefetch: any;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, linkingConfigOptions?: LinkingConfigOptions): void;
     updateState(state: ResultState, nextState?: any): void;
     getRouteInfo(state: ResultState): UrlObject;
@@ -56,26 +57,26 @@ export declare class RouterStore {
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
+        history?: unknown[];
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
-        stale?: true | undefined;
+        stale?: true;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
-        state?: (Partial<Omit<Readonly<{
+        state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
-            history?: unknown[] | undefined;
+            history?: unknown[];
             routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
-            stale?: true | undefined;
+            stale?: true;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-        }> & any) | undefined;
+        }> & /*elided*/ any;
     }) | undefined;
     applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
 }

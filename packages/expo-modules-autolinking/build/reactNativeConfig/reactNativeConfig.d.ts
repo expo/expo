@@ -9,4 +9,5 @@ export declare function createReactNativeConfigAsync({ platform, projectRoot, se
  */
 export declare function findDependencyRootsAsync(projectRoot: string, searchPaths: string[]): Promise<Record<string, string>>;
 export declare function resolveDependencyConfigAsync(platform: SupportedPlatform, name: string, packageRoot: string, projectConfig: RNConfigReactNativeProjectConfig | null): Promise<RNConfigDependency | null>;
+export declare function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | null;
 export declare function resolveAppProjectConfigAsync(projectRoot: string, platform: SupportedPlatform): Promise<RNConfigReactNativeAppProjectConfig>;

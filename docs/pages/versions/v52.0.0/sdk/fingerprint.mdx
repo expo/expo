@@ -4,6 +4,7 @@ sidebar_title: Fingerprint
 description: A library to generate a fingerprint from a React Native project.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/%40expo/fingerprint'
 packageName: '@expo/fingerprint'
+iconUrl: '/static/images/packages/expo-fingerprint.png'
 platforms: ['node']
 isNew: true
 ---
@@ -22,12 +23,6 @@ import { CODE } from '~/ui/components/Text';
 If you wish to use `@expo/fingerprint` as a standalone package, you can install it by running the command:
 
 <Terminal cmd={['$ npx expo install @expo/fingerprint']} />
-
-## API Usage
-
-```ts
-import * as Fingerprint from '@expo/fingerprint';
-```
 
 ## CLI Usage
 
@@ -54,9 +49,7 @@ For example, to skip a folder but keep some files:
 
 ### fingerprint.config.js
 
-Placed in your project root, **fingerprint.config.js** allows you to specify custom hash calculation configuration beyond what is configurable in the **.fingerprintignore**.
-
-For supported configurations, see [Config](#config) and [`SourceSkips`](#sourceskips).
+Placed in your project root, **fingerprint.config.js** allows you to specify custom hash calculation configuration beyond what is configurable in the **.fingerprintignore**. For supported configurations, see [Config](#config) and [`SourceSkips`](#sourceskips).
 
 Below is an example **fingerprint.config.js** configuration, assuming you have `@expo/fingerprint` installed as a direct dependency:
 
@@ -146,5 +139,11 @@ module.exports = withMyPlugin;
 By following these guidelines, you can effectively manage changes to config plugins and ensure that fingerprinting remains consistent and reliable.
 
 </Collapsible>
+
+## API
+
+```ts
+import * as Fingerprint from '@expo/fingerprint';
+```
 
 <APISection packageName="@expo/fingerprint" apiName="Fingerprint" />
