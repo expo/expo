@@ -41,7 +41,7 @@ it(`should throw an error when trying to transform import.meta by default for na
 
     const sourceCode = `var url = import.meta.url;`;
     expect(() => babel.transform(sourceCode, options)).toThrow(
-      /Your code uses `import.meta` which is not supported in the React Native runtime yet. Enable the `unstable_transformImportMeta` option in babel-preset-expo to use `import.meta`./
+      /`import.meta` is not supported in Hermes. Enable the polyfill `unstable_transformImportMeta` in babel-preset-expo to use this syntax./
     );
   });
 });

@@ -15,7 +15,7 @@ function expoImportMetaTransformPluginFactory(pluginEnabled) {
                     if (node.meta.name === 'import' && node.property.name === 'meta') {
                         if (!pluginEnabled) {
                             if (platform !== 'web') {
-                                throw path.buildCodeFrameError('Your code uses `import.meta` which is not supported in the React Native runtime yet. Enable the `unstable_transformImportMeta` option in babel-preset-expo to use `import.meta`.');
+                                throw path.buildCodeFrameError('`import.meta` is not supported in Hermes. Enable the polyfill `unstable_transformImportMeta` in babel-preset-expo to use this syntax.');
                             }
                             return;
                         }
