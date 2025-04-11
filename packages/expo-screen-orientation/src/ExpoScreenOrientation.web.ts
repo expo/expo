@@ -167,4 +167,4 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
   }
 }
 
-export default registerWebModule(ExpoScreenOrientation);
+export default registerWebModule(ExpoScreenOrientation, 'ExpoScreenOrientation');

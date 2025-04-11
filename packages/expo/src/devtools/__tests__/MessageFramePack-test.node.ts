@@ -86,7 +86,7 @@ describe(MessageFramePacker, () => {
     if (packedData instanceof Promise || typeof packedData === 'string') {
       throw new Error('Unexpected packed data type');
     }
-    const unpackedData = packer.unpack(packedData.buffer);
+    const unpackedData = packer.unpack(packedData.buffer as ArrayBuffer);
     expect(unpackedData.messageKey).toEqual(messageFrame.messageKey);
     expect(unpackedData.payload).toEqual(messageFrame.payload);
   });
@@ -105,7 +105,7 @@ describe(MessageFramePacker, () => {
     if (packedData instanceof Promise || typeof packedData === 'string') {
       throw new Error('Unexpected packed data type');
     }
-    const unpackedData = packer.unpack(packedData.buffer);
+    const unpackedData = packer.unpack(packedData.buffer as ArrayBuffer);
     expect(unpackedData.messageKey).toEqual(messageFrame.messageKey);
     expect(new Uint8Array(unpackedData.payload as ArrayBuffer)).toEqual(view);
   });
@@ -123,7 +123,7 @@ describe(MessageFramePacker, () => {
       throw new Error('Unexpected packed data type');
     }
     const packedData = await packedDataPromise;
-    const unpackedData = packer.unpack(packedData.buffer);
+    const unpackedData = packer.unpack(packedData.buffer as ArrayBuffer);
     expect(unpackedData.messageKey).toEqual(messageFrame.messageKey);
     const unpackedBlob = unpackedData.payload as Blob;
     expect(await unpackedBlob.text()).toEqual(await blob.text());

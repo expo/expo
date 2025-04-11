@@ -109,6 +109,72 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('Works with %, # and space characters in names', () => {
+        it('Works with spaces as filename', () => {
+          const outputFile = new File(testDirectory, 'my new file.txt');
+          expect(outputFile.exists).toBe(false);
+          outputFile.write('Hello world');
+          expect(outputFile.exists).toBe(true);
+          expect(outputFile.name).toBe('my new file.txt');
+        });
+
+        it('Works with spaces as directory name', () => {
+          const dir = new Directory(testDirectory, 'my new folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my new folder');
+        });
+
+        it('Works with # as directory name', () => {
+          const dir = new Directory(testDirectory, 'my#folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my#folder');
+        });
+
+        it('Ignores # passed in as uri path', () => {
+          // note the + sign here – the first argument is first decoded if it is a file url, so the # is stripped
+          const dir = new Directory(testDirectory + '/TestFolder#query');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('TestFolder');
+        });
+
+        it('Works with # as directory name', () => {
+          const dir = new Directory(testDirectory, 'my#folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my#folder');
+        });
+
+        it('Works with % as directory name', () => {
+          const dir = new Directory(testDirectory, 'my%folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my%folder');
+        });
+
+        it('Works with % as file name', () => {
+          const dir = new Directory(testDirectory, 'my%file.txt');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my%file.txt');
+        });
+
+        it('Throws error on invalid uris passed in as argument', () => {
+          expect(() => {
+            // eslint-disable-next-line no-new
+            new Directory(testDirectory + '/TestFolder%query');
+          }).toThrow();
+        });
+      });
+
       it('Writes a string to a file reference', () => {
         const outputFile = new File(testDirectory, 'file.txt');
         expect(outputFile.exists).toBe(false);

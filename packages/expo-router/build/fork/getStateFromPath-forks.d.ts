@@ -44,20 +44,20 @@ export declare function spreadParamsAcrossAllStates(state: InitialState, params?
 export declare function stripBaseUrl(path: string, baseUrl?: string | undefined): string;
 export declare function matchForEmptyPath(configs: RouteConfig[]): {
     path: string;
-    type: "layout" | "dynamic" | "static";
+    type: "static" | "dynamic" | "layout";
     userReadableName: string;
     isIndex: boolean;
-    isInitial?: boolean | undefined;
+    isInitial?: boolean;
     hasChildren: boolean;
     expandedRouteNames: string[];
     parts: string[];
     screen: string;
-    regex?: RegExp | undefined;
+    regex?: RegExp;
     pattern: string;
     routeNames: string[];
     parse?: {
         [x: string]: (value: string) => any;
-    } | undefined;
+    };
 } | undefined;
 export declare function appendIsInitial(initialRoutes: InitialRouteConfig[]): (config: RouteConfig) => RouteConfig;
 export declare function getRouteConfigSorter(previousSegments?: string[]): (a: RouteConfig, b: RouteConfig) => number;

@@ -54,7 +54,7 @@ export function Code({ className, children, title }: CodeProps) {
   const highlightedHtml = getCodeData(value, language);
 
   useEffect(() => {
-    const tippyFunc = testTippy || tippy;
+    const tippyFunc = testTippy ?? tippy;
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',

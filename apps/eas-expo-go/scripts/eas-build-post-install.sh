@@ -12,8 +12,11 @@ else
   echo "EXPO_TOKEN is not set"
 fi
 
-# Bail out if the versions endpoint is not available
-et eas verify-versions-endpoint-available
+# Only run this if the VERIFY_VERSIONS_ENDPOINT is set
+if [ -n "${VERIFY_VERSIONS_ENDPOINT+x}" ] && [ "${VERIFY_VERSIONS_ENDPOINT}" = "1" ]; then
+  # Bail out if the versions endpoint is not available
+  et eas verify-versions-endpoint-available
+fi
 
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et ios-generate-dynamic-macros

@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parse = void 0;
+exports.parse = parse;
 const xmldom_1 = require("@xmldom/xmldom");
 const assert_1 = __importDefault(require("assert"));
 const TEXT_NODE = 3;
@@ -75,7 +75,6 @@ function parse(xml) {
         plist = plist[0];
     return plist;
 }
-exports.parse = parse;
 /**
  * Convert an XML based plist document into a JSON representation.
  *

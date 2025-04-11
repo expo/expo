@@ -713,13 +713,6 @@ export function withExtendedResolver(
         ];
       }
 
-      // HACK:
-      if (moduleName.match(/^@react-navigation\//)) {
-        // Force to use the ESM versions of react-navigation to prevent Metro behavior where it changes the
-        // resolution based on if a module is `import`ing or `require`ing it.
-        context.unstable_conditionNames = ['import', 'require'];
-      }
-
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {

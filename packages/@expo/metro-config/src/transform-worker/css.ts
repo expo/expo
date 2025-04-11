@@ -63,5 +63,5 @@ export function escapeBackticksAndOctals(str: string) {
   return str
     .replace(/\\/g, '\\\\')
     .replace(/`/g, '\\`')
-    .replace(/[\0-\7]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
+    .replace(/[\x00-\x07]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }

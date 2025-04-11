@@ -86,7 +86,7 @@ internal val isBundleConvertibleToJSValue: BundleConversionTester = { bundle: Bu
 /**
  * Returns true if the argument is a valid JSON string, false otherwise
  */
-internal fun isValidJSONString(test: Any?): Boolean {
+internal fun isValidJSONString(test: String?): Boolean {
   when (test is String) {
     true -> {
       try {

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 14.1.2 — 2025-04-11
+
+### 💡 Others
+
+- Update doc comment about `--https` flag. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
 ## 14.1.0 — 2025-04-04
 
 ### 🎉 New features

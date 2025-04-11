@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export declare function isEnabled(): boolean;
 /** All conventional modes that should not cause warnings */

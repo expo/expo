@@ -4,6 +4,7 @@ import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {
+  // TODO: Remove once no longer needed for compatibility with current modules core.
   // @ts-ignore: Overrides the built-in `Function.name` property
   static name = 'ExpoImage';
 
@@ -76,4 +77,4 @@ async function loadImageElementAsync(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export default registerWebModule(ImageModule);
+export default registerWebModule(ImageModule, 'ExpoImage');

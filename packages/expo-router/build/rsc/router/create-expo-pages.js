@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createExpoPages = void 0;
+exports.createExpoPages = createExpoPages;
 const create_pages_1 = require("./create-pages");
 /**
  * Wrapper around `createPages` to pass data from the server to the fn
@@ -18,5 +18,4 @@ function createExpoPages(fn) {
         };
     };
 }
-exports.createExpoPages = createExpoPages;
 //# sourceMappingURL=create-expo-pages.js.map

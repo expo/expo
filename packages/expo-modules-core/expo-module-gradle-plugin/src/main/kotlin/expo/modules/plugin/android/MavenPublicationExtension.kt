@@ -3,7 +3,10 @@
 package expo.modules.plugin.android
 
 import expo.modules.plugin.androidLibraryExtension
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import expo.modules.plugin.publishingExtension
+import groovy.lang.Binding
+import groovy.lang.GroovyShell
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -19,7 +22,6 @@ import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskProvider
-import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.toPath
@@ -85,10 +87,10 @@ internal fun PublicationContainer.createReleasePublication(publicationInfo: Publ
   }
 }
 
-internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo, pathToRepository: String): TaskProvider<Task> {
+internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension, pathToRepository: String): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublish") { task ->
     task.doLast {
-      expoPublishBody(publicationInfo, pathToRepository = pathToRepository)
+      expoPublishBody(publicationInfo, expoModulesExtension, pathToRepository = pathToRepository)
     }
   }
   taskProvider.configure { task ->
@@ -130,10 +132,10 @@ internal fun Project.createEmptyExpoPublishToMavenLocalTask(): TaskProvider<Task
   return taskProvider
 }
 
-internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: PublicationInfo): TaskProvider<Task> {
+internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublishToMavenLocal") { task ->
     task.doLast {
-      expoPublishBody(publicationInfo)
+      expoPublishBody(publicationInfo, expoModulesExtension)
     }
   }
   taskProvider.configure { task ->
@@ -147,7 +149,9 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
   return taskProvider
 }
 
-private fun Project.expoPublishBody(publicationInfo: PublicationInfo, pathToRepository: String? = null) {
+private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension, pathToRepository: String? = null) {
+  validateProjectConfiguration(expoModulesExtension)
+
   if (pathToRepository == null) {
     val mavenLocal = publishingExtension().repositories.mavenLocal()
     val mavenLocalPath = mavenLocal.url.toPath()
@@ -180,6 +184,24 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, pathToRepo
     // TODO(@lukmccall): support other package managers
     env.commandLine("yarn", "prettier", "--write", "expo-module.config.json")
   }.result.get()
+}
+
+private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
+  val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
+  // If the path to the script is not defined, we assume that we can publish the module.
+  if (shouldUsePublicationScript == null) {
+    return
+  }
+
+  val binding = Binding()
+  binding.setVariable("providers", project.providers)
+  val shell = GroovyShell(javaClass.classLoader, binding)
+
+  val shouldUsePublication = shell.run(shouldUsePublicationScript, emptyArray<String>()) as? Boolean == true
+
+  if (!shouldUsePublication) {
+    throw IllegalStateException("The publication script returned false. Please check the script or your project configuration. You're trying to precompile a non-default configuration.")
+  }
 }
 
 private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo, pathToRepository: String?): JsonObject {

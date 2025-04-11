@@ -98,7 +98,7 @@ By default, the project is served over a LAN connection. You can change this beh
 Other available options are:
 
 - `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Use `--port 0` to automatically use the first available port. Default: **8081**.
-- `--https`: Start the dev server using a secure origin. This is currently only supported on web.
+- `--https`: **(Deprecated in favor of `--tunnel`)** Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
@@ -120,7 +120,9 @@ Then run the following to start your dev server from a _tunnel_ URL:
 
 <Terminal cmd={['$ npx expo start --tunnel']} />
 
-This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp.direct:80`.
+This will serve your app from a public URL like: `https://xxxxxxx.bacon.19000.exp.direct:80`.
+
+Use the `EXPO_TUNNEL_SUBDOMAIN` environment variable to experimentally set the subdomain for the tunnel URL. This is useful for testing universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`.
 
 **Drawbacks**
 

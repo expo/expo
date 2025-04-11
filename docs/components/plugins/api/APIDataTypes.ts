@@ -201,7 +201,7 @@ export type PropData = {
   name: string;
   kind?: TypeDocKind;
   comment?: CommentData;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];

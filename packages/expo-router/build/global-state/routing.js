@@ -15,15 +15,37 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
+exports.navigate = navigate;
+exports.reload = reload;
+exports.prefetch = prefetch;
+exports.push = push;
+exports.dismiss = dismiss;
+exports.dismissTo = dismissTo;
+exports.replace = replace;
+exports.dismissAll = dismissAll;
+exports.goBack = goBack;
+exports.canGoBack = canGoBack;
+exports.canDismiss = canDismiss;
+exports.setParams = setParams;
+exports.linkTo = linkTo;
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -40,38 +62,34 @@ function assertIsReady(store) {
 function navigate(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
-exports.navigate = navigate;
 function reload() {
     // TODO(EvanBacon): add `reload` support.
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
-exports.reload = reload;
+function prefetch(href, options) {
+    return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
+}
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
-exports.push = push;
 function dismiss(count) {
     if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
         return;
     }
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
-exports.dismiss = dismiss;
 function dismissTo(href, options) {
     return this.linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
 }
-exports.dismissTo = dismissTo;
 function replace(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
-exports.replace = replace;
 function dismissAll() {
     if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
         return;
     }
     this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
-exports.dismissAll = dismissAll;
 function goBack() {
     if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
         return;
@@ -79,7 +97,6 @@ function goBack() {
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-exports.goBack = goBack;
 function canGoBack() {
     if (dom_1.IS_DOM) {
         throw new Error('canGoBack imperative method is not supported. Pass the property to the DOM component instead.');
@@ -94,7 +111,6 @@ function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-exports.canGoBack = canGoBack;
 function canDismiss() {
     if (dom_1.IS_DOM) {
         throw new Error('canDismiss imperative method is not supported. Pass the property to the DOM component instead.');
@@ -111,7 +127,6 @@ function canDismiss() {
     }
     return false;
 }
-exports.canDismiss = canDismiss;
 function setParams(params = {}) {
     if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
         return;
@@ -119,7 +134,6 @@ function setParams(params = {}) {
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-exports.setParams = setParams;
 function linkTo(originalHref, options = {}) {
     let href = originalHref;
     if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
@@ -158,7 +172,6 @@ function linkTo(originalHref, options = {}) {
     }
     return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
 }
-exports.linkTo = linkTo;
 function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the

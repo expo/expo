@@ -26,39 +26,17 @@ describe('server api redirects', () => {
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
-            {
-              source: '/redirect/methods',
-              destination: '/methods',
-            },
-            {
-              source: '/redirect/dynamic/[slug]',
-              destination: '/dynamic/[slug]',
-            },
-            {
-              source: '/redirect/dynamic/[other]/[slug]',
-              destination: '/dynamic/[slug]/[other]',
-            },
+            { source: '/redirect/methods', destination: '/methods' },
+            { source: '/redirect/dynamic/[slug]', destination: '/dynamic/[slug]' },
+            { source: '/redirect/dynamic/[other]/[slug]', destination: '/dynamic/[slug]/[other]' },
             {
               source: '/redirect/dynamic/[slug]/to/[catchAll]',
               destination: '/dynamic/[...catchAll]',
             },
-            {
-              source: '/redirect/dynamic/[slug]/[query]/[params]',
-              destination: '/dynamic/[slug]',
-            },
-            {
-              source: '/redirect/catch-all/[...catchAll]',
-              destination: '/dynamic/[...catchAll]',
-            },
-            {
-              source: '/redirect/catch-all-to-slug/[...slug]',
-              destination: '/dynamic/[slug]',
-            },
-            {
-              source: '/redirect/only-post/[slug]',
-              destination: '/methods',
-              methods: ['POST'],
-            },
+            { source: '/redirect/dynamic/[slug]/[query]/[params]', destination: '/dynamic/[slug]' },
+            { source: '/redirect/catch-all/[...catchAll]', destination: '/dynamic/[...catchAll]' },
+            { source: '/redirect/catch-all-to-slug/[...slug]', destination: '/dynamic/[slug]' },
+            { source: '/redirect/only-post/[slug]', destination: '/methods', methods: ['POST'] },
           ] as RedirectConfig[]),
         },
       }
@@ -71,10 +49,7 @@ describe('server api redirects', () => {
       host: (chunk) =>
         processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
       cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        TEST_SECRET_KEY: 'test-secret-key',
-      },
+      env: { NODE_ENV: 'production', TEST_SECRET_KEY: 'test-secret-key' },
     });
 
     beforeAll(async () => {

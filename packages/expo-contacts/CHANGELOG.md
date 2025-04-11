@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [iOS] Disambiguated `limited` permission status from `granted`. ([#35772](https://github.com/expo/expo/pull/35772) by [@clarkg](https://github.com/clarkg))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
 
 ## 14.1.0 — 2025-04-04
 

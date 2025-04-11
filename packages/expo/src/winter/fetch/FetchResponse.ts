@@ -112,6 +112,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     return JSON.parse(text);
   }
 
+  async bytes(): Promise<Uint8Array> {
+    return new Uint8Array(await this.arrayBuffer());
+  }
+
   toString(): string {
     return `FetchResponse: { status: ${this.status}, statusText: ${this.statusText}, url: ${this.url} }`;
   }

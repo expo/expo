@@ -7,6 +7,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = minifyPlatformSelectPlugin;
 const core_1 = require("@babel/core");
 function minifyPlatformSelectPlugin({ types: t, }) {
     return {
@@ -31,7 +32,6 @@ function minifyPlatformSelectPlugin({ types: t, }) {
         },
     };
 }
-exports.default = minifyPlatformSelectPlugin;
 function isPlatformSelect(path) {
     return (core_1.types.isMemberExpression(path.node.callee) &&
         core_1.types.isIdentifier(path.node.callee.object) &&
