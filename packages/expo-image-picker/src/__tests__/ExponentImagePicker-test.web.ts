@@ -34,7 +34,7 @@ describe('ExponentImagePicker', () => {
       originalCreateElement = globalThis.document.createElement;
       globalThis.document.createElement = (function (create) {
         return function (this: typeof create, ...args: any[]) {
-          const element: HTMLElement = create.apply(this, args);
+          const element: HTMLElement = (create as any).apply(this, args);
 
           if (element.tagName === 'IMG') {
             setTimeout(() => {

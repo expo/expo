@@ -16,12 +16,12 @@ export type ImageSource = {
      * Can be specified if known at build time, in which case the value
      * will be used to set the default `<Image/>` component dimension.
      */
-    width?: number;
+    width?: number | null;
     /**
      * Can be specified if known at build time, in which case the value
      * will be used to set the default `<Image/>` component dimension.
      */
-    height?: number;
+    height?: number | null;
     /**
      * A string used to generate the image [`placeholder`](#placeholder). For example,
      * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
@@ -326,8 +326,8 @@ export interface ImageNativeProps extends ImageProps {
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
     autoplay?: boolean;
-    nativeViewRef?: React.RefObject<ExpoImage>;
-    containerViewRef?: React.RefObject<View>;
+    nativeViewRef?: React.RefObject<ExpoImage | null>;
+    containerViewRef?: React.RefObject<View | null>;
 }
 /**
  * A value that represents the relative position of a single axis.

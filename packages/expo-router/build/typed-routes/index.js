@@ -53,7 +53,9 @@ function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.r
             shouldRegenerate = routeFiles.has(relativePath);
         }
         if (shouldRegenerate) {
-            regenerateFn(outputDir, ctx);
+            // TODO(@kitten): This was altered from `regenerateFn(outputDir, ctx)` which, as per the types, is incorrect
+            // It's unclear whether fixing this will have other unintended consequences!
+            regenerateFn(outputDir, {}, ctx);
         }
     };
 }

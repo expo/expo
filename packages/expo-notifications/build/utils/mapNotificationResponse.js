@@ -51,6 +51,7 @@ let didWarn = false;
  */
 export const mapNotificationContent = (content) => {
     try {
+        // @ts-expect-error: TODO(@kitten): This is not present in the types! This is error prone
         const dataString = content['dataString'];
         if (typeof dataString === 'string') {
             const mappedContent = { ...content };

@@ -114,7 +114,7 @@ export function useWebQRScanner(
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       if (onError) {
         onError({ nativeEvent: error });
       }

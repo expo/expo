@@ -163,11 +163,11 @@ if (__DEV__) {
     isInstalled(): boolean {
       return false;
     },
-    ignoreLogs(patterns: readonly IgnorePattern[]): void {},
-    ignoreAllLogs(value?: boolean): void {},
+    ignoreLogs(_patterns: readonly IgnorePattern[]): void {},
+    ignoreAllLogs(_value?: boolean): void {},
     clearAllLogs(): void {},
-    addLog(log: LogData): void {},
-    addException(ex: ExtendedExceptionData): void {},
+    addLog(_log: LogData): void {},
+    addException(_ex: ExtendedExceptionData): void {},
   };
 }
 

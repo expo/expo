@@ -49,6 +49,7 @@ const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
+// @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");

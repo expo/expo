@@ -12,7 +12,8 @@ const fakeManifest = {
   sdkVersion: '36.0.0',
 } as any as Manifest;
 
-let old__DEV__;
+let old__DEV__: boolean;
+
 beforeAll(() => {
   old__DEV__ = __DEV__;
   //@ts-expect-error: __DEV__ is usually not assignable but we need to set it to false for this test
@@ -77,8 +78,7 @@ it('returns the proper object when no logs from readLogEntriesAsync', async () =
   jest.mocked(ExpoUpdates.readLogEntriesAsync).mockResolvedValueOnce([]);
 
   const actual = await Updates.readLogEntriesAsync();
-  const expected = [];
-  expect(actual).toEqual(expected);
+  expect(actual).toEqual([]);
 });
 
 it('returns the proper object when logs returned from readLogEntriesAsync', async () => {

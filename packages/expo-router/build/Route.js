@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = void 0;
 exports.useRouteNode = useRouteNode;

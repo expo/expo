@@ -2,7 +2,7 @@ describe('TextDecoder', () => {
   // https://github.com/inexorabletash/text-encoding/blob/master/test/test-big5.js
 
   it(`uses the Expo built-in APIs`, () => {
-    expect(TextDecoder[Symbol.for('expo.builtin')]).toBe(true);
+    expect((TextDecoder as any)[Symbol.for('expo.builtin')]).toBe(true);
   });
 
   // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/test/test-misc.js#L34C1-L47C18
@@ -163,15 +163,13 @@ describe('TextDecoder', () => {
   describe('Supersets of ASCII decode ASCII correctly', () => {
     it.each(['utf-8'])('should decode ASCII correctly for encoding: %s', (encoding) => {
       let string = '';
-      const bytes = [];
+      const bytes: number[] = [];
       for (let i = 0; i < 128; ++i) {
         // Encodings that have escape codes in 0x00-0x7F
         if (encoding === 'iso-2022-jp' && (i === 0x0e || i === 0x0f || i === 0x1b)) {
           continue;
         }
-
         string += String.fromCharCode(i);
-        // @ts-expect-error
         bytes.push(i);
       }
       const ascii_encoded = new TextEncoder().encode(string);
@@ -234,7 +232,7 @@ describe('TextDecoder', () => {
         'Int32Array',
         'Float32Array',
         'Float64Array',
-      ];
+      ] as const;
 
       types.forEach((typeName) => {
         const TypeConstructor = globalThis[typeName];
@@ -308,7 +306,7 @@ describe('TextDecoder', () => {
   });
 
   it('UTF-8 - Encode/Decode - full roundtrip and agreement with encode/decodeURIComponent', () => {
-    function assertStringEquals(actual, expected, description) {
+    function assertStringEquals(actual: string, expected: string, description: string) {
       // short circuit success case
       if (actual === expected) {
         return;
@@ -341,7 +339,7 @@ describe('TextDecoder', () => {
 
     // Inspired by:
     // http://ecmanaut.blogspot.com/2006/07/encoding-decoding-utf8-in-javascript.html
-    function encodeUtf8(string) {
+    function encodeUtf8(string: string): Uint8Array {
       const utf8 = unescape(encodeURIComponent(string));
       const octets = new Uint8Array(utf8.length);
       for (let i = 0; i < utf8.length; i += 1) {
@@ -350,35 +348,32 @@ describe('TextDecoder', () => {
       return octets;
     }
 
-    function decodeUtf8(octets) {
+    function decodeUtf8(octets: number[]): string {
       const utf8 = String.fromCharCode.apply(null, octets);
       return decodeURIComponent(escape(utf8));
     }
 
     // Helpers for test_utf_roundtrip.
-    function cpname(n) {
+    function cpname(n: number): string {
       if (n + 0 !== n) return n.toString();
       const w = n <= 0xffff ? 4 : 6;
       return 'U+' + ('000000' + n.toString(16).toUpperCase()).slice(-w);
     }
 
-    function genblock(from, len, skip) {
-      const block = [];
+    function genblock(from: number, len: number, skip: number) {
+      let block = '';
       for (let i = 0; i < len; i += skip) {
         let cp = from + i;
         if (0xd800 <= cp && cp <= 0xdfff) continue;
         if (cp < 0x10000) {
-          // @ts-expect-error
-          block.push(String.fromCharCode(cp));
+          block += String.fromCharCode(cp);
           continue;
         }
         cp = cp - 0x10000;
-        // @ts-expect-error
-        block.push(String.fromCharCode(0xd800 + (cp >> 10)));
-        // @ts-expect-error
-        block.push(String.fromCharCode(0xdc00 + (cp & 0x3ff)));
+        block += String.fromCharCode(0xd800 + (cp >> 10));
+        block += String.fromCharCode(0xdc00 + (cp & 0x3ff));
       }
-      return block.join('');
+      return block;
     }
 
     const MIN_CODEPOINT = 0;
@@ -405,7 +400,7 @@ describe('TextDecoder', () => {
       expect(encoded.length).toBe(expEncoded.length);
       // assert_array_equals(encoded, expEncoded, 'UTF-8 reference encoding ' + block_tag);
 
-      const expDecoded = decodeUtf8(expEncoded);
+      const expDecoded = decodeUtf8([...expEncoded]);
       assertStringEquals(decoded, expDecoded, 'UTF-8 reference decoding ' + block_tag);
     }
   });

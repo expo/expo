@@ -91,6 +91,7 @@
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "@types/react": "~19.0.10",
     "@types/react-test-renderer": "^19.0.0",
     "expo-module-scripts": "^4.1.1",

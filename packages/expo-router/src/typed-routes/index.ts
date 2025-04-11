@@ -58,7 +58,9 @@ export function getWatchHandler(
     }
 
     if (shouldRegenerate) {
-      regenerateFn(outputDir, ctx);
+      // TODO(@kitten): This was altered from `regenerateFn(outputDir, ctx)` which, as per the types, is incorrect
+      // It's unclear whether fixing this will have other unintended consequences!
+      regenerateFn(outputDir, {}, ctx);
     }
   };
 }
@@ -96,8 +98,11 @@ export const regenerateDeclarations = debounce(
  * Debounce a function to only run once after a period of inactivity
  * If called while waiting, it will reset the timer
  */
-function debounce<T extends (...args: any[]) => any>(fn: T, timeout: number = 1000) {
-  let timer;
+function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  timeout: number = 1000
+): (...args: Parameters<T>) => void {
+  let timer: ReturnType<typeof setTimeout>;
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => {

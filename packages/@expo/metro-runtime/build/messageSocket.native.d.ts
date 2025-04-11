@@ -1,2 +1,2 @@
-declare function createWebSocketConnection(path?: string): any;
+export {};
 //# sourceMappingURL=messageSocket.native.d.ts.map

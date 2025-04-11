@@ -5,8 +5,8 @@ type PlatformMethod = (...args: any[]) => Promise<any>;
  * @hidden
  */
 export type FileSystemEvents = {
-    'expo-file-system.downloadProgress'(event: ProgressEvent<DownloadProgressData>): any;
-    'expo-file-system.uploadProgress'(event: ProgressEvent<UploadProgressData>): any;
+    'expo-file-system.downloadProgress'(event: ProgressEvent<DownloadProgressData>): void;
+    'expo-file-system.uploadProgress'(event: ProgressEvent<UploadProgressData>): void;
 };
 export declare class ExponentFileSystemModule extends NativeModule<FileSystemEvents> {
     readonly documentDirectory: string | null;

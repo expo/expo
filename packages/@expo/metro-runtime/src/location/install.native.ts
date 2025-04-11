@@ -13,17 +13,25 @@ import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilitie
 import { install, setLocationHref } from './Location';
 import getDevServer from '../getDevServer';
 
-const manifest = Constants.expoConfig as Record<string, any> | null;
+interface ExpoExtraRouterConfig {
+  router?: {
+    origin?: any;
+    generatedOrigin?: any;
+  };
+}
+
+const manifest = Constants.expoConfig;
 
 function getOrigin() {
   if (process.env.NODE_ENV !== 'production') {
     // e.g. http://localhost:8081
     return getDevServer().url;
   }
+  const extra = manifest?.extra as ExpoExtraRouterConfig | null;
   return (
-    manifest?.extra?.router?.origin ??
+    extra?.router?.origin ??
     // Written automatically during release builds.
-    manifest?.extra?.router?.generatedOrigin
+    extra?.router?.generatedOrigin
   );
 }
 
@@ -91,7 +99,8 @@ try {
   );
 } catch {}
 
-if (manifest?.extra?.router?.origin !== false) {
+const extra = manifest?.extra as ExpoExtraRouterConfig | null;
+if (extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.
   if (typeof window !== 'undefined' && !window.location) {
     const url = getBaseUrl();

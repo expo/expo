@@ -57,6 +57,8 @@ export type SortByKey =
   | 'duration';
 export type SortByValue = [SortByKey, boolean] | SortByKey;
 
+type InternalSortByValue = `${SortByKey} ${'ASC' | 'DESC'}`;
+
 export type MediaTypeObject = {
   audio: 'audio';
   photo: 'photo';
@@ -351,39 +353,39 @@ export {
   EventSubscription as Subscription,
 };
 
-function arrayize(item: any): any[] {
+function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {
     return item;
   }
   return item ? [item] : [];
 }
 
-function getId(ref: any): string | undefined {
+function getId(ref: string | undefined | { id?: string }): string | undefined {
   if (typeof ref === 'string') {
     return ref;
   }
   return ref ? ref.id : undefined;
 }
 
-function checkAssetIds(assetIds: any): void {
+function checkAssetIds(assetIds: unknown[]): asserts assetIds is string[] {
   if (assetIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Asset ID must be a string!');
   }
 }
 
-function checkAlbumIds(albumIds: any): void {
+function checkAlbumIds(albumIds: unknown[]): asserts albumIds is string[] {
   if (albumIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Album ID must be a string!');
   }
 }
 
-function checkMediaType(mediaType: any): void {
-  if (Object.values(MediaType).indexOf(mediaType) === -1) {
+function checkMediaType(mediaType: unknown): asserts mediaType is keyof MediaTypeObject {
+  if (Object.values(MediaType).indexOf(mediaType as any) === -1) {
     throw new Error(`Invalid mediaType: ${mediaType}`);
   }
 }
 
-function checkSortBy(sortBy: any): void {
+function checkSortBy(sortBy: unknown): asserts sortBy is SortByValue {
   if (Array.isArray(sortBy)) {
     checkSortByKey(sortBy[0]);
 
@@ -401,7 +403,8 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
-function sortByOptionToString(sortBy: any) {
+function sortByOptionToString(sortBy: SortByValue | undefined): InternalSortByValue {
+  checkSortBy(sortBy);
   if (Array.isArray(sortBy)) {
     return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
   }
@@ -825,20 +828,19 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   if (album != null && typeof options.album !== 'string') {
     throw new Error('Option "album" must be a string!');
   }
-
   if (after != null && Platform.OS === 'android' && isNaN(parseInt(getId(after) as string, 10))) {
     throw new Error('Option "after" must be a valid ID!');
   }
-
   if (first != null && first < 0) {
     throw new Error('Option "first" must be a positive integer!');
   }
 
-  options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
-  options.sortBy = options.sortBy.map(sortByOptionToString);
-
-  return await MediaLibrary.getAssetsAsync(options);
+  // TODO(@kitten): Add expected native types for `MediaLibrary`
+  return await MediaLibrary.getAssetsAsync({
+    ...options,
+    sortBy: options.sortBy.map(sortByOptionToString),
+  });
 }
 
 // @needsAudit

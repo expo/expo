@@ -1,6 +1,10 @@
 /* eslint-env browser */
 
-function createWebSocketConnection(path: string = '/message') {
+declare namespace globalThis {
+  const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
+}
+
+function createWebSocketConnection(path: string = '/message'): WebSocket {
   const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {

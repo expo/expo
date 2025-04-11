@@ -3,6 +3,7 @@ import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-cor
 import {
   CameraType,
   ImagePickerAsset,
+  ImagePickerOptions,
   ImagePickerResult,
   MediaType,
   MediaTypeOptions,
@@ -21,7 +22,7 @@ export default {
     mediaTypes = ['images'] as MediaType[],
     allowsMultipleSelection = false,
     base64 = false,
-  }): Promise<ImagePickerResult> {
+  }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
       return { canceled: true, assets: null };
@@ -38,7 +39,7 @@ export default {
     allowsMultipleSelection = false,
     base64 = false,
     cameraType,
-  }): Promise<ImagePickerResult> {
+  }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
       return { canceled: true, assets: null };

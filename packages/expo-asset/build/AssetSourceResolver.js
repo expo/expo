@@ -16,6 +16,7 @@ export default class AssetSourceResolver {
     serverUrl;
     // where the jsbundle is being run from
     // NOTE(EvanBacon): Never defined on web.
+    // @ts-expect-error: Never read locally
     jsbundleUrl;
     // the asset to resolve
     asset;

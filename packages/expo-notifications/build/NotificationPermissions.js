@@ -59,6 +59,7 @@ export async function requestPermissionsAsync(permissions) {
         },
     };
     const requestedPlatformPermissions = requestedPermissions[Platform.OS];
+    // TODO(@kitten): This never checks whether the configuration object is undefined
     return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions);
 }
 //# sourceMappingURL=NotificationPermissions.js.map

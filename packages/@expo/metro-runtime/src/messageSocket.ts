@@ -3,6 +3,10 @@
 // Setup websocket messages for reloading the page from the command line.
 // This is normally setup on the native client.
 
+declare namespace globalThis {
+  const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
+}
+
 const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const messageSocket = new WebSocket(`${protocol}://${window.location.host}/message`);
 messageSocket.onmessage = (message) => {

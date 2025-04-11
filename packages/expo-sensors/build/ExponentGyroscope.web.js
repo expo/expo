@@ -8,12 +8,15 @@ export default {
         }
         return await isSensorEnabledAsync(eventName);
     },
-    _handleMotion({ accelerationIncludingGravity }) {
+    _handleMotion({ accelerationIncludingGravity: acceleration, timeStamp }) {
+        // Abort if data is missing from the event
+        if (acceleration === null)
+            return;
         DeviceEventEmitter.emit('gyroscopeDidUpdate', {
-            x: accelerationIncludingGravity.x,
-            y: accelerationIncludingGravity.y,
-            z: accelerationIncludingGravity.z,
-            timestamp: accelerationIncludingGravity.timeStamp / 1000,
+            x: acceleration.x,
+            y: acceleration.y,
+            z: acceleration.z,
+            timestamp: timeStamp / 1000,
         });
     },
     getPermissionsAsync,

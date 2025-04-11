@@ -5,6 +5,9 @@ export { VoiceQuality };
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
 let _didSetListeners = false;
+function _makeCallbackId() {
+    return String(_nextCallbackId++);
+}
 function _unregisterListenersIfNeeded() {
     if (Object.keys(_CALLBACKS).length === 0) {
         removeSpeakingListener('Exponent.speakingStarted');
@@ -28,6 +31,7 @@ function _registerListenersIfNeeded() {
     setSpeakingListener('Exponent.speakingWillSayNextString', ({ id, charIndex, charLength }) => {
         const options = _CALLBACKS[id];
         if (options && options.onBoundary) {
+            // @ts-expect-error TODO(cedric): type is `SpeechEventCallback` while it should be `NativeBoundaryEventCallback` in this context, resulting in errors around `this` context
             options.onBoundary({
                 charIndex,
                 charLength,
@@ -50,6 +54,7 @@ function _registerListenersIfNeeded() {
         delete _CALLBACKS[id];
         _unregisterListenersIfNeeded();
     });
+    // @ts-expect-error TODO(cedric): Android does not provide the `error` parameter for the `speakingError` event, while iOS never uses this event at all
     setSpeakingListener('Exponent.speakingError', ({ id, error }) => {
         const options = _CALLBACKS[id];
         if (options && options.onError) {
@@ -67,7 +72,7 @@ function _registerListenersIfNeeded() {
  * @param options A `SpeechOptions` object.
  */
 export function speak(text, options = {}) {
-    const id = _nextCallbackId++;
+    const id = _makeCallbackId();
     _CALLBACKS[id] = options;
     _registerListenersIfNeeded();
     ExponentSpeech.speak(String(id), text, options);

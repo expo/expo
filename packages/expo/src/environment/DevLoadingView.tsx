@@ -14,7 +14,7 @@ export default function DevLoadingView() {
   const emitter = useMemo<LegacyEventEmitter>(() => {
     try {
       return new LegacyEventEmitter(DevLoadingViewNativeModule);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
           error.message

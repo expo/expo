@@ -36,7 +36,7 @@ export function getObjectPositionFromContentPositionObject(
   }
 
   return (
-    ['top', 'bottom', 'left', 'right']
+    (['top', 'bottom', 'left', 'right'] as const)
       .map((key) => {
         if (key in resolvedPosition) {
           return `${key} ${ensureValueIsWebUnits(resolvedPosition[key])}`;

@@ -4,11 +4,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "declaration": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true

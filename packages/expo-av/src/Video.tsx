@@ -322,18 +322,20 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
 
     // Set status via individual props
     const status: AVPlaybackStatusToSet = { ...this.props.status };
-    [
-      'progressUpdateIntervalMillis',
-      'positionMillis',
-      'shouldPlay',
-      'rate',
-      'shouldCorrectPitch',
-      'volume',
-      'isMuted',
-      'isLooping',
-    ].forEach((prop) => {
+    (
+      [
+        'progressUpdateIntervalMillis',
+        'positionMillis',
+        'shouldPlay',
+        'rate',
+        'shouldCorrectPitch',
+        'volume',
+        'isMuted',
+        'isLooping',
+      ] as const
+    ).forEach((prop) => {
       if (prop in this.props) {
-        status[prop] = this.props[prop];
+        status[prop] = this.props[prop] as any;
       }
     });
 

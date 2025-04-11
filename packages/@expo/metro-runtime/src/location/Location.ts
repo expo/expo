@@ -1,3 +1,3 @@
 export function install() {}
 
-export function setLocationHref(href: string) {}
+export function setLocationHref(_href: string) {}

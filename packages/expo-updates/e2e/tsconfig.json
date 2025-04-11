@@ -1,0 +1,4 @@
+{
+  "extends": "../../../tsconfig.node",
+  "include": ["./fixtures", "./setup"]
+}

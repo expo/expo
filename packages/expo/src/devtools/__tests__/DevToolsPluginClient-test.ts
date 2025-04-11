@@ -1,4 +1,6 @@
-import { TextDecoder, TextEncoder } from 'util';
+/// <reference types="node" />
+
+import { TextDecoder, TextEncoder } from 'node:util';
 
 import MockWebSocket from './MockWebSocket';
 import { DevToolsPluginClient } from '../DevToolsPluginClient';
@@ -17,7 +19,7 @@ const TEST_PROTOCOL_VERSION = 1;
 describe(`DevToolsPluginClient`, () => {
   let appClient: DevToolsPluginClient;
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
   const pluginName = 'testPlugin';
 
   beforeEach(async () => {
@@ -44,7 +46,7 @@ describe(`DevToolsPluginClient`, () => {
 
 describe(`DevToolsPluginClient (browser <> app)`, () => {
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
   const pluginName = 'testPlugin';
   let appClient: DevToolsPluginClient;
   let browserClient: DevToolsPluginClient;
@@ -229,7 +231,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
 describe(`DevToolsPluginClient - multiplexing`, () => {
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
 
   beforeEach(() => {
     // Connect to different devServer for each test case to avoid jest parallel test issues.

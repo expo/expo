@@ -1,6 +1,6 @@
 import { URLListener } from './Linking.types';
 declare const _default: {
-    addListener(eventName: any, listener: URLListener): {
+    addListener(eventName: "onURLReceived" | string, listener: URLListener): {
         remove(): void;
     };
     getLinkingURL(): string;

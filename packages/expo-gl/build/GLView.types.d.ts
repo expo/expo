@@ -63,6 +63,9 @@ export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
     endFrameEXP(): void;
     flushEXP(): void;
     __expoSetLogging(option: GLLoggingOption): void;
+    /** @internal */
+    _expo_texSubImage2D?(...props: any[]): void;
+    _expo_texImage2D?(...props: any[]): void;
 }
 export type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
 export type GLViewProps = {
@@ -87,7 +90,7 @@ export type GLViewProps = {
      * @hidden
      * A ref callback for the native GLView
      */
-    nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null): any;
+    nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null): void;
 } & ViewProps;
 export declare enum GLLoggingOption {
     /**

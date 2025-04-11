@@ -131,7 +131,10 @@ export default {
         if (!isFontLoadingListenerSupported()) {
             return Promise.resolve();
         }
-        return new FontObserver(fontFamilyName, { display: resource.display }).load(null, 6000);
+        return new FontObserver(fontFamilyName, {
+            // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
+            display: resource.display,
+        }).load(null, 6000);
     },
 };
 const ID = 'expo-generated-fonts';

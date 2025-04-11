@@ -9,6 +9,7 @@
  * see: https://github.com/necolas/react-native-web
  */
 import React from 'react';
+// @ts-expect-error: TODO(@kitten): We optimally shouldn't pull in all of react-native-web just for expo-checkbox. It's excessive
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
     const handleChange = (event) => {

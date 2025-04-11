@@ -3,6 +3,10 @@ import { useCallback, useEffect, useImperativeHandle, type DependencyList, type 
 import type { DOMImperativeFactory } from './dom.types';
 import { REGISTER_DOM_IMPERATIVE_HANDLE_PROPS } from './injection';
 
+declare namespace globalThis {
+  let _domRefProxy: undefined | unknown;
+}
+
 /**
  * A React `useImperativeHandle` like hook for DOM components.
  *
@@ -24,11 +28,12 @@ export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
   useEffect(() => {
     if (!isTargetWeb) {
       globalThis._domRefProxy = init();
+      // TODO(@kitten): Type `ReactNativeWebView` and the message data
       // @ts-expect-error: Added via react-native-webview
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
           type: REGISTER_DOM_IMPERATIVE_HANDLE_PROPS,
-          data: Object.keys(globalThis._domRefProxy),
+          data: Object.keys(globalThis._domRefProxy as any),
         })
       );
     }

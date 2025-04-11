@@ -57,7 +57,7 @@ const errorCodeMessages = {
       'The OP does not support use of the `request_uri` parameter defined in Section 6. (https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests)',
     registration_not_supported:
       'The OP does not support use of the `registration` parameter defined in Section 7.2.1. (https://openid.net/specs/openid-connect-core-1_0.html#RegistrationParameter)',
-  },
+  } as Record<string, string | undefined>,
   // https://tools.ietf.org/html/rfc6749#section-5.2
   token: {
     invalid_request: `The request is missing a required parameter, includes an unsupported parameter value (other than grant type), repeats a parameter, includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.`,
@@ -65,7 +65,7 @@ const errorCodeMessages = {
     invalid_grant: `The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.`,
     unauthorized_client: `The authenticated client is not authorized to use this authorization grant type.`,
     unsupported_grant_type: `The authorization grant type is not supported by the authorization server.`,
-  },
+  } as Record<string, string | undefined>,
 };
 
 /**
@@ -88,7 +88,7 @@ export class ResponseError extends CodedError {
    */
   params: Record<string, string>;
 
-  constructor(params: ResponseErrorConfig, errorCodeType: string) {
+  constructor(params: ResponseErrorConfig, errorCodeType: 'auth' | 'token') {
     const { error, error_description, error_uri } = params;
     const message = errorCodeMessages[errorCodeType][error];
     let errorMessage: string;

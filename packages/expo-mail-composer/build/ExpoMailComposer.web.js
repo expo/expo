@@ -30,7 +30,8 @@ export default {
             body: options.body,
         });
         Object.entries(email).forEach(([key, value]) => {
-            mailtoUrl.searchParams.append(key, value);
+            // TODO(@kitten): This was implicitly cast before. Is this what we want?
+            mailtoUrl.searchParams.append(key, '' + value);
         });
         window.open(mailtoUrl.toString());
         return { status: MailComposerStatus.UNDETERMINED };

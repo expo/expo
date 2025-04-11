@@ -3,7 +3,7 @@
 
 describe(URL, () => {
   it(`uses the Expo built-ins`, () => {
-    expect(URL[Symbol.for('expo.builtin')]).toBe(true);
+    expect((URL as any)[Symbol.for('expo.builtin')]).toBe(true);
   });
   it(`supports getter`, () => {
     expect(new URL('https://acme.com').hostname).toBe('acme.com');
@@ -16,7 +16,7 @@ describe(URL, () => {
 
 describe(URLSearchParams, () => {
   it(`uses the Expo built-ins`, () => {
-    expect(URLSearchParams[Symbol.for('expo.builtin')]).toBe(true);
+    expect((URLSearchParams as any)[Symbol.for('expo.builtin')]).toBe(true);
   });
   it(`uses the working URLSearchParams builtin from the global`, () => {
     expect(() => new URLSearchParams({ a: 'b' }).set('a', 'c')).not.toThrow();

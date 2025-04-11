@@ -104,13 +104,12 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
     // Update the native camera with any custom capabilities.
     React.useEffect(() => {
         const changes = {};
-        for (const key of Object.keys(settings)) {
-            if (!VALID_SETTINGS_KEYS.includes(key)) {
-                continue;
-            }
-            const nextValue = settings[key];
-            if (nextValue !== capabilities.current[key]) {
-                changes[key] = nextValue;
+        for (const key of VALID_SETTINGS_KEYS) {
+            if (key in settings) {
+                const nextValue = settings[key];
+                if (nextValue !== capabilities.current[key]) {
+                    changes[key] = nextValue;
+                }
             }
         }
         // Only update the native camera if changes were found

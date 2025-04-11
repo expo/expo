@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import View from '../primitives/RNWView';
 function createView(nativeProps) {
     return forwardRef((props, ref) => {
+        // @ts-expect-error - View and ViewProps have no properties in common
         return <View {...nativeProps} {...props} ref={ref}/>;
     });
 }

@@ -421,7 +421,7 @@ export class Recording {
     let stopError: Error | undefined;
     try {
       stopResult = await ExponentAV.stopAudioRecording();
-    } catch (err) {
+    } catch (err: any) {
       stopError = err;
     }
 

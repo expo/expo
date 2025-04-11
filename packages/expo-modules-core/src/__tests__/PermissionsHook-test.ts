@@ -63,7 +63,8 @@ describe('product', () => {
   });
 
   it('skips state update when unmounted', async () => {
-    let resolve;
+    let resolve: (value?: any) => void;
+
     const logError = jest.spyOn(console, 'error').mockImplementation();
     const promise = new Promise<PermissionResponse>((resolvePromise) => {
       resolve = resolvePromise;
@@ -78,7 +79,7 @@ describe('product', () => {
     );
 
     act(() => unmount());
-    resolve();
+    resolve!();
     await promise;
     expect(logError).not.toHaveBeenCalled();
     logError.mockRestore();

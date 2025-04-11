@@ -7,7 +7,7 @@ exports.getRootComponent = getRootComponent;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const _ctx_html_1 = require("../../_ctx-html");
+const _ctx_html_1 = require("expo-router/_ctx-html");
 function getRootComponent() {
     const keys = _ctx_html_1.ctx.keys();
     if (!keys.length) {

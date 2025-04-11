@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes } from './ProviderUtils';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
 import { AuthRequestConfig, AuthRequestPromptOptions, ResponseType } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
@@ -119,13 +119,15 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
-  const clientId = useMemo((): string => {
+  const clientId = useMemo(() => {
     const propertyName = Platform.select({
       ios: 'iosClientId',
       android: 'androidClientId',
       default: 'webClientId',
-    });
-    return config[propertyName as any] ?? config.clientId;
+    } as const);
+    const clientId = config[propertyName] ?? config.clientId;
+    invariantClientId(propertyName, clientId, 'Facebook');
+    return clientId;
   }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
 
   const redirectUri = useMemo((): string => {

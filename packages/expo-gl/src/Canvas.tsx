@@ -3,7 +3,7 @@ import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-function getElement(component) {
+function getElement(component: React.ReactInstance): React.ReactInstance | Element | null | Text {
   try {
     return findDOMNode(component);
   } catch {
@@ -58,7 +58,7 @@ const CanvasWrapper: React.FunctionComponent<
       return { width: 0, height: 0 };
     }
     const element = getElement(ref.current);
-    const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
+    const { offsetWidth: width = 0, offsetHeight: height = 0 } = element as HTMLElement;
     return { width, height };
   }
 

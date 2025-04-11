@@ -61,7 +61,7 @@ async function getServerActionManifest(
 }
 
 async function getSSRManifest(
-  distFolder: string,
+  _distFolder: string,
   platform: string
 ): Promise<
   Record<

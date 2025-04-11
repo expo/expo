@@ -6,7 +6,7 @@ exports.createRoutesManifest = createRoutesManifest;
 const getRoutesSSR_1 = require("./getRoutesSSR");
 const getServerManifest_1 = require("./getServerManifest");
 function createMockContextModule(map = []) {
-    const contextModule = (key) => ({ default() { } });
+    const contextModule = (_key) => ({ default() { } });
     Object.defineProperty(contextModule, 'keys', {
         value: () => map,
     });

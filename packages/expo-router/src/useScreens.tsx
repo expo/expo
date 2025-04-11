@@ -4,7 +4,6 @@ import type {
   EventMapBase,
   NavigationState,
   ParamListBase,
-  RouteConfig,
   RouteProp,
   ScreenListeners,
 } from '@react-navigation/native';
@@ -263,7 +262,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 export function screenOptionsFactory(
   route: RouteNode,
   options?: ScreenProps['options']
-): RouteConfig<any, any, any, any, any, any>['options'] {
+): ScreenProps['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;

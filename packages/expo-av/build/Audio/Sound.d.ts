@@ -36,11 +36,6 @@ export type SoundObject = {
 };
 type AudioInstance = number | HTMLMediaElement | null;
 export type AudioSampleCallback = ((sample: AudioSample) => void) | null;
-declare global {
-    interface Global {
-        __EXAV_setOnAudioSampleReceivedCallback: ((key: number, callback: AudioSampleCallback) => void) | undefined;
-    }
-}
 /**
  * This class represents a sound corresponding to an Asset or URL.
  * @return A newly constructed instance of `Audio.Sound`.

@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+/// <reference path="../ts-declarations/react-native.d.ts" />
+
 import SourceCode from 'react-native/Libraries/NativeModules/specs/NativeSourceCode';
 
 export function getBundleUrl(): string | null {

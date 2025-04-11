@@ -1,10 +1,12 @@
 import React from 'react';
+import { type View } from 'react-native';
+import ExpoImage from './ExpoImage';
 import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
-    nativeViewRef: any;
-    containerViewRef: any;
-    constructor(props: any);
-    getAnimatableRef: () => any;
+    nativeViewRef: React.RefObject<ExpoImage | null>;
+    containerViewRef: React.RefObject<View | null>;
+    constructor(props: ImageProps);
+    getAnimatableRef: () => View | this | null;
     /**
      * @hidden
      */

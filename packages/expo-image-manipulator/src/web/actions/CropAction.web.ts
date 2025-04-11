@@ -3,10 +3,11 @@ import { CodedError } from 'expo-modules-core';
 import { ActionCrop } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
+const clamp = (value: number, max: number): number => Math.max(0, Math.min(max, value));
+
 export default (canvas: HTMLCanvasElement, options: ActionCrop['crop']) => {
   // ensure values are defined.
   let { originX = 0, originY = 0, width = 0, height = 0 } = options;
-  const clamp = (value, max) => Math.max(0, Math.min(max, value));
   // lock within bounds.
   width = clamp(width, canvas.width);
   height = clamp(height, canvas.height);

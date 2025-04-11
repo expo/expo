@@ -12,7 +12,8 @@ const _populateMissingKeys = (
 ): AudioMode => {
   for (const key in defaultAudioMode) {
     if (!userAudioMode.hasOwnProperty(key)) {
-      userAudioMode[key] = defaultAudioMode[key];
+      const prop = key as keyof AudioMode;
+      userAudioMode[prop] = defaultAudioMode[prop] as any;
     }
   }
   return userAudioMode as AudioMode;

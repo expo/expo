@@ -9,10 +9,10 @@ function getBrowserName() {
         else if (agent.includes('edg')) {
             return 'Chromium Edge';
         }
-        else if (agent.includes('opr') && !!window['opr']) {
+        else if (agent.includes('opr') && 'opr' in window && !!window['opr']) {
             return 'Opera';
         }
-        else if (agent.includes('chrome') && !!window['chrome']) {
+        else if (agent.includes('chrome') && 'chrome' in window && !!window['chrome']) {
             return 'Chrome';
         }
         else if (agent.includes('trident')) {

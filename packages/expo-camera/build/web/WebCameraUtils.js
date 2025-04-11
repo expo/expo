@@ -34,8 +34,9 @@ function ensureCameraPictureOptions(config) {
         isImageMirror: false,
     };
     for (const key in config) {
-        if (key in config && config[key] !== undefined && key in captureOptions) {
-            captureOptions[key] = config[key];
+        const prop = key;
+        if (prop in config && config[prop] !== undefined && prop in captureOptions) {
+            captureOptions[prop] = config[prop];
         }
     }
     return captureOptions;
@@ -275,7 +276,7 @@ export function isCapabilityAvailable(video, keyName) {
     const stream = video.srcObject;
     if (stream instanceof MediaStream) {
         const videoTrack = stream.getVideoTracks()[0];
-        return videoTrack.getCapabilities?.()?.[keyName];
+        return !!videoTrack.getCapabilities?.()?.[keyName];
     }
     return false;
 }

@@ -22,13 +22,17 @@ const USES_FAHRENHEIT = [
     'PW',
     'KY',
 ];
-export function addLocaleListener(listener) {
+export function addLocaleListener(
+// NOTE(@kitten): We never use the event's data
+listener) {
     addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
     return {
         remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
     };
 }
-export function addCalendarListener(listener) {
+export function addCalendarListener(
+// NOTE(@kitten): We never use the event's data
+listener) {
     addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
     return {
         remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),

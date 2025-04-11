@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Drawer = void 0;
 const drawer_1 = require("@react-navigation/drawer");

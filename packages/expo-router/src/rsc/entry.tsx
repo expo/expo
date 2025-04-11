@@ -26,7 +26,7 @@ function RootErrorBoundary(props: ErrorBoundaryProps) {
     if (process.env.NODE_ENV === 'development') {
       globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
       const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
-        globalThis.__EXPO_REFETCH_ROUTE__
+        globalThis.__EXPO_REFETCH_ROUTE__!
       );
       if (index !== -1) {
         globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRoute);

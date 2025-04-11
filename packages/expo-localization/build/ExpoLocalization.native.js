@@ -1,9 +1,13 @@
 import { requireNativeModule } from 'expo-modules-core';
 const ExpoLocalizationModule = requireNativeModule('ExpoLocalization');
-export function addLocaleListener(listener) {
+export function addLocaleListener(
+// NOTE(@kitten): We never use the event's data
+listener) {
     return ExpoLocalizationModule.addListener('onLocaleSettingsChanged', listener);
 }
-export function addCalendarListener(listener) {
+export function addCalendarListener(
+// NOTE(@kitten): We never use the event's data
+listener) {
     return ExpoLocalizationModule.addListener('onCalendarSettingsChanged', listener);
 }
 export function removeSubscription(subscription) {

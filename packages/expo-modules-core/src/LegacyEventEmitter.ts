@@ -3,7 +3,14 @@ import { NativeEventEmitter, Platform } from 'react-native';
 
 import { EventSubscription } from './EventEmitter';
 
-const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
+const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@' as const;
+
+type SubscriptionState = {
+  // NOTE(@kitten): Since this is legacy/deprecated, we don't need to be exact about types here
+  [Key in typeof nativeEmitterSubscriptionKey]?: {
+    remove?(): void;
+  };
+} & EventSubscription;
 
 type NativeModule = {
   __expo_module_name__?: string;
@@ -46,7 +53,7 @@ export class LegacyEventEmitter {
 
     this._listenerCount++;
     const nativeEmitterSubscription = this._eventEmitter.addListener(eventName, listener);
-    const subscription = {
+    const subscription: SubscriptionState = {
       [nativeEmitterSubscriptionKey]: nativeEmitterSubscription,
       remove: () => {
         this.removeSubscription(subscription);
@@ -75,19 +82,20 @@ export class LegacyEventEmitter {
   }
 
   removeSubscription(subscription: EventSubscription): void {
-    const nativeEmitterSubscription = subscription[nativeEmitterSubscriptionKey];
+    const state = subscription as SubscriptionState;
+    const nativeEmitterSubscription = state[nativeEmitterSubscriptionKey];
     if (!nativeEmitterSubscription) {
       return;
     }
 
     if ('remove' in nativeEmitterSubscription) {
-      nativeEmitterSubscription.remove();
+      nativeEmitterSubscription.remove?.();
     }
     this._listenerCount--;
 
     // Ensure that the emitter's internal state remains correct even if `removeSubscription` is
     // called again with the same subscription
-    delete subscription[nativeEmitterSubscriptionKey];
+    delete state[nativeEmitterSubscriptionKey];
 
     // Release closed-over references to the emitter
     subscription.remove = () => {};

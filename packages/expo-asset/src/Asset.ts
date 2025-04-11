@@ -31,8 +31,8 @@ export { AssetMetadata };
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-  private static byHash = {};
-  private static byUri = {};
+  private static byHash: Record<string, Asset | undefined> = {};
+  private static byUri: Record<string, Asset | undefined> = {};
 
   /**
    * The name of the asset file without the extension. Also without the part from `@` onward in the
@@ -276,7 +276,7 @@ export class Asset {
 
       this.downloaded = true;
       this._downloadCallbacks.forEach(({ resolve }) => resolve());
-    } catch (e) {
+    } catch (e: any) {
       this._downloadCallbacks.forEach(({ reject }) => reject(e));
       throw e;
     } finally {

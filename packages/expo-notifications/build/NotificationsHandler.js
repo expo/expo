@@ -63,6 +63,7 @@ export function setNotificationHandler(handler) {
                 handler.handleSuccess?.(id);
             }
             catch (error) {
+                // TODO(@kitten): This callback expects specific Error types, but we never narrow the type before calling this callback
                 handler.handleError?.(id, error);
             }
         });

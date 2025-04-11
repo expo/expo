@@ -1,3 +1,2 @@
-declare const protocol: string;
-declare const messageSocket: WebSocket;
+export {};
 //# sourceMappingURL=messageSocket.d.ts.map

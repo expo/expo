@@ -24,7 +24,9 @@ const forwardPropsList = Object.assign({}, forwardedProps.defaultProps, forwarde
     onWheel: true,
     pointerEvents: true,
 });
-const pickProps = (props) => pick(props, forwardPropsList);
+function pickProps(props) {
+    return pick(props, forwardPropsList);
+}
 /**
  * This is the View from react-native-web copied out in order to supply a custom `__element` property.
  * In the past, you could use `createElement` to create an element with a custom HTML element, but this changed
@@ -68,6 +70,7 @@ const View = React.forwardRef((props, forwardedRef) => {
     const supportedProps = pickProps(rest);
     supportedProps.dir = componentDirection;
     supportedProps.style = [styles.view$raw, hasTextAncestor && styles.inline, props.style];
+    // @ts-expect-error TODO(cedric): Property 'href' does not exist on type 'HTMLElement & PlatformMethods'
     if (props.href != null) {
         component = 'a';
         if (hrefAttrs != null) {
@@ -86,6 +89,7 @@ const View = React.forwardRef((props, forwardedRef) => {
     const platformMethodsRef = usePlatformMethods(supportedProps);
     const setRef = useMergeRefs(hostRef, platformMethodsRef, forwardedRef);
     supportedProps.ref = setRef;
+    // @ts-expect-error TODO(cedric): 'writingDirection' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'
     return createElement(component, supportedProps, { writingDirection });
 });
 if (__DEV__) {
