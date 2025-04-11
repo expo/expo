@@ -18,10 +18,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.Async
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class VideoThumbnailsModule : Module() {
   private val context
@@ -60,6 +64,37 @@ class VideoThumbnailsModule : Module() {
           promise.reject(ERROR_TAG, ex.message, ex)
         }
       }
+    }
+
+    AsyncFunction("getNativeVideoThumbnail") { sourceFilename: String, options: VideoThumbnailOptions, promise: Promise ->
+      withModuleScope(promise) {
+        try {
+          if (!URLUtil.isValidUrl(sourceFilename)) throw InvalidSourceFilenameException()
+
+          if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
+            throw ThumbnailFileException()
+          }
+
+          val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
+            ?: throw GenerateThumbnailException()
+
+          val timeDuration = (options.time * 1000).toDuration(DurationUnit.MILLISECONDS)
+          promise.resolve(
+            NativeVideoThumbnail(thumbnail, timeDuration, timeDuration)
+          )
+        } catch (ex: IOException) {
+          promise.reject(ERROR_TAG, ex.message, ex)
+        } catch (ex: RuntimeException) {
+          promise.reject(ERROR_TAG, ex.message, ex)
+        }
+      }
+    }
+
+    Class<NativeVideoThumbnail> {
+      Property("width") { ref -> ref.width }
+      Property("height") { ref -> ref.height }
+      Property("requestedTime") { ref -> ref.requestedTime }
+      Property("actualTime") { ref -> ref.actualTime }
     }
 
     OnDestroy {
