@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- Support `expo-doctor --quiet`
 ### 🐛 Bug fixes
 
 ### 💡 Others
