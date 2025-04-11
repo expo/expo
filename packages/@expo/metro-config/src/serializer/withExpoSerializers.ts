@@ -153,12 +153,7 @@ export function createDefaultExportCustomSerializer(
     // We write the Expo serializer back to the original config object, possibly falling into recursive loops
     const originalCustomSerializer = unwrapOriginalSerializer(config.serializer?.customSerializer);
     if (originalCustomSerializer) {
-      const bundle = await originalCustomSerializer(
-        entryPoint,
-        premodulesToBundle,
-        graph,
-        options
-      );
+      const bundle = await originalCustomSerializer(entryPoint, premodulesToBundle, graph, options);
       if (typeof bundle === 'string') {
         bundleCode = bundle;
       } else {
