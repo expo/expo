@@ -13,6 +13,18 @@ import { StatusBarAnimation, StatusBarProps, StatusBarStyle } from './types';
 
 export function StatusBar(props: StatusBarProps) {
   if (isEdgeToEdge()) {
+    if (props.backgroundColor) {
+      console.warn(
+        'StatusBar backgroundColor is not supported with edge-to-edge enabled. Render a view under the status bar to change its background.'
+      );
+    }
+
+    if (typeof props.translucent !== 'undefined' && Boolean(props.translucent) === false) {
+      console.warn(
+        'StatusBar is always translucent when edge-to-edge is enabled. The translucent prop is ignored.'
+      );
+    }
+
     return (
       <SystemBars
         style={{ statusBar: props.style, navigationBar: undefined }}
