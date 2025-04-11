@@ -1477,6 +1477,13 @@ module.exports = {
     stopLoading: { type: 'function', functionType: 'async' },
   },
   RNDateTimePickerManager: {},
+  RNEdgeToEdge: {
+    onColorSchemeChange: { type: 'function', functionType: 'sync' },
+    setStatusBarStyle: { type: 'function', functionType: 'sync' },
+    setNavigationBarStyle: { type: 'function', functionType: 'sync' },
+    setStatusBarHidden: { type: 'function', functionType: 'sync' },
+    setNavigationBarHidden: { type: 'function', functionType: 'sync' },
+  },
   RNGestureHandlerButton: {},
   RNGestureHandlerModule: {
     addListener: { type: 'function', functionType: 'async' },
