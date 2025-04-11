@@ -14,14 +14,7 @@ export default ({ config }) => {
     config.sdkVersion = process.env.EXPO_SDK_VERSION;
   }
   config.plugins = [
-    // iOS plugins
-    // Add a plugin to modify the AppDelegate.
-    './plugins/withNotFoundModule',
-    // Add the React DevMenu back to the client.
-    './plugins/withDevMenu',
-
     // Android plugins
-
     // expo-modules-test-core requires kotlin, so additional setup must be executed.
     'expo-modules-test-core',
     [
