@@ -173,7 +173,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
-      .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+      .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new File(uri)));
   }
 
   /**
