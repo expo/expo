@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add a warning for users to upgrade their `eas-cli` when using `remoteBuildCache`. ([#36103](https://github.com/expo/expo/pull/36103) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.23.4 — 2025-04-11
 
 ### 💡 Others

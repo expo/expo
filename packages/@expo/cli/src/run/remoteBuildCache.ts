@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../log';
+import { isSpawnResultError } from '../start/platforms/ios/xcrun';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
@@ -56,6 +57,12 @@ export async function resolveRemoteBuildCache(
       return json?.path;
     } catch (error) {
       debug('eas-cli error:', error);
+      // @TODO(2025-04-11): remove this in a future release
+      if (isSpawnResultError(error) && error.stderr.includes('command build:download not found')) {
+        Log.warn(
+          `To take advantage of remote build cache, upgrade your eas-cli installation to latest.`
+        );
+      }
       return null;
     }
   }
