@@ -36,7 +36,8 @@
     "eslint-plugin-expo": "^0.1.2",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-react": "^7.37.3",
-    "eslint-plugin-react-hooks": "^5.1.0"
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^16.0.0"
   },
   "devDependencies": {
     "eslint": "^9.18.0",
