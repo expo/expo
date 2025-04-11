@@ -150,11 +150,10 @@ export function createDefaultExportCustomSerializer(
     let bundleMap: string | null = null;
 
     // Only invoke the custom serializer if it's not our serializer
-    if (
-      config.serializer?.customSerializer &&
-      !isExpoSerializer(config.serializer.customSerializer)
-    ) {
-      const bundle = await config.serializer.customSerializer(
+    // We write the Expo serializer back to the original config object, possibly falling into recursive loops
+    const originalCustomSerializer = unwrapOriginalSerializer(config.serializer?.customSerializer);
+    if (originalCustomSerializer) {
+      const bundle = await originalCustomSerializer(
         entryPoint,
         premodulesToBundle,
         graph,
@@ -356,23 +355,27 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
 
-  return markExpoSerializer(async (...props: SerializerParameters): ReturnType<Serializer> => {
-    for (const processor of processors) {
-      if (processor) {
-        props = await processor(...props);
+  return wrapSerializerWithOriginal(
+    originalSerializer,
+    async (...props: SerializerParameters): ReturnType<Serializer> => {
+      for (const processor of processors) {
+        if (processor) {
+          props = await processor(...props);
+        }
       }
+
+      return finalSerializer(...props);
     }
-
-    return finalSerializer(...props);
-  });
+  );
 }
 
-function markExpoSerializer(serializer: Serializer) {
-  return Object.assign(serializer, { __expoSerializer: true });
+function wrapSerializerWithOriginal(original: Serializer | null, expo: Serializer) {
+  return Object.assign(expo, { __originalSerializer: original });
 }
 
-function isExpoSerializer(serializer: Serializer) {
-  return '__expoSerializer' in serializer && serializer.__expoSerializer;
+function unwrapOriginalSerializer(serializer?: Serializer | null) {
+  if (!serializer || !('__originalSerializer' in serializer)) return null;
+  return serializer.__originalSerializer as Serializer | null;
 }
 
 export { SerialAsset };

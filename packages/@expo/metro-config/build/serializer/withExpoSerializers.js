@@ -88,9 +88,10 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         let bundleCode = null;
         let bundleMap = null;
         // Only invoke the custom serializer if it's not our serializer
-        if (config.serializer?.customSerializer &&
-            !isExpoSerializer(config.serializer.customSerializer)) {
-            const bundle = await config.serializer.customSerializer(entryPoint, premodulesToBundle, graph, options);
+        // We write the Expo serializer back to the original config object, possibly falling into recursive loops
+        const originalCustomSerializer = unwrapOriginalSerializer(config.serializer?.customSerializer);
+        if (originalCustomSerializer) {
+            const bundle = await originalCustomSerializer(entryPoint, premodulesToBundle, graph, options);
             if (typeof bundle === 'string') {
                 bundleCode = bundle;
             }
@@ -234,7 +235,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return markExpoSerializer(async (...props) => {
+    return wrapSerializerWithOriginal(originalSerializer, async (...props) => {
         for (const processor of processors) {
             if (processor) {
                 props = await processor(...props);
@@ -243,10 +244,12 @@ function createSerializerFromSerialProcessors(config, processors, originalSerial
         return finalSerializer(...props);
     });
 }
-function markExpoSerializer(serializer) {
-    return Object.assign(serializer, { __expoSerializer: true });
+function wrapSerializerWithOriginal(original, expo) {
+    return Object.assign(expo, { __originalSerializer: original });
 }
-function isExpoSerializer(serializer) {
-    return '__expoSerializer' in serializer && serializer.__expoSerializer;
+function unwrapOriginalSerializer(serializer) {
+    if (!serializer || !('__originalSerializer' in serializer))
+        return null;
+    return serializer.__originalSerializer;
 }
 //# sourceMappingURL=withExpoSerializers.js.map
