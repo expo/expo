@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Mark `--https` as deprecated in favor of `--tunnel`. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `eas-cli fingerprint:generate` to generate fingerprints for remote builds cache. ([#36085](https://github.com/expo/expo/pull/36085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.23.3 — 2025-04-10
 
