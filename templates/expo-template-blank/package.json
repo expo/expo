@@ -11,8 +11,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~53.0.0-preview.4",
-    "expo-status-bar": "~2.1.0",
+    "expo": "~53.0.0-preview.5",
+    "expo-status-bar": "~2.2.0",
     "react": "19.0.0",
     "react-native": "0.79.0"
   },
