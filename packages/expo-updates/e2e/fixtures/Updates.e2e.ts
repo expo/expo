@@ -1032,10 +1032,7 @@ describe('Asset deletion recovery tests', () => {
     // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
     // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    let expectedNumAssets = 2;
-    if (shouldCopyEmbeddedAssets) {
-      expectedNumAssets += manifest.assets.length;
-    }
+    const expectedNumAssets = shouldCopyEmbeddedAssets ? manifest.assets.length + 1 : 2;
     if (platform === 'ios') {
       jestExpect(numAssets).toBe(expectedNumAssets);
     } else {
