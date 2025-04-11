@@ -33,6 +33,7 @@ export { withMod, withBaseMod } from './plugins/withMod';
 
 export {
   withAppDelegate,
+  withBridgingHeader,
   withInfoPlist,
   withEntitlementsPlist,
   withExpoPlist,
