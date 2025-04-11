@@ -88,7 +88,8 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         let bundleCode = null;
         let bundleMap = null;
         // Only invoke the custom serializer if it's not our serializer
-        if (config.serializer?.customSerializer && !isExpoSerializer(config.serializer.customSerializer)) {
+        if (config.serializer?.customSerializer &&
+            !isExpoSerializer(config.serializer.customSerializer)) {
             const bundle = await config.serializer.customSerializer(entryPoint, premodulesToBundle, graph, options);
             if (typeof bundle === 'string') {
                 bundleCode = bundle;

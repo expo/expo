@@ -150,7 +150,10 @@ export function createDefaultExportCustomSerializer(
     let bundleMap: string | null = null;
 
     // Only invoke the custom serializer if it's not our serializer
-    if (config.serializer?.customSerializer && !isExpoSerializer(config.serializer.customSerializer)) {
+    if (
+      config.serializer?.customSerializer &&
+      !isExpoSerializer(config.serializer.customSerializer)
+    ) {
       const bundle = await config.serializer.customSerializer(
         entryPoint,
         premodulesToBundle,
@@ -352,7 +355,7 @@ export function createSerializerFromSerialProcessors(
   options: SerializerConfigOptions = {}
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-  
+
   return markExpoSerializer(async (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
