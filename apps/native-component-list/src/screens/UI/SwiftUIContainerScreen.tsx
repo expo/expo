@@ -1,4 +1,4 @@
-import * as SwiftUI from '@expo/ui/components/SwiftUI';
+import * as SwiftUI from '@expo/ui/swift-ui';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
