@@ -1,4 +1,3 @@
-import { SystemBars } from 'react-native-edge-to-edge';
 import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 
 import {
@@ -11,8 +10,19 @@ import {
 } from './NativeStatusBarWrapper';
 import { StatusBarAnimation, StatusBarProps, StatusBarStyle } from './types';
 
+// This line only imports the type information for TypeScript type checking.  It
+// doesn't import the actual module in the compiled JavaScript code.  The actual
+// module is imported conditionally with require() below, in order to avoid
+// importing the module if edge-to-edge is not enabled (which could throw if
+// it's not linked).
+let SystemBars: typeof import('react-native-edge-to-edge').SystemBars | null = null;
+
+if (isEdgeToEdge()) {
+  SystemBars = require('react-native-edge-to-edge').SystemBars;
+}
+
 export function StatusBar(props: StatusBarProps) {
-  if (isEdgeToEdge()) {
+  if (isEdgeToEdge() && SystemBars) {
     if (props.backgroundColor) {
       console.warn(
         'StatusBar backgroundColor is not supported with edge-to-edge enabled. Render a view under the status bar to change its background.'
