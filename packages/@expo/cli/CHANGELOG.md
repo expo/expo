@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Output recommended versions in prebuild ([#35941](https://github.com/expo/expo/pull/35941) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.24.0 — 2025-04-11
+
+### 🎉 New features
+
+- Output recommended versions in prebuild ([#35941](https://github.com/expo/expo/pull/35941) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

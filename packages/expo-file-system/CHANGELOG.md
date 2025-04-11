@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 18.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 18.1.2 — 2025-04-11
 
 _This version does not introduce any user-facing changes._

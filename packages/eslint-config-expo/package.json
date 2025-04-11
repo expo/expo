@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-expo",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {

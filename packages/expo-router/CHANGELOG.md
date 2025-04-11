@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.2-preview.3 — 2025-04-11
+
+### 💡 Others
+
 - bump @radix-ui/react-slot ([#36089](https://github.com/expo/expo/pull/36089) by [@leonhh](https://github.com/leonhh))
 
 ## 5.0.2-preview.2 — 2025-04-11

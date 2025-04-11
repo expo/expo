@@ -7,9 +7,14 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- Define browser globals correctly for flat config. ([#34371](https://github.com/expo/expo/pull/36101) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
+
+## 9.0.2 — 2025-04-11
+
+### 🐛 Bug fixes
+
+- Define browser globals correctly for flat config. ([#34371](https://github.com/expo/expo/pull/36101) by [@kadikraman](https://github.com/kadikraman))
 
 ## 9.0.1 — 2025-04-08
 
