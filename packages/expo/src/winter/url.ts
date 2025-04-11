@@ -8,6 +8,7 @@
 
 // This file should not import `react-native` in order to remain self-contained.
 
+/// <reference path="../ts-declarations/whatwg-url-without-unicode.d.ts" />
 import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
 
 declare namespace globalThis {

@@ -1,5 +1,7 @@
 // Copyright © 2024 650 Industries.
 
+/// <reference path="ts-declarations/NativeComponentRegistry.d.ts" />
+
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
