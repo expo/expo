@@ -1,9 +1,29 @@
-module.exports = {
-  extends: ['./shared/core.js', './shared/typescript.js', './shared/prettier.js'],
-  plugins: ['node'],
-  env: { node: true },
-  rules: {
-    'no-buffer-constructor': 'warn',
-    'node/no-path-concat': 'warn',
+const { defineConfig } = require('eslint/config');
+const nodePlugin = require('eslint-plugin-n');
+const globals = require('globals');
+
+const coreConfig = require('./shared/core.js');
+const prettierConfig = require('./shared/prettier.js');
+const typescriptConfig = require('./shared/typescript.js');
+
+module.exports = defineConfig([
+  {
+    plugins: {
+      n: nodePlugin,
+    },
+
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+
+    rules: {
+      'no-buffer-constructor': 'warn',
+      'n/no-path-concat': 'warn',
+    },
   },
-};
+  coreConfig,
+  typescriptConfig,
+  prettierConfig,
+]);

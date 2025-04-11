@@ -1,7 +1,11 @@
-module.exports = {
-  extends: ['prettier'],
-  plugins: ['prettier'],
-  rules: {
-    'prettier/prettier': ['warn'],
+const { defineConfig } = require('eslint/config');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
+
+module.exports = defineConfig([
+  eslintPluginPrettierRecommended,
+  {
+    rules: {
+      'prettier/prettier': ['warn'],
+    },
   },
-};
+]);
