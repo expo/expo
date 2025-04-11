@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed SVG image tinting on iOS. ([#35927](https://github.com/expo/expo/pull/35927) by [@kudo](https://github.com/kudo))
+- [Android] Fixed OutOfMemoryError crash when displaying some gif images ([#36097](https://github.com/expo/expo/pull/36097) by [@rahimrahman](https://github.com/rahimrahman))
 
 ### 💡 Others
 
