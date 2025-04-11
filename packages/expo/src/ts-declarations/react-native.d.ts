@@ -9,7 +9,7 @@ declare module 'react-native/Libraries/Network/FormData' {
   type FormDataValue = string | { name?: string; type?: string; uri: string };
 
   type Headers = {
-    [name: string]: string
+    [name: string]: string;
   };
 
   type FormDataPart =
