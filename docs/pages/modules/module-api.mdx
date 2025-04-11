@@ -430,6 +430,31 @@ Defines the activity lifecycle listener that is called when the activity owning 
 
 </PaddedAPIBox>
 
+<PaddedAPIBox header="OnActivityResult" platforms={["android"]}>
+
+Defines the activity lifecycle listener that is called when the activity launched with startActivityForResult returns a result.
+
+#### Arguments
+
+- **activity** — The Android activity that received the result.
+- **payload** — An object containing data about the activity result.
+  - **requestCode**: `Int` — The request code originally supplied to `startActivityForResult`, used to identify the source of the result.
+  - **resultCode**: `Int` — The result code returned by the child activity (e.g., `Activity.RESULT_OK` or `Activity.RESULT_CANCELED`).
+  - **data** — An optional intent that carries the result data returned from the launched activity. Can be `null`.
+
+```kotlin Kotlin
+AsyncFunction('someFunc') {
+  ...
+  activity.startActivityForResult(someIntent, SOME_REQUEST_CODE)
+}
+
+OnActivityResult { activity, (requestCode, resultCode, data) ->
+  ...
+}
+```
+
+</PaddedAPIBox>
+
 <PaddedAPIBox header="GroupView" platforms={["android"]}>
 
 Enables the view to be used as a view group. Definition components that are accepted as part of the group view definition: [`AddChildView`](#addchildview), [`GetChildCount`](#getchildcount), [`GetChildViewAt`](#getchildviewat), [`RemoveChildView`](#removechildview), [`RemoveChildViewAt`](#removechildviewat).
