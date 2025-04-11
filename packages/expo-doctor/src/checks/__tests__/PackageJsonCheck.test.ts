@@ -122,4 +122,28 @@ describe('runAsync', () => {
     });
     expect(result.isSuccessful).toBeFalsy();
   });
+
+  // React 19 override check
+  it('returns result with isSuccessful = true if React 19 is installed and an override is set', async () => {
+    const check = new PackageJsonCheck();
+    const result = await check.runAsync({
+      pkg: {
+        name: 'name',
+        version: '1.0.0',
+        dependencies: { react: '19.0.0' },
+        overrides: { react: '19.0.0' },
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('returns result with isSuccessful = false if React 19 is installed and no override is set ', async () => {
+    const check = new PackageJsonCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0', dependencies: { react: '19.0.0' } },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
 });

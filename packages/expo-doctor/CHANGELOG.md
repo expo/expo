@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add React 19 override check to package.json validation ([#36076](https://github.com/expo/expo/pull/36076) by [@leonhh](https://github.com/leonhh))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
