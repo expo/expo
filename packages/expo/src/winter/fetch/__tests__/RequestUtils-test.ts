@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 /** @jest-environment node */
 // Specify node environment because jsdom for web testing doesn't support standard Blob
 
@@ -49,8 +51,13 @@ describe(convertReadableStreamToUint8ArrayAsync, () => {
   });
 });
 
+declare namespace globalThis {
+  let FormData: typeof RNFormData;
+}
+
 describe(normalizeBodyInitAsync, () => {
-  let originalFormData;
+  let originalFormData: any;
+
   beforeAll(() => {
     originalFormData = globalThis.FormData;
     globalThis.FormData = RNFormData;
@@ -73,14 +80,14 @@ describe(normalizeBodyInitAsync, () => {
 
   it('should normalize an ArrayBuffer body', async () => {
     const body = new TextEncoder().encode('Hello, world!').buffer;
-    const result = await normalizeBodyInitAsync(body);
+    const result = await normalizeBodyInitAsync(body as ArrayBuffer);
     expect(new TextDecoder().decode(result.body)).toBe('Hello, world!');
   });
 
   it('should throw a FormData body', async () => {
     const body = new RNFormData();
     body.append('key', 'value');
-    const result = await normalizeBodyInitAsync(body);
+    const result = await normalizeBodyInitAsync(body as any);
     const resultBodyString = new TextDecoder().decode(result.body);
     expect(resultBodyString).toMatch(/------ExpoFetchFormBoundary[\w]{16}/);
     const overrideHeaders = result.overriddenHeaders;
