@@ -4,6 +4,7 @@ import path from 'path';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
   if (process.platform !== 'darwin') {
@@ -25,12 +26,28 @@ async function checkCocoapodsVersionAsync(): Promise<string | null> {
   return null;
 }
 
+async function checkMinimumXcodeVersionAsync(
+  sdkVersion: string | undefined
+): Promise<string | null> {
+  const { xcodeVersion } = await getXcodeVersionAsync();
+
+  if (!xcodeVersion || !sdkVersion) {
+    return null;
+  }
+
+  if (semver.lt(sdkVersion, '52.0.0') && semver.gt(xcodeVersion, '16.2.0')) {
+    return `You are using Xcode version ${xcodeVersion}. The maximum supported version for SDK version ${sdkVersion} is 16.2.`;
+  }
+
+  return null;
+}
+
 export class NativeToolingVersionCheck implements DoctorCheck {
   description = 'Check native tooling versions';
 
   sdkVersionRange = '*';
 
-  async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
     const hasPodfile = fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
@@ -40,6 +57,11 @@ export class NativeToolingVersionCheck implements DoctorCheck {
       if (checkResult) {
         issues.push(checkResult);
       }
+    }
+
+    const checkResult = await checkMinimumXcodeVersionAsync(exp.sdkVersion);
+    if (checkResult) {
+      issues.push(checkResult);
     }
 
     return {
