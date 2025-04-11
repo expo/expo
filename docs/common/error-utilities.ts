@@ -499,6 +499,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/create-pages/': '/router/basics/core-concepts/',
   '/router/layouts/': '/router/basics/layout/',
 
+  // After updating config plugin section
+  '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
+
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
 };
