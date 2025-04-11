@@ -100,6 +100,7 @@
     "@testing-library/react": "^15.0.7",
     "@testing-library/react-native": "^13.1.0",
     "immer": "^10.1.1",
+    "jest-expo": "53.0.0-preview.0",
     "react-server-dom-webpack": "~19.0.0",
     "tsd": "^0.28.1"
   },
