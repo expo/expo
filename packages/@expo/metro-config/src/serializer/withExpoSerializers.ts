@@ -149,8 +149,9 @@ export function createDefaultExportCustomSerializer(
     let bundleCode: string | null = null;
     let bundleMap: string | null = null;
 
-    if (config.serializer?.customSerializer) {
-      const bundle = await config.serializer?.customSerializer(
+    // Only invoke the custom serializer if it's not our serializer
+    if (config.serializer?.customSerializer && !isExpoSerializer(config.serializer.customSerializer)) {
+      const bundle = await config.serializer.customSerializer(
         entryPoint,
         premodulesToBundle,
         graph,
@@ -252,7 +253,7 @@ function getDefaultSerializer(
   const defaultSerializer =
     fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
 
-  return async (
+  const expoSerializer = async (
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
@@ -340,6 +341,8 @@ function getDefaultSerializer(
 
     return JSON.stringify(assets);
   };
+
+  return Object.assign(expoSerializer, { __expoSerializer: true });
 }
 
 export function createSerializerFromSerialProcessors(
@@ -349,7 +352,8 @@ export function createSerializerFromSerialProcessors(
   options: SerializerConfigOptions = {}
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-  return async (...props: SerializerParameters): ReturnType<Serializer> => {
+  
+  return markExpoSerializer(async (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
         props = await processor(...props);
@@ -357,7 +361,15 @@ export function createSerializerFromSerialProcessors(
     }
 
     return finalSerializer(...props);
-  };
+  });
+}
+
+function markExpoSerializer(serializer: Serializer) {
+  return Object.assign(serializer, { __expoSerializer: true });
+}
+
+function isExpoSerializer(serializer: Serializer) {
+  return '__expoSerializer' in serializer && serializer.__expoSerializer;
 }
 
 export { SerialAsset };

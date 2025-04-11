@@ -87,8 +87,9 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         let premodulesToBundle = [...preModules];
         let bundleCode = null;
         let bundleMap = null;
-        if (config.serializer?.customSerializer) {
-            const bundle = await config.serializer?.customSerializer(entryPoint, premodulesToBundle, graph, options);
+        // Only invoke the custom serializer if it's not our serializer
+        if (config.serializer?.customSerializer && !isExpoSerializer(config.serializer.customSerializer)) {
+            const bundle = await config.serializer.customSerializer(entryPoint, premodulesToBundle, graph, options);
             if (typeof bundle === 'string') {
                 bundleCode = bundle;
             }
@@ -166,7 +167,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
 }
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
-    return async (entryPoint, preModules, graph, inputOptions) => {
+    const expoSerializer = async (entryPoint, preModules, graph, inputOptions) => {
         const context = {
             platform: graph.transformOptions?.platform,
             environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
@@ -228,16 +229,23 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
         }
         return JSON.stringify(assets);
     };
+    return Object.assign(expoSerializer, { __expoSerializer: true });
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return async (...props) => {
+    return markExpoSerializer(async (...props) => {
         for (const processor of processors) {
             if (processor) {
                 props = await processor(...props);
             }
         }
         return finalSerializer(...props);
-    };
+    });
+}
+function markExpoSerializer(serializer) {
+    return Object.assign(serializer, { __expoSerializer: true });
+}
+function isExpoSerializer(serializer) {
+    return '__expoSerializer' in serializer && serializer.__expoSerializer;
 }
 //# sourceMappingURL=withExpoSerializers.js.map
