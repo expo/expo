@@ -4,11 +4,11 @@ import ExpoModulesCore
 
 // MARK: - NotificationBuilder record definitions
 
-protocol TriggerRecord: Record {
+public protocol TriggerRecord: Record {
   func toUNNotificationTrigger() throws -> UNNotificationTrigger?
 }
 
-struct CalendarTriggerRecord: TriggerRecord {
+public struct CalendarTriggerRecord: TriggerRecord {
   @Field
   var year: Int?
   @Field
@@ -47,6 +47,8 @@ struct CalendarTriggerRecord: TriggerRecord {
     "weekdayOrdinal": .weekdayOrdinal
   ]
 
+  public init() {}
+
   func dateComponentsFrom(_ calendarTrigger: CalendarTriggerRecord) -> DateComponents {
     var dateComponents = DateComponents()
     // TODO: Verify that DoW matches JS getDay()
@@ -54,16 +56,16 @@ struct CalendarTriggerRecord: TriggerRecord {
     if let timeZone = calendarTrigger.timezone {
       dateComponents.timeZone = TimeZone(identifier: timeZone)
     }
-    dateComponentsMatchMap.keys.forEach { key in
-      let calendarComponent = dateComponentsMatchMap[key] ?? .day
-      if let value = calendarTrigger.toDictionary()[key] as? Int {
-        dateComponents.setValue(value, for: calendarComponent)
+    let triggerAsDict = calendarTrigger.toDictionary()
+    dateComponentsMatchMap.forEach { key, keyVal in
+      if let value = triggerAsDict[key] as? Int {
+        dateComponents.setValue(value, for: keyVal)
       }
     }
     return dateComponents
   }
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
       let dateComponents: DateComponents = dateComponentsFrom(self)
@@ -74,13 +76,15 @@ struct CalendarTriggerRecord: TriggerRecord {
   }
 }
 
-struct TimeIntervalTriggerRecord: TriggerRecord {
+public struct TimeIntervalTriggerRecord: TriggerRecord {
   @Field
   var seconds: TimeInterval
   @Field
   var repeats: Bool
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
       trigger = UNTimeIntervalNotificationTrigger(timeInterval: self.seconds, repeats: self.repeats)
@@ -89,11 +93,13 @@ struct TimeIntervalTriggerRecord: TriggerRecord {
   }
 }
 
-struct DateTriggerRecord: TriggerRecord {
+public struct DateTriggerRecord: TriggerRecord {
   @Field
   var timestamp: TimeInterval
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let timestamp: Int = Int(self.timestamp / 1000)
     let date: Date = Date(timeIntervalSince1970: TimeInterval(timestamp))
     var trigger: UNNotificationTrigger?
@@ -104,13 +110,15 @@ struct DateTriggerRecord: TriggerRecord {
   }
 }
 
-struct DailyTriggerRecord: TriggerRecord {
+public struct DailyTriggerRecord: TriggerRecord {
   @Field
   var hour: Int
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(hour: self.hour, minute: self.minute)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -120,7 +128,7 @@ struct DailyTriggerRecord: TriggerRecord {
   }
 }
 
-struct WeeklyTriggerRecord: TriggerRecord {
+public struct WeeklyTriggerRecord: TriggerRecord {
   @Field
   var weekday: Int
   @Field
@@ -128,7 +136,9 @@ struct WeeklyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(hour: self.hour, minute: self.minute, weekday: self.weekday)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -137,7 +147,7 @@ struct WeeklyTriggerRecord: TriggerRecord {
     return trigger  }
 }
 
-struct MonthlyTriggerRecord: TriggerRecord {
+public struct MonthlyTriggerRecord: TriggerRecord {
   @Field
   var day: Int
   @Field
@@ -145,7 +155,9 @@ struct MonthlyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(day: self.day, hour: self.hour, minute: self.minute)
     var trigger: UNNotificationTrigger?
     try EXUtilities.catchException {
@@ -155,7 +167,7 @@ struct MonthlyTriggerRecord: TriggerRecord {
   }
 }
 
-struct YearlyTriggerRecord: TriggerRecord {
+public struct YearlyTriggerRecord: TriggerRecord {
   @Field
   var month: Int
   @Field
@@ -165,9 +177,11 @@ struct YearlyTriggerRecord: TriggerRecord {
   @Field
   var minute: Int
 
-  func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
+  public init() {}
+
+  public func toUNNotificationTrigger() throws -> UNNotificationTrigger? {
     let dateComponents: DateComponents = DateComponents(
-      month: self.month,
+      month: self.month + 1, // iOS months are 1-based, JS months are 0-based
       day: self.day,
       hour: self.hour,
       minute: self.minute
@@ -198,10 +212,11 @@ struct CategoryTextInputActionRecord: Record {
     self.submitButtonTitle = textInputAction.textInputButtonTitle
   }
 
-  func toUNTextInputNotificationAction(identifier: String, title: String) -> UNTextInputNotificationAction {
+  func toUNTextInputNotificationAction(identifier: String, title: String, options: UNNotificationActionOptions) -> UNTextInputNotificationAction {
     return UNTextInputNotificationAction(
       identifier: identifier,
       title: title,
+      options: options,
       textInputButtonTitle: submitButtonTitle ?? "",
       textInputPlaceholder: placeholder ?? ""
     )
@@ -225,8 +240,8 @@ struct CategoryActionOptionsRecord: Record {
   }
 }
 
-struct CategoryActionRecord: Record {
-  init() {}
+public struct CategoryActionRecord: Record {
+  public init() {}
 
   @Field
   var identifier: String?
@@ -251,9 +266,7 @@ struct CategoryActionRecord: Record {
       let buttonTitle = buttonTitle else {
       return nil
     }
-    if let textInput = textInput {
-      return textInput.toUNTextInputNotificationAction(identifier: identifier, title: buttonTitle)
-    }
+
     var notificationOptions: UNNotificationActionOptions = []
     if let optionsParams = options {
       if optionsParams.opensAppToForeground == true {
@@ -266,18 +279,20 @@ struct CategoryActionRecord: Record {
         notificationOptions.insert(.authenticationRequired)
       }
     }
+    if let textInput = textInput {
+      return textInput.toUNTextInputNotificationAction(identifier: identifier, title: buttonTitle, options: notificationOptions)
+    }
     return UNNotificationAction(identifier: identifier, title: buttonTitle, options: notificationOptions)
   }
 }
 
-struct CategoryOptionsRecord: Record {
-  init() {}
+public struct CategoryOptionsRecord: Record {
+  public init() {}
 
-  // allowAnnouncement deprecated in iOS 15 and later
-  /*
+  // allowAnnouncement deprecated in iOS 15 and later but still exposed on the JS side
+  // we set it to false because the option is ignored by iOS
   @Field
-  var allowAnnouncement: Bool?
-   */
+  var allowAnnouncement: Bool = false
   @Field
   var allowInCarPlay: Bool?
   @Field
@@ -294,8 +309,6 @@ struct CategoryOptionsRecord: Record {
   var showSubtitle: Bool?
 
   init(_ category: UNNotificationCategory) {
-    // allowAnnouncement deprecated in iOS 15 and later
-    // record.allowAnnouncement = category.options.contains(.allowAnnouncement)
     self.allowInCarPlay = category.options.contains(.allowInCarPlay)
     self.categorySummaryFormat = category.categorySummaryFormat
     self.customDismissAction = category.options.contains(.customDismissAction)
@@ -313,12 +326,6 @@ struct CategoryOptionsRecord: Record {
     if allowInCarPlay == true {
       options.insert(.allowInCarPlay)
     }
-    // allowAnnouncement deprecated in iOS 15 and later
-    /*
-    if allowAnnouncement as? Bool ?? false {
-      options.insert(.allowAnnouncement)
-    }
-     */
     if showTitle == true {
       options.insert(.hiddenPreviewsShowTitle)
     }
@@ -329,17 +336,17 @@ struct CategoryOptionsRecord: Record {
   }
 }
 
-struct CategoryRecord: Record {
-  init() {}
+public struct CategoryRecord: Record {
+  public init() {}
 
   @Field
-  var identifier: String
+  public var identifier: String
   @Field
   var actions: [CategoryActionRecord]?
   @Field
   var options: CategoryOptionsRecord?
 
-  init(_ category: UNNotificationCategory) {
+  public init(_ category: UNNotificationCategory) {
     self.identifier = category.identifier
     self.actions = category.actions.map { action in
       return CategoryActionRecord(action)
@@ -347,16 +354,16 @@ struct CategoryRecord: Record {
     self.options = CategoryOptionsRecord(category)
   }
 
-  init(_ identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) {
+  public init(_ identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) {
     self.identifier = identifier
     self.actions = actions
     self.options = options
   }
 
   func toUNNotificationCategory() -> UNNotificationCategory {
-    let intentIdentifiers: [String] = options?.intentIdentifiers as? [String] ?? []
-    let previewPlaceholder: String? = options?.previewPlaceholder as? String
-    let categorySummaryFormat: String? = options?.categorySummaryFormat as? String
+    let intentIdentifiers: [String] = options?.intentIdentifiers ?? []
+    let previewPlaceholder: String? = options?.previewPlaceholder
+    let categorySummaryFormat: String? = options?.categorySummaryFormat
     let actionsArray = actions?.compactMap { action in
       return action.toUNNotificationAction()
     } ?? []
@@ -386,7 +393,7 @@ struct NotificationRequestContentRecord: Record {
   @Field
   var badge: Int?
   @Field
-  var userInfo: [String: Any]?
+  var data: [String: Any]?
   @Field
   var categoryIdentifier: String?
   @Field
@@ -476,7 +483,7 @@ struct NotificationRequestContentRecord: Record {
       content.badge = NSNumber.init(value: badge)
     }
 
-    if let userInfo = userInfo {
+    if let userInfo = data {
       content.userInfo = userInfo
     }
 
@@ -512,5 +519,42 @@ struct NotificationRequestContentRecord: Record {
     }
 
     return content
+  }
+}
+
+// Notification permissions record
+
+struct NotificationPermissionRecord: Record {
+  @Field
+  var allowAlert: Bool?
+  @Field
+  var allowBadge: Bool?
+  @Field
+  var allowSound: Bool?
+  @Field
+  var allowDisplayInCarPlay: Bool?
+  @Field
+  var allowCriticalAlerts: Bool?
+  @Field
+  var provideAppNotificationSettings: Bool?
+  @Field
+  var allowProvisional: Bool?
+
+  func numberOfOptionsRequested() -> Int {
+    return self.toDictionary(appContext: nil)
+      .filter { $1 as? Bool ?? false == true }
+      .count
+  }
+
+  func authorizationOptionValue() -> UNAuthorizationOptions {
+    var options: UNAuthorizationOptions = []
+    if self.allowAlert ?? false { options.insert(.alert) }
+    if self.allowBadge ?? false { options.insert(.badge) }
+    if self.allowSound ?? false { options.insert(.sound) }
+    if self.allowDisplayInCarPlay ?? false { options.insert(.carPlay) }
+    if self.allowCriticalAlerts ?? false { options.insert(.criticalAlert) }
+    if self.provideAppNotificationSettings ?? false { options.insert(.providesAppNotificationSettings) }
+    if self.allowProvisional ?? false { options.insert(.provisional) }
+    return options
   }
 }

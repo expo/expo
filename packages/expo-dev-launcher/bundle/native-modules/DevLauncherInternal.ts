@@ -1,14 +1,8 @@
 import { requireNativeModule } from 'expo-modules-core';
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';
 
-const DevLauncher =
-  Platform.OS === 'ios'
-    ? requireNativeModule('ExpoDevLauncherInternal')
-    : NativeModules.EXDevLauncherInternal;
-const emitter = Platform.OS === 'ios' ? DevLauncher : new NativeEventEmitter(DevLauncher);
-
+const DevLauncher = requireNativeModule('ExpoDevLauncherInternal');
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
 export async function getRecentlyOpenedApps(): Promise<RecentApp[]> {
@@ -67,12 +61,8 @@ export async function getCrashReport(): Promise<CrashReport | null> {
   return await DevLauncher.getCrashReport();
 }
 
-export async function openCamera(): Promise<void> {
-  return await DevLauncher.openCamera();
-}
-
-export function addDeepLinkListener(callback: (string) => void) {
-  return emitter.addListener(ON_NEW_DEEP_LINK_EVENT, callback);
+export function addDeepLinkListener(callback: (event: { url: string }) => void) {
+  return DevLauncher.addListener(ON_NEW_DEEP_LINK_EVENT, callback);
 }
 
 export type BuildInfo = {

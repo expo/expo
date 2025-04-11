@@ -6,6 +6,7 @@ type CheckPackageType = 'package' | 'plugin' | 'cli' | 'utils';
 export type ActionOptions = {
   since: string;
   all: boolean;
+  core: boolean;
   build: boolean;
   test: boolean;
   lint: boolean;

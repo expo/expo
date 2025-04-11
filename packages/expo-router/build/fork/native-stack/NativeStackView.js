@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeStackView = void 0;
+exports.NativeStackView = NativeStackView;
 const native_stack_1 = require("@react-navigation/native-stack");
 const react_1 = require("react");
 const RootModal_1 = require("../../layouts/RootModal");
@@ -9,7 +9,6 @@ function NativeStackView(props) {
       <NativeStackViewInner {...props}/>
     </RootModal_1.RootModalProvider>);
 }
-exports.NativeStackView = NativeStackView;
 function NativeStackViewInner(props) {
     const rootModals = (0, react_1.useContext)(RootModal_1.RootModalContext);
     // Append the root modals to the state

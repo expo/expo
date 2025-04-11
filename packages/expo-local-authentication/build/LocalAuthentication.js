@@ -20,7 +20,7 @@ export async function hasHardwareAsync() {
  * Determine what kinds of authentications are available on the device.
  * @return Returns a promise which fulfils to an array containing [`AuthenticationType`s](#authenticationtype).
  *
- * Devices can support multiple authentication methods- i.e. `[1,2]` means the device supports both
+ * Devices can support multiple authentication methods - i.e. `[1,2]` means the device supports both
  * fingerprint and facial recognition. If none are supported, this method returns an empty array.
  */
 export async function supportedAuthenticationTypesAsync() {

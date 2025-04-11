@@ -1,5 +1,5 @@
 import { EventMapBase, NavigationState } from '@react-navigation/native';
-import React, { ComponentType, ReactNode } from 'react';
+import { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
 import { PickPartial } from '../types';
 import { ScreenProps } from '../useScreens';
 export declare function useFilterScreenChildren(children: ReactNode, { isCustomNavigator, contextKey, }?: {
@@ -7,7 +7,7 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
     /** Used for sending developer hints */
     contextKey?: string;
 }): {
-    screens: any[] | null | undefined;
+    screens: ScreenProps[] | undefined;
     children: any[];
 };
 /**
@@ -40,7 +40,7 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  * }
  * ```
  */
-export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps<TOptions, TState, TEventMap>[]) => ScreenProps<TOptions, TState, TEventMap>[]): React.ForwardRefExoticComponent<React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, "children">> & React.RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
 };
 //# sourceMappingURL=withLayoutContext.d.ts.map

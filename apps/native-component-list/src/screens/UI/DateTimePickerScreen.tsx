@@ -1,5 +1,5 @@
-import { DateTimePicker, DatePickerProps } from '@expo/ui/components/DatePicker';
-import { Picker } from '@expo/ui/components/Picker';
+import { DateTimePicker, DateTimePickerProps } from '@expo/ui/DatePicker';
+import { Picker } from '@expo/ui/Picker';
 import * as React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
@@ -35,10 +35,14 @@ export default function DatePickerScreen() {
               onDateSelected={(date) => {
                 setSelectedDate(date);
               }}
-              displayedComponents={typeOptions[typeIndex] as DatePickerProps['displayedComponents']}
+              displayedComponents={
+                typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
+              }
               initialDate={selectedDate.toISOString()}
-              iosVariant={displayOptions[selectedIndex] as DatePickerProps['iosVariant']}
-              androidVariant={displayOptions[selectedIndex] as DatePickerProps['androidVariant']}
+              iosVariant={displayOptions[selectedIndex] as DateTimePickerProps['iosVariant']}
+              androidVariant={
+                displayOptions[selectedIndex] as DateTimePickerProps['androidVariant']
+              }
               style={{ height: Platform.select({ android: 520, ios: undefined }) }}
               showVariantToggle
               is24Hour

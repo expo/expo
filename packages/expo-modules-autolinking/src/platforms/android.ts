@@ -1,11 +1,24 @@
-import glob from 'fast-glob';
 import fs from 'fs';
+import { glob } from 'glob';
 import path from 'path';
 
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+import type {
+  ExtraDependencies,
+  ModuleDescriptorAndroid,
+  PackageRevision,
+  ResolveOptions,
+} from '../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
+
+export function getConfiguration(options: ResolveOptions): Record<string, any> | undefined {
+  const buildFromSource = options.android?.buildFromSource;
+  if (buildFromSource) {
+    return { buildFromSource };
+  }
+  return undefined;
+}
 
 /**
  * Generates Java file that contains all autolinked packages.
@@ -23,18 +36,11 @@ export async function generatePackageListAsync(
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 
-async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]> {
-  const configGradlePaths = revision.config?.androidGradlePaths();
-  if (configGradlePaths && configGradlePaths.length) {
-    return configGradlePaths;
-  }
-
-  const buildGradleFiles = await glob('*/build.gradle{,.kts}', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
-  return buildGradleFiles;
+export function isAndroidProject(projectRoot: string): boolean {
+  return (
+    fs.existsSync(path.join(projectRoot, 'build.gradle')) ||
+    fs.existsSync(path.join(projectRoot, 'build.gradle.kts'))
+  );
 }
 
 export async function resolveModuleAsync(
@@ -48,12 +54,6 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const buildGradleFiles = await findGradleFilesAsync(revision);
-  // Just in case where the module doesn't have its own `build.gradle`.
-  if (!buildGradleFiles.length) {
-    return null;
-  }
-
   const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
     ({ id, group, sourceDir, applyToRootProject }) => ({
       id,
@@ -63,57 +63,89 @@ export async function resolveModuleAsync(
     })
   );
 
-  const aarProjects = (revision.config?.androidGradleAarProjects() ?? []).map(
-    ({ name, aarFilePath }) => {
-      const mainProjectName = convertPackageToProjectName(packageName);
-      const projectName = `${mainProjectName}$${name}`;
-      const projectDir = path.join(revision.path, 'android', 'build', projectName);
+  const defaultProjectName = convertPackageToProjectName(packageName);
+
+  const androidProjects = revision.config
+    ?.androidProjects(defaultProjectName)
+    ?.filter((project) => {
+      return !project.isDefault || isAndroidProject(path.join(revision.path, project.path));
+    });
+
+  // Just in case where the module doesn't have its own `build.gradle`/`settings.gradle`.
+  if (!androidProjects?.length) {
+    if (!plugins.length) {
+      return null;
+    }
+
+    return {
+      packageName,
+      plugins,
+    };
+  }
+
+  const projects = androidProjects.map((project) => {
+    const projectPath = path.join(revision.path, project.path);
+
+    const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
+      const projectName = aarProject.name;
+      const projectDir = path.join(projectPath, 'build', projectName);
       return {
         name: projectName,
-        aarFilePath: path.join(revision.path, aarFilePath),
+        aarFilePath: path.join(revision.path, aarProject.aarFilePath),
         projectDir,
       };
-    }
-  );
+    });
 
-  const projects = buildGradleFiles
-    .map((buildGradleFile) => {
-      const gradleFilePath = path.join(revision.path, buildGradleFile);
-      return {
-        name: convertPackageWithGradleToProjectName(
-          packageName,
-          path.relative(revision.path, gradleFilePath)
-        ),
-        sourceDir: path.dirname(gradleFilePath),
-      };
-    })
-    // Filter out projects that are already linked by plugins
-    .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
+    const { publication } = project;
+    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+      : undefined;
+
+    return {
+      name: project.name,
+      sourceDir: projectPath,
+      modules: project.modules ?? [],
+      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
+      ...(publication ? { publication } : {}),
+      ...(aarProjects?.length > 0 ? { aarProjects } : {}),
+    };
+  });
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
-  const publication = revision.config?.androidPublication();
 
   return {
     packageName,
     projects,
-    ...(plugins.length > 0 ? { plugins } : {}),
-    modules: revision.config?.androidModules() ?? [],
-    ...(aarProjects.length > 0 ? { aarProjects } : {}),
+    ...(plugins?.length > 0 ? { plugins } : {}),
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
-    ...(publication ? { publication } : {}),
   };
 }
 
 export async function resolveExtraBuildDependenciesAsync(
   projectNativeRoot: string
 ): Promise<ExtraDependencies | null> {
+  const extraMavenReposString = await resolveGradlePropertyAsync(
+    projectNativeRoot,
+    ANDROID_EXTRA_BUILD_DEPS_KEY
+  );
+  if (extraMavenReposString) {
+    try {
+      return JSON.parse(extraMavenReposString);
+    } catch {}
+  }
+  return null;
+}
+
+export async function resolveGradlePropertyAsync(
+  projectNativeRoot: string,
+  propertyKey: string
+): Promise<string | null> {
   const propsFile = path.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
   try {
     const contents = await fs.promises.readFile(propsFile, 'utf8');
-    const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
-    if (extraMavenReposString) {
-      const extraMavenRepos = JSON.parse(extraMavenReposString);
-      return extraMavenRepos;
+    const propertyValue = searchGradlePropertyFirst(contents, propertyKey);
+    if (propertyValue) {
+      return propertyValue;
     }
   } catch {}
   return null;
@@ -165,7 +197,9 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 }
 
 function findAndroidModules(modules: ModuleDescriptorAndroid[]): string[] {
-  const modulesToProvide = modules.filter((module) => module.modules.length > 0);
+  const projects = modules.flatMap((module) => module.projects ?? []);
+
+  const modulesToProvide = projects.filter((project) => project.modules?.length > 0);
   const classNames = ([] as string[]).concat(...modulesToProvide.map((module) => module.modules));
   return classNames;
 }
@@ -175,7 +209,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
 
   const flattenedSourceDirList: string[] = [];
   for (const module of modules) {
-    for (const project of module.projects) {
+    for (const project of module.projects ?? []) {
       flattenedSourceDirList.push(project.sourceDir);
     }
   }

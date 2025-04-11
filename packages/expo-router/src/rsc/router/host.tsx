@@ -19,7 +19,6 @@ import {
   useCallback,
   useState,
   startTransition,
-  // @ts-expect-error
   use,
   useEffect,
 } from 'react';
@@ -127,7 +126,16 @@ const ACTION_HEADERS = {
   'expo-platform': process.env.EXPO_OS!,
 };
 
-const checkStatus = async (responsePromise: Promise<Response>): Promise<Response> => {
+interface ResponseLike {
+  url: string;
+  ok: boolean;
+  status: number;
+  statusText: string;
+  headers: Headers;
+  text(): Promise<string>;
+}
+
+const checkStatus = async <T extends ResponseLike>(responsePromise: Promise<T>): Promise<T> => {
   // TODO: Combine with metro async fetch logic.
   const response = await responsePromise;
   if (!response.ok) {
@@ -135,7 +143,7 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
     // This was tested against using a Class component in a server component.
     if (__DEV__ && (response.status === 500 || response.status === 404)) {
       const errorText = await response.text();
-      let errorJson;
+      let errorJson: any;
       try {
         errorJson = JSON.parse(errorText);
       } catch {
@@ -151,7 +159,7 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
       throw new MetroServerError(errorJson, response.url);
     }
 
-    let responseText;
+    let responseText: string;
     try {
       responseText = await response.text();
     } catch {
@@ -331,11 +339,11 @@ export const prefetchRSC = (input: string, params?: unknown): void => {
   }
 };
 
-const RefetchContext = createContext<(input: string, searchParams?: URLSearchParams) => void>(
-  () => {
-    throw new Error('Missing Root component');
-  }
-);
+const RefetchContext = createContext<
+  (input: string, searchParams?: URLSearchParams | string) => void
+>(() => {
+  throw new Error('Missing Root component');
+});
 const ElementsContext = createContext<Elements | null>(null);
 
 export const Root = ({

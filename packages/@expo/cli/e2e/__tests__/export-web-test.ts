@@ -79,7 +79,6 @@ it('runs `npx expo export:web`', async () => {
   ];
 
   assert(assetsManifest.files);
-  console.log(assetsManifest.files);
   for (const [key, value] of knownFiles) {
     const files = assetsManifest.files as Record<string, string>;
     expect(files[key]).toEqual(value);

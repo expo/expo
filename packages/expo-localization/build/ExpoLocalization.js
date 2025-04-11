@@ -139,8 +139,8 @@ export default {
                 measurementSystem: null,
                 currencyCode: null,
                 currencySymbol: null,
-                langageCurrencyCode: null,
-                langageCurrencySymbol: null,
+                languageCurrencyCode: null,
+                languageCurrencySymbol: null,
                 // On web, we don't have a way to get the region code, except from the language tag. `regionCode` and `languageRegionCode` are the same.
                 regionCode: region || null,
                 languageRegionCode: region || null,
@@ -156,7 +156,7 @@ export default {
             {
                 calendar: (locale?.calendar || locale?.calendars?.[0]) || null,
                 timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
-                uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null,
+                uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null, //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle
                 firstWeekday: locale?.weekInfo?.firstDay || null,
             },
         ];

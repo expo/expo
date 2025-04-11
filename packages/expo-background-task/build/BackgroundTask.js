@@ -1,6 +1,24 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { isRunningInExpoGo } from 'expo';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
+import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
+// Flag to warn about running on Apple simulator
+let warnAboutRunningOniOSSimulator = false;
+let warnedAboutExpoGo = false;
+function _validate(taskName) {
+    if (isRunningInExpoGo()) {
+        if (!warnedAboutExpoGo) {
+            const message = '`Background Task` functionality is not available in Expo Go:\n' +
+                'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+            console.warn(message);
+            warnedAboutExpoGo = true;
+        }
+    }
+    if (!taskName || typeof taskName !== 'string') {
+        throw new TypeError('`taskName` must be a non-empty string.');
+    }
+}
 // @needsAudit
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
@@ -12,7 +30,9 @@ export const getStatusAsync = async () => {
     if (!ExpoBackgroundTaskModule.getStatusAsync) {
         throw new UnavailabilityError('BackgroundTask', 'getStatusAsync');
     }
-    return ExpoBackgroundTaskModule.getStatusAsync();
+    return isRunningInExpoGo()
+        ? BackgroundTaskStatus.Restricted
+        : ExpoBackgroundTaskModule.getStatusAsync();
 };
 // @needsAudit
 /**
@@ -50,7 +70,20 @@ export async function registerTaskAsync(taskName, options = {}) {
     if (!TaskManager.isTaskDefined(taskName)) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
     }
-    console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
+    if (await TaskManager.isTaskRegisteredAsync(taskName)) {
+        throw new Error(`Task '${taskName}' is already registered.`);
+    }
+    if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
+        if (!warnAboutRunningOniOSSimulator) {
+            const message = Platform.OS === 'ios'
+                ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
+                : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
+            console.warn(message);
+            warnAboutRunningOniOSSimulator = true;
+        }
+        return;
+    }
+    _validate(taskName);
     await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
 }
 // @needsAudit
@@ -63,7 +96,10 @@ export async function unregisterTaskAsync(taskName) {
     if (!ExpoBackgroundTaskModule.unregisterTaskAsync) {
         throw new UnavailabilityError('BackgroundTask', 'unregisterTaskAsync');
     }
-    console.log('Calling ExpoBackgroundTaskModule.unregisterTaskAsync', taskName);
+    if (!(await TaskManager.isTaskRegisteredAsync(taskName))) {
+        throw new Error(`Task '${taskName}' is not registered.`);
+    }
+    _validate(taskName);
     await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
 }
 // @needsAudit

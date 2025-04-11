@@ -69,6 +69,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TextInput component',
+    route: 'ui/textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
+    },
+  },
+  {
     name: 'Progress component',
     route: 'ui/progress',
     options: {},
@@ -76,16 +84,42 @@ export const UIScreens = [
       return optionalRequire(() => require('./ProgressScreen'));
     },
   },
-];
-if (Platform.OS === 'ios') {
-  UIScreens.push({
-    name: 'Gauge component',
-    route: 'ui/gauge',
+  {
+    name: 'List component',
+    route: 'ui/list',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./GaugeScreen'));
+      return optionalRequire(() => require('./ListScreen'));
     },
-  });
+  },
+  {
+    name: 'BottomSheet component',
+    route: 'ui/bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetScreen'));
+    },
+  },
+];
+if (Platform.OS === 'ios') {
+  UIScreens.push(
+    {
+      name: 'Gauge component',
+      route: 'ui/gauge',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./GaugeScreen'));
+      },
+    },
+    {
+      name: 'SwiftUI container',
+      route: 'ui/swiftui-container',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./SwiftUIContainerScreen'));
+      },
+    }
+  );
 }
 
 export default function UIScreen() {

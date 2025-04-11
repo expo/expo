@@ -2,8 +2,6 @@
 
 ## Unpublished
 
-- Warn about potential edge-to-edge interferences. ([#34478](https://github.com/expo/expo/pull/34478) by [@zoontek](https://github.com/zoontek))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -12,8 +10,30 @@
 
 ### 💡 Others
 
+## 4.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.0 — 2025-04-04
+
+- Warn about potential edge-to-edge interferences. ([#34478](https://github.com/expo/expo/pull/34478) by [@zoontek](https://github.com/zoontek))
+
+### 🛠 Breaking changes
+
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 4.0.9 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.8 - 2025-02-06
 

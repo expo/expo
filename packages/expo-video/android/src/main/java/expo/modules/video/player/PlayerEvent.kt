@@ -79,6 +79,13 @@ sealed class PlayerEvent {
     override val jsEventPayload = VideoTrackChangedEventPayload(videoTrack, oldVideoTrack)
   }
 
+  class RenderedFirstFrame : PlayerEvent() {
+    override val name = "renderFirstFrame"
+
+    // This Event is emitted through the view (we are matching the AVKit API behavior)
+    override val emitToJS = false
+  }
+
   data class AvailableSubtitleTracksChanged(
     val availableSubtitleTracks: List<SubtitleTrack>,
     val oldAvailableSubtitleTracks: List<SubtitleTrack>
@@ -130,6 +137,7 @@ sealed class PlayerEvent {
       is MutedChanged -> listeners.forEach { it.onMutedChanged(player, muted, oldMuted) }
       is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
       is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
+      is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
       // JS-only events - VideoSourceLoaded, SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }

@@ -1,5 +1,5 @@
-import glob from 'fast-glob';
 import fs from 'fs';
+import { glob, GlobOptions } from 'glob';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
@@ -21,7 +21,7 @@ export class ProjectSetupCheck implements DoctorCheck {
       // Glob returns matching files and `git check-ignore` checks files, as
       // well, but we want to check if the path is gitignored, so we pick vital
       // files to match off of (e.g., .podspec, build.gradle).
-      const keyFilePathsForModules: ({ pattern: string } & glob.Options)[] = [
+      const keyFilePathsForModules: readonly ({ pattern: string } & GlobOptions)[] = [
         { pattern: 'modules/**/ios/*.podspec', cwd: projectRoot, absolute: true },
         { pattern: 'modules/**/android/build.gradle', cwd: projectRoot, absolute: true },
       ];
@@ -67,8 +67,11 @@ export class ProjectSetupCheck implements DoctorCheck {
 async function areAnyMatchingPathsIgnoredAsync({
   pattern,
   ...options
-}: { pattern: string } & glob.Options): Promise<boolean> {
-  const matchingNativeFiles = await glob(pattern, options);
+}: { pattern: string } & GlobOptions): Promise<boolean> {
+  const matchingNativeFiles = await glob(pattern, {
+    ...options,
+    withFileTypes: false,
+  });
   if (!matchingNativeFiles.length) return false;
   // multiple matches may occur if there are multiple modules
   return (

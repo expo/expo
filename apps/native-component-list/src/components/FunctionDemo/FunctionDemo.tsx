@@ -54,7 +54,7 @@ type Props = {
   /**
    * Rendering function to render some additional components based on the function's result.
    */
-  renderAdditionalResult?: (result: any) => JSX.Element | void;
+  renderAdditionalResult?: (result: any) => React.ReactElement | void;
 };
 
 /**

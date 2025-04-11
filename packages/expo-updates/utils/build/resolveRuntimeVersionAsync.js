@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveRuntimeVersionAsync = void 0;
+exports.resolveRuntimeVersionAsync = resolveRuntimeVersionAsync;
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const createFingerprintAsync_1 = require("./createFingerprintAsync");
@@ -14,6 +14,9 @@ async function resolveRuntimeVersionAsync(projectRoot, platform, fingerprintOpti
     const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
     if (!runtimeVersion || typeof runtimeVersion === 'string') {
         return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null, workflow };
+    }
+    if (typeof runtimeVersion !== 'object' || Array.isArray(runtimeVersion)) {
+        throw new Error(`Invalid runtime version: ${JSON.stringify(runtimeVersion)}. Expected a string or an object with a "policy" key. https://docs.expo.dev/eas-update/runtime-versions`);
     }
     const policy = runtimeVersion.policy;
     if (policy === 'fingerprint') {
@@ -29,4 +32,3 @@ async function resolveRuntimeVersionAsync(projectRoot, platform, fingerprintOpti
         workflow,
     };
 }
-exports.resolveRuntimeVersionAsync = resolveRuntimeVersionAsync;

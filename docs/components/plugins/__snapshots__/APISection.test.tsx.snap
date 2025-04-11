@@ -110,14 +110,22 @@ exports[`APISection expo-apple-authentication 1`] = `
         data-text="true"
       >
         React.Element
-        &lt;
+        <span
+          class="text-quaternary"
+        >
+          &lt;
+        </span>
         <a
           class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
         </a>
-        &gt;
+        <span
+          class="text-quaternary"
+        >
+          &gt;
+        </span>
       </code>
     </p>
     <div
@@ -239,7 +247,7 @@ not appear on the screen.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -1128,7 +1136,7 @@ properties.
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -1331,7 +1339,7 @@ This should come from the user field of an
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-default"
+            class="translate-z shrink-0 icon-xs text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -1376,7 +1384,7 @@ This should come from the user field of an
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -1529,7 +1537,7 @@ value depending on the state of the credential.
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -1768,7 +1776,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -2065,7 +2073,7 @@ the user, since this remains the same for apps released by the same developer.
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -2350,7 +2358,7 @@ from using
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -2604,7 +2612,7 @@ sign-out operation.
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -2784,7 +2792,7 @@ which contains all of the pertinent user and credential information.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -3711,7 +3719,7 @@ may be
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -3764,7 +3772,7 @@ for more details.
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'default'
@@ -3775,7 +3783,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'short'
@@ -3786,7 +3794,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'medium'
@@ -3797,7 +3805,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'long'
@@ -3808,7 +3816,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'abbreviated'
@@ -3897,7 +3905,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -4224,7 +4232,7 @@ None of these options are required.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -4571,7 +4579,7 @@ You must include the ID string of the user to sign out.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -5610,7 +5618,7 @@ After calling this function, the listener will no longer receive any events from
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -6299,7 +6307,7 @@ for more details.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-default"
+            class="translate-z shrink-0 icon-xs text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -6340,7 +6348,7 @@ You will still need to handle null values for any fields you request.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -6580,7 +6588,7 @@ for more details.
           class="select-none mt-1"
         >
           <svg
-            class="translate-z icon-xs text-icon-secondary"
+            class="translate-z shrink-0 icon-xs text-icon-secondary"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
@@ -6947,7 +6955,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -7231,7 +7239,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -7338,7 +7346,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="select-none mt-1"
             >
               <svg
-                class="translate-z icon-xs text-icon-default"
+                class="translate-z shrink-0 icon-xs text-icon-default"
                 fill="currentColor"
                 role="img"
                 viewBox="0 0 24 24"
@@ -7443,7 +7451,7 @@ a start date that is more than seven days in the past returns only the available
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -7586,7 +7594,7 @@ available on this device.
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -7802,7 +7810,7 @@ provided with a single argument that is
           class="flex flex-row items-center gap-2"
         >
           <svg
-            class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+            class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
             fill="none"
             role="img"
             stroke="currentColor"
@@ -7875,7 +7883,7 @@ provided with a single argument that is
               class="select-none mt-1"
             >
               <svg
-                class="translate-z icon-xs text-icon-default"
+                class="translate-z shrink-0 icon-xs text-icon-default"
                 fill="currentColor"
                 role="img"
                 viewBox="0 0 24 24"
@@ -8235,7 +8243,7 @@ On iOS, the
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+          class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -8352,7 +8360,7 @@ On iOS, the
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'never'
@@ -8363,7 +8371,7 @@ On iOS, the
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         number

@@ -6,14 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Fork of https://github.com/facebook/metro/blob/b8e9e64f1de97a67234e223f5ee21524b160e8a5/packages/metro-runtime/src/modules/asyncRequire.js#L1
+ * Adds worker support.
  */
 
 type MetroRequire = {
   (id: number): unknown;
   importAll: <T>(id: number) => T;
 };
-
-declare const require: MetroRequire;
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
@@ -40,7 +39,7 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
 
 function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promise<T> | T {
   const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-  const importAll = () => require.importAll<T>(moduleID);
+  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID);
 
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
@@ -75,6 +74,20 @@ asyncRequire.prefetch = function (
     () => {},
     () => {}
   );
+};
+
+asyncRequire.unstable_resolve = function unstable_resolve(
+  moduleID: number,
+  paths: DependencyMapPaths
+) {
+  if (!paths) {
+    throw new Error('Bundle splitting is required for Web Worker imports');
+  }
+  const id = paths[moduleID];
+  if (!id) {
+    throw new Error('Worker import is missing from split bundle paths: ' + id);
+  }
+  return id;
 };
 
 module.exports = asyncRequire;

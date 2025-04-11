@@ -7,6 +7,9 @@ import javax.inject.Inject
 import android.os.Bundle
 import host.exp.exponent.di.NativeModuleDepsProvider
 import android.content.Intent
+import android.graphics.Color
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -31,6 +34,11 @@ class ErrorActivity() : FragmentActivity() {
   lateinit var kernel: Kernel
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // The error screen doesn't change with theme changes, so we set the status bar to dark mode
+    // to align the status bar color with the color of the text of the screen.
+    enableEdgeToEdge(
+      SystemBarStyle.dark(Color.TRANSPARENT)
+    )
     super.onCreate(savedInstanceState)
     binding = ErrorActivityNewBinding.inflate(layoutInflater)
     val view = binding.root

@@ -107,7 +107,8 @@ export function createConfig(
     hasChildren,
     parts,
     userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
-    expandedRouteNames: routeNames.flatMap((name) => {
+    // Don't include the __root route name
+    expandedRouteNames: routeNames.slice(1).flatMap((name) => {
       return name.split('/');
     }),
   };
@@ -445,31 +446,29 @@ export function parseQueryParams(
   return Object.keys(params).length ? params : undefined;
 }
 
-/*** ????????? */
+export function cleanPath(path: string) {
+  path = path
+    // let remaining = path
+    // END FORK
+    .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+    .replace(/^\//, '') // Remove extra leading slash
+    .replace(/\?.*$/, ''); // Remove query params which we will handle later
 
-// export function mutateRouteParams(
-//   route: ParsedRoute,
-//   params: object,
-//   { allowUrlParamNormalization = false } = {}
-// ) {
-//   route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
-//   for (const [name, value] of Object.entries(params)) {
-//     if (route.params?.[name]) {
-//       if (allowUrlParamNormalization) {
-//         route.params[name] = value;
-//       } else {
-//         if (process.env.NODE_ENV !== 'production') {
-//           console.warn(
-//             `Route '/${route.name}' with param '${name}' was specified both in the path and as a param, removing from path`
-//           );
-//         }
-//       }
-//     } else {
-//       route.params[name] = value;
-//     }
-//   }
+  // Make sure there is a trailing slash
+  return path.endsWith('/') ? path : `${path}/`;
+}
 
-//   if (Object.keys(route.params).length === 0) {
-//     delete route.params;
-//   }
-// }
+export function routePatternToRegex(pattern: string) {
+  return new RegExp(
+    `^(${pattern
+      .split('/')
+      .map((it) => {
+        if (it.startsWith(':')) {
+          return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+        }
+
+        return `${it === '*' ? '.*' : escape(it)}\\/`;
+      })
+      .join('')})`
+  );
+}

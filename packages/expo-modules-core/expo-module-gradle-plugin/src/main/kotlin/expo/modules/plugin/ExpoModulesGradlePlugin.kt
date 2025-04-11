@@ -2,6 +2,7 @@
 
 package expo.modules.plugin
 
+import com.android.build.api.variant.AndroidComponentsExtension
 import expo.modules.plugin.gradle.ExpoGradleHelperExtension
 import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Plugin
@@ -13,7 +14,7 @@ private val lock = Any()
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
-    val kspVersion = getKSPVersion(project, kotlinVersion)
+    val kspVersion = getKSPVersion(project)
 
     // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
     val expoModuleExtension = project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
@@ -23,7 +24,10 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
-      applyPublishing(expoModuleExtension)
+
+      extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl {
+        applyPublishing(expoModuleExtension)
+      }
     }
 
     // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.
@@ -42,7 +46,7 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       ?: project.logger.warnIfNotDefined("kotlinVersion", "2.0.21")
   }
 
-  private fun getKSPVersion(project: Project, kotlinVersion: String): String {
+  private fun getKSPVersion(project: Project): String {
     return project.rootProject.extra.safeGet<String>("kspVersion")
       ?: project.logger.warnIfNotDefined("kspVersion", "2.0.21-1.0.28")
   }

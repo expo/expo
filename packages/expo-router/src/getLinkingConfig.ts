@@ -4,6 +4,7 @@ import { Platform } from 'expo-modules-core';
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { type RedirectConfig } from './getRoutesCore';
 import { RouterStore } from './global-state/router-store';
 import {
   addEventListener,
@@ -13,8 +14,17 @@ import {
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
+export const INTERNAL_SLOT_NAME = '__root';
+
 export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
-  return getReactNavigationConfig(routes, metaOnly);
+  return {
+    screens: {
+      [INTERNAL_SLOT_NAME]: {
+        path: '',
+        ...getReactNavigationConfig(routes, metaOnly),
+      },
+    },
+  };
 }
 
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
@@ -26,13 +36,14 @@ export type LinkingConfigOptions = {
   metaOnly?: boolean;
   serverUrl?: string;
   getInitialURL?: typeof getInitialURL;
+  redirects?: RedirectConfig[];
 };
 
 export function getLinkingConfig(
   store: RouterStore,
   routes: RouteNode,
   context: RequireContext,
-  { metaOnly = true, serverUrl }: LinkingConfigOptions = {}
+  { metaOnly = true, serverUrl, redirects }: LinkingConfigOptions = {}
 ): ExpoLinkingOptions {
   // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
   let hasCachedInitialUrl = false;
@@ -45,9 +56,12 @@ export function getLinkingConfig(
     ? context(nativeLinkingKey)
     : undefined;
 
+  const config = getNavigationConfig(routes, metaOnly);
+  const boundGetStateFromPath = getStateFromPath.bind(store);
+
   return {
     prefixes: [],
-    config: getNavigationConfig(routes, metaOnly),
+    config,
     // A custom getInitialURL is used on native to ensure the app always starts at
     // the root path if it's launched from something other than a deep link.
     // This helps keep the native functionality working like the web functionality.
@@ -63,11 +77,13 @@ export function getLinkingConfig(
           initialUrl = serverUrl ?? getInitialURL();
 
           if (typeof initialUrl === 'string') {
-            if (typeof nativeLinking?.redirectSystemPath === 'function') {
+            initialUrl = store.applyRedirects(initialUrl);
+            if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
+              url = store.applyRedirects(url);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }
@@ -79,14 +95,14 @@ export function getLinkingConfig(
       }
       return initialUrl;
     },
-    subscribe: addEventListener(nativeLinking),
-    getStateFromPath: getStateFromPath.bind(store),
+    subscribe: addEventListener(nativeLinking, store),
+    getStateFromPath: boundGetStateFromPath,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
-          screens: {},
-          ...this.config,
+          ...config,
           ...options,
+          screens: config.screens ?? options?.screens ?? {},
         }) ?? '/'
       );
     },

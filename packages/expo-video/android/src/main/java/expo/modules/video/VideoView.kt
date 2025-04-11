@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.util.Rational
 import android.view.View
@@ -34,6 +35,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onPictureInPictureStop by EventDispatcher<Unit>()
   val onFullscreenEnter by EventDispatcher<Unit>()
   val onFullscreenExit by EventDispatcher<Unit>()
+  val onFirstFrameRender by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
 
@@ -52,6 +54,20 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
   private var pictureInPictureHelperTag: String? = null
 
+  // We need to keep track of the target surface view visibility, but only apply it when `useExoShutter` is false.
+  var shouldHideSurfaceView: Boolean = true
+
+  var useExoShutter: Boolean? = null
+    set(value) {
+      if (value == false) {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+      } else {
+        playerView.setShutterBackgroundColor(Color.BLACK)
+      }
+      applySurfaceViewVisibility()
+      field = value
+    }
+
   var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
     applyAutoEnterPiP(currentActivity, new)
   }
@@ -69,8 +85,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       videoPlayer?.removeListener(this)
       newPlayer?.addListener(this)
-      playerView.player = newPlayer?.player
       field = newPlayer
+      shouldHideSurfaceView = true
+      attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
@@ -110,6 +127,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // The prop `useNativeControls` prop is sometimes applied after the view is created, and sometimes there is a visible
     // flash of controls event when they are set to off. Initially we set it to `false` and apply it in `onAttachedToWindow` to avoid this.
     this.playerView.useController = false
+
+    // Start with the SurfaceView being transparent to avoid any flickers when the prop value is delivered.
+    this.playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+    this.playerView.videoSurfaceView?.alpha = 0f
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -117,6 +138,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         ViewGroup.LayoutParams.MATCH_PARENT
       )
     )
+  }
+
+  fun applySurfaceViewVisibility() {
+    if (useExoShutter == false && shouldHideSurfaceView) {
+      playerView.videoSurfaceView?.alpha = 0f
+    } else {
+      playerView.videoSurfaceView?.alpha = 1f
+    }
   }
 
   fun enterFullscreen() {
@@ -223,6 +252,12 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
+  }
+
+  override fun onRenderedFirstFrame(player: VideoPlayer) {
+    shouldHideSurfaceView = false
+    applySurfaceViewVisibility()
+    onFirstFrameRender(Unit)
   }
 
   override fun requestLayout() {

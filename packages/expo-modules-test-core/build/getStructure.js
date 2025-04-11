@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllExpoModulesInWorkingDirectory = void 0;
+exports.getAllExpoModulesInWorkingDirectory = getAllExpoModulesInWorkingDirectory;
 // convert requires above to imports
 const child_process_1 = require("child_process");
 const fs_1 = __importDefault(require("fs"));
@@ -228,5 +228,4 @@ function getAllExpoModulesInWorkingDirectory() {
     const files = (0, glob_1.globSync)(pattern);
     return findModuleDefinitionsInFiles(files);
 }
-exports.getAllExpoModulesInWorkingDirectory = getAllExpoModulesInWorkingDirectory;
 //# sourceMappingURL=getStructure.js.map

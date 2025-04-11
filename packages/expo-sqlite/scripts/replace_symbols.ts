@@ -35,7 +35,7 @@ async function queryApiSetAsync(headerFilePath: string): Promise<Set<string>> {
   const contents = await fs.readFile(headerFilePath, 'utf8');
   const apiSet = new Set<string>();
 
-  const apiRegExp = /(SQLITE_API .+? \*?)(ex)?(sqlite3_.+?)\(/g;
+  const apiRegExp = /(SQLITE_API .+? \*?)(ex)?((sqlite3_|sqlite3session_|sqlite3changeset_).+?)\(/g;
   const matchesApi = contents.matchAll(apiRegExp);
   for (const match of matchesApi) {
     apiSet.add(match[3]);
@@ -57,10 +57,7 @@ async function replaceVendorSymbolsAsync(apiSet: Set<string>, sqliteSrcDir: stri
 
 async function replaceIosSymbolsAsync(apiSet: Set<string>): Promise<void> {
   const iosSrcRoot = path.join(PACKAGE_ROOT, 'ios');
-  const files = [
-    path.join(iosSrcRoot, 'CRSQLiteLoader.m'),
-    path.join(iosSrcRoot, 'SQLiteModule.swift'),
-  ];
+  const files = [path.join(iosSrcRoot, 'SQLiteModule.swift')];
   await Promise.all(files.map((file) => replaceSqlite3SymbolsAsync(apiSet, file)));
 }
 

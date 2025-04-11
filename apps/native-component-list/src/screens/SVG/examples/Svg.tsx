@@ -85,16 +85,12 @@ function SvgLayout() {
 SvgLayout.title = 'SVG with flex layout';
 
 function SvgNativeMethods() {
-  const root = useRef<Svg.Svg>();
+  const root = useRef<Svg.Svg>(null);
   const [base64, setBase64] = useState<string | undefined>(undefined);
 
   return (
     <View>
-      <Svg.Svg
-        height="100"
-        width="150"
-        // @ts-expect-error
-        ref={root}>
+      <Svg.Svg height="100" width="150" ref={root}>
         <G x="40" onPress={() => root.current?.toDataURL?.((base64: string) => setBase64(base64))}>
           <Circle cx="32" cy="32" r="4.167" fill="blue" />
           <Path

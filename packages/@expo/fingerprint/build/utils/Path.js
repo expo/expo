@@ -3,8 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toPosixPath = exports.normalizeFilePath = exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
-const minimatch_1 = __importDefault(require("minimatch"));
+exports.isIgnoredPath = isIgnoredPath;
+exports.buildPathMatchObjects = buildPathMatchObjects;
+exports.buildDirMatchObjects = buildDirMatchObjects;
+exports.isIgnoredPathWithMatchObjects = isIgnoredPathWithMatchObjects;
+exports.normalizeFilePath = normalizeFilePath;
+exports.toPosixPath = toPosixPath;
+const minimatch_1 = require("minimatch");
 const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 /**
@@ -14,14 +19,12 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
     const matchObjects = buildPathMatchObjects(ignorePaths, minimatchOptions);
     return isIgnoredPathWithMatchObjects(filePath, matchObjects);
 }
-exports.isIgnoredPath = isIgnoredPath;
 /**
  * Prebuild match objects for `isIgnoredPathWithMatchObjects` calls.
  */
 function buildPathMatchObjects(paths, minimatchOptions = { dot: true }) {
-    return paths.map((filePath) => new minimatch_1.default.Minimatch(filePath, minimatchOptions));
+    return paths.map((filePath) => new minimatch_1.Minimatch(filePath, minimatchOptions));
 }
-exports.buildPathMatchObjects = buildPathMatchObjects;
 /**
  * Build an ignore match objects for directories based on the given `ignorePathMatchObjects`.
  */
@@ -55,9 +58,8 @@ function buildDirMatchObjects(ignorePathMatchObjects, minimatchOptions = { dot: 
             }
         }
     }
-    return dirIgnorePatterns.map((pattern) => new minimatch_1.default.Minimatch(pattern, minimatchOptions));
+    return dirIgnorePatterns.map((pattern) => new minimatch_1.Minimatch(pattern, minimatchOptions));
 }
-exports.buildDirMatchObjects = buildDirMatchObjects;
 /**
  * Indicate the given `filePath` should be excluded by the prebuilt `matchObjects`.
  */
@@ -78,7 +80,6 @@ function isIgnoredPathWithMatchObjects(filePath, matchObjects) {
     }
     return result;
 }
-exports.isIgnoredPathWithMatchObjects = isIgnoredPathWithMatchObjects;
 /**
  * Returns true if `parent` is a parent directory of `child`.
  */
@@ -102,7 +103,6 @@ function normalizeFilePath(filePath, options) {
     }
     return filePath;
 }
-exports.normalizeFilePath = normalizeFilePath;
 const REGEXP_REPLACE_SLASHES = /\\/g;
 /**
  * Convert any platform-specific path to a POSIX path.
@@ -110,5 +110,4 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
 function toPosixPath(filePath) {
     return node_process_1.default.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
 }
-exports.toPosixPath = toPosixPath;
 //# sourceMappingURL=Path.js.map

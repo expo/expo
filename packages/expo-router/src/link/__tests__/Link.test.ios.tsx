@@ -202,3 +202,339 @@ it('can preserve the initialRoute with shared groups', () => {
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
 });
+
+describe('singular', () => {
+  test('can dynamically route using singular', () => {
+    renderRouter(
+      {
+        '[slug]': () => (
+          <Link testID="link" href="/apple" dangerouslySingular>
+            Slug
+          </Link>
+        ),
+      },
+      {
+        initialUrl: '/apple',
+      }
+    );
+
+    act(() => router.push('/apple'));
+    act(() => router.push('/apple'));
+    act(() => router.push('/banana'));
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 3,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: '/apple',
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+
+    // Should push /apple and remove all previous instances of /apple
+    act(() => fireEvent.press(screen.getByTestId('link')));
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: {
+            slug: 'apple',
+          },
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [],
+            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'banana',
+                },
+                path: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: '[slug]',
+                params: {
+                  slug: 'apple',
+                },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+});
+
+test('can dynamically route using singular function', () => {
+  renderRouter(
+    {
+      '[slug]': () => (
+        <Link
+          testID="link"
+          href="/apple?id=1"
+          dangerouslySingular={(_, params) => params.id?.toString()}>
+          Slug
+        </Link>
+      ),
+    },
+    {
+      initialUrl: '/apple',
+    }
+  );
+
+  act(() => router.push('/apple?id=1'));
+  act(() => router.push('/apple?id=1'));
+  act(() => router.push('/apple?id=2'));
+  act(() => router.push('/banana'));
+
+  expect(screen).toHaveRouterState({
+    index: 0,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['__root'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        params: {
+          slug: 'apple',
+        },
+        state: {
+          index: 4,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                slug: 'apple',
+              },
+              path: '/apple',
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                id: '1',
+                slug: 'apple',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                id: '1',
+                slug: 'apple',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                id: '2',
+                slug: 'apple',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                slug: 'banana',
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+
+  // Should push /apple and remove all previous instances of /apple
+  act(() => fireEvent.press(screen.getByTestId('link')));
+
+  expect(screen).toHaveRouterState({
+    index: 0,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['__root'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        params: {
+          slug: 'apple',
+        },
+        state: {
+          index: 3,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                slug: 'apple',
+              },
+              path: '/apple',
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                id: '2',
+                slug: 'apple',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                slug: 'banana',
+              },
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                id: '1',
+                slug: 'apple',
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+});
+
+describe('prefetch', () => {
+  it('can preload the href', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+    });
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+});

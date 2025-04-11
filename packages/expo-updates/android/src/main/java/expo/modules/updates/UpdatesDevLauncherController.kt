@@ -29,9 +29,12 @@ import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resume
 
 /**
  * Main entry point to expo-updates in development builds with expo-dev-client. Similar to EnabledUpdatesController
@@ -54,12 +57,12 @@ class UpdatesDevLauncherController(
 
   private var launcher: Launcher? = null
 
-  private val logger = UpdatesLogger(context)
+  private val logger = UpdatesLogger(context.filesDir)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -67,12 +70,15 @@ class UpdatesDevLauncherController(
   )
   private val selectionPolicy: SelectionPolicy
     get() = mSelectionPolicy ?: defaultSelectionPolicy
+
   private fun setNextSelectionPolicy(selectionPolicy: SelectionPolicy?) {
     mSelectionPolicy = selectionPolicy
   }
+
   private fun resetSelectionPolicyToDefault() {
     mSelectionPolicy = null
   }
+
   private fun setDefaultSelectionPolicy(selectionPolicy: SelectionPolicy) {
     defaultSelectionPolicy = selectionPolicy
   }
@@ -157,7 +163,6 @@ class UpdatesDevLauncherController(
     )
     loader.start(object : Loader.LoaderCallback {
       override fun onFailure(e: Exception) {
-        databaseHolder.releaseDatabase()
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
         callback.onFailure(e)
@@ -165,7 +170,6 @@ class UpdatesDevLauncherController(
 
       override fun onSuccess(loaderResult: Loader.LoaderResult) {
         // the dev launcher doesn't handle roll back to embedded commands
-        databaseHolder.releaseDatabase()
         if (loaderResult.updateEntity == null) {
           callback.onSuccess(null)
           return
@@ -193,7 +197,8 @@ class UpdatesDevLauncherController(
           )
         }
 
-        val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        val update = updateResponse.manifestUpdateResponsePart?.update
+          ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
         return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
@@ -220,9 +225,11 @@ class UpdatesDevLauncherController(
       UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
         throw Exception("Failed to load update: UpdatesConfiguration object is not enabled")
       }
+
       UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
         throw Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL")
       }
+
       UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
         throw Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version")
       }
@@ -274,14 +281,12 @@ class UpdatesDevLauncherController(
       databaseHolder.database,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
-          databaseHolder.releaseDatabase()
           // reset controller's configuration to what it was before this request
           updatesConfiguration = previousUpdatesConfiguration
           callback.onFailure(e)
         }
 
         override fun onSuccess() {
-          databaseHolder.releaseDatabase()
           this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
             override val manifest: JSONObject
@@ -296,9 +301,6 @@ class UpdatesDevLauncherController(
   }
 
   private fun getDatabase(): UpdatesDatabase = databaseHolder.database
-  private fun releaseDatabase() {
-    databaseHolder.releaseDatabase()
-  }
 
   private fun runReaper() {
     AsyncTask.execute {
@@ -311,7 +313,6 @@ class UpdatesDevLauncherController(
           launchedUpdate,
           selectionPolicy
         )
-        releaseDatabase()
       }
     }
   }
@@ -335,35 +336,28 @@ class UpdatesDevLauncherController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(
-    callback: IUpdatesController.ModuleCallback<Unit>
-  ) {
+  override suspend fun relaunchReactApplicationForModule() = suspendCancellableCoroutine { continuation ->
     this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
-    callback.onSuccess(Unit)
+    continuation.resume(Unit)
   }
 
-  override fun checkForUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Updates.checkForUpdateAsync() is not supported in development builds."))
+  override suspend fun checkForUpdate(): IUpdatesController.CheckForUpdateResult {
+    throw NotAvailableInDevClientException("Updates.checkForUpdateAsync() is not supported in development builds.")
   }
 
-  override fun fetchUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Updates.fetchUpdateAsync() is not supported in development builds."))
+  override suspend fun fetchUpdate(): IUpdatesController.FetchUpdateResult {
+    throw NotAvailableInDevClientException("Updates.fetchUpdateAsync() is not supported in development builds.")
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(NotAvailableInDevClientException("Updates.getExtraParamsAsync() is not supported in development builds."))
+  override suspend fun getExtraParams(): Bundle {
+    throw NotAvailableInDevClientException("Updates.getExtraParamsAsync() is not supported in development builds.")
   }
 
-  override fun setExtraParam(
+  override suspend fun setExtraParam(
     key: String,
-    value: String?,
-    callback: IUpdatesController.ModuleCallback<Unit>
+    value: String?
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+    throw NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds.")
   }
 
   override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {

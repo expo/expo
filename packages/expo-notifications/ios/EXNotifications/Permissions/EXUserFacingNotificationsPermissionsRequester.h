@@ -1,15 +1,14 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface EXUserFacingNotificationsPermissionsRequester : NSObject <EXPermissionsRequester>
 
-- (instancetype)initWithMethodQueue:(dispatch_queue_t)methodQueue;
+@property (nonatomic, assign) UNAuthorizationOptions authorizationOptions;
 
-- (void)requestPermissions:(NSDictionary *)permissions
-              withResolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject;
-
-+ (void)setRequestedPermissions:(NSDictionary *)permissions;
+- (void)requestAuthorizationOptions:(UNAuthorizationOptions)options
+                       withResolver:(EXPromiseResolveBlock)resolve
+                           rejecter:(EXPromiseRejectBlock)reject;
 
 @end

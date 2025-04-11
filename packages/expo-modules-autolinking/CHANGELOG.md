@@ -6,17 +6,46 @@
 
 ### 🎉 New features
 
-- Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
-- Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.3 — 2025-04-11
+
+### 🎉 New features
+
+- [Android] Support `android.enableEdgeToEdge` field in app config. ([#35958](https://github.com/expo/expo/pull/35958) by [@behenate](https://github.com/behenate))
+
+## 2.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2025-04-08
 
 ### 🐛 Bug fixes
+
+- Fixed E2E test timeout. ([#35953](https://github.com/expo/expo/pull/35953) by [@kudo](https://github.com/kudo))
+
+## 2.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
+- Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`. ([#35789](https://github.com/expo/expo/pull/35789) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - [Android] Added `publication` configuration. ([#35068](https://github.com/expo/expo/pull/35068) by [@lukmccall](https://github.com/lukmccall))
 - Removed legacy `modulesClassNames` field. ([#35095](https://github.com/expo/expo/pull/35095) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add a special case for autolinking `react-native-edge-to-edge` ([#35812](https://github.com/expo/expo/pull/35812) by [@behenate](https://github.com/behenate))
 
 ## 2.0.8 - 2025-02-19
 

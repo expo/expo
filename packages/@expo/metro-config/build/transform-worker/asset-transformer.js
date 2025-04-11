@@ -15,18 +15,28 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transform = void 0;
+exports.transform = transform;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -56,6 +66,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     };
     // Is bundling for webview.
     const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
+    const useMd5Filename = options.customTransformOptions?.useMd5Filename;
     const isExport = options.publicPath.includes('?export_path=');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
     const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
@@ -87,9 +98,16 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         : options.publicPath);
     if (isServerEnv || options.platform === 'web') {
         const type = !data.type ? '' : `.${data.type}`;
-        const assetPath = !isExport
-            ? data.httpServerLocation + '/' + data.name + type
-            : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        let assetPath;
+        if (useMd5Filename) {
+            assetPath = data.hash + type;
+        }
+        else if (!isExport) {
+            assetPath = data.httpServerLocation + '/' + data.name + type;
+        }
+        else {
+            assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        }
         // If size data is known then it should be passed back to ensure the correct dimensions are used.
         if (data.width != null || data.height != null) {
             return {
@@ -123,5 +141,4 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         },
     };
 }
-exports.transform = transform;
 //# sourceMappingURL=asset-transformer.js.map

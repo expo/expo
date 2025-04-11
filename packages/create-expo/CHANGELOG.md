@@ -6,11 +6,29 @@
 
 ### 🎉 New features
 
-- Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.3.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.0 — 2025-03-31
+
+### 🎉 New features
+
+- Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
+- Add support for aliasing and deprecating examples. ([#35717](https://github.com/expo/expo/pull/35717) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
+- Upgrade to `tar@6` ([#35315](https://github.com/expo/expo/pull/35315) by [@kitten](https://github.com/kitten))
 
 ## 3.1.6 - 2025-02-14
 

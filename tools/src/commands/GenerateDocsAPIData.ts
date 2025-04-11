@@ -21,7 +21,7 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
-  expo: [['Expo.ts', 'types.ts'], 'expo'],
+  expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
@@ -103,6 +103,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
+  'expo-ui': ['types.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],

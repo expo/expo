@@ -23,7 +23,7 @@ if (KOTLIN_MAJOR_VERSION >= 2) {
 }
 
 group = 'host.exp.exponent'
-version = '2.0.6'
+version = '2.3.3'
 
 // List of features that are required by linked modules
 def coreFeatures = project.findProperty("coreFeatures") ?: []
@@ -60,6 +60,10 @@ def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
+expoModule {
+  canBePublished false
+}
+
 android {
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -72,7 +76,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.0.6"
+    versionName "2.3.3"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 

@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 iconUrl: '/static/images/packages/expo-av.png'
 platforms: ['android', 'ios', 'tvos', 'web']
+isDeprecated: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -17,7 +18,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
-> **warning** The `Video` and `Audio` APIs from `expo-av` are being replaced by improved versions in [expo-video](video.mdx) and [expo-audio](audio.mdx). We recommend using those libraries instead, `expo-av` is not receiving patches and will be removed in an upcoming release.
+> **warning** The `Video` and `Audio` APIs from `expo-av` have now been deprecated and replaced by improved versions in [`expo-video`](video.mdx) and [`expo-audio`](audio.mdx). We recommend using those libraries instead. `expo-av` is not receiving patches and will be removed in SDK 54.
 
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
 
@@ -68,7 +69,20 @@ You can configure `expo-av` using its built-in [config plugin](/config-plugins/i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-av` repository](https://github.com/expo/expo/tree/main/packages/expo-av#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.RECORD_AUDIO` permission to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  ```
+
+- For iOS, add `NSMicrophoneUsageDescription` to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+  ```
 
 </ConfigReactNative>
 

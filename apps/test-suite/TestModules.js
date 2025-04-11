@@ -70,15 +70,15 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
-    require('./tests/Fetch')
+    require('./tests/Fetch'),
+    require('./tests/SQLite')
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/FileSystemNext'), require('./tests/SQLite'));
+    modules.push(require('./tests/FileSystemNext'));
   }
 
   if (Platform.OS === 'android') {
-    modules.push(require('./tests/JSC'));
     modules.push(require('./tests/Hermes'));
   }
 

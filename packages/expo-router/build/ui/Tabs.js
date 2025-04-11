@@ -14,7 +14,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useTabsWithTriggers = exports.useTabsWithChildren = exports.Tabs = void 0;
+exports.Tabs = Tabs;
+exports.useTabsWithChildren = useTabsWithChildren;
+exports.useTabsWithTriggers = useTabsWithTriggers;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -53,14 +55,19 @@ function Tabs(props) {
     const Comp = asChild ? common_1.SafeAreaViewSlot : react_native_1.View;
     const { NavigationContent } = useTabsWithChildren({
         // asChild adds an extra layer, so we need to process the child's children
-        children: asChild && (0, react_1.isValidElement)(children) ? children.props.children : children,
+        children: asChild &&
+            (0, react_1.isValidElement)(children) &&
+            children.props &&
+            typeof children.props === 'object' &&
+            'children' in children.props
+            ? children.props.children
+            : children,
         ...options,
     });
     return (<Comp style={styles.tabsRoot} {...rest}>
       <NavigationContent>{children}</NavigationContent>
     </Comp>);
 }
-exports.Tabs = Tabs;
 /**
  * Hook version of `Tabs`. The returned NavigationContent component
  * should be rendered. Using the hook requires using the `<TabList />`
@@ -82,7 +89,6 @@ function useTabsWithChildren(options) {
     const { children, ...rest } = options;
     return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
-exports.useTabsWithChildren = useTabsWithChildren;
 /**
  * Alternative hook version of `Tabs` that uses explicit triggers
  * instead of `children`.
@@ -130,7 +136,6 @@ function useTabsWithTriggers(options) {
     </TabContext_1.TabTriggerMapContext.Provider>));
     return { state, descriptors, navigation, NavigationContent, describe };
 }
-exports.useTabsWithTriggers = useTabsWithTriggers;
 function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = false) {
     react_1.Children.forEach(children, (child) => {
         if (!child || !(0, react_1.isValidElement)(child) || (0, TabSlot_1.isTabSlot)(child)) {
@@ -142,7 +147,11 @@ function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = 
         if ((0, TabList_1.isTabList)(child) && typeof child.props.children !== 'function') {
             let children = child.props.children;
             // <TabList asChild /> adds an extra layer. We need to parse the child's children
-            if (child.props.asChild && (0, react_1.isValidElement)(children)) {
+            if (child.props.asChild &&
+                (0, react_1.isValidElement)(children) &&
+                children.props &&
+                typeof children.props === 'object' &&
+                'children' in children.props) {
                 children = children.props.children;
             }
             return parseTriggersFromChildren(children, screenTriggers, isInTabList || (0, TabList_1.isTabList)(child));

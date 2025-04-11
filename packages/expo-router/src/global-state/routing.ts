@@ -1,7 +1,6 @@
 import { StackActions, type NavigationState, PartialRoute } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
-import { nanoid } from 'nanoid/non-secure';
 import { Platform } from 'react-native';
 
 import { type RouterStore } from './router-store';
@@ -16,6 +15,7 @@ import {
 } from '../link/useDomComponentNavigation';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -35,6 +35,10 @@ export function navigate(this: RouterStore, url: Href, options?: NavigationOptio
 export function reload(this: RouterStore) {
   // TODO(EvanBacon): add `reload` support.
   throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+
+export function prefetch(this: RouterStore, href: Href, options?: NavigationOptions) {
+  return linkTo.bind(this)(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
 export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
@@ -133,9 +137,18 @@ export type LinkToOptions = {
    * Include the anchor when navigating to a new navigator
    */
   withAnchor?: boolean;
+
+  /**
+   * When navigating in a Stack, remove all screen from the history that match the singular condition
+   *
+   * If used with `push`, the history will be filtered even if no navigation occurs.
+   */
+  dangerouslySingular?: SingularOptions;
 };
 
-export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
+export function linkTo(this: RouterStore, originalHref: string, options: LinkToOptions = {}) {
+  let href: string | undefined = originalHref;
+
   if (emitDomLinkEvent(href, options)) {
     return;
   }
@@ -170,6 +183,12 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
   const rootState = navigationRef.getRootState();
 
   href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+  href = this.applyRedirects(href);
+
+  // If the href is undefined, it means that the redirect has already been handled the navigation
+  if (!href) {
+    return;
+  }
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
@@ -179,7 +198,13 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
   }
 
   return navigationRef.dispatch(
-    getNavigateAction(state, rootState, options.event, options.withAnchor)
+    getNavigateAction(
+      state,
+      rootState,
+      options.event,
+      options.withAnchor,
+      options.dangerouslySingular
+    )
   );
 }
 
@@ -187,7 +212,8 @@ function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
   type = 'NAVIGATE',
-  withAnchor?: boolean
+  withAnchor?: boolean,
+  singular?: SingularOptions
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -257,35 +283,14 @@ function getNavigateAction(
     actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
   }
 
-  // Expo Router uses only three actions, but these don't directly translate to all navigator actions
-  if (type === 'PUSH') {
-    // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
+  if (type === 'PUSH' && navigationState.type !== 'stack') {
     type = 'NAVIGATE';
-
-    /*
-     * The StackAction.PUSH does not work correctly with Expo Router.
-     *
-     * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
-     * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
-     * When you try and push to a screen with the same ID, no navigation will occur
-     * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
-     *
-     * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
-     *
-     * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
-     * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
-     *
-     */
-    if (navigationState.type === 'stack') {
-      rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
-    }
-  }
-
-  if (navigationState.type === 'expo-tab') {
+  } else if (navigationState.type === 'expo-tab') {
     type = 'JUMP_TO';
-  }
-
-  if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
+  } else if (
+    type === 'REPLACE' &&
+    (navigationState.type === 'tab' || navigationState.type === 'drawer')
+  ) {
     type = 'JUMP_TO';
   }
 
@@ -314,6 +319,7 @@ function getNavigateAction(
       // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
+      singular,
     },
   };
 }

@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import glob from 'fast-glob';
 import fs from 'fs';
+import { glob } from 'glob';
 import path from 'path';
 
 import { fileExistsAsync } from '../fileUtils';

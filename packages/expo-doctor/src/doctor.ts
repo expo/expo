@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import { load as loadEnv } from '@expo/env';
 import chalk from 'chalk';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
@@ -7,6 +8,7 @@ import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
+import { setNodeEnv } from './utils/nodeEnv';
 import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
@@ -73,14 +75,14 @@ export async function printFailedCheckIssueAndAdvice(job: DoctorCheckRunnerJob) 
     return;
   }
 
-  Log.warn(chalk.red(`✖ [${job.check.description}]`));
+  Log.log(chalk.red(`✖ ${job.check.description}`));
 
   if (result.issues.length) {
     for (const issue of result.issues) {
-      Log.warn(chalk.yellow(`${issue}`));
+      Log.log(chalk.yellow(issue.replace(/^/gm, '  ')));
     }
     if (result.advice) {
-      Log.log(chalk.green(`Advice: ${result.advice}`));
+      Log.log(chalk.green(`Advice: ${result.advice}`.replace(/^/gm, '  ')));
     }
     Log.log();
   }
@@ -126,6 +128,9 @@ export async function runChecksAsync(
  */
 export async function actionAsync(projectRoot: string, showVerboseTestResults: boolean) {
   try {
+    setNodeEnv('development');
+    loadEnv(projectRoot);
+
     const projectConfig = getConfig(projectRoot);
 
     // expo-doctor relies on versioned CLI, which is only available for 44+
@@ -179,7 +184,9 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
         }
       }
       Log.exit(
-        `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
+        chalk.red(
+          `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
+        )
       );
     } else {
       Log.log(

@@ -42,9 +42,10 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.READ)
     return file.listFiles()?.map {
+      val uriString = Uri.fromFile(it).toString()
       mapOf(
         "isDirectory" to it.isDirectory,
-        "path" to it.path
+        "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
       )
     } ?: emptyList()
   }

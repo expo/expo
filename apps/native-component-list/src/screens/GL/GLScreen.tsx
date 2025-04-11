@@ -1,121 +1,162 @@
 import * as React from 'react';
 
-import ComponentListScreen from '../ComponentListScreen';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
-const screens = [
+export const GLScreens = [
   {
-    screenName: 'ClearToBlue',
-    isAvailable: true,
-    name: 'Clear to blue',
-    route: '/components/gl/cleartoblue',
+    name: 'ClearToBlue',
+    getComponent() {
+      return optionalRequire(() => require('./ClearToBlueScreen'));
+    },
+    options: { title: 'Clear to blue' },
+    route: 'gl/cleartoblue',
   },
   {
-    screenName: 'BasicTexture',
-    isAvailable: true,
-    name: 'Basic texture use',
-    route: '/components/gl/basictexture',
+    name: 'BasicTexture',
+    getComponent() {
+      return optionalRequire(() => require('./BasicTextureScreen'));
+    },
+    options: { title: 'Basic texture use' },
+    route: 'gl/basictexture',
   },
   {
-    screenName: 'GLViewScreen',
-    isAvailable: true,
-    name: 'GLView example',
-    route: '/components/gl/glviewscreen',
+    name: 'GLViewScreen',
+    getComponent() {
+      return optionalRequire(() => require('./GLViewScreen'));
+    },
+    options: { title: 'GLView example' },
+    route: 'gl/glviewscreen',
   },
   {
-    screenName: 'Mask',
-    isAvailable: true,
-    name: 'MaskedView integration',
-
-    route: '/components/gl/mask',
+    name: 'Mask',
+    getComponent() {
+      return optionalRequire(() => require('./GLMaskScreen'));
+    },
+    options: { title: 'MaskedView integration' },
+    route: 'gl/mask',
   },
   {
-    screenName: 'Snapshots',
-    isAvailable: true,
-    name: 'Taking snapshots',
-
-    route: '/components/gl/snapshots',
+    name: 'Snapshots',
+    getComponent() {
+      return optionalRequire(() => require('./GLSnapshotsScreen'));
+    },
+    options: { title: 'Taking snapshots' },
+    route: 'gl/snapshots',
   },
   {
-    screenName: 'THREEComposer',
-    isAvailable: true,
-    name: 'three.js glitch and film effects',
-
-    route: '/components/gl/threecomposer',
+    name: 'THREEComposer',
+    getComponent() {
+      return optionalRequire(() => require('./GLThreeComposerScreen'));
+    },
+    options: { title: 'three.js glitch and film effects' },
+    route: 'gl/threecomposer',
   },
   {
-    screenName: 'THREEDepthStencilBuffer',
-    isAvailable: true,
-    name: 'three.js depth and stencil buffer',
-    route: '/components/gl/threedepthstencilbuffer',
+    name: 'THREEDepthStencilBuffer',
+    getComponent() {
+      return optionalRequire(() => require('./GLThreeDepthStencilBufferScreen'));
+    },
+    options: { title: 'three.js depth and stencil buffer' },
+    route: 'gl/threedepthstencilbuffer',
   },
   {
-    screenName: 'THREESprite',
-    isAvailable: true,
-    name: 'three.js sprite rendering',
-    route: '/components/gl/threesprite',
+    name: 'THREESprite',
+    getComponent() {
+      return optionalRequire(() => require('./GLThreeSpriteScreen'));
+    },
+    options: { title: 'three.js sprite rendering' },
+    route: 'gl/threesprite',
   },
   {
-    screenName: 'ProcessingInAndOut',
-    isAvailable: true,
-    name: "'In and out' from openprocessing.org",
-    route: '/components/gl/processinginandout',
+    name: 'ProcessingInAndOut',
+    getComponent() {
+      return optionalRequire(() => require('./ProcessingInAndOutScreen'));
+    },
+    options: { title: "'In and out' from openprocessing.org" },
+    route: 'gl/processinginandout',
   },
   {
-    screenName: 'ProcessingNoClear',
-    isAvailable: true,
-    name: 'Draw without clearing screen with processing.js',
-    route: '/components/gl/processingnoclear',
+    name: 'ProcessingNoClear',
+    getComponent() {
+      return optionalRequire(() => require('./ProcessingNoClearScreen'));
+    },
+    options: { title: 'Draw without clearing screen with processing.js' },
+    route: 'gl/processingnoclear',
   },
   {
-    screenName: 'PIXIBasic',
-    isAvailable: true,
-    name: 'Basic pixi.js use',
-    route: '/components/gl/pixibasic',
+    name: 'PIXIBasic',
+    getComponent() {
+      return optionalRequire(() => require('./PIXIBasicScreen'));
+    },
+    options: { title: 'Basic pixi.js use' },
+    route: 'gl/pixibasic',
   },
   {
-    screenName: 'PIXISprite',
-    isAvailable: true,
-    name: 'pixi.js sprite rendering',
-    route: '/components/gl/pixisprite',
+    name: 'PIXISprite',
+    getComponent() {
+      return optionalRequire(() => require('./PIXISpriteScreen'));
+    },
+    options: { title: 'pixi.js sprite rendering' },
+    route: 'gl/pixisprite',
   },
   {
-    screenName: 'GLCamera',
-    isAvailable: true,
-    name: 'Expo.Camera integration',
-    route: '/components/gl/glcamera',
+    name: 'GLCamera',
+    getComponent() {
+      return optionalRequire(() => require('./GLCameraScreen'));
+    },
+    options: { title: 'Expo.Camera integration' },
+    route: 'gl/glcamera',
   },
   {
-    screenName: 'WebGL2TransformFeedback',
-    isAvailable: true,
-    name: 'WebGL2 - Transform feedback',
-    route: '/components/gl/webgl2transformfeedback',
+    name: 'WebGL2TransformFeedback',
+    getComponent() {
+      return optionalRequire(() => require('./WebGL2TransformFeedbackScreen'));
+    },
+    options: { title: 'WebGL2 - Transform feedback' },
+    route: 'gl/webgl2transformfeedback',
   },
   {
-    screenName: 'Canvas',
-    isAvailable: true,
-    name: 'Canvas example - expo-2d-context',
-    route: '/components/gl/canvas',
+    name: 'Canvas',
+    getComponent() {
+      return optionalRequire(() => require('./CanvasScreen'));
+    },
+    options: { title: 'Canvas example - expo-2d-context' },
+    route: 'gl/canvas',
   },
   {
-    screenName: 'HeadlessRendering',
-    isAvailable: true,
-    name: 'Headless rendering',
-    route: '/components/gl/headlessrendering',
+    name: 'HeadlessRendering',
+    getComponent() {
+      return optionalRequire(() => require('./GLHeadlessRenderingScreen'));
+    },
+    options: { title: 'Headless rendering' },
+    route: 'gl/headlessrendering',
   },
   {
-    screenName: 'ReanimatedWorklets',
-    isAvailable: true,
-    name: 'Reanimated worklets + gesture handler',
-    route: '/components/gl/reanimated',
+    name: 'ReanimatedWorklets',
+    getComponent() {
+      return optionalRequire(() => require('./GLReanimatedExample'));
+    },
+    options: { title: 'Reanimated worklets + gesture handler' },
+    route: 'gl/reanimated',
   },
   {
-    screenName: 'GLViewOnBusyThread',
-    isAvailable: true,
-    name: 'Creating GLView when a thread is busy',
-    route: '/components/gl/busythread',
+    name: 'GLViewOnBusyThread',
+    getComponent() {
+      return optionalRequire(() => require('./GLViewOnBusyThread'));
+    },
+    options: { title: 'Creating GLView when a thread is busy' },
+    route: 'gl/busythread',
   },
 ];
 
 export default function GLScreen() {
-  return <ComponentListScreen apis={screens} />;
+  const apis: ListElement[] = GLScreens.map((screen) => {
+    return {
+      name: screen.name,
+      isAvailable: true,
+      route: `/components/${screen.route}`,
+    };
+  });
+  return <ComponentListScreen apis={apis} />;
 }

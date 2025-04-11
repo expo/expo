@@ -2,20 +2,20 @@ import { RouterLogo, mergeClasses } from '@expo/styleguide';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 
-import { GridContainer, GridCell, HeaderDescription, HomeButton } from '~/ui/components/Home';
+import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, RawH2, CALLOUT, A } from '~/ui/components/Text';
+import { H1, RawH2, CALLOUT, A, P } from '~/ui/components/Text';
 
 export function QuickStart() {
   return (
     <>
-      <H1 className="mt-2 border-0 pb-0 !font-extrabold">
+      <H1 className="mt-1 border-0 pb-0 !font-extrabold">
         Create amazing apps that run everywhere
       </H1>
-      <HeaderDescription>
+      <P className="mb-2 text-secondary">
         Build one JavaScript/TypeScript project that runs natively on all your users' devices.
-      </HeaderDescription>
+      </P>
       <GridContainer>
         <GridCell
           className={mergeClasses(
@@ -54,7 +54,7 @@ export function QuickStart() {
             )}
           />
           <DevicesImage />
-          <RawH2 className="relative z-10 !font-bold !text-palette-blue12">
+          <RawH2 className="relative z-10 max-w-[24ch] !font-bold !text-palette-blue12">
             Create a universal Android, iOS, and web app
           </RawH2>
           <HomeButton
@@ -82,7 +82,7 @@ export function QuickStart() {
               'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 stroke-[0.01rem] text-palette-pink8'
             )}
           />
-          <RawH2 className="relative z-10 !text-lg !text-palette-pink11">
+          <RawH2 className="relative z-10 max-w-[32ch] !text-lg !text-palette-pink11">
             Discover the benefits of file-based routing with Expo Router
           </RawH2>
           <HomeButton
@@ -111,7 +111,7 @@ export function QuickStart() {
               'border-palette-purple5 bg-palette-purple4 text-palette-purple8'
             )}
           />
-          <RawH2 className="relative z-10 !text-lg !text-palette-purple11">
+          <RawH2 className="relative z-10 max-w-[22ch] !text-lg !text-palette-purple11">
             Speed up your development with Expo Application Services
           </RawH2>
           <HomeButton

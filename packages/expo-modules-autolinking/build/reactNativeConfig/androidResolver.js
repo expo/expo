@@ -3,9 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findGradleAndManifestAsync = exports.parseComponentDescriptorsAsync = exports.parseLibraryNameAsync = exports.matchNativePackageClassName = exports.parseNativePackageClassNameAsync = exports.parsePackageNameAsync = exports.resolveDependencyConfigImplAndroidAsync = void 0;
-const fast_glob_1 = __importDefault(require("fast-glob"));
+exports.resolveDependencyConfigImplAndroidAsync = resolveDependencyConfigImplAndroidAsync;
+exports.parsePackageNameAsync = parsePackageNameAsync;
+exports.parseNativePackageClassNameAsync = parseNativePackageClassNameAsync;
+exports.matchNativePackageClassName = matchNativePackageClassName;
+exports.parseLibraryNameAsync = parseLibraryNameAsync;
+exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
+exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 const promises_1 = __importDefault(require("fs/promises"));
+const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const fileUtils_1 = require("../fileUtils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig) {
@@ -70,7 +76,6 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
     }
     return result;
 }
-exports.resolveDependencyConfigImplAndroidAsync = resolveDependencyConfigImplAndroidAsync;
 /**
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
@@ -91,7 +96,6 @@ async function parsePackageNameAsync(androidDir, manifestPath, gradlePath) {
     }
     return null;
 }
-exports.parsePackageNameAsync = parsePackageNameAsync;
 /**
  * Parse the Java or Kotlin class name to for `ReactPackage` or `(Base|Turbo)ReactPackage`.
  */
@@ -108,10 +112,9 @@ async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
         cwd: androidDir,
     });
 }
-exports.parseNativePackageClassNameAsync = parseNativePackageClassNameAsync;
 let lazyReactPackageRegex = null;
 let lazyTurboReactPackageRegex = null;
-function matchNativePackageClassName(filePath, contents) {
+function matchNativePackageClassName(_filePath, contents) {
     const fileContents = contents.toString();
     // [0] Match ReactPackage
     if (!lazyReactPackageRegex) {
@@ -133,7 +136,6 @@ function matchNativePackageClassName(filePath, contents) {
     }
     return null;
 }
-exports.matchNativePackageClassName = matchNativePackageClassName;
 async function parseLibraryNameAsync(androidDir, packageJson) {
     // [0] `codegenConfig.name` from package.json
     if (packageJson.codegenConfig?.name) {
@@ -160,7 +162,6 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     }
     return null;
 }
-exports.parseLibraryNameAsync = parseLibraryNameAsync;
 async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
     const jsRoot = packageJson?.codegenConfig?.jsSrcsDir
         ? path_1.default.join(packageRoot, packageJson.codegenConfig.jsSrcsDir)
@@ -173,7 +174,6 @@ async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
     // TODO: consider using "codegenConfig" to avoid this.
     return Array.from(new Set(results));
 }
-exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
 let lazyCodegenComponentRegex = null;
 function matchComponentDescriptors(filePath, contents) {
     const fileContents = contents.toString();
@@ -201,12 +201,11 @@ async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
     ];
     const gradlePattern = isLibrary ? 'build.gradle{,.kts}' : 'app/build.gradle{,.kts}';
     const [manifests, gradles] = await Promise.all([
-        (0, fast_glob_1.default)('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
-        (0, fast_glob_1.default)(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
+        (0, glob_1.glob)('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
+        (0, glob_1.glob)(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
     ]);
     const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
     const gradle = gradles[0];
     return { gradle: gradle || null, manifest: manifest || null };
 }
-exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 //# sourceMappingURL=androidResolver.js.map

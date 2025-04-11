@@ -4,16 +4,16 @@ import com.android.build.api.variant.AndroidComponentsExtension
 buildscript {
   ext {
     minSdkVersion = 24
-    targetSdkVersion = 34
+    targetSdkVersion = 35
     compileSdkVersion = 35
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '35.0.0'
-    kotlinVersion = '1.9.24'
+    kotlinVersion = "2.0.21"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "27.1.12297006"
   }
   repositories {
     google()

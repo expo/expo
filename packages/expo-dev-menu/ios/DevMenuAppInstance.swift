@@ -1,44 +1,37 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
-#if canImport(ReactAppDependencyProvider)
 import ReactAppDependencyProvider
-#endif
+import React_RCTAppDelegate
 
 @objc
-class DevMenuAppInstance: DevMenuRCTAppDelegate {
+class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
+  var reactNativeFactory: RCTReactNativeFactory?
 
   init(manager: DevMenuManager) {
     self.manager = manager
-
     super.init()
-#if canImport(ReactAppDependencyProvider)
-	self.dependencyProvider = RCTAppDependencyProvider()
-#endif
-    super.initRootViewFactory()
+    self.dependencyProvider = RCTAppDependencyProvider()
+    self.reactNativeFactory = RCTReactNativeFactory(delegate: self)
   }
 
-  init(manager: DevMenuManager, bridge: RCTBridge) {
-    self.manager = manager
-
-    super.init()
-    super.initRootViewFactory()
-    self.rootViewFactory.bridge = bridge
+  func setBridge(_ bridge: RCTBridge) {
+    self.reactNativeFactory?.rootViewFactory.bridge = bridge
   }
 
   /**
    Sends an event to JS triggering the animation that collapses the dev menu.
    */
   func sendCloseEvent() {
-    self.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+    self.reactNativeFactory?.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
 
   func sendOpenEvent() {
-    self.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
+    self.reactNativeFactory?.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTAppDelegate

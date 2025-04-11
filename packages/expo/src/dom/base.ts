@@ -33,7 +33,7 @@ export function getBaseURL(): string {
   }
 
   // Serving from local dev server
-  const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer');
+  const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
   const devServer = getDevServer();
   cachedBaseUrl = new URL('/_expo/@dom', devServer.url).toString();
   return cachedBaseUrl;

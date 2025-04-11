@@ -58,7 +58,8 @@ class VideoModule : Module() {
         "onPictureInPictureStart",
         "onPictureInPictureStop",
         "onFullscreenEnter",
-        "onFullscreenExit"
+        "onFullscreenExit",
+        "onFirstFrameRender"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
@@ -87,6 +88,10 @@ class VideoModule : Module() {
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
 
+      Prop("useExoShutter") { view: VideoView, useExoShutter: Boolean? ->
+        view.useExoShutter = useExoShutter ?: true
+      }
+
       AsyncFunction("enterFullscreen") { view: VideoView ->
         view.enterFullscreen()
       }
@@ -107,9 +112,14 @@ class VideoModule : Module() {
 
       OnViewDestroys {
         VideoManager.unregisterVideoView(it)
+        // Remove relations with mounted players
+        it.videoPlayer = null
       }
 
       OnViewDidUpdateProps { view ->
+        view.useExoShutter = view.useExoShutter ?: true
+        view.applySurfaceViewVisibility()
+
         if (view.playerView.useController != view.useNativeControls) {
           view.playerView.useController = view.useNativeControls
         }

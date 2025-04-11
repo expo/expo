@@ -909,6 +909,33 @@ describe('serializes', () => {
     });
   });
 
+  it(`does not emit empty files when splitting`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./one')
+          import "./one";
+        `,
+      'one.js': `
+          export const a = ""
+        `,
+      'two.js': `
+          import('./foo')
+        `,
+      'foo.js': `
+          export const foo = 'foo';
+        `,
+    });
+
+    // Ensure no async paths are injected
+    expect(artifacts[0].source).toMatch(/"paths":{}/);
+    expect(artifacts[0].source).toMatch(/a = "";/);
+
+    // Ensure no empty files are emitted
+    for (const artifact of artifacts) {
+      expect(artifact.source).not.toEqual('');
+    }
+  });
+
   it(`imports async bundles in second module`, async () => {
     const artifacts = await serializeSplitAsync({
       'index.js': `
@@ -1248,7 +1275,7 @@ describe('serializes', () => {
       );
 
       expect(artifacts.map((art) => art.filename)).toEqual([
-        '_expo/static/js/web/index-e442a5eec0eab76e713768637a386582.js',
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]{32}\.js/),
       ]);
 
       // Split bundle
@@ -1277,7 +1304,9 @@ describe('serializes', () => {
           });
           const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("file:///app/other.js");
           module.exports = proxy;
-          const foo = proxy["foo"];
+          const foo = _$$_REQUIRE(_dependencyMap[0]).registerClientReference(function () {
+            throw new Error("Attempted to call foo() of /app/other.js from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+          }, "file:///app/other.js", "foo");
           exports.foo = foo;
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);

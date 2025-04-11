@@ -21,6 +21,7 @@ import {
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+import { WithTestRequire } from '~/types/common';
 import { P } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
@@ -29,9 +30,8 @@ type Props = {
   packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  testRequire?: any;
   headersMapping?: Record<string, string>;
-};
+} & WithTestRequire;
 
 const filterDataByKind = (
   entries: GeneratedData[] = [],

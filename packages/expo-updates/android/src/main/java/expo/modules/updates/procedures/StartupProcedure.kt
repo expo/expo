@@ -1,8 +1,6 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import expo.modules.updates.UpdatesConfiguration
@@ -25,6 +23,9 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class StartupProcedure(
@@ -35,7 +36,8 @@ class StartupProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
-  private val callback: StartupProcedureCallback
+  private val callback: StartupProcedureCallback,
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-startup"
 
@@ -65,18 +67,8 @@ class StartupProcedure(
 
   var emergencyLaunchException: Exception? = null
     private set
-  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags)
+  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags.enableBridgelessArchitecture)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-
-  // TODO: move away from DatabaseHolder pattern to Handler thread
-  private val databaseHandlerThread = HandlerThread("expo-updates-database")
-  private lateinit var databaseHandler: Handler
-  private fun initializeDatabaseHandler() {
-    if (!::databaseHandler.isInitialized) {
-      databaseHandlerThread.start()
-      databaseHandler = Handler(databaseHandlerThread.looper)
-    }
-  }
 
   private val loaderTask = LoaderTask(
     context,
@@ -208,10 +200,9 @@ class StartupProcedure(
     }
   )
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
-    initializeDatabaseHandler()
     initializeErrorRecovery()
     loaderTask.start()
   }
@@ -253,7 +244,6 @@ class StartupProcedure(
           override fun onFailure(e: Exception) {
             logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
-            databaseHolder.releaseDatabase()
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
@@ -264,7 +254,6 @@ class StartupProcedure(
                 ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               }
             )
-            databaseHolder.releaseDatabase()
           }
 
           override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
@@ -297,10 +286,9 @@ class StartupProcedure(
         if (emergencyLaunchException != null) {
           return
         }
-        databaseHandler.post {
-          val launchedUpdate = launchedUpdate ?: return@post
-          databaseHolder.database.updateDao().incrementFailedLaunchCount(launchedUpdate)
-          databaseHolder.releaseDatabase()
+        procedureScope.launch {
+          val launchedUpdate = launchedUpdate ?: return@launch
+          databaseHolder.withDatabase { it.updateDao().incrementFailedLaunchCount(launchedUpdate) }
         }
       }
 
@@ -308,10 +296,9 @@ class StartupProcedure(
         if (emergencyLaunchException != null) {
           return
         }
-        databaseHandler.post {
-          val launchedUpdate = launchedUpdate ?: return@post
-          databaseHolder.database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
-          databaseHolder.releaseDatabase()
+        procedureScope.launch {
+          val launchedUpdate = launchedUpdate ?: return@launch
+          databaseHolder.withDatabase { it.updateDao().incrementSuccessfulLaunchCount(launchedUpdate) }
         }
       }
 

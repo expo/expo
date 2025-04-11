@@ -21,9 +21,13 @@ func getStep(_ min: Float, _ max: Float, _ steps: Int) -> Float {
   return (max - min) / Float(steps + 1)
 }
 
-struct SliderView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: SliderProps
+struct SliderView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
+
+  init(props: SliderProps) {
+    self.props = props
+  }
 
   var body: some View {
     #if !os(tvOS)
