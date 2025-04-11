@@ -4,6 +4,7 @@ const reactConfig = require('./utils/react.js');
 const typescriptConfig = require('./utils/typescript.js');
 const { allExtensions } = require('./utils/extensions.js');
 const { defineConfig } = require('eslint/config');
+const globals = require("globals");
 
 module.exports = defineConfig([
   ...coreConfig,
@@ -19,6 +20,7 @@ module.exports = defineConfig([
     },
     languageOptions: {
       globals: {
+        ...globals.browser,
         __DEV__: 'readonly',
         ErrorUtils: false,
         FormData: false,
@@ -40,6 +42,5 @@ module.exports = defineConfig([
   },
   {
     files: ['*.web.*'],
-    env: { browser: true },
   },
 ]);
