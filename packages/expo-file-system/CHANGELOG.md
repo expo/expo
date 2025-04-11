@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for custom headers in downloadFileAsync
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
