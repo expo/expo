@@ -41,14 +41,14 @@ function withExpoSerializers(config, options = {}) {
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 function withSerializerPlugins(config, processors, options = {}) {
-    const originalSerializer = config.serializer?.customSerializer;
-    return {
-        ...config,
-        serializer: {
-            ...config.serializer,
-            customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer ?? null, options),
-        },
-    };
+    const expoSerializer = createSerializerFromSerialProcessors(config, processors, config.serializer?.customSerializer ?? null, options);
+    // We can't object-spread the config, it loses the reference to the original config
+    // Meaning that any user-provided changes are not propagated to the serializer config
+    // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
+    config.serializer ??= {};
+    // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
+    config.serializer.customSerializer = expoSerializer;
+    return config;
 }
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
     return async (entryPoint, preModules, graph, inputOptions) => {
