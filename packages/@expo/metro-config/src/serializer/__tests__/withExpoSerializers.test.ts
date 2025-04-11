@@ -40,7 +40,7 @@ describe(withSerializerPlugins, () => {
     // Create the `getRunBeforeMainModules` default and (user) override function
     const defaultGetMainModules = jest.fn(() => ['default/module']);
     const overrideGetMainModules = jest.fn(() => ['override/module']);
-    
+
     // Create a fake serializer, running `getRunBeforeMainModules` from the config
     const customProcessor = jest.fn((...res) => res);
     const customSerializer = jest.fn((_entryPoint, _preModules, _graph, options) => {
@@ -65,7 +65,12 @@ describe(withSerializerPlugins, () => {
     config.serializer.getModulesRunBeforeMainModule = overrideGetMainModules;
 
     // @ts-expect-error
-    await configWithSerializer.serializer.customSerializer('a', 'b', 'c', configWithSerializer.serializer);
+    await configWithSerializer.serializer.customSerializer(
+      'a',
+      'b',
+      'c',
+      configWithSerializer.serializer
+    );
 
     // Ensure the serializer was invoked correctly
     expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
