@@ -441,4 +441,17 @@ describe(findModulesAsync, () => {
       }),
     ]);
   });
+
+  it('should not link modules excluded by `options.exclude`', async () => {
+    const searchPath = path.join(expoRoot, 'node_modules');
+    addMockedModule('react-native-third-party', { globCwd: searchPath });
+
+    const result = await findModulesAsync({
+      searchPaths: [searchPath],
+      platform: 'ios',
+      projectRoot: expoRoot,
+      exclude: ['react-native-third-party'],
+    });
+    expect(result['react-native-third-party']).toBeUndefined();
+  });
 });
