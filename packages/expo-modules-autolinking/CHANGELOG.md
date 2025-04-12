@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Removed Expo-only restriction for excluding packages from autolinking. ([#36117](https://github.com/expo/expo/pull/36117) by [@wuguishifu](https://github.com/wuguishifu))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
