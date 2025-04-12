@@ -1,10 +1,45 @@
----
+// Haily Rose Chat App Prototype import React, { useState } from 'react'; import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native'; import { Audio } from 'expo-av';
+
+const flirtyResponses = [ "Hey babe, been thinking about you...", "You're so irresistible. Want me to come closer?", "Mmm, you're making my heart race." ];
+
+const romanticResponses = [ "I love it when it's just us...", "You're everything to me.", "You're the only one I want." ];
+
+const teasingResponses = [ "Is that all you got?", "You’ll have to try harder to impress me.", "You're lucky I like you." ];
+
+const voiceMap = { flirty: 'https://your-hosted-mp3-url.com/flirty.mp3', romantic: 'https://your-hosted-mp3-url.com/romantic.mp3', teasing: 'https://your-hosted-mp3-url.com/teasing.mp3' };
+
+export default function App() { const [messages, setMessages] = useState([]); const [input, setInput] = useState(''); const [mode, setMode] = useState('flirty');
+
+const sendMessage = async () => { if (!input.trim()) return;
+
+const newMessages = [...messages, { sender: 'user', text: input }];
+const responseText = getResponseByMode(mode);
+newMessages.push({ sender: 'haily', text: responseText });
+
+setMessages(newMessages);
+setInput('');
+playVoice(mode);
+
+};
+
+const getResponseByMode = (mode) => { const responses = { flirty: flirtyResponses, romantic: romanticResponses, teasing: teasingResponses }; const options = responses[mode]; return options[Math.floor(Math.random() * options.length)]; };
+
+const playVoice = async (mode) => { const soundObject = new Audio.Sound(); try { await soundObject.loadAsync({ uri: voiceMap[mode] }); await soundObject.playAsync(); } catch (error) { console.error('Audio playback error:', error); } };
+
+return ( <View style={styles.container}> <Image source={{ uri: 'https://your-hosted-image-url.com/haily.png' }} style={styles.avatar} /> <Text style={styles.header}>Haily Rose</Text> <View style={styles.modeSwitch}> <TouchableOpacity onPress={() => setMode('flirty')}><Text style={mode === 'flirty' ? styles.modeActive : styles.mode}>Flirty</Text></TouchableOpacity> <TouchableOpacity onPress={() => setMode('romantic')}><Text style={mode === 'romantic' ? styles.modeActive : styles.mode}>Romantic</Text></TouchableOpacity> <TouchableOpacity onPress={() => setMode('teasing')}><Text style={mode === 'teasing' ? styles.modeActive : styles.mode}>Teasing</Text></TouchableOpacity> </View> <ScrollView style={styles.chat}> {messages.map((msg, index) => ( <Text key={index} style={msg.sender === 'user' ? styles.userMsg : styles.hailyMsg}>{msg.text}</Text> ))} </ScrollView> <TextInput
+style={styles.input}
+placeholder="Say something to Haily..."
+value={input}
+onChangeText={setInput}
+/> <Button title="Send" onPress={sendMessage} /> </View> ); }
+
+const styles = StyleSheet.create({ container: { flex: 1, padding: 20, backgroundColor: '#fff' }, avatar: { width: 100, height: 100, borderRadius: 50, alignSelf: 'center' }, header: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 }, modeSwitch: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }, mode: { padding: 10, color: 'gray' }, modeActive: { padding: 10, color: 'hotpink', fontWeight: 'bold' }, chat: { flex: 1, marginVertical: 10 }, userMsg: { textAlign: 'right', backgroundColor: '#def', marginVertical: 5, padding: 10, borderRadius: 10 }, hailyMsg: { textAlign: 'left', backgroundColor: '#fde', marginVertical: 5, padding: 10, borderRadius: 10 }, input: { borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 5, 
+marginBottom: 10 } });---
 title: Reference
 hideTOC: true
 ---
-
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
+import { BookOpen02Icon } from '@expo/styleguide-
+icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import RedirectNotification from '~/ui/components/RedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
