@@ -184,7 +184,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   // Utils
 
   private fun playerRequiresFocus(weakPlayer: WeakReference<VideoPlayer>): Boolean {
-    val player = weakPlayer?.get() ?: return false  // Return false if player is null
+    val player = weakPlayer?.get() ?: return false // Return false if player is null
     return (!player.muted && player.playing && player.volume > 0) || player.audioMixingMode == AudioMixingMode.DO_NOT_MIX
   }
 
