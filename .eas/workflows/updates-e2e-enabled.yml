@@ -74,24 +74,40 @@ jobs:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e
-      - name: Build E2E project
-        id: build
+      - name: Prepare E2E project
+        id: prepare
         working_directory: ../updates-e2e
         run: |
           yarn generate-test-update-bundles
           npx pod-install
+      - name: Build E2E project (debug)
+        id: build_debug
+        working_directory: ../updates-e2e
+        run: |
           npx detox build -c ios.debug
-      - name: Test E2E project
-        id: test
+      - name: Test E2E project (debug)
+        id: test_debug
         env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
           npx detox test -c ios.debug          
+      - name: Build E2E project (release)
+        id: build_release
+        working_directory: ../updates-e2e
+        run: |
+          npx detox build -c ios.release
+      - name: Test E2E project (release)
+        id: test_release
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: "4747"
+        working_directory: ../updates-e2e
+        run: |
+          npx detox test -c ios.release      
   android:
     runs_on: linux-large-nested-virtualization
     needs: [check_paths]
@@ -118,16 +134,22 @@ jobs:
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
           ls -la ../updates-e2e
-      - name: Build E2E project
-        id: build
+      - name: Prepare E2E project
+        id: prepare
         working_directory: ../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           yarn generate-test-update-bundles
+      - name: Build E2E project (debug)
+        id: build_debug
+        working_directory: ../updates-e2e
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
           npx detox build -c android.debug
-      - name: Test E2E project
-        id: test
+      - name: Test E2E project (debug)
+        id: test_debug
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           UPDATES_HOST: localhost
@@ -136,3 +158,20 @@ jobs:
         run: |
           yarn check-android-emulator
           npx detox test -c android.debug
+      - name: Build E2E project (release)
+        id: build_release
+        working_directory: ../updates-e2e
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
+          npx detox build -c android.release
+      - name: Test E2E project (release)
+        id: test_release
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          UPDATES_HOST: localhost
+          UPDATES_PORT: "4747"
+        working_directory: ../updates-e2e
+        run: |
+          yarn check-android-emulator
+          npx detox test -c android.release
