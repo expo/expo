@@ -12,6 +12,8 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 
 `@expo/ui` is a set of native input components that allows you to build fully native interfaces with SwiftUI and Jetpack Compose.
 
@@ -26,292 +28,308 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 ### BottomSheet component
 
 <Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="BottomSheet component on iOS."
+      src="/static/images/expo-ui/bottomsheet/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { BottomSheet } from '@expo/ui/BottomSheet';
 
-<Tab label="iOS">
-  <ContentSpotlight
-    alt="BottomSheet component on iOS."
-    src="/static/images/expo-ui/bottomsheet/ios.png"
-    className="max-w-[240px]"
-  />
-</Tab>
-
-<Tab label="Code">
-```tsx
-import { BottomSheet } from '@expo/ui/BottomSheet';
-
-<BottomSheet isOpen={isOpen} onIsOpenedChange={e => setIsOpened(e)}>
-  <Text>Hello, world!</Text>
-</BottomSheet>
-```
-</Tab>
+  <BottomSheet isOpen={isOpen} onIsOpenedChange={e => setIsOpened(e)}>
+    <Text>Hello, world!</Text>
+  </BottomSheet>
+  ```
+  </Tab>
 </Tabs>
 
 ### Button component
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="Button component on Android."
-  src="/static/images/expo-ui/button/android.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Button component on iOS."
-  src="/static/images/expo-ui/button/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Button } from '@expo/ui/Button';
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Button component on Android."
+      src="/static/images/expo-ui/button/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Button component on iOS."
+      src="/static/images/expo-ui/button/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { Button } from '@expo/ui/Button';
 
-<Button
-  style={{ flex: 1 }}
-  onPress={() => {
-    setEditingProfile(true);
-  }}>
-  Edit profile
-</Button>
-```
-</Tab>
+  <Button
+    style={{ flex: 1 }}
+    onPress={() => {
+      setEditingProfile(true);
+    }}>
+    Edit profile
+  </Button>
+  ```
+  </Tab>
 </Tabs>
 
 ### ColorPicker component
 
 <Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="ColorPicker component on iOS."
+      src="/static/images/expo-ui/colorpicker/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { ColorPicker } from '@expo/ui/ColorPicker';
 
-<Tab label="iOS">
-  <ContentSpotlight
-    alt="ColorPicker component on iOS."
-    src="/static/images/expo-ui/colorpicker/ios.png"
-    className="max-w-[240px]"
+  <ColorPicker
+    label="Select a color"
+    selection={color}
+      onValueChanged={setColor}
+    style={{ width: 400, height: 200 }}
   />
-</Tab>
-
-<Tab label="Code">
-```tsx
-import { ColorPicker } from '@expo/ui/ColorPicker';
-
-<ColorPicker
-  label="Select a color"
-  selection={color}
-  onValueChanged={setColor}
-  style={{ width: 400, height: 200 }}
-/>
-```
-</Tab>
+  ```
+  </Tab>
 </Tabs>
 
 ### DateTimePicker component (date variant)
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="DateTimePicker component on Android."
-  src="/static/images/expo-ui/datetimepicker/android.png"
-  className="max-w-[240px]"
-/>
-</Tab>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="DateTimePicker component on iOS."
-  src="/static/images/expo-ui/datetimepicker/ios.png"
-  className="max-w-[240px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { DateTimePicker } from '@expo/ui/DateTimePicker';
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="DateTimePicker component on Android."
+      src="/static/images/expo-ui/datetimepicker/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="DateTimePicker component on iOS."
+      src="/static/images/expo-ui/datetimepicker/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { DateTimePicker } from '@expo/ui/DateTimePicker';
 
-<DateTimePicker
-  onDateSelected={date => {
-    setSelectedDate(date);
-  }}
-  displayedComponents='date'
-  initialDate={selectedDate.toISOString()}
-  iosVariant='wheel'
-  androidVariant='picker'
-/>
-```
-</Tab>
+  <DateTimePicker
+    onDateSelected={date => {
+      setSelectedDate(date);
+    }}
+    displayedComponents='date'
+    initialDate={selectedDate.toISOString()}
+    iosVariant='wheel'
+    androidVariant='picker'
+  />
+  ```
+  </Tab>
 </Tabs>
 
 ### Gauge component
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Gauge component on iOS."
-  src="/static/images/expo-ui/gauge/ios.png"
-  className="max-w-[240px]"
-/>
-</Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Gauge component on iOS."
+      src="/static/images/expo-ui/gauge/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { Gauge } from "@expo/ui/Gauge";
 
-<Tab label="Code">
-```tsx
-import { Gauge } from "@expo/ui/Gauge";
-
-<Gauge
-  max={{ value: 1, label: '1' }}
-  min={{ value: 0, label: '0' }}
-  current={{ value: 0.5 }}
-  color={[
-    PlatformColor('systemRed'),
-    PlatformColor('systemOrange'),
-    PlatformColor('systemYellow'),
-    PlatformColor('systemGreen'),
-  ]}
-  type="circular"
-/>
-```
-</Tab>
+  <Gauge
+    max={{ value: 1, label: '1' }}
+    min={{ value: 0, label: '0' }}
+    current={{ value: 0.5 }}
+    color={[
+      PlatformColor('systemRed'),
+      PlatformColor('systemOrange'),
+      PlatformColor('systemYellow'),
+      PlatformColor('systemGreen'),
+    ]}
+    type="circular"
+  />
+  ```
+  </Tab>
 </Tabs>
 
 ### LinearProgress component
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="LinearProgress component on iOS."
-  src="/static/images/expo-ui/linearprogress/ios.png"
-  className="max-w-[380px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { LinearProgress } from '@expo/ui/LinearProgress';
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="LinearProgress component on iOS."
+      src="/static/images/expo-ui/linearprogress/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { LinearProgress } from '@expo/ui/LinearProgress';
 
-<LinearProgress progress={0.5} style={{ width: 300 }} />
-```
-</Tab>
+  <LinearProgress progress={0.5} style={{ width: 300 }} />
+  ```
+  </Tab>
 </Tabs>
 
 ### Picker component (segmented variant)
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="Picker component on Android."
-  src="/static/images/expo-ui/segmentedPicker/android.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/segmentedPicker/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Picker } from '@expo/ui/Picker';
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Picker component on Android."
+      src="/static/images/expo-ui/segmentedPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/segmentedPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { Picker } from '@expo/ui/Picker';
 
-<Picker
-  options={['$', '$$', '$$$', '$$$$']}
-  selectedIndex={selectedIndex}
-  onOptionSelected={({ nativeEvent: { index } }) => {
-    setSelectedIndex(index);
-  }}
-/>
-```
-</Tab>
+  <Picker
+    options={['$', '$$', '$$$', '$$$$']}
+    selectedIndex={selectedIndex}
+    onOptionSelected={({ nativeEvent: { index } }) => {
+      setSelectedIndex(index);
+    }}
+  />
+  ```
+  </Tab>
 </Tabs>
 
-### Picker component (wheel variant) (iOS only)
+### Picker component (wheel variant)
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/menuPicker/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-{/* TODO: Add screenshot on Android once we support the label prop */}
-<Tab label="Code">
-```tsx
-import { Picker } from '@expo/ui/Picker';
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/menuPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  {/* TODO: Add screenshot on Android once we support the label prop */}
+  <Tab label="Code">
+  ```tsx
+  import { Picker } from '@expo/ui/Picker';
 
-<Picker
-  options={['$', '$$', '$$$', '$$$$']}
-  selectedIndex={selectedIndex}
-  onOptionSelected={({ nativeEvent: { index } }) => {
-    setSelectedIndex(index);
-  }}
-  variant="wheel"
-  style={{
-    height: 100,
-  }}
-/>
-```
-</Tab>
+  <Picker
+    options={['$', '$$', '$$$', '$$$$']}
+    selectedIndex={selectedIndex}
+    onOptionSelected={({ nativeEvent: { index } }) => {
+      setSelectedIndex(index);
+    }}
+    variant="wheel"
+    style={{
+      height: 100,
+    }}
+  />
+  ```
+  </Tab>
 </Tabs>
 
 ### Switch component
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Switch component on iOS."
-  src="/static/images/expo-ui/switch/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Switch } from '@expo/ui/Switch';
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Switch component on iOS."
+      src="/static/images/expo-ui/switch/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { Switch } from '@expo/ui/Switch';
 
-<Switch
-  checked={checked}
-  onValueChange={checked => {
-    setChecked(checked);
-  }}
-  label="Play music"
-/>
-```
-</Tab>
+  <Switch
+    checked={checked}
+    onValueChange={checked => {
+      setChecked(checked);
+    }}
+    label="Play music"
+  />
+  ```
+  </Tab>
 </Tabs>
 
 ### Switch component (checkbox variant)
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/checkbox/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Switch } from '@expo/ui/Switch';
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not supported for Android.
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/checkbox/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+  ```tsx
+  import { Switch } from '@expo/ui/Switch';
 
-<Switch
-  checked={checked}
-  onValueChange={checked => {
-    setChecked(checked);
-  }}
-  label="Play music"
-  variant="checkbox"
-/>
-```
-</Tab>
+  <Switch
+    checked={checked}
+    onValueChange={checked => {
+      setChecked(checked);
+    }}
+    label="Play music"
+    variant="checkbox"
+  />
+  ```
+  </Tab>
 </Tabs>
 
 ### TextInput component
 
 <Tabs>
-  <Tab label="Android">
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
     <ContentSpotlight
       alt="TextInput component on Android."
       src="/static/images/expo-ui/textinput/android.png"
       className="max-w-[380px]"
     />
   </Tab>
-  <Tab label="iOS">
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
       alt="TextInput component on iOS."
       src="/static/images/expo-ui/textinput/ios.png"
