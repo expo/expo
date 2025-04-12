@@ -95,7 +95,7 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
 }
 
 /**
- * Renders a `TextInput` component.
+ * Renders a `TextInput` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export function TextInput(props: TextInputProps) {
   return <TextInputNativeView {...transformTextInputProps(props)} style={props.style} />;
