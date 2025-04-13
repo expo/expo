@@ -8,12 +8,13 @@ platforms: ['android', 'ios']
 isNew: true
 ---
 
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
-import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
-import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 
 `@expo/ui` is a set of native input components that allows you to build fully native interfaces with SwiftUI and Jetpack Compose.
 
@@ -32,6 +33,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     This component is not (yet) supported for Android.
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/bottom-sheets)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -97,6 +99,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -112,6 +115,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 
     <CircularProgress progress={0.5} style={{ width: 300 }} />
     ```
+
   </Tab>
 </Tabs>
 
@@ -145,7 +149,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 
 ### ContextMenu component
 
-*Note: also known as **DropdownMenu***
+\*Note: also known as **DropdownMenu\***
 
 <Tabs>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
@@ -156,6 +160,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -197,6 +202,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
       </ContextMenu.Trigger>
     </ContextMenu>
     ```
+
   </Tab>
 </Tabs>
 
@@ -269,6 +275,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
       androidVariant='picker'
     />
     ```
+
   </Tab>
 </Tabs>
 
@@ -317,6 +324,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -342,6 +350,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     This component is not (yet) supported for Android.
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -371,6 +380,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
       ))}
     </List>
     ```
+
   </Tab>
 </Tabs>
 
@@ -401,6 +411,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
       variant="radio"
     />
     ```
+
   </Tab>
 </Tabs>
 
@@ -504,12 +515,13 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
       }}
     />
     ```
+
   </Tab>
 </Tabs>
 
 ### Switch component
 
-*Note: also known as **Toggle***
+\*Note: also known as **Toggle\***
 
 <Tabs>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
@@ -520,6 +532,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
@@ -555,6 +568,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox)*
+
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
