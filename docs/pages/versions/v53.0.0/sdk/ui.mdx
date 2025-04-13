@@ -148,16 +148,16 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 <Tabs>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
     <ContentSpotlight
-      alt="DateTimePicker component on Android."
-      src="/static/images/expo-ui/datetimepicker/android.png"
+      alt="DateTimePicker (date variant) component on Android."
+      src="/static/images/expo-ui/datetimepicker/date/android.png"
       className="max-w-[240px]"
     />
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/datepickers)*
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
-      alt="DateTimePicker component on iOS."
-      src="/static/images/expo-ui/datetimepicker/ios.png"
+      alt="DateTimePicker (date variant) component on iOS."
+      src="/static/images/expo-ui/datetimepicker/date/ios.png"
       className="max-w-[240px]"
     />
     *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
@@ -176,6 +176,42 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     androidVariant='picker'
   />
   ```
+  </Tab>
+</Tabs>
+
+### DateTimePicker component (time variant)
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="DateTimePicker (time variant) component on Android."
+      src="/static/images/expo-ui/datetimepicker/time/android.png"
+      className="max-w-[240px]"
+    />
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="DateTimePicker component on iOS."
+      src="/static/images/expo-ui/datetimepicker/time/ios.png"
+      className="max-w-[240px]"
+    />
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/DateTimePicker';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='hourAndMinute'
+      initialDate={selectedDate.toISOString()}
+      iosVariant='wheel'
+      androidVariant='picker'
+    />
+    ```
   </Tab>
 </Tabs>
 
