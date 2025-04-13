@@ -143,6 +143,63 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
   </Tab>
 </Tabs>
 
+### ContextMenu component
+
+*Note: also known as **DropdownMenu***
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="ContextMenu component on Android."
+      src="/static/images/expo-ui/contextMenu/android.png"
+      className="max-w-[380px]"
+    />
+
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="ContextMenu component on iOS."
+      src="/static/images/expo-ui/contextMenu/ios.png"
+      className="max-w-[380px]"
+    />
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:))*
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { ContextMenu } from '@expo/ui/ContextMenu';
+
+    <ContextMenu style={{ width: 150, height: 50 }}>
+      <ContextMenu.Items>
+        <Button
+          systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+          onPress={() => console.log('Pressed1')}>
+          Hello
+        </Button>
+        <Button
+          variant="bordered"
+          systemImage={{ ios: 'heart' }}
+          onPress={() => console.log('Pressed2')}>
+          I love
+        </Button>
+        <Picker
+          label="Doggos"
+          options={['very', 'veery', 'veeery', 'much']}
+          variant="menu"
+          selectedIndex={selectedIndex}
+          onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+        />
+      </ContextMenu.Items>
+      <ContextMenu.Trigger>
+        <Button variant="bordered" style={{ width: 150, height: 50 }}>
+          Show Menu
+        </Button>
+      </ContextMenu.Trigger>
+    </ContextMenu>
+    ```
+  </Tab>
+</Tabs>
+
 ### DateTimePicker component (date variant)
 
 <Tabs>
