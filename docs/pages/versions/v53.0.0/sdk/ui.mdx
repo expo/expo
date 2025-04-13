@@ -434,6 +434,40 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
   </Tab>
 </Tabs>
 
+### Slider component
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Slider component on Android."
+      src="/static/images/expo-ui/slider/android.png"
+      className="max-w-[480px]"
+    />
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/slider)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="Slider component on iOS."
+      src="/static/images/expo-ui/slider/ios.png"
+      className="max-w-[480px]"
+    />
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/slider)*
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Slider } from '@expo/ui/Slider';
+
+    <Slider
+      style={{ minHeight: 60 }}
+      value={value}
+      onValueChange={(value) => {
+        setValue(value);
+      }}
+    />
+    ```
+  </Tab>
+</Tabs>
+
 ### Switch component
 
 *Note: also known as **Toggle***
