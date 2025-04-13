@@ -82,32 +82,21 @@ jobs:
         run: |
           yarn generate-test-update-bundles
           npx pod-install
-      - name: Build E2E project (debug)
-        id: build_debug
+      - name: Build E2E project (debug and release)
+        id: build
         working_directory: ../updates-e2e
         run: |
           npx detox build -c ios.debug
-      - name: Test E2E project (debug)
-        id: test_debug
+          npx detox build -c ios.release
+      - name: Test E2E project (debug and release)
+        id: test
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         working_directory: ../updates-e2e
         run: |
           npx detox test -c ios.debug          
-      - name: Build E2E project (release)
-        id: build_release
-        working_directory: ../updates-e2e
-        run: |
-          npx detox build -c ios.release
-      - name: Test E2E project (release)
-        id: test_release
-        env:
-          UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
-        working_directory: ../updates-e2e
-        run: |
-          npx detox test -c ios.release      
+          npx detox test -c ios.release
   android:
     runs_on: linux-large-nested-virtualization
     needs: [check_paths]
@@ -141,15 +130,16 @@ jobs:
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
-      - name: Build E2E project (debug)
-        id: build_debug
+      - name: Build E2E project (debug and release)
+        id: build
         working_directory: ../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           npx detox build -c android.debug
-      - name: Test E2E project (debug)
-        id: test_debug
+          npx detox build -c android.release
+      - name: Test E2E project (debug and release)
+        id: test
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           UPDATES_HOST: localhost
@@ -158,23 +148,4 @@ jobs:
         run: |
           yarn check-android-emulator
           npx detox test -c android.debug
-      - uses: eas/start_android_emulator
-        with:
-          device_name: pixel_4
-      - name: Build E2E project (release)
-        id: build_release
-        working_directory: ../updates-e2e
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-        run: |
-          npx detox build -c android.release
-      - name: Test E2E project (release)
-        id: test_release
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
-        working_directory: ../updates-e2e
-        run: |
-          yarn check-android-emulator
           npx detox test -c android.release
