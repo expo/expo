@@ -49,5 +49,7 @@ var SourceSkips;
     SourceSkips[SourceSkips["GitIgnore"] = 2048] = "GitIgnore";
     /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
     SourceSkips[SourceSkips["ExpoConfigExtraSection"] = 4096] = "ExpoConfigExtraSection";
+    /** The [updates](https://docs.expo.dev/versions/latest/config/app/#updates) section in app.json */
+    SourceSkips[SourceSkips["ExpoConfigUpdatesSection"] = 8192] = "ExpoConfigUpdatesSection";
 })(SourceSkips || (exports.SourceSkips = SourceSkips = {}));
 //# sourceMappingURL=SourceSkips.js.map

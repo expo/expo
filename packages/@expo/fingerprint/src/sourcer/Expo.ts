@@ -206,6 +206,10 @@ function normalizeExpoConfig(
     delete normalizedConfig?.updates?.url;
   }
 
+  if (sourceSkips & SourceSkips.ExpoConfigUpdatesSection) {
+    delete normalizedConfig?.updates;
+  }
+
   if (sourceSkips & SourceSkips.ExpoConfigAssets) {
     delete normalizedConfig.icon;
     delete normalizedConfig.splash;
