@@ -335,6 +335,45 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
   </Tab>
 </Tabs>
 
+### List component
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
+    This component is not (yet) supported for Android.
+
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="List component on iOS."
+      src="/static/images/expo-ui/list/ios.png"
+      className="max-w-[380px]"
+    />
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/list)*
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { List } from '@expo/ui/List';
+
+    <List
+      scrollEnabled={false}
+      editModeEnabled={editModeEnabled}
+      onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
+      moveEnabled={moveEnabled}
+      onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
+      onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
+      style={{ flex: 1 }}
+      listStyle={listStyleOptions[selectedIndex ?? 0]}
+      deleteEnabled={deleteEnabled}
+      selectEnabled={selectEnabled}>
+      {data.map((item, index) => (
+        <Label key={index} title={item.text} systemImage={item.systemImage} color={color} />
+      ))}
+    </List>
+    ```
+  </Tab>
+</Tabs>
+
 ### Picker component (radio variant)
 
 <Tabs>
