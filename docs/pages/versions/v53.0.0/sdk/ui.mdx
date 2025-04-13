@@ -473,8 +473,12 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 *Note: also known as **Toggle***
 
 <Tabs>
-  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
-    This component is not (yet) supported for Android.
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Switch component on Android."
+      src="/static/images/expo-ui/switch/android.png"
+      className="max-w-[480px]"
+    />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch)*
   </Tab>
