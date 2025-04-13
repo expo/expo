@@ -508,14 +508,18 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 ### Switch component (checkbox variant)
 
 <Tabs>
-  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
-    This component is not (yet) supported for Android.
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Switch (checkbox variant) component on Android."
+      src="/static/images/expo-ui/checkbox/android.png"
+      className="max-w-[480px]"
+    />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox)*
   </Tab>
   <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
     <ContentSpotlight
-      alt="Picker component on iOS."
+      alt="Switch (checkbox variant) component on iOS."
       src="/static/images/expo-ui/checkbox/ios.png"
       className="max-w-[480px]"
     />
