@@ -335,6 +335,36 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
   </Tab>
 </Tabs>
 
+### Picker component (radio variant)
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="Picker component (radio variant) on Android."
+      src="/static/images/expo-ui/radioPicker/android.png"
+      className="max-w-[480px]"
+    />
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />iOS</div>}>
+    This component is not supported for iOS (although it is supported for macOS).
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/Picker';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="radio"
+    />
+    ```
+  </Tab>
+</Tabs>
+
 ### Picker component (segmented variant)
 
 <Tabs>
@@ -364,6 +394,7 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
     onOptionSelected={({ nativeEvent: { index } }) => {
       setSelectedIndex(index);
     }}
+    variant="segmented"
   />
   ```
   </Tab>
