@@ -86,6 +86,35 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
   </Tab>
 </Tabs>
 
+### CircularProgress component
+
+<Tabs>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />Android</div>}>
+    <ContentSpotlight
+      alt="CircularProgress component on Android."
+      src="/static/images/expo-ui/circularprogress/android.png"
+      className="max-w-[380px]"
+    />
+
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+  </Tab>
+  <Tab label={<div className="flex items-center justify-center gap-1"><CheckIcon className="icon-sm stroke-palette-green10" />iOS</div>}>
+    <ContentSpotlight
+      alt="CircularProgress component on iOS."
+      src="/static/images/expo-ui/circularprogress/ios.png"
+      className="max-w-[380px]"
+    />
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/progressview)*
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { CircularProgress } from '@expo/ui/CircularProgress';
+
+    <CircularProgress progress={0.5} style={{ width: 300 }} />
+    ```
+  </Tab>
+</Tabs>
+
 ### ColorPicker component
 
 <Tabs>
@@ -188,7 +217,11 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 
 <Tabs>
   <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
-    This component is not (yet) supported for Android.
+    <ContentSpotlight
+      alt="LinearProgress component on Android."
+      src="/static/images/expo-ui/linearprogress/android.png"
+      className="max-w-[380px]"
+    />
 
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
   </Tab>
@@ -278,6 +311,8 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 </Tabs>
 
 ### Switch component
+
+*Note: also known as **Toggle***
 
 <Tabs>
   <Tab label={<div className="flex items-center justify-center gap-1"><XIcon className="icon-sm stroke-palette-red10" />Android</div>}>
