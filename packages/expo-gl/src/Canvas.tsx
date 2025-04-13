@@ -46,7 +46,7 @@ const CanvasWrapper: React.FunctionComponent<
     const element = getElement(ref.current);
     const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
     return { width, height };
-  }, [!!size, ref.current])
+  }, [size?.width, size?.height])
 
   const updateCanvasSize = React.useCallback((): void => {
     const canvas = _canvasRef.current;
@@ -60,7 +60,7 @@ const CanvasWrapper: React.FunctionComponent<
       canvas.width = size.width * scale;
       canvas.height = size.height * scale;
     }
-  }, [getSize, _canvasRef.current]);
+  }, [getSize]);
 
   const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const {
