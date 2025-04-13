@@ -120,9 +120,6 @@ jobs:
         run: |
           sudo apt-get --quiet update --yes
           sudo apt-get --quiet install openjdk-17-jdk openjdk-17-jre libc6 libdbus-1-3 libfontconfig1 libgcc1 libpulse0 libtinfo5 libx11-6 libxcb1 libxdamage1 libnss3 libxcomposite1 libxcursor1 libxi6 libxext6 libxfixes3 zlib1g libgl1 pulseaudio socat --yes
-      - uses: eas/start_android_emulator
-        with:
-          device_name: pixel_4
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -141,6 +138,9 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           yarn generate-test-update-bundles
+      - uses: eas/start_android_emulator
+        with:
+          device_name: pixel_4
       - name: Build E2E project (debug)
         id: build_debug
         working_directory: ../updates-e2e
@@ -158,6 +158,9 @@ jobs:
         run: |
           yarn check-android-emulator
           npx detox test -c android.debug
+      - uses: eas/start_android_emulator
+        with:
+          device_name: pixel_4
       - name: Build E2E project (release)
         id: build_release
         working_directory: ../updates-e2e
