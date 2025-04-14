@@ -52,7 +52,7 @@
     "@expo/osascript": "^2.1.6",
     "@expo/package-manager": "^1.7.2",
     "@expo/plist": "^0.2.2",
-    "@expo/prebuild-config": "~8.0.31",
+    "@expo/prebuild-config": "~8.2.0",
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",
