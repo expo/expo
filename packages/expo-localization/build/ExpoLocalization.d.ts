@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { Localization, Calendar, Locale } from './Localization.types';
-export declare function addLocaleListener(listener: (event: any) => void): EventSubscription;
-export declare function addCalendarListener(listener: (event: any) => void): EventSubscription;
+export declare function addLocaleListener(listener: (event?: unknown) => void): EventSubscription;
+export declare function addCalendarListener(listener: (event?: unknown) => void): EventSubscription;
 export declare function removeSubscription(subscription: EventSubscription): void;
 declare const _default: {
     readonly currency: string | null;

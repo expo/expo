@@ -7,7 +7,8 @@ export { PitchCorrectionQuality } from './AV';
 const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
     for (const key in defaultAudioMode) {
         if (!userAudioMode.hasOwnProperty(key)) {
-            userAudioMode[key] = defaultAudioMode[key];
+            const prop = key;
+            userAudioMode[prop] = defaultAudioMode[prop];
         }
     }
     return userAudioMode;

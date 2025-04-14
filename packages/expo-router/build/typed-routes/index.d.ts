@@ -10,7 +10,9 @@ export declare const version = 52;
  */
 export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }?: {
     ctx?: RequireContextPonyFill | undefined;
-    regenerateFn?: ((...args: any[]) => void) | undefined;
+    regenerateFn?: ((outputDir: string, options?: {
+        partialTypedGroups?: boolean;
+    } | undefined, ctx?: RequireContextPonyFill | undefined) => void) | undefined;
 }): ({ filePath, type }: {
     filePath: string;
     type: string;
@@ -27,5 +29,7 @@ export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }
  *
  * If you process the types after the ADD, then they will crash as you will have conflicting routes
  */
-export declare const regenerateDeclarations: (...args: any[]) => void;
+export declare const regenerateDeclarations: (outputDir: string, options?: {
+    partialTypedGroups?: boolean;
+} | undefined, ctx?: RequireContextPonyFill | undefined) => void;
 //# sourceMappingURL=index.d.ts.map

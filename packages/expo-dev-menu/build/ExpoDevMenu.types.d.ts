@@ -20,12 +20,12 @@ export type ExpoDevMenuItem = {
  * @hidden
  */
 export type ExpoDevMenu = {
-    openMenu(): any;
-    closeMenu(): any;
-    hideMenu(): any;
+    openMenu(): void;
+    closeMenu(): void;
+    hideMenu(): void;
     addDevMenuCallbacks(callbacks: {
         name: string;
         shouldCollapse?: boolean;
-    }[]): any;
+    }[]): void;
 };
 //# sourceMappingURL=ExpoDevMenu.types.d.ts.map

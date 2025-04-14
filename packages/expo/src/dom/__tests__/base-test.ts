@@ -4,7 +4,7 @@ jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
 }));
 
 describe('getBaseURL', () => {
-  let getBaseURL;
+  let getBaseURL: typeof import('../base').getBaseURL;
 
   const originalProcessEnv = process.env;
   const originalExpo = globalThis.expo;

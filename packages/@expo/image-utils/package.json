@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@types/getenv": "^0.7.0",
-    "@types/semver": "^6.0.0",
+    "@types/semver": "^7.0.0",
     "expo-module-scripts": "^4.1.1"
   },
   "publishConfig": {

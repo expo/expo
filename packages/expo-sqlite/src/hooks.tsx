@@ -195,7 +195,7 @@ function SQLiteProviderNonSuspense({
         });
         databaseRef.current = db;
         setLoading(false);
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
     }
@@ -203,7 +203,7 @@ function SQLiteProviderNonSuspense({
     async function teardown(db: SQLiteDatabase | null) {
       try {
         await db?.closeAsync();
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
     }

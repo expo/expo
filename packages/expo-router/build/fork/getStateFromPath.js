@@ -359,6 +359,7 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
     const configs = [];
     routeNames.push(screen);
     parentScreens.push(screen);
+    // @ts-expect-error: TODO(@kitten): This is entirely untyped. The index access just flags this, but we're not typing the config properly here
     const config = routeConfig[screen];
     if (typeof config === 'string') {
         // If a string is specified as the value of the key(e.g. Foo: '/path'), use it as the pattern

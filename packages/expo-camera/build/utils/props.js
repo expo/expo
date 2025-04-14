@@ -11,8 +11,10 @@ export function convertNativeProps(props) {
     }
     const nativeProps = {};
     for (const [key, value] of Object.entries(props)) {
-        if (typeof value === 'string' && ConversionTables[key]) {
-            nativeProps[key] = ConversionTables[key][value];
+        const prop = key;
+        if (typeof value === 'string' && ConversionTables[prop]) {
+            nativeProps[key] =
+                ConversionTables[prop][value];
         }
         else {
             nativeProps[key] = value;
