@@ -176,4 +176,12 @@ describe('runAsync', () => {
     });
     expect(result.isSuccessful).toBeTruthy();
   });
+
+  test('returns success if xcode is not installed', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: null });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync(additionalProjectProps);
+    expect(result.isSuccessful).toBeTruthy();
+  });
 });
