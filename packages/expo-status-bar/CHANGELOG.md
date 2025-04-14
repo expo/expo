@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support imperative functions from `SystemBars` when edge-to-edge is enabled. ([#36156](https://github.com/expo/expo/pull/36156) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
