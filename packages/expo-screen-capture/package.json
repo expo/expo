@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "description": "Protects screens in your app from being captured or recorded, and notifies if a screenshot is taken.",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",

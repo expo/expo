@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^4.1.2",
-    "expo-test-runner": "0.2.1"
+    "expo-test-runner": "0.2.2"
   },
   "peerDependencies": {
     "expo": "*"

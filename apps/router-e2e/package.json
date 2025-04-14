@@ -22,9 +22,9 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo/dom-webview": "0.1.1",
+    "@expo/dom-webview": "0.1.2",
     "expo": "~53.0.0-preview.6",
-    "expo-haptics": "~14.1.1",
+    "expo-haptics": "~14.1.2",
     "expo-linking": "~7.1.2",
     "expo-router": "^5.0.2-preview.4",
     "expo-speech": "~13.1.4",
