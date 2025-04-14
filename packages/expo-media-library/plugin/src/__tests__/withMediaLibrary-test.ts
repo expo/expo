@@ -36,7 +36,7 @@ describe(modifyAndroidManifest, () => {
     expect(modifiedPermissions).toContain('android.permission.READ_MEDIA_VIDEO');
   });
 
-  it (`modifies the AndroidManifest with empty granular permissions`, async () => {
+  it(`modifies the AndroidManifest with empty granular permissions`, async () => {
     let androidManifestJson =
       await AndroidConfig.Manifest.readAndroidManifestAsync(sampleManifestPath);
 
@@ -46,5 +46,5 @@ describe(modifyAndroidManifest, () => {
     expect(modifiedPermissions).not.toContain('android.permission.READ_MEDIA_IMAGES');
     expect(modifiedPermissions).not.toContain('android.permission.READ_MEDIA_AUDIO');
     expect(modifiedPermissions).not.toContain('android.permission.READ_MEDIA_VIDEO');
-  })
+  });
 });

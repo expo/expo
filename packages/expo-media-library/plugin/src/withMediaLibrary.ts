@@ -18,7 +18,7 @@ const GRANULAR_PERMISSIONS_MAP: Record<GranularTypes, string> = {
 
 export function modifyAndroidManifest(
   manifest: AndroidConfig.Manifest.AndroidManifest,
-  granularPermissions?: GranularTypes[],
+  granularPermissions?: GranularTypes[]
 ): AndroidConfig.Manifest.AndroidManifest {
   // Starting with Android 10, the concept of scoped storage is introduced.
   // Currently, to make expo-media-library working with that change, you have to add
@@ -29,7 +29,10 @@ export function modifyAndroidManifest(
   // If granular permissions are specified, remove the defaults and add only the specified ones
   if (granularPermissions) {
     AndroidConfig.Permissions.removePermissions(manifest, Object.values(GRANULAR_PERMISSIONS_MAP));
-    AndroidConfig.Permissions.ensurePermissions(manifest, granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type]));
+    AndroidConfig.Permissions.ensurePermissions(
+      manifest,
+      granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type])
+    );
   }
 
   return manifest;
@@ -46,8 +49,8 @@ const withGranularPermissions: ConfigPlugin<GranularTypes[]> = (config, granular
   return withAndroidManifest(config, (config) => {
     config.modResults = modifyAndroidManifest(config.modResults, granularPermissions);
     return config;
-  })
-}
+  });
+};
 
 const withMediaLibrary: ConfigPlugin<
   {
