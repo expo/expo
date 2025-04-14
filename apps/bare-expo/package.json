@@ -56,7 +56,7 @@
     "expo-insights": "~0.8.2",
     "expo-network-addons": "~0.7.2",
     "expo-notifications": "~0.29.14",
-    "expo-splash-screen": "~0.29.23",
+    "expo-splash-screen": "~0.29.24",
     "lottie-react-native": "7.1.0",
     "native-component-list": "*",
     "react": "18.3.1",

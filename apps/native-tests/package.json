@@ -15,7 +15,7 @@
     "expo-face-detector": "~13.0.2",
     "expo-image": "~2.0.7",
     "expo-notifications": "~0.29.14",
-    "expo-splash-screen": "~0.29.23",
+    "expo-splash-screen": "~0.29.24",
     "native-component-list": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",

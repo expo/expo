@@ -17,7 +17,7 @@
     "expo-dev-client": "~5.0.20",
     "expo-image": "^2.0.7",
     "expo-linear-gradient": "~14.0.2",
-    "expo-splash-screen": "~0.29.23",
+    "expo-splash-screen": "~0.29.24",
     "expo-status-bar": "~2.0.1",
     "expo-updates": "~0.27.4",
     "react": "18.3.1",
