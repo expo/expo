@@ -164,7 +164,7 @@ class Chunk {
         return this.graph.transformOptions.platform;
     }
     getFilename(src) {
-        return !this.options.serializerOptions?.isExporting
+        return !this.options.serializerOptions?.exporting
             ? this.name
             : (0, exportPath_1.getExportPathForDependencyWithOptions)(this.name, {
                 platform: this.getPlatform(),

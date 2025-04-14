@@ -39,7 +39,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
     splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
-    isExporting?: boolean;
+    exporting?: boolean;
   };
   // Chunk-based stable identifier for the bundle that is used for identifying the bundle.
   // https://sentry.engineering/blog/the-case-for-debug-ids

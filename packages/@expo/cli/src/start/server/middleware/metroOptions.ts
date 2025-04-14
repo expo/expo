@@ -52,7 +52,7 @@ export type SerializerOptions = {
   output?: 'static';
   splitChunks?: boolean;
   usedExports?: boolean;
-  isExporting?: boolean;
+  exporting?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -241,7 +241,7 @@ export function getMetroDirectBundleOptions(
       usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
-      isExporting: isExporting || undefined,
+      exporting: isExporting || undefined,
     },
   };
 

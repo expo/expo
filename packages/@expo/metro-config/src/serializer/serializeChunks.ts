@@ -226,7 +226,7 @@ export class Chunk {
   }
 
   private getFilename(src: string) {
-    return !this.options.serializerOptions?.isExporting
+    return !this.options.serializerOptions?.exporting
       ? this.name
       : getExportPathForDependencyWithOptions(this.name, {
           platform: this.getPlatform(),
