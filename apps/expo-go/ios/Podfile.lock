@@ -3382,9 +3382,9 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 5ea8f813affd33c2ec3c0163674f051899a82843
   EXApplication: 6120ef61ab4bee9df179ef8c130aa38616b03d7f
   EXAV: 09d62e1e69490b035739d2f32c69adfbfd7332d9
@@ -3462,13 +3462,13 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d84bd0d1dda5e9e83b32922a83b7b9161e02dd27
+  hermes-engine: ced00f3972ea31e573ba2041d2ab0011c3a41cab
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

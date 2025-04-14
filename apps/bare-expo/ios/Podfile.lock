@@ -3593,8 +3593,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: a97859cac8efb2f5411b2052e61841b349813a4a
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 5ea8f813affd33c2ec3c0163674f051899a82843
   EXApplication: 6120ef61ab4bee9df179ef8c130aa38616b03d7f
   EXAV: 09d62e1e69490b035739d2f32c69adfbfd7332d9
@@ -3672,7 +3672,7 @@ SPEC CHECKSUMS:
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 758fbc1be5fb7ce700b23160033d82e574c2b6b7
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: cd4bd90f051e3658c83cc00e87c603dfe1b75947
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

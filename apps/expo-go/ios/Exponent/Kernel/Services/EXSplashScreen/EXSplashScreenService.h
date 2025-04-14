@@ -4,7 +4,7 @@
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import "EXSplashScreenViewController.h"
-#import "EXSplashScreenViewProvider.h"
+#import "Expo_Go-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

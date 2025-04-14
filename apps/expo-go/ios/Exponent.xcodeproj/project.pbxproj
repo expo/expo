@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -33,8 +33,14 @@
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
 		402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */; };
 		40482BA92D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */; };
+		4072128D2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4072128C2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift */; };
+		4072128F2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4072128E2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift */; };
+		407212912DAA9ACC00D02522 /* ManagedAppSplashScreenConfigurationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407212902DAA9ACC00D02522 /* ManagedAppSplashScreenConfigurationBuilder.swift */; };
+		407212932DAAA55100D02522 /* SplashScreenViewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407212922DAAA55100D02522 /* SplashScreenViewProvider.swift */; };
+		407212A12DAD14C000D02522 /* SplashScreenViewNativeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407212A02DAD14C000D02522 /* SplashScreenViewNativeProvider.swift */; };
+		407212A32DAD1B5E00D02522 /* HomeAppSplashScreenViewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407212A22DAD1B5E00D02522 /* HomeAppSplashScreenViewProvider.swift */; };
+		407212A52DAD22C500D02522 /* SplashScreenHUDButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407212A42DAD22C500D02522 /* SplashScreenHUDButton.swift */; };
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
-		40CB1D752CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D722CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m */; };
 		40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */; };
 		40CB1D772CD2A0C200CB3717 /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */; };
 		40CB1D782CD2A0C200CB3717 /* EXSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D702CD2A0C200CB3717 /* EXSplashScreenViewController.m */; };
@@ -47,13 +53,8 @@
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
-		8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */; };
-		8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */; };
-		8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */; };
-		87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
-		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
 		B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
@@ -243,6 +244,13 @@
 		402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkAccessManager.swift; sourceTree = "<group>"; };
 		40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoGoReactNativeFactory.mm; sourceTree = "<group>"; };
 		40482BAA2D6CB91700ACAFBB /* ExpoGoReactNativeFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoGoReactNativeFactory.h; sourceTree = "<group>"; };
+		4072128C2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedSplashscreenViewProvider.swift; sourceTree = "<group>"; };
+		4072128E2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAppSplashScreenConfiguration.swift; sourceTree = "<group>"; };
+		407212902DAA9ACC00D02522 /* ManagedAppSplashScreenConfigurationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAppSplashScreenConfigurationBuilder.swift; sourceTree = "<group>"; };
+		407212922DAAA55100D02522 /* SplashScreenViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenViewProvider.swift; sourceTree = "<group>"; };
+		407212A02DAD14C000D02522 /* SplashScreenViewNativeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenViewNativeProvider.swift; sourceTree = "<group>"; };
+		407212A22DAD1B5E00D02522 /* HomeAppSplashScreenViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAppSplashScreenViewProvider.swift; sourceTree = "<group>"; };
+		407212A42DAD22C500D02522 /* SplashScreenHUDButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenHUDButton.swift; sourceTree = "<group>"; };
 		408933582CAAF7870095810E /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
 		408933592CAAF7A20095810E /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40CB1D6B2CD2A0C200CB3717 /* EXSplashScreenModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenModule.h; sourceTree = "<group>"; };
@@ -251,9 +259,6 @@
 		40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenService.m; sourceTree = "<group>"; };
 		40CB1D6F2CD2A0C200CB3717 /* EXSplashScreenViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenViewController.h; sourceTree = "<group>"; };
 		40CB1D702CD2A0C200CB3717 /* EXSplashScreenViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenViewController.m; sourceTree = "<group>"; };
-		40CB1D712CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenViewNativeProvider.h; sourceTree = "<group>"; };
-		40CB1D722CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenViewNativeProvider.m; sourceTree = "<group>"; };
-		40CB1D732CD2A0C200CB3717 /* EXSplashScreenViewProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenViewProvider.h; sourceTree = "<group>"; };
 		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
 		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -271,14 +276,6 @@
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoadingProgressWindowViewController.swift; sourceTree = "<group>"; };
-		8767F5B624D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenConfigurationBuilder.h; sourceTree = "<group>"; };
-		8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenConfigurationBuilder.m; sourceTree = "<group>"; };
-		8767F97124D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenViewProvider.h; sourceTree = "<group>"; };
-		8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenViewProvider.m; sourceTree = "<group>"; };
-		8767F97424D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHomeAppSplashScreenViewProvider.h; sourceTree = "<group>"; };
-		8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHomeAppSplashScreenViewProvider.m; sourceTree = "<group>"; };
-		87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenConfiguration.m; sourceTree = "<group>"; };
-		87750C4C24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenConfiguration.h; sourceTree = "<group>"; };
 		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		88A25B1DAF71DFE5C4134A46 /* libPods-Expo Go-Expo Go (versioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (versioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -286,8 +283,6 @@
 		9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A12E8B62266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenViewController.h; sourceTree = "<group>"; };
 		A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenViewController.m; sourceTree = "<group>"; };
-		A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenHUDButton.m; sourceTree = "<group>"; };
-		A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenHUDButton.h; sourceTree = "<group>"; };
 		A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		A6EAF60D92D03B190DFCD5D2 /* Pods-Expo Go-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.release.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXExpoGoLauncherSelectionPolicyFilterAware.swift; sourceTree = "<group>"; };
@@ -469,17 +464,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2D1A6CC92D9B38910007E94A /* Notifications */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
+		2D1A6CC92D9B38910007E94A /* Notifications */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Notifications; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -586,9 +571,8 @@
 				40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */,
 				40CB1D6F2CD2A0C200CB3717 /* EXSplashScreenViewController.h */,
 				40CB1D702CD2A0C200CB3717 /* EXSplashScreenViewController.m */,
-				40CB1D712CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.h */,
-				40CB1D722CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m */,
-				40CB1D732CD2A0C200CB3717 /* EXSplashScreenViewProvider.h */,
+				407212922DAAA55100D02522 /* SplashScreenViewProvider.swift */,
+				407212A02DAD14C000D02522 /* SplashScreenViewNativeProvider.swift */,
 			);
 			path = EXSplashScreen;
 			sourceTree = "<group>";
@@ -867,23 +851,18 @@
 		B5A473DD204A673E0035C61C /* Loading */ = {
 			isa = PBXGroup;
 			children = (
-				87750C4C24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.h */,
-				87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */,
 				B54D2911205307380019411A /* EXAppLoadingCancelView.h */,
 				B54D2912205307380019411A /* EXAppLoadingCancelView.m */,
 				878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */,
 				878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */,
-				8767F5B624D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.h */,
-				8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */,
-				8767F97124D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.h */,
-				8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */,
-				8767F97424D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.h */,
-				8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */,
-				A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */,
-				A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */,
 				A12E8B62266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.h */,
 				A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */,
 				8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */,
+				4072128C2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift */,
+				4072128E2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift */,
+				407212902DAA9ACC00D02522 /* ManagedAppSplashScreenConfigurationBuilder.swift */,
+				407212A22DAD1B5E00D02522 /* HomeAppSplashScreenViewProvider.swift */,
+				407212A42DAD22C500D02522 /* SplashScreenHUDButton.swift */,
 			);
 			path = Loading;
 			sourceTree = "<group>";
@@ -1825,6 +1804,7 @@
 				B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
 				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
+				407212912DAA9ACC00D02522 /* ManagedAppSplashScreenConfigurationBuilder.swift in Sources */,
 				8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
@@ -1833,6 +1813,8 @@
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
+				407212932DAAA55100D02522 /* SplashScreenViewProvider.swift in Sources */,
+				407212A12DAD14C000D02522 /* SplashScreenViewNativeProvider.swift in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.mm in Sources */,
@@ -1840,6 +1822,7 @@
 				319AC474255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m in Sources */,
 				B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */,
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
+				407212A32DAD1B5E00D02522 /* HomeAppSplashScreenViewProvider.swift in Sources */,
 				4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */,
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
@@ -1872,11 +1855,9 @@
 				F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */,
 				B56C65CC204769F9002B2424 /* EXDevMenuViewController.mm in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
-				A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */,
-				87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */,
 				F138E0D62A5F2090002E15BC /* ExpoGoModule.swift in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
 				31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */,
@@ -1899,14 +1880,16 @@
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
-				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */,
+				407212A52DAD22C500D02522 /* SplashScreenHUDButton.swift in Sources */,
+				4072128F2DAA998300D02522 /* ManagedAppSplashScreenConfiguration.swift in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
 				F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				B2A8E25F2CBF3B24004CA9AF /* EXApiUtil.swift in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
+				4072128D2DAA98E100D02522 /* ManagedSplashscreenViewProvider.swift in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
@@ -1916,18 +1899,15 @@
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
-				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,
 				25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */,
-				8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */,
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */,
-				40CB1D752CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m in Sources */,
 				40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */,
 				40CB1D772CD2A0C200CB3717 /* EXSplashScreenService.m in Sources */,
 				40CB1D782CD2A0C200CB3717 /* EXSplashScreenViewController.m in Sources */,
@@ -2065,10 +2045,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -2131,10 +2108,7 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

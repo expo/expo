@@ -1,7 +1,7 @@
 #import <MBProgressHUD/MBProgressHUD.h>
 
 #import "EXManagedAppSplashScreenViewController.h"
-#import "EXSplashScreenHUDButton.h"
+#import "Expo_Go-Swift.h"
 
 @interface EXManagedAppSplashScreenViewController()
 

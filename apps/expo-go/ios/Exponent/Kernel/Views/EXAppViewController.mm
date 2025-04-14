@@ -6,10 +6,8 @@
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
-#import "EXManagedAppSplashScreenViewProvider.h"
-#import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "Expo_Go-Swift.h"
 #import "EXManagedAppSplashScreenViewController.h"
-#import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -333,11 +331,11 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   if (!_managedAppSplashScreenViewProvider) {
-    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
+    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWith:manifest];
 
     [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
-    [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
+    [_managedAppSplashScreenViewProvider updateSplashScreenViewWith:manifest];
   }
 }
 
