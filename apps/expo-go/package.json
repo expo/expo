@@ -44,7 +44,7 @@
     "date-fns": "^2.28.0",
     "dedent": "^0.7.0",
     "es6-error": "^4.1.1",
-    "expo": "~53.0.0-preview.6",
+    "expo": "~53.0.0-preview.7",
     "expo-application": "~6.1.2",
     "expo-asset": "~11.1.2",
     "expo-blur": "~14.1.2",

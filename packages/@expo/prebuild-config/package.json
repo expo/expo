@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "8.1.4",
+  "version": "9.0.0",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
