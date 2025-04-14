@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.24.0 — 2025-04-11
+
+### 🎉 New features
+
+- Output recommended versions in prebuild ([#35941](https://github.com/expo/expo/pull/35941) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Add a warning for users to upgrade their `eas-cli` when using `remoteBuildCache`. ([#36103](https://github.com/expo/expo/pull/36103) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.23.4 — 2025-04-11
 
 ### 💡 Others

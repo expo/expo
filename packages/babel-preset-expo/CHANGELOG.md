@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.1.3 — 2025-04-11
+
+### 💡 Others
+
 - Throwing an error if people having `import.meta` in code but not enabled `unstable_transformImportMeta`. ([#36074](https://github.com/expo/expo/pull/36074) by [@kudo](https://github.com/kudo))
 
 ## 13.1.2 — 2025-04-11

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Change registerWebModule to work with minified classes. ([#35946](https://github.com/expo/expo/pull/35946) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 2.3.4 — 2025-04-11
+
+### 🐛 Bug fixes
+
+- Change registerWebModule to work with minified classes. ([#35946](https://github.com/expo/expo/pull/35946) by [@aleqsio](https://github.com/aleqsio))
 
 ## 2.3.3 — 2025-04-11
 
