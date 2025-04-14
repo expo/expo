@@ -145,7 +145,7 @@ object UpdatesUtils {
   }
 
   /**
-   * Create an asset filename in file system (files are used to save in `.expo-internal` directory)
+   * Create an asset filename in file system (files are saved in the `.expo-internal` directory)
    */
   fun createFilenameForAsset(asset: AssetEntity): String {
     val fileExtension = asset.getFileExtension()

@@ -70,8 +70,11 @@ class AssetEntity(@field:ColumnInfo(name = "key") var key: String?, var type: St
   var scales: Array<Float>? = null
 
   internal fun getFileExtension(): String {
-    return this.type?.let {
-      if (it.startsWith(".")) it else ".$it"
-    } ?: ""
+    val type = this.type ?: return ""
+    return if (type.startsWith(".")) {
+      type
+    } else {
+      ".$it"
+    }
   }
 }

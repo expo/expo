@@ -41,13 +41,11 @@ internal object AndroidResourceAssetUtils {
   /**
    * Check a given file name is existed in Android embedded assets
    */
-  fun isAndroidAssetExisted(context: Context, name: String): Boolean {
-    return try {
-      context.assets.open(name).close()
-      true
-    } catch (e: IOException) {
-      false
-    }
+  fun isAndroidAssetExisted(context: Context, name: String) = try {
+    context.assets.open(name).close()
+    true
+  } catch (e: IOException) {
+    false
   }
 
   /**
@@ -63,17 +61,16 @@ internal object AndroidResourceAssetUtils {
   }
 
   /**
-   * Check if given filePath matches and is existed in Android embedded assets or resources
+   * Check if given filePath matches and exists in the Android embedded assets or resources
    */
   fun isAndroidAssetOrResourceExisted(context: Context, filePath: String): Boolean {
     val (embeddedAssetFilename, resourceFolder, resourceFilename) = parseAndroidResponseAssetFromPath(filePath)
-    if (embeddedAssetFilename != null) {
-      return isAndroidAssetExisted(context, embeddedAssetFilename)
-    }
-    if (resourceFolder != null && resourceFilename != null) {
-      return isAndroidResourceExisted(context, resourceFolder, resourceFilename)
-    }
-    return false
+    return when {
+        embeddedAssetFilename != null -> isAndroidAssetExisted(context, embeddedAssetFilename)
+        resourceFolder != null && resourceFilename != null -> isAndroidResourceExisted(context, resourceFolder, resourceFilename)
+        else -> {
+            false
+        }
   }
 
   /**
