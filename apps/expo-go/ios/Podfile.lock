@@ -26,7 +26,7 @@ PODS:
   - EXManifests/Tests (0.16.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.30.3):
+  - EXNotifications (0.30.4):
     - ExpoModulesCore
   - Expo (53.0.0-preview.7):
     - DoubleConversion
@@ -270,7 +270,7 @@ PODS:
   - EXTaskManager (13.1.3):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.28.4):
+  - EXUpdates (0.28.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -300,7 +300,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.28.4):
+  - EXUpdates/Tests (0.28.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3392,7 +3392,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 96fe8e11fc4e243db06df7b7f198796fb26fbf24
-  EXNotifications: 05f3e47030700292614dd0922e2573f4aea71e8a
+  EXNotifications: 5e4c23cfc1ab5b86e75ec9255f1849ac95a8bd1d
   Expo: 484fcc97508bd7651f66d9ce5a18a7dfcf93eeb5
   ExpoAppleAuthentication: b1b48e4b0b84699f2c38b7210a3c9b0fef4b301f
   ExpoAsset: 6ed36a13e3817a85b0991032ac44d69bb41297c6
@@ -3449,7 +3449,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 808186d4bff006938ec6f18edd0fd44ff16443b6
   EXStructuredHeaders: 32bec6771c2db18c4cd47cecae530d1d06cdf972
   EXTaskManager: cb0885162e1ce32b49169fc9009bc4fab962b602
-  EXUpdates: 26b6c104f7677e24599cfb95185399595c8c8467
+  EXUpdates: 2c752bd39c61f3bcff4f63926be4bd907eae9baa
   EXUpdatesInterface: 64f35449b8ef89ce08cdd8952a4d119b5de6821d
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 758fbc1be5fb7ce700b23160033d82e574c2b6b7

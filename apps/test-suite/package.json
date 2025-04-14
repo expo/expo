@@ -38,7 +38,7 @@
     "expo-location": "~18.1.2",
     "expo-media-library": "~17.1.2",
     "expo-network": "~7.1.3",
-    "expo-notifications": "~0.30.3",
+    "expo-notifications": "~0.30.4",
     "expo-secure-store": "~14.2.1",
     "expo-speech": "~13.1.4",
     "expo-sqlite": "~15.2.5",
