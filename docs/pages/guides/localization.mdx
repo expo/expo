@@ -273,7 +273,7 @@ import { View } from 'react-native';
 import { getLocales } from 'expo-localization';
 // ...
 
-return <View dir={getLocales()[0].textDirection || 'ltr'}>//...</View>;
+return <View dir={getLocales()[0].textDirection || 'ltr'}>...</View>;
 ```
 
 > **warning** `textDirection` is not available on Firefox and older browser versions. [Detect it manually](https://stackoverflow.com/a/15726039) if needed.
