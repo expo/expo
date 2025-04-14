@@ -1,3 +1,5 @@
+import type { default as AssetSourceResolver } from 'react-native/Libraries/Image/AssetSourceResolver';
+
 import { Asset, ANDROID_EMBEDDED_URL_BASE_RESOURCE } from './Asset';
 import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource, { setCustomSourceTransformer } from './resolveAssetSource';
@@ -12,7 +14,12 @@ if (IS_ENV_WITH_LOCAL_ASSETS) {
       if ('fileHashes' in resolver.asset && resolver.asset.fileHashes) {
         const asset = Asset.fromMetadata(resolver.asset);
         if (asset.uri.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
-          return resolver.resourceIdentifierWithoutScale();
+          // TODO(@kitten): See https://github.com/expo/expo/commit/ec940b57a87d99ab4f1d06d87126e662c3f04f04#r155340943
+          // It's unclear whether this is sound since this may be our own AssetSourceResolver, which doesn't have this method
+          // Please compare `AssetSourceResolver` type from `react-native/Libraries/Image/AssetSourceResolver` against `./AssetSourceResolver`
+          return (
+            resolver as unknown as AssetSourceResolver
+          ).resourceIdentifierWithoutScale() as any;
         }
         return resolver.fromSource(asset.downloaded ? asset.localUri! : asset.uri);
       } else {
