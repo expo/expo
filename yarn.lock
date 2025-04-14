@@ -12934,10 +12934,10 @@ react-native-dropdown-picker@^5.3.0:
   resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.2.tgz#3d17de3d8a84cb8e74a2ffda6be417d287245b81"
   integrity sha512-cZBPyN+k52jA9XguFnKoF5tLf31z6gjZ8GijO/pfVNSSEtPwZ14UTUrr87JiiOnMh5K/O2kRzZ/jZN8D0MmUMA==
 
-react-native-edge-to-edge@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/react-native-edge-to-edge/-/react-native-edge-to-edge-1.5.1.tgz#2cfb281155a6a83a2c53e1a2f30078fe95ee6638"
-  integrity sha512-x9ldVAgSzxlgudxd8FDbl5fYJjXiFBpwaiTBvmUY3u6Tl7Own5DFSH6UUEbS57NWVYGJftvnsNyuNH/6c9Kvrg==
+react-native-edge-to-edge@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-edge-to-edge/-/react-native-edge-to-edge-1.6.0.tgz#2ba63b941704a7f713e298185c26cde4d9e4b973"
+  integrity sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==
 
 react-native-fade-in-image@^1.6.1:
   version "1.6.1"
