@@ -40,7 +40,7 @@ class MockFailedCheck implements DoctorCheck {
   description = 'Mock failed check';
   sdkVersionRange = '*';
   runAsync = jest.fn(() =>
-    Promise.resolve({ isSuccessful: false, issues: ['issue'], advice: 'advice' })
+    Promise.resolve({ isSuccessful: false, issues: ['issue'], advice: ['advice'] })
   );
 }
 
@@ -287,10 +287,10 @@ describe(printFailedCheckIssueAndAdvice, () => {
   it(`Prints advice when check fails if available`, () => {
     jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
-      result: { isSuccessful: false, issues: ['issue1'], advice: 'advice' },
+      result: { isSuccessful: false, issues: ['issue1'], advice: ['advice'] },
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('advice');
+    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('Advice:');
   });
 });

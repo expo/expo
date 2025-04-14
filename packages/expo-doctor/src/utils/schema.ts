@@ -4,10 +4,8 @@
 import { ExpoConfig } from '@expo/config';
 import Schemer, { SchemerError, ValidationError } from '@expo/schemer';
 
-import { learnMore } from './TerminalLink';
-
 function formatValidationError(validationError: ValidationError) {
-  return `\n • ${validationError.fieldPath ? 'Field: ' + validationError.fieldPath + ' - ' : ''}${
+  return `\n• ${validationError.fieldPath ? 'Field: ' + validationError.fieldPath + ' - ' : ''}${
     validationError.message
   }.`;
 }
@@ -32,11 +30,9 @@ export async function validateWithSchemaAsync(
     await validator.validateSchemaAsync(exp);
   } catch (e: any) {
     if (e instanceof SchemerError) {
-      schemaErrorMessage = `Error: Problem${
+      schemaErrorMessage = `Error${
         e.errors.length > 1 ? 's' : ''
-      } validating fields in ${configName}. ${learnMore(
-        'https://docs.expo.dev/workflow/configuration/'
-      )}`;
+      } validating fields in ${configName}.`;
       schemaErrorMessage += e.errors.map(formatValidationError).join('');
     }
   }
@@ -46,9 +42,9 @@ export async function validateWithSchemaAsync(
       await validator.validateAssetsAsync(exp);
     } catch (e: any) {
       if (e instanceof SchemerError) {
-        assetsErrorMessage = `Error: Problem${
+        assetsErrorMessage = `Error${
           e.errors.length > 1 ? '' : 's'
-        } validating asset fields in ${configName}. ${learnMore('https://docs.expo.dev/')}`;
+        } validating asset fields in ${configName}.}`;
         assetsErrorMessage += e.errors.map(formatValidationError).join('');
       }
     }
