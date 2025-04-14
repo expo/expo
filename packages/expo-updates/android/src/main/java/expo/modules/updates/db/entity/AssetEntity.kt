@@ -74,7 +74,7 @@ class AssetEntity(@field:ColumnInfo(name = "key") var key: String?, var type: St
     return if (type.startsWith(".")) {
       type
     } else {
-      ".$it"
+      ".$type"
     }
   }
 }

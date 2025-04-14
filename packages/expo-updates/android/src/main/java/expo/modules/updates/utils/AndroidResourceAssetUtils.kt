@@ -66,17 +66,27 @@ internal object AndroidResourceAssetUtils {
   fun isAndroidAssetOrResourceExisted(context: Context, filePath: String): Boolean {
     val (embeddedAssetFilename, resourceFolder, resourceFilename) = parseAndroidResponseAssetFromPath(filePath)
     return when {
-        embeddedAssetFilename != null -> isAndroidAssetExisted(context, embeddedAssetFilename)
-        resourceFolder != null && resourceFilename != null -> isAndroidResourceExisted(context, resourceFolder, resourceFilename)
-        else -> {
-            false
-        }
+      embeddedAssetFilename != null -> isAndroidAssetExisted(context, embeddedAssetFilename)
+      resourceFolder != null && resourceFilename != null -> isAndroidResourceExisted(context, resourceFolder, resourceFilename)
+      else -> {
+        false
+      }
+    }
   }
 
   /**
-   * Parse a file path to return as Triple<embeddedAssetFilename, resourcesFolder, resourcesFilename>
+   * Data structure for Android embedded asset and resource
    */
-  fun parseAndroidResponseAssetFromPath(filePath: String): Triple<String?, String?, String?> {
+  data class AndroidResourceAsset(
+    val embeddedAssetFilename: String?,
+    val resourcesFolder: String?,
+    val resourceFilename: String?
+  )
+
+  /**
+   * Parse a file path and return as `AndroidResourceAsset`
+   */
+  fun parseAndroidResponseAssetFromPath(filePath: String): AndroidResourceAsset {
     if (filePath.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
       val uri = filePath.toUri()
       val pathSegments = uri.pathSegments
@@ -87,13 +97,13 @@ internal object AndroidResourceAssetUtils {
       val resourcesFolder = pathSegments[1].substringBefore('-')
       // Strip file extension for resource name
       val resourceFilename = pathSegments[2].substringBeforeLast('.', pathSegments[2])
-      return Triple(null, resourcesFolder, resourceFilename)
+      return AndroidResourceAsset(null, resourcesFolder, resourceFilename)
     }
     if (filePath.startsWith(ANDROID_EMBEDDED_URL_BASE_ASSET)) {
       val embeddedAssetFilename = filePath.substringAfterLast('/')
-      return Triple(embeddedAssetFilename, null, null)
+      return AndroidResourceAsset(embeddedAssetFilename, null, null)
     }
-    return Triple(null, null, null)
+    return AndroidResourceAsset(null, null, null)
   }
 
   private fun getDrawableSuffix(scale: Float?): String {
