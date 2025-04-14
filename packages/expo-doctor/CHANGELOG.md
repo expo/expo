@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Formatting improvements. ([#36151](https://github.com/expo/expo/pull/36151) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 1.12.9 — 2025-04-08
 
 ### 💡 Others
