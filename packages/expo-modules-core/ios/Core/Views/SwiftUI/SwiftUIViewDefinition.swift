@@ -45,8 +45,9 @@ public extension ExpoSwiftUIView {
       }
       return AnyView(
         Group {
-          if let hostingView = child as? ExpoSwiftUI.UIViewHost {
-            let content = hostingView.childView
+          if let hostingView = child as? ExpoSwiftUI.UIViewHost,
+            let hostingUIView = hostingView.view as? (any ExpoSwiftUI.AnyHostingView) {
+            let content = hostingUIView.getContentView()
             transform(
               AnyView(
                 content
