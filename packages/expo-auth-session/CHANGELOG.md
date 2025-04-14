@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `clientId` not being asserted properly if it's `undefined` in `providers/Facebook`, like it is for `providers/Google`
-
 ### 💡 Others
+
+## 6.1.2 — 2025-04-14
+
+### 🐛 Bug fixes
+
+- Fix `clientId` not being asserted properly if it's `undefined` in `providers/Facebook`, like it is for `providers/Google`
 
 ## 6.1.1 — 2025-04-09
 

@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/probe-image-size": "^7.2.4",
-    "expo-module-scripts": "^4.1.1"
+    "expo-module-scripts": "^4.1.2"
   },
   "publishConfig": {
     "access": "public"

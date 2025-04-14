@@ -10,9 +10,9 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
-    "expo": "~53.0.0-preview.5",
-    "expo-linking": "~7.1.1",
-    "expo-router": "^5.0.2-preview.3",
+    "expo": "~53.0.0-preview.6",
+    "expo-linking": "~7.1.2",
+    "expo-router": "^5.0.2-preview.4",
     "expo-splash-screen": "~0.30.2",
     "react": "19.0.0",
     "react-native": "0.79.0",
