@@ -801,119 +801,128 @@ describe('JS API tests', () => {
 // These tests all make use of the additional UpdatesE2ETestModule, which provides methods for
 // clearing and reading the .expo-internal folder.
 describe('Asset deletion recovery tests', () => {
+  const shouldCopyEmbeddedAssets = platform !== 'android';
+  const itWhenCopyEmbeddedAssets = shouldCopyEmbeddedAssets ? it : xit;
+
   afterEach(async () => {
     await device.uninstallApp();
     Server.stop();
   });
 
-  it('embedded assets deleted from internal storage should be re-copied', async () => {
-    // Simplest scenario; only one update (embedded) is loaded, then assets are cleared from
-    // internal storage. The app is then relaunched with the same embedded update.
-    // DatabaseLauncher should copy all the missing assets and run the update as normal.
+  itWhenCopyEmbeddedAssets(
+    'embedded assets deleted from internal storage should be re-copied',
+    async () => {
+      // Simplest scenario; only one update (embedded) is loaded, then assets are cleared from
+      // internal storage. The app is then relaunched with the same embedded update.
+      // DatabaseLauncher should copy all the missing assets and run the update as normal.
 
-    Server.start(Update.serverPort, protocolVersion);
+      Server.start(Update.serverPort, protocolVersion);
 
-    // Install the app and immediately send it a message to clear internal storage. Verify storage
-    // has been cleared properly.
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
+      // Install the app and immediately send it a message to clear internal storage. Verify storage
+      // has been cleared properly.
+      await device.installApp();
+      await device.launchApp({
+        newInstance: true,
+      });
+      await waitForAppToBecomeVisible();
 
-    // Check that we are running the embedded update
-    const isEmbedded = await testElementValueAsync('isEmbeddedLaunch');
-    jestExpect(isEmbedded).toEqual('true');
+      // Check that we are running the embedded update
+      const isEmbedded = await testElementValueAsync('isEmbeddedLaunch');
+      jestExpect(isEmbedded).toEqual('true');
 
-    // Check that asset files are present
-    let numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBeGreaterThan(2);
+      // Check that asset files are present
+      let numAssets = await checkNumAssetsAsync();
+      jestExpect(numAssets).toBeGreaterThan(2);
 
-    // Get current update ID
-    const updateID = await testElementValueAsync('updateID');
+      // Get current update ID
+      const updateID = await testElementValueAsync('updateID');
 
-    // Clear assets and check that number of assets is now 0
-    await clearNumAssetsAsync();
-    numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(0);
+      // Clear assets and check that number of assets is now 0
+      await clearNumAssetsAsync();
+      numAssets = await checkNumAssetsAsync();
+      jestExpect(numAssets).toBe(0);
 
-    // Stop and then restart app.
-    await device.terminateApp();
-    await device.launchApp();
-    await waitForAppToBecomeVisible();
+      // Stop and then restart app.
+      await device.terminateApp();
+      await device.launchApp();
+      await waitForAppToBecomeVisible();
 
-    // Check that assets are restored from DB
-    numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBeGreaterThan(2);
+      // Check that assets are restored from DB
+      numAssets = await checkNumAssetsAsync();
+      jestExpect(numAssets).toBeGreaterThan(2);
 
-    // Check that update ID is the same
-    const updateID2 = await testElementValueAsync('updateID');
-    jestExpect(updateID2).toEqual(updateID);
+      // Check that update ID is the same
+      const updateID2 = await testElementValueAsync('updateID');
+      jestExpect(updateID2).toEqual(updateID);
 
-    // Check for log messages
-    const logEntries = await readLogEntriesAsync();
-    console.warn(
-      'Total number of log entries = ' +
-        logEntries.length +
-        '\n' +
-        JSON.stringify(logEntries, null, 2)
-    );
-    jestExpect(logEntries.length).toBeGreaterThan(0);
-  });
+      // Check for log messages
+      const logEntries = await readLogEntriesAsync();
+      console.warn(
+        'Total number of log entries = ' +
+          logEntries.length +
+          '\n' +
+          JSON.stringify(logEntries, null, 2)
+      );
+      jestExpect(logEntries.length).toBeGreaterThan(0);
+    }
+  );
 
-  it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {
-    // This test ensures that when trying to launch a NEW update that includes some OLD assets we
-    // already have (according to SQLite), even if those assets are actually missing from disk
-    // (but included in the embedded update) DatabaseLauncher can recover.
-    //
-    // To create this scenario, we load a single (embedded) update, then clear assets from
-    // internal storage. Then we install a NEW build with a NEW embedded update but that includes
-    // some of the same assets. When we launch this new build, DatabaseLauncher should still copy
-    // the missing assets and run the update as normal.
+  itWhenCopyEmbeddedAssets(
+    'embedded assets deleted from internal storage should be re-copied from a new embedded update',
+    async () => {
+      // This test ensures that when trying to launch a NEW update that includes some OLD assets we
+      // already have (according to SQLite), even if those assets are actually missing from disk
+      // (but included in the embedded update) DatabaseLauncher can recover.
+      //
+      // To create this scenario, we load a single (embedded) update, then clear assets from
+      // internal storage. Then we install a NEW build with a NEW embedded update but that includes
+      // some of the same assets. When we launch this new build, DatabaseLauncher should still copy
+      // the missing assets and run the update as normal.
 
-    Server.start(Update.serverPort, protocolVersion);
+      Server.start(Update.serverPort, protocolVersion);
 
-    // Install the app and immediately send it a message to clear internal storage. Verify storage
-    // has been cleared properly.
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
+      // Install the app and immediately send it a message to clear internal storage. Verify storage
+      // has been cleared properly.
+      await device.installApp();
+      await device.launchApp({
+        newInstance: true,
+      });
+      await waitForAppToBecomeVisible();
 
-    // Save the number of assets in storage
-    const numAssetsSaved = await checkNumAssetsAsync();
-    jestExpect(numAssetsSaved).toBeGreaterThan(0);
+      // Save the number of assets in storage
+      const numAssetsSaved = await checkNumAssetsAsync();
+      jestExpect(numAssetsSaved).toBeGreaterThan(0);
 
-    // Clear assets and check that number of assets is now 0
-    await clearNumAssetsAsync();
-    let numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(0);
+      // Clear assets and check that number of assets is now 0
+      await clearNumAssetsAsync();
+      let numAssets = await checkNumAssetsAsync();
+      jestExpect(numAssets).toBe(0);
 
-    // Stop the app and install a newer build on top of it. The newer build has a different
-    // embedded update (different updateId) but still includes some of the same assets. Now SQLite
-    // thinks we already have these assets, but we actually just deleted them from internal
-    // storage.
-    await device.terminateApp();
-    await device.installApp();
+      // Stop the app and install a newer build on top of it. The newer build has a different
+      // embedded update (different updateId) but still includes some of the same assets. Now SQLite
+      // thinks we already have these assets, but we actually just deleted them from internal
+      // storage.
+      await device.terminateApp();
+      await device.installApp();
 
-    // Start the new build, and immediately send it a message to read internal storage.
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
+      // Start the new build, and immediately send it a message to read internal storage.
+      await device.launchApp({
+        newInstance: true,
+      });
+      await waitForAppToBecomeVisible();
 
-    // Verify all the assets that were deleted have been re-copied back into internal storage, and
-    // that we are running a DIFFERENT update than before -- otherwise this test is no different
-    // from the previous one.
-    numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toEqual(numAssetsSaved);
+      // Verify all the assets that were deleted have been re-copied back into internal storage, and
+      // that we are running a DIFFERENT update than before -- otherwise this test is no different
+      // from the previous one.
+      numAssets = await checkNumAssetsAsync();
+      jestExpect(numAssets).toEqual(numAssetsSaved);
 
-    // TODO: develop a way to modify the embedded update used by the build in a Detox test environment,
-    // so that we can actually do this test with a real modified update. Until then, disable the line below
-    // to allow the test to pass.
-    //jestExpect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
-  });
+      // TODO: develop a way to modify the embedded update used by the build in a Detox test environment,
+      // so that we can actually do this test with a real modified update. Until then, disable the line below
+      // to allow the test to pass.
+      //jestExpect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
+    }
+  );
 
   it('assets in a downloaded update deleted from internal storage should be re-copied or re-downloaded', async () => {
     // This test ensures we can (or at least try to) recover missing assets that originated from a
@@ -951,6 +960,24 @@ describe('Asset deletion recovery tests', () => {
         };
       })
     );
+
+    // Append a new asset that is not embedded and should be re-downloaded
+    async function createNewAssetAsync(file: string = 'patrick-untersee-XJjsuuDwWas-unsplash.jpg') {
+      const newAsset = path.join(__dirname, 'assets', file);
+      const filename = path.basename(newAsset);
+      const mimeType = 'image/jpg';
+      const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
+      const hash = await Update.copyAssetToStaticFolder(newAsset, filename);
+      return {
+        hash,
+        key,
+        contentType: mimeType,
+        fileExtension: '.jpg',
+        url: `http://${Update.serverHost}:${Update.serverPort}/static/${filename}`,
+      };
+    }
+    assets.push(await createNewAssetAsync());
+
     const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       bundleHash,
@@ -969,13 +996,14 @@ describe('Asset deletion recovery tests', () => {
 
     // give the app time to load the new update in the background
     await waitForExpectationAsync(
-      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(2),
       {
         timeout: 10000,
         interval: 1000,
       }
     );
-    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
+    // only the bundle and the new asset should be requested
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(2);
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to
     // clear internal storage while also verifying the new update is running.
@@ -1004,13 +1032,15 @@ describe('Asset deletion recovery tests', () => {
     // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
     // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
+    const expectedNumAssets = shouldCopyEmbeddedAssets ? manifest.assets.length + 1 : 2;
     if (platform === 'ios') {
-      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+      jestExpect(numAssets).toBe(expectedNumAssets);
     } else {
-      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+      jestExpect(numAssets).toBeGreaterThanOrEqual(expectedNumAssets);
     }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
-    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
+    // should have re-downloaded only the JS bundle and the new asset; the rest should have been copied from the app binary.
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(2);
   });
 });
