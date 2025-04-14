@@ -1,9 +1,9 @@
 import { ReadableStream, WritableStream } from 'web-streams-polyfill';
 
 import ExpoFileSystem from './ExpoFileSystem';
+import type { DownloadOptions } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
-import type { DownloadOptions } from './ExpoFileSystem.types';
 
 export class Paths extends PathUtilities {
   /**
