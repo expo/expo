@@ -33,7 +33,7 @@ const additionalProjectProps = {
 class MockSuccessfulCheck implements DoctorCheck {
   description = 'Mock successful check';
   sdkVersionRange = '*';
-  runAsync = jest.fn(() => Promise.resolve({ isSuccessful: true, issues: [], advice: '' }));
+  runAsync = jest.fn(() => Promise.resolve({ isSuccessful: true, issues: [], advice: [''] }));
 }
 
 class MockFailedCheck implements DoctorCheck {
@@ -174,7 +174,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: true, issues: [], advice: '' },
+        result: { isSuccessful: true, issues: [], advice: [''] },
         check: new MockSuccessfulCheck(),
         duration: 0,
       },
@@ -187,7 +187,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: false, issues: [], advice: '' },
+        result: { isSuccessful: false, issues: [], advice: [''] },
         check: new MockFailedCheck(),
         duration: 0,
       },
@@ -200,7 +200,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: true, issues: [], advice: '' },
+        result: { isSuccessful: true, issues: [], advice: [''] },
         check: new MockSuccessfulCheck(),
         duration: 0,
       },
@@ -215,7 +215,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: false, issues: [], advice: '' },
+        result: { isSuccessful: false, issues: [], advice: [''] },
         check: new MockFailedCheck(),
         duration: 0,
       },
@@ -231,7 +231,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     jest.mocked(Log.exception).mockReset();
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: false, issues: [], advice: '' },
+        result: { isSuccessful: false, issues: [], advice: [''] },
         check: new MockFailedCheck(),
         duration: 0,
         error: new Error('Some error'),
@@ -252,7 +252,7 @@ describe(printCheckResultSummaryOnComplete, () => {
     error.cause.toString = () => 'ENOTFOUND';
     printCheckResultSummaryOnComplete(
       {
-        result: { isSuccessful: false, issues: [], advice: '' },
+        result: { isSuccessful: false, issues: [], advice: [''] },
         check: new MockFailedCheck(),
         duration: 0,
         error,
@@ -267,7 +267,7 @@ describe(printFailedCheckIssueAndAdvice, () => {
   it(`Does not print when check is successful`, () => {
     jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
-      result: { isSuccessful: true, issues: [], advice: '' },
+      result: { isSuccessful: true, issues: [], advice: [''] },
       check: new MockSuccessfulCheck(),
       duration: 0,
     });
@@ -277,7 +277,7 @@ describe(printFailedCheckIssueAndAdvice, () => {
   it(`Prints issues when check fails`, () => {
     jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
-      result: { isSuccessful: false, issues: ['issue1', 'issue2'], advice: '' },
+      result: { isSuccessful: false, issues: ['issue1', 'issue2'], advice: [''] },
       check: new MockFailedCheck(),
       duration: 0,
     });
