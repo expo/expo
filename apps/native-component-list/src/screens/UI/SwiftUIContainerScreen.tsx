@@ -71,9 +71,9 @@ export default function SwiftUIContainerScreen() {
             <SwiftUI.Text>H1V1</SwiftUI.Text>
           </SwiftUI.HStack>
 
-          {/* NOTE: To host UIView inside SwiftUI, we may need fixed size and `collapsable={false}` */}
+          {/* NOTE: To host UIView inside SwiftUI, we may need fixed size */}
           <SwiftUI.HStack frame={{ width: 300, height: 100 }}>
-            <View style={[styles.uiView, { width: 300, height: 100 }]} collapsable={false}>
+            <View style={[styles.uiView, { width: 300, height: 100 }]}>
               <Text style={styles.uiViewText}>Text in UIView</Text>
             </View>
           </SwiftUI.HStack>
