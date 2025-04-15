@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Exclude `@expo/*` packages from the New Architecture compatibility check.
+
 ## 0.24.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
