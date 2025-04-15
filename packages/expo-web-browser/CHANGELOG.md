@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `openBrowserAsync` doesn't surface exceptions.
+
 ### 💡 Others
 
 ## 14.1.3 — 2025-04-14
