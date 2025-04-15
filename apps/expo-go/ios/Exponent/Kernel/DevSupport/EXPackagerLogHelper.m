@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, EXLogLevel) {
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(nullable NSString *)reason wasClean:(BOOL)wasClean {
   _socket = nil;
-  _connected = false;
+  _connected = NO;
 }
 
 #pragma Internal methods
@@ -127,7 +127,7 @@ typedef NS_ENUM(NSInteger, EXLogLevel) {
   // Close socket
   [_socket close];
   _socket = nil;
-  _connected = false;
+  _connected = NO;
   
   // Call completion handler
   if (_onComplete) {
