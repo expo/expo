@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Exported missing config plugin.
+- Exported missing config plugin. ([#36177](https://github.com/expo/expo/pull/36177) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
