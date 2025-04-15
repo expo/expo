@@ -7,7 +7,7 @@ group = 'host.exp.exponent'
 version = '14.1.2'
 
 android {
-  namespace "expo.modules.haptics"
+  namespace "expo.configplugins.branch"
   defaultConfig {
     versionCode 16
     versionName '14.1.2'
