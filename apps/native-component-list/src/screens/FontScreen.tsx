@@ -128,7 +128,7 @@ export default function FontScreen() {
             </View>
           </View>
         </Section>
-        <Section title="toImageAsync">
+        <Section title="renderToImageAsync">
           <Button
             title="ABCD Inter-ThinItalic"
             onPress={() =>

@@ -9,10 +9,10 @@ public final class FontUtilsModule: Module {
     AsyncFunction("renderToImageAsync") { (glyphs: String, options: RenderToImageOptions, promise: Promise) throws in
       let font: UIFont
       if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
-         let uiFont = UIFont(name: fontName, size: CGFloat(options.size)) {
-          font = uiFont
+        let uiFont = UIFont(name: fontName, size: CGFloat(options.size)) {
+        font = uiFont
       } else {
-          font = UIFont.systemFont(ofSize: CGFloat(options.size))
+        font = UIFont.systemFont(ofSize: CGFloat(options.size))
       }
 
       let attributedString = NSAttributedString(
