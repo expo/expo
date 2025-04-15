@@ -60,12 +60,10 @@ type AudioInstance = number | HTMLMediaElement | null;
 // @docsMissing
 export type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 
-declare global {
-  interface Global {
-    __EXAV_setOnAudioSampleReceivedCallback:
-      | ((key: number, callback: AudioSampleCallback) => void)
-      | undefined;
-  }
+declare namespace globalThis {
+  let __EXAV_setOnAudioSampleReceivedCallback:
+    | ((key: number, callback: AudioSampleCallback) => void)
+    | undefined;
 }
 
 // @needsAudit

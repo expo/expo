@@ -21,6 +21,9 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
+        // TODO(@kitten): The types indicates that this is incorrect.
+        // Please check whether this is correct!
+        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
@@ -65,8 +68,8 @@ async function handleRequestPermissionsAsync() {
             granted: true,
         };
     }
-    catch ({ message }) {
-        return handleGetUserMediaError({ message });
+    catch (error) {
+        return handleGetUserMediaError(error.message);
     }
 }
 async function handlePermissionsQueryAsync(query) {
@@ -212,8 +215,8 @@ export default {
                 granted: true,
             };
         }
-        catch ({ message }) {
-            return handleGetUserMediaError({ message });
+        catch (error) {
+            return handleGetUserMediaError(error.message);
         }
     },
 };

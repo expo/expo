@@ -4,7 +4,7 @@ export function applyRequiredScopes(scopes: string[] = [], requiredScopes: strin
   return [...new Set([...scopes, ...requiredScopes])];
 }
 
-export function invariantClientId(idName: string, value: any, providerName: string) {
+export function invariantClientId(idName: string, value: any, providerName: string): asserts value {
   if (typeof value === 'undefined')
     // TODO(Bacon): Add learn more
     throw new Error(

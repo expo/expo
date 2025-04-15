@@ -5,6 +5,7 @@ import { ViewProps } from '../primitives/View';
 
 function createView(nativeProps: ViewProps & { __element: string }): ComponentType<ViewProps> {
   return forwardRef((props: ViewProps, ref) => {
+    // @ts-expect-error - View and ViewProps have no properties in common
     return <View {...nativeProps} {...props} ref={ref} />;
   }) as ComponentType<ViewProps>;
 }

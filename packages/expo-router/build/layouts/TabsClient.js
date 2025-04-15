@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -25,6 +25,7 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                 options: {
                     ...options,
                     tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+                    // @ts-expect-error: TODO(@kitten): This isn't properly typed
                     tabBarButton: (props) => {
                         if (href == null) {
                             return null;

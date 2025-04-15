@@ -115,7 +115,7 @@ export function canDismiss(this: RouterStore): boolean {
 
 export function setParams(
   this: RouterStore,
-  params: Record<string, string | number | (string | number)[]> = {}
+  params: Record<string, undefined | string | number | (string | number)[]> = {}
 ) {
   if (emitDomSetParams(params)) {
     return;
@@ -246,6 +246,7 @@ function getNavigateAction(
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
+      // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
       (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
 
     if (didActionAndCurrentStateDiverge) {

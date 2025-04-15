@@ -198,6 +198,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||
+            // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
             (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
         if (didActionAndCurrentStateDiverge) {
             break;

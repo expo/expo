@@ -54,7 +54,7 @@ export function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array) {
   }
 
   // Encode using the DCT into DC (constant) and normalized AC (varying) terms
-  const encodeChannel = (channel, nx, ny) => {
+  const encodeChannel = (channel: number[], nx: number, ny: number) => {
     let dc = 0;
     const ac: number[] = [];
     let scale = 0;
@@ -142,7 +142,7 @@ export function thumbHashToRGBA(hash: Uint8Array) {
   // Read the varying factors (boost saturation by 1.25x to compensate for quantization)
   const ac_start = hasAlpha ? 6 : 5;
   let ac_index = 0;
-  const decodeChannel = (nx, ny, scale) => {
+  const decodeChannel = (nx: number, ny: number, scale: number) => {
     const ac: number[] = [];
     for (let cy = 0; cy < ny; cy++)
       for (let cx = cy ? 0 : 1; cx * ny < nx * (ny - cy); cx++)
@@ -154,7 +154,7 @@ export function thumbHashToRGBA(hash: Uint8Array) {
   const l_ac = decodeChannel(lx, ly, l_scale);
   const p_ac = decodeChannel(3, 3, p_scale * 1.25);
   const q_ac = decodeChannel(3, 3, q_scale * 1.25);
-  const a_ac = hasAlpha && decodeChannel(5, 5, a_scale);
+  const a_ac = hasAlpha ? decodeChannel(5, 5, a_scale) : null;
 
   // Decode using the DCT into RGB
   const ratio = thumbHashToApproximateAspectRatio(hash);
@@ -194,7 +194,7 @@ export function thumbHashToRGBA(hash: Uint8Array) {
       if (hasAlpha)
         for (let cy = 0, j = 0; cy < 5; cy++)
           for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx < 5 - cy; cx++, j++)
-            a += a_ac[j] * fx[cx] * fy2;
+            a += a_ac![j] * fx[cx] * fy2;
 
       // Convert to RGB
       const b = l - (2 / 3) * p;

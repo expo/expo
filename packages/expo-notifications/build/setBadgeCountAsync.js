@@ -14,6 +14,7 @@ export default async function setBadgeCountAsync(badgeCount, options) {
     if (!BadgeModule.setBadgeCountAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'setBadgeCountAsync');
     }
-    return await BadgeModule.setBadgeCountAsync(badgeCount, options?.[Platform.OS]);
+    const platformOptions = options?.[Platform.OS];
+    return await BadgeModule.setBadgeCountAsync(badgeCount, platformOptions);
 }
 //# sourceMappingURL=setBadgeCountAsync.js.map

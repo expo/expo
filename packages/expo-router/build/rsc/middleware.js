@@ -35,7 +35,7 @@ async function getServerActionManifest(distFolder, platform) {
     const filePath = `../../rsc/${platform}/action-manifest.js`;
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
-async function getSSRManifest(distFolder, platform) {
+async function getSSRManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }

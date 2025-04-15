@@ -42,6 +42,7 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     pausePreview(): Promise<void>;
     static ConversionTables: {
+        [prop: string]: unknown;
         type: Record<keyof import("./Camera.types").CameraType, import("./Camera.types").CameraNativeProps["facing"]>;
         flash: Record<keyof import("./Camera.types").FlashMode, import("./Camera.types").CameraNativeProps["flashMode"]>;
     };
