@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
@@ -39,6 +40,7 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
+import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
@@ -903,6 +905,13 @@ class Kernel : KernelInterface() {
       ExceptionUtils.exceptionToErrorHeader(exception),
       ExceptionUtils.exceptionToCanRetry(exception)
     )
+    if (exception is ManifestException) {
+      ExponentPackageLogger.send(
+        exception.manifestUrl.toUri(),
+        ExceptionUtils.exceptionToPlainText(exception),
+        ExponentPackageLogger.LogLevel.ERROR
+      )
+    }
   }
 
   // TODO: probably need to call this from other places.

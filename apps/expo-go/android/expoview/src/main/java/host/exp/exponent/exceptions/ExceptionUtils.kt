@@ -61,11 +61,26 @@ object ExceptionUtils {
     return null
   }
 
+  fun exceptionToPlainText(exception: Exception): String {
+    if (exception is ManifestException) {
+      return "${exceptionToErrorHeader(exception)}\n\n${replaceHtml(exception.errorMessage)
+        }\n\nHow to fix this error:\n${replaceHtml(exception.fixInstructions)}"
+    }
+    return exception.toString()
+  }
+
   fun exceptionToCanRetry(exception: Exception): Boolean {
     if (exception is ManifestException) {
       return exception.canRetry
     }
     return true
+  }
+
+  private fun replaceHtml(string: String?): String {
+    return string
+      ?.replace("<br>", "\n")
+      ?.replace("<b>", "")
+      ?.replace("</b>", "") ?: ""
   }
 
   private fun getUserErrorMessage(exception: Exception?, context: Context): String? {
