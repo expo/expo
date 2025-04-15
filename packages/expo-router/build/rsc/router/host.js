@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -9,7 +10,15 @@
  */
 //// <reference types="react/canary" />
 'use client';
-"use strict";
+/**
+ * Copyright © 2024 650 Industries.
+ * Copyright © 2024 2023 Daishi Kato
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

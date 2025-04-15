@@ -72,7 +72,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   }
 
   // Temporary fallback for loading assets in Expo Go home
-  if (NativeModules.ExponentKernel) {
+  if (NativeModules['ExponentKernel']) {
     return { uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`, hash };
   }
 

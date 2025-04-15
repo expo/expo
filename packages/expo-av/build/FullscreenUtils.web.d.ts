@@ -1,3 +1,11 @@
+declare global {
+    interface Document {
+        fullscreenElement?: Element | null;
+        msFullscreenElement?: Element | null;
+        webkitFullscreenElement?: Element | null;
+        msExitFullscreen?(): void;
+    }
+}
 /**
  * Switches a video element into fullscreen.
  */

@@ -19,7 +19,8 @@ import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
 
-const _PICTURE_SAVED_CALLBACKS = {};
+const _PICTURE_SAVED_CALLBACKS: Record<number, CameraPictureOptions['onPictureSaved'] | undefined> =
+  {};
 
 let loggedRenderingChildrenWarning = false;
 let _GLOBAL_PICTURE_ID = 1;

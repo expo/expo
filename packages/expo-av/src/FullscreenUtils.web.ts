@@ -1,3 +1,12 @@
+declare global {
+  interface Document {
+    fullscreenElement?: Element | null;
+    msFullscreenElement?: Element | null;
+    webkitFullscreenElement?: Element | null;
+    msExitFullscreen?(): void;
+  }
+}
+
 /**
  * Detect if the browser supports the standard fullscreen API on the given
  * element:
@@ -6,18 +15,28 @@
 const supportsFullscreenAPI = (element: HTMLMediaElement): boolean =>
   'requestFullscreen' in element;
 
+interface WebkitFullscreenElement extends HTMLMediaElement {
+  webkitExitFullScreen?(): void;
+  webkitEnterFullScreen?(): void;
+}
+
 /**
  * Detect if the browser supports the non-standard webkit fullscreen API on the
  * given element (looking at you, Safari).
  */
-const supportsWebkitFullscreenAPI = (element: HTMLMediaElement): boolean =>
-  'webkitEnterFullScreen' in element;
+const supportsWebkitFullscreenAPI = (
+  element: HTMLMediaElement
+): element is WebkitFullscreenElement => 'webkitEnterFullScreen' in element;
+
+interface IEFullscreenElement extends HTMLMediaElement {
+  msRequestFullscreen?(): void;
+}
 
 /**
  * Detect if the browser supports the non-standard ms fullscreen API on the
  * given element (looking at you, IE11).
  */
-const supportsMsFullscreenAPI = (element: HTMLMediaElement): boolean =>
+const supportsMsFullscreenAPI = (element: HTMLMediaElement): element is IEFullscreenElement =>
   'msRequestFullscreen' in element;
 
 /**
@@ -53,7 +72,7 @@ const supportsEvent = (elementName: string, eventName: string): boolean => {
   // attribute as "function". See: https://stackoverflow.com/a/4562426/2747759
   const element = document.createElement(elementName);
   element.setAttribute('on' + eventName, 'return;');
-  return typeof element['on' + eventName] === 'function';
+  return typeof element[('on' + eventName) as keyof Element] === 'function';
 };
 
 /**

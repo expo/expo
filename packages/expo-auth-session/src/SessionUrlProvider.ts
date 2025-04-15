@@ -112,7 +112,7 @@ export class SessionUrlProvider {
     return undefined;
   }
 
-  private static warnIfAnonymous(id, url): void {
+  private static warnIfAnonymous(id: string, url: string): void {
     if (id.startsWith('@anonymous/')) {
       console.warn(
         `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`

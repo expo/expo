@@ -2,14 +2,14 @@ import { Platform } from 'expo-modules-core';
 
 import * as Localization from '../Localization';
 
-function validateString(result, allowEmpty = false) {
+function validateString(result: unknown, allowEmpty = false): asserts result is string {
   expect(typeof result).toBe('string');
   if (!allowEmpty) {
-    expect(result.length).toBeGreaterThan(0);
+    expect((result as string).length).toBeGreaterThan(0);
   }
 }
 
-function validateStringArray(result) {
+function validateStringArray(result: unknown): asserts result is string[] {
   expect(result).toBeDefined();
   expect(Array.isArray(result)).toBe(true);
 }

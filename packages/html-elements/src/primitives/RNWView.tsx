@@ -9,6 +9,7 @@
 import * as React from 'react';
 import StyleSheet from 'react-native-web/dist/exports/StyleSheet';
 import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext';
+import { ViewProps } from 'react-native-web/dist/exports/View/types';
 import createElement from 'react-native-web/dist/exports/createElement';
 import * as forwardedProps from 'react-native-web/dist/modules/forwardedProps';
 import pick from 'react-native-web/dist/modules/pick';
@@ -17,7 +18,7 @@ import { useLocaleContext, getLocaleDirection } from 'react-native-web/dist/modu
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 import usePlatformMethods from 'react-native-web/dist/modules/usePlatformMethods';
 import useResponderEvents from 'react-native-web/dist/modules/useResponderEvents';
-import { PlatformMethods, ViewProps } from 'react-native-web/dist/types';
+import { PlatformMethods } from 'react-native-web/dist/types';
 
 const forwardPropsList = Object.assign(
   {},
@@ -40,7 +41,10 @@ const forwardPropsList = Object.assign(
     pointerEvents: true,
   }
 );
-const pickProps = (props) => pick(props, forwardPropsList);
+
+function pickProps(props: React.ComponentProps<any>) {
+  return pick(props, forwardPropsList);
+}
 
 /**
  * This is the View from react-native-web copied out in order to supply a custom `__element` property.
@@ -113,6 +117,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   const supportedProps = pickProps(rest);
   supportedProps.dir = componentDirection;
   supportedProps.style = [styles.view$raw, hasTextAncestor && styles.inline, props.style];
+  // @ts-expect-error TODO(cedric): Property 'href' does not exist on type 'HTMLElement & PlatformMethods'
   if (props.href != null) {
     component = 'a';
     if (hrefAttrs != null) {
@@ -134,6 +139,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
 
   supportedProps.ref = setRef;
 
+  // @ts-expect-error TODO(cedric): 'writingDirection' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'
   return createElement(component, supportedProps, { writingDirection });
 });
 

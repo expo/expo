@@ -13,7 +13,7 @@ const addListenerWithNativeCallback = (
         result = {};
       }
       Kernel.onEventSuccess(event.eventId, result);
-    } catch (e) {
+    } catch (e: any) {
       Kernel.onEventFailure(event.eventId, e.message);
     }
   });
