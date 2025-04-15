@@ -11,7 +11,12 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ExponentPackageLogger private constructor(private val appUrl: Uri) {
@@ -32,12 +37,14 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
   private var pendingMessage: String? = null
   private var logLevel: LogLevel = LogLevel.INFO
 
-  private fun sendMessage(message: String, logLevel: LogLevel): CompletableFuture<Void> {
-    val future = CompletableFuture<Void>()
+  private suspend fun sendMessage(message: String, logLevel: LogLevel) {
     pendingMessage = message
     this.logLevel = logLevel
 
     val request: Request = Request.Builder().url(getMessageSocketUrl(appUrl)).build()
+
+    val latch = CompletableDeferred<Unit>()
+
     okHttpClient.newWebSocket(
       request,
       object : WebSocketListener() {
@@ -45,12 +52,12 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
           connected = true
           this@ExponentPackageLogger.webSocket = webSocket
           sendPendingMessage()
-          future.complete(null)
+          latch.complete(Unit)
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
           Log.e(TAG, "Error opening web socket to url: ${getMessageSocketUrl(appUrl)}")
-          future.completeExceptionally(t)
+          latch.completeExceptionally(t)
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -59,7 +66,7 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
       }
     )
 
-    return future
+    latch.await()
   }
 
   private fun sendPendingMessage() {
@@ -105,14 +112,22 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
   companion object {
     private val TAG = ExponentPackageLogger::class.java.simpleName
 
+    /**
+     * Sends a message to the packager with the given url.
+     * @param appUrl packager url
+     * @param message message to send
+     * @param logLevel log level to use, will be sent to the packager which can format or
+     * display different log levels in different ways.
+     */
     fun send(appUrl: String, message: String, logLevel: LogLevel) {
       val logger = ExponentPackageLogger(appUrl.toUri())
-      logger.sendMessage(message, logLevel)
-        .thenAccept { /* Success - no further action needed */ }
-        .exceptionally {
-          Log.e(TAG, "Failed to send message: ${it.message}")
-          null
+      CoroutineScope(Dispatchers.IO).launch {
+        try {
+          logger.sendMessage(message, logLevel)
+        } catch (e: Exception) {
+          Log.e(TAG, "Failed to send message: ${e.message}")
         }
+      }
     }
   }
 }
