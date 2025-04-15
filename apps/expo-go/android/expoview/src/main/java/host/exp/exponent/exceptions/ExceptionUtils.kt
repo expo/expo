@@ -69,8 +69,8 @@ ${exceptionToErrorHeader(exception)}
 ${replaceHtml(exception.errorMessage)}
 
 How to fix this error:
-${replaceHtml(exception.fixInstructions)}"
-""".trimIndent()
+${replaceHtml(exception.fixInstructions)}
+      """.trimIndent()
     }
     return exception.toString()
   }
@@ -82,8 +82,8 @@ ${replaceHtml(exception.fixInstructions)}"
     return true
   }
 
-  private fun replaceHtml(string: String?): String {
-    return string
+  private fun replaceHtml(input: String?): String {
+    return input
       ?.replace("<br>", "\n")
       ?.replace("<b>", "")
       ?.replace("</b>", "") ?: ""
