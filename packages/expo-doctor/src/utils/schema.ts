@@ -5,7 +5,7 @@ import { ExpoConfig } from '@expo/config';
 import Schemer, { SchemerError, ValidationError } from '@expo/schemer';
 
 function formatValidationError(validationError: ValidationError) {
-  return `\n• ${validationError.fieldPath ? 'Field: ' + validationError.fieldPath + ' - ' : ''}${
+  return `\n ${validationError.fieldPath ? 'Field: ' + validationError.fieldPath + ' - ' : ''}${
     validationError.message
   }.`;
 }
@@ -32,7 +32,7 @@ export async function validateWithSchemaAsync(
     if (e instanceof SchemerError) {
       schemaErrorMessage = `Error${
         e.errors.length > 1 ? 's' : ''
-      } validating fields in ${configName}.`;
+      } validating fields in ${configName}:`;
       schemaErrorMessage += e.errors.map(formatValidationError).join('');
     }
   }
@@ -44,7 +44,7 @@ export async function validateWithSchemaAsync(
       if (e instanceof SchemerError) {
         assetsErrorMessage = `Error${
           e.errors.length > 1 ? '' : 's'
-        } validating asset fields in ${configName}.}`;
+        } validating asset fields in ${configName}:`;
         assetsErrorMessage += e.errors.map(formatValidationError).join('');
       }
     }

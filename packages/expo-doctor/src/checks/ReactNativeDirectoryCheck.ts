@@ -100,22 +100,22 @@ export class ReactNativeDirectoryCheck implements DoctorCheck {
 
     if (newArchUnsupportedPackages.length > 0) {
       issues.push(
-        `${chalk.bold(`Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
+        `${chalk.bold(`  Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
       );
     }
 
     if (newArchUntestedPackages.length > 0) {
       issues.push(
-        `${chalk.bold(`Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
+        `${chalk.bold(`  Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
       );
     }
 
     if (unmaintainedPackages.length > 0) {
-      issues.push(`${chalk.bold(`Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
+      issues.push(`${chalk.bold(`  Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
     }
 
     if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
-      issues.push(`${chalk.bold(`No metadata available`)}: ${unknownPackages.join(', ')}`);
+      issues.push(`${chalk.bold(`  No metadata available`)}: ${unknownPackages.join(', ')}`);
     }
 
     if (issues.length) {
