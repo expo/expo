@@ -71,14 +71,7 @@ export function myFunc2(foo: T2 | null) {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/ban-ts-comment",
-      ],
-      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 2,
 }
 `;
@@ -110,14 +103,7 @@ for (const b in arr) {
 }
 export { sum };",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/ban-ts-comment",
-      ],
-      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
@@ -164,14 +150,7 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/ban-ts-comment",
-      ],
-      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
@@ -199,14 +178,7 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
   throw 3;
 }",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/ban-ts-comment",
-      ],
-      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
@@ -343,14 +315,7 @@ export async function wat() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/ban-ts-comment",
-      ],
-      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 3,
 }
 `;

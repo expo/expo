@@ -30,7 +30,7 @@ module.exports = defineConfig([
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/prefer-readonly': 'warn',
       '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
-      '@typescript-eslint/prefer-ts-expect-error': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'warn',
       'no-return-await': 'off',
       '@typescript-eslint/return-await': ['error', 'always'],
     },
