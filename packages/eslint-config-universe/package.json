@@ -30,9 +30,6 @@
       "**/__tests__/*-test.js"
     ]
   },
-  "eslintIgnore": [
-    "/__tests__/fixtures/*"
-  ],
   "author": "Expo",
   "license": "MIT",
   "bugs": {
@@ -47,11 +44,12 @@
     "eslint-plugin-n": "^17.17.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0"
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0"
   },
   "peerDependencies": {
-    "prettier": ">=3",
-    "eslint": ">=9"
+    "eslint": ">=9",
+    "prettier": ">=3"
   },
   "peerDependenciesMeta": {
     "prettier": {
