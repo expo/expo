@@ -20,7 +20,7 @@ function emitDomEvent(type: string, data: any = {}) {
 }
 
 export function emitDomSetParams(
-  params: Record<string, string | number | (string | number)[]> = {}
+  params: Record<string, undefined | string | number | (string | number)[]> = {}
 ) {
   return emitDomEvent(ROUTER_SET_PARAMS_TYPE, { params });
 }

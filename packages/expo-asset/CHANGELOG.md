@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.1.2 — 2025-04-14
+
+### 💡 Others
+
+- Added `file:///android_res/` format support. ([#36058](https://github.com/expo/expo/pull/36058) by [@kudo](https://github.com/kudo))
+
 ## 11.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

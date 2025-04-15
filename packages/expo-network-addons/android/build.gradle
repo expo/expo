@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.9.0'
+version = '0.9.1'
 
 android {
   namespace "expo.modules.networkaddons"
   defaultConfig {
     versionCode 1
-    versionName "0.9.0"
+    versionName "0.9.1"
     consumerProguardFiles("proguard-rules.pro")
   }
 }

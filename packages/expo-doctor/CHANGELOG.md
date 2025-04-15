@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
+
+## 1.12.10 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 1.12.9 — 2025-04-08
 
 ### 💡 Others
