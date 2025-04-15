@@ -19,7 +19,7 @@ exports[`lints with the React Native config: fixtures/all-00.js 1`] = `
       "endColumn": 15,
       "endLine": 30,
       "line": 30,
-      "message": "'e' is defined but never used. Allowed unused args must match /^_/u.",
+      "message": "'e' is defined but never used. Allowed unused caught errors must match /^_/u.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
       "ruleId": "no-unused-vars",
@@ -254,6 +254,22 @@ exports[`lints with the React Native config: fixtures/all-02.js 1`] = `
       "nodeType": "Identifier",
       "ruleId": "no-unused-vars",
       "severity": 1,
+      "suggestions": [
+        {
+          "data": {
+            "varName": "unused1",
+          },
+          "desc": "Remove unused variable 'unused1'.",
+          "fix": {
+            "range": [
+              0,
+              18,
+            ],
+            "text": "",
+          },
+          "messageId": "removeVar",
+        },
+      ],
     },
     {
       "column": 10,
@@ -265,6 +281,22 @@ exports[`lints with the React Native config: fixtures/all-02.js 1`] = `
       "nodeType": "Identifier",
       "ruleId": "no-unused-vars",
       "severity": 1,
+      "suggestions": [
+        {
+          "data": {
+            "varName": "unused2",
+          },
+          "desc": "Remove unused variable 'unused2'.",
+          "fix": {
+            "range": [
+              20,
+              66,
+            ],
+            "text": "",
+          },
+          "messageId": "removeVar",
+        },
+      ],
     },
     {
       "column": 9,
@@ -276,6 +308,22 @@ exports[`lints with the React Native config: fixtures/all-02.js 1`] = `
       "nodeType": "Identifier",
       "ruleId": "no-unused-vars",
       "severity": 1,
+      "suggestions": [
+        {
+          "data": {
+            "varName": "unused3",
+          },
+          "desc": "Remove unused variable 'unused3'.",
+          "fix": {
+            "range": [
+              43,
+              64,
+            ],
+            "text": "",
+          },
+          "messageId": "removeVar",
+        },
+      ],
     },
   ],
   "source": "const unused1 = 0;
@@ -951,6 +999,22 @@ exports[`lints with the React Native config: fixtures/web-native-04.js 1`] = `
       "nodeType": "Identifier",
       "ruleId": "no-unused-vars",
       "severity": 1,
+      "suggestions": [
+        {
+          "data": {
+            "varName": "notAHook",
+          },
+          "desc": "Remove unused variable 'notAHook'.",
+          "fix": {
+            "range": [
+              249,
+              295,
+            ],
+            "text": "",
+          },
+          "messageId": "removeVar",
+        },
+      ],
     },
     {
       "column": 3,
