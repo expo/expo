@@ -6,8 +6,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../log';
+import { Options as AndroidRunOptions } from './android/resolveOptions';
+import { Options as IosRunOptions } from './ios/XcodeBuild.types';
+import { hasDirectDevClientDependency } from '../start/detectDevClient';
 import { isSpawnResultError } from '../start/platforms/ios/xcrun';
-
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
 export async function resolveRemoteBuildCache(
@@ -15,9 +17,11 @@ export async function resolveRemoteBuildCache(
   {
     platform,
     provider,
+    runOptions,
   }: {
     platform: ModPlatform;
     provider?: Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider'];
+    runOptions: AndroidRunOptions | IosRunOptions;
   }
 ): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync(projectRoot, platform, provider);
@@ -41,7 +45,7 @@ export async function resolveRemoteBuildCache(
           `--platform=${platform}`,
           `--fingerprint=${fingerprintHash}`,
           '--non-interactive',
-          '--dev-client',
+          isDevClientBuild({ runOptions, projectRoot }) ? '--dev-client' : '--no-dev-client',
           '--json',
         ],
         {
@@ -75,9 +79,11 @@ export async function uploadRemoteBuildCache(
   {
     platform,
     provider,
+    buildPath,
   }: {
     platform: ModPlatform;
     provider?: Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider'];
+    buildPath?: string;
   }
 ): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync(projectRoot, platform, provider);
@@ -98,6 +104,7 @@ export async function uploadRemoteBuildCache(
           'upload',
           `--platform=${platform}`,
           `--fingerprint=${fingerprintHash}`,
+          buildPath ? `--build-path=${buildPath}` : '',
           '--non-interactive',
           '--json',
         ],
@@ -167,4 +174,25 @@ function importFingerprintForDev(projectRoot: string): null | typeof import('@ex
   } catch {
     return null;
   }
+}
+
+function isDevClientBuild({
+  runOptions,
+  projectRoot,
+}: {
+  runOptions: AndroidRunOptions | IosRunOptions;
+  projectRoot: string;
+}) {
+  if (!hasDirectDevClientDependency(projectRoot)) {
+    return false;
+  }
+
+  if ('variant' in runOptions && runOptions.variant) {
+    return runOptions.variant === 'debug';
+  }
+  if ('configuration' in runOptions && runOptions.configuration) {
+    return runOptions.configuration === 'Debug';
+  }
+
+  return true;
 }
