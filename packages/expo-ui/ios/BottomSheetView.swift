@@ -64,10 +64,10 @@ struct BottomSheetView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           ])
         })
         .onChange(of: props.isOpened) { newValue in
-            isOpened = newValue
+          isOpened = newValue
         }
         .onAppear {
-            isOpened = props.isOpened
+          isOpened = props.isOpened
         }
     } else {
       Rectangle().hidden()
@@ -83,10 +83,10 @@ struct BottomSheetView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           ])
         })
         .onChange(of: props.isOpened) { newValue in
-            isOpened = newValue
+          isOpened = newValue
         }
         .onAppear {
-            isOpened = props.isOpened
+          isOpened = props.isOpened
         }
     }
   }
