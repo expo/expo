@@ -4,6 +4,7 @@ import path from 'path';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
@@ -36,7 +37,7 @@ async function checkMinimumXcodeVersionAsync(
   }
 
   if (semver.lt(sdkVersion, '52.0.0') && semver.gt(xcodeVersion, '16.2.0')) {
-    return `You are using Xcode version ${xcodeVersion}. The maximum supported version for SDK version ${sdkVersion} is 16.2.`;
+    return `SDK ${sdkVersion} is compatible with Xcode 16.2 or lower. You are using Xcode ${xcodeVersion}. ${learnMore('https://expo.fyi/expo-sdk-xcode-compatibility')}`;
   }
 
   return null;
