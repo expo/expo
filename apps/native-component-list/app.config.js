@@ -20,7 +20,8 @@ export default ({ config }) => {
       './plugins/withGradleProperties',
       {
         // Increase default java VM size so it can handle building all the Expo packages.
-        'org.gradle.jvmargs': '-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
+        'org.gradle.jvmargs':
+          '-Xmx8g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
       },
     ],
     [
