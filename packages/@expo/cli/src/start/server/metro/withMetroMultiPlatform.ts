@@ -684,6 +684,7 @@ export function withExtendedResolver(
     // If at this point, we haven't resolved a module yet, if it's a module specifier for a known dependency
     // of either `expo` or `expo-router`, attempt to resolve it from these origin modules instead
     createFallbackModuleResolver({
+      projectRoot: config.projectRoot,
       originModuleNames: ['expo', 'expo-router'],
       getStrictResolver,
     }),
