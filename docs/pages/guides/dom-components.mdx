@@ -462,3 +462,33 @@ DOM components currently only render as single-page applications and don't suppo
 Ultimately, universal architecture is the most exciting kind. Expo CLI's extensive universal tooling is the only reason we can even offer a feature as intricate and valuable as this one.
 
 While DOM components help with migration and moving quickly, we recommend using truly native views whenever possible.
+
+## FAQ
+
+### How to obtain a Secure Context in DOM components?
+
+Some Web APIs require a [Secure Context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) function correctly. For example, the [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) is only available in secure contexts. A secure context means that remote resources must be served over HTTPS. [Learn more about features restricted to secure contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts).
+
+To ensure your DOM components run within a secure context, follow these guidelines:
+
+- **Release builds** DOM components served using the `file://` scheme are provided a secure context by default.
+- **Debug builds** When using development servers (which default to the `http:// `protocol), you can use [tunneling](/more/expo-cli/#tunneling) to serve DOM components over HTTPS.
+
+<Collapsible summary="Example commands to tunnel DOM components over HTTPS">
+
+```bash
+# Install expo-dev-client to enable connection to the remote development server:
+npx expo install expo-dev-client
+
+# Run the app on Android:
+npx expo run:android
+# Press Ctrl + C to stop the server
+npx expo start --tunnel -d -a
+
+# Run the app on iOS:
+npx expo run:ios
+# Press Ctrl + C to stop the server
+npx expo start --tunnel -d -i
+```
+
+</Collapsible>
