@@ -63,8 +63,14 @@ object ExceptionUtils {
 
   fun exceptionToPlainText(exception: Exception): String {
     if (exception is ManifestException) {
-      return "${exceptionToErrorHeader(exception)}\n\n${replaceHtml(exception.errorMessage)
-      }\n\nHow to fix this error:\n${replaceHtml(exception.fixInstructions)}"
+      return """
+${exceptionToErrorHeader(exception)}
+
+${replaceHtml(exception.errorMessage)}
+
+How to fix this error:
+${replaceHtml(exception.fixInstructions)}"
+""".trimIndent()
     }
     return exception.toString()
   }
