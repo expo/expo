@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Exported missing config plugin.
+
 ### 💡 Others
 
 ## 0.9.3 — 2025-04-14
