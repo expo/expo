@@ -7,6 +7,7 @@
 #import "EXKernelAppRecord.h"
 #import "EXManifestResource.h"
 #import "EXUtil.h"
+#import "EXPackagerLogHelper.h"
 
 @import EXManifests;
 
@@ -135,6 +136,9 @@
   if (!showTryAgainButton) {
     [_btnRetry removeFromSuperview];
   }
+  
+  // Send error to cli/packager
+  [EXPackagerLogHelper logError:[NSString stringWithFormat:@"%@\n\n%@\n\nHow to fix this error:\n\n%@", errorHeader, [errorDetail stringByReplacingOccurrencesOfString:@"**" withString:@""], errorFixInstructions] withBundleUrl:_appRecord.appLoader.manifestUrl];
 
   [self _resetUIState];
 }
