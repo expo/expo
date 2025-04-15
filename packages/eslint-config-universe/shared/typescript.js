@@ -98,7 +98,6 @@ module.exports = defineConfig([
       'no-useless-constructor': 'off',
       '@typescript-eslint/no-useless-constructor': 'warn',
       'no-undef': 'off',
-      'import/no-unresolved': 'off', // TODO: (Kadi) why do I need this to make the default test pass?
     },
   },
 ]);

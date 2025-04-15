@@ -271,7 +271,6 @@ module.exports = defineConfig([
       ],
 
       'import/no-duplicates': 'error',
-      'import/no-unresolved': 'off', // TODO: (Kadi) why do I need this to make the default test pass?
 
       'import/order': [
         'warn',
