@@ -476,19 +476,21 @@ To ensure your DOM components run within a secure context, follow these guidelin
 
 <Collapsible summary="Example commands to tunnel DOM components over HTTPS">
 
-```bash
-# Install expo-dev-client to enable connection to the remote development server:
-npx expo install expo-dev-client
-
-# Run the app on Android:
-npx expo run:android
-# Press Ctrl + C to stop the server
-npx expo start --tunnel -d -a
-
-# Run the app on iOS:
-npx expo run:ios
-# Press Ctrl + C to stop the server
-npx expo start --tunnel -d -i
-```
+<Terminal
+  cmd={[
+    '# Install expo-dev-client to enable connection to the remote development server:',
+    '$ npx expo install expo-dev-client',
+    '',
+    '# Run the app on Android:',
+    '$ npx expo run:android',
+    '# Press Ctrl + C to stop the server',
+    '$ npx expo start --tunnel -d -a',
+    '',
+    '# Run the app on iOS:',
+    '$ npx expo run:ios',
+    '# Press Ctrl + C to stop the server',
+    '$ npx expo start --tunnel -d -i',
+  ]}
+/>
 
 </Collapsible>
