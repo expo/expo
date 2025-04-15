@@ -3,6 +3,7 @@ package host.exp.exponent.kernel
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -104,8 +105,8 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
   companion object {
     private val TAG = ExponentPackageLogger::class.java.simpleName
 
-    fun send(appUrl: Uri, message: String, logLevel: LogLevel) {
-      val logger = ExponentPackageLogger(appUrl)
+    fun send(appUrl: String, message: String, logLevel: LogLevel) {
+      val logger = ExponentPackageLogger(appUrl.toUri())
       logger.sendMessage(message, logLevel)
         .thenAccept { /* Success - no further action needed */ }
         .exceptionally {

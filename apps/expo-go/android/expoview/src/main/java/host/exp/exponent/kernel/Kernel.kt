@@ -15,7 +15,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
@@ -907,7 +906,7 @@ class Kernel : KernelInterface() {
     )
     if (exception is ManifestException) {
       ExponentPackageLogger.send(
-        exception.manifestUrl.toUri(),
+        exception.manifestUrl,
         ExceptionUtils.exceptionToPlainText(exception),
         ExponentPackageLogger.LogLevel.ERROR
       )
