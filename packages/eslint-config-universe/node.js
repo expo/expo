@@ -19,7 +19,7 @@ module.exports = defineConfig([
     },
 
     rules: {
-      'no-buffer-constructor': 'warn',
+      'n/no-deprecated-api': 'warn',
       'n/no-path-concat': 'warn',
     },
   },
