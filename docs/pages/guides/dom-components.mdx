@@ -463,7 +463,7 @@ Ultimately, universal architecture is the most exciting kind. Expo CLI's extensi
 
 While DOM components help with migration and moving quickly, we recommend using truly native views whenever possible.
 
-## FAQ
+## Common questions
 
 ### How to obtain a Secure Context in DOM components?
 
@@ -471,8 +471,8 @@ Some Web APIs require a [Secure Context](https://developer.mozilla.org/en-US/doc
 
 To ensure your DOM components run within a secure context, follow these guidelines:
 
-- **Release builds** DOM components served using the `file://` scheme are provided a secure context by default.
-- **Debug builds** When using development servers (which default to the `http:// `protocol), you can use [tunneling](/more/expo-cli/#tunneling) to serve DOM components over HTTPS.
+- **Release builds**: DOM components served using the `file://` scheme are provided a secure context by default.
+- **Debug builds**: When using development servers (which default to the `http:// `protocol), you can use [tunneling](/more/expo-cli/#tunneling) to serve DOM components over HTTPS.
 
 <Collapsible summary="Example commands to tunnel DOM components over HTTPS">
 
