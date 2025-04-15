@@ -13,7 +13,6 @@ it(`has a default config`, () => {
       new eslint.ESLint({
         baseConfig: getBaseConfig(),
         overrideConfigFile: configFile,
-        useEslintrc: false,
       }),
   ).not.toThrow();
 });
@@ -24,7 +23,6 @@ it(`lints with the default config`, async () => {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
       ignore: false,
-      useEslintrc: false,
     },
     ['fixtures/*all*'],
   );
