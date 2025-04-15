@@ -1,7 +1,7 @@
 import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
-import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
-import { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
+import type { MetroSourceMapSegmentTuple } from '@bycedric/metro/metro-source-map';
+import { JsTransformerConfig, JsTransformOptions } from '@bycedric/metro/metro-transform-worker';
 import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 export { JsTransformOptions };

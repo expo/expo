@@ -15,25 +15,35 @@ import * as babylon from '@babel/parser';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
+import JsFileWrapping from '@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from '@bycedric/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
-import { stableHash } from 'metro-cache';
-import getMetroCacheKey from 'metro-cache-key';
+} from '@bycedric/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+} from '@bycedric/metro/metro-babel-transformer';
+import { stableHash } from '@bycedric/metro/metro-cache';
+import getMetroCacheKey from '@bycedric/metro/metro-cache-key';
 import {
   fromRawMappings,
   functionMapBabelPlugin,
   toBabelSegments,
   toSegmentTuple,
-} from 'metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
-import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
-import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
+} from '@bycedric/metro/metro-source-map';
+import type {
+  FBSourceFunctionMap,
+  MetroSourceMapSegmentTuple,
+} from '@bycedric/metro/metro-source-map';
+import metroTransformPlugins from '@bycedric/metro/metro-transform-plugins';
+import {
+  JsTransformerConfig,
+  JsTransformOptions,
+  type Type,
+} from '@bycedric/metro/metro-transform-worker';
+import getMinifier from '@bycedric/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -48,6 +58,7 @@ import collectDependencies, {
 } from './collect-dependencies';
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
+import type { ExpoBabelFileMetadata } from '../babel-transformer';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
 export { JsTransformOptions };
@@ -628,6 +639,7 @@ async function transformJSWithBabel(
     ])
   );
 
+  const expoFileMetadata = transformResult.metadata as null | ExpoBabelFileMetadata;
   const jsFile: JSFile = {
     ...file,
     ast: transformResult.ast,
@@ -638,10 +650,10 @@ async function transformJSWithBabel(
       null,
     unstable_importDeclarationLocs:
       transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
-    hasCjsExports: transformResult.metadata?.hasCjsExports,
-    reactServerReference: transformResult.metadata?.reactServerReference,
-    reactClientReference: transformResult.metadata?.reactClientReference,
-    expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    hasCjsExports: expoFileMetadata?.hasCjsExports,
+    reactServerReference: expoFileMetadata?.reactServerReference,
+    reactClientReference: expoFileMetadata?.reactClientReference,
+    expoDomComponentReference: expoFileMetadata?.expoDomComponentReference,
   };
 
   return await transformJS(jsFile, context);
@@ -778,12 +790,12 @@ export function getCacheKey(config: JsTransformerConfig): string {
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
-    require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('@bycedric/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
-    require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-    require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
+    require.resolve('@bycedric/metro/metro/ModuleGraph/worker/generateImportNames'),
+    require.resolve('@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 

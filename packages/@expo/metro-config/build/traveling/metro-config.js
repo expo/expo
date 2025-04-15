@@ -8,10 +8,10 @@ exports.importMetroConfig = importMetroConfig;
 const resolve_from_1 = __importDefault(require("resolve-from"));
 // ensure that Metro can bundle the project's assets (see: `watchFolders`).
 function importMetroConfig(projectRoot) {
-    const modulePath = resolve_from_1.default.silent(projectRoot, 'metro-config');
-    if (!modulePath) {
-        return require('metro-config');
+    const modulePath = resolve_from_1.default.silent(projectRoot, '@bycedric/metro/metro-config');
+    if (modulePath) {
+        return require(modulePath);
     }
-    return require(modulePath);
+    return require('@bycedric/metro/metro-config');
 }
 //# sourceMappingURL=metro-config.js.map

@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
+import type { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from '@bycedric/metro/metro';
+import CountingSet from '@bycedric/metro/metro/lib/CountingSet';
+import countLines from '@bycedric/metro/metro/lib/countLines';
 
 import { SerializerParameters } from './withExpoSerializers';
 

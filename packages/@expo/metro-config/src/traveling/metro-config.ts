@@ -8,10 +8,10 @@ export function importMetroConfig(
 ): typeof import('@bycedric/metro/metro-config') & {
   getDefaultConfig: import('@bycedric/metro/metro-config/defaults/index').default;
 } {
-  const modulePath = resolveFrom.silent(projectRoot, 'metro-config');
-
-  if (!modulePath) {
-    return require('metro-config');
+  const modulePath = resolveFrom.silent(projectRoot, '@bycedric/metro/metro-config');
+  if (modulePath) {
+    return require(modulePath);
   }
-  return require(modulePath);
+
+  return require('@bycedric/metro/metro-config');
 }

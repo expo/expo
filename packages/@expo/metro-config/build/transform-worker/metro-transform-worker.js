@@ -56,14 +56,14 @@ const generator_1 = __importDefault(require("@babel/generator"));
 const babylon = __importStar(require("@babel/parser"));
 const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
-const metro_cache_1 = require("metro-cache");
-const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
+const JsFileWrapping_1 = __importDefault(require("@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const generateImportNames_1 = __importDefault(require("@bycedric/metro/metro/ModuleGraph/worker/generateImportNames"));
+const importLocationsPlugin_1 = require("@bycedric/metro/metro/ModuleGraph/worker/importLocationsPlugin");
+const metro_cache_1 = require("@bycedric/metro/metro-cache");
+const metro_cache_key_1 = __importDefault(require("@bycedric/metro/metro-cache-key"));
+const metro_source_map_1 = require("@bycedric/metro/metro-source-map");
+const metro_transform_plugins_1 = __importDefault(require("@bycedric/metro/metro-transform-plugins"));
+const getMinifier_1 = __importDefault(require("@bycedric/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
@@ -473,6 +473,7 @@ async function transformJSWithBabel(file, context) {
         // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
         importLocationsPlugin_1.importLocationsPlugin,
     ]));
+    const expoFileMetadata = transformResult.metadata;
     const jsFile = {
         ...file,
         ast: transformResult.ast,
@@ -481,10 +482,10 @@ async function transformJSWithBabel(file, context) {
             transformResult.functionMap ??
             null,
         unstable_importDeclarationLocs: transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
-        hasCjsExports: transformResult.metadata?.hasCjsExports,
-        reactServerReference: transformResult.metadata?.reactServerReference,
-        reactClientReference: transformResult.metadata?.reactClientReference,
-        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        hasCjsExports: expoFileMetadata?.hasCjsExports,
+        reactServerReference: expoFileMetadata?.reactServerReference,
+        reactClientReference: expoFileMetadata?.reactClientReference,
+        expoDomComponentReference: expoFileMetadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);
 }
@@ -587,12 +588,12 @@ function getCacheKey(config) {
     const filesKey = (0, metro_cache_key_1.default)([
         require.resolve(babelTransformerPath),
         require.resolve(minifierPath),
-        require.resolve('metro-transform-worker/src/utils/getMinifier'),
+        require.resolve('@bycedric/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),
         require.resolve('./resolveOptions'),
-        require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-        require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
+        require.resolve('@bycedric/metro/metro/ModuleGraph/worker/generateImportNames'),
+        require.resolve('@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping'),
         ...metro_transform_plugins_1.default.getTransformPluginCacheKeyFiles(),
     ]);
     const babelTransformer = require(babelTransformerPath);

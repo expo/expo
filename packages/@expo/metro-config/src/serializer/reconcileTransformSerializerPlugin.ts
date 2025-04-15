@@ -6,13 +6,13 @@
  */
 import generate from '@babel/generator';
 import * as t from '@babel/types';
+import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@bycedric/metro/metro';
+import JsFileWrapping from '@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import { locToKey } from '@bycedric/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import type { SerializerConfigT } from '@bycedric/metro/metro-config';
+import { toSegmentTuple } from '@bycedric/metro/metro-source-map';
+import metroTransformPlugins from '@bycedric/metro/metro-transform-plugins';
 import assert from 'assert';
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import { SerializerConfigT } from 'metro-config';
-import { toSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
 import util from 'node:util';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';

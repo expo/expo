@@ -1,4 +1,4 @@
-import { Module } from 'metro';
+import type { Module } from '@bycedric/metro/metro';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
@@ -64,9 +64,9 @@ describe(withSerializerPlugins, () => {
     // Modify the original config, which should also modify the function in the serializer config
     config.serializer.getModulesRunBeforeMainModule = overrideGetMainModules;
 
-    // @ts-expect-error
     await configWithSerializer.serializer.customSerializer(
       'a',
+      // @ts-expect-error - We pass in stubbed data, not matching the actual types
       'b',
       'c',
       configWithSerializer.serializer

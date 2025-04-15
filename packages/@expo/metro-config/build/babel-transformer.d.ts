@@ -15,3 +15,9 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
     routerRoot?: string;
     projectRoot: string;
 };
+export type ExpoBabelFileMetadata = {
+    reactServerReference?: string;
+    reactClientReference?: string;
+    expoDomComponentReference?: string;
+    hasCjsExports?: boolean;
+};

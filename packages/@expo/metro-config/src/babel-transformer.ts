@@ -7,7 +7,10 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+} from '@bycedric/metro/metro-babel-transformer';
 import assert from 'node:assert';
 
 import type { TransformOptions } from './babel-core';
@@ -29,6 +32,17 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   platform?: string | null;
   routerRoot?: string;
   projectRoot: string;
+};
+
+export type ExpoBabelFileMetadata = {
+  // NOTE(cedric): see babel-preset-expo/src/{client-module-proxy-plugin.ts,server-actions-plugin.ts}
+  reactServerReference?: string;
+  // NOTE(cedric): see babel-preset-expo/src/client-module-proxy-plugin.ts
+  reactClientReference?: string;
+  // NOTE(cedric): see babel-preset-expo/src/use-dom-directive-plugin.ts
+  expoDomComponentReference?: string;
+  // NOTE(cedric): see babel-preset-expo/src/detect-dynamic-exports.ts
+  hasCjsExports?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;

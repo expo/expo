@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUniversalAssetData = getUniversalAssetData;
 exports.default = getAssets;
-const Assets_1 = require("metro/src/Assets");
-const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
+const Assets_1 = require("@bycedric/metro/metro/Assets");
+const js_js_1 = require("@bycedric/metro/metro/DeltaBundler/Serializers/helpers/js.js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));

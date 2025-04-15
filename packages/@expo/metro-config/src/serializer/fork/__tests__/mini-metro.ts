@@ -1,5 +1,11 @@
-import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
+import type {
+  Dependency,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@bycedric/metro/metro';
+import CountingSet from '@bycedric/metro/metro/lib/CountingSet';
 import * as path from 'path';
 
 import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
@@ -8,7 +14,7 @@ import * as expoMetroTransformWorker from '../../../transform-worker/transform-w
 export const projectRoot = '/app';
 
 const METRO_CONFIG_DEFAULTS =
-  require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
+  require('@bycedric/metro/metro-config/defaults/index').getDefaultValues() as import('@bycedric/metro/metro-config').ConfigT;
 
 function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
@@ -174,7 +180,6 @@ export async function microBundle({
         try {
           const resolved = resolve(id, dep.data.name);
           await recurseWith([resolved], module, (fp) => {
-            // @ts-expect-error
             dep.absolutePath = fp;
           });
         } catch (error) {
@@ -325,7 +330,6 @@ export async function parseModule(
     ),
     inverseDependencies: new CountingSet(),
 
-    // @ts-expect-error
     output,
   };
 }

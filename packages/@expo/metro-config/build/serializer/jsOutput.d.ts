@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import { JsTransformerConfig } from 'metro-transform-worker';
+import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@bycedric/metro/metro-source-map';
+import type { JsTransformerConfig } from '@bycedric/metro/metro-transform-worker';
 import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 export type JsOutput = {

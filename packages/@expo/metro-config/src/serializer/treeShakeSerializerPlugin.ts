@@ -7,9 +7,14 @@
 import { NodePath, traverse } from '@babel/core';
 import generate from '@babel/generator';
 import * as types from '@babel/types';
+import type {
+  AsyncDependencyType,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@bycedric/metro/metro';
+import type { SerializerConfigT } from '@bycedric/metro/metro-config';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
 
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';

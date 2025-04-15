@@ -46,11 +46,11 @@ exports.reconcileTransformSerializerPlugin = reconcileTransformSerializerPlugin;
  * LICENSE file in the root directory of this source tree.
  */
 const generator_1 = __importDefault(require("@babel/generator"));
+const JsFileWrapping_1 = __importDefault(require("@bycedric/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const importLocationsPlugin_1 = require("@bycedric/metro/metro/ModuleGraph/worker/importLocationsPlugin");
+const metro_source_map_1 = require("@bycedric/metro/metro-source-map");
+const metro_transform_plugins_1 = __importDefault(require("@bycedric/metro/metro-transform-plugins"));
 const assert_1 = __importDefault(require("assert"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const node_util_1 = __importDefault(require("node:util"));
 const jsOutput_1 = require("./jsOutput");
 const sideEffects_1 = require("./sideEffects");

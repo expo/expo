@@ -18,9 +18,9 @@ exports.getModuleParams = getModuleParams;
 exports.getJsOutput = getJsOutput;
 exports.isJsModule = isJsModule;
 exports.isJsOutput = isJsOutput;
+const metro_transform_plugins_1 = require("@bycedric/metro/metro-transform-plugins");
 const assert_1 = __importDefault(require("assert"));
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
-const metro_transform_plugins_1 = require("metro-transform-plugins");
 const path_1 = __importDefault(require("path"));
 function wrapModule(module, options) {
     const output = getJsOutput(module);

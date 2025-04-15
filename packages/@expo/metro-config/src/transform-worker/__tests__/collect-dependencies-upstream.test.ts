@@ -1495,13 +1495,16 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
     ast: true,
     plugins: [
       [
-        require('metro-transform-plugins').importExportPlugin,
+        require('@bycedric/metro/metro-transform-plugins').importExportPlugin,
         {
           importDefault,
           importAll,
         },
       ],
-      [require('metro-transform-plugins').inlineRequiresPlugin, { inlineableCalls }],
+      [
+        require('@bycedric/metro/metro-transform-plugins').inlineRequiresPlugin,
+        { inlineableCalls },
+      ],
     ],
     babelrc: false,
     configFile: false,

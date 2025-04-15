@@ -49,7 +49,7 @@ exports.transform = transform;
  */
 const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
-const util_1 = require("metro/src/Bundler/util");
+const util_1 = require("@bycedric/metro/metro/Bundler/util");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");

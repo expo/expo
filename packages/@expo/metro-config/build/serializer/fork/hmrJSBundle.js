@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = hmrJSBundle;
+const metro_transform_plugins_1 = require("@bycedric/metro/metro-transform-plugins");
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
-const metro_transform_plugins_1 = require("metro-transform-plugins");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const js_1 = require("./js");

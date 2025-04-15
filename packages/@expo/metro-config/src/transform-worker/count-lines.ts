@@ -8,7 +8,7 @@
  * https://github.com/facebook/metro/blob/96c6b893eb77b5929b6050d7189905232ddf6d6d/packages/metro-transform-worker/src/index.js#L679
  */
 
-import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
+import type { MetroSourceMapSegmentTuple } from '@bycedric/metro/metro-source-map';
 
 export function countLinesAndTerminateMap(
   code: string,

@@ -6,12 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hasSideEffectWithDebugTrace = hasSideEffectWithDebugTrace;
 exports._createSideEffectMatcher = _createSideEffectMatcher;
 exports.isVirtualModule = isVirtualModule;
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));

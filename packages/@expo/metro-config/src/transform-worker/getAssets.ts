@@ -5,9 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { AssetData, Module } from 'metro';
-import { getAssetData } from 'metro/src/Assets';
-import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js.js';
+import type { AssetData, Module } from '@bycedric/metro/metro';
+import { getAssetData } from '@bycedric/metro/metro/Assets';
+import {
+  getJsOutput,
+  isJsModule,
+} from '@bycedric/metro/metro/DeltaBundler/Serializers/helpers/js.js';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

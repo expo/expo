@@ -9,11 +9,11 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@bycedric/metro/metro';
+import CountingSet from '@bycedric/metro/metro/lib/CountingSet';
+import countLines from '@bycedric/metro/metro/lib/countLines';
+import getAppendScripts from '@bycedric/metro/metro/lib/getAppendScripts';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
-import getAppendScripts from 'metro/src/lib/getAppendScripts';
 
 import { processModules } from './processModules';
 

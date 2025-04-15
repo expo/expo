@@ -5,12 +5,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import countLines from 'metro/src/lib/countLines';
+import type { TransformResultDependency } from '@bycedric/metro/metro/DeltaBundler';
+import countLines from '@bycedric/metro/metro/lib/countLines';
 import type {
+  JsOutput,
   JsTransformerConfig,
   JsTransformOptions,
-  TransformResponse,
-} from 'metro-transform-worker';
+} from '@bycedric/metro/metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
 import {
@@ -24,6 +25,12 @@ import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
+
+// NOTE(cedric): this type isn't exposed from Metro - see https://github.com/facebook/metro/blob/v0.82.1/packages/metro-transform-worker/src/index.js#L179-L182
+type TransformResponse = {
+  dependencies: readonly TransformResultDependency[];
+  output: readonly JsOutput[];
+};
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 

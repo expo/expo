@@ -9,12 +9,16 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 
+import { fromRawMappings } from '@bycedric/metro/metro-source-map/source-map';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  JsOutput,
+} from '@bycedric/metro/metro-transform-worker';
 import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { fromRawMappings } from 'metro-source-map';
-import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
@@ -39,15 +43,20 @@ afterEach(() => {
 });
 
 jest
-  .mock('metro-transform-worker/src/utils/getMinifier', () => () => ({ code, map, config }) => {
-    const trimmed = config.output.comments ? code : code.replace('/*#__PURE__*/', '');
-    return {
-      code: trimmed.replace('arbitrary(code)', 'minified(code)'),
-      map,
-    };
-  })
-  .mock('metro-transform-plugins', () => ({
-    ...jest.requireActual('metro-transform-plugins'),
+  .mock(
+    '@bycedric/metro/metro-transform-worker/utils/getMinifier',
+    () =>
+      () =>
+      ({ code, map, config }) => {
+        const trimmed = config.output.comments ? code : code.replace('/*#__PURE__*/', '');
+        return {
+          code: trimmed.replace('arbitrary(code)', 'minified(code)'),
+          map,
+        };
+      }
+  )
+  .mock('@bycedric/metro/metro-transform-plugins', () => ({
+    ...jest.requireActual('@bycedric/metro/metro-transform-plugins'),
     inlinePlugin: () => ({}),
     constantFoldingPlugin: () => ({}),
   }))
@@ -739,10 +748,11 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
   // NOTE(kitten): The `constantFoldingPlugin` removes used, inlined Babel helpers, unless
   // the AST path has been re-crawled. If this regressed, check whether `programPath.scope.crawl()`
   // is called before this plugin is run.
-  jest.mock('metro-transform-plugins', () => ({
-    ...jest.requireActual('metro-transform-plugins'),
+  jest.mock('@bycedric/metro/metro-transform-plugins', () => ({
+    ...jest.requireActual('@bycedric/metro/metro-transform-plugins'),
     inlinePlugin: () => ({}),
-    constantFoldingPlugin: jest.requireActual('metro-transform-plugins').constantFoldingPlugin,
+    constantFoldingPlugin: jest.requireActual('@bycedric/metro/metro-transform-plugins')
+      .constantFoldingPlugin,
   }));
 
   const contents = ['import * as test from "test-module";', 'export { test };'].join('\n');
