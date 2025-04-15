@@ -64,7 +64,7 @@ object ExceptionUtils {
   fun exceptionToPlainText(exception: Exception): String {
     if (exception is ManifestException) {
       return "${exceptionToErrorHeader(exception)}\n\n${replaceHtml(exception.errorMessage)
-        }\n\nHow to fix this error:\n${replaceHtml(exception.fixInstructions)}"
+      }\n\nHow to fix this error:\n${replaceHtml(exception.fixInstructions)}"
     }
     return exception.toString()
   }
