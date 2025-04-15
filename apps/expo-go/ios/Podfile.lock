@@ -387,8 +387,8 @@ PODS:
     - PromisesSwift (~> 2.1)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (5.0.0):
-    - GoogleMaps (~> 8.0)
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
   - GoogleAppMeasurement (11.11.0):
     - GoogleAppMeasurement/AdIdSupport (= 11.11.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
@@ -412,11 +412,9 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleMaps (8.4.0):
-    - GoogleMaps/Maps (= 8.4.0)
-  - GoogleMaps/Base (8.4.0)
-  - GoogleMaps/Maps (8.4.0):
-    - GoogleMaps/Base
+  - GoogleMaps (9.3.0):
+    - GoogleMaps/Maps (= 9.3.0)
+  - GoogleMaps/Maps (9.3.0)
   - GoogleUtilities (8.0.2):
     - GoogleUtilities/AppDelegateSwizzler (= 8.0.2)
     - GoogleUtilities/Environment (= 8.0.2)
@@ -1853,12 +1851,83 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-google-maps (1.20.1):
-    - Google-Maps-iOS-Utils (= 5.0.0)
-    - GoogleMaps (= 8.4.0)
+  - react-native-google-maps (1.21.0):
+    - DoubleConversion
+    - glog
+    - Google-Maps-iOS-Utils (= 6.1.0)
+    - GoogleMaps (= 9.3.0)
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
-  - react-native-maps (1.20.1):
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - react-native-maps
+    - react-native-maps-generated
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-maps (1.21.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - react-native-maps-generated
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-maps-generated (1.21.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (6.7.0):
@@ -2963,6 +3032,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-google-maps (from `../../../node_modules/react-native-maps`)
   - react-native-maps (from `../../../node_modules/react-native-maps`)
+  - react-native-maps-generated (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
@@ -3278,6 +3348,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-maps"
   react-native-maps:
     :path: "../../../node_modules/react-native-maps"
+  react-native-maps-generated:
+    :path: "../../../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -3461,14 +3533,14 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 781e0e37aa0e1c92b44d00e739aba79ad31b2dba
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
-  fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
+  fmt: 01b82d4ca6470831d1cc0852a1af644be019e8f6
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  GoogleMaps: b58e9627004f47043897eeae830c3ef023678f3b
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d84bd0d1dda5e9e83b32922a83b7b9161e02dd27
+  hermes-engine: adee6f47783d536f42f18b85bce4aeb57ec5081c
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3514,8 +3586,9 @@ SPEC CHECKSUMS:
   React-logger: a0374da29c78e17da5523809c9f54c91dfef0462
   React-Mapbuffer: 08d7cddd2dcd2cc51c424931cca9ef507f7afe7b
   React-microtasksnativemodule: cd8733e55d2bc53f5342d2c8e26c8c9bae82a999
-  react-native-google-maps: 7cc1184afe41fbd15a3dffd53c924819f6587b69
-  react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
+  react-native-google-maps: a11303ae193b42fc1c3546a00f523f0c7eec933b
+  react-native-maps: cf262b49eb40a038dac62f8765f73d5010c0ee2e
+  react-native-maps-generated: 16d4be72a3675d38e9936ff33e207bc372b9cad8
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: b7f8cf921e19063a3528ee2aeae945bb42104dbd
   react-native-safe-area-context: 55dbcf556a51092ddf163b29febbc07dc7f14ebb
@@ -3582,6 +3655,6 @@ SPEC CHECKSUMS:
   Yoga: 9773f1327b258fa449988c2e42fbb7cbdf655d96
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: a281d730cb159bd3316f12fe0fa826633ca90be1
+PODFILE CHECKSUM: 27d6bd5f5411aab4418ba7c55f8ea537fed0acd3
 
 COCOAPODS: 1.16.2
