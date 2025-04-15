@@ -169,3 +169,54 @@ console.log(process.env.EXPO_PUBLIC_NODE_ENV);
 
   expect(contents).toMatch('EXPO_PUBLIC_NODE_ENV');
 });
+
+function transformTest(
+  sourceCode: string,
+  customOptions: { filename?: string; caller?: any } = {}
+) {
+  const options = {
+    ...DEF_OPTIONS,
+    // plugins: [serverActionPlugin],
+    caller: getCaller(ENABLED_CALLER),
+    ...customOptions,
+  };
+
+  const results = babel.transform(sourceCode, options);
+  if (!results) throw new Error('Failed to transform code');
+  //   console.log('results', results.code);
+  const meta = results.metadata as unknown as { hasCjsExports?: boolean };
+
+  // Parse again to ensure the output is valid code
+  babel.parse(results.code, options);
+
+  return {
+    code: results.code,
+    hasCjsExports: meta.hasCjsExports,
+    metadata: meta,
+  };
+}
+
+it(`inlines environment variables in development`, () => {
+  process.env.EXPO_PUBLIC_NODE_ENV = 'development';
+  process.env.EXPO_PUBLIC_FOO = 'bar';
+
+  const sourceCode = `
+const foo = process.env.EXPO_PUBLIC_URL;
+
+function App() {
+  console.log(process.env.EXPO_PUBLIC_NODE_ENV);
+}
+`;
+
+  const contents = transformTest(sourceCode, {
+    caller: getCaller({
+      ...ENABLED_CALLER,
+      isDev: true,
+    }),
+  });
+
+  expect(contents.code).toMatch('expo/virtual/env');
+  expect(contents.metadata).toEqual({ publicEnvVars: ['EXPO_PUBLIC_URL', 'EXPO_PUBLIC_NODE_ENV'] });
+
+  expect(contents).toMatchSnapshot();
+});

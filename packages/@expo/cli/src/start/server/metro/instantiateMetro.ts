@@ -406,6 +406,23 @@ function pruneCustomTransformOptions(
   filePath = filePath.split(path.sep).join('/');
 
   if (
+    // The only generated file that needs the dom root is `expo/dom/entry.js`
+    filePath.match(/expo\/virtual\/env\.js$/)
+  ) {
+    // Create an object containing all environment variables that start with EXPO_PUBLIC_
+    const env = {};
+    for (const key in process.env) {
+      if (key.startsWith('EXPO_PUBLIC_')) {
+        // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+        env[key] = process.env[key];
+      }
+    }
+
+    // Clear the dom root option if we aren't transforming the magic entry file, this ensures
+    // that cached artifacts from other DOM component bundles can be reused.
+    transformOptions.customTransformOptions.fullEnv = env;
+  }
+  if (
     transformOptions.customTransformOptions?.dom &&
     // The only generated file that needs the dom root is `expo/dom/entry.js`
     !filePath.match(/expo\/dom\/entry\.js$/)

@@ -18,6 +18,7 @@ import type { UrlWithParsedQuery as EntryPointURL } from 'node:url';
 import url from 'node:url';
 
 import { isJsModule, wrapModule } from './js';
+import { prepareVirtualEnvVarModule } from '../environmentVariableSerializerPlugin';
 
 type Options = {
   clientUrl: EntryPointURL;
@@ -58,7 +59,12 @@ function generateModules(
       const sourceMappingURL = getURL('map');
       const sourceURL = jscSafeUrl.toJscSafeUrl(getURL('bundle'));
       const code =
-        prepareModule(module, graph, options) +
+        prepareModule(
+          // Inject env var support for dev.
+          prepareVirtualEnvVarModule(module, graph),
+          graph,
+          options
+        ) +
         `\n//# sourceMappingURL=${sourceMappingURL}\n` +
         `//# sourceURL=${sourceURL}\n`;
 

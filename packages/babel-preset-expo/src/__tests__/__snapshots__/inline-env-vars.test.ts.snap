@@ -25,3 +25,21 @@ env.EXPO_PUBLIC_URL;
 
 process.env['other'];"
 `;
+
+exports[`inlines environment variables in development 1`] = `
+{
+  "code": "var _env2 = require("expo/virtual/env");
+var foo = _env2.env.EXPO_PUBLIC_URL;
+
+function App() {
+  console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
+}",
+  "hasCjsExports": undefined,
+  "metadata": {
+    "publicEnvVars": [
+      "EXPO_PUBLIC_URL",
+      "EXPO_PUBLIC_NODE_ENV",
+    ],
+  },
+}
+`;

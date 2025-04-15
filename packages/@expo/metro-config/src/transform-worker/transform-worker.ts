@@ -131,6 +131,50 @@ export async function transform(
       return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
     }
 
+    if (isClientEnvironment && filename.match(/\/expo\/virtual\/env\.js$/)) {
+      function getAllExpoPublicEnvVars(inputEnv: NodeJS.ProcessEnv = process.env) {
+        // Create an object containing all environment variables that start with EXPO_PUBLIC_
+        const env = {};
+        for (const key in inputEnv) {
+          if (key.startsWith('EXPO_PUBLIC_')) {
+            // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+            env[key] = inputEnv[key];
+          }
+        }
+        return env;
+      }
+
+      console.log(
+        'options.customTransformOptions?.fullEnv',
+        options.customTransformOptions?.fullEnv
+      );
+
+      const contents = `export const env = {${Object.keys(
+        options.customTransformOptions?.fullEnv ?? {}
+      )
+        .map(
+          (key) =>
+            `${JSON.stringify(key)}: ${JSON.stringify(options.customTransformOptions?.fullEnv[key])}`
+        )
+        .join(',')}};`;
+      console.log('contents', contents);
+      const res = await worker.transform(
+        config,
+        projectRoot,
+        filename,
+        Buffer.from(contents),
+        options
+      );
+      console.log(
+        'The virtual env file was removed from the client JS bundle by Expo CLI. ' + filename
+      );
+      // Add skipCache to the output.
+      // This ensures that the file is not cached and always reloaded.
+      res.output[0].data.skipCache = true;
+
+      return res;
+    }
+
     return worker.transform(config, projectRoot, filename, data, options);
   }
 
