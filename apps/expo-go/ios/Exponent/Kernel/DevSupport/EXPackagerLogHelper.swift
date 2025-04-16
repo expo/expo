@@ -23,11 +23,9 @@ import React
   }
 
   deinit {
-    if let socket = socket, connected {
-      socket.close()
-      connected = false
-      self.socket = nil
-    }
+    socket?.close()
+    self.socket = nil
+    connected = false
   }
 
   @objc func sendMessage(_ message: String, withCompletion completion: @escaping () -> Void) {
