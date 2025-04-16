@@ -31,6 +31,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     const localPath = await resolveRemoteBuildCache(projectRoot, {
       platform: 'android',
       provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      runOptions: options,
     });
     if (localPath) {
       options.binary = localPath;
@@ -82,6 +83,15 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     headless: !props.shouldStartBundler,
   });
 
+  if (!options.binary) {
+    // Find the APK file path
+    const apkFile = await resolveInstallApkNameAsync(props.device.device, props);
+    if (apkFile) {
+      // Attempt to install the APK from the file path
+      options.binary = path.join(props.apkVariantDirectory, apkFile);
+    }
+  }
+
   if (options.binary) {
     // Attempt to install the APK from the file path
     const binaryPath = path.join(options.binary);
@@ -115,27 +125,18 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await uploadRemoteBuildCache(projectRoot, {
       platform: 'android',
       provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      buildPath: options.binary,
     });
   }
 }
 
 async function installAppAsync(androidProjectRoot: string, props: ResolvedOptions) {
-  // Find the APK file path
-  const apkFile = await resolveInstallApkNameAsync(props.device.device, props);
-
-  if (apkFile) {
-    // Attempt to install the APK from the file path
-    const binaryPath = path.join(props.apkVariantDirectory, apkFile);
-    Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
-    await props.device.installAppAsync(binaryPath);
-  } else {
-    // If we cannot resolve the APK file path then we can attempt to install using Gradle.
-    // This offers more advanced resolution that we may not have first class support for.
-    Log.log('› Failed to locate binary file, installing with Gradle...');
-    await installAsync(androidProjectRoot, {
-      variant: props.variant ?? 'debug',
-      appName: props.appName ?? 'app',
-      port: props.port,
-    });
-  }
+  // If we cannot resolve the APK file path then we can attempt to install using Gradle.
+  // This offers more advanced resolution that we may not have first class support for.
+  Log.log('› Failed to locate binary file, installing with Gradle...');
+  await installAsync(androidProjectRoot, {
+    variant: props.variant ?? 'debug',
+    appName: props.appName ?? 'app',
+    port: props.port,
+  });
 }

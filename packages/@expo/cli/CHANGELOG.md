@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for using build variants with remote build cache ([#36165](https://github.com/expo/expo/pull/36165) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 - Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
