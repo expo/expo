@@ -3,7 +3,7 @@
 import Foundation
 import React
 
-@objc enum EXLogLevel: Int {
+@objc enum EXPackagerLogLevel: Int {
   case info
   case warning
   case error
@@ -14,10 +14,10 @@ import React
   private var socket: SRWebSocket?
   private var bundleURL: URL
   private var pendingMessage: String?
-  private var logLevel: EXLogLevel
+  private var logLevel: EXPackagerLogLevel
   private var onComplete: (() -> Void)?
 
-  @objc init(bundleURL: URL, level: EXLogLevel) {
+  @objc init(bundleURL: URL, level: EXPackagerLogLevel) {
     self.bundleURL = bundleURL
     self.logLevel = level
   }
@@ -50,7 +50,7 @@ import React
     log(message, withBundleUrl: url, level: .error)
   }
 
-  @objc static func log(_ message: String, withBundleUrl url: URL, level: EXLogLevel) {
+  @objc static func log(_ message: String, withBundleUrl url: URL, level: EXPackagerLogLevel) {
     var strongHelper: EXPackagerLogHelper? = EXPackagerLogHelper(bundleURL: url, level: level)
     strongHelper?.sendMessage(message) {
       strongHelper = nil
