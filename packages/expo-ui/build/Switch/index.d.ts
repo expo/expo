@@ -27,7 +27,7 @@ export type SwitchProps = {
     /**
      * Label for the switch.
      *
-     * > On Android the label has an effect only when the `Switch` is used inside a `ContextMenu`.
+     * > On Android, the label has an effect only when the `Switch` is used inside a `ContextMenu`.
      * @platform ios
      */
     label?: string;

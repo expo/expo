@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = exports.getExactRoutes = exports.getRoutes = void 0;
+exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = void 0;
+exports.getRoutes = getRoutes;
+exports.getExactRoutes = getExactRoutes;
 const getRoutesCore_1 = require("./getRoutesCore");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -73,14 +75,12 @@ function getRoutes(contextModule, options = {}) {
         ...options,
     });
 }
-exports.getRoutes = getRoutes;
 function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
-exports.getExactRoutes = getExactRoutes;
 var getRoutesCore_2 = require("./getRoutesCore");
 Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
 Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });

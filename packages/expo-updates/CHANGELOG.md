@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 0.28.5 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2025-04-14
+
+### 🎉 New features
+
+- [Android] Added `EX_UPDATES_COPY_EMBEDDED_ASSETS` flag which is false by default, to not copy embedded assets. ([#36059](https://github.com/expo/expo/pull/36059) by [@kudo](https://github.com/kudo))
+
+## 0.28.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 0.28.0 — 2025-04-04
 
 ### 🛠 Breaking changes

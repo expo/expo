@@ -4,6 +4,7 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
+    "moduleResolution": "node10",
     "resolveJsonModule": true,
     "types": [
       "jest",

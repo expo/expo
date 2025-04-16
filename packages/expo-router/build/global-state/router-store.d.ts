@@ -28,19 +28,20 @@ export declare class RouterStore {
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
     storeSubscribers: Set<() => void>;
-    linkTo: any;
-    getSortedRoutes: any;
-    goBack: any;
-    canGoBack: any;
-    push: any;
-    dismiss: any;
-    dismissTo: any;
-    replace: any;
-    dismissAll: any;
-    canDismiss: any;
-    setParams: any;
-    navigate: any;
-    reload: any;
+    linkTo: (originalHref: string, options?: LinkToOptions | undefined) => void;
+    getSortedRoutes: () => RouteNode[];
+    goBack: () => void;
+    canGoBack: () => boolean;
+    push: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
+    dismiss: (count?: number | undefined) => void;
+    dismissTo: (href: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
+    replace: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
+    dismissAll: () => void;
+    canDismiss: () => boolean;
+    setParams: (params?: Record<string, string | number | (string | number)[] | undefined> | undefined) => any;
+    navigate: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
+    reload: () => void;
+    prefetch: (href: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, linkingConfigOptions?: LinkingConfigOptions): void;
     updateState(state: ResultState, nextState?: any): void;
     getRouteInfo(state: ResultState): UrlObject;
@@ -56,26 +57,26 @@ export declare class RouterStore {
         key: string;
         index: number;
         routeNames: string[];
-        history?: unknown[] | undefined;
+        history?: unknown[];
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
-        stale?: true | undefined;
+        stale?: true;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
-        state?: (Partial<Omit<Readonly<{
+        state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
-            history?: unknown[] | undefined;
+            history?: unknown[];
             routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
-            stale?: true | undefined;
+            stale?: true;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-        }> & any) | undefined;
+        }> & /*elided*/ any;
     }) | undefined;
     applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
 }

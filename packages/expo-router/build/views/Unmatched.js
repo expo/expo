@@ -1,11 +1,11 @@
+"use strict";
 // Copyright © 2024 650 Industries.
 'use client';
-"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Unmatched = void 0;
+exports.Unmatched = Unmatched;
 const expo_linking_1 = require("expo-linking");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -118,7 +118,6 @@ function Unmatched() {
       </react_native_1.View>
     </react_native_1.View>);
 }
-exports.Unmatched = Unmatched;
 function NotFoundAsset() {
     return <react_native_1.Image source={require('expo-router/assets/unmatched.png')} style={styles.image}/>;
 }

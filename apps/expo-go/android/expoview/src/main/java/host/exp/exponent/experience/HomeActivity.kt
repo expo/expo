@@ -2,9 +2,15 @@
 package host.exp.exponent.experience
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Debug
-import com.facebook.react.runtime.ReactSurfaceView
+import android.view.View
+import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
+import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -28,16 +34,14 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
-import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
@@ -45,10 +49,12 @@ import host.exp.exponent.utils.ExperienceRTLManager
 import org.json.JSONException
 
 open class HomeActivity : BaseExperienceActivity() {
-
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
+    configureSplashScreen(installSplashScreen())
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
+
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
@@ -63,14 +69,15 @@ open class HomeActivity : BaseExperienceActivity() {
     // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
     // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
     // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
-    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, this)
+    ExperienceActivityUtils.configureStatusBar(
+      exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
+      this
+    )
 
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
 
     ExperienceRTLManager.setRTLPreferences(this, allowRTL = false, forceRTL = false)
-
-    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactSurfaceView::class.java, true)
   }
 
   override fun shouldCreateLoadingView(): Boolean {
@@ -108,9 +115,41 @@ open class HomeActivity : BaseExperienceActivity() {
     }
   }
 
+  private fun configureSplashScreen(customSplashscreen: SplashScreen) {
+    val contentView = findViewById<View>(android.R.id.content)
+    val observer = contentView.viewTreeObserver
+    observer.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+      override fun onPreDraw(): Boolean {
+        if (isLoading) {
+          return false
+        }
+        contentView.viewTreeObserver.removeOnPreDrawListener(this)
+        return true
+      }
+    })
+
+    customSplashscreen.setOnExitAnimationListener { splashScreenViewProvider ->
+      val splashScreenView = splashScreenViewProvider.view
+      splashScreenView
+        .animate()
+        .setDuration(450)
+        .alpha(0.0f)
+        .setInterpolator(AccelerateInterpolator())
+        .withEndAction {
+          splashScreenViewProvider.remove()
+        }.start()
+    }
+  }
+
   override fun onError(intent: Intent) {
     intent.putExtra(ErrorActivity.IS_HOME_KEY, true)
     kernel.setHasError()
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    // Will update the navigation bar colors if the system theme has changed. This is only relevant for the three button navigation bar.
+    enableEdgeToEdge()
+    super.onConfigurationChanged(newConfig)
   }
 
   companion object : ModulesProvider {

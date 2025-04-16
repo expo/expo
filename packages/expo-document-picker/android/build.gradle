@@ -4,13 +4,13 @@ plugins {
 }
 
 group = "host.exp.exponent"
-version = "13.1.0"
+version = "13.1.2"
 
 android {
   namespace "expo.modules.documentpicker"
   defaultConfig {
     versionCode 17
-    versionName '13.1.0'
+    versionName '13.1.2'
   }
 }
 

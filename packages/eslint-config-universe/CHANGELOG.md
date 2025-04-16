@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 14.2.0 — 2025-04-09
+
+### 💡 Others
+
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+- Update `prettier` dependency to new minor version. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+- Update other packages patch version for various fixes. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+
 ## 14.1.0 — 2025-04-04
 
 ### 💡 Others

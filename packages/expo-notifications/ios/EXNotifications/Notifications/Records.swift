@@ -289,11 +289,10 @@ public struct CategoryActionRecord: Record {
 public struct CategoryOptionsRecord: Record {
   public init() {}
 
-  // allowAnnouncement deprecated in iOS 15 and later
-  /*
+  // allowAnnouncement deprecated in iOS 15 and later but still exposed on the JS side
+  // we set it to false because the option is ignored by iOS
   @Field
-  var allowAnnouncement: Bool?
-   */
+  var allowAnnouncement: Bool = false
   @Field
   var allowInCarPlay: Bool?
   @Field
@@ -310,8 +309,6 @@ public struct CategoryOptionsRecord: Record {
   var showSubtitle: Bool?
 
   init(_ category: UNNotificationCategory) {
-    // allowAnnouncement deprecated in iOS 15 and later
-    // record.allowAnnouncement = category.options.contains(.allowAnnouncement)
     self.allowInCarPlay = category.options.contains(.allowInCarPlay)
     self.categorySummaryFormat = category.categorySummaryFormat
     self.customDismissAction = category.options.contains(.customDismissAction)
@@ -329,12 +326,6 @@ public struct CategoryOptionsRecord: Record {
     if allowInCarPlay == true {
       options.insert(.allowInCarPlay)
     }
-    // allowAnnouncement deprecated in iOS 15 and later
-    /*
-    if allowAnnouncement as? Bool ?? false {
-      options.insert(.allowAnnouncement)
-    }
-     */
     if showTitle == true {
       options.insert(.hiddenPreviewsShowTitle)
     }
@@ -402,7 +393,7 @@ struct NotificationRequestContentRecord: Record {
   @Field
   var badge: Int?
   @Field
-  var userInfo: [String: Any]?
+  var data: [String: Any]?
   @Field
   var categoryIdentifier: String?
   @Field
@@ -492,7 +483,7 @@ struct NotificationRequestContentRecord: Record {
       content.badge = NSNumber.init(value: badge)
     }
 
-    if let userInfo = userInfo {
+    if let userInfo = data {
       content.userInfo = userInfo
     }
 

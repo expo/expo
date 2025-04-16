@@ -84,6 +84,17 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
+  const isReactCanaryEnabled =
+    (exp.experiments?.reactServerComponentRoutes ||
+      serverActionsEnabled ||
+      exp.experiments?.reactCanary) ??
+    false;
+
+  if (isReactCanaryEnabled) {
+    // The fast resolver is required for React canary to work as it can switch the node_modules location for react imports.
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -150,11 +161,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponentRoutes ||
-        serverActionsEnabled ||
-        exp.experiments?.reactCanary) ??
-      false,
+    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,

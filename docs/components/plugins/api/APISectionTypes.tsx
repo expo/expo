@@ -4,6 +4,7 @@ import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, CODE, MONOSPACE, CALLOUT, RawH4, DEMI } from '~/ui/components/Text';
 
@@ -25,6 +26,7 @@ import {
   renderIndexSignature,
   getCommentContent,
   listParams,
+  defineLiteralType,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
@@ -35,24 +37,6 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
-};
-
-const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
-  const uniqueTypes = Array.from(
-    new Set(
-      types.map((t: TypeDefinitionData) => {
-        if ('head' in t) {
-          return t.head;
-        } else if ('value' in t) {
-          return t.value && typeof t.value;
-        }
-      })
-    )
-  );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
-    return <CODE>{uniqueTypes[0]}</CODE>;
-  }
-  return null;
 };
 
 const renderTypeDeclarationTable = (
@@ -109,8 +93,10 @@ const renderTypeMethodEntry = (
   return null;
 };
 
-const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => {
-  const { name, flags, type, comment, defaultValue, signatures, kind } = x;
+const renderTypePropertyRow = (
+  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -148,14 +134,12 @@ const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => 
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
         {params?.map(param => (
-          <div
-            className="mt-2 flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5"
-            key={param.name}>
-            <MONOSPACE>
-              {param.name}: {resolveTypeName(param.type, sdkVersion)}
-            </MONOSPACE>
-            <APICommentTextBlock comment={param.comment} />
-          </div>
+          <APIParamDetailsBlock
+            key={param.name}
+            param={param}
+            sdkVersion={sdkVersion}
+            className="mt-2"
+          />
         ))}
       </Cell>
     </Row>
@@ -282,7 +266,7 @@ const renderType = (
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
-                <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
+                <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
                 {index + 1 !== literalTypes.length ? (
                   <span className="text-quaternary"> | </span>
                 ) : null}

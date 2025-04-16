@@ -2,9 +2,7 @@ import { DoctorMultiCheck, DoctorMultiCheckItemBase } from './DoctorMultiCheck';
 import { DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 
-export type DirectPackageInstallCheckItem = {
-  packageName: string;
-} & DoctorMultiCheckItemBase;
+export type DirectPackageInstallCheckItem = { packageName: string } & DoctorMultiCheckItemBase;
 
 const baseCheckItem = {
   getMessage: (packageName: string) =>
@@ -27,34 +25,13 @@ const shouldBeInstalledGloballyItem = {
 };
 
 export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
-  {
-    packageName: 'expo-modules-core',
-    ...baseCheckItem,
-  },
-  {
-    packageName: 'expo-modules-autolinking',
-    ...baseCheckItem,
-  },
-  {
-    packageName: 'expo-dev-launcher',
-    ...baseCheckItem,
-  },
-  {
-    packageName: 'expo-dev-menu',
-    ...baseCheckItem,
-  },
-  {
-    packageName: 'npm',
-    ...shouldBeInstalledGloballyItem,
-  },
-  {
-    packageName: 'yarn',
-    ...shouldBeInstalledGloballyItem,
-  },
-  {
-    packageName: 'pnpm',
-    ...shouldBeInstalledGloballyItem,
-  },
+  { packageName: 'expo-modules-core', ...baseCheckItem },
+  { packageName: 'expo-modules-autolinking', ...baseCheckItem },
+  { packageName: 'expo-dev-launcher', ...baseCheckItem },
+  { packageName: 'expo-dev-menu', ...baseCheckItem },
+  { packageName: 'npm', ...shouldBeInstalledGloballyItem },
+  { packageName: 'yarn', ...shouldBeInstalledGloballyItem },
+  { packageName: 'pnpm', ...shouldBeInstalledGloballyItem },
   {
     packageName: '@types/react-native',
     getMessage: () =>
@@ -67,19 +44,10 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
       `The package  "expo-permissions" was deprecated in SDK 41 and should be removed from your project because it may no longer compile on the latest SDK. It was replaced by permissions methods directly on modules, eg: MediaLibrary.requestPermissionsAsync().`,
     sdkVersionRange: '>=50.0.0',
   },
-  {
-    packageName: 'expo-firebase-analytics',
-    ...expoFirebaseCheckItem,
-  },
-  {
-    packageName: 'expo-firebase-recaptcha',
-    ...expoFirebaseCheckItem,
-  },
+  { packageName: 'expo-firebase-analytics', ...expoFirebaseCheckItem },
+  { packageName: 'expo-firebase-recaptcha', ...expoFirebaseCheckItem },
   // unlikely to be installed directly, but just in case
-  {
-    packageName: 'expo-firebase-core',
-    ...expoFirebaseCheckItem,
-  },
+  { packageName: 'expo-firebase-core', ...expoFirebaseCheckItem },
   {
     packageName: 'expo-app-loading',
     getMessage: (packageName: string) =>
@@ -114,6 +82,7 @@ export class DirectPackageInstallCheck extends DoctorMultiCheck<DirectPackageIns
     return {
       isSuccessful: issues.length === 0,
       issues,
+      advice: issues.length ? ['Remove these packages from your package.json.'] : [],
     };
   }
 }

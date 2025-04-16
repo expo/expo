@@ -38,7 +38,7 @@ public class ExpoNotificationsChannelSerializer implements NotificationsChannelS
     result.putBoolean(SHOW_BADGE_KEY, channel.canShowBadge());
     result.putString(SOUND_KEY, toString(channel.getSound()));
     result.putBundle(SOUND_AUDIO_ATTRIBUTES_KEY, toBundle(channel.getAudioAttributes()));
-    result.putDoubleArray(VIBRATION_PATTERN_KEY, toArray(channel.getVibrationPattern()));
+    result.putLongArray(VIBRATION_PATTERN_KEY, channel.getVibrationPattern());
     result.putBoolean(ENABLE_LIGHTS_KEY, channel.shouldShowLights());
     result.putBoolean(ENABLE_VIBRATE_KEY, channel.shouldVibrate());
     return result;
@@ -83,19 +83,6 @@ public class ExpoNotificationsChannelSerializer implements NotificationsChannelS
     flags.putBoolean(AUDIO_ATTRIBUTES_FLAGS_ENFORCE_AUDIBILITY_KEY, (attributes.getFlags() & AudioAttributes.FLAG_AUDIBILITY_ENFORCED) > 0);
     result.putBundle(AUDIO_ATTRIBUTES_FLAGS_KEY, flags);
 
-    return result;
-  }
-
-  @Nullable
-  private double[] toArray(@Nullable long[] array) {
-    if (array == null) {
-      return null;
-    }
-
-    double[] result = new double[array.length];
-    for (int i = 0; i < array.length; i++) {
-      result[i] = array[i];
-    }
     return result;
   }
 }

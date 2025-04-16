@@ -40,6 +40,7 @@ export const mapNotificationRequest = (request) => ({
     ...request,
     content: mapNotificationContent(request.content),
 });
+let didWarn = false;
 /**
  * @hidden
  * Does any required processing of notification content from native code
@@ -50,14 +51,18 @@ export const mapNotificationRequest = (request) => ({
  */
 export const mapNotificationContent = (content) => {
     try {
+        // @ts-expect-error: TODO(@kitten): This is not present in the types! This is error prone
         const dataString = content['dataString'];
         if (typeof dataString === 'string') {
             const mappedContent = { ...content };
             mappedContent.data = JSON.parse(dataString);
             Object.defineProperty(mappedContent, 'dataString', {
                 get() {
-                    // TODO(vonovak) remove this warning and delete dataString entry in a next version
-                    console.warn('reading dataString is deprecated, use data instead');
+                    if (!didWarn) {
+                        didWarn = true;
+                        // TODO(vonovak) remove this warning and delete dataString entry in a next version
+                        console.warn('reading dataString is deprecated, use data instead');
+                    }
                     return dataString;
                 },
             });

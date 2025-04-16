@@ -2,6 +2,8 @@ package expo.modules.updates.launcher
 
 import android.content.Context
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
+import expo.modules.updates.BuildConfig
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
@@ -18,6 +20,7 @@ import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import org.json.JSONObject
 import java.io.File
 
@@ -44,7 +47,8 @@ class DatabaseLauncher(
   private val updatesDirectory: File?,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
-  private val logger: UpdatesLogger
+  private val logger: UpdatesLogger,
+  private val shouldCopyEmbeddedAssets: Boolean = BuildConfig.EX_UPDATES_COPY_EMBEDDED_ASSETS
 ) : Launcher {
   private val loaderFiles: LoaderFiles = LoaderFiles()
   override var launchedUpdate: UpdateEntity? = null
@@ -97,7 +101,18 @@ class DatabaseLauncher(
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, launchedUpdate)
 
-    val launchAssetFile = ensureAssetExists(launchAsset, database, embeddedUpdate, extraHeaders)
+    val embeddedLaunchAsset = if (!shouldCopyEmbeddedAssets) {
+      embeddedUpdate?.assetEntityList
+        ?.find { it.key == launchAsset.key }
+        ?.embeddedAssetFilename
+        ?.let {
+          // react-native uses `assets://` to indicate loading a bundle from assets
+          "assets://$it"
+        }
+    } else {
+      null
+    }
+    val launchAssetFile = embeddedLaunchAsset ?: ensureAssetExists(launchAsset, database, embeddedUpdate, extraHeaders)
     if (launchAssetFile != null) {
       this.launchAssetFile = launchAssetFile.toString()
     }
@@ -110,12 +125,14 @@ class DatabaseLauncher(
           // we took care of this one above
           continue
         }
-        val filename = asset.relativePath
-        if (filename != null) {
+        val filename = asset.relativePath ?: continue
+        if (!AndroidResourceAssetUtils.isAndroidResourceAsset(filename)) {
           val assetFile = ensureAssetExists(asset, database, embeddedUpdate, extraHeaders)
           if (assetFile != null) {
             this[asset] = Uri.fromFile(assetFile).toString()
           }
+        } else {
+          this[asset] = filename
         }
       }
     }
@@ -158,6 +175,20 @@ class DatabaseLauncher(
         if (asset.isLaunchAsset) {
           continue
         }
+
+        if (!shouldCopyEmbeddedAssets) {
+          val filename = AndroidResourceAssetUtils.createEmbeddedFilenameForAsset(asset)
+          if (filename != null) {
+            asset.relativePath = filename
+            this[asset] = filename
+            logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
+          } else {
+            val cause = Exception("Missing embedded asset")
+            logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
+          }
+          continue
+        }
+
         val filename = UpdatesUtils.createFilenameForAsset(asset)
         asset.relativePath = filename
         val assetFile = File(updatesDirectory, filename)
@@ -175,7 +206,13 @@ class DatabaseLauncher(
     }
   }
 
-  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, embeddedUpdate: EmbeddedUpdate?, extraHeaders: JSONObject): File? {
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  fun ensureAssetExists(
+    asset: AssetEntity,
+    database: UpdatesDatabase,
+    embeddedUpdate: EmbeddedUpdate?,
+    extraHeaders: JSONObject
+  ): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
     if (!assetFileExists) {

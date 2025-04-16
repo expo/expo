@@ -45,15 +45,18 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule
@@ -100,7 +103,7 @@ export function parseTrigger(userFacingTrigger) {
         return timeIntervalTrigger;
     }
     return Platform.select({
-        default: null,
+        default: null, // There's no notion of channels on platforms other than Android.
         android: {
             type: 'channel',
             channelId: typeof userFacingTrigger === 'object' &&

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shouldHandleMouseEvent = void 0;
+exports.default = useLinkToPathProps;
+exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
 const react_native_1 = require("react-native");
 const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
 const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
@@ -47,7 +48,6 @@ function useLinkToPathProps({ href, ...options }) {
         onPress,
     };
 }
-exports.default = useLinkToPathProps;
 function shouldHandleMouseEvent(event) {
     if (react_native_1.Platform.OS !== 'web') {
         return !event?.defaultPrevented;
@@ -58,5 +58,4 @@ function shouldHandleMouseEvent(event) {
     }
     return false;
 }
-exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
 //# sourceMappingURL=useLinkToPathProps.js.map

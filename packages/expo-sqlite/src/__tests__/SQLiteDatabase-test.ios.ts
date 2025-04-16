@@ -95,8 +95,7 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test2', 456);
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for await (const row of db.getEachAsync<TestEntity>(
+    for await (const _row of db.getEachAsync<TestEntity>(
       'SELECT * FROM test ORDER BY intValue DESC'
     )) {
       break;
@@ -114,8 +113,7 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test2', 456);
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const row of db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+    for (const _row of db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
       break;
     }
     const mockStatement = await mockPrepareSync.mock.results[0].value;
@@ -194,7 +192,7 @@ INSERT INTO users (name) VALUES ('aaa');
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }
         resolve(null);
-      } catch (e) {
+      } catch (e: any) {
         reject(new Error(`Exception from promise2: ${e.toString()}`));
       }
     });
@@ -232,7 +230,7 @@ INSERT INTO users (name) VALUES ('aaa');
           throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
         }
         resolve(null);
-      } catch (e) {
+      } catch (e: any) {
         reject(new Error(`Exception from promise2: ${e.toString()}`));
       }
     });

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoUseDomDirectivePlugin = void 0;
+exports.expoUseDomDirectivePlugin = expoUseDomDirectivePlugin;
 /**
  * Copyright © 2024 650 Industries.
  */
@@ -124,7 +124,6 @@ function expoUseDomDirectivePlugin(api) {
         },
     };
 }
-exports.expoUseDomDirectivePlugin = expoUseDomDirectivePlugin;
 function assertExpoMetadata(metadata) {
     if (metadata && typeof metadata === 'object') {
         return;

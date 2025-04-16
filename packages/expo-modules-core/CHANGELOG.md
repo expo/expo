@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 2.3.5 — 2025-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `UnwrappedChildren` not get the unwrapped content view for SwiftUI integration. ([#36112](https://github.com/expo/expo/pull/36112) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed the limitation to use `collapsable={false}` when hosting a UIView in SwiftUI views. ([#36153](https://github.com/expo/expo/pull/36153) by [@kudo](https://github.com/kudo))
+
+## 2.3.4 — 2025-04-11
+
+### 🐛 Bug fixes
+
+- Change registerWebModule to work with minified classes. ([#35946](https://github.com/expo/expo/pull/35946) by [@aleqsio](https://github.com/aleqsio))
+
+## 2.3.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.2 — 2025-04-09
+
+### 💡 Others
+
+- [Android] Migrate `AppLoaderProvider` to kotlin. ([#36035](https://github.com/expo/expo/pull/36035) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.3.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 2.3.0 — 2025-04-04
 
 ### 🛠 Breaking changes

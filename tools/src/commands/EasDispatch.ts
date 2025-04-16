@@ -211,9 +211,22 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
-    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
-      stdio: isDebug ? 'inherit' : 'pipe',
-    });
+    let opensslVersionCommandOutput = '';
+
+    // Handle different openssl versions
+    try {
+      const { stdout } = await spawnAsync('openssl', ['--version'], {
+        stdio: isDebug ? 'inherit' : 'pipe',
+      });
+      opensslVersionCommandOutput = stdout.toString();
+    } catch (err) {
+      console.log(`'openssl --version' failed, trying 'openssl version'. ${err}`);
+      const { stdout } = await spawnAsync('openssl', ['version'], {
+        stdio: isDebug ? 'inherit' : 'pipe',
+      });
+      opensslVersionCommandOutput = stdout.toString();
+    }
+
     const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
     const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
     assert(matches, 'Could not parse openssl version');
@@ -411,11 +424,16 @@ async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<
   delete parsedPlist.NSLocationAlwaysUsageDescription;
 
   logger.info(
-    `Removing location, audio and remonte-notfication from UIBackgroundModes from ios/Exponent/Supporting/Info.plist`
+    `Removing location, audio, background-fetch, background-task and remote-notfication from UIBackgroundModes from ios/Exponent/Supporting/Info.plist`
   );
   parsedPlist.UIBackgroundModes = parsedPlist.UIBackgroundModes.filter(
-    (i: string) => !['location', 'audio', 'remote-notification'].includes(i)
+    (i: string) => !['location', 'audio', 'remote-notification', 'fetch', 'processing'].includes(i)
   );
+  logger.info(
+    'Removing BGTaskSchedulerPermittedIdentifiers key from ios/Exponent/Supporting/Info.plist'
+  );
+  delete parsedPlist.BGTaskSchedulerPermittedIdentifiers;
+
   await fs.writeFile(INFO_PLIST_PATH, plist.build(parsedPlist));
 }
 

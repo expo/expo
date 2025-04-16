@@ -9,6 +9,7 @@ import {
   NotificationBehavior,
   NotificationCategoryOptions,
   NotificationChannelInput,
+  NotificationContentInput,
   NotificationHandler,
   NotificationTriggerInput,
   SchedulableNotificationTriggerInput,
@@ -534,23 +535,24 @@ export async function test(t) {
     t.describe('Notification Categories', () => {
       const vanillaButton = {
         identifier: 'vanillaButton',
-        buttonTitle: 'Plain Option',
+        buttonTitle: 'Destructive Option',
         options: {
           isDestructive: true,
           isAuthenticationRequired: true,
           opensAppToForeground: false,
         },
-      };
+      } satisfies Notifications.NotificationAction;
+
       const textResponseButton = {
         identifier: 'textResponseButton',
         buttonTitle: 'Click to Respond with Text',
         options: {
-          isDestructive: true,
+          isDestructive: false,
           isAuthenticationRequired: true,
           opensAppToForeground: true,
         },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
-      };
+      } satisfies Notifications.NotificationAction;
 
       type CategoryParams = {
         identifier: string;
@@ -558,7 +560,7 @@ export async function test(t) {
         options?: NotificationCategoryOptions;
       };
 
-      const testCategory1: CategoryParams = {
+      const testCategory1 = {
         identifier: 'testNotificationCategory1',
         actions: [vanillaButton],
         options: {
@@ -571,13 +573,13 @@ export async function test(t) {
           categorySummaryFormat: '',
           intentIdentifiers: [],
         },
-      };
-      const testCategory2: CategoryParams = {
+      } as const satisfies CategoryParams;
+      const testCategory2 = {
         identifier: 'testNotificationCategory2',
         actions: [vanillaButton, textResponseButton],
         options: {
           customDismissAction: false,
-          allowInCarPlay: false,
+          allowInCarPlay: true,
           showTitle: true,
           showSubtitle: true,
           allowAnnouncement: false,
@@ -585,7 +587,7 @@ export async function test(t) {
           previewPlaceholder: 'exPreview',
           intentIdentifiers: [],
         },
-      };
+      } as const satisfies CategoryParams;
 
       const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
 
@@ -630,45 +632,105 @@ export async function test(t) {
             await Notifications.deleteNotificationCategoryAsync(id);
           }
         });
-        t.it('creates a category with one action successfully', async () => {
-          const resultCategory = await Notifications.setNotificationCategoryAsync(
-            testCategory1.identifier,
-            testCategory1.actions,
-            testCategory1.options
-          );
 
-          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
-          testCategory1.actions.forEach((action, i) => {
-            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
-            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
-            t.expect(action.options).toEqual(
-              t.jasmine.objectContaining(resultCategory.actions[i].options)
+        t.it(
+          'given a category with two actions, presents notifications with the category, and asserts the response',
+          async () => {
+            const resultCategory = await Notifications.setNotificationCategoryAsync(
+              testCategory2.identifier,
+              testCategory2.actions,
+              testCategory2.options
             );
-          });
-          t.expect(testCategory1.options).toEqual(
-            t.jasmine.objectContaining(resultCategory.options)
-          );
-        });
 
-        t.it('creates a category with two actions successfully', async () => {
-          const resultCategory = await Notifications.setNotificationCategoryAsync(
-            testCategory2.identifier,
-            testCategory2.actions,
-            testCategory2.options
-          );
+            function attachResponseListener() {
+              return new Promise<Notifications.NotificationResponse>((resolve) => {
+                const listener = Notifications.addNotificationResponseReceivedListener((event) => {
+                  responseEvents.push(event);
+                  listener.remove();
+                  resolve(event);
+                });
+              });
+            }
 
-          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
-          testCategory2.actions.forEach((action, i) => {
-            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
-            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
-            t.expect(action.options).toEqual(
-              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            t.expect(resultCategory).toEqual({
+              identifier: testCategory2.identifier,
+              actions: [
+                {
+                  identifier: testCategory2.actions[0].identifier,
+                  buttonTitle: testCategory2.actions[0].buttonTitle,
+                  options: {
+                    opensAppToForeground: testCategory2.actions[0].options.opensAppToForeground,
+                    ...(Platform.OS === 'ios' && testCategory2.actions[0].options),
+                  },
+                  textInput: null,
+                },
+                {
+                  identifier: testCategory2.actions[1].identifier,
+                  buttonTitle: testCategory2.actions[1].buttonTitle,
+                  options: {
+                    opensAppToForeground: testCategory2.actions[1].options.opensAppToForeground,
+                    ...(Platform.OS === 'ios' && testCategory2.actions[1].options),
+                  },
+                  textInput: {
+                    placeholder: testCategory2.actions[1].textInput.placeholder,
+                    ...(Platform.OS === 'ios' && {
+                      submitButtonTitle: testCategory2.actions[1].textInput.submitButtonTitle,
+                      title: testCategory2.actions[1].buttonTitle,
+                    }),
+                  },
+                },
+              ],
+              options:
+                Platform.OS === 'ios'
+                  ? testCategory2.options
+                  : {
+                      // options are iOS-only
+                    },
+            });
+
+            const responseEvents: Notifications.NotificationResponse[] = [];
+            const responsePromise = attachResponseListener();
+
+            Notifications.setNotificationHandler({
+              handleNotification: async () => behaviorEnableAll,
+            });
+
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Press the destructive action button',
+                categoryIdentifier: testCategory2.identifier,
+              },
+              trigger: null,
+            });
+
+            const firstResponse = await responsePromise;
+            t.expect(firstResponse).toEqual(
+              t.jasmine.objectContaining({
+                actionIdentifier: vanillaButton.identifier,
+              })
             );
-          });
-          t.expect(testCategory2.options).toEqual(
-            t.jasmine.objectContaining(resultCategory.options)
-          );
-        });
+
+            // Wait for the second response
+            const secondResponsePromise = attachResponseListener();
+
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Enter some response text',
+                categoryIdentifier: testCategory2.identifier,
+              },
+              trigger: null,
+            });
+
+            const secondResponse = await secondResponsePromise;
+            t.expect(secondResponse).toEqual(
+              t.jasmine.objectContaining({
+                actionIdentifier: textResponseButton.identifier,
+                userText: t.jasmine.stringMatching(/.+/),
+              })
+            );
+          },
+          15000
+        );
       });
 
       t.describe('deleteNotificationCategoriesAsync()', () => {
@@ -895,12 +957,14 @@ export async function test(t) {
 
     t.describe('scheduleNotificationAsync', () => {
       const identifier = 'test-scheduled-notification';
-      const notification = {
+      const notificationContent: NotificationContentInput = {
         title: 'Scheduled notification',
+        body: 'below title',
         data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
         color: '#FF0000',
+        sound: 'pop_sound.wav',
       };
 
       t.afterEach(async () => {
@@ -915,11 +979,58 @@ export async function test(t) {
             Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
+
           await waitFor(6000);
-          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          const platformTrigger =
+            Platform.OS === 'android'
+              ? {
+                  channelId: null,
+                }
+              : {
+                  class: 'UNTimeIntervalNotificationTrigger',
+                };
+
+          const platformContent =
+            Platform.OS === 'android'
+              ? {
+                  vibrationPattern: [100, 100, 100, 100, 100, 100],
+                  color: '#FFFF0000',
+                  autoDismiss: true,
+                  sticky: false,
+                }
+              : {
+                  launchImageName: '',
+                  categoryIdentifier: '',
+                  interruptionLevel: 'active',
+                  attachments: [],
+                  threadIdentifier: '',
+                  targetContentIdentifier: null,
+                };
+
+          t.expect(notificationReceivedSpy).toHaveBeenCalledWith({
+            date: t.jasmine.any(Number),
+            request: {
+              trigger: t.jasmine.objectContaining({
+                seconds: 5,
+                repeats: false,
+                type: 'timeInterval',
+                ...platformTrigger,
+              }),
+              content: t.jasmine.objectContaining({
+                ...platformContent,
+                sound: 'custom',
+                title: notificationContent.title,
+                body: notificationContent.body,
+                subtitle: null,
+                badge: 2,
+                data: { key: 'value' },
+              }),
+              identifier,
+            },
+          });
           subscription.remove();
         },
         10000
@@ -932,7 +1043,7 @@ export async function test(t) {
           try {
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               // @ts-expect-error
               trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
             });
@@ -940,36 +1051,6 @@ export async function test(t) {
             error = err;
           }
           t.expect(error).toBeDefined();
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which contains the custom color',
-        async () => {
-          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription =
-            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notification,
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationReceivedSpy).toHaveBeenCalled();
-          if (Platform.OS === 'android') {
-            t.expect(notificationReceivedSpy).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({
-                request: t.jasmine.objectContaining({
-                  content: t.jasmine.objectContaining({
-                    // #AARRGGBB
-                    color: '#FFFF0000',
-                  }),
-                }),
-              })
-            );
-          }
-          subscription.remove();
         },
         10000
       );
@@ -986,45 +1067,11 @@ export async function test(t) {
           });
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
-          Notifications.setNotificationHandler(null);
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which triggers the handler (with custom sound)',
-        async () => {
-          let notificationFromEvent = undefined;
-          Notifications.setNotificationHandler({
-            handleNotification: async (event) => {
-              notificationFromEvent = event;
-              return behaviorEnableAll;
-            },
-          });
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: {
-              ...notification,
-              sound: 'notification.wav',
-            },
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationFromEvent).toBeDefined();
-          t.expect(notificationFromEvent).toEqual(
-            t.jasmine.objectContaining({
-              request: t.jasmine.objectContaining({
-                content: t.jasmine.objectContaining({
-                  sound: 'custom',
-                }),
-              }),
-            })
-          );
           Notifications.setNotificationHandler(null);
         },
         10000
@@ -1043,7 +1090,7 @@ export async function test(t) {
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: {
-              ...notification,
+              ...notificationContent,
               sound: 'no-such-file.wav',
             },
             trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
@@ -1080,7 +1127,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           await waitFor(6000);
@@ -1101,7 +1148,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1145,7 +1192,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1188,7 +1235,7 @@ export async function test(t) {
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notification,
+            content: notificationContent,
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
@@ -1233,7 +1280,7 @@ export async function test(t) {
             });
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               trigger: {
                 type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                 seconds: 5,
@@ -1257,7 +1304,7 @@ export async function test(t) {
               Notifications.addNotificationReceivedListener(notificationReceivedSpy);
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notification,
+              content: notificationContent,
               trigger: {
                 type: SchedulableTriggerInputTypes.CALENDAR,
                 second: (new Date().getSeconds() + 5) % 60,

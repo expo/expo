@@ -1,10 +1,14 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSingularId = exports.routeToScreen = exports.screenOptionsFactory = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.useSortedScreens = useSortedScreens;
+exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
+exports.screenOptionsFactory = screenOptionsFactory;
+exports.routeToScreen = routeToScreen;
+exports.getSingularId = getSingularId;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -80,7 +84,6 @@ function useSortedScreens(order) {
         : [];
     return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
 }
-exports.useSortedScreens = useSortedScreens;
 function fromImport(value, { ErrorBoundary, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
     if (component?.default && __DEV__) {
@@ -160,7 +163,6 @@ function getQualifiedRouteComponent(value) {
     qualifiedStore.set(value, BaseRoute);
     return BaseRoute;
 }
-exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 function screenOptionsFactory(route, options) {
     return (args) => {
         // Only eager load generated components
@@ -181,11 +183,9 @@ function screenOptionsFactory(route, options) {
         return output;
     };
 }
-exports.screenOptionsFactory = screenOptionsFactory;
 function routeToScreen(route, { options, getId, ...props } = {}) {
     return (<primitives_1.Screen {...props} name={route.route} key={route.route} getId={getId} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
-exports.routeToScreen = routeToScreen;
 function getSingularId(name, options = {}) {
     return name
         .split('/')
@@ -202,5 +202,4 @@ function getSingularId(name, options = {}) {
     })
         .join('/');
 }
-exports.getSingularId = getSingularId;
 //# sourceMappingURL=useScreens.js.map

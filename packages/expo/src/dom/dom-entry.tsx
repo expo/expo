@@ -4,10 +4,21 @@ import '@expo/metro-runtime';
 import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import React from 'react';
 
+import { JSONValue } from './dom.types';
 import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
 
-declare let window: any;
+interface MarshalledProps {
+  name: string[];
+  props: Record<string, JSONValue>;
+  [key: string]: undefined | JSONValue;
+}
+
+interface WindowType {
+  $$EXPO_INITIAL_PROPS?: MarshalledProps;
+}
+
+declare let window: WindowType;
 
 const ACTIONS = getActionsObject!();
 
@@ -54,7 +65,7 @@ function convertError(error: any) {
 }
 
 export function registerDOMComponent(AppModule: any) {
-  function DOMComponentRoot(props) {
+  function DOMComponentRoot(props: Record<string, unknown>) {
     // Props listeners
     const [marshalledProps, setProps] = React.useState(() => {
       if (typeof window.$$EXPO_INITIAL_PROPS === 'undefined') {
@@ -68,7 +79,7 @@ export function registerDOMComponent(AppModule: any) {
     React.useEffect(() => {
       const remove = addEventListener!((msg) => {
         if (msg.type === '$$props') {
-          setProps(msg.data);
+          setProps(msg.data as MarshalledProps);
         }
       });
       return () => {
@@ -79,8 +90,9 @@ export function registerDOMComponent(AppModule: any) {
     const proxyActions = React.useMemo(() => {
       if (!marshalledProps.names) return {};
       // Create a named map { [name: string]: ProxyFunction }
+      // TODO(@kitten): Unclear how this is typed or shaped
       return Object.fromEntries(
-        marshalledProps.names.map((key) => {
+        (marshalledProps.names as string[]).map((key: string) => {
           return [key, ACTIONS[key]];
         })
       );

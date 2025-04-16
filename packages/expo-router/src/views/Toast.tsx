@@ -53,10 +53,10 @@ export function Toast({
       <Animated.View
         style={[
           styles.toast,
-          // @ts-expect-error: fixed is supported on web.
           {
             position: Platform.select({
-              web: 'fixed',
+              // NOTE(@kitten): This isn't typed to support Web properties
+              web: 'fixed' as any,
               default: 'absolute',
             }),
             opacity: value,

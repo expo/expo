@@ -2,19 +2,21 @@
 'use client';
 
 import { View, Text, Button } from 'react-native';
-import React, { useState, useTransition } from 'react';
+import React, { useMemo, useState, useTransition } from 'react';
 
 import { greetWithHeaders } from './server-actions-in-file';
 
 export const Counter = ({ greet }: { greet: (name: string) => Promise<string> }) => {
   const [isPending, startTransition] = useTransition();
   const [count, setCount] = useState(0);
-  const [text, setText] = useState<string | Promise<string>>('');
-  const handleClick1 = () => {
-    startTransition(() => {
-      setText(greet('c=' + count));
-    });
-  };
+
+  const [text, callAction] = React.useActionState<string | null>(async () => {
+    return greet('c=' + count);
+  }, 'click me');
+
+  const headers = useMemo(() => {
+    return greetWithHeaders();
+  }, []);
   return (
     <View
       style={{
@@ -32,11 +34,17 @@ export const Counter = ({ greet }: { greet: (name: string) => Promise<string> })
       />
       <Text testID="client-state-count">{count}</Text>
 
-      <Text onPress={handleClick1} testID="button-server-action">
+      <Text
+        onPress={() => {
+          startTransition(() => {
+            callAction();
+          });
+        }}
+        testID="button-server-action">
         Call Server Action: {count}
       </Text>
 
-      <React.Suspense fallback={<Text>Loading...</Text>}>{greetWithHeaders()}</React.Suspense>
+      <React.Suspense fallback={<Text>Loading...</Text>}>{headers}</React.Suspense>
 
       <View
         style={{

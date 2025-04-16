@@ -179,12 +179,18 @@ public final class SecureStoreModule: Module {
 
     let encodedKey = Data(key.utf8)
 
-    return [
+    var query: [String: Any] = [
       kSecClass as String: kSecClassGenericPassword,
       kSecAttrService as String: service,
       kSecAttrGeneric as String: encodedKey,
       kSecAttrAccount as String: encodedKey
     ]
+
+    if let accessGroup = options.accessGroup {
+      query[kSecAttrAccessGroup as String] = accessGroup
+    }
+
+    return query
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {

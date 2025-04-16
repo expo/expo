@@ -13,11 +13,6 @@ private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
 class PushTokenModule : Module(), FirebaseTokenListener {
-
-  init {
-    addTokenListener(this@PushTokenModule)
-  }
-
   /**
    * Callback called when [FirebaseMessagingDelegate] gets notified of a new token.
    * Emits a [NEW_TOKEN_EVENT_NAME] event.
@@ -37,6 +32,10 @@ class PushTokenModule : Module(), FirebaseTokenListener {
     Name("ExpoPushTokenManager")
 
     Events("onDevicePushToken")
+
+    OnCreate {
+      addTokenListener(this@PushTokenModule)
+    }
 
     /**
      * Fetches Firebase push token and resolves the promise.

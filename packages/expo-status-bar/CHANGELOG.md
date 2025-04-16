@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 2.2.1 — 2025-04-14
+
+### 🎉 New features
+
+- Support imperative functions from `SystemBars` when edge-to-edge is enabled. ([#36156](https://github.com/expo/expo/pull/36156) by [@behenate](https://github.com/behenate))
+
+## 2.2.0 — 2025-04-11
+
+### 🎉 New features
+
+- Use react-native-edge-to-edge system bars when edge-to-edge is enabled ([#36087](https://github.com/expo/expo/pull/36087) by [@brentvatne](https://github.com/brentvatne))
+
 ## 2.1.0 — 2025-04-04
 
 - Warn about potential edge-to-edge interferences. ([#34478](https://github.com/expo/expo/pull/34478) by [@zoontek](https://github.com/zoontek))

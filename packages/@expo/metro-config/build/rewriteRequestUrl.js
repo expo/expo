@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRewriteRequestUrl = exports.getRouterDirectory = void 0;
+exports.getRouterDirectory = getRouterDirectory;
+exports.getRewriteRequestUrl = getRewriteRequestUrl;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
@@ -43,7 +44,6 @@ function getRouterDirectory(projectRoot) {
     debug('Using app as the root directory for Expo Router.');
     return 'app';
 }
-exports.getRouterDirectory = getRouterDirectory;
 function getRewriteRequestUrl(projectRoot) {
     function rewriteExpoRequestUrl(url) {
         // Like: `/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
@@ -98,5 +98,4 @@ function getRewriteRequestUrl(projectRoot) {
     }
     return rewriteExpoRequestUrl;
 }
-exports.getRewriteRequestUrl = getRewriteRequestUrl;
 //# sourceMappingURL=rewriteRequestUrl.js.map

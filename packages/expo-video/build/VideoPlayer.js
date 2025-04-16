@@ -30,12 +30,14 @@ export function useVideoPlayer(source, setup) {
 }
 function parseSource(source) {
     if (typeof source === 'number') {
+        // TODO(@kitten): This seems to not handle the `null` case. Is this correct?
         return { uri: resolveAssetSource(source).uri };
     }
     else if (typeof source === 'string') {
         return { uri: source };
     }
     if (typeof source?.assetId === 'number' && !source.uri) {
+        // TODO(@kitten): This seems to not handle the `null` case. Is this correct?
         return { ...source, uri: resolveAssetSource(source.assetId).uri };
     }
     return source;

@@ -6,7 +6,7 @@
  * @param rgba The pixels in the input image, row-by-row. Must have w*h*4 elements.
  * @returns The ThumbHash as a Uint8Array.
  */
-export declare function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array): Uint8Array;
+export declare function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array): Uint8Array<ArrayBuffer>;
 /**
  * Decodes a ThumbHash to an RGBA image. RGB is not be premultiplied by A.
  *
@@ -16,7 +16,7 @@ export declare function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array):
 export declare function thumbHashToRGBA(hash: Uint8Array): {
     w: number;
     h: number;
-    rgba: Uint8Array;
+    rgba: Uint8Array<ArrayBuffer>;
 };
 /**
  * Extracts the average color from a ThumbHash. RGB is not be premultiplied by A.

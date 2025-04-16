@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 9.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.1 — 2025-04-08
+
+### 💡 Others
+
+- Enabled `newArchEnabled` by default. ([#35964](https://github.com/expo/expo/pull/35964) by [@kudo](https://github.com/kudo))
+
 ## 9.1.0 — 2025-04-04
 
 ### 🎉 New features
