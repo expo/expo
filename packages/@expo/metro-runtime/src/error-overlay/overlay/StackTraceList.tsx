@@ -4,13 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState } from 'react';
+import React, { useState, type SVGProps } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Pressable } from 'react-native';
 
 import type { StackType } from '../Data/LogBoxLog';
 import {
   getStackFormattedLocation,
+  isStackFileAnonymous,
   openFileInEditor,
   type MetroStackFrame,
 } from '../devServerEndpoints';
@@ -193,16 +194,18 @@ export function StackTraceList({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {visibleStack?.map((frame, index) => {
           const { file, lineNumber } = frame;
+          const isLaunchable =
+            !isStackFileAnonymous(frame) &&
+            symbolicationStatus === 'COMPLETE' &&
+            file != null &&
+            lineNumber != null;
           return (
             <StackTraceItem
               key={index}
+              isLaunchable={isLaunchable}
               projectRoot={projectRoot}
               frame={frame}
-              onPress={
-                symbolicationStatus === 'COMPLETE' && file != null && lineNumber != null
-                  ? () => openFileInEditor(file, lineNumber)
-                  : undefined
-              }
+              onPress={isLaunchable ? () => openFileInEditor(file, lineNumber) : undefined}
             />
           );
         })}
@@ -215,51 +218,28 @@ function StackTraceItem({
   frame,
   onPress,
   projectRoot,
+  isLaunchable,
 }: {
+  isLaunchable: boolean;
   frame: MetroStackFrame;
   projectRoot?: string;
-  onPress?: (event: GestureResponderEvent) => void;
+  onPress?: () => void;
 }) {
   return (
-    <Pressable onPress={onPress}>
-      {({ hovered }) => (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            marginLeft: -6,
-            padding: `6px 12px`,
-            borderRadius: 8,
-            transition: 'background-color 0.3s',
-            outlineColor: 'transparent',
-            backgroundColor: hovered ? 'rgba(234.6, 234.6, 244.8, 0.1)' : undefined,
-            opacity: frame.collapse === true ? 0.4 : 1,
-            color: 'var(--expo-log-color-label)',
-          }}>
-          <code
-            style={{
-              fontSize: 14,
-              fontWeight: '400',
-              lineHeight: 1.5,
-            }}>
-            {frame.methodName}
-          </code>
-          <code
-            style={{
-              fontSize: 12,
-              fontWeight: '300',
-              opacity: 0.7,
-            }}>
-            {getStackFormattedLocation(projectRoot ?? '', frame)}
-          </code>
-        </div>
-      )}
-    </Pressable>
+    <div
+      aria-disabled={!isLaunchable ? true : undefined}
+      onClick={onPress}
+      className={styles.stackFrame}
+      style={{
+        opacity: frame.collapse === true ? 0.4 : 1,
+      }}>
+      <code className={styles.stackFrameTitle}>{frame.methodName}</code>
+      <code className={styles.stackFrameFile}>
+        {getStackFormattedLocation(projectRoot ?? '', frame)}
+      </code>
+    </div>
   );
 }
-
-import { SVGProps } from 'react';
 
 const ReactIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>

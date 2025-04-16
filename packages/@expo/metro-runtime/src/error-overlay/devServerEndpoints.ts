@@ -126,6 +126,12 @@ function pathRelativeToPath(path: string, relativeTo: string, sep = '/') {
   return pathParts.slice(i).join(sep);
 }
 
+export function isStackFileAnonymous(
+  frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>
+): boolean {
+  return !frame.file || frame.file === '<unknown>' || frame.file === '<anonymous>';
+}
+
 export function getStackFormattedLocation(
   projectRoot: string,
   frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>

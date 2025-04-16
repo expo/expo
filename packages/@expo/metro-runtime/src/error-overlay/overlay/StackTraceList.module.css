@@ -6,3 +6,44 @@
     display: block;
   }
 }
+
+.stackFrame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: -6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  outline-color: transparent;
+  background-color: transparent;
+  opacity: var(--expo-log-opacity);
+  color: var(--expo-log-color-label);
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(234.6, 234.6, 244.8, 0.1);
+    outline-color: var(--expo-log-color-label);
+  }
+
+  /* aria-disabled */
+  &[aria-disabled='true'] {
+    background-color: transparent;
+    color: var(--expo-log-color-label);
+    cursor: unset;
+  }
+}
+
+.stackFrameTitle {
+  
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  
+}
+
+.stackFrameFile {
+  font-size: 12px;
+  font-weight: 300;
+  opacity: 0.7;
+  
+}
