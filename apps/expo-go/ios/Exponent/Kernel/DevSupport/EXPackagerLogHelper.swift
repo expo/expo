@@ -74,9 +74,11 @@ import React
   }
 
   private func sendPendingMessage() {
-    guard let message = pendingMessage,
-          connected,
-          let socket = socket else {
+    guard let message = pendingMessage else {
+      return
+    }
+
+    guard let socket = socket else {
       return
     }
 
