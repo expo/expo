@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Add support for flat config ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
