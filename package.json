@@ -34,7 +34,7 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^9.24.0",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
     "patch-package": "^8.0.0",
