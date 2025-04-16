@@ -116,26 +116,6 @@ export async function getBorderColorAsync() {
     return await ExpoNavigationBar.getBorderColorAsync();
 }
 /**
- * Set the navigation bar's visibility.
- *
- * @example
- * ```ts
- * NavigationBar.setVisibilityAsync("hidden");
- * ```
- * @param visibility Based on CSS visibility property.
- */
-export async function setVisibilityAsync(visibility) {
-    // We should never enter this if statement
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge('Legacy `setVisibilityAsync function has been called with edge-to-edge enabled. Make sure that `react-native-edge-to-edge` is properly configured in your project.');
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setVisibilityAsync` is only available on Android');
-        return;
-    }
-    await ExpoNavigationBar.setVisibilityAsync(visibility);
-}
-/**
  * Get the navigation bar's visibility.
  *
  *

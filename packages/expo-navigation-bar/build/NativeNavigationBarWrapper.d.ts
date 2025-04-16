@@ -62,16 +62,6 @@ export declare function setBorderColorAsync(color: string): Promise<void>;
  */
 export declare function getBorderColorAsync(): Promise<string>;
 /**
- * Set the navigation bar's visibility.
- *
- * @example
- * ```ts
- * NavigationBar.setVisibilityAsync("hidden");
- * ```
- * @param visibility Based on CSS visibility property.
- */
-export declare function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void>;
-/**
  * Get the navigation bar's visibility.
  *
  *
