@@ -44,13 +44,13 @@ internal struct SubtitleTrackChangedEventPayload: Record {
 }
 
 internal struct AudioTracksChangedEventPayload: Record {
-    @Field var availableAudioTracks: [AudioTrack] = []
-    @Field var oldAvailableAudioTracks: [AudioTrack] = []
+  @Field var availableAudioTracks: [AudioTrack] = []
+  @Field var oldAvailableAudioTracks: [AudioTrack] = []
 }
 
 internal struct AudioTrackChangedEventPayload: Record {
-    @Field var audioTrack: AudioTrack? = nil
-    @Field var oldAudioTrack: AudioTrack? = nil
+  @Field var audioTrack: AudioTrack? = nil
+  @Field var oldAudioTrack: AudioTrack? = nil
 }
 
 internal struct TimeUpdate: Record {

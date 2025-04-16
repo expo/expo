@@ -373,7 +373,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       oldAvailableSubtitleTracks: oldTracks
     )
     safeEmit(event: "availableSubtitleTracksChange", payload: payload)
-    
+
     // Handle audio tracks
     let oldAudioTracks = audioTracks.availableAudioTracks
     self.audioTracks.onNewPlayerItemLoaded(playerItem: playerItem)
