@@ -16,6 +16,7 @@ import {
 } from '../devServerEndpoints';
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 
+// @ts-ignore
 import styles from './StackTraceList.module.css';
 export function StackTraceList({
   onRetry,

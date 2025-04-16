@@ -16,7 +16,7 @@ import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
 import { LogBoxLog, StackType, LogContext } from './LogBoxLog';
-import type { Category, CodeFrame, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import type { Category, ExtendedExceptionData, Message } from './parseLogBoxLog';
 import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;

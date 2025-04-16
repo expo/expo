@@ -1,6 +1,6 @@
 'use dom';
 
-import { LogBoxInspector, LogBoxInspectorContainer } from './ErrorOverlay';
+import { LogBoxInspectorContainer } from './ErrorOverlay';
 import { LogBoxLog, LogContext } from './Data/LogBoxLog';
 
 // const Foo = LogBoxData.withSubscription(LogBoxInspectorContainer);
@@ -13,6 +13,7 @@ function useViewportMeta(content: string) {
 
     if (!meta) {
       meta = document.createElement('meta');
+      // @ts-ignore
       meta.name = 'viewport';
       document.head.appendChild(meta);
     }
@@ -37,7 +38,7 @@ export default function LogBoxPolyfillDOM({
   ...props
 }: {
   fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
-  platform: string;
+  platform: string | undefined;
   onDismiss: () => void;
   onMinimize: () => void;
   onChangeSelectedIndex: (index: number) => void;
@@ -49,7 +50,9 @@ export default function LogBoxPolyfillDOM({
     return Array.from(props.logs.map((log) => new LogBoxLog(log)));
   }, []);
 
+  // @ts-ignore
   globalThis.__polyfill_platform = platform;
+  // @ts-ignore
   globalThis.__polyfill_dom_fetchJsonAsync = fetchJsonAsync;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
 
