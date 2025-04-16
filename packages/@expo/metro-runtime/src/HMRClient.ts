@@ -165,7 +165,7 @@ const HMRClient: HMRClientNativeInterface = {
       let error = `Cannot connect to Metro.
  
  Try the following to fix the issue:
- - Ensure the Metro dev server is running and available on the same network as this device`;
+ - Ensure the Expo dev server is running and available on the same network as this device`;
       error += `
  
  URL: ${window.location.host}
@@ -184,7 +184,7 @@ const HMRClient: HMRClientNativeInterface = {
       }
     });
 
-    client.on('update', ({ isInitialUpdate, ...props }: { isInitialUpdate?: boolean }) => {
+    client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
         LogBox.clearAllLogs();
         // dismissGlobalErrorOverlay();
@@ -221,19 +221,19 @@ const HMRClient: HMRClientNativeInterface = {
         closeEvent == null ||
         closeEvent.code === 1000 ||
         closeEvent.code === 1005 ||
+        closeEvent.code === 1006 ||
         closeEvent.code == null;
 
       setHMRUnavailableReason(
         `${
           isNormalOrUnsetCloseReason
-            ? 'Disconnected from Metro.'
-            : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`
+            ? 'Disconnected from Expo CLI.'
+            : `Disconnected from Expo CLI (${closeEvent.code}: "${closeEvent.reason}").`
         }
 
 To reconnect:
-- Ensure that Metro is running and available on the same network
-- Reload this app (will trigger further help if Metro cannot be connected to)
-      `
+- Start the dev server with: npx expo
+- Reload the ${process.env.EXPO_OS === 'web' ? 'page' : 'app'}`
       );
     });
 

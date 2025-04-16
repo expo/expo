@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import 'foobar';
+// import 'foobar';
 
 export default function App() {
   return (
