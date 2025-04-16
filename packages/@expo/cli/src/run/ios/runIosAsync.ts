@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../../log';
+import { hasDirectDevClientDependency } from '../../start/detectDevClient';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -46,6 +47,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     const localPath = await resolveRemoteBuildCache(projectRoot, {
       platform: 'ios',
       provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      runOptions: options,
     });
     if (localPath) {
       options.binary = localPath;
@@ -186,6 +188,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     await uploadRemoteBuildCache(projectRoot, {
       platform: 'ios',
       provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      buildPath: binaryPath,
     });
   }
 }
