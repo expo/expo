@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- correctly include `NotificationContent.data` in `NotificationHandler` ([#36195](https://github.com/expo/expo/pull/36195) by [@vonovak](https://github.com/vonovak))
+
+
 ### 💡 Others
 
 ## 0.30.5 — 2025-04-21
