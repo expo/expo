@@ -209,9 +209,14 @@ export function LogBoxInspector({
           />
 
           <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-            {uniqueBy(Object.entries(log.codeFrame), ([key, value]) => {
-              return [value.fileName, value.location?.column, value.location?.row].join(':');
-            }).map(([key, codeFrame]) => (
+            {uniqueBy(
+              uniqueBy(Object.entries(log.codeFrame), ([, value]) => {
+                return [value.fileName, value.location?.column, value.location?.row].join(':');
+              }),
+              ([, value]) => {
+                return value.content;
+              }
+            ).map(([key, codeFrame]) => (
               <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
             ))}
 
@@ -375,7 +380,6 @@ export function presentGlobalErrorOverlay() {
 }
 
 export function dismissGlobalErrorOverlay() {
-  debugger;
   // Remove div with ID `error-overlay`
   if (currentRoot) {
     currentRoot.unmount();

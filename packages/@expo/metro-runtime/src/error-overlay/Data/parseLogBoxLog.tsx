@@ -130,6 +130,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
 
   const metroInternalError = message.match(METRO_ERROR_FORMAT);
   if (metroInternalError) {
+    debugger;
     const [content, fileName, row, column, codeFrame] = metroInternalError.slice(1);
 
     return {
@@ -212,6 +213,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   }
 
   if (message.match(/^TransformError /)) {
+    debugger;
     return {
       level: 'syntax',
       stack: error.stack,
@@ -239,6 +241,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   }
 
   if (componentStack != null) {
+    debugger;
     // It is possible that console errors have a componentStack.
     return {
       level: 'error',

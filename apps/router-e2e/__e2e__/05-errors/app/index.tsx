@@ -47,6 +47,19 @@ export default function App() {
         }}
       />
 
+      <BigButton
+        title="console.error: string"
+        onPress={() => {
+          console.error('Hello');
+        }}
+      />
+      <BigButton
+        title="console.error: Error"
+        onPress={() => {
+          console.error(new Error('Hello'));
+        }}
+      />
+
       <MountOnPress title="React: undefined component">{() => <RErrUndef />}</MountOnPress>
       <MountOnPress title="React: error in render">{() => <RErrThrowInRender />}</MountOnPress>
       <MountOnPress title="React: missing keys">{() => <RWarningMissingKeys />}</MountOnPress>
