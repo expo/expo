@@ -328,13 +328,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
           session.startRunning()
         }
         sessionQueue.async {
-          Task {
-            await MainActor.run {
-              self.updateSessionAudioIsMuted()
-            }
-            await self.onCameraReady()
-          }
+          self.updateSessionAudioIsMuted()
         }
+        onCameraReady()
       }
     }
   }

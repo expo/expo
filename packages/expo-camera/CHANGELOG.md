@@ -49,7 +49,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Add warning when rendering `children` in the `CameraView`. ([#34969](https://github.com/expo/expo/pull/34969) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate)), ([#35291](https://github.com/expo/expo/pull/35291) by [@behenate](https://github.com/behenate))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
 
 ## 16.0.8 - 2024-11-29
 
