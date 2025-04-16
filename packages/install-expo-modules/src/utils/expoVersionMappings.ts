@@ -1,3 +1,4 @@
+import assert from 'assert';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
@@ -12,6 +13,13 @@ export interface VersionInfo {
 
 export const ExpoVersionMappings: VersionInfo[] = [
   // Please keep sdk versions in sorted order (latest sdk first)
+  {
+    expoPackageVersion: '~53.0.0',
+    sdkVersion: '53.0.0',
+    iosDeploymentTarget: '15.1',
+    reactNativeVersionRange: '~0.79.0',
+    supportCliIntegration: true,
+  },
   {
     // react-native 0.78 support was serving through canary.
     // see: https://expo.dev/changelog/react-native-78
@@ -109,12 +117,18 @@ export function getLatestSdkVersion(): VersionInfo {
   const latestSdkVersion = ExpoVersionMappings.find(
     ({ expoPackageVersion }) => semver.prerelease(expoPackageVersion) == null
   );
-  if (!latestSdkVersion) {
-    throw new Error('No latest SDK version found');
-  }
+  assert(latestSdkVersion, 'No latest SDK version found');
   return latestSdkVersion;
 }
 
 export function getVersionInfo(sdkVersion: string): VersionInfo | null {
   return ExpoVersionMappings.find((info) => info.sdkVersion === sdkVersion) ?? null;
+}
+
+export function getSdkVersion(reactNativeVersion: string): string {
+  const versionInfo = ExpoVersionMappings.find((info) =>
+    semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
+  );
+  assert(versionInfo, `Unsupported react-native version: ${reactNativeVersion}`);
+  return versionInfo?.sdkVersion;
 }
