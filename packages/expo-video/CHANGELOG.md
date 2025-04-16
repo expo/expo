@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Added support for Audio Track feature. You can now set the audio track using `player.audioTrack` and list available audio tracks using `player.availableAudioTracks`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
