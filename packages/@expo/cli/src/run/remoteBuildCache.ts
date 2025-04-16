@@ -176,7 +176,7 @@ function importFingerprintForDev(projectRoot: string): null | typeof import('@ex
   }
 }
 
-function isDevClientBuild({
+export function isDevClientBuild({
   runOptions,
   projectRoot,
 }: {
@@ -187,10 +187,10 @@ function isDevClientBuild({
     return false;
   }
 
-  if ('variant' in runOptions && runOptions.variant) {
+  if ('variant' in runOptions && runOptions.variant !== undefined) {
     return runOptions.variant === 'debug';
   }
-  if ('configuration' in runOptions && runOptions.configuration) {
+  if ('configuration' in runOptions && runOptions.configuration !== undefined) {
     return runOptions.configuration === 'Debug';
   }
 
