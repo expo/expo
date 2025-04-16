@@ -1,0 +1,1 @@
+{"version":3,"file":"LogBoxMessage.d.ts","sourceRoot":"","sources":["../../src/error-overlay/LogBoxMessage.tsx"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,MAAM,OAAO,CAAC;AAG1B,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,uBAAuB,CAAC;AAMrD,wBAAgB,aAAa,CAAC,KAAK,EAAE;IAAE,OAAO,EAAE,OAAO,CAAC;IAAC,SAAS,CAAC,EAAE,MAAM,CAAA;CAAE,GAAG,KAAK,CAAC,YAAY,CA8CjG"}

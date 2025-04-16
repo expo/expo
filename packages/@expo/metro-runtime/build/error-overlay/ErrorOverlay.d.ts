@@ -6,20 +6,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { LogBoxLog, StackType } from './Data/LogBoxLog';
+import { LogBoxLog, type LogLevel } from './Data/LogBoxLog';
+import type { Message } from './Data/parseLogBoxLog';
 export declare function LogBoxInspectorContainer(): React.JSX.Element | null;
 export declare function LogBoxInspector({ log, selectedLogIndex, logs, }: {
     log: LogBoxLog;
     selectedLogIndex: number;
     logs: LogBoxLog[];
 }): React.JSX.Element;
-export declare function ErrorOverlayBody({ onRetry }: {
-    onRetry: (type: StackType) => void;
+export declare function ErrorMessageHeader(props: {
+    collapsed: boolean;
+    message: Message;
+    level: LogLevel;
+    title: string;
+    onPress: () => void;
 }): React.JSX.Element;
-export declare function ErrorOverlayBodyContents({ log, onRetry, }: {
-    log: LogBoxLog;
-    onRetry: (type: StackType) => void;
-}): React.JSX.Element;
-declare const _default: React.Component<object, {}, any>;
-export default _default;
+export declare function presentGlobalErrorOverlay(): void;
+export declare function dismissGlobalErrorOverlay(): void;
 //# sourceMappingURL=ErrorOverlay.d.ts.map

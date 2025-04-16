@@ -5,18 +5,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Stack } from './LogBoxSymbolication';
-import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
-type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
-export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
+import React from 'react';
+import { type MetroStackFrame } from '../devServerEndpoints';
+import type { Category, Message, CodeFrame } from './parseLogBoxLog';
+export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
+export type LogLevel = 'error' | 'fatal' | 'syntax' | 'static';
 export type LogBoxLogData = {
     level: LogLevel;
     type?: string;
     message: Message;
-    stack: Stack;
+    stack: MetroStackFrame[];
     category: string;
-    componentStack: ComponentStack;
-    codeFrame?: CodeFrame;
+    componentStack: MetroStackFrame[];
+    codeFrame: Partial<Record<StackType, CodeFrame>>;
     isComponentError: boolean;
 };
 export type StackType = 'stack' | 'component';
@@ -30,7 +31,7 @@ type SymbolicationResult = {
     status: 'PENDING';
 } | {
     error: null;
-    stack: Stack;
+    stack: MetroStackFrame[];
     status: 'COMPLETE';
 } | {
     error: Error;
@@ -41,28 +42,38 @@ export declare class LogBoxLog {
     message: Message;
     type: string;
     category: Category;
-    componentStack: ComponentStack;
-    stack: Stack;
+    componentStack: MetroStackFrame[];
+    stack: MetroStackFrame[];
     count: number;
     level: LogLevel;
-    codeFrame?: CodeFrame;
+    codeFrame: Partial<Record<StackType, CodeFrame>>;
     isComponentError: boolean;
-    symbolicated: Record<StackType, SymbolicationResult>;
+    private symbolicated;
     private callbacks;
     constructor(data: LogBoxLogData & {
         symbolicated?: Record<StackType, SymbolicationResult>;
     });
     incrementCount(): void;
-    getAvailableStack(type: StackType): Stack | null;
+    getStackStatus(type: StackType): "NONE" | "PENDING" | "COMPLETE" | "FAILED";
+    getAvailableStack(type: StackType): MetroStackFrame[] | null;
     private flushCallbacks;
     private pushCallback;
     retrySymbolicate(type: StackType, callback?: (status: SymbolicationStatus) => void): void;
     symbolicate(type: StackType, callback?: (status: SymbolicationStatus) => void): void;
     private _symbolicate;
-    private componentStackCache;
     private getStack;
     private handleSymbolicate;
     private updateStatus;
 }
+export declare const LogContext: React.Context<{
+    selectedLogIndex: number;
+    isDisabled: boolean;
+    logs: LogBoxLog[];
+} | null>;
+export declare function useLogs(): {
+    selectedLogIndex: number;
+    isDisabled: boolean;
+    logs: LogBoxLog[];
+};
 export {};
 //# sourceMappingURL=LogBoxLog.d.ts.map

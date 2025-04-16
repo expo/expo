@@ -198,7 +198,9 @@ export function LogBoxInspector({
             />
           </div>
           <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
-            {Object.entries(log.codeFrame).map(([key, codeFrame]) => (
+            {uniqueBy(Object.entries(log.codeFrame), ([key, value]) => {
+              return [value.fileName, value.location?.column, value.location?.row].join(':');
+            }).map(([key, codeFrame]) => (
               <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
             ))}
 
@@ -228,6 +230,18 @@ export function LogBoxInspector({
       </div>
     </>
   );
+}
+
+function uniqueBy<T>(array: T[], key: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  return array.filter((item) => {
+    const k = key(item);
+    if (seen.has(k)) {
+      return false;
+    }
+    seen.add(k);
+    return true;
+  });
 }
 
 function ErrorOverlayFooter({ message }: { message?: string }) {

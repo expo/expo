@@ -170,8 +170,7 @@ function normalizeMetroSymbolicatedStackResults({
   if (!Array.isArray(maybeStack)) {
     throw new Error('Expected stack to be an array.');
   }
-  const stack: MetroStackFrame[] = [];
-  for (const maybeFrame of maybeStack) {
+  const stack = maybeStack.map<MetroStackFrame>((maybeFrame) => {
     let collapse = false;
     if ('collapse' in maybeFrame) {
       if (typeof maybeFrame.collapse !== 'boolean') {
@@ -179,15 +178,15 @@ function normalizeMetroSymbolicatedStackResults({
       }
       collapse = maybeFrame.collapse;
     }
-    stack.push({
+    return {
       arguments: [],
       column: maybeFrame.column,
       file: maybeFrame.file,
       lineNumber: maybeFrame.lineNumber,
       methodName: maybeFrame.methodName,
       collapse,
-    });
-  }
+    };
+  });
   return { stack, codeFrame };
 }
 
@@ -200,9 +199,48 @@ export function symbolicateStackAndCacheAsync(
 ): Promise<SymbolicatedStackTrace> {
   let promise = cache.get(stack);
   if (promise == null) {
-    promise = symbolicateStackTrace(stack).then(normalizeMetroSymbolicatedStackResults);
+    promise = symbolicateStackTrace(ensureStackFilesHaveParams(stack)).then(
+      normalizeMetroSymbolicatedStackResults
+    );
     cache.set(stack, promise);
   }
 
   return promise;
+}
+
+// Sometime the web stacks don't have correct query params, this can lead to Metro errors when it attempts to resolve without a platform.
+// This will attempt to reconcile the issue by adding the current query params to the stack frames if they exist, or fallback to some common defaults.
+function ensureStackFilesHaveParams(stack: MetroStackFrame[]): MetroStackFrame[] {
+  const currentSrc =
+    typeof document !== 'undefined' && document.currentScript
+      ? ('src' in document.currentScript && document.currentScript.src) || null
+      : null;
+
+  const currentParams = currentSrc
+    ? new URLSearchParams(currentSrc)
+    : new URLSearchParams({
+        platform: globalThis.__polyfill_platform ?? process.env.EXPO_OS,
+        dev: String(__DEV__),
+      });
+
+  return stack.map((frame) => {
+    if (
+      !frame.file?.startsWith('http') ||
+      // Account for Metro malformed URLs
+      frame.file.includes('&platform=')
+    )
+      return frame;
+
+    const url = new URL(frame.file);
+    if (url.searchParams.has('platform')) {
+      return frame;
+    }
+
+    currentParams.forEach((value, key) => {
+      if (url.searchParams.has(key)) return;
+      url.searchParams.set(key, value);
+    });
+
+    return { ...frame, file: url.toString() };
+  });
 }
