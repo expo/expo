@@ -23,6 +23,7 @@ export declare function fetchProjectMetadataAsync(): Promise<{
 }>;
 export declare function formatProjectFilePath(projectRoot: string, file?: string | null): string;
 export declare function getFormattedStackTrace(projectRoot: string, stack: MetroStackFrame[]): string;
+export declare function isStackFileAnonymous(frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>): boolean;
 export declare function getStackFormattedLocation(projectRoot: string, frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>): string;
 export declare function parseErrorStack(stack?: string): MetroStackFrame[];
 export declare function invalidateCachedStack(stack: MetroStackFrame[]): void;
