@@ -162,6 +162,9 @@ export function LogBoxInspector({
 
     navigator.clipboard.writeText(errContents.join('\n'));
   };
+  const [collapsed, setCollapsed] = useState(true);
+
+  const headerTitle = HEADER_TITLE_MAP[log.level] ?? log.type;
 
   return (
     <>
@@ -197,7 +200,16 @@ export function LogBoxInspector({
               onCopy={onCopy}
             />
           </div>
-          <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
+
+          <ErrorMessageHeader
+            collapsed={collapsed}
+            onPress={() => setCollapsed(!collapsed)}
+            message={log.message}
+            level={log.level}
+            title={headerTitle}
+          />
+
+          <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
             {uniqueBy(Object.entries(log.codeFrame), ([key, value]) => {
               return [value.fileName, value.location?.column, value.location?.row].join(':');
             }).map(([key, codeFrame]) => (
@@ -222,7 +234,7 @@ export function LogBoxInspector({
               // eslint-disable-next-line react/jsx-no-bind
               onRetry={_handleRetry.bind(_handleRetry, 'stack')}
             />
-          </ErrorOverlayBody>
+          </div>
           {!isDismissable && (
             <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
           )}
@@ -267,40 +279,6 @@ function ErrorOverlayFooter({ message }: { message?: string }) {
   );
 }
 
-function ErrorOverlayBody({
-  message,
-  level,
-  type,
-  isComponentError,
-  children,
-}: {
-  type: LogBoxLog['type'];
-  message: LogBoxLog['message'];
-  level: LogBoxLog['level'];
-  isComponentError?: boolean;
-  children?: React.ReactNode;
-}) {
-  const [collapsed, setCollapsed] = useState(true);
-
-  const headerTitle = HEADER_TITLE_MAP[isComponentError ? 'component' : level] ?? type;
-
-  return (
-    <>
-      <ErrorMessageHeader
-        collapsed={collapsed}
-        onPress={() => setCollapsed(!collapsed)}
-        message={message}
-        level={level}
-        title={headerTitle}
-      />
-
-      <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-        {children}
-      </div>
-    </>
-  );
-}
-
 const SHOW_MORE_MESSAGE_LENGTH = 300;
 
 export function ErrorMessageHeader(props: {
@@ -324,13 +302,11 @@ export function ErrorMessageHeader(props: {
           style={{
             fontFamily: 'var(--expo-log-font-family)',
             padding: 8,
-            backgroundColor:
-              props.level === 'warn' ? 'rgba(243, 250, 154, 0.2)' : 'rgba(205, 97, 94, 0.2)',
+            backgroundColor: 'rgba(205, 97, 94, 0.2)',
             borderRadius: 8,
             fontWeight: '600',
             fontSize: 14,
-            color:
-              props.level === 'warn' ? 'rgba(243, 250, 154, 1)' : `var(--expo-log-color-danger)`,
+            color: `var(--expo-log-color-danger)`,
           }}>
           {props.title}
         </span>
