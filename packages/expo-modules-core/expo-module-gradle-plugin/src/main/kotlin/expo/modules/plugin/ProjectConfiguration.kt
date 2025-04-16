@@ -17,7 +17,6 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
 import java.io.File
-import java.net.URI
 
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
