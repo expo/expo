@@ -1,8 +1,7 @@
 'use dom';
 
 import { LogBoxInspector, LogBoxInspectorContainer } from './ErrorOverlay';
-import { LogBoxLog } from './Data/LogBoxLog';
-import { LogContext } from './Data/LogContext';
+import { LogBoxLog, LogContext } from './Data/LogBoxLog';
 
 // const Foo = LogBoxData.withSubscription(LogBoxInspectorContainer);
 

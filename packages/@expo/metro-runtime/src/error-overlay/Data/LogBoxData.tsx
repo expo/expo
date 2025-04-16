@@ -12,12 +12,11 @@ import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
 import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
-import { parseErrorStack } from '../devServerEndpoints';
+import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
-import { LogBoxLog, StackType } from './LogBoxLog';
-import { LogContext } from './LogContext';
-import type { Category, ComponentStack, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import { LogBoxLog, StackType, LogContext } from './LogBoxLog';
+import type { Category, CodeFrame, ExtendedExceptionData, Message } from './parseLogBoxLog';
 import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
@@ -26,7 +25,7 @@ export type LogData = {
   level: LogLevel;
   message: Message;
   category: Category;
-  componentStack: ComponentStack;
+  componentStack: MetroStackFrame[];
 };
 
 export type Observer = (options: {
@@ -207,6 +206,7 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
+          codeFrame: {},
         })
       );
     } catch (unexpectedError: any) {
@@ -274,15 +274,6 @@ export function setSelectedLog(proposedNewIndex: number): void {
       dismissGlobalErrorOverlay();
     }
   }, 0);
-}
-
-export function clearWarnings(): void {
-  const newLogs = Array.from(logs).filter((log) => log.level !== 'warn');
-  if (newLogs.length !== logs.size) {
-    logs = new Set(newLogs);
-    setSelectedLog(-1);
-    handleUpdate();
-  }
 }
 
 export function clearErrors(): void {

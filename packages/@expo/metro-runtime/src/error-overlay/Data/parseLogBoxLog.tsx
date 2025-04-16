@@ -8,7 +8,7 @@
 
 import React from 'react';
 
-import { parseErrorStack } from '../devServerEndpoints';
+import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
 import type { LogBoxLogData } from './LogBoxLog';
 type ExceptionData = any;
 
@@ -46,8 +46,6 @@ export type Message = {
     offset: number;
   }[];
 };
-
-export type ComponentStack = CodeFrame[];
 
 const SUBSTITUTION = '\ufeff%s';
 
@@ -127,19 +125,6 @@ export function parseInterpolation(args: readonly any[]): {
   };
 }
 
-// TODO: Why are we returning a code frame?
-function parseComponentStack(message: string): ComponentStack {
-  return parseErrorStack(message)?.map((frame) => ({
-    content: frame.methodName,
-    collapse: frame.collapse || false,
-    fileName: frame.file == null ? 'unknown' : frame.file,
-    location: {
-      column: frame.column == null ? -1 : frame.column,
-      row: frame.lineNumber == null ? -1 : frame.lineNumber,
-    },
-  }));
-}
-
 export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogData {
   const message = error.originalMessage != null ? error.originalMessage : 'Unknown';
 
@@ -154,12 +139,14 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
       isComponentError: false,
       componentStack: [],
       codeFrame: {
-        fileName,
-        location: {
-          row: parseInt(row, 10),
-          column: parseInt(column, 10),
+        stack: {
+          fileName,
+          location: {
+            row: parseInt(row, 10),
+            column: parseInt(column, 10),
+          },
+          content: codeFrame,
         },
-        content: codeFrame,
       },
       message: {
         content,
@@ -180,12 +167,14 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
       isComponentError: false,
       componentStack: [],
       codeFrame: {
-        fileName,
-        location: {
-          row: parseInt(row, 10),
-          column: parseInt(column, 10),
+        stack: {
+          fileName,
+          location: {
+            row: parseInt(row, 10),
+            column: parseInt(column, 10),
+          },
+          content: codeFrame,
         },
-        content: codeFrame,
       },
       message: {
         content,
@@ -206,9 +195,11 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
       isComponentError: false,
       componentStack: [],
       codeFrame: {
-        fileName,
-        location: null, // We are not given the location.
-        content: codeFrame,
+        stack: {
+          fileName,
+          location: null, // We are not given the location.
+          content: codeFrame,
+        },
       },
       message: {
         content,
@@ -224,6 +215,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
       stack: error.stack,
       isComponentError: error.isComponentError,
       componentStack: [],
+      codeFrame: {},
       message: {
         content: message,
         substitutions: [],
@@ -237,8 +229,9 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
     return {
       level: 'fatal',
       stack: error.stack,
+      codeFrame: {},
       isComponentError: error.isComponentError,
-      componentStack: componentStack != null ? parseComponentStack(componentStack) : [],
+      componentStack: componentStack != null ? parseErrorStack(componentStack) : [],
       ...parseInterpolation([message]),
     };
   }
@@ -248,8 +241,9 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
     return {
       level: 'error',
       stack: error.stack,
+      codeFrame: {},
       isComponentError: error.isComponentError,
-      componentStack: parseComponentStack(componentStack),
+      componentStack: parseErrorStack(componentStack),
       ...parseInterpolation([message]),
     };
   }
@@ -259,6 +253,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   return {
     level: 'error',
     stack: error.stack,
+    codeFrame: {},
     isComponentError: error.isComponentError,
     ...parseLogBoxLog([message]),
   };
@@ -410,7 +405,7 @@ function appendOwnerStack(error: Error) {
 }
 
 export function parseLogBoxLog(args: any[]): {
-  componentStack: ComponentStack;
+  componentStack: MetroStackFrame[];
   category: Category;
   message: Message;
 } {
@@ -442,7 +437,7 @@ export function parseLogBoxLog(args: any[]): {
   }
 
   return {
-    componentStack: parseComponentStack(error.stack ?? ''),
+    componentStack: parseErrorStack(error.stack ?? ''),
     category: error.message,
     message: {
       content: message,

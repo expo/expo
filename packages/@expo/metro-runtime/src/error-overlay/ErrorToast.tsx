@@ -8,14 +8,13 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 
 import * as LogBoxData from './Data/LogBoxData';
-import { LogBoxLog } from './Data/LogBoxLog';
-import { useLogs } from './Data/LogContext';
+import { LogBoxLog, useLogs } from './Data/LogBoxLog';
 import { Pressable, Text, View } from 'react-native';
 import { LogBoxMessage } from './LogBoxMessage';
 
 import './ErrorOverlay.css';
 
-import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
+// import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
 export function ErrorToastContainer() {
   useRejectionHandler();
@@ -42,10 +41,6 @@ export function ErrorToastContainer() {
 }
 
 function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
-  const onDismissWarns = useCallback(() => {
-    LogBoxData.clearWarnings();
-  }, []);
-
   const onDismissErrors = useCallback(() => {
     LogBoxData.clearErrors();
   }, []);
@@ -62,8 +57,6 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
     setSelectedLog(index);
   }
 
-  const warnings = useMemo(() => logs.filter((log) => log.level === 'warn'), [logs]);
-
   const errors = useMemo(
     () => logs.filter((log) => log.level === 'error' || log.level === 'fatal'),
     [logs]
@@ -79,16 +72,6 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
         position: 'fixed',
         display: 'flex',
       }}>
-      {/* TODO: Remove warnings */}
-      {warnings.length > 0 && (
-        <ErrorToast
-          log={warnings[warnings.length - 1]}
-          level="warn"
-          totalLogCount={warnings.length}
-          onPressOpen={() => openLog(warnings[warnings.length - 1])}
-          onPressDismiss={onDismissWarns}
-        />
-      )}
       {errors.length > 0 && (
         <ErrorToast
           log={errors[errors.length - 1]}
