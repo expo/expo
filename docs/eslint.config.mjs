@@ -62,15 +62,13 @@ const CORE_RULES = {
   ],
 };
 
-const config = defineConfig([
+export default defineConfig([
   globalIgnores([
     '**/.next/',
     '**/.swc/',
     '**/.yarn/',
     'types/global.d.ts',
     '**/.cache',
-    '**/.next',
-    '**/.swc',
     '**/.vale',
     '**/out',
     '**/node_modules',
@@ -82,6 +80,8 @@ const config = defineConfig([
   universeWebConfig,
   universeNodeConfig,
   universeTypescriptAnalysisConfig,
+
+  // Overrides needed to make flat config rules work
   {
     rules: {
       'import/order': 'off', // TODO (Kadi): enable and fix issues
@@ -90,12 +90,18 @@ const config = defineConfig([
     },
     settings: {
       'import/resolver': {
-        typescript: {
-          project: './tsconfig.json',
-        },
+        typescript: { project: './tsconfig.json' },
+      },
+    },
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.__dirname,
       },
     },
   },
+
+  // TypeScript files configuration
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
@@ -107,7 +113,10 @@ const config = defineConfig([
     extends: ['tailwind/flat/recommended'],
     rules: {
       ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
       ...CORE_RULES,
+      'lodash/import-scope': [2, 'method'],
+      '@next/next/no-img-element': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       '@typescript-eslint/explicit-function-return-type': [
         'off',
@@ -187,7 +196,6 @@ const config = defineConfig([
           warnOnDuplicates: true,
         },
       ],
-      '@next/next/no-img-element': 'off',
       'tailwindcss/classnames-order': 'off',
       'tailwindcss/enforces-negative-arbitrary-values': 'error',
       'tailwindcss/enforces-shorthand': 'error',
@@ -229,6 +237,8 @@ const config = defineConfig([
       ],
     },
   },
+
+  // JavaScript/Node files configuration
   {
     files: ['**/*.js', '**/*.cjs', '**/*.ts'],
     plugins: {
@@ -238,28 +248,13 @@ const config = defineConfig([
     extends: [universeNodeConfig],
     rules: CORE_RULES,
   },
-  {
-    plugins: {
-      '@next/next': nextPlugin,
-      tailwind,
-      lodash,
-      unicorn,
-    },
-    extends: ['tailwind/flat/recommended'],
-    rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
-      'lodash/import-scope': [2, 'method'],
-      '@next/next/no-img-element': 'off', // TODO (Kadi): enable and fix issues
-    },
-  },
+
+  // MDX configuration
   {
     ...mdx.flat,
     languageOptions: {
       ...mdx.flat.languageOptions,
-      parserOptions: {
-        extensions: ['.js', '.md', '.mdx'],
-      },
+      parserOptions: { extensions: ['.js', '.md', '.mdx'] },
     },
     rules: {
       ...mdx.flat.rules,
@@ -269,18 +264,10 @@ const config = defineConfig([
       'react/self-closing-comp': 'off',
     },
   },
-  {
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.__dirname,
-      },
-    },
-  },
+
+  // Test files configuration
   {
     files: ['**/*-test.[jt]s?(x)'],
     ...testingLibrary.configs['flat/react'],
   },
 ]);
-
-export default config;
