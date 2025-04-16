@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `openBrowserAsync` doesn't surface exceptions.
+- Fixed `openBrowserAsync` doesn't surface exceptions. ([#36182](https://github.com/expo/expo/pull/36182) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
