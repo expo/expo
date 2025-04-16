@@ -5,8 +5,16 @@ import React
 
 @objc enum EXPackagerLogLevel: Int {
   case info
-  case warning
+  case warn
   case error
+  
+  var stringValue: String {
+    switch self {
+      case .info: return "info"
+      case .warn: return "warn"
+      case .error: return "error"
+    }
+  }
 }
 
 @objc class EXPackagerLogHelper: NSObject, SRWebSocketDelegate {
@@ -43,7 +51,7 @@ import React
   }
 
   @objc static func logWarning(_ message: String, withBundleUrl url: URL) {
-    log(message, withBundleUrl: url, level: .warning)
+    log(message, withBundleUrl: url, level: .warn)
   }
 
   @objc static func logError(_ message: String, withBundleUrl url: URL) {
@@ -80,19 +88,9 @@ import React
       return
     }
 
-    let type: String
-    switch logLevel {
-    case .info:
-      type = "info"
-    case .warning:
-      type = "warn"
-    case .error:
-      type = "error"
-    }
-
     let payload: [String: Any] = [
       "type": "log",
-      "level": type,
+      "level": logLevel.stringValue,
       "data": [message]
     ]
 
