@@ -14,11 +14,7 @@ export declare function parseUnexpectedThrownValue(error: any): {
     originalMessage: string | null;
     name: string | null;
     componentStack: string | null;
-    stack: (import("stacktrace-parser").StackFrame & {
-        collapse?: boolean;
-    } & {
-        collapse?: boolean;
-    })[];
+    stack: import("./devServerEndpoints").MetroStackFrame[];
     id: number;
     isFatal: boolean;
     extraData: {

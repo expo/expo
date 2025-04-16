@@ -5,19 +5,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import React from 'react';
 
 import {
   symbolicateStackAndCacheAsync,
   invalidateCachedStack,
   type MetroStackFrame,
 } from '../devServerEndpoints';
-import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
+import type { Category, Message, CodeFrame } from './parseLogBoxLog';
 
 const PRINT_FIXTURES = false;
 
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
-export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
+export type LogLevel = 'error' | 'fatal' | 'syntax' | 'static';
 
 export type LogBoxLogData = {
   level: LogLevel;
@@ -25,8 +26,8 @@ export type LogBoxLogData = {
   message: Message;
   stack: MetroStackFrame[];
   category: string;
-  componentStack: ComponentStack;
-  codeFrame?: CodeFrame;
+  componentStack: MetroStackFrame[];
+  codeFrame: Partial<Record<StackType, CodeFrame>>;
   isComponentError: boolean;
 };
 
@@ -40,26 +41,17 @@ type SymbolicationResult =
   | { error: null; stack: MetroStackFrame[]; status: 'COMPLETE' }
   | { error: Error; stack: null; status: 'FAILED' };
 
-function componentStackToStack(componentStack: ComponentStack): MetroStackFrame[] {
-  return componentStack.map((stack) => ({
-    file: stack.fileName,
-    methodName: stack.content,
-    lineNumber: stack.location?.row ?? 0,
-    column: stack.location?.column ?? 0,
-    arguments: [],
-  }));
-}
 export class LogBoxLog {
   message: Message;
   type: string;
   category: Category;
-  componentStack: ComponentStack;
+  componentStack: MetroStackFrame[];
   stack: MetroStackFrame[];
   count: number;
   level: LogLevel;
-  codeFrame?: CodeFrame;
+  codeFrame: Partial<Record<StackType, CodeFrame>> = {};
   isComponentError: boolean;
-  symbolicated: Record<StackType, SymbolicationResult> = {
+  private symbolicated: Record<StackType, SymbolicationResult> = {
     stack: {
       error: null,
       stack: null,
@@ -95,6 +87,10 @@ export class LogBoxLog {
 
   incrementCount(): void {
     this.count += 1;
+  }
+
+  getStackStatus(type: StackType) {
+    return this.symbolicated[type].status;
   }
 
   getAvailableStack(type: StackType): MetroStackFrame[] | null {
@@ -178,14 +174,9 @@ export class LogBoxLog {
     }
   }
 
-  private componentStackCache: MetroStackFrame[] | null = null;
-
   private getStack(type: StackType): MetroStackFrame[] {
     if (type === 'component') {
-      if (this.componentStackCache == null) {
-        this.componentStackCache = componentStackToStack(this.componentStack);
-      }
-      return this.componentStackCache;
+      return this.componentStack;
     }
     return this.stack;
   }
@@ -223,7 +214,7 @@ export class LogBoxLog {
       };
     } else if (stack != null) {
       if (codeFrame) {
-        this.codeFrame = codeFrame;
+        this.codeFrame[type] = codeFrame;
       }
 
       this.symbolicated[type] = {
@@ -283,4 +274,36 @@ function ensureStackFilesHaveParams(stack: MetroStackFrame[]): MetroStackFrame[]
 
     return { ...frame, file: url.toString() };
   });
+}
+
+export const LogContext = React.createContext<{
+  selectedLogIndex: number;
+  isDisabled: boolean;
+  logs: LogBoxLog[];
+} | null>(null);
+
+export function useLogs(): {
+  selectedLogIndex: number;
+  isDisabled: boolean;
+  logs: LogBoxLog[];
+} {
+  const logs = React.useContext(LogContext);
+
+  if (!logs) {
+    // TODO: Move this outside of the hook.
+    if (process.env.EXPO_OS === 'web' && typeof window !== 'undefined') {
+      // Logbox data that is pre-fetched on the dev server and rendered here.
+      const expoCliStaticErrorElement = document.getElementById('_expo-static-error');
+      if (expoCliStaticErrorElement?.textContent) {
+        const raw = JSON.parse(expoCliStaticErrorElement.textContent);
+        return {
+          ...raw,
+          logs: raw.logs.map((raw: any) => new LogBoxLog(raw)),
+        };
+      }
+    }
+
+    throw new Error('useLogs must be used within a LogContext.Provider');
+  }
+  return logs;
 }

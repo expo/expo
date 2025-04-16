@@ -143,7 +143,7 @@ export function getStackFormattedLocation(
   return location;
 }
 
-export function parseErrorStack(stack?: string): (MetroStackFrame & { collapse?: boolean })[] {
+export function parseErrorStack(stack?: string): MetroStackFrame[] {
   if (stack == null) {
     return [];
   }

@@ -8,8 +8,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import * as LogBoxData from './Data/LogBoxData';
-import { LogBoxLog, type LogLevel, type StackType } from './Data/LogBoxLog';
-import { useLogs } from './Data/LogContext';
+import { LogBoxLog, useLogs, type LogLevel, type StackType } from './Data/LogBoxLog';
+
 import { ErrorCodeFrame } from './overlay/ErrorCodeFrame';
 import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { StackTraceList } from './overlay/StackTraceList';
@@ -199,14 +199,16 @@ export function LogBoxInspector({
             />
           </div>
           <ErrorOverlayBody message={log.message} level={log.level} type={log.type}>
-            <ErrorCodeFrame projectRoot={projectRoot} codeFrame={log.codeFrame} />
+            {Object.entries(log.codeFrame).map(([key, codeFrame]) => (
+              <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
+            ))}
 
             {!!log?.componentStack?.length && (
               <StackTraceList
                 type="component"
                 projectRoot={projectRoot}
                 stack={log.getAvailableStack('component')}
-                symbolicationStatus={log.symbolicated['component'].status}
+                symbolicationStatus={log.getStackStatus('component')}
                 // eslint-disable-next-line react/jsx-no-bind
                 onRetry={_handleRetry.bind(_handleRetry, 'component')}
               />
@@ -215,7 +217,7 @@ export function LogBoxInspector({
               type="stack"
               projectRoot={projectRoot}
               stack={log.getAvailableStack('stack')}
-              symbolicationStatus={log.symbolicated['stack'].status}
+              symbolicationStatus={log.getStackStatus('stack')}
               // eslint-disable-next-line react/jsx-no-bind
               onRetry={_handleRetry.bind(_handleRetry, 'stack')}
             />

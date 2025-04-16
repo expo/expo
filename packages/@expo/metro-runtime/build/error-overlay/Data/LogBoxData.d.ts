@@ -6,15 +6,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as React from 'react';
+import { MetroStackFrame } from '../devServerEndpoints';
 import type { LogLevel } from './LogBoxLog';
 import { LogBoxLog, StackType } from './LogBoxLog';
-import type { Category, ComponentStack, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import type { Category, ExtendedExceptionData, Message } from './parseLogBoxLog';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = {
     level: LogLevel;
     message: Message;
     category: Category;
-    componentStack: ComponentStack;
+    componentStack: MetroStackFrame[];
 };
 export type Observer = (options: {
     logs: LogBoxLogs;
@@ -54,7 +55,6 @@ export declare function retrySymbolicateLogNow(type: StackType, log: LogBoxLog):
 export declare function symbolicateLogLazy(type: StackType, log: LogBoxLog): void;
 export declare function clear(): void;
 export declare function setSelectedLog(proposedNewIndex: number): void;
-export declare function clearWarnings(): void;
 export declare function clearErrors(): void;
 export declare function dismiss(log: LogBoxLog): void;
 export declare function getIgnorePatterns(): IgnorePattern[];

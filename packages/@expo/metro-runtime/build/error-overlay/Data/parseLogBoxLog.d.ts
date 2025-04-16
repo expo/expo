@@ -5,6 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { MetroStackFrame } from '../devServerEndpoints';
 import type { LogBoxLogData } from './LogBoxLog';
 type ExceptionData = any;
 export type ExtendedExceptionData = ExceptionData & {
@@ -29,7 +30,6 @@ export type Message = {
         offset: number;
     }[];
 };
-export type ComponentStack = CodeFrame[];
 export declare function parseInterpolation(args: readonly any[]): {
     category: Category;
     message: Message;
@@ -39,7 +39,7 @@ export declare function hasTaggedError(error: any): boolean;
 export declare function tagError(error: any): any;
 export declare function isError(err: any): err is Error;
 export declare function parseLogBoxLog(args: any[]): {
-    componentStack: ComponentStack;
+    componentStack: MetroStackFrame[];
     category: Category;
     message: Message;
 };
