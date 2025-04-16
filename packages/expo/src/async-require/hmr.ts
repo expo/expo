@@ -9,6 +9,10 @@
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
 import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
+import {
+  MetroBuildError,
+  MetroPackageResolutionError,
+} from '@expo/metro-runtime/src/error-overlay/metro-build-errors';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 
@@ -28,17 +32,9 @@ const pendingEntryPoints: string[] = [];
 // @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
 const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
 
-type HMRClientType = {
-  send: (msg: string) => void;
-  isEnabled: () => boolean;
-  disable: () => void;
-  enable: () => void;
-  hasPendingUpdates: () => boolean;
-};
-
-let hmrClient: HMRClientType | null = null;
+let hmrClient: MetroHMRClient | null = null;
 let hmrUnavailableReason: string | null = null;
-let currentCompileErrorMessage: string | null = null;
+const buildErrorQueue = new Set<MetroBuildError>();
 let didConnect: boolean = false;
 const pendingLogs: [LogLevel, any[]][] = [];
 
@@ -53,14 +49,6 @@ type LogLevel =
   | 'groupEnd'
   | 'debug';
 
-export type HMRClientNativeInterface = {
-  enable(): void;
-  disable(): void;
-  registerBundle(requestUrl: string): void;
-  log(level: LogLevel, data: any[]): void;
-  setup(props: { isEnabled: boolean }): void;
-};
-
 function assert(foo: any, msg: string): asserts foo {
   if (!foo) throw new Error(msg);
 }
@@ -69,7 +57,7 @@ function assert(foo: any, msg: string): asserts foo {
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
-const HMRClient: HMRClientNativeInterface = {
+const HMRClient = {
   enable() {
     if (hmrUnavailableReason !== null) {
       // If HMR became unavailable while you weren't using it,
@@ -181,7 +169,7 @@ const HMRClient: HMRClientNativeInterface = {
     );
 
     client.on('connection-error', (e: Error) => {
-      let error = `Cannot connect to Metro.
+      let error = `Cannot connect to Expo CLI.
  
  Try the following to fix the issue:
  - Ensure the Expo dev server is running and available on the same network as this device`;
@@ -195,7 +183,7 @@ const HMRClient: HMRClientNativeInterface = {
     });
 
     client.on('update-start', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
-      currentCompileErrorMessage = null;
+      buildErrorQueue.clear();
       didConnect = true;
 
       if (client.isEnabled() && !isInitialUpdate) {
@@ -217,22 +205,7 @@ const HMRClient: HMRClientNativeInterface = {
       hideLoading();
     });
 
-    client.on('error', (data: { type: string; message: string }) => {
-      hideLoading();
-
-      if (data.type === 'GraphNotFoundError') {
-        client.close();
-        setHMRUnavailableReason('Metro has restarted since the last edit. Reload to reconnect.');
-      } else if (data.type === 'RevisionNotFoundError') {
-        client.close();
-        setHMRUnavailableReason('Metro and the client are out of sync. Reload to reconnect.');
-      } else {
-        currentCompileErrorMessage = `${data.type} ${data.message}`;
-        if (client.isEnabled()) {
-          showCompileError();
-        }
-      }
-    });
+    client.on('error', (data) => this._onMetroError(data));
 
     client.on('close', (closeEvent: { code: number; reason: string }) => {
       hideLoading();
@@ -268,6 +241,77 @@ To reconnect:
     registerBundleEntryPoints(hmrClient);
     flushEarlyLogs();
   },
+
+  _onMetroError(data: unknown) {
+    // console.log('FIXTURE', data);
+
+    if (!hmrClient) {
+      return;
+    }
+
+    assert(typeof data === 'object' && data != null, 'Expected data to be an object');
+
+    hideLoading();
+
+    if ('type' in data) {
+      if (data.type === 'GraphNotFoundError') {
+        hmrClient.close();
+        setHMRUnavailableReason('Expo CLI has restarted since the last edit. Reload to reconnect.');
+        return;
+      } else if (data.type === 'RevisionNotFoundError') {
+        hmrClient.close();
+        setHMRUnavailableReason(
+          `Expo CLI and the ${process.env.EXPO_OS} client are out of sync. Reload to reconnect.`
+        );
+        return;
+      }
+    }
+
+    const message = [
+      // @ts-expect-error
+      data.type,
+      // @ts-expect-error
+      data.message,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const errors = (data as any).errors;
+
+    // Fallback for resolution errors which don't return a type
+    // https://github.com/facebook/metro/blob/a3fac645dc377f78bd4182ca0ca73629b2707d5b/packages/metro/src/lib/formatBundlingError.js#L65-L73
+    // https://github.com/facebook/metro/pull/1487
+    let error: MetroBuildError;
+    if (
+      'originModulePath' in data &&
+      typeof data.originModulePath === 'string' &&
+      'targetModuleName' in data &&
+      typeof data.targetModuleName === 'string' &&
+      'cause' in data
+    ) {
+      error = new MetroPackageResolutionError(
+        message,
+        errors,
+        data.originModulePath,
+        data.targetModuleName,
+        // @ts-expect-error
+        data.cause
+      );
+    } else {
+      error = new MetroBuildError(message, errors);
+    }
+
+    // TODO: Add import stack to the error: EXPO_METRO_UNSTABLE_ERRORS=1
+    // if ('stack' in data && typeof data.stack === 'string') {
+    //   error.stack = stripAnsi(data.stack);
+    // }
+
+    buildErrorQueue.add(error);
+
+    if (hmrClient.isEnabled()) {
+      showCompileError();
+    }
+  },
 };
 
 function setHMRUnavailableReason(reason: string) {
@@ -287,7 +331,7 @@ function setHMRUnavailableReason(reason: string) {
   }
 }
 
-function registerBundleEntryPoints(client: HMRClientType | null) {
+function registerBundleEntryPoints(client: MetroHMRClient | null) {
   if (hmrUnavailableReason != null) {
     // "Bundle Splitting – Metro disconnected"
     window.location.reload();
@@ -316,7 +360,7 @@ function flushEarlyLogs() {
 }
 
 function showCompileError() {
-  if (currentCompileErrorMessage === null) {
+  if (buildErrorQueue.size === 0) {
     return;
   }
 
@@ -324,27 +368,9 @@ function showCompileError() {
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
   // dismissGlobalErrorOverlay();
 
-  const message = currentCompileErrorMessage;
-  currentCompileErrorMessage = null;
-
-  const error = new Error(stripAnsi(message));
-  // Symbolicating compile errors is wasted effort
-  // because the stack trace is meaningless:
-  // @ts-expect-error
-  error.ansiError = message;
+  const error = buildErrorQueue.values().next().value;
+  buildErrorQueue.clear();
   throw error;
-}
-
-function stripAnsi(str: string) {
-  if (!str) {
-    return str;
-  }
-  const pattern = [
-    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
-  ].join('|');
-
-  return str.replace(new RegExp(pattern, 'g'), '');
 }
 
 export default HMRClient;
