@@ -26,9 +26,6 @@ export default function VideoAudioTracksScreen() {
   const { availableAudioTracks } = useEvent(player, 'availableAudioTracksChange', {
     availableAudioTracks: player.availableAudioTracks,
   });
-  console.log('availableAudioTracks', availableAudioTracks);
-  console.log('audioTrack', audioTrack);
-  console.log('audioTrackIndex', audioTrackIndex);
 
   const handleAudioTrackChange = (value: number) => {
     setAudioTrackIndex(value);
