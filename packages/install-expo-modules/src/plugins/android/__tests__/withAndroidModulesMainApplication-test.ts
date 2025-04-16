@@ -99,5 +99,5 @@ function getSdkVersion(reactNativeVersion: string): string {
     semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
   );
   assert(versionInfo, `Unsupported react-native version: ${reactNativeVersion}`);
-  return versionInfo?.expoSdkVersion;
+  return versionInfo?.sdkVersion;
 }
