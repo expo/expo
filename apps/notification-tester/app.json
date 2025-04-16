@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "appleTeamId": "your-apple-team-id",
       "supportsTablet": true,
       "bundleIdentifier": "com.vonovak.microfoam"
     },
@@ -32,7 +33,12 @@
           "icon": "./assets/images/icon.png",
           "color": "#232323",
           "defaultChannel": "defaultExpoChannel",
-          "sounds": ["./assets/pop_sound.wav", "./assets/bells_sound.wav"],
+          "sounds": [
+            "./assets/pop_sound.wav",
+            "./assets/bells_sound.wav",
+            "./assets/pop_sound.wav",
+            "./assets/bells_sound.wav"
+          ],
           "enableBackgroundRemoteNotifications": true
         }
       ],
@@ -44,7 +50,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "runtimeVersion": "be975abaed5ef1ab51b8eff6c95f384a8700debe",
     "owner": "brents",
