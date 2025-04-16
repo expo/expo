@@ -14,7 +14,7 @@ export const ExpoVersionMappings: VersionInfo[] = [
   {
     expoSdkVersion: '52.0.0',
     iosDeploymentTarget: '15.1',
-    reactNativeVersionRange: '>= 0.76.0',
+    reactNativeVersionRange: '>= 0.76.0 < 0.78.0',
     supportCliIntegration: true,
   },
   {
