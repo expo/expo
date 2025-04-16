@@ -92,7 +92,7 @@ const CanvasWrapper: React.FunctionComponent<
         props.onLayout(event);
       }
     }
-  }, [props.onLayout]);
+  }, [size?.width, size?.height, props.onLayout]);
 
   React.useEffect(() => {
     if (ref.current != null) {
