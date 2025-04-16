@@ -3,6 +3,18 @@ import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
+
+interface Size {
+  width: number,
+  height: number
+}
+type NullableSize = Size | null
+
+interface GetSizeParams {
+  size: NullableSize,
+  ref: React.RefObject<View | null>
+}
+
 function getElement(component: React.ReactInstance): React.ReactInstance | Element | null | Text {
   try {
     return findDOMNode(component);
@@ -22,6 +34,18 @@ function setRef<T>(refProp: React.Ref<T>, ref: T | null) {
   }
 }
 
+function getSize({ size, ref }: GetSizeParams): Size {
+  if (size) {
+    return size;
+  } else if (!ref.current || typeof window === 'undefined') {
+    return { width: 0, height: 0 };
+  }
+  const element = getElement(ref.current);
+  const { offsetWidth: width = 0, offsetHeight: height = 0 } = element as HTMLElement;
+  return { width, height };
+}
+
+
 const Canvas = React.forwardRef(
   (props: React.ComponentProps<typeof View>, ref: React.Ref<HTMLCanvasElement>) =>
     createElement('canvas', { ...props, ref })
@@ -32,55 +56,47 @@ const CanvasWrapper: React.FunctionComponent<
     canvasRef: React.Ref<HTMLCanvasElement>;
   }
 > = ({ pointerEvents, children, style, ...props }) => {
-  const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
+  const [size, setSize] = React.useState<NullableSize>(null);
 
   const ref = React.useRef<View>(null);
   const _canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-  function updateCanvasSize(): void {
+  const updateCanvasSize = React.useCallback(() => {
     const canvas = _canvasRef.current;
     if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
-      const size = getSize();
+      const sizeData = getSize({
+        size,
+        ref
+      });
       const scale = PixelRatio.get();
 
-      canvas.style.width = `${size.width}px`;
-      canvas.style.height = `${size.height}px`;
+      canvas.style.width = `${sizeData.width}px`;
+      canvas.style.height = `${sizeData.height}px`;
 
-      canvas.width = size.width * scale;
-      canvas.height = size.height * scale;
+      canvas.width = sizeData.width * scale;
+      canvas.height = sizeData.height * scale;
     }
-  }
+  }, [size?.width, size?.height]);
 
-  function getSize(): { width: number; height: number } {
-    if (size) {
-      return size;
-    } else if (!ref.current || typeof window === 'undefined') {
-      return { width: 0, height: 0 };
-    }
-    const element = getElement(ref.current);
-    const { offsetWidth: width = 0, offsetHeight: height = 0 } = element as HTMLElement;
-    return { width, height };
-  }
-
-  const onLayout = (event: LayoutChangeEvent) => {
+  const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const {
       nativeEvent: {
         layout: { width, height },
       },
     } = event;
 
-    if (width !== size?.width || height !== size.height) {
+    if (width !== size?.width || height !== size?.height) {
       setSize({ width, height });
 
       if (props.onLayout) {
         props.onLayout(event);
       }
     }
-  };
+  }, [props.onLayout]);
 
   React.useEffect(() => {
     if (ref.current != null) {
-      setSize(getSize());
+      setSize(getSize({ size, ref }));
     }
   }, [ref]);
 
