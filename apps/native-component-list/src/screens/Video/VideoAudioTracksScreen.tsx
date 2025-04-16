@@ -26,6 +26,9 @@ export default function VideoAudioTracksScreen() {
   const { availableAudioTracks } = useEvent(player, 'availableAudioTracksChange', {
     availableAudioTracks: player.availableAudioTracks,
   });
+  console.log('availableAudioTracks', availableAudioTracks);
+  console.log('audioTrack', audioTrack);
+  console.log('audioTrackIndex', audioTrackIndex);
 
   const handleAudioTrackChange = (value: number) => {
     setAudioTrackIndex(value);
@@ -41,6 +44,10 @@ export default function VideoAudioTracksScreen() {
       return;
     }
     const index = availableAudioTracks.findIndex((track) => track?.label === audioTrack?.label);
+    if (index === -1) {
+      setAudioTrackIndex(0);
+      return;
+    }
     setAudioTrackIndex(index);
   }, [audioTrack, availableAudioTracks]);
 
