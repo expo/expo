@@ -19,9 +19,9 @@ exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 exports.getAsyncRoutes = getAsyncRoutes;
 exports.createAddNamedImportOnce = createAddNamedImportOnce;
-const node_path_1 = __importDefault(require("node:path"));
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
+const node_path_1 = __importDefault(require("node:path"));
 function hasModule(name) {
     try {
         return !!require.resolve(name);

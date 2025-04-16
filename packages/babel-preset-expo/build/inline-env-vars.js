@@ -10,10 +10,10 @@ function expoInlineEnvVars(api) {
         return core_1.types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
     }
     let addEnvImport;
+    const publicEnvVars = new Set();
     return {
         name: 'expo-inline-or-reference-env-vars',
         pre(file) {
-            file.metadata.publicEnvVars = new Set();
             const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(core_1.types);
             addEnvImport = () => {
                 return addNamedImportOnce(file.path, 'env', 'expo/virtual/env');
@@ -23,13 +23,14 @@ function expoInlineEnvVars(api) {
             MemberExpression(path, state) {
                 const filename = state.filename;
                 if (path.get('object').matchesPattern('process.env')) {
+                    // @ts-expect-error
                     const key = path.toComputedKey();
                     if (core_1.types.isStringLiteral(key) &&
                         !isFirstInAssign(path) &&
                         key.value.startsWith('EXPO_PUBLIC_')) {
                         const envVar = key.value;
                         debug(`${isProduction ? 'Inlining' : 'Referencing'} environment variable in %s: %s`, filename, envVar);
-                        state.file.metadata.publicEnvVars.add(envVar);
+                        publicEnvVars.add(envVar);
                         if (isProduction) {
                             path.replaceWith(core_1.types.valueToNode(process.env[envVar]));
                         }
@@ -41,7 +42,13 @@ function expoInlineEnvVars(api) {
             },
         },
         post(file) {
-            file.metadata.publicEnvVars = Array.from(file.metadata.publicEnvVars);
+            assertExpoMetadata(file.metadata);
+            file.metadata.publicEnvVars = Array.from(publicEnvVars);
         },
     };
+}
+function assertExpoMetadata(metadata) {
+    if (!metadata || typeof metadata !== 'object') {
+        throw new Error('Expected Babel state.file.metadata to be an object');
+    }
 }

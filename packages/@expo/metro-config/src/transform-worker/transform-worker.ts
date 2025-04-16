@@ -5,16 +5,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { relative, dirname } from 'node:path';
 
+import * as dotenv from 'dotenv';
+import { expand as dotenvExpand } from 'dotenv-expand';
 import countLines from 'metro/src/lib/countLines';
 import type {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
 } from 'metro-transform-worker';
-import * as dotenv from 'dotenv';
-import { expand as dotenvExpand } from 'dotenv-expand';
+import { relative, dirname } from 'node:path';
 
 import { wrapDevelopmentCSS } from './css';
 import {

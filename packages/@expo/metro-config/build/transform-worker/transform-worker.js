@@ -1,4 +1,11 @@
 "use strict";
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,17 +44,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
-/**
- * Copyright 2023-present 650 Industries (Expo). All rights reserved.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-const node_path_1 = require("node:path");
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const dotenv = __importStar(require("dotenv"));
 const dotenv_expand_1 = require("dotenv-expand");
+const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const node_path_1 = require("node:path");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
