@@ -16,7 +16,7 @@ import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
 import { LogBoxLog, StackType, LogContext } from './LogBoxLog';
 import type { Category, ExtendedExceptionData, Message } from './parseLogBoxLog';
-import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
+import { isError, parseLogBoxException, parseLogBoxLog } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -81,13 +81,7 @@ export function reportUnexpectedLogBoxError(error: any): void {
   if (isError(error)) {
     error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   }
-  reportUnexpectedThrownValue(error);
-}
-
-export function reportUnexpectedThrownValue(value: any): void {
-  tagError(value);
-
-  addException(parseUnexpectedThrownValue(value));
+  addException(error);
 }
 
 export function isLogBoxErrorMessage(message: string): boolean {
@@ -179,7 +173,7 @@ export function _appendNewLog(newLog: LogBoxLog): void {
         handleUpdate();
       }
     });
-  } else if (newLog.level === 'syntax') {
+  } else if (newLog.level === 'syntax' || newLog.level === 'resolution') {
     logs.add(newLog);
     setSelectedLog(logs.size - 1);
   } else {
@@ -215,11 +209,25 @@ export function addLog(log: LogData): void {
 }
 
 export function addException(error: ExtendedExceptionData): void {
+  let logBoxData;
+
+  // NOTE(Bacon): Support newer system for formatting errors as logbox data with more data and less parsing.
+  if ('toLogBoxLogData' in error && typeof error.toLogBoxLogData === 'function') {
+    const logBoxLogData = error.toLogBoxLogData();
+    if (logBoxLogData) {
+      logBoxData = logBoxLogData;
+    }
+  }
+
+  // Fallback to the old system for formatting errors as logbox data.
+  // This is used for unexpected behavior and should be reduced as much as possible.
+  logBoxData ??= parseLogBoxException(parseUnexpectedThrownValue(error));
+
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setTimeout(() => {
     try {
-      _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
+      _appendNewLog(new LogBoxLog(logBoxData));
     } catch (unexpectedError: any) {
       reportUnexpectedLogBoxError(unexpectedError);
     }
@@ -257,7 +265,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   let index = logArray.length - 1;
   while (index >= 0) {
     // The latest syntax error is selected and displayed before all other logs.
-    if (logArray[index].level === 'syntax') {
+    if (logArray[index].level === 'syntax' || logArray[index].level === 'resolution') {
       newIndex = index;
       break;
     }

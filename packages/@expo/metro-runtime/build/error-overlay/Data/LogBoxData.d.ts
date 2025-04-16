@@ -43,7 +43,6 @@ type State = {
     selectedLogIndex: number;
 };
 export declare function reportUnexpectedLogBoxError(error: any): void;
-export declare function reportUnexpectedThrownValue(value: any): void;
 export declare function isLogBoxErrorMessage(message: string): boolean;
 export declare function isMessageIgnored(message: string): boolean;
 /** Exposed for debugging */

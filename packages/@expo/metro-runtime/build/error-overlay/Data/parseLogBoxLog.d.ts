@@ -35,8 +35,6 @@ export declare function parseInterpolation(args: readonly any[]): {
     message: Message;
 };
 export declare function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogData;
-export declare function hasTaggedError(error: any): boolean;
-export declare function tagError(error: any): any;
 export declare function isError(err: any): err is Error;
 export declare function parseLogBoxLog(args: any[]): {
     componentStack: MetroStackFrame[];
