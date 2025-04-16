@@ -905,11 +905,13 @@ class Kernel : KernelInterface() {
       ExceptionUtils.exceptionToCanRetry(exception)
     )
     if (exception is ManifestException) {
-      ExponentPackageLogger.send(
-        exception.manifestUrl,
-        ExceptionUtils.exceptionToPlainText(exception),
-        ExponentPackageLogger.LogLevel.ERROR
-      )
+      kernelScope.launch {
+        ExponentPackageLogger.send(
+          exception.manifestUrl,
+          ExceptionUtils.exceptionToPlainText(exception),
+          ExponentPackageLogger.LogLevel.ERROR
+        )
+      }
     }
   }
 

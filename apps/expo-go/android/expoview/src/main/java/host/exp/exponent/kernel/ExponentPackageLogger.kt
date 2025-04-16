@@ -12,9 +12,6 @@ import okhttp3.WebSocketListener
 import org.json.JSONException
 import org.json.JSONObject
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class ExponentPackageLogger private constructor(private val appUrl: Uri) {
@@ -117,14 +114,12 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
      * @param logLevel log level to use, will be sent to the packager which can format or
      * display different log levels in different ways.
      */
-    fun send(appUrl: String, message: String, logLevel: LogLevel) {
+    suspend fun send(appUrl: String, message: String, logLevel: LogLevel) {
       val logger = ExponentPackageLogger(appUrl.toUri())
-      CoroutineScope(Dispatchers.IO).launch {
-        try {
-          logger.sendMessage(message, logLevel)
-        } catch (e: Exception) {
-          Log.e(TAG, "Failed to send message: ${e.message}")
-        }
+      try {
+        logger.sendMessage(message, logLevel)
+      } catch (e: Exception) {
+        Log.e(TAG, "Failed to send message: ${e.message}")
       }
     }
   }
