@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added react-native 0.77 support. ([#36204](https://github.com/expo/expo/pull/36204) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
