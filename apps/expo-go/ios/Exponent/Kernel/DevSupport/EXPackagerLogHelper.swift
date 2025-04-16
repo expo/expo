@@ -74,7 +74,11 @@ import React
   }
 
   private func sendPendingMessage() {
-    guard let message = pendingMessage, connected, let socket = socket else { return }
+    guard let message = pendingMessage,
+          connected,
+          let socket = socket else {
+      return
+    }
 
     let type: String
     switch logLevel {
@@ -129,7 +133,7 @@ import React
     } else {
       return
     }
-    
+
     socket?.delegate = self
 
     let queue = DispatchQueue(label: "host.exp.Exponent.EXPackagerLogHelper")
