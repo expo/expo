@@ -7,6 +7,7 @@
  */
 
 import { parseErrorStack } from './devServerEndpoints';
+import { MetroBuildError } from './metro-build-errors';
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
@@ -30,13 +31,9 @@ export function parseUnexpectedThrownValue(error: any) {
 
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
-  let originalMessage = e.message || '';
-  if ('ansiError' in e) {
-    // Re-apply the ansi error formatting to the message for CLI/Bundler errors such as missing imports.
-    // This ensures the console.error has ansi stripped.
-    // @ts-expect-error
-    originalMessage = e.ansiError;
-  }
+  // Re-apply the ansi error formatting to the message for CLI/Bundler errors such as missing imports.
+  // This ensures the console.error has ansi stripped.
+  const originalMessage = e instanceof MetroBuildError ? e.ansiError : e.message || '';
 
   let message = originalMessage;
   if (e.componentStack != null) {

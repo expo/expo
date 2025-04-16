@@ -1,19 +1,51 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
-// import 'foobar';
+import * as hmr_fixtures from '@expo/metro-runtime/fixtures/hmr-fixtures';
+import HMRClient from '@expo/metro-runtime/src/HMRClient';
+// import './foobar';
+
+// eval('clasfs Foo {}');
 
 export default function App() {
   return (
-    <View style={{ flex: 1, padding: 48 }}>
-      <Text
-        style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ gap: 8, padding: 48 }}
+      contentInsetAdjustmentBehavior="automatic">
+      <BigButton
+        title="Runtime error: undefined is not a function"
         onPress={() => {
           // @ts-expect-error
           undefined();
-        }}>
-        Runtime error: undefined is not a function
-      </Text>
+        }}
+      />
+      <BigButton
+        title="Runtime error: accessing undefined variable"
+        onPress={() => {
+          // @ts-expect-error
+          console.log(undefinedVariable);
+        }}
+      />
+
+      <BigButton
+        title="Build error: syntax error"
+        onPress={() => {
+          HMRClient._onMetroError(hmr_fixtures.syntax_error);
+        }}
+      />
+      <BigButton
+        title="Build error: import missing file"
+        onPress={() => {
+          HMRClient._onMetroError(hmr_fixtures.missing_file);
+        }}
+      />
+      <BigButton
+        title="Build error: import missing node module"
+        onPress={() => {
+          HMRClient._onMetroError(hmr_fixtures.missing_node_module);
+        }}
+      />
 
       <MountOnPress title="React: undefined component">{() => <RErrUndef />}</MountOnPress>
       <MountOnPress title="React: error in render">{() => <RErrThrowInRender />}</MountOnPress>
@@ -27,7 +59,17 @@ export default function App() {
       <MountOnPress title="React Native: unwrapped text">
         {() => <RNBugUnwrappedText />}
       </MountOnPress>
-    </View>
+    </ScrollView>
+  );
+}
+
+function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  return (
+    <Text
+      style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+      onPress={onPress}>
+      {title}
+    </Text>
   );
 }
 
