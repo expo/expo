@@ -30,7 +30,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -45,6 +44,7 @@ import host.exp.exponent.experience.loading.LoadingProgressPopupController
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewController
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentUrls
@@ -390,7 +390,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(
-        this,
         manifest!!
       )
     }
