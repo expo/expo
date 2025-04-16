@@ -23,7 +23,8 @@
     "native.js",
     "node.js",
     "web.js",
-    "shared"
+    "shared",
+    "flat"
   ],
   "jest": {
     "testMatch": [
@@ -42,6 +43,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^17.17.0",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",

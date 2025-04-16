@@ -1,8 +1,8 @@
 import nextPlugin from '@next/eslint-plugin-next';
 import { defineConfig, globalIgnores } from 'eslint/config';
-import universeNodeConfig from 'eslint-config-universe/node.js';
-import universeTypescriptAnalysisConfig from 'eslint-config-universe/shared/typescript-analysis.js';
-import universeWebConfig from 'eslint-config-universe/web.js';
+import universeNodeConfig from 'eslint-config-universe/flat/node.js';
+import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
+import universeWebConfig from 'eslint-config-universe/flat/web.js';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import tailwind from 'eslint-plugin-tailwindcss';

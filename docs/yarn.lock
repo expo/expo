@@ -5101,7 +5101,7 @@ __metadata:
 
 "eslint-config-universe@file:../packages/eslint-config-universe::locator=expo-docs%40workspace%3A.":
   version: 14.2.0
-  resolution: "eslint-config-universe@file:../packages/eslint-config-universe#../packages/eslint-config-universe::hash=b8af45&locator=expo-docs%40workspace%3A."
+  resolution: "eslint-config-universe@file:../packages/eslint-config-universe#../packages/eslint-config-universe::hash=6f1712&locator=expo-docs%40workspace%3A."
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:^8.29.1"
     "@typescript-eslint/parser": "npm:^8.29.1"
@@ -5118,7 +5118,7 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/51c8f6431a928512ba242362435fad04a4b030b56c7142086b6d0380517bb7889488ee4701958f81b1785f99ef79d982b172ac9bc7d37f3e5de577676f9bae9a
+  checksum: 10c0/5ce8ea2be2f869fdadcbb897f9c1b9232e4cd437f45f8462489b4822a599c52d373aaf7d2c7d562da410bb19163d4243014e2725e4e547780ed1bfadbd9b5cce
   languageName: node
   linkType: hard
 

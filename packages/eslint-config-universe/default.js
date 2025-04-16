@@ -1,7 +1,3 @@
-const { defineConfig } = require('eslint/config');
-
-const coreConfig = require('./shared/core.js');
-const prettierConfig = require('./shared/prettier.js');
-const typescriptConfig = require('./shared/typescript.js');
-
-module.exports = defineConfig([coreConfig, typescriptConfig, prettierConfig]);
+module.exports = {
+  extends: ['./shared/core.js', './shared/typescript.js', './shared/prettier.js'],
+};
