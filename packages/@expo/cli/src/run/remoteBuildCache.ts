@@ -6,8 +6,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../log';
-import { Options as AndroidRunOptions } from './android/resolveOptions';
-import { Options as IosRunOptions } from './ios/XcodeBuild.types';
+import { type Options as AndroidRunOptions } from './android/resolveOptions';
+import { type Options as IosRunOptions } from './ios/XcodeBuild.types';
 import { hasDirectDevClientDependency } from '../start/detectDevClient';
 import { isSpawnResultError } from '../start/platforms/ios/xcrun';
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
