@@ -77,6 +77,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Audio Tracks',
+    route: 'video/audio-tracks',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioTracksScreen'));
+    },
+  },
+  {
     // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
     name: 'Video Events',
     route: 'video/events',

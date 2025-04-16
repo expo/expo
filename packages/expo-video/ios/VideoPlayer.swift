@@ -10,6 +10,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var observer: VideoPlayerObserver?
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
   private var dangerousPropertiesStore = DangerousPropertiesStore()
+  lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -21,6 +22,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
   private(set) var isPlaying = false
   private(set) var status: PlayerStatus = .idle
+
   var playbackRate: Float = 1.0 {
     didSet {
       if oldValue != playbackRate {
@@ -371,6 +373,15 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       oldAvailableSubtitleTracks: oldTracks
     )
     safeEmit(event: "availableSubtitleTracksChange", payload: payload)
+    
+    // Handle audio tracks
+    let oldAudioTracks = audioTracks.availableAudioTracks
+    self.audioTracks.onNewPlayerItemLoaded(playerItem: playerItem)
+    let audioPayload = AudioTracksChangedEventPayload(
+      availableAudioTracks: audioTracks.availableAudioTracks,
+      oldAvailableAudioTracks: oldAudioTracks
+    )
+    safeEmit(event: "availableAudioTracksChange", payload: audioPayload)
 
     Task {
       let videoPlayerItem: VideoPlayerItem? = playerItem as? VideoPlayerItem
@@ -381,7 +392,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         videoSource: videoPlayerItem?.videoSource,
         duration: playerItem?.duration.seconds,
         availableVideoTracks: availableVideoTracks,
-        availableSubtitleTracks: subtitles.availableSubtitleTracks
+        availableSubtitleTracks: subtitles.availableSubtitleTracks,
+        availableAudioTracks: audioTracks.availableAudioTracks
       )
       safeEmit(event: "sourceLoad", payload: videoSourceLoadedPayload)
     }
@@ -392,6 +404,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     subtitles.onNewSubtitleTrackSelected(subtitleTrack: subtitleTrack)
     let payload = SubtitleTrackChangedEventPayload(subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
     safeEmit(event: "subtitleTrackChange", payload: payload)
+  }
+
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {
+    let oldTrack = audioTracks.currentAudioTrack
+    audioTracks.onNewAudioTrackSelected(audioTrack: audioTrack)
+    let payload = AudioTrackChangedEventPayload(audioTrack: audioTracks.currentAudioTrack, oldAudioTrack: oldTrack)
+    safeEmit(event: "audioTrackChange", payload: payload)
   }
 
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {
