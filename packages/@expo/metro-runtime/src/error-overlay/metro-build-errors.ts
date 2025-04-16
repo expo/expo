@@ -1,3 +1,7 @@
+import type { LogBoxLogData } from './Data/LogBoxLog';
+import { parseInterpolation } from './Data/parseLogBoxLog';
+import { parseErrorStack } from './devServerEndpoints';
+
 type MetroFormattedError = {
   description: string;
   filename?: string;
@@ -9,6 +13,7 @@ export class MetroBuildError extends Error {
 
   constructor(
     message: string,
+    public errorType?: string,
     public errors?: MetroFormattedError[]
   ) {
     super(message);
@@ -16,11 +21,105 @@ export class MetroBuildError extends Error {
     // Strip the ansi so it shows as a normalized error in the console log.
     this.message = stripAnsi(message);
   }
+
+  toLogBoxLogData(): LogBoxLogData {
+    const babelCodeFrameError = this.ansiError.match(BABEL_CODE_FRAME_ERROR_FORMAT);
+
+    if (babelCodeFrameError) {
+      // Codeframe errors are thrown from any use of buildCodeFrameError.
+      const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
+      return {
+        level: 'syntax',
+        stack: [],
+        isComponentError: false,
+        componentStack: [],
+        codeFrame: {
+          stack: {
+            fileName,
+            location: null, // We are not given the location.
+            content: codeFrame,
+          },
+        },
+        message: {
+          content,
+          substitutions: [],
+        },
+        category: `${fileName}-${1}-${1}`,
+      };
+    }
+
+    return {
+      level: 'fatal',
+      stack: parseErrorStack(this.stack),
+      codeFrame: {},
+      isComponentError: false,
+      componentStack: [],
+      ...parseInterpolation([this.ansiError]),
+    };
+  }
+}
+
+const BABEL_TRANSFORM_ERROR_FORMAT =
+  /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
+
+const BABEL_CODE_FRAME_ERROR_FORMAT =
+  /^(?:TransformError )?(?:.*):? (?:.*?)([/|\\].*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+
+export class MetroTransformError extends MetroBuildError {
+  public codeFrame: string | undefined;
+  constructor(
+    message: string,
+    public errorType: string,
+    public errors: MetroFormattedError[],
+    public lineNumber: number,
+    public column: number,
+    public filename: string
+  ) {
+    super(message);
+
+    // TODO: Remove need for regex by passing code frame in error data from Metro.
+    const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
+    if (babelTransformError) {
+      // Transform errors are thrown from inside the Babel transformer.
+      const [fileName, content, row, column, codeFrame] = babelTransformError.slice(1);
+      this.codeFrame = codeFrame;
+      this.message = stripAnsi(content);
+    }
+  }
+
+  toLogBoxLogData(): LogBoxLogData {
+    // MetroTransformError is a custom error type that we throw when the transformer fails.
+    // It has a stack trace and a message.
+    return {
+      level: 'syntax',
+      stack: [],
+      isComponentError: false,
+      componentStack: [],
+      codeFrame: {
+        stack: this.codeFrame
+          ? {
+              fileName: this.filename,
+              location: {
+                row: this.lineNumber,
+                column: this.column,
+              },
+              content: this.codeFrame,
+            }
+          : undefined,
+      },
+      message: {
+        content: this.message,
+        substitutions: [],
+      },
+      category: `${this.filename}-${this.lineNumber}-${this.column}`,
+    };
+  }
 }
 
 export class MetroPackageResolutionError extends MetroBuildError {
   constructor(
     message: string,
+    public errorType: string | undefined,
     public errors: MetroFormattedError[] | undefined,
     /** "/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e/__e2e__/05-errors/app/index.tsx" */
     public originModulePath: string,
@@ -56,6 +155,32 @@ export class MetroPackageResolutionError extends MetroBuildError {
         }
   ) {
     super(message);
+  }
+
+  toLogBoxLogData(): LogBoxLogData {
+    const babelCodeFrameError = this.ansiError.match(BABEL_CODE_FRAME_ERROR_FORMAT);
+
+    return {
+      level: 'resolution',
+      // TODO: Add import stacks
+      stack: [],
+      isComponentError: false,
+      componentStack: [],
+      codeFrame: {
+        stack: babelCodeFrameError?.[3]
+          ? {
+              fileName: this.originModulePath,
+              location: null, // We are not given the location.
+              content: babelCodeFrameError?.[3],
+            }
+          : undefined,
+      },
+      message: {
+        content: `Unable to resolve module ${this.targetModuleName}`,
+        substitutions: [],
+      },
+      category: `${this.originModulePath}-${1}-${1}`,
+    };
   }
 }
 

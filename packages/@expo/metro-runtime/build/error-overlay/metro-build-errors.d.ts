@@ -1,14 +1,28 @@
+import type { LogBoxLogData } from './Data/LogBoxLog';
 type MetroFormattedError = {
     description: string;
     filename?: string;
     lineNumber?: number;
 };
 export declare class MetroBuildError extends Error {
+    errorType?: string | undefined;
     errors?: MetroFormattedError[] | undefined;
     ansiError: string;
-    constructor(message: string, errors?: MetroFormattedError[] | undefined);
+    constructor(message: string, errorType?: string | undefined, errors?: MetroFormattedError[] | undefined);
+    toLogBoxLogData(): LogBoxLogData;
+}
+export declare class MetroTransformError extends MetroBuildError {
+    errorType: string;
+    errors: MetroFormattedError[];
+    lineNumber: number;
+    column: number;
+    filename: string;
+    codeFrame: string | undefined;
+    constructor(message: string, errorType: string, errors: MetroFormattedError[], lineNumber: number, column: number, filename: string);
+    toLogBoxLogData(): LogBoxLogData;
 }
 export declare class MetroPackageResolutionError extends MetroBuildError {
+    errorType: string | undefined;
     errors: MetroFormattedError[] | undefined;
     /** "/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e/__e2e__/05-errors/app/index.tsx" */
     originModulePath: string;
@@ -38,7 +52,7 @@ export declare class MetroPackageResolutionError extends MetroBuildError {
         message: string;
         stack: string;
     };
-    constructor(message: string, errors: MetroFormattedError[] | undefined, 
+    constructor(message: string, errorType: string | undefined, errors: MetroFormattedError[] | undefined, 
     /** "/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e/__e2e__/05-errors/app/index.tsx" */
     originModulePath: string, 
     /** "foobar" */
@@ -66,6 +80,7 @@ export declare class MetroPackageResolutionError extends MetroBuildError {
         message: string;
         stack: string;
     });
+    toLogBoxLogData(): LogBoxLogData;
 }
 export declare function stripAnsi(str: string): string;
 export {};

@@ -20,13 +20,12 @@ import { fetchProjectMetadataAsync, getFormattedStackTrace } from './devServerEn
 import styles from './ErrorOverlay.module.css';
 import { LogBoxMessage } from './LogBoxMessage';
 
-const HEADER_TITLE_MAP = {
-  warn: 'Console Warning',
+const HEADER_TITLE_MAP: Record<LogLevel, string> = {
   error: 'Console Error',
   fatal: 'Uncaught Error',
+  resolution: 'Resolution Error',
   syntax: 'Build Error',
   static: 'Server Error',
-  component: 'Render Error',
 };
 
 export function LogBoxInspectorContainer() {
@@ -67,7 +66,7 @@ export function LogBoxInspector({
   logs: LogBoxLog[];
 }) {
   const meta = useDevServerMeta();
-  const isDismissable = !['static', 'syntax'].includes(log.level);
+  const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [closing, setClosing] = useState(false);
 
   // TODO: Get this outside of the bundle.

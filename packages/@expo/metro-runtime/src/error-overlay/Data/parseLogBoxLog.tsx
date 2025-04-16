@@ -158,6 +158,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
 
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
+    debugger;
     // Transform errors are thrown from inside the Babel transformer.
     const [fileName, content, row, column, codeFrame] = babelTransformError.slice(1);
 
@@ -187,6 +188,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   const babelCodeFrameError = message.match(BABEL_CODE_FRAME_ERROR_FORMAT);
 
   if (babelCodeFrameError) {
+    debugger;
     // Codeframe errors are thrown from any use of buildCodeFrameError.
     const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
     return {
@@ -306,18 +308,6 @@ function interpolateLikeConsole(...args: any[]) {
   return output;
 }
 
-const ERROR_TAG_SYMBOL = Symbol.for('expo.error.tagged');
-
-export function hasTaggedError(error: any) {
-  return error != null && error[ERROR_TAG_SYMBOL] === true;
-}
-
-export function tagError(error: any) {
-  if (isError(error)) {
-    error[ERROR_TAG_SYMBOL] = true;
-  }
-  return error;
-}
 export function isError(err: any): err is Error {
   return typeof err === 'object' && err !== null && 'name' in err && 'message' in err;
 }
@@ -335,9 +325,6 @@ const REACT_STACK_BOTTOM_MARKER_REGEX = new RegExp(
  */
 function processReactErrorDetails<T = unknown>(inputError: T): Error | T {
   const isInputErrorInstance = isError(inputError);
-
-  // Tag the input error if it's an instance of Error.
-  tagError(isInputErrorInstance);
 
   // Extract the original stack and message from the error.
   const originalStack = isInputErrorInstance ? inputError.stack || '' : '';
@@ -370,9 +357,6 @@ function processReactErrorDetails<T = unknown>(inputError: T): Error | T {
 
   // Append the owner stack if available.
   appendOwnerStack(updatedError);
-
-  // Tag the updated error for identification.
-  tagError(updatedError);
 
   return updatedError;
 }

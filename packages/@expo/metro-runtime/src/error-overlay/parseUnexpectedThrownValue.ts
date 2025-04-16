@@ -39,6 +39,7 @@ export function parseUnexpectedThrownValue(error: any) {
   if (e.componentStack != null) {
     message += `\n\nThis error is located at:${e.componentStack}`;
   }
+
   const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
 
   if (!message.startsWith(namePrefix)) {

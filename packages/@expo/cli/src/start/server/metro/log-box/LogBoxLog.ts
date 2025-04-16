@@ -23,7 +23,7 @@ type ComponentStack = CodeFrame[];
 
 type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
-export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
+export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
 
 export type LogBoxLogData = {
   level: LogLevel;

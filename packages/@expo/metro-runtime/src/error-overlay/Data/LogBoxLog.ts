@@ -18,7 +18,7 @@ const PRINT_FIXTURES = true;
 
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
-export type LogLevel = 'error' | 'fatal' | 'syntax' | 'static';
+export type LogLevel = 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
 
 export type LogBoxLogData = {
   level: LogLevel;

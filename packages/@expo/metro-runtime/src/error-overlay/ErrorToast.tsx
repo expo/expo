@@ -242,7 +242,7 @@ function useRejectionHandler() {
         return;
       }
 
-      LogBoxData.reportUnexpectedThrownValue(error);
+      LogBoxData.addException(error);
     }
 
     function onUnhandledRejection(ev: PromiseRejectionEvent) {
@@ -253,7 +253,7 @@ function useRejectionHandler() {
         return;
       }
 
-      LogBoxData.reportUnexpectedThrownValue(reason);
+      LogBoxData.addException(reason);
     }
 
     window.addEventListener('unhandledrejection', onUnhandledRejection);

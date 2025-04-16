@@ -13,7 +13,11 @@ import prettyFormat, { plugins } from 'pretty-format';
 
 import LoadingView from './LoadingView';
 import LogBox from './error-overlay/LogBox';
-import { MetroBuildError, MetroPackageResolutionError } from './error-overlay/metro-build-errors';
+import {
+  MetroBuildError,
+  MetroPackageResolutionError,
+  MetroTransformError,
+} from './error-overlay/metro-build-errors';
 import getDevServer from './getDevServer';
 
 const pendingEntryPoints: string[] = [];
@@ -251,7 +255,8 @@ To reconnect:
       .filter(Boolean)
       .join(' ');
 
-    const errors = (data as any).errors;
+    const type: string | undefined = (data as any).type;
+    const errors: any[] | undefined = (data as any).errors;
 
     // Fallback for resolution errors which don't return a type
     // https://github.com/facebook/metro/blob/a3fac645dc377f78bd4182ca0ca73629b2707d5b/packages/metro/src/lib/formatBundlingError.js#L65-L73
@@ -266,14 +271,31 @@ To reconnect:
     ) {
       error = new MetroPackageResolutionError(
         message,
+        type,
         errors,
         data.originModulePath,
         data.targetModuleName,
         // @ts-expect-error
         data.cause
       );
+    } else if (type === 'TransformError') {
+      assert(
+        'lineNumber' in data,
+        '[Internal] Expected lineNumber to be in Metro HMR error update'
+      );
+      assert('column' in data, '[Internal] Expected column to be in Metro HMR error update');
+      assert('filename' in data, '[Internal] Expected filename to be in Metro HMR error update');
+
+      error = new MetroTransformError(
+        message,
+        type,
+        errors!,
+        data.lineNumber,
+        data.column,
+        data.filename
+      );
     } else {
-      error = new MetroBuildError(message, errors);
+      error = new MetroBuildError(message, type, errors);
     }
 
     // TODO: Add import stack to the error: EXPO_METRO_UNSTABLE_ERRORS=1

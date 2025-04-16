@@ -9,7 +9,7 @@ import React from 'react';
 import { type MetroStackFrame } from '../devServerEndpoints';
 import type { Category, Message, CodeFrame } from './parseLogBoxLog';
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
-export type LogLevel = 'error' | 'fatal' | 'syntax' | 'static';
+export type LogLevel = 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
 export type LogBoxLogData = {
     level: LogLevel;
     type?: string;
