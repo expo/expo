@@ -5,6 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { relative, dirname } from 'node:path';
+
 import countLines from 'metro/src/lib/countLines';
 import type {
   JsTransformerConfig,
@@ -13,7 +15,7 @@ import type {
 } from 'metro-transform-worker';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
-import { relative, dirname } from 'node:path';
+
 import { wrapDevelopmentCSS } from './css';
 import {
   collectCssImports,
@@ -29,7 +31,7 @@ import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
-function parseEnvFile(src: string): Record<string, string> {
+function parseEnvFile(src: string, isClient: boolean): Record<string, string> {
   const expandedEnv: Record<string, string> = {};
   const envFileParsed = dotenv.parse(src);
 
@@ -40,7 +42,11 @@ function parseEnvFile(src: string): Record<string, string> {
     });
 
     for (const key of Object.keys(envFileParsed)) {
-      if (allExpandedEnv.parsed?.[key] && key.startsWith('EXPO_PUBLIC_')) {
+      if (allExpandedEnv.parsed?.[key]) {
+        if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
+          // Don't include non-public variables in the client bundle.
+          continue;
+        }
         expandedEnv[key] = allExpandedEnv.parsed[key];
       }
     }
@@ -152,11 +158,9 @@ export async function transform(
       return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
     }
 
-    console.log('filename', filename);
-    if (filename.match(/\.env(\.(local|development(\.local)?))?$/)) {
-      console.log('Loading .env file:', filename);
-      const envFileParsed = parseEnvFile(data.toString('utf-8'));
-
+    // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
+    if (filename.match(/^\.env(\.(local|development(\.local)?))?$/)) {
+      const envFileParsed = parseEnvFile(data.toString('utf-8'), isClientEnvironment);
       return worker.transform(
         config,
         projectRoot,
@@ -166,41 +170,30 @@ export async function transform(
       );
     }
 
-    if (isClientEnvironment && filename.match(/\/expo\/virtual\/env\.js$/)) {
+    if (
+      // Parsing the virtual env is client-only, on the server we use `process.env` directly.
+      isClientEnvironment &&
+      // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
+      options.dev &&
+      // Finally match the virtual env file.
+      filename.match(/\/expo\/virtual\/env\.js$/)
+    ) {
       const relativePath = relative(dirname(filename), projectRoot);
       const posixPath = toPosixPath(relativePath);
 
-      const contents = `const envFiles = require.context(
-  ${JSON.stringify(posixPath)},
-  false,
-  /^\\.\\/\\.env/
-);
-
-const supportedEnvFiles = ['.env', '.env.development', '.env.local', '.env.development.local'];
-
-export const env = {
-  ...envFiles
-    .keys()
-    .filter((file) => supportedEnvFiles.includes(file))
-    .reduce((acc, file) => {
-      const env = envFiles(file);
-      return {
-        ...acc,
-        ...env,
-      };
-    }, {}),
-  ...process.env,
-};
-`;
-      const res = await worker.transform(
-        config,
-        projectRoot,
-        filename,
-        Buffer.from(contents),
-        options
-      );
-
-      return res;
+      // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
+      // We then merge them in the expected order.
+      // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
+      // defined in the script or bash, essentially all places where HMR is not possible.
+      // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
+      // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
+      const contents = `const envFiles = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
+const keys = envFiles.keys();
+const dotEnv = ['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+  return keys.includes(file) ? { ...acc, ...envFiles(file)} : acc;
+}, {});
+export const env = { ...dotEnv, ...process.env };`;
+      return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
     }
 
     return worker.transform(config, projectRoot, filename, data, options);

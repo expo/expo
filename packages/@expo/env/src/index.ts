@@ -133,11 +133,8 @@ export function parseEnvFiles(
     }
   });
 
-  const e = expandEnvFromSystem(loadedEnvVars, systemEnv);
-
-  console.log('e>>', loadedEnvVars, e);
   return {
-    env: e,
+    env: expandEnvFromSystem(loadedEnvVars, systemEnv),
     files: loadedEnvFiles.reverse(),
   };
 }
@@ -219,7 +216,6 @@ function expandEnvFromSystem(
   }
 
   // Only store the values that were initially parsed, from `parsedEnv`.
-  console.log('parsed:', allExpandedEnv);
   for (const key of Object.keys(parsedEnv)) {
     if (allExpandedEnv.parsed?.[key]) {
       expandedEnv[key] = allExpandedEnv.parsed[key];
@@ -336,11 +332,8 @@ export function load(
       // If the key was previously overwritten by the .env file then it can be overwritten again.
       !overwrittenKeys.has(key)
     ) {
-      console.log('overwrittenKeys', key, [...overwrittenKeys.values()]);
-
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
-      console.log('set key', key, envInfo.env[key], process.env[key]);
       // Avoid creating a new object, mutate it instead as this causes problems in Bun
       overwrittenKeys.add(key);
       process.env[key] = envInfo.env[key];

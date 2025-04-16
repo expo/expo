@@ -144,10 +144,8 @@ function parseEnvFiles(envFiles, { systemEnv = process.env, } = {}) {
             throw error;
         }
     });
-    const e = expandEnvFromSystem(loadedEnvVars, systemEnv);
-    node_console_1.default.log('e>>', loadedEnvVars, e);
     return {
-        env: e,
+        env: expandEnvFromSystem(loadedEnvVars, systemEnv),
         files: loadedEnvFiles.reverse(),
     };
 }
@@ -200,7 +198,6 @@ function expandEnvFromSystem(parsedEnv, systemEnv = process.env) {
         return parsedEnv;
     }
     // Only store the values that were initially parsed, from `parsedEnv`.
-    node_console_1.default.log('parsed:', allExpandedEnv);
     for (const key of Object.keys(parsedEnv)) {
         if (allExpandedEnv.parsed?.[key]) {
             expandedEnv[key] = allExpandedEnv.parsed[key];
@@ -271,11 +268,9 @@ function load(projectRoot, options = {}) {
         if (typeof process.env[key] !== 'undefined' &&
             // If the key was previously overwritten by the .env file then it can be overwritten again.
             !overwrittenKeys.has(key)) {
-            node_console_1.default.log('overwrittenKeys', key, [...overwrittenKeys.values()]);
             debug(`"${key}" is already defined and IS NOT overwritten`);
         }
         else {
-            node_console_1.default.log('set key', key, envInfo.env[key], process.env[key]);
             // Avoid creating a new object, mutate it instead as this causes problems in Bun
             overwrittenKeys.add(key);
             process.env[key] = envInfo.env[key];

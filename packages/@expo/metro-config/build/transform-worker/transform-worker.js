@@ -44,10 +44,10 @@ exports.transform = transform;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+const node_path_1 = require("node:path");
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const dotenv = __importStar(require("dotenv"));
 const dotenv_expand_1 = require("dotenv-expand");
-const node_path_1 = require("node:path");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
@@ -55,7 +55,7 @@ const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
 const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
-function parseEnvFile(src) {
+function parseEnvFile(src, isClient) {
     const expandedEnv = {};
     const envFileParsed = dotenv.parse(src);
     if (envFileParsed) {
@@ -64,7 +64,11 @@ function parseEnvFile(src) {
             processEnv: {},
         });
         for (const key of Object.keys(envFileParsed)) {
-            if (allExpandedEnv.parsed?.[key] && key.startsWith('EXPO_PUBLIC_')) {
+            if (allExpandedEnv.parsed?.[key]) {
+                if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
+                    // Don't include non-public variables in the client bundle.
+                    continue;
+                }
                 expandedEnv[key] = allExpandedEnv.parsed[key];
             }
         }
@@ -143,39 +147,33 @@ async function transform(config, projectRoot, filename, data, options) {
             // This ensures that the client doesn't accidentally use the server-only +api files.
             return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
         }
-        console.log('filename', filename);
-        if (filename.match(/\.env(\.(local|development(\.local)?))?$/)) {
-            console.log('Loading .env file:', filename);
-            const envFileParsed = parseEnvFile(data.toString('utf-8'));
+        // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
+        if (filename.match(/^\.env(\.(local|development(\.local)?))?$/)) {
+            const envFileParsed = parseEnvFile(data.toString('utf-8'), isClientEnvironment);
             return worker.transform(config, projectRoot, filename, Buffer.from(`module.exports = ${JSON.stringify(envFileParsed)};`), options);
         }
-        if (isClientEnvironment && filename.match(/\/expo\/virtual\/env\.js$/)) {
+        if (
+        // Parsing the virtual env is client-only, on the server we use `process.env` directly.
+        isClientEnvironment &&
+            // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
+            options.dev &&
+            // Finally match the virtual env file.
+            filename.match(/\/expo\/virtual\/env\.js$/)) {
             const relativePath = (0, node_path_1.relative)((0, node_path_1.dirname)(filename), projectRoot);
             const posixPath = (0, filePath_1.toPosixPath)(relativePath);
-            const contents = `const envFiles = require.context(
-  ${JSON.stringify(posixPath)},
-  false,
-  /^\\.\\/\\.env/
-);
-
-const supportedEnvFiles = ['.env', '.env.development', '.env.local', '.env.development.local'];
-
-export const env = {
-  ...envFiles
-    .keys()
-    .filter((file) => supportedEnvFiles.includes(file))
-    .reduce((acc, file) => {
-      const env = envFiles(file);
-      return {
-        ...acc,
-        ...env,
-      };
-    }, {}),
-  ...process.env,
-};
-`;
-            const res = await worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
-            return res;
+            // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
+            // We then merge them in the expected order.
+            // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
+            // defined in the script or bash, essentially all places where HMR is not possible.
+            // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
+            // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
+            const contents = `const envFiles = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
+const keys = envFiles.keys();
+const dotEnv = ['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+  return keys.includes(file) ? { ...acc, ...envFiles(file)} : acc;
+}, {});
+export const env = { ...dotEnv, ...process.env };`;
+            return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
         }
         return worker.transform(config, projectRoot, filename, data, options);
     }

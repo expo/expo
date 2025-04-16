@@ -42,7 +42,8 @@
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json",
-    "types"
+    "types",
+    "virtual"
   ],
   "scripts": {
     "build": "expo-module build",
