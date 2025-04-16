@@ -145,8 +145,8 @@ export class LogBoxLog {
           'LogBoxLog.symbolicated:',
           JSON.stringify(
             {
-              stack: [],
-              componentStack: [],
+              stack: this.stack,
+              componentStack: this.componentStack,
               level: this.level,
               type: this.type,
               message: this.message,
