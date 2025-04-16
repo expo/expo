@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use wrappers for methods from `react-native-edge-to-edge.SystemBars` when edge-to-edge is enabled. ([#36163](https://github.com/expo/expo/pull/36163) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
