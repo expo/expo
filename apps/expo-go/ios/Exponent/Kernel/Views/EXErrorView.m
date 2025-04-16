@@ -7,7 +7,7 @@
 #import "EXKernelAppRecord.h"
 #import "EXManifestResource.h"
 #import "EXUtil.h"
-#import "EXPackagerLogHelper.h"
+#import "Expo_Go-Swift.h"
 
 @import EXManifests;
 

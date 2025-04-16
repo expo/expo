@@ -56,7 +56,7 @@
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
-		8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.m */; };
+		8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.swift */; };
 		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
@@ -285,8 +285,7 @@
 		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		88A25B1DAF71DFE5C4134A46 /* libPods-Expo Go-Expo Go (versioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (versioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A8D97E62DAE4389009DBB9F /* EXPackagerLogHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPackagerLogHelper.h; sourceTree = "<group>"; };
-		8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPackagerLogHelper.m; sourceTree = "<group>"; };
+		8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXPackagerLogHelper.swift; sourceTree = "<group>"; };
 		8EE60BD85240AF63736C047A /* Pods-Expo Go-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -943,8 +942,7 @@
 		B5AC39941E95A90B00540AA7 /* DevSupport */ = {
 			isa = PBXGroup;
 			children = (
-				8A8D97E62DAE4389009DBB9F /* EXPackagerLogHelper.h */,
-				8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.m */,
+				8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.swift */,
 				B5576081204A41F90041D9C8 /* EXHomeModule.h */,
 				B5576080204A41F90041D9C8 /* EXHomeModule.m */,
 				F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */,
@@ -1748,7 +1746,7 @@
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
-				8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.m in Sources */,
+				8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.swift in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,

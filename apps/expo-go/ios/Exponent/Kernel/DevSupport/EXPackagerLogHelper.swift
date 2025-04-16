@@ -1,0 +1,134 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import Foundation
+import React
+
+@objc enum EXLogLevel: Int {
+  case info
+  case warning
+  case error
+}
+
+@objc class EXPackagerLogHelper: NSObject, SRWebSocketDelegate {
+  private var connected: Bool = false
+  private var socket: SRWebSocket?
+  private var bundleURL: URL
+  private var pendingMessage: String?
+  private var logLevel: EXLogLevel
+  private var onComplete: (() -> Void)?
+
+  @objc init(bundleURL: URL, level: EXLogLevel) {
+    self.bundleURL = bundleURL
+    self.logLevel = level
+  }
+
+  deinit {
+    if let socket = socket, connected {
+      socket.close()
+      connected = false
+      self.socket = nil
+    }
+  }
+
+  @objc func sendMessage(_ message: String, withCompletion completion: @escaping () -> Void) {
+    pendingMessage = message
+    onComplete = completion
+    if !connected {
+      createSocket()
+    } else {
+      sendPendingMessage()
+    }
+  }
+
+  @objc static func logInfo(_ message: String, withBundleUrl url: URL) {
+    log(message, withBundleUrl: url, level: .info)
+  }
+
+  @objc static func logWarning(_ message: String, withBundleUrl url: URL) {
+    log(message, withBundleUrl: url, level: .warning)
+  }
+
+  @objc static func logError(_ message: String, withBundleUrl url: URL) {
+    log(message, withBundleUrl: url, level: .error)
+  }
+
+  @objc static func log(_ message: String, withBundleUrl url: URL, level: EXLogLevel) {
+    var strongHelper: EXPackagerLogHelper? = EXPackagerLogHelper(bundleURL: url, level: level)
+    strongHelper?.sendMessage(message) {
+      strongHelper = nil
+    }
+  }
+
+  public func webSocketDidOpen(_ webSocket: SRWebSocket) {
+    connected = true
+    sendPendingMessage()
+  }
+
+  public func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
+    // Ignored
+  }
+
+  public func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
+    socket = nil
+    connected = false
+  }
+
+  private func sendPendingMessage() {
+    guard let message = pendingMessage, connected, let socket = socket else { return }
+
+    let type: String
+    switch logLevel {
+    case .info:
+      type = "info"
+    case .warning:
+      type = "warn"
+    case .error:
+      type = "error"
+    }
+
+    let payload: [String: Any] = [
+      "type": "log",
+      "level": type,
+      "data": [message]
+    ]
+
+    pendingMessage = nil
+
+    do {
+      let jsonData = try JSONSerialization.data(withJSONObject: payload)
+      if let jsonString = String(data: jsonData, encoding: .utf8) {
+        try socket.send(string: jsonString)
+      }
+    } catch {
+      // Swallow errors
+    }
+
+    socket.close()
+    self.socket = nil
+    connected = false
+
+    if let onComplete = onComplete {
+      onComplete()
+      self.onComplete = nil
+    }
+  }
+
+  private func createSocket() {
+    let serverHost = bundleURL.host ?? "localhost"
+    let serverPort = bundleURL.port ?? Int(kRCTBundleURLProviderDefaultPort)
+    let scheme = (bundleURL.scheme == "exps" || bundleURL.scheme == "https") ? "https" : "http"
+
+    var components = URLComponents()
+    components.host = serverHost
+    components.scheme = scheme
+    components.port = serverPort
+    components.path = "/hot"
+
+    socket = SRWebSocket(url: components.url!)
+    socket?.delegate = self
+
+    let queue = DispatchQueue(label: "host.exp.Exponent.EXPackagerLogHelper")
+    socket?.delegateDispatchQueue = queue
+    socket?.open()
+  }
+}
