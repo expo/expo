@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add hot reloading for environment variables.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
