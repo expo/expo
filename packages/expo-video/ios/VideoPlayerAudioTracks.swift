@@ -37,7 +37,7 @@ class VideoPlayerAudioTracks {
     guard let asset = playerItem?.asset else {
       return availableAudioTracks
     }
-    
+
     let mediaSelectionCharacteristics = asset.availableMediaCharacteristicsWithMediaSelectionOptions
 
     for characteristic in mediaSelectionCharacteristics {

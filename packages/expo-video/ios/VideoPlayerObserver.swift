@@ -251,8 +251,8 @@ class VideoPlayerObserver {
       queue: nil
     ) { [weak self] _ in
       self?.delegates.forEach { delegate in
-          let audioTrack = VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
-          delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
+        let audioTrack = VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
+        delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
       }
     }
   }
