@@ -165,7 +165,7 @@ export async function transform(
         config,
         projectRoot,
         filename,
-        Buffer.from(`module.exports = ${JSON.stringify(envFileParsed)};`),
+        Buffer.from(`export default ${JSON.stringify(envFileParsed)};`),
         options
       );
     }
@@ -190,7 +190,7 @@ export async function transform(
       const contents = `const envFiles = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
 const keys = envFiles.keys();
 const dotEnv = ['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
-  return keys.includes(file) ? { ...acc, ...envFiles(file)} : acc;
+  return keys.includes(file) ? { ...acc, ...envFiles(file).default} : acc;
 }, {});
 export const env = { ...dotEnv, ...process.env };`;
       return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
