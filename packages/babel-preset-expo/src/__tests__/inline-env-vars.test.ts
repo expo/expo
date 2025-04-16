@@ -26,6 +26,7 @@ describe(getInlineEnvVarsEnabled, () => {
       })
     ).toBe(true);
   });
+
   it(`aggressively disables`, () => {
     expect(getInlineEnvVarsEnabled({ preserveEnvVars: true })).toBe(false);
 
@@ -46,12 +47,6 @@ describe(getInlineEnvVarsEnabled, () => {
       getInlineEnvVarsEnabled({
         ...ENABLED_CALLER,
         isServer: true,
-      })
-    ).toBe(false);
-    expect(
-      getInlineEnvVarsEnabled({
-        ...ENABLED_CALLER,
-        isDev: true,
       })
     ).toBe(false);
   });
@@ -115,7 +110,7 @@ process.env['other'];
   expect(contents).toMatchSnapshot();
 });
 
-it(`does not inline environment variables`, () => {
+it(`inlines environment variables in development`, () => {
   process.env.EXPO_PUBLIC_NODE_ENV = 'development';
   process.env.EXPO_PUBLIC_FOO = 'bar';
 
