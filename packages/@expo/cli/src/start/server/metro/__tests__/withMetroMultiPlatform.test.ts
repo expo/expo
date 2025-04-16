@@ -1015,7 +1015,7 @@ describe(withExtendedResolver, () => {
       // 2: Resolves the origin root module path for `expo`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo/package.json',
         platform
       );
@@ -1085,7 +1085,7 @@ describe(withExtendedResolver, () => {
       // 2: Resolves the origin root module path for `expo`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo/package.json',
         platform
       );
@@ -1093,7 +1093,7 @@ describe(withExtendedResolver, () => {
       // 3: Resolves the origin root module path for `expo-router`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         3,
-        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo-router/package.json',
         platform
       );
@@ -1135,7 +1135,7 @@ describe(withExtendedResolver, () => {
       // 2: Fails to resolve origin root module path for `expo`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo/package.json',
         platform
       );
@@ -1143,7 +1143,7 @@ describe(withExtendedResolver, () => {
       // 3: Fails to resolve origin root module path for `expo-router`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         3,
-        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo-router/package.json',
         platform
       );
@@ -1189,7 +1189,7 @@ describe(withExtendedResolver, () => {
       // 2: Resolves the origin root module path for `expo`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo/package.json',
         platform
       );
@@ -1197,7 +1197,7 @@ describe(withExtendedResolver, () => {
       // 2: Resolves the origin root module path for `expo-router`
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         3,
-        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        expect.objectContaining({ originModulePath: '//package.json' }),
         'expo-router/package.json',
         platform
       );
