@@ -5,7 +5,9 @@ import * as Notifications from 'expo-notifications';
 // own server or use the local notification API if you want to notify this user.
 const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
-export default async function registerForPushNotificationsAsync() {
+export default async function registerForPushNotificationsAsync(
+  payloadOverride?: Record<string, any>
+) {
   // this method assumes the user has already granted permission
   // to receive remote notifications.
 
@@ -29,6 +31,7 @@ export default async function registerForPushNotificationsAsync() {
         body: 'Native Component List is registered for push notifications.',
         data: { example: 'sample data' },
         categoryId: 'welcome',
+        ...payloadOverride,
       },
     ]),
   });

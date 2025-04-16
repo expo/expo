@@ -95,6 +95,19 @@ export default class NotificationScreen extends React.Component<
         )}
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
         <ListButton
+          onPress={async () => {
+            const permission = await this._obtainRemoteNotifPermissionsAsync();
+            if (permission.status === 'granted') {
+              registerForPushNotificationsAsync({
+                richContent: {
+                  image: 'https://picsum.photos/200/300',
+                },
+              });
+            }
+          }}
+          title="Send me a push notification with an image"
+        />
+        <ListButton
           onPress={this._unregisterForNotificationsAsync}
           title="Unregister for push notifications"
         />
