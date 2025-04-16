@@ -52,6 +52,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     private set
   var showsSubtitlesButton = false
     private set
+  var showsAudioTracksButton = false
+    private set
 
   private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
@@ -260,6 +262,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
+    showsAudioTracksButton = player.audioTracks.availableAudioTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
   }
