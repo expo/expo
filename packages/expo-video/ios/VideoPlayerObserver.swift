@@ -25,6 +25,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?)
   func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?)
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?)
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
 }
@@ -42,6 +43,7 @@ extension VideoPlayerObserverDelegate {
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {}
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {}
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {}
   func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {}
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
@@ -125,6 +127,7 @@ class VideoPlayerObserver {
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
   private var currentSubtitlesObserver: NSObjectProtocol?
+  private var currentAudioTracksObserver: NSObjectProtocol?
   private var currentAudioTracksObserver: NSObjectProtocol?
 
   init(owner: VideoPlayer) {
@@ -264,6 +267,7 @@ class VideoPlayerObserver {
     tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
     NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
+    NotificationCenter.default.removeObserver(currentAudioTracksObserver as Any)
     NotificationCenter.default.removeObserver(currentAudioTracksObserver as Any)
   }
 

@@ -6,9 +6,9 @@ class VideoPlayerAudioTracks {
   private(set) var availableAudioTracks: [AudioTrack] = []
   private(set) var currentAudioTrack: AudioTrack?
 
-  init (owner: VideoPlayer) {
-    self.owner = owner
-  }
+    init (owner: VideoPlayer) {
+        self.owner = owner
+    }
 
   func onNewAudioTrackSelected(audioTrack: AudioTrack?) {
     currentAudioTrack = audioTrack
