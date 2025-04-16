@@ -43,6 +43,8 @@
     "@expo/json-file": "~9.1.2",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
+    "dotenv": "~16.4.5",
+    "dotenv-expand": "~11.0.6",
     "debug": "^4.3.2",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
