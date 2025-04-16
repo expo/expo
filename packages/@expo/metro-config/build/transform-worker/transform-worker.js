@@ -45,6 +45,9 @@ exports.transform = transform;
  * LICENSE file in the root directory of this source tree.
  */
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const dotenv = __importStar(require("dotenv"));
+const dotenv_expand_1 = require("dotenv-expand");
+const node_path_1 = require("node:path");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
@@ -52,6 +55,22 @@ const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
 const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
+function parseEnvFile(src) {
+    const expandedEnv = {};
+    const envFileParsed = dotenv.parse(src);
+    if (envFileParsed) {
+        const allExpandedEnv = (0, dotenv_expand_1.expand)({
+            parsed: envFileParsed,
+            processEnv: {},
+        });
+        for (const key of Object.keys(envFileParsed)) {
+            if (allExpandedEnv.parsed?.[key] && key.startsWith('EXPO_PUBLIC_')) {
+                expandedEnv[key] = allExpandedEnv.parsed[key];
+            }
+        }
+    }
+    return expandedEnv;
+}
 function getStringArray(value) {
     if (!value)
         return undefined;
@@ -124,23 +143,72 @@ async function transform(config, projectRoot, filename, data, options) {
             // This ensures that the client doesn't accidentally use the server-only +api files.
             return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
         }
+        console.log('filename', filename);
+        if (filename.match(/\.env(\.(local|development(\.local)?))?$/)) {
+            console.log('Loading .env file:', filename);
+            const envFileParsed = parseEnvFile(data.toString('utf-8'));
+            return worker.transform(config, projectRoot, filename, Buffer.from(`module.exports = ${JSON.stringify(envFileParsed)};`), options);
+        }
         if (isClientEnvironment && filename.match(/\/expo\/virtual\/env\.js$/)) {
-            function getAllExpoPublicEnvVars(inputEnv = process.env) {
-                // Create an object containing all environment variables that start with EXPO_PUBLIC_
-                const env = {};
-                for (const key in inputEnv) {
-                    if (key.startsWith('EXPO_PUBLIC_')) {
-                        // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
-                        env[key] = inputEnv[key];
-                    }
-                }
-                return env;
-            }
-            console.log('options.customTransformOptions?.fullEnv', options.customTransformOptions?.fullEnv);
-            const contents = `export const env = {${Object.keys(options.customTransformOptions?.fullEnv ?? {})
-                .map((key) => `${JSON.stringify(key)}: ${JSON.stringify(options.customTransformOptions?.fullEnv[key])}`)
-                .join(',')}};`;
-            console.log('contents', contents);
+            // function getAllExpoPublicEnvVars(inputEnv: NodeJS.ProcessEnv = process.env) {
+            //   // Create an object containing all environment variables that start with EXPO_PUBLIC_
+            //   const env = {};
+            //   for (const key in inputEnv) {
+            //     if (key.startsWith('EXPO_PUBLIC_')) {
+            //       // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+            //       env[key] = inputEnv[key];
+            //     }
+            //   }
+            //   return env;
+            // }
+            // const envFiles = [
+            //   '.env.development.local',
+            //   '.env.local',
+            //   '.env.development',
+            //   '.env',
+            // ];
+            // const rel = envFiles.map(envFile => {
+            //   const p = "./" + relative(filename, projectRoot + "/" + envFiles);
+            //   return `require(${JSON.stringify(p)})`;
+            //   });
+            // console.log(
+            //   'options.customTransformOptions?.fullEnv',
+            //   options.customTransformOptions?.fullEnv
+            // );
+            // const contents = `export const env = {${Object.keys(
+            //   options.customTransformOptions?.fullEnv ?? {}
+            // )
+            //   .map(
+            //     (key) =>
+            //       `${JSON.stringify(key)}: ${JSON.stringify(options.customTransformOptions?.fullEnv[key])}`
+            //   )
+            //   .join(',')}};`;
+            // console.log('contents', contents);
+            const relativePath = (0, node_path_1.relative)((0, node_path_1.dirname)(filename), projectRoot);
+            const posixPath = (0, filePath_1.toPosixPath)(relativePath);
+            const contents = `const envFiles = require.context(
+  ${JSON.stringify(posixPath)},
+  false,
+  /^\\.\\/\\.env/
+);
+
+const supportedEnvFiles = ['.env', '.env.development', '.env.local', '.env.development.local'];
+
+export const env = {
+  ...envFiles
+    .keys()
+    .filter((file) => supportedEnvFiles.includes(file))
+    .reduce((acc, file) => {
+      const env = envFiles(file);
+      return {
+        ...acc,
+        ...env,
+      };
+    }, {}),
+  ...process.env,
+};
+`;
+            console.log('relativePath', relativePath, contents);
             const res = await worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
             console.log('The virtual env file was removed from the client JS bundle by Expo CLI. ' + filename);
             // Add skipCache to the output.
