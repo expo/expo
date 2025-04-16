@@ -3595,10 +3595,17 @@ SPEC CHECKSUMS:
   BenchmarkingModule: a97859cac8efb2f5411b2052e61841b349813a4a
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
+<<<<<<< HEAD
   EASClient: 2d9d3631681fc426f9c4ade4d7cf6fc2d19baa46
   EXApplication: 11b2bbe282966309a86145fc642090b6e5b356cc
   EXAV: 796c01cfbe714ce51fb0712636780b3b6feb1248
   EXConstants: 98e2e1043294fc2347346fb14b9577dfedc936f7
+=======
+  EASClient: 5ea8f813affd33c2ec3c0163674f051899a82843
+  EXApplication: 6120ef61ab4bee9df179ef8c130aa38616b03d7f
+  EXAV: 09d62e1e69490b035739d2f32c69adfbfd7332d9
+  EXConstants: 20326ab88197a2dcfb13d641e28d11ae08bb1fc4
+>>>>>>> aa2c210594 ([expo-video] Audio Tracks on iOS)
   EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 96fe8e11fc4e243db06df7b7f198796fb26fbf24
@@ -3673,7 +3680,11 @@ SPEC CHECKSUMS:
   FBLazyVector: abbac80c6f89e71a8c55c7e92ec015c8a9496753
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
+<<<<<<< HEAD
   hermes-engine: c32f2e405098bc1ebe30630a051ddce6f21d3c2e
+=======
+  hermes-engine: cd4bd90f051e3658c83cc00e87c603dfe1b75947
+>>>>>>> aa2c210594 ([expo-video] Audio Tracks on iOS)
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3766,10 +3777,15 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+<<<<<<< HEAD
   UMAppLoader: 04b2c13a454eb35e4058b416b48eafd6d0d7a6ce
   Yoga: d15f5aa644c466e917569ac43b19cbf17975239a
+=======
+  UMAppLoader: ea3f6eb9b8089b1ac051a679b71fe7a4a93c4126
+  Yoga: dbaa9504cd449d991982c1486e75155e7f5f70fe
+>>>>>>> aa2c210594 ([expo-video] Audio Tracks on iOS)
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: a4b563d9d9c73e29b619314cb8136ce02bea61e0
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

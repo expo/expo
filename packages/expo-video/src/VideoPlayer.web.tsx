@@ -9,6 +9,7 @@ import type {
   SubtitleTrack,
   AudioMixingMode,
   VideoTrack,
+  AudioTrack,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -80,6 +81,8 @@ export default class VideoPlayerWeb
   bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
   subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
   availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+  audioTrack: AudioTrack | null = null; // Not supported on web. Dummy to match the interface.
+  availableAudioTracks: AudioTrack[] = []; // Not supported on web. Dummy to match the interface.
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
 

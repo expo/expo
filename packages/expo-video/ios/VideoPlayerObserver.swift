@@ -24,6 +24,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate)
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?)
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?)
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
 }
@@ -41,6 +42,7 @@ extension VideoPlayerObserverDelegate {
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {}
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {}
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {}
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
 }
@@ -123,6 +125,7 @@ class VideoPlayerObserver {
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
   private var currentSubtitlesObserver: NSObjectProtocol?
+  private var currentAudioTracksObserver: NSObjectProtocol?
 
   init(owner: VideoPlayer) {
     self.owner = owner
@@ -241,6 +244,17 @@ class VideoPlayerObserver {
         delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: subtitleTrack)
       }
     }
+
+    currentAudioTracksObserver = NotificationCenter.default.addObserver(
+      forName: AVPlayerItem.mediaSelectionDidChangeNotification,
+      object: playerItem,
+      queue: nil
+    ) { [weak self] _ in
+      self?.delegates.forEach { delegate in
+          let audioTrack = VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
+          delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
+      }
+    }
   }
 
   private func invalidateCurrentPlayerItemObservers() {
@@ -250,6 +264,7 @@ class VideoPlayerObserver {
     tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
     NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
+    NotificationCenter.default.removeObserver(currentAudioTracksObserver as Any)
   }
 
   func startOrUpdateTimeUpdates(forInterval interval: Double) {
