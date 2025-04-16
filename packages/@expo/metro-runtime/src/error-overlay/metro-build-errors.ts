@@ -8,6 +8,9 @@ type MetroFormattedError = {
   lineNumber?: number;
 };
 
+const METRO_ERROR_FORMAT =
+  /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+
 export class MetroBuildError extends Error {
   public ansiError: string;
 
@@ -23,6 +26,35 @@ export class MetroBuildError extends Error {
   }
 
   toLogBoxLogData(): LogBoxLogData {
+    // TODO: Split into different error
+    const metroInternalError = this.ansiError.match(METRO_ERROR_FORMAT);
+    if (metroInternalError) {
+      const [content, fileName, row, column, codeFrame] = metroInternalError.slice(1);
+
+      return {
+        level: 'fatal',
+        type: 'Metro Error',
+        stack: [],
+        isComponentError: false,
+        componentStack: [],
+        codeFrame: {
+          stack: {
+            fileName,
+            location: {
+              row: parseInt(row, 10),
+              column: parseInt(column, 10),
+            },
+            content: codeFrame,
+          },
+        },
+        message: {
+          content,
+          substitutions: [],
+        },
+        category: `${fileName}-${row}-${column}`,
+      };
+    }
+
     const babelCodeFrameError = this.ansiError.match(BABEL_CODE_FRAME_ERROR_FORMAT);
 
     if (babelCodeFrameError) {
