@@ -6,12 +6,15 @@ import android.net.Uri
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.util.UnstableApi
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
@@ -28,7 +31,7 @@ import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableReactNativeAPI
-@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+@androidx.annotation.OptIn(UnstableApi::class)
 class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
@@ -53,78 +56,8 @@ class VideoModule : Module() {
       VideoManager.cache.clear()
     }
 
-    View(VideoView::class) {
-      Events(
-        "onPictureInPictureStart",
-        "onPictureInPictureStop",
-        "onFullscreenEnter",
-        "onFullscreenExit",
-        "onFirstFrameRender"
-      )
-
-      Prop("player") { view: VideoView, player: VideoPlayer ->
-        view.videoPlayer = player
-      }
-
-      Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
-        view.useNativeControls = useNativeControls
-      }
-
-      Prop("contentFit") { view: VideoView, contentFit: ContentFit ->
-        view.contentFit = contentFit
-      }
-
-      Prop("startsPictureInPictureAutomatically") { view: VideoView, autoEnterPiP: Boolean ->
-        view.autoEnterPiP = autoEnterPiP
-      }
-
-      Prop("allowsFullscreen") { view: VideoView, allowsFullscreen: Boolean? ->
-        view.allowsFullscreen = allowsFullscreen ?: true
-      }
-
-      Prop("requiresLinearPlayback") { view: VideoView, requiresLinearPlayback: Boolean? ->
-        val linearPlayback = requiresLinearPlayback ?: false
-        view.playerView.applyRequiresLinearPlayback(linearPlayback)
-        view.videoPlayer?.requiresLinearPlayback = linearPlayback
-      }
-
-      Prop("useExoShutter") { view: VideoView, useExoShutter: Boolean? ->
-        view.useExoShutter = useExoShutter ?: true
-      }
-
-      AsyncFunction("enterFullscreen") { view: VideoView ->
-        view.enterFullscreen()
-      }
-
-      AsyncFunction("exitFullscreen") {
-        throw MethodUnsupportedException("exitFullscreen")
-      }
-
-      AsyncFunction("startPictureInPicture") { view: VideoView ->
-        runWithPiPMisconfigurationSoftHandling(true) {
-          view.enterPictureInPicture()
-        }
-      }
-
-      AsyncFunction("stopPictureInPicture") {
-        throw MethodUnsupportedException("stopPictureInPicture")
-      }
-
-      OnViewDestroys {
-        VideoManager.unregisterVideoView(it)
-        // Remove relations with mounted players
-        it.videoPlayer = null
-      }
-
-      OnViewDidUpdateProps { view ->
-        view.useExoShutter = view.useExoShutter ?: true
-        view.applySurfaceViewVisibility()
-
-        if (view.playerView.useController != view.useNativeControls) {
-          view.playerView.useController = view.useNativeControls
-        }
-      }
-    }
+    View(SurfaceVideoView::class, videoViewDefinitionBody<SurfaceVideoView>())
+    View(TextureVideoView::class, videoViewDefinitionBody<TextureVideoView>())
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource? ->
@@ -384,6 +317,72 @@ class VideoModule : Module() {
 
     OnActivityEntersBackground {
       VideoManager.onAppBackgrounded()
+    }
+  }
+}
+
+@androidx.annotation.OptIn(UnstableApi::class)
+private inline fun <reified T : VideoView> videoViewDefinitionBody(): ViewDefinitionBuilder<T>.() -> Unit {
+  return {
+    Events(
+      "onPictureInPictureStart",
+      "onPictureInPictureStop",
+      "onFullscreenEnter",
+      "onFullscreenExit"
+    )
+
+    Prop("player") { view: T, player: VideoPlayer ->
+      view.videoPlayer = player
+    }
+
+    Prop("nativeControls") { view: T, useNativeControls: Boolean ->
+      view.useNativeControls = useNativeControls
+    }
+
+    Prop("contentFit") { view: T, contentFit: ContentFit ->
+      view.contentFit = contentFit
+    }
+
+    Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
+      view.autoEnterPiP = autoEnterPiP
+    }
+
+    Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
+      view.allowsFullscreen = allowsFullscreen ?: true
+    }
+
+    Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
+      val linearPlayback = requiresLinearPlayback ?: false
+      view.playerView.applyRequiresLinearPlayback(linearPlayback)
+      view.videoPlayer?.requiresLinearPlayback = linearPlayback
+    }
+
+    AsyncFunction("enterFullscreen") { view: T ->
+      view.enterFullscreen()
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("exitFullscreen") {
+      throw MethodUnsupportedException("exitFullscreen")
+    }
+
+    AsyncFunction("startPictureInPicture") { view: T ->
+      runWithPiPMisconfigurationSoftHandling(true) {
+        view.enterPictureInPicture()
+      }
+    }
+
+    AsyncFunction("stopPictureInPicture") {
+      throw MethodUnsupportedException("stopPictureInPicture")
+    }
+
+    OnViewDestroys {
+      VideoManager.unregisterVideoView(it)
+    }
+
+    OnViewDidUpdateProps { view ->
+      if (view.playerView.useController != view.useNativeControls) {
+        view.playerView.useController = view.useNativeControls
+      }
     }
   }
 }
