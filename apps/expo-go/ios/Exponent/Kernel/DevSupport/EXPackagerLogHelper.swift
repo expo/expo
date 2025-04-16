@@ -10,12 +10,12 @@ import React
 
   var stringValue: String {
     switch self {
-      case .info:
-        return "info"
-      case .warn:
-        return "warn"
-      case .error:
-        return "error"
+    case .info:
+      return "info"
+    case .warn:
+      return "warn"
+    case .error:
+      return "error"
     }
   }
 }
