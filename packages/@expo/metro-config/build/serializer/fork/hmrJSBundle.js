@@ -18,7 +18,6 @@ const metro_transform_plugins_1 = require("metro-transform-plugins");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const js_1 = require("./js");
-const environmentVariableSerializerPlugin_1 = require("../environmentVariableSerializerPlugin");
 function generateModules(sourceModules, graph, options) {
     const modules = [];
     for (const module of sourceModules) {
@@ -36,9 +35,7 @@ function generateModules(sourceModules, graph, options) {
             };
             const sourceMappingURL = getURL('map');
             const sourceURL = jsc_safe_url_1.default.toJscSafeUrl(getURL('bundle'));
-            const code = prepareModule(
-            // Inject env var support for dev.
-            (0, environmentVariableSerializerPlugin_1.prepareVirtualEnvVarModule)(module, graph), graph, options) +
+            const code = prepareModule(module, graph, options) +
                 `\n//# sourceMappingURL=${sourceMappingURL}\n` +
                 `//# sourceURL=${sourceURL}\n`;
             modules.push({

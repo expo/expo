@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTransformEnvironment = getTransformEnvironment;
 exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
-exports.prepareVirtualEnvVarModule = prepareVirtualEnvVarModule;
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getEnvVarDevString = getEnvVarDevString;
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
@@ -52,23 +51,6 @@ function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
     }
     return [entryPoint, preModules, graph, options];
 }
-function prepareVirtualEnvVarModule(module, graph) {
-    // if (!module.path.endsWith('/expo/virtual/env.js')) {
-    //   return module;
-    // }
-    // const env = process.env;
-    // // debug('Injecting environment variables in virtual module.');
-    // // TODO: Add dependencies on env files.
-    // console.log('virtualEnvVar.output[0].data.code', module.output[0].data.code);
-    // // Replace `exports.env = process.env;` with `exports.env = { ...process.env };`
-    // module.output[0].data.code = module.output[0].data.code.replace(
-    //   /exports\.env\s*=\s*process\.env;/,
-    //   `exports.env = {${Object.keys(getAllExpoPublicEnvVars(env))
-    //     .map((key) => `${JSON.stringify(key)}: ${JSON.stringify(env[key])}`)
-    //     .join(',')}};`
-    // );
-    return module;
-}
 function environmentVariableSerializerPlugin(entryPoint, preModules, graph, options) {
     // Skip replacement in Node.js environments.
     if (isServerEnvironment(graph, options)) {
@@ -80,27 +62,6 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
     if (!options.dev) {
         debug('Skipping environment variable inlining in production environment in favor of babel-preset-expo inlining with source maps.');
         return [entryPoint, preModules, graph, options];
-    }
-    const virtualEnvVar = [...graph.dependencies.values()].find((module) => {
-        return module.path.endsWith('/expo/virtual/env.js');
-    });
-    if (virtualEnvVar) {
-        console.log('virtualEnvVar', virtualEnvVar);
-        prepareVirtualEnvVarModule(virtualEnvVar, graph);
-        // // import * as runtimeEnv from '@expo/env';
-        // const env = process.env;
-        // // debug('Injecting environment variables in virtual module.');
-        // // TODO: Add dependencies on env files.
-        // console.log('virtualEnvVar.output[0].data.code', virtualEnvVar.output[0].data.code);
-        // // Replace `exports.env = process.env;` with `exports.env = { ...process.env };`
-        // virtualEnvVar.output[0].data.code = virtualEnvVar.output[0].data.code.replace(
-        //   /exports\.env\s*=\s*process\.env;/,
-        //   `exports.env = {${Object.keys(getAllExpoPublicEnvVars(env))
-        //     .map((key) => `${JSON.stringify(key)}: ${JSON.stringify(env[key])}`)
-        //     .join(',')}};`
-        // );
-        // console.log('virtualEnvVar', virtualEnvVar.output[0].data.code);
-        // return [entryPoint, preModules, graph, options];
     }
     const code = getEnvVarDevString();
     const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
