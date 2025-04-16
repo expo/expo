@@ -127,7 +127,7 @@ async function transform(config, projectRoot, filename, data, options) {
             return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
         }
         // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
-        if (filename.match(/^\.env(\.(local|development(\.local)?))?$/)) {
+        if (filename.match(/(^|\/)\.env(\.(local|development(\.local)?))?$/)) {
             const envFileParsed = (0, dot_env_development_1.parseEnvFile)(data.toString('utf-8'), isClientEnvironment);
             return worker.transform(config, projectRoot, filename, Buffer.from(`export default ${JSON.stringify(envFileParsed)};`), options);
         }
