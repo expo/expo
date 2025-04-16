@@ -37,9 +37,6 @@ module.exports = defineConfig([
       },
 
       'import/resolver': {
-        typescript: {
-          project: 'tsconfig.json',
-        },
         node: {
           extensions: allExtensions,
         },
