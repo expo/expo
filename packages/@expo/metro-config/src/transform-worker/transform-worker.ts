@@ -6,8 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as dotenv from 'dotenv';
-import { expand as dotenvExpand } from 'dotenv-expand';
 import countLines from 'metro/src/lib/countLines';
 import type {
   JsTransformerConfig,
@@ -23,6 +21,7 @@ import {
   printCssWarnings,
   transformCssModuleWeb,
 } from './css-modules';
+import { parseEnvFile } from './dot-env-development';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
@@ -30,29 +29,6 @@ import { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
-
-function parseEnvFile(src: string, isClient: boolean): Record<string, string> {
-  const expandedEnv: Record<string, string> = {};
-  const envFileParsed = dotenv.parse(src);
-
-  if (envFileParsed) {
-    const allExpandedEnv = dotenvExpand({
-      parsed: envFileParsed,
-      processEnv: {},
-    });
-
-    for (const key of Object.keys(envFileParsed)) {
-      if (allExpandedEnv.parsed?.[key]) {
-        if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
-          // Don't include non-public variables in the client bundle.
-          continue;
-        }
-        expandedEnv[key] = allExpandedEnv.parsed[key];
-      }
-    }
-  }
-  return expandedEnv;
-}
 
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;

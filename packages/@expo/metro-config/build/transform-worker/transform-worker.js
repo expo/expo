@@ -44,37 +44,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
-const dotenv = __importStar(require("dotenv"));
-const dotenv_expand_1 = require("dotenv-expand");
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const node_path_1 = require("node:path");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
+const dot_env_development_1 = require("./dot-env-development");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
 const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
-function parseEnvFile(src, isClient) {
-    const expandedEnv = {};
-    const envFileParsed = dotenv.parse(src);
-    if (envFileParsed) {
-        const allExpandedEnv = (0, dotenv_expand_1.expand)({
-            parsed: envFileParsed,
-            processEnv: {},
-        });
-        for (const key of Object.keys(envFileParsed)) {
-            if (allExpandedEnv.parsed?.[key]) {
-                if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
-                    // Don't include non-public variables in the client bundle.
-                    continue;
-                }
-                expandedEnv[key] = allExpandedEnv.parsed[key];
-            }
-        }
-    }
-    return expandedEnv;
-}
 function getStringArray(value) {
     if (!value)
         return undefined;
@@ -149,7 +128,7 @@ async function transform(config, projectRoot, filename, data, options) {
         }
         // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
         if (filename.match(/^\.env(\.(local|development(\.local)?))?$/)) {
-            const envFileParsed = parseEnvFile(data.toString('utf-8'), isClientEnvironment);
+            const envFileParsed = (0, dot_env_development_1.parseEnvFile)(data.toString('utf-8'), isClientEnvironment);
             return worker.transform(config, projectRoot, filename, Buffer.from(`export default ${JSON.stringify(envFileParsed)};`), options);
         }
         if (
