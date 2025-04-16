@@ -1,4 +1,7 @@
-import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import {
+  serializeOptimizeAsync,
+  serializeShakingAsync,
+} from '../fork/__tests__/serializer-test-utils';
 
 jest.mock('../exportHermes', () => {
   return {
@@ -103,4 +106,39 @@ EXPO_PUBLIC_FOO=bar
   });
 
   expect(artifacts[0].source).toMatch('EXPO_PUBLIC_FOO = bar;');
+});
+
+it(`creates virtual expo env var module in production`, async () => {
+  const [, artifacts] = await serializeShakingAsync({
+    'index.js': `
+import {env} from "./pkg/expo/virtual/env";
+console.log(env);
+            `,
+    'pkg/expo/virtual/env.js': ``,
+    '.env': ` 
+EXPO_PUBLIC_FOO=bar
+`,
+  });
+
+  expect(artifacts[0].source).toMatch('Attempting to access internal environment');
+});
+
+it(`creates virtual expo env var module in development`, async () => {
+  await expect(
+    serializeOptimizeAsync(
+      {
+        'index.js': `
+import {env} from "./pkg/expo/virtual/env";
+console.log(env);
+            `,
+        'pkg/expo/virtual/env.js': ``,
+        '.env': ` 
+EXPO_PUBLIC_FOO=bar
+`,
+      },
+      {
+        dev: true,
+      }
+    )
+  ).rejects.toThrow(/mini-metro runner doesn't support require context/);
 });
