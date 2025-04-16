@@ -401,6 +401,7 @@ export function presentGlobalErrorOverlay() {
 }
 
 export function dismissGlobalErrorOverlay() {
+  debugger;
   // Remove div with ID `error-overlay`
   if (currentRoot) {
     currentRoot.unmount();

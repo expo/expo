@@ -12,11 +12,6 @@ import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 
-// import LoadingView from '../environment/DevLoadingView';
-// import LogBox from '@expo/metro-runtime/src/error-overlay/LogBox';
-// import getDevServer from './getDevServer';
-import { dismissGlobalErrorOverlay } from '@expo/metro-runtime/src/error-overlay/ErrorOverlay';
-
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showLoading(message: string, _type: 'load' | 'refresh') {
   DeviceEventEmitter.emit('devLoadingView:showMessage', {
@@ -208,7 +203,7 @@ const HMRClient: HMRClientNativeInterface = {
       }
     });
 
-    client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
+    client.on('update', ({ isInitialUpdate, ...props }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
         // dismissRedbox();
         // @ts-expect-error
@@ -327,17 +322,29 @@ function showCompileError() {
 
   // Even if there is already a redbox, syntax errors are more important.
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissGlobalErrorOverlay();
+  // dismissGlobalErrorOverlay();
 
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
-  const error = new Error(message);
+  const error = new Error(stripAnsi(message));
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:
   // @ts-expect-error
-  error.preventSymbolication = true;
+  error.ansiError = message;
   throw error;
+}
+
+function stripAnsi(str: string) {
+  if (!str) {
+    return str;
+  }
+  const pattern = [
+    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
+  ].join('|');
+
+  return str.replace(new RegExp(pattern, 'g'), '');
 }
 
 export default HMRClient;

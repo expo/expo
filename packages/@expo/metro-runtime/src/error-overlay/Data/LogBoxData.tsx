@@ -11,7 +11,6 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
 import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
@@ -269,9 +268,9 @@ export function setSelectedLog(proposedNewIndex: number): void {
 
   setTimeout(() => {
     if (oldIndex < 0 && newIndex >= 0) {
-      presentGlobalErrorOverlay();
+      require('../ErrorOverlay').presentGlobalErrorOverlay();
     } else if (oldIndex >= 0 && newIndex < 0) {
-      dismissGlobalErrorOverlay();
+      require('../ErrorOverlay').dismissGlobalErrorOverlay();
     }
   }, 0);
 }
