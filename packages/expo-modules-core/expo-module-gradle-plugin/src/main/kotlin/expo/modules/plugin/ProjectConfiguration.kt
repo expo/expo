@@ -16,6 +16,7 @@ import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
+import java.io.File
 import java.net.URI
 
 internal fun Project.applyDefaultPlugins() {
@@ -87,7 +88,7 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
     createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
     val npmLocalRepositoryRelativePath = "local-maven-repo"
-    val npmLocalRepository = URI("file://${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
+    val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
     publishingExtension().repositories.mavenLocal { mavenRepo ->
       mavenRepo.name = "NPMPackage"
       mavenRepo.url = npmLocalRepository
