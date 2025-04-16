@@ -14,7 +14,7 @@ import {
 } from '../devServerEndpoints';
 import type { Category, Message, CodeFrame } from './parseLogBoxLog';
 
-const PRINT_FIXTURES = false;
+const PRINT_FIXTURES = true;
 
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 

@@ -30,7 +30,14 @@ export function parseUnexpectedThrownValue(error: any) {
 
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
-  const originalMessage = e.message || '';
+  let originalMessage = e.message || '';
+  if ('ansiError' in e) {
+    // Re-apply the ansi error formatting to the message for CLI/Bundler errors such as missing imports.
+    // This ensures the console.error has ansi stripped.
+    // @ts-expect-error
+    originalMessage = e.ansiError;
+  }
+
   let message = originalMessage;
   if (e.componentStack != null) {
     message += `\n\nThis error is located at:${e.componentStack}`;

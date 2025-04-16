@@ -11,12 +11,11 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import { dismissGlobalErrorOverlay, presentGlobalErrorOverlay } from '../ErrorOverlay';
 import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
 import { parseUnexpectedThrownValue } from '../parseUnexpectedThrownValue';
 import type { LogLevel } from './LogBoxLog';
 import { LogBoxLog, StackType, LogContext } from './LogBoxLog';
-import type { Category, CodeFrame, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import type { Category, ExtendedExceptionData, Message } from './parseLogBoxLog';
 import { isError, parseLogBoxException, parseLogBoxLog, tagError } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
@@ -269,9 +268,9 @@ export function setSelectedLog(proposedNewIndex: number): void {
 
   setTimeout(() => {
     if (oldIndex < 0 && newIndex >= 0) {
-      presentGlobalErrorOverlay();
+      require('../ErrorOverlay').presentGlobalErrorOverlay();
     } else if (oldIndex >= 0 && newIndex < 0) {
-      dismissGlobalErrorOverlay();
+      require('../ErrorOverlay').dismissGlobalErrorOverlay();
     }
   }, 0);
 }
