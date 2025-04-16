@@ -160,7 +160,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
-    intent.putExtra(VideoManager.INTENT_PLAYER_KEY, id)
+    intent.putExtra(VideoManager.INTENT_PLAYER_KEY, videoViewId)
     // Set before starting the activity to avoid entering PiP unintentionally
     isInFullscreen = true
     currentActivity.startActivity(intent)
