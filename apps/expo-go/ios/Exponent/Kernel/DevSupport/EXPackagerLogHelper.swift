@@ -59,16 +59,16 @@ import React
     }
   }
 
-  public func webSocketDidOpen(_ webSocket: SRWebSocket) {
+  func webSocketDidOpen(_ webSocket: SRWebSocket) {
     connected = true
     sendPendingMessage()
   }
 
-  public func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
+  func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
     // Ignored
   }
 
-  public func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
+  func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
     socket = nil
     connected = false
   }
@@ -124,7 +124,12 @@ import React
     components.port = serverPort
     components.path = "/hot"
 
-    socket = SRWebSocket(url: components.url!)
+    if let url = components.url {
+      socket = SRWebSocket(url: url)
+    } else {
+      return
+    }
+    
     socket?.delegate = self
 
     let queue = DispatchQueue(label: "host.exp.Exponent.EXPackagerLogHelper")
