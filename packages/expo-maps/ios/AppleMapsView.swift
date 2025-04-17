@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import SwiftUI
 import ExpoModulesCore
 import MapKit
-import SwiftUI
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
