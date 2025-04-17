@@ -45,6 +45,7 @@ export class PackageJsonCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
+      advice: issues.length ? [`Update your package.json to remove conflicts.`] : [],
     };
   }
 }

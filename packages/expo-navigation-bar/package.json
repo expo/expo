@@ -36,7 +36,8 @@
   "dependencies": {
     "@react-native/normalize-colors": "0.79.1",
     "debug": "^4.3.2",
-    "react-native-is-edge-to-edge": "^1.1.6"
+    "react-native-is-edge-to-edge": "^1.1.6",
+    "react-native-edge-to-edge": "1.6.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

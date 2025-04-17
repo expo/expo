@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.3.5 — 2025-04-14
