@@ -1,20 +1,4 @@
-interface RenderToImageOptions {
-    /**
-     * Font family name.
-     * @default system default
-     */
-    fontFamily?: string;
-    /**
-     * Size of the font.
-     * @default 24
-     */
-    size?: number;
-    /**
-     * Font color
-     * @default 'black'
-     */
-    color?: string;
-}
+import { RenderToImageOptions } from './FontUtils.types';
 /**
  * Creates an image with provided text.
  * @param glyphs Text to be exported.
@@ -24,5 +8,4 @@ interface RenderToImageOptions {
  * @platform ios
  */
 export declare function renderToImageAsync(glyphs: string, options?: RenderToImageOptions): Promise<string>;
-export {};
 //# sourceMappingURL=FontUtils.d.ts.map
