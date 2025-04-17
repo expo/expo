@@ -9,7 +9,7 @@ data class RenderToImageOptions(
   val fontFamily: String = "",
 
   @Field
-  val size: Int = 24,
+  val size: Float = 24f,
 
   @Field
   val color: Int = Color.BLACK

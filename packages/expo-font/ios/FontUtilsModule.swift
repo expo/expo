@@ -9,10 +9,10 @@ public final class FontUtilsModule: Module {
     AsyncFunction("renderToImageAsync") { (glyphs: String, options: RenderToImageOptions, promise: Promise) throws in
       let font: UIFont
       if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
-        let uiFont = UIFont(name: fontName, size: CGFloat(options.size)) {
+        let uiFont = UIFont(name: fontName, size: options.size) {
         font = uiFont
       } else {
-        font = UIFont.systemFont(ofSize: CGFloat(options.size))
+        font = UIFont.systemFont(ofSize: options.size)
       }
 
       let attributedString = NSAttributedString(
@@ -33,7 +33,7 @@ public final class FontUtilsModule: Module {
         return
       }
 
-      let outputURL = getOutputURL(glyphs: glyphs, options: options)
+      let outputURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(UUID().uuidString).png")
 
       do {
         try data.write(to: outputURL, options: .atomic)
@@ -44,12 +44,4 @@ public final class FontUtilsModule: Module {
     }
   }
 
-  private func getOutputURL(glyphs: String, options: RenderToImageOptions) -> URL {
-    let glyphCodePoints = glyphs.unicodeScalars.map { String($0.value) }.joined(separator: "")
-    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-    UIColor(options.color).getRed(&r, green: &g, blue: &b, alpha: &a)
-    let colorString = String(format: "%02X%02X%02X%02X", Int(r * 255), Int(g * 255), Int(b * 255), Int(a * 255))
-    let path = "\(NSTemporaryDirectory())\(options.fontFamily)-\(options.size)-\(colorString)-\(glyphCodePoints).png"
-    return URL(fileURLWithPath: path)
-  }
 }

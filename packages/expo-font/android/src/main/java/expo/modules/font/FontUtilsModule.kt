@@ -18,10 +18,11 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.UUID
 import kotlin.math.abs
 
-private class SaveImageException(uri: String) :
-  CodedException("Could not save image to '$uri'")
+private class SaveImageException(uri: String, cause: Throwable? = null) :
+  CodedException("Could not save image to '$uri'", cause)
 
 open class FontUtilsModule : Module() {
   private val context: Context
@@ -36,7 +37,7 @@ open class FontUtilsModule : Module() {
       val paint = Paint().apply {
         this.typeface = typeface
         this.color = options.color
-        this.textSize = options.size.toFloat()
+        this.textSize = options.size
         this.isAntiAlias = true
       }
 
@@ -48,11 +49,11 @@ open class FontUtilsModule : Module() {
       val canvas = Canvas(bitmap)
 
       val x = abs(bounds.left).toFloat()
-      val y = bounds.height() / 2 - ((paint.fontMetrics.ascent + paint.fontMetrics.descent) / 2)
+      val y = bounds.height().toFloat() / 2 - ((paint.fontMetrics.ascent + paint.fontMetrics.descent) / 2)
 
       canvas.drawText(glyphs, x, y, paint)
 
-      val output = getOutputFile(glyphs, options)
+      val output = File(context.cacheDir, "${UUID.randomUUID()}.png")
       if (!output.exists()) {
         output.createNewFile()
       }
@@ -63,14 +64,8 @@ open class FontUtilsModule : Module() {
           promise.resolve(Uri.fromFile(output))
         }
       } catch (e: IOException) {
-        promise.reject(SaveImageException(output.absolutePath))
+        promise.reject(SaveImageException(output.absolutePath, e))
       }
     }
-  }
-
-  private fun getOutputFile(glyphs: String, options: RenderToImageOptions): File {
-    val glyphCodePoints = glyphs.codePoints().toArray().joinToString("")
-    val colorString = String.format("%08X", options.color)
-    return File(context.cacheDir, "${options.fontFamily}-${options.size}-$colorString-$glyphCodePoints.png")
   }
 }
