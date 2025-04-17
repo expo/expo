@@ -19,8 +19,6 @@ export const KNOWN_MODES = ['development', 'test', 'production'];
 /** The environment variable name to use when marking the environment as loaded */
 export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
 
-const overwrittenKeys = new Set<string>();
-
 /**
  * Get a list of all `.env*` files based on the `NODE_ENV` mode.
  * This returns a list of files, in order of highest priority to lowest priority.
@@ -166,14 +164,9 @@ export function loadEnvFiles(
   const loadedEnvKeys: string[] = [];
 
   for (const key in parsed.env) {
-    if (
-      typeof systemEnv[key] !== 'undefined' &&
-      // If the key was previously overwritten by the .env file then it can be overwritten again.
-      !overwrittenKeys.has(key)
-    ) {
+    if (typeof systemEnv[key] !== 'undefined') {
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
-      overwrittenKeys.add(key);
       systemEnv[key] = parsed.env[key];
       loadedEnvKeys.push(key);
     }
@@ -195,17 +188,11 @@ function expandEnvFromSystem(
 ) {
   const expandedEnv: Record<string, string> = {};
 
-  const originalEnv = { ...systemEnv };
-
-  overwrittenKeys.forEach((key) => {
-    delete originalEnv[key];
-  });
-
   // Pass a clone of the system environment variables to avoid mutating the original environment.
   // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
   const allExpandedEnv = dotenvExpand({
     parsed: parsedEnv,
-    processEnv: originalEnv as Record<string, string>,
+    processEnv: { ...systemEnv } as Record<string, string>,
   });
 
   if (allExpandedEnv.error) {
@@ -327,15 +314,10 @@ export function load(
   const loadedEnvKeys: string[] = [];
 
   for (const key in envInfo.env) {
-    if (
-      typeof process.env[key] !== 'undefined' &&
-      // If the key was previously overwritten by the .env file then it can be overwritten again.
-      !overwrittenKeys.has(key)
-    ) {
+    if (typeof process.env[key] !== 'undefined') {
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
       // Avoid creating a new object, mutate it instead as this causes problems in Bun
-      overwrittenKeys.add(key);
       process.env[key] = envInfo.env[key];
       loadedEnvKeys.push(key);
     }

@@ -134,23 +134,36 @@ async function transform(config, projectRoot, filename, data, options) {
         if (
         // Parsing the virtual env is client-only, on the server we use `process.env` directly.
         isClientEnvironment &&
-            // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
-            options.dev &&
             // Finally match the virtual env file.
             filename.match(/\/expo\/virtual\/env\.js$/)) {
-            const relativePath = (0, node_path_1.relative)((0, node_path_1.dirname)(filename), projectRoot);
-            const posixPath = (0, filePath_1.toPosixPath)(relativePath);
-            // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
-            // We then merge them in the expected order.
-            // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
-            // defined in the script or bash, essentially all places where HMR is not possible.
-            // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
-            // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
-            const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
-export const env = { ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
-  return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
-}, {}), ...process.env };`;
-            return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+            if (
+            // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
+            options.dev) {
+                const relativePath = (0, node_path_1.relative)((0, node_path_1.dirname)(filename), projectRoot);
+                const posixPath = (0, filePath_1.toPosixPath)(relativePath);
+                // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
+                // We then merge them in the expected order.
+                // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
+                // defined in the script or bash, essentially all places where HMR is not possible.
+                // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
+                // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
+                const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
+    export const env = { ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+      return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
+    }, {}), ...process.env };`;
+                return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+            }
+            else {
+                // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.
+                // Create a proxy module where a helpful error is thrown whenever a key from `process.env` is accessed.
+                const contents = `
+        export const env = new Proxy({}, {
+          get(target, key) {
+            throw new Error(\`Attempting to access internal environment variable "\${key}" is not supported in production bundles. Environment variables should be inlined in production by Babel.\`);
+          },
+       });`;
+                return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+            }
         }
         return worker.transform(config, projectRoot, filename, data, options);
     }
