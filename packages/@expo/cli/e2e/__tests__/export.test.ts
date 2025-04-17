@@ -70,6 +70,12 @@ describe('server', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
+
+    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
+    // Or when we can build `@expo/metro-config` on Windows
+    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
+    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
+    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -290,5 +296,33 @@ describe('server', () => {
     // log and diff the `bundle` with the a previous version from a branch
     // where this passes.
     expect(bundle.split('\n').length).toBeLessThan(700);
+  });
+
+  // Regression test for: https://github.com/expo/expo/issues/35471
+  it('runs `npx expo export --platform=web --dev`', async () => {
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '--source-maps', '--dump-assetmap', '--platform=web', '--dev'],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
+
+    // Ensure the app entry has the expected export name
+    expect(findProjectFiles(path.join(projectRoot, 'dist'))).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
+      'assetmap.json',
+      'assets/assets/font.3858f62230ac3c915f300c664312c63f.ttf',
+      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15.png',
+      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
+      'favicon.ico',
+      'index.html',
+      'metadata.json',
+    ]);
   });
 });
