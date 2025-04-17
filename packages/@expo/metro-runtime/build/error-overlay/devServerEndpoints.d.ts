@@ -15,6 +15,7 @@ export type SymbolicatedStackTrace = {
     stack: MetroStackFrame[];
     codeFrame?: CodeFrame;
 };
+export declare function installPackageInProject(pkg: string): void;
 export declare function openFileInEditor(file: string, lineNumber: number): void;
 export declare function fetchProjectMetadataAsync(): Promise<{
     projectRoot: string;

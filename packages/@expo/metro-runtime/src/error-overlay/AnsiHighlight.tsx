@@ -31,7 +31,11 @@ const COLORS: Record<string, string> = {
   'ansi-bright-white': 'rgb(247, 247, 247)',
 };
 
-export class Ansi extends React.Component<{ text: string; style: StyleProp<TextStyle> }, { hasError: boolean }> {
+export class Ansi extends React.Component<{
+  // TODO: Does undefined make sense here?
+  text: string | undefined;
+  style: StyleProp<TextStyle>;
+}, { hasError: boolean }> {
   constructor(props: { text: string; style: StyleProp<TextStyle> }) {
     super(props);
     this.state = { hasError: false };
@@ -49,7 +53,7 @@ export class Ansi extends React.Component<{ text: string; style: StyleProp<TextS
     if (this.state.hasError) {
       return <Text style={this.props.style}>Error rendering ANSI text.</Text>;
     }
-    return <AnsiUnsafe text={this.props.text} style={this.props.style} />;
+    return <AnsiUnsafe text={this.props.text || ''} style={this.props.style} />;
   }
 }
 

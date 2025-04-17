@@ -1,7 +1,7 @@
 import React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 export declare class Ansi extends React.Component<{
-    text: string;
+    text: string | undefined;
     style: StyleProp<TextStyle>;
 }, {
     hasError: boolean;

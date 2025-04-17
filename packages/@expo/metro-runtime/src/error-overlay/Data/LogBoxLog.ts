@@ -29,6 +29,7 @@ export type LogBoxLogData = {
   componentStack: MetroStackFrame[];
   codeFrame: Partial<Record<StackType, CodeFrame>>;
   isComponentError: boolean;
+  isMissingModuleError?: string;
 };
 
 export type StackType = 'stack' | 'component';
@@ -51,6 +52,8 @@ export class LogBoxLog {
   level: LogLevel;
   codeFrame: Partial<Record<StackType, CodeFrame>> = {};
   isComponentError: boolean;
+  isMissingModuleError?: string;
+
   private symbolicated: Record<StackType, SymbolicationResult> = {
     stack: {
       error: null,
@@ -81,6 +84,7 @@ export class LogBoxLog {
     this.isComponentError = data.isComponentError;
     this.count = 1;
     this.symbolicated = data.symbolicated ?? this.symbolicated;
+    this.isMissingModuleError = data.isMissingModuleError;
     // Create unsymbolidated fixture:
     // console.log('LogBoxLog', JSON.stringify(data, null, 2));
   }
