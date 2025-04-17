@@ -98,6 +98,9 @@ module.exports = defineConfig([
       'no-useless-constructor': 'off',
       '@typescript-eslint/no-useless-constructor': 'warn',
       'no-undef': 'off',
+
+      // TODO (Kadi): Enable this. Disabling for now because import/recommended adds it, but we didn't use to have it enabled
+      'import/no-unresolved': 'off',
     },
   },
 ]);

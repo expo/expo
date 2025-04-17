@@ -272,6 +272,9 @@ module.exports = defineConfig([
 
       'import/no-duplicates': 'error',
 
+      // TODO (Kadi): Enable this. Disabling for now because import/recommended adds it, but we didn't use to have it enabled
+      'import/no-unresolved': 'off',
+
       'import/order': [
         'warn',
         {
