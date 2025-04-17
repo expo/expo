@@ -146,6 +146,7 @@ class VideoModule : Module() {
             ref.subtitles.currentSubtitleTrack = subtitleTrack
           }
         }
+
       Property("availableAudioTracks")
         .get { ref: VideoPlayer ->
           ref.audioTracks.availableAudioTracks
