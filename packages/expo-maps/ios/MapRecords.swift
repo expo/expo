@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import SwiftUI
 import ExpoModulesCore
 import MapKit
-import SwiftUI
 
 struct Coordinate: Record {
   @Field var latitude: Double = 0
@@ -37,8 +37,9 @@ struct CameraPosition: Record, Equatable {
   @Field var zoom: Double = 1
 
   static func == (lhs: CameraPosition, rhs: CameraPosition) -> Bool {
-    return lhs.coordinates.latitude == rhs.coordinates.latitude
-      && lhs.coordinates.longitude == rhs.coordinates.longitude && lhs.zoom == rhs.zoom
+    return lhs.coordinates.latitude == rhs.coordinates.latitude &&
+    lhs.coordinates.longitude == rhs.coordinates.longitude &&
+    lhs.zoom == rhs.zoom
   }
 }
 
