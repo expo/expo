@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
 import MapKit
+import SwiftUI
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
@@ -137,7 +137,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
-                "longitude": $0.longitude
+                "longitude": $0.longitude,
               ]
             }
             props.onPolylineClick([
@@ -145,14 +145,14 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
               "strokeColor": hit.strokeColor,
               "strokeWidth": hit.strokeWidth,
               "contourStyle": hit.contourStyle,
-              "coordinates": coords
+              "coordinates": coords,
             ])
           }
 
           // Send an event of map click regardless
           props.onMapClick([
-            "latitude": coord.latitude,
-            "longitude": coord.longitude,
+            "latitude": coordinate.latitude,
+            "longitude": coordinate.longitude,
           ])
         }
       }
@@ -182,11 +182,11 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude
+            "longitude": cameraPosition.longitude,
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading
+          "bearing": context.camera.heading,
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
@@ -213,8 +213,8 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude
-        ]
+          "longitude": marker.coordinates.longitude,
+        ],
       ])
       return
     }
