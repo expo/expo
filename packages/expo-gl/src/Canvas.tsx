@@ -44,7 +44,6 @@ function getSize({ size, ref }: GetSizeParams): Size {
   return { width, height };
 }
 
-
 const Canvas = React.forwardRef(
   (props: React.ComponentProps<typeof View>, ref: React.Ref<HTMLCanvasElement>) =>
     createElement('canvas', { ...props, ref })
