@@ -64,6 +64,20 @@ export declare enum AppleMapsMapType {
     IMAGERY = "IMAGERY"
 }
 /**
+ * The style of the polyline.
+ * @platform ios
+ */
+export declare enum AppleMapsContourStyle {
+    /**
+     * A straight line.
+     */
+    STRAIGHT = "STRAIGHT",
+    /**
+     * A geodesic line.
+     */
+    GEODESIC = "GEODESIC"
+}
+/**
  * @platform ios
  */
 export type AppleMapsProperties = {
@@ -101,6 +115,24 @@ export type AppleMapsAnnotation = {
      */
     icon?: SharedRefType<'image'>;
 } & AppleMapsMarker;
+export type AppleMapsPolyline = {
+    /**
+     * The coordinates of the polyline.
+     */
+    coordinates: Coordinates[];
+    /**
+     * The color of the polyline.
+     */
+    strokeColor?: string;
+    /**
+     * The width of the polyline.
+     */
+    strokeWidth?: number;
+    /**
+     * The style of the polyline.
+     */
+    contourStyle?: AppleMapsContourStyle;
+};
 /**
  * @platform ios
  */
@@ -115,6 +147,10 @@ export type AppleMapsViewProps = {
      * The array of markers to display on the map.
      */
     markers?: AppleMapsMarker[];
+    /**
+     * The array of polylines to display on the map.
+     */
+    polylines?: AppleMapsPolyline[];
     /**
      * The array of annotations to display on the map.
      */
@@ -138,6 +174,10 @@ export type AppleMapsViewProps = {
      * Lambda invoked when the marker is clicked
      */
     onMarkerClick?: (event: AppleMapsMarker) => void;
+    /**
+     * Lambda invoked when the polyline is clicked
+     */
+    onPolylineClick?: (event: AppleMapsPolyline) => void;
     /**
      * Lambda invoked when the map was moved by the user.
      */

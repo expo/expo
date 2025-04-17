@@ -1,18 +1,43 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
 import MapKit
+import SwiftUI
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
+  @Field var polylines: [ExpoAppleMapPolyline] = []
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
+  let onPolylineClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
+}
+
+
+extension MKMapPoint {
+
+  /// Perpendicular distance (in metres) from `self` to the
+  /// line segment **AB**.
+  func distance(toSegmentFrom a: MKMapPoint, to b: MKMapPoint) -> CLLocationDistance {
+    let dx = b.x - a.x
+    let dy = b.y - a.y
+
+    // Degenerate segment => use point distance
+    guard dx != 0 || dy != 0 else { return distance(to: a) }
+
+    let t = ((x - a.x) * dx + (y - a.y) * dy) / (dx * dx + dy * dy)
+    // Clamp the projection to the segment
+    let clamped = max(0.0, min(1.0, t))
+
+    let proj = MKMapPoint(x: a.x + clamped * dx,
+                          y: a.y + clamped * dy)
+
+    return distance(to: proj)
+  }
 }
 
 protocol AppleMapsViewProtocol: View {
@@ -54,7 +79,8 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition =
+        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -73,6 +99,12 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
           )
           .tint(marker.tintColor)
           .tag(MapSelection(marker.mapItem))
+        }
+
+        ForEach(props.polylines) { polyline in
+          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+            .stroke(polyline.strokeColor, lineWidth: polyline.strokeWidth)
+            .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
         ForEach(props.annotations) { annotation in
@@ -98,12 +130,26 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
-        if let coordinate = reader.convert(position, from: .local) {
-          props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
-          ])
-        }
+        if let coord = reader.convert(position, from: .local) {
+            // 1️⃣ first see if the tap hit a polyline
+            if let hit = polyline(at: coord) {
+              let coords = hit.coordinates.map { ["latitude": $0.latitude,
+                                                  "longitude": $0.longitude] }
+              props.onPolylineClick([
+                "id":           hit.id,
+                "strokeColor":  hit.strokeColor,
+                "strokeWidth":  hit.strokeWidth,
+                "contourStyle": hit.contourStyle,
+                "coordinates":  coords
+              ])
+            }
+
+            // 2️⃣ otherwise fall back to a plain map click
+            props.onMapClick([
+              "latitude":  coord.latitude,
+              "longitude": coord.longitude
+            ])
+          }
       }
       .mapControls {
         if uiSettings.compassEnabled {
@@ -122,19 +168,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
       .onChange(of: props.cameraPosition) { _, newValue in
         state.mapCameraPosition = convertToMapCamera(position: newValue)
       }
-      .onChange(of: state.selection) { _, newValue in
-        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
-          props.onMarkerClick([
-            "title": marker.title,
-            "tintColor": marker.tintColor,
-            "systemImage": marker.systemImage,
-            "coordinates": [
-              "latitude": marker.coordinates.latitude,
-              "longitude": marker.coordinates.longitude
-            ]
-          ])
-        }
-      }
+      .onChange(of: state.selection, perform: handleSelectionChange)  // ✅ compiler now sees a 1‑line closure
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
@@ -143,20 +177,63 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude
+            "longitude": cameraPosition.longitude,
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading
+          "bearing": context.camera.heading,
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
+      .mapStyle(
+        properties.mapType.toMapStyle(
+          showsTraffic: properties.isTrafficEnabled
+        )
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
+    }
+  }
+
+  private func handleSelectionChange(_ newSelection: MapSelection<MKMapItem>?) {
+    print("TAPPED SELECTION")
+    print(newSelection)
+
+    guard let item = newSelection?.value else { return }
+
+    // ‑‑ marker tap
+    if let marker = props.markers.first(where: { $0.mapItem == item }) {
+      props.onMarkerClick([
+        "title": marker.title,
+        "tintColor": marker.tintColor,
+        "systemImage": marker.systemImage,
+        "coordinates": [
+          "latitude": marker.coordinates.latitude,
+          "longitude": marker.coordinates.longitude,
+        ],
+      ])
+      return
+    }
+
+
+  }
+
+
+  private func polyline(at tap: CLLocationCoordinate2D,
+                        threshold: CLLocationDistance = 20) -> ExpoAppleMapPolyline? {
+
+    let tapPoint = MKMapPoint(tap)
+
+    return props.polylines.first { line in
+      let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)
+      // walk successive segments and keep the minimum distance
+      var minDist = CLLocationDistance.greatestFiniteMagnitude
+      for (a, b) in zip(pts, pts.dropFirst()) {
+        minDist = min(minDist, tapPoint.distance(toSegmentFrom: a, to: b))
+        if minDist < threshold { return true }
+      }
+      return false
     }
   }
 }
