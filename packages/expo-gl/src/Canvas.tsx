@@ -8,7 +8,6 @@ interface Size {
   width: number,
   height: number
 }
-type NullableSize = Size | null
 
 interface GetSizeParams {
   size: Size | null,
