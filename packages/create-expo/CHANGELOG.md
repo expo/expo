@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for `.vscode`, `.github`, `.cursor` directories by using an underscore instead of a dot.
+- Add support for `.vscode`, `.eas`, `.github`, `.cursor` directories by using an underscore instead of a dot.
 
 ### 🐛 Bug fixes
 
