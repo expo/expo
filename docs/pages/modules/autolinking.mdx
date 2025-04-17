@@ -129,18 +129,32 @@ When used with the CLI, you can pass the search paths as command arguments like 
 
 A list of package names to exclude from autolinking. These packages will not be autolinked even if they are found in the search paths.
 For example, you may want not to link some packages that you don't use on the specific platform to reduce the binary size.
-The following config in **package.json** will exclude `expo-random` and `third-party-native-module` from autolinking on Android:
+The following config in **package.json** will exclude `expo-random` and `third-party-expo-module` from autolinking on Android:
 
 ```json package.json
 {
   "expo": {
     "autolinking": {
       "android": {
-        "exclude": ["expo-random", "third-party-native-module"]
+        "exclude": ["expo-random", "third-party-expo-module"]
       }
     }
   }
 }
+```
+
+Note that the `exclude` option is for excluding the autolinking of Expo packages. To exclude the autolinking for any other packages, create **react-native.config.js** at the root directory of your project and apply the configuration as shown in the example below:
+
+```js react-native.config.js
+module.exports = {
+  dependencies: {
+    'library-name': {
+      platforms: {
+        android: null,
+      },
+    },
+  },
+};
 ```
 
 </PaddedAPIBox>
