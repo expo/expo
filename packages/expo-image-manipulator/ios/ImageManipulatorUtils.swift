@@ -7,7 +7,7 @@ internal typealias SaveImageResult = (url: URL, data: Data)
 /**
  Loads the image from given URL.
  */
-internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> UIImage {
+internal func loadImage(atUrl url: URL, headers: [String: String] = [:], appContext: AppContext) async throws -> UIImage {
   if url.scheme == "data" {
     guard let data = try? Data(contentsOf: url), let image = UIImage(data: data) else {
       throw CorruptedImageDataException()
@@ -25,15 +25,21 @@ internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> 
     throw FileSystemReadPermissionException(url.absoluteString)
   }
 
+  // Add headers to the request if needed
+  var request = URLRequest(url: url)
+  for (key, value) in headers {
+    request.setValue(value, forHTTPHeaderField: key)
+  }
+
   do {
-    if let result = try await imageLoader.loadImage(for: url) {
-      return result
+    let (data, _) = try await URLSession.shared.data(for: request)
+    guard let image = UIImage(data: data) else {
+      throw CorruptedImageDataException()
     }
+    return image
   } catch {
     throw ImageLoadingFailedException((error as NSError).debugDescription)
   }
-  // TODO: throw something better
-  throw ImageLoadingFailedException("")
 }
 
 /**
