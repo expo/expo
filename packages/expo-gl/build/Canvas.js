@@ -42,7 +42,7 @@ const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
         if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const currentSize = getSize({
                 size,
-                ref
+                ref,
             });
             const scale = PixelRatio.get();
             canvas.style.width = `${currentSize.width}px`;
