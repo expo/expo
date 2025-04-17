@@ -1,4 +1,5 @@
 import {
+  addSwiftImports,
   findObjcFunctionCodeBlock,
   findObjcInterfaceCodeBlock,
   findSwiftFunctionCodeBlock,
@@ -439,5 +440,65 @@ func doSomething(_ value: String!) -> Bool {
         }
       )
     ).toEqual(expectContents);
+  });
+});
+
+describe(addSwiftImports, () => {
+  it('should add import to the head', () => {
+    const contents = `\
+class Foo: NSObject {
+  func doSomething() {
+    // ...
+  }
+}`;
+
+    expect(addSwiftImports(contents, ['Expo'])).toMatchInlineSnapshot(`
+      "import Expo
+      class Foo: NSObject {
+        func doSomething() {
+          // ...
+        }
+      }"
+    `);
+  });
+
+  it('should add imports after the first import', () => {
+    const contents = `\
+import UIKit
+import Foundation
+
+class Foo: NSObject {
+  func doSomething() {
+    // ...
+  }
+}`;
+
+    expect(addSwiftImports(contents, ['Expo', 'ExpoModulesCore'])).toMatchInlineSnapshot(`
+      "import UIKit
+      import ExpoModulesCore
+      import Expo
+      import Foundation
+
+      class Foo: NSObject {
+        func doSomething() {
+          // ...
+        }
+      }"
+    `);
+  });
+
+  it('should not add duplicate imports', () => {
+    const contents = `\
+import UIKit
+import Foundation
+import Expo
+
+class Foo: NSObject {
+  func doSomething() {
+    // ...
+  }
+}`;
+
+    expect(addSwiftImports(contents, ['Expo'])).toEqual(contents);
   });
 });

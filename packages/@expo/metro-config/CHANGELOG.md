@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.20.4 — 2025-04-14

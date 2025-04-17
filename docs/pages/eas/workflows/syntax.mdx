@@ -647,8 +647,6 @@ jobs:
     # @end #
 ```
 
-{/* vale off */}
-
 | Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                                |
 | ---------------------------------- | ---- | ---------------- | --------- | ------------------------------------ |
 | linux-medium                       | 4    | 16               | 14        | Default worker.                      |
@@ -657,8 +655,6 @@ jobs:
 | linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android Emulators.    |
 | macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
 | macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
-
-{/* vale on */}
 
 > **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 

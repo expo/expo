@@ -366,7 +366,7 @@ function printFurtherLocalInstructions(slug, name) {
     console.log();
     console.log(`You can now import this module inside your application.`);
     console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-    console.log(`${chalk_1.default.gray.italic(`import ${name} './modules/${slug}';`)}`);
+    console.log(`${chalk_1.default.gray.italic(`import ${name} from './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
     console.log(chalk_1.default.yellow(`Remember to re-build your native app (for example, with ${chalk_1.default.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`));

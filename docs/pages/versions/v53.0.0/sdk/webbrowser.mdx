@@ -9,6 +9,7 @@ platforms: ['android', 'ios', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -17,6 +18,41 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-web-browser` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure a property that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'experimentalLauncherActivity',
+      platform: 'android',
+      description:
+        "A boolean that enables a launcher activity to persist the system's web browser state when the app is in the background.",
+      default: 'false',
+    },
+  ]}
+/>
 
 ## Usage
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove unnecessary async calls. ([#36222](https://github.com/expo/expo/pull/36222) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.1.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

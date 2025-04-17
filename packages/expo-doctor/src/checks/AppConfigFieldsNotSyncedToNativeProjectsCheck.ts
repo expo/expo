@@ -34,13 +34,13 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
     dynamicConfigPath,
   }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
     const appJsonFields: string[] = Object.keys(exp);
     const unsyncedFields: string[] = [];
     const isBuildingOnEAS: boolean = fs.existsSync('eas.json');
     const prebuildMessage: string = isBuildingOnEAS
       ? 'EAS Build will not sync the following properties:'
       : `if you don't run prebuild in your build pipeline, the following properties will not be synced:`;
-    let advice;
     const ignoreFile: string = fs.existsSync('.easignore') ? '.easignore' : '.gitignore';
 
     // iterate over all fields in app.json and add those that will not be synced to unsyncedFields array
@@ -71,14 +71,12 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
       );
 
       if (isBuildingOnEAS) {
-        advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
+        advice.push(
+          `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`
+        );
       }
     }
 
-    return {
-      isSuccessful: issues.length === 0,
-      issues,
-      advice,
-    };
+    return { isSuccessful: issues.length === 0, issues, advice };
   }
 }

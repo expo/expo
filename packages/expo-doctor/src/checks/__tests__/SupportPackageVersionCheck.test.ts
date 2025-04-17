@@ -72,7 +72,10 @@ describe('runAsync', () => {
       projectRoot: '/path/to/project',
       ...additionalProjectProps,
     });
-    expect(result.advice).toContain('remove resolutions from package.json');
+    expect(result.advice.length).toBe(1);
+    expect(result.advice[0]).toContain(
+      'Upgrade dependencies that are using the invalid package versions and remove resolutions'
+    );
   });
 
   it('warns about selected related metro packages that are not explicitly referenced in remote versions', async () => {
@@ -91,7 +94,7 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.advice).toEqual(
+    expect(result.advice[0]).toEqual(
       'Upgrade dependencies that are using the invalid package versions.'
     );
   });
@@ -118,7 +121,7 @@ describe('runAsync', () => {
       },
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.advice).toContain(
+    expect(result.advice[0]).toContain(
       'Upgrade dependencies that are using the invalid package versions and remove resolutions'
     );
   });
