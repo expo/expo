@@ -100,10 +100,10 @@ class VideoPlayerAudioTracks(owner: VideoPlayer) : VideoPlayerListener {
     val trackSelectionParameters = videoPlayer?.player?.trackSelectionParameters
     val preferredAudioLanguages = trackSelectionParameters?.preferredAudioLanguages
     val overriddenFormat: Format? = trackSelectionParameters?.overrides?.let {
-      for ((group, override) in it) {
+      for ((group, trackSelectionOverride) in it) {
         if (group.type == C.TRACK_TYPE_AUDIO) {
           // For audioTracks only one index will be replaced
-          return@let override.trackIndices.firstOrNull()?.let { index ->
+          return@let trackSelectionOverride.trackIndices.firstOrNull()?.let { index ->
             group.getFormat(index)
           }
         }
