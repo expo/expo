@@ -152,7 +152,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
           // Send an event of map click regardless
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude,
+            "longitude": coordinate.longitude
           ])
         }
       }
@@ -212,7 +212,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         "coordinates": [
           "latitude": marker.coordinates.latitude,
           "longitude": marker.coordinates.longitude
-        ],
+        ]
       ])
       return
     }
