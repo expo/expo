@@ -59,7 +59,7 @@ class VideoPlayerAudioTracks(owner: VideoPlayer) : VideoPlayerListener {
         val format: Format = group.getTrackFormat(i)
 
         if (MimeTypes.isAudio(format.sampleMimeType)) {
-          formatsToGroups[format] = Pair(group.mediaTrackGroup, i)
+          formatsToGroups[format] = group.mediaTrackGroup to i
           val track = AudioTrack.fromFormat(format) ?: continue
           availableAudioTracks.add(track)
         }
