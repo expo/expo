@@ -87,11 +87,11 @@ class VideoPlayerAudioTracks(owner: VideoPlayer) : VideoPlayerListener {
     }
     format?.let {
       formatsToGroups[it]?.let { subtitlePair ->
-        val override = TrackSelectionOverride(subtitlePair.first, subtitlePair.second)
-        newParameters = newParameters.buildUpon().addOverride(override).build()
+        val trackSelectionOverride = TrackSelectionOverride(subtitlePair.first, subtitlePair.second)
+        newParameters = newParameters.buildUpon().addOverride(trackSelectionOverride).build()
         player.trackSelectionParameters = newParameters
         setAudioTracksEnabled(true)
-        currentOverride = override
+        currentOverride = trackSelectionOverride
       }
     }
   }
