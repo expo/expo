@@ -15,8 +15,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- Added custom headers to `expo-image-manipulator` to allow for accessing remote images that need specific headers. ([#36242]https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper)
-
 ### 🐛 Bug fixes
 
 ## 52.0.0 — 2024-11-08
