@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Render to image ([#36185](https://github.com/expo/expo/pull/36185) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
