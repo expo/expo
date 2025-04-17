@@ -1,7 +1,7 @@
 /**
  * Call `registerTaskAsync` to set a callback (task) that runs when a notification is received while the app is in foreground, background, or terminated.
  * Only on Android, the task also runs in response to a notification action press when the app is backgrounded or terminated.
- * When app is terminated, only a [Headless Background Notification](https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications) triggers the task execution.
+ * When the app is terminated, only a [Headless Background Notification](/push-notifications/what-you-need-to-know/#headless-background-notifications) triggers the task execution.
  * However, the OS may decide not to deliver the notification to your app in some cases (e.g. when the device is in Doze mode on Android, or when you send too many notifications - Apple recommends to not ["send more than two or three per hour"](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview)).
  *
  * Under the hood, this function is run using `expo-task-manager`. You **must** define the task first, with [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-taskexecutor) and register it with `registerTaskAsync`.
