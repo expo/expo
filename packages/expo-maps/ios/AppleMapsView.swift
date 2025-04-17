@@ -18,7 +18,6 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 }
 
 extension MKMapPoint {
-
   /// Perpendicular distance (in metres) from `self` to the
   /// line segment **AB**.
   func distance(toSegmentFrom a: MKMapPoint, to b: MKMapPoint) -> CLLocationDistance {
@@ -26,14 +25,17 @@ extension MKMapPoint {
     let dy = b.y - a.y
 
     // Degenerate segment => use point distance
-    guard dx != 0 || dy != 0 else { return distance(to: a) }
+    guard dx != 0 || dy != 0 else {
+      return distance(to: a)
+    }
 
     let t = ((x - a.x) * dx + (y - a.y) * dy) / (dx * dx + dy * dy)
     // Clamp the projection to the segment
     let clamped = max(0.0, min(1.0, t))
 
-    let proj = MKMapPoint(x: a.x + clamped * dx,
-                          y: a.y + clamped * dy)
+    let proj = MKMapPoint(
+      x: a.x + clamped * dx,
+      y: a.y + clamped * dy)
 
     return distance(to: proj)
   }
@@ -130,25 +132,29 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coord = reader.convert(position, from: .local) {
-            // 1️⃣ first see if the tap hit a polyline
-            if let hit = polyline(at: coord) {
-              let coords = hit.coordinates.map { ["latitude": $0.latitude,
-                                                  "longitude": $0.longitude] }
-              props.onPolylineClick([
-                "id": hit.id,
-                "strokeColor": hit.strokeColor,
-                "strokeWidth": hit.strokeWidth,
-                "contourStyle": hit.contourStyle,
-                "coordinates": coords
-              ])
+          // First check if we hit a polyline and send an event
+          if let hit = polyline(at: coord) {
+            let coords = hit.coordinates.map {
+              [
+                "latitude": $0.latitude,
+                "longitude": $0.longitude
+              ]
             }
-
-            // 2️⃣ otherwise fall back to a plain map click
-            props.onMapClick([
-              "latitude": coord.latitude,
-              "longitude": coord.longitude
+            props.onPolylineClick([
+              "id": hit.id,
+              "strokeColor": hit.strokeColor,
+              "strokeWidth": hit.strokeWidth,
+              "contourStyle": hit.contourStyle,
+              "coordinates": coords
             ])
           }
+
+          // Send an event of map click regardless
+          props.onMapClick([
+            "latitude": coord.latitude,
+            "longitude": coord.longitude,
+          ])
+        }
       }
       .mapControls {
         if uiSettings.compassEnabled {
@@ -167,7 +173,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
       .onChange(of: props.cameraPosition) { _, newValue in
         state.mapCameraPosition = convertToMapCamera(position: newValue)
       }
-      .onChange(of: state.selection, perform: handleSelectionChange)  // ✅ compiler now sees a 1‑line closure
+      .onChange(of: state.selection, perform: handleSelectionChange)
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
@@ -196,12 +202,10 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
   }
 
   private func handleSelectionChange(_ newSelection: MapSelection<MKMapItem>?) {
-    print("TAPPED SELECTION")
-    print(newSelection)
+    guard let item = newSelection?.value else {
+      return
+    }
 
-    guard let item = newSelection?.value else { return }
-
-    // ‑‑ marker tap
     if let marker = props.markers.first(where: { $0.mapItem == item }) {
       props.onMarkerClick([
         "title": marker.title,
@@ -209,22 +213,23 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude
-        ]
+          "longitude": marker.coordinates.longitude,
+        ],
       ])
       return
     }
-
   }
 
-  private func polyline(at tap: CLLocationCoordinate2D,
-                        threshold: CLLocationDistance = 20) -> ExpoAppleMapPolyline? {
+  private func polyline(
+    at tap: CLLocationCoordinate2D,
+    threshold: CLLocationDistance = 20
+  ) -> ExpoAppleMapPolyline? {
 
     let tapPoint = MKMapPoint(tap)
 
     return props.polylines.first { line in
       let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)
-      // walk successive segments and keep the minimum distance
+
       var minDist = CLLocationDistance.greatestFiniteMagnitude
       for (a, b) in zip(pts, pts.dropFirst()) {
         minDist = min(minDist, tapPoint.distance(toSegmentFrom: a, to: b))
