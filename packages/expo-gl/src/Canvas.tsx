@@ -54,7 +54,7 @@ const CanvasWrapper: React.FunctionComponent<
     canvasRef: React.Ref<HTMLCanvasElement>;
   }
 > = ({ pointerEvents, children, style, ...props }) => {
-  const [size, setSize] = React.useState<NullableSize>(null);
+  const [size, setSize] = React.useState<Size | null>(null);
 
   const ref = React.useRef<View>(null);
   const _canvasRef = React.useRef<HTMLCanvasElement>(null);
