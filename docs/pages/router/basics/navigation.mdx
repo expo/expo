@@ -5,6 +5,7 @@ sidebar_title: Navigation
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Once you have a few pages in your app and their layouts setup, it's time to start navigating between them. Navigation in Expo Router works a lot like React Navigation, but with all pages having a URL by default, we can create links and use these URLs to move about our app using familiar web patterns.
 
@@ -92,6 +93,14 @@ router.navigate('./article');
 ```
 
 ## Dynamic routes and URL parameters
+
+<VideoBoxLink
+  videoId="izZv6a99Roo"
+  time={350}
+  title="Using dynamic routes with Expo Router"
+  description="Learn how to make a segment of a route dynamic."
+  className="mb-6"
+/>
 
 Dynamic routes can be linked to with their full URL, or by passing a `params` object.
 
