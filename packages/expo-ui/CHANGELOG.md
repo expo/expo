@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `DatePicker` causing out of memory exception.
+
 ### 💡 Others
 
 ## 0.1.1-alpha.2 — 2025-04-14
