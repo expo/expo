@@ -194,21 +194,19 @@ export default Sentry.wrap(App);
 </Tabs>
 
 > **info** Additionally, if your app is using EAS Update, we recommend configuring your Sentry release with the
-following format to see related Sentry errors in Expo dashboard with the Sentry integration enabled:
+> following format to see related Sentry errors in Expo dashboard with the Sentry integration enabled:
 
 ```js
 // other imports
-import * as Updates from "expo-updates";
-import * as Application from "expo-application";
+import * as Updates from 'expo-updates';
+import * as Application from 'expo-application';
 
-const version = Application.nativeApplicationVersion ?? "unknown-version";
+const version = Application.nativeApplicationVersion ?? 'unknown-version';
 const updateId = Updates.isEmbeddedLaunch ? null : Updates.updateId;
-const channel = Updates.channel || "development";
+const channel = Updates.channel || 'development';
 
 // Specifying your release name with this format allows you to see related Sentry errors in Expo dashboard if you have the integration enabled on the website for this project.
-const release = updateId
-  ? `${version}#${channel}:${updateId}`
-  : `${version}#${channel}`;
+const release = updateId ? `${version}#${channel}:${updateId}` : `${version}#${channel}`;
 
 Sentry.init({
   // other init options
