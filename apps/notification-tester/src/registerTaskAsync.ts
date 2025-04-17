@@ -8,6 +8,7 @@ import { defineTask } from 'expo-task-manager';
 import { AppState, Platform } from 'react-native';
 
 import { addItemToStorage } from './misc/addItemToStorage';
+import { CATEGORY_ID } from './misc/constants';
 
 function shouldBeHandledByTask(categoryIdentifier?: string | null | unknown) {
   // it's tricky to present notifications with action button across platforms
@@ -16,14 +17,14 @@ function shouldBeHandledByTask(categoryIdentifier?: string | null | unknown) {
   //   to: '', // Will be replaced by the real push tokens
   //   ttl: 60 * 60 * 24, // 1 day
   //   priority: 'high',
-  //   categoryId: 'submit_reply_placeholder',
+  //   categoryId: CATEGORY_ID,
   //   _contentAvailable: true,
   //   data: {
   //     title: 'hello how are you',
   //     someMockKey: 123,
   //   },
   // }
-  return categoryIdentifier === 'submit_reply_placeholder';
+  return categoryIdentifier === CATEGORY_ID;
 }
 
 // TODO vonovak this API works on iOS but is awkward to have this on module level

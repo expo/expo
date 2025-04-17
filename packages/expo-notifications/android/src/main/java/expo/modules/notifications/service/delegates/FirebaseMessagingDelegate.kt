@@ -100,7 +100,6 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     sLastToken = token
   }
 
-
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     // the entry point for notifications. For its behavior, see table at https://firebase.google.com/docs/cloud-messaging/android/receive
     DebugLogging.logRemoteMessage("FirebaseMessagingDelegate.onMessageReceived: message", remoteMessage)
