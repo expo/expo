@@ -17,7 +17,6 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   let onCameraMove = EventDispatcher()
 }
 
-
 extension MKMapPoint {
 
   /// Perpendicular distance (in metres) from `self` to the
@@ -136,17 +135,17 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
               let coords = hit.coordinates.map { ["latitude": $0.latitude,
                                                   "longitude": $0.longitude] }
               props.onPolylineClick([
-                "id":           hit.id,
-                "strokeColor":  hit.strokeColor,
-                "strokeWidth":  hit.strokeWidth,
+                "id": hit.id,
+                "strokeColor": hit.strokeColor,
+                "strokeWidth": hit.strokeWidth,
                 "contourStyle": hit.contourStyle,
-                "coordinates":  coords
+                "coordinates": coords
               ])
             }
 
             // 2️⃣ otherwise fall back to a plain map click
             props.onMapClick([
-              "latitude":  coord.latitude,
+              "latitude": coord.latitude,
               "longitude": coord.longitude
             ])
           }
@@ -177,11 +176,11 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude,
+            "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading,
+          "bearing": context.camera.heading
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
@@ -210,15 +209,13 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude,
-        ],
+          "longitude": marker.coordinates.longitude
+        ]
       ])
       return
     }
 
-
   }
-
 
   private func polyline(at tap: CLLocationCoordinate2D,
                         threshold: CLLocationDistance = 20) -> ExpoAppleMapPolyline? {
