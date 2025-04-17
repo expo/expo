@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added custom headers to `expo-image-manipulator` to allow for accessing remote images that need specific headers. ([#36242]https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper)
+- Added custom headers to `expo-image-manipulator` to allow for accessing remote images that need specific headers. ([#36242]https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper) ([#36242](https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper))
 
 ### 🐛 Bug fixes
 
