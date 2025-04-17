@@ -6,6 +6,7 @@ public final class FontUtilsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoFontUtils")
 
+#if !os(macOS)
     AsyncFunction("renderToImageAsync") { (glyphs: String, options: RenderToImageOptions, promise: Promise) throws in
       let font: UIFont
       if let fontName = UIFont.fontNames(forFamilyName: options.fontFamily).first,
@@ -42,5 +43,6 @@ public final class FontUtilsModule: Module {
         promise.reject(SaveImageException(outputURL.absoluteString))
       }
     }
+#endif
   }
 }

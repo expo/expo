@@ -1,24 +1,7 @@
 import { processColor } from 'react-native';
 
 import ExpoFontUtils from './ExpoFontUtils';
-
-interface RenderToImageOptions {
-  /**
-   * Font family name.
-   * @default system default
-   */
-  fontFamily?: string;
-  /**
-   * Size of the font.
-   * @default 24
-   */
-  size?: number;
-  /**
-   * Font color
-   * @default 'black'
-   */
-  color?: string;
-}
+import { RenderToImageOptions } from './FontUtils.types';
 
 /**
  * Creates an image with provided text.
