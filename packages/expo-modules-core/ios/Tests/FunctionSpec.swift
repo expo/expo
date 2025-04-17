@@ -366,11 +366,11 @@ class FunctionSpec: ExpoSpec {
       }
       
       it("returns a SharedObject (async)") {
-          try runtime
-            .eval(
-              "expo.modules.TestModule.withSharedObjectAsync().then((result) => { globalThis.result = result; })"
-            )
-       
+        try runtime
+          .eval(
+            "expo.modules.TestModule.withSharedObjectAsync().then((result) => { globalThis.result = result; })"
+          )
+
         expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(4000))
         let object = try runtime.eval("object = globalThis.result")
         
