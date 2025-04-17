@@ -19,6 +19,7 @@ export type LogBoxLogData = {
     componentStack: MetroStackFrame[];
     codeFrame: Partial<Record<StackType, CodeFrame>>;
     isComponentError: boolean;
+    isMissingModuleError?: string;
 };
 export type StackType = 'stack' | 'component';
 type SymbolicationResult = {
@@ -48,6 +49,7 @@ export declare class LogBoxLog {
     level: LogLevel;
     codeFrame: Partial<Record<StackType, CodeFrame>>;
     isComponentError: boolean;
+    isMissingModuleError?: string;
     private symbolicated;
     private callbacks;
     constructor(data: LogBoxLogData & {

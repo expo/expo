@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, useLogs, type LogLevel, type StackType } from './Data/LogBoxLog';
 
-import { ErrorCodeFrame } from './overlay/ErrorCodeFrame';
+import { ErrorCodeFrame, Terminal } from './overlay/ErrorCodeFrame';
 import { ErrorOverlayHeader } from './overlay/ErrorOverlayHeader';
 import { StackTraceList } from './overlay/StackTraceList';
 
@@ -220,6 +220,13 @@ export function LogBoxInspector({
               <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
             ))}
 
+            {log.isMissingModuleError && (
+              <InstallMissingModule
+                moduleName={log.isMissingModuleError}
+                projectRoot={projectRoot ?? ''}
+              />
+            )}
+
             {!!log?.componentStack?.length && (
               <StackTraceList
                 type="component"
@@ -246,6 +253,16 @@ export function LogBoxInspector({
       </div>
     </>
   );
+}
+
+function InstallMissingModule({
+  moduleName,
+  projectRoot,
+}: {
+  moduleName: string;
+  projectRoot: string;
+}) {
+  return <Terminal moduleName={moduleName} content={`$ npx expo install ${moduleName}`} />;
 }
 
 function uniqueBy<T>(array: T[], key: (item: T) => string): T[] {
@@ -285,7 +302,7 @@ function ErrorOverlayFooter({ message }: { message?: string }) {
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
 
-export function ErrorMessageHeader(props: {
+function ErrorMessageHeader(props: {
   collapsed: boolean;
   message: Message;
   level: LogLevel;

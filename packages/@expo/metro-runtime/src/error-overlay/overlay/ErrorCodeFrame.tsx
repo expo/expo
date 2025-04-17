@@ -9,7 +9,11 @@ import { ScrollView } from 'react-native';
 
 import { Ansi } from '../AnsiHighlight';
 import type { CodeFrame } from '../Data/parseLogBoxLog';
-import { formatProjectFilePath, openFileInEditor } from '../devServerEndpoints';
+import {
+  formatProjectFilePath,
+  installPackageInProject,
+  openFileInEditor,
+} from '../devServerEndpoints';
 
 import styles from './ErrorCodeFrame.module.css';
 
@@ -37,6 +41,74 @@ export function ErrorCodeFrame({
     return null;
   }
 
+  return (
+    <CodeFrame
+      title={
+        <>
+          {getFileName()}
+          <span style={{ opacity: 0.8 }}>{getLocation()}</span>
+        </>
+      }
+      headerIcon={<FileIcon />}
+      headerAction={
+        <button
+          className={styles.copyButton}
+          type="button"
+          title="Open in editor"
+          onClick={() => {
+            openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
+          }}
+          aria-label="Copy content">
+          <p className={styles.copyButtonText} data-text="true">
+            Open
+          </p>
+
+          <OpenIcon className={styles.copyButtonIcon} width={26} height={26} />
+        </button>
+      }
+      content={codeFrame.content}
+    />
+  );
+}
+
+export function Terminal({ content, moduleName }: { content?: string; moduleName: string }) {
+  return (
+    <CodeFrame
+      title="Terminal"
+      headerAction={
+        <button
+          className={styles.copyButton}
+          type="button"
+          title="Run command in project"
+          onClick={() => {
+            // TODO: Stream back progress
+            installPackageInProject(moduleName);
+          }}
+          aria-label="Copy content">
+          <p className={styles.copyButtonText} data-text="true">
+            Run
+          </p>
+
+          <PlayIcon className={styles.copyButtonIcon} width={26} height={26} />
+        </button>
+      }
+      headerIcon={<TerminalIcon />}
+      content={content}
+    />
+  );
+}
+
+export function CodeFrame({
+  content,
+  headerIcon,
+  headerAction,
+  title,
+}: {
+  content?: string;
+  headerIcon?: React.ReactNode;
+  headerAction?: React.ReactNode;
+  title: React.ReactNode;
+}) {
   // Try to match the Expo docs
   return (
     <div
@@ -64,7 +136,8 @@ export function ErrorCodeFrame({
             fontWeight: '600',
             // className="text-default text-[15px] leading-[1.6] tracking-[-0.009rem] flex min-h-10 w-full items-center gap-2 py-1 pr-4 font-medium !leading-tight"
           }}>
-          <FileIcon />
+          {headerIcon}
+
           <span
             style={{
               overflowWrap: 'break-word',
@@ -74,8 +147,7 @@ export function ErrorCodeFrame({
               color: 'var(--expo-log-color-label)',
               paddingRight: 16,
             }}>
-            {getFileName()}
-            <span style={{ opacity: 0.8 }}>{getLocation()}</span>
+            {title}
           </span>
 
           {/* R-L gradient to fade contents */}
@@ -92,20 +164,7 @@ export function ErrorCodeFrame({
           />
         </span>
 
-        <button
-          className={styles.copyButton}
-          type="button"
-          title="Open in editor"
-          onClick={() => {
-            openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
-          }}
-          aria-label="Copy content">
-          <p className={styles.copyButtonText} data-text="true">
-            Open
-          </p>
-
-          <OpenIcon className={styles.copyButtonIcon} width={26} height={26} />
-        </button>
+        {headerAction}
       </header>
 
       <div
@@ -128,11 +187,27 @@ export function ErrorCodeFrame({
               lineHeight: 20,
               fontFamily: 'var(--expo-log-font-mono)',
             }}
-            text={codeFrame.content}
+            text={content}
           />
         </ScrollView>
       </div>
     </div>
+  );
+}
+
+function PlayIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      stroke="currentColor"
+      {...props}
+      role="img">
+      <polygon points="6 3 20 12 6 21 6 3" />
+    </svg>
   );
 }
 
@@ -168,6 +243,27 @@ export function FileIcon() {
         strokeWidth="2"
         d="M14 2.26953V6.40007C14 6.96012 14 7.24015 14.109 7.45406C14.2049 7.64222 14.3578 7.7952 14.546 7.89108C14.7599 8.00007 15.0399 8.00007 15.6 8.00007H19.7305M14 17.5L16.5 15L14 12.5M10 12.5L7.5 15L10 17.5M20 9.98822V17.2C20 18.8802 20 19.7202 19.673 20.362C19.3854 20.9265 18.9265 21.3854 18.362 21.673C17.7202 22 16.8802 22 15.2 22H8.8C7.11984 22 6.27976 22 5.63803 21.673C5.07354 21.3854 4.6146 20.9265 4.32698 20.362C4 19.7202 4 18.8802 4 17.2V6.8C4 5.11984 4 4.27976 4.32698 3.63803C4.6146 3.07354 5.07354 2.6146 5.63803 2.32698C6.27976 2 7.11984 2 8.8 2H12.0118C12.7455 2 13.1124 2 13.4577 2.08289C13.7638 2.15638 14.0564 2.27759 14.3249 2.44208C14.6276 2.6276 14.887 2.88703 15.4059 3.40589L18.5941 6.59411C19.113 7.11297 19.3724 7.3724 19.5579 7.67515C19.7224 7.94356 19.8436 8.2362 19.9171 8.5423C20 8.88757 20 9.25445 20 9.98822Z"
       />
+    </svg>
+  );
+}
+export function TerminalIcon() {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      style={{
+        width: '1rem',
+        height: '1rem',
+        color: 'var(--expo-log-secondary-label)',
+      }}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={styles.fileIcon}
+      role="img">
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" x2="20" y1="19" y2="19" />
     </svg>
   );
 }

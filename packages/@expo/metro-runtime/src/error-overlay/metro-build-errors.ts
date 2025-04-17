@@ -211,6 +211,7 @@ export class MetroPackageResolutionError extends MetroBuildError {
         content: `Unable to resolve module ${this.targetModuleName}`,
         substitutions: [],
       },
+      isMissingModuleError: this.cause?.dirPaths ? this.targetModuleName : undefined,
       category: `${this.originModulePath}-${1}-${1}`,
     };
   }
