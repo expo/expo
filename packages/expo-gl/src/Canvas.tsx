@@ -3,15 +3,14 @@ import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-
 interface Size {
-  width: number,
-  height: number
+  width: number;
+  height: number;
 }
 
 interface GetSizeParams {
-  size: Size | null,
-  ref: React.RefObject<View | null>
+  size: Size | null;
+  ref: React.RefObject<View | null>;
 }
 
 function getElement(component: React.ReactInstance): React.ReactInstance | Element | null | Text {
@@ -64,7 +63,7 @@ const CanvasWrapper: React.FunctionComponent<
     if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
       const currentSize = getSize({
         size,
-        ref
+        ref,
       });
       const scale = PixelRatio.get();
 
@@ -76,21 +75,24 @@ const CanvasWrapper: React.FunctionComponent<
     }
   }, [size?.width, size?.height]);
 
-  const onLayout = React.useCallback((event: LayoutChangeEvent) => {
-    const {
-      nativeEvent: {
-        layout: { width, height },
-      },
-    } = event;
+  const onLayout = React.useCallback(
+    (event: LayoutChangeEvent) => {
+      const {
+        nativeEvent: {
+          layout: { width, height },
+        },
+      } = event;
 
-    if (width !== size?.width || height !== size?.height) {
-      setSize({ width, height });
+      if (width !== size?.width || height !== size?.height) {
+        setSize({ width, height });
 
-      if (props.onLayout) {
-        props.onLayout(event);
+        if (props.onLayout) {
+          props.onLayout(event);
+        }
       }
-    }
-  }, [size?.width, size?.height, props.onLayout]);
+    },
+    [size?.width, size?.height, props.onLayout]
+  );
 
   React.useEffect(() => {
     if (ref.current != null) {
