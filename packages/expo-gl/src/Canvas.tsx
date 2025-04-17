@@ -62,17 +62,17 @@ const CanvasWrapper: React.FunctionComponent<
   const updateCanvasSize = React.useCallback(() => {
     const canvas = _canvasRef.current;
     if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
-      const sizeData = getSize({
+      const currentSize = getSize({
         size,
         ref
       });
       const scale = PixelRatio.get();
 
-      canvas.style.width = `${sizeData.width}px`;
-      canvas.style.height = `${sizeData.height}px`;
+      canvas.style.width = `${currentSize.width}px`;
+      canvas.style.height = `${currentSize.height}px`;
 
-      canvas.width = sizeData.width * scale;
-      canvas.height = sizeData.height * scale;
+      canvas.width = currentSize.width * scale;
+      canvas.height = currentSize.height * scale;
     }
   }, [size?.width, size?.height]);
 
