@@ -11,6 +11,7 @@ import {
   ScanningOptions,
   ScanningResult,
   VideoCodec,
+  AvailableLenses,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -117,6 +118,16 @@ export default class CameraView extends Component<CameraViewProps> {
    */
   async getAvailablePictureSizesAsync(): Promise<string[]> {
     return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
+  }
+
+  /**
+   * Returns the available lenses for the currently selected camera.
+   *
+   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @platform ios
+   */
+  async getAvailableLensesAsync(): Promise<string[]> {
+    return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
   }
 
   /**
@@ -276,6 +287,12 @@ export default class CameraView extends Component<CameraViewProps> {
     }
   };
 
+  _onAvailableLensesChanged = ({ nativeEvent }: { nativeEvent: AvailableLenses }) => {
+    if (this.props.onAvailableLensesChanged) {
+      this.props.onAvailableLensesChanged(nativeEvent);
+    }
+  };
+
   _onMountError = ({ nativeEvent }: { nativeEvent: { message: string } }) => {
     if (this.props.onMountError) {
       this.props.onMountError(nativeEvent);
@@ -342,6 +359,7 @@ export default class CameraView extends Component<CameraViewProps> {
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onBarcodeScanned={onBarcodeScanned}
+        onAvailableLensesChanged={this._onAvailableLensesChanged}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
       />

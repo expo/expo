@@ -4,7 +4,7 @@ import AVFoundation
 import ExpoModulesCore
 import VisionKit
 
-let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
+let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged", "onAvailableLensesChanged"]
 
 struct ScannerContext {
   var controller: Any?
@@ -95,6 +95,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
         if flashMode == nil && view.flashMode != .auto {
           view.flashMode = .auto
+        }
+      }
+
+      Prop("selectedLens") { (view, selectedLens: String?) in
+        if let selectedLens, view.selectedLens != selectedLens {
+          view.selectedLens = selectedLens
+        }
+
+        if selectedLens == nil && view.selectedLens != nil {
+          view.selectedLens = nil
         }
       }
 
@@ -233,6 +243,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         return PictureSize.allCases.map {
           $0.rawValue
         }
+      }
+
+      AsyncFunction("getAvailableLenses") { view in
+        view.getAvailableLenses()
       }
 
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
