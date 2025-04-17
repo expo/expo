@@ -190,11 +190,9 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(
-        properties.mapType.toMapStyle(
-          showsTraffic: properties.isTrafficEnabled
-        )
-      )
+      .mapStyle(properties.mapType.toMapStyle(
+        showsTraffic: properties.isTrafficEnabled
+      ))
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
@@ -232,7 +230,9 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
       var minDist = CLLocationDistance.greatestFiniteMagnitude
       for (a, b) in zip(pts, pts.dropFirst()) {
         minDist = min(minDist, tapPoint.distance(toSegmentFrom: a, to: b))
-        if minDist < threshold { return true }
+        if minDist < threshold {
+          return true
+        }
       }
       return false
     }
