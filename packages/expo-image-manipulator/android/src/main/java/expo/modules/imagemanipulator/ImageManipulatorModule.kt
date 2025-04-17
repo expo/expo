@@ -34,24 +34,40 @@ class ImageManipulatorModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
+  private fun createManipulatorContext(url: Uri, headers: Map<String, String>?): ImageManipulatorContext {
     val loader = suspend {
       val imageLoader = appContext.imageLoader
         ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->
-        imageLoader.loadImageForManipulationFromURL(
-          url.toString(),
-          object : ResultListener {
-            override fun onSuccess(bitmap: Bitmap) {
-              continuation.resume(bitmap)
-            }
+        if (headers != null) {
+          imageLoader.loadImageForManipulationFromURLWithHeaders(
+            url.toString(),
+            headers,
+            object : ResultListener {
+              override fun onSuccess(bitmap: Bitmap) {
+                continuation.resume(bitmap)
+              }
 
-            override fun onFailure(cause: Throwable?) {
-              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+              override fun onFailure(cause: Throwable?) {
+                continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+              }
             }
-          }
-        )
+          )
+        } else {
+          imageLoader.loadImageForManipulationFromURL(
+            url.toString(),
+            object : ResultListener {
+              override fun onSuccess(bitmap: Bitmap) {
+                continuation.resume(bitmap)
+              }
+
+              override fun onFailure(cause: Throwable?) {
+                continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+              }
+            }
+          )
+        }
       }
     }
 
@@ -67,9 +83,10 @@ class ImageManipulatorModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { url: EitherOfThree<Uri, SharedRef<Bitmap>, SharedRef<Drawable>> ->
+    Function("manipulate") { url: EitherOfThree<Uri, SharedRef<Bitmap>, SharedRef<Drawable>>, headers: Map<String, String>? ->
       return@Function if (url.`is`(Uri::class)) {
-        createManipulatorContext(url.get(Uri::class))
+        val manipulatorContext = createManipulatorContext(url.get(Uri::class), headers)
+        manipulatorContext
       } else if (url.`is`(toKClass<SharedRef<Bitmap>>())) {
         val bitmap = url.get(toKClass<SharedRef<Bitmap>>()).ref
         createManipulatorContext(bitmap)
@@ -82,8 +99,8 @@ class ImageManipulatorModule : Module() {
     }
 
     Class<ImageManipulatorContext>("Context") {
-      Constructor { url: Uri ->
-        createManipulatorContext(url)
+      Constructor { url: Uri, headers: Map<String, String>? ->
+        createManipulatorContext(url, headers)
       }
 
       Function("resize") { context: ImageManipulatorContext, options: ResizeOptions ->
