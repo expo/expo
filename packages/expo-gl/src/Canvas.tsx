@@ -11,7 +11,7 @@ interface Size {
 type NullableSize = Size | null
 
 interface GetSizeParams {
-  size: NullableSize,
+  size: Size | null,
   ref: React.RefObject<View | null>
 }
 
