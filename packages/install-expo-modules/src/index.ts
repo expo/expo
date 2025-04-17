@@ -123,7 +123,8 @@ async function runAsync() {
   );
 
   const {
-    expoSdkVersion: sdkVersion,
+    sdkVersion,
+    expoPackageVersion,
     iosDeploymentTarget,
     androidAgpVersion,
     supportCliIntegration,
@@ -184,7 +185,7 @@ async function runAsync() {
   });
 
   console.log('\u203A Installing expo packages...');
-  await installExpoPackageAsync(projectRoot, sdkVersion);
+  await installExpoPackageAsync(projectRoot, expoPackageVersion);
 
   console.log('\u203A Installing ios pods...');
   await installPodsAsync(projectRoot);
