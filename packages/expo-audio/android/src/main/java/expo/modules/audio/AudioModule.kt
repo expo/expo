@@ -114,7 +114,9 @@ class AudioModule : Module() {
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
     }
 
-    audioEnabled = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+    if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+      Log.e(TAG, "Audio focus request failed")
+    }
   }
 
   private fun releaseAudioFocus() {

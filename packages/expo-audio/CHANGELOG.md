@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Android] Support manual focus control on `Android`.
+- [Android] Support manual audio focus control on `Android`. ([#36221](https://github.com/expo/expo/pull/36221) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.4.2 — 2025-04-14
 
