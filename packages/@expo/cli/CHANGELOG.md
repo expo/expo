@@ -8,9 +8,20 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for using build variants with remote build cache ([#36165](https://github.com/expo/expo/pull/36165) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
+
+## 0.24.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
 
 ## 0.24.0 — 2025-04-11
 

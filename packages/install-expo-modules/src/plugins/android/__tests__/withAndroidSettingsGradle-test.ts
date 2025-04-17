@@ -6,6 +6,27 @@ import { updateAndroidSettingsGradle } from '../withAndroidSettingsGradle';
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateAndroidSettingsGradle, () => {
+  it(`should be able to update settings.gradle for react-native@0.79.0`, async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'settings-rn079.gradle'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'settings-rn079-updated.gradle'), 'utf8'),
+    ]);
+
+    const contents = updateAndroidSettingsGradle({
+      contents: rawContents,
+      isGroovy: true,
+      sdkVersion: '53.0.0',
+    });
+    expect(contents).toEqual(expectContents);
+    // Try it twice...
+    const nextContents = updateAndroidSettingsGradle({
+      contents,
+      isGroovy: true,
+      sdkVersion: '53.0.0',
+    });
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it(`should be able to update settings.gradle for react-native@0.74.0`, async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'settings-rn074.gradle'), 'utf8'),

@@ -243,23 +243,46 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("createAlbumAsync") { (title: String, assetId: String?, promise: Promise) in
+    AsyncFunction("createAlbumAsync") { (title: String, assetId: String?, initialAssetUri: URL?, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
-        createAlbum(with: title) { collection, createError in
-          if let collection {
-            if let assetId {
-              addAssets(ids: [assetId], to: collection.localIdentifier) { success, addError in
-                if success {
-                  promise.resolve(exportCollection(collection))
-                } else {
-                  promise.reject(FailedToAddAssetException(addError))
+        createAlbum(with: title) { [weak self] collection, createError in
+          guard let collection else {
+            promise.reject(CreateAlbumFailedException(createError))
+            return
+          }
+
+          if assetId == nil && initialAssetUri == nil {
+            promise.resolve(exportCollection(collection))
+            return
+          }
+
+          if let assetId {
+            addAssets(ids: [assetId], to: collection.localIdentifier) { success, addError in
+              if success {
+                promise.resolve(exportCollection(collection))
+              } else {
+                promise.reject(FailedToAddAssetException(addError))
+              }
+            }
+            return
+          }
+
+          if let initialAssetUri {
+            createAsset(uri: initialAssetUri, appContext: self?.appContext) { asset, error in
+              if let error {
+                promise.reject(error)
+                return
+              }
+              if let asset {
+                addAssets(ids: [asset.localIdentifier], to: collection.localIdentifier) { success, addError in
+                  if success {
+                    promise.resolve(exportCollection(collection))
+                  } else {
+                    promise.reject(FailedToAddAssetException(addError))
+                  }
                 }
               }
-            } else {
-              promise.resolve(exportCollection(collection))
             }
-          } else {
-            promise.reject(CreateAlbumFailedException(createError))
           }
         }
       }

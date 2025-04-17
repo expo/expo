@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.2.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 14.2.0 — 2025-04-11
 
 ### 🎉 New features

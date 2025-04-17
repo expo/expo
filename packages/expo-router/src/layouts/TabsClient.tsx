@@ -36,6 +36,7 @@ export const Tabs = withLayoutContext<
         options: {
           ...options,
           tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+          // @ts-expect-error: TODO(@kitten): This isn't properly typed
           tabBarButton: (props) => {
             if (href == null) {
               return null;
