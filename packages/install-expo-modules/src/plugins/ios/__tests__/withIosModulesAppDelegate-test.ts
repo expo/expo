@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getLatestSdkVersion } from '../../../utils/expoVersionMappings';
+import { getLatestSdkVersion, getSdkVersion } from '../../../utils/expoVersionMappings';
 import { updateVirtualMetroEntryIos } from '../../cli/withCliIntegration';
 import {
   updateModulesAppDelegateObjcHeader,
@@ -12,13 +12,27 @@ import {
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateModulesAppDelegateObjcHeader, () => {
+  it('should migrate from react-native@>=0.79.0 AppDelegate.swift', async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn079.swift'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn079-updated.swift'), 'utf8'),
+    ]);
+
+    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
+    expect(contents).toEqual(expectContents);
+    // Try it twice...
+    const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it('should migrate from react-native@>=0.71.0 AppDelegate header', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn071.h'), 'utf8'),
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn071-updated.h'), 'utf8'),
     ]);
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.71.0');
     const contents = updateModulesAppDelegateObjcHeader(rawContents, sdkVersion);
     expect(updateModulesAppDelegateObjcHeader(contents, sdkVersion)).toEqual(expectContents);
     // Try it twice...
@@ -32,7 +46,7 @@ describe(updateModulesAppDelegateObjcHeader, () => {
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn067-updated.h'), 'utf8'),
     ]);
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.67.0');
     const contents = updateModulesAppDelegateObjcHeader(rawContents, sdkVersion);
     expect(updateModulesAppDelegateObjcHeader(contents, sdkVersion)).toEqual(expectContents);
     // Try it twice...
@@ -48,7 +62,7 @@ describe(updateModulesAppDelegateObjcImpl, () => {
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn068-updated.mm'), 'utf8'),
     ]);
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.68.0');
     const contents = updateModulesAppDelegateObjcImpl(rawContents, sdkVersion);
     expect(contents).toEqual(expectContents);
     // Try it twice...
@@ -62,7 +76,7 @@ describe(updateModulesAppDelegateObjcImpl, () => {
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn067-updated.m'), 'utf8'),
     ]);
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.67.0');
     const contents = updateModulesAppDelegateObjcImpl(rawContents, sdkVersion);
     expect(contents).toEqual(expectContents);
     // Try it twice...
@@ -78,7 +92,7 @@ describe(updateModulesAppDelegateSwift, () => {
       'utf8'
     );
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.77.0');
     expect(updateModulesAppDelegateSwift(rawContents, sdkVersion)).toMatchSnapshot();
   });
 
@@ -88,7 +102,7 @@ describe(updateModulesAppDelegateSwift, () => {
       'utf8'
     );
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.77.0');
     let expectedContents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
     expectedContents = updateVirtualMetroEntryIos(expectedContents);
     expect(expectedContents).toMatchSnapshot();
