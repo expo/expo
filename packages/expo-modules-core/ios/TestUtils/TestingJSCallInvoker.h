@@ -15,7 +15,7 @@ namespace react = facebook::react;
 namespace expo {
 
 /**
- * Dummy CallInvoker that invokes everything immediately.
+ * Dummy CallInvoker.
  * Used in the test environment to check the async flow.
  */
 class TestingJSCallInvoker : public react::CallInvoker {
