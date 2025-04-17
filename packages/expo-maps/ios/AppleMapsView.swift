@@ -131,9 +131,9 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
-        if let coord = reader.convert(position, from: .local) {
+        if let coordinate = reader.convert(position, from: .local) {
           // First check if we hit a polyline and send an event
-          if let hit = polyline(at: coord) {
+          if let hit = polyline(at: coordinate) {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
@@ -213,8 +213,8 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude,
-        ],
+          "longitude": marker.coordinates.longitude
+        ]
       ])
       return
     }
@@ -224,7 +224,6 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
     at tap: CLLocationCoordinate2D,
     threshold: CLLocationDistance = 20
   ) -> ExpoAppleMapPolyline? {
-
     let tapPoint = MKMapPoint(tap)
 
     return props.polylines.first { line in

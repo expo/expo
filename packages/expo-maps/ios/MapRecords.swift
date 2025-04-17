@@ -74,8 +74,8 @@ struct ExpoAppleMapPolyline: Record, Identifiable {
   }
 
   var mkPlacemark: MKPlacemark {
-    MKPlacemark(coordinate: clLocationCoordinates2D.first
-                ?? CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0))
   }
 
   var mapItem: MKMapItem {
