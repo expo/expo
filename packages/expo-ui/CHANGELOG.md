@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `DatePicker` causing out of memory exception.
+- [Android] Fixed `DatePicker` causing out of memory exception. ([#36227](https://github.com/expo/expo/pull/36227) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
