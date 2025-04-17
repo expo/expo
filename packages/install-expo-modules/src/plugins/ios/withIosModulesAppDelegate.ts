@@ -1,6 +1,7 @@
 import { ConfigPlugin, IOSConfig, withAppDelegate, withDangerousMod } from '@expo/config-plugins';
 import {
   addObjcImports,
+  addSwiftImports,
   insertContentsInsideObjcFunctionBlock,
   insertContentsInsideSwiftFunctionBlock,
 } from '@expo/config-plugins/build/ios/codeMod';
@@ -130,6 +131,32 @@ export function updateModulesAppDelegateObjcHeader(
 }
 
 export function updateModulesAppDelegateSwift(
+  contents: string,
+  sdkVersion: string | undefined
+): string {
+  if (sdkVersion && semver.lt(sdkVersion, '52.0.0')) {
+    return updateModulesAppDelegateSwiftLegacy(contents, sdkVersion);
+  }
+
+  // Add imports if needed
+  if (!contents.match(/^import\s+Expo\s*$/m)) {
+    contents = addSwiftImports(contents, ['Expo']);
+  }
+  if (sdkVersion === '52.0.0' && !contents.match(/^import\s+ExpoModulesCore\s*$/m)) {
+    // SDK 52 serves ExpoAppDelegate from ExpoModulesCore. We also need to import it.
+    contents = addSwiftImports(contents, ['ExpoModulesCore']);
+  }
+
+  // Replace superclass with ExpoAppDelegate
+  contents = contents.replace(
+    /^(class\s+AppDelegate\s*:\s*)RCTAppDelegate(\W+)/m,
+    '$1ExpoAppDelegate$2'
+  );
+
+  return contents;
+}
+
+function updateModulesAppDelegateSwiftLegacy(
   contents: string,
   sdkVersion: string | undefined
 ): string {
