@@ -1,17 +1,17 @@
 export type * from '../swift-ui/BottomSheet';
-export type * from '../Button';
+export type * from '../swift-ui/Button';
 export type * from '../swift-ui/ColorPicker';
-export type * from '../ContextMenu';
-export type * from '../DatePicker';
+export type * from '../swift-ui/ContextMenu';
+export type * from '../swift-ui/DatePicker';
 export type * from '../swift-ui/Gauge';
 export type * from '../swift-ui/Label';
 export type * from '../swift-ui/List';
-export type * from '../Picker';
-export type * from '../Progress';
+export type * from '../swift-ui/Picker';
+export type * from '../swift-ui/Progress';
 export type * from '../swift-ui/Section';
-export type * from '../Slider';
-export type * from '../Switch';
-export type * from '../TextInput';
+export type * from '../swift-ui/Slider';
+export type * from '../swift-ui/Switch';
+export type * from '../swift-ui/TextInput';
 /**
  * @hidden
  */
