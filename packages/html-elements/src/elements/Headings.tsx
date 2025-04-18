@@ -4,7 +4,9 @@ import { Platform, StyleSheet } from 'react-native';
 import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
 
-function createHeadingComponent(level: number): ComponentType<TextProps> {
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+function createHeadingComponent(level: HeadingLevel): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
       'aria-level': level,

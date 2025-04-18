@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getHashSourcesAsync = void 0;
+exports.getHashSourcesAsync = getHashSourcesAsync;
 const chalk_1 = __importDefault(require("chalk"));
 const semver_1 = __importDefault(require("semver"));
 const Bare_1 = require("./Bare");
@@ -54,5 +54,4 @@ async function getHashSourcesAsync(projectRoot, options) {
     // flatten results
     return [].concat(...results);
 }
-exports.getHashSourcesAsync = getHashSourcesAsync;
 //# sourceMappingURL=Sourcer.js.map

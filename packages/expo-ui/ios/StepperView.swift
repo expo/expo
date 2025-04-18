@@ -12,9 +12,14 @@ class StepperProps: ExpoSwiftUI.ViewProps {
   var onValueChanged = EventDispatcher()
 }
 
-struct StepperView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: StepperProps
+struct StepperView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: StepperProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  
+  init(props: StepperProps) {
+    self.props = props
+  }
+
   private var value: Binding<Float> {
     .init(
       get: { self.props.value },

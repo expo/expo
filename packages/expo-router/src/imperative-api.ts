@@ -73,6 +73,10 @@ export type Router = {
    * @hidden
    */
   reload: () => void;
+  /**
+   * Prefetch a screen in the background before navigating to it
+   */
+  prefetch: (name: Href) => void;
 };
 
 /**
@@ -88,6 +92,7 @@ export const router: Router = {
   replace: (href, options) => store.replace(href, options),
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
-  setParams: (params) => store.setParams(params),
+  setParams: (params) => store.setParams(params as Record<string, any>),
   reload: () => store.reload(),
+  prefetch: (name) => store.prefetch(name),
 };

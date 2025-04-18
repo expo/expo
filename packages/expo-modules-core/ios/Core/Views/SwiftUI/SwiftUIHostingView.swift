@@ -5,14 +5,32 @@ import SwiftUI
 /**
  A type-erased protocol that hosting views must conform to.
  */
-public protocol AnyExpoSwiftUIHostingView {
+internal protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
   func getProps() -> ExpoSwiftUI.ViewProps
 }
 
 extension ExpoSwiftUI {
-  public typealias AnyHostingView = AnyExpoSwiftUIHostingView
+  /**
+   Checks if the child view is wrapped by a `UIViewHost` and matches the specified SwiftUI view type.
+   */
+  public static func isHostingViewOfType<Props: ViewProps, ViewType: View<Props>>(view: any AnyChild, viewType: ViewType.Type) -> Bool {
+    if let host = view as? UIViewHost {
+      return host.view is HostingView<Props, ViewType>
+    }
+    return false
+  }
+}
+
+extension ExpoSwiftUI {
+  internal typealias AnyHostingView = AnyExpoSwiftUIHostingView
+
+  /**
+   For a SwiftUI view to self-contain a HostingView, it can conform to the WithHostingView protocol.
+   */
+  public protocol WithHostingView {
+  }
 
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
@@ -39,8 +57,8 @@ extension ExpoSwiftUI {
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      self.contentView = ContentView()
-      let rootView = AnyView(contentView.environmentObject(props).environmentObject(shadowNodeProxy))
+      self.contentView = ContentView(props: props)
+      let rootView = AnyView(contentView.environmentObject(shadowNodeProxy))
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -117,7 +135,12 @@ extension ExpoSwiftUI {
      */
     public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       var children = props.children ?? []
-      let child = Child(view: childComponentView)
+      let child: any AnyChild
+      if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.View) {
+        child = view
+      } else {
+        child = UIViewHost(view: childComponentView)
+      }
 
       children.insert(child, at: index)
 
@@ -132,8 +155,18 @@ extension ExpoSwiftUI {
       // Make sure the view has no superview, React Native asserts against this.
       childComponentView.removeFromSuperview()
 
+      let childViewId: ObjectIdentifier
+      if let child = childComponentView as AnyObject as? (any AnyChild) {
+        childViewId = child.id
+      } else {
+        childViewId = ObjectIdentifier(childComponentView)
+      }
+
       if let children = props.children {
-        props.children = children.filter({ $0.view != childComponentView })
+        props.children = children.filter({ $0.id != childViewId })
+        #if DEBUG
+        assert(props.children?.count == children.count - 1, "Failed to remove child view")
+        #endif
         props.objectWillChange.send()
       }
     }

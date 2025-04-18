@@ -21,6 +21,9 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
+        // TODO(@kitten): The types indicates that this is incorrect.
+        // Please check whether this is correct!
+        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
@@ -48,8 +51,15 @@ function handleGetUserMediaError({ message }) {
 }
 async function handleRequestPermissionsAsync() {
     try {
-        await getUserMedia({
+        const streams = await getUserMedia({
             video: true,
+        });
+        // We need to close the media stream returned by getUserMedia
+        // to avoid using the camera since we won't use these streams now
+        // https://developer.mozilla.org/fr/docs/Web/API/MediaDevices/getUserMedia
+        streams.getTracks().forEach((track) => {
+            track.stop();
+            streams.removeTrack(track);
         });
         return {
             status: PermissionStatus.GRANTED,
@@ -58,8 +68,8 @@ async function handleRequestPermissionsAsync() {
             granted: true,
         };
     }
-    catch ({ message }) {
-        return handleGetUserMediaError({ message });
+    catch (error) {
+        return handleGetUserMediaError(error.message);
     }
 }
 async function handlePermissionsQueryAsync(query) {
@@ -205,8 +215,8 @@ export default {
                 granted: true,
             };
         }
-        catch ({ message }) {
-            return handleGetUserMediaError({ message });
+        catch (error) {
+            return handleGetUserMediaError(error.message);
         }
     },
 };

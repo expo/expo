@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.12.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2025-04-04
+
+### 💡 Others
+
 - docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
 - Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
 - Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))

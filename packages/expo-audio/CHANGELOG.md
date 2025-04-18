@@ -6,9 +6,32 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.4.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2025-04-04
+
+### 🎉 New features
+
 - [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
+
+- [Android] Remove maxSdkVersion from MODIFY_AUDIO_SETTINGS permission ([#35541](https://github.com/expo/expo/pull/35541) by [@jakex7](https://github.com/jakex7))
+- Use the same prop name for "muted" on all platforms. Fix playing in background on iOS.([#35600](https://github.com/expo/expo/pull/35600) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Recording was not working when prepared due to wrong precondition check ([#35591](https://github.com/expo/expo/pull/35591) by [@pennersr](https://github.com/pennersr))
+- [Android] Correctly handle muting and volume. ([#35631](https://github.com/expo/expo/pull/35631) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix replacing item when `useAudioPlayer` is passed an empty source. ([#35749](https://github.com/expo/expo/pull/35749) by [@alanjhughes](https://github.com/alanjhughes))
+- Return `currentTime` and `duration` in seconds across all platforms. ([#35787](https://github.com/expo/expo/pull/35787) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

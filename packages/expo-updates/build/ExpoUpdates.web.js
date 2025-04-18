@@ -50,5 +50,5 @@ class ExpoUpdatesModule extends NativeModule {
         return { isNew: false, manifest: undefined, isRollBackToEmbedded: false };
     }
 }
-export default registerWebModule(ExpoUpdatesModule);
+export default registerWebModule(ExpoUpdatesModule, 'ExpoUpdates');
 //# sourceMappingURL=ExpoUpdates.web.js.map

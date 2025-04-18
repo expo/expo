@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
@@ -295,10 +295,19 @@ export type GoogleMapsViewType = {
 /**
  * @platform android
  */
+export type StreetViewCameraPosition = {
+  coordinates: Coordinates;
+  zoom?: number;
+  tilt?: number;
+  bearing?: number;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleStreetViewProps = {
   style?: StyleProp<ViewStyle>;
-
-  position?: Coordinates;
+  position: StreetViewCameraPosition;
   isPanningGesturesEnabled?: boolean;
   isStreetNamesEnabled?: boolean;
   isUserNavigationEnabled?: boolean;

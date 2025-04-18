@@ -4,8 +4,10 @@ import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.util.Rational
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -13,6 +15,10 @@ import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -23,17 +29,19 @@ import expo.modules.video.player.VideoPlayerListener
 import expo.modules.video.utils.applyAutoEnterPiP
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.utils.dispatchMotionEvent
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext), VideoPlayerListener {
-  val id: String = UUID.randomUUID().toString()
+  val videoViewId: String = UUID.randomUUID().toString()
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
   val onFullscreenEnter by EventDispatcher<Unit>()
   val onFullscreenExit by EventDispatcher<Unit>()
+  val onFirstFrameRender by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
 
@@ -48,9 +56,25 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
+  private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
   private var pictureInPictureHelperTag: String? = null
+  private var reactNativeEventDispatcher: EventDispatcher? = null
+
+  // We need to keep track of the target surface view visibility, but only apply it when `useExoShutter` is false.
+  var shouldHideSurfaceView: Boolean = true
+
+  var useExoShutter: Boolean? = null
+    set(value) {
+      if (value == false) {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+      } else {
+        playerView.setShutterBackgroundColor(Color.BLACK)
+      }
+      applySurfaceViewVisibility()
+      field = value
+    }
 
   var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
     applyAutoEnterPiP(currentActivity, new)
@@ -69,8 +93,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       videoPlayer?.removeListener(this)
       newPlayer?.addListener(this)
-      newPlayer?.changePlayerView(playerView)
       field = newPlayer
+      shouldHideSurfaceView = true
+      attachPlayer()
       newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
@@ -110,6 +135,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // The prop `useNativeControls` prop is sometimes applied after the view is created, and sometimes there is a visible
     // flash of controls event when they are set to off. Initially we set it to `false` and apply it in `onAttachedToWindow` to avoid this.
     this.playerView.useController = false
+
+    // Start with the SurfaceView being transparent to avoid any flickers when the prop value is delivered.
+    this.playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+    this.playerView.videoSurfaceView?.alpha = 0f
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -117,11 +146,21 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         ViewGroup.LayoutParams.MATCH_PARENT
       )
     )
+
+    reactNativeEventDispatcher = UIManagerHelper.getEventDispatcher(appContext.reactContext as ReactContext, id)
+  }
+
+  fun applySurfaceViewVisibility() {
+    if (useExoShutter == false && shouldHideSurfaceView) {
+      playerView.videoSurfaceView?.alpha = 0f
+    } else {
+      playerView.videoSurfaceView?.alpha = 1f
+    }
   }
 
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
-    intent.putExtra(VideoManager.INTENT_PLAYER_KEY, id)
+    intent.putExtra(VideoManager.INTENT_PLAYER_KEY, videoViewId)
     // Set before starting the activity to avoid entering PiP unintentionally
     isInFullscreen = true
     currentActivity.startActivity(intent)
@@ -225,6 +264,12 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     super.onTracksChanged(player, tracks)
   }
 
+  override fun onRenderedFirstFrame(player: VideoPlayer) {
+    shouldHideSurfaceView = false
+    applySurfaceViewVisibility()
+    onFirstFrameRender(Unit)
+  }
+
   override fun requestLayout() {
     super.requestLayout()
 
@@ -264,6 +309,34 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .commitAllowingStateLoss()
     }
     applyAutoEnterPiP(currentActivity, false)
+  }
+
+  // After adding the `PlayerView` to the hierarchy the touch events stop being emitted to the JS side.
+  // The only workaround I have found is to dispatch the touch events manually using the `EventDispatcher`.
+  // The behavior is different when the native controls are enabled and disabled.
+  override fun onTouchEvent(event: MotionEvent?): Boolean {
+    if (!useNativeControls) {
+      event?.eventTime?.let {
+        touchEventCoalescingKeyHelper.addCoalescingKey(it)
+        reactNativeEventDispatcher?.dispatchMotionEvent(this@VideoView, event, touchEventCoalescingKeyHelper)
+      }
+    }
+    if (event?.actionMasked == MotionEvent.ACTION_UP) {
+      performClick()
+    }
+    // Mark the event as handled
+    return true
+  }
+
+  override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
+    if (useNativeControls) {
+      event?.eventTime?.let {
+        touchEventCoalescingKeyHelper.addCoalescingKey(it)
+        reactNativeEventDispatcher?.dispatchMotionEvent(this@VideoView, MotionEvent.obtainNoHistory(event), touchEventCoalescingKeyHelper)
+      }
+    }
+    // Return false to receive all other events before the target `onTouchEvent`
+    return false
   }
 
   companion object {

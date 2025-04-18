@@ -6,7 +6,9 @@ if (Platform.OS === 'ios') {
     NativeView = requireNativeView('ExpoAppleMaps');
 }
 function useNativeEvent(userHandler) {
-    return React.useCallback((event) => {
+    return React.useCallback(
+    // TODO(@kitten): We unwrap a native payload here, but this isn't reflected in NativeView's prop types
+    (event) => {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }

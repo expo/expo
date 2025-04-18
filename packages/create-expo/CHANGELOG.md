@@ -6,9 +6,30 @@
 
 ### 🎉 New features
 
-- Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
+- Add support for `.vscode`, `.eas`, `.github`, `.cursor` directories by using an underscore instead of a dot. ([#36240](https://github.com/expo/expo/pull/36240) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.3.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.0 — 2025-03-31
+
+### 🎉 New features
+
+- Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
+- Add support for aliasing and deprecating examples. ([#35717](https://github.com/expo/expo/pull/35717) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 

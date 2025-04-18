@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ReactAppDependencyProvider
+import React_RCTAppDelegate
 
 @objc
 class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
@@ -8,13 +10,13 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
-  var reactNativeFactory: EXDevClientReactNativeFactory?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   init(manager: DevMenuManager) {
     self.manager = manager
     super.init()
-    self.dependencyProvider = EXAppDependencyProvider()
-    self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
+    self.dependencyProvider = RCTAppDependencyProvider()
+    self.reactNativeFactory = RCTReactNativeFactory(delegate: self)
   }
 
   func setBridge(_ bridge: RCTBridge) {

@@ -3,7 +3,7 @@ declare module 'metro-transform-worker' {
   export * from 'metro-transform-worker/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-transform-worker/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/index.js
 declare module 'metro-transform-worker/src/index' {
   // NOTE(cedric): this is a manual change exporting this existing Flow type for reuse in Expo
   import type * as _babel_types from '@babel/types';
@@ -121,7 +121,7 @@ declare module 'metro-transform-worker/src/index' {
   export { default as getCacheKey } from 'metro-cache-key';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-transform-worker/src/utils/assetTransformer.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/utils/assetTransformer.js
 declare module 'metro-transform-worker/src/utils/assetTransformer' {
   import type { File } from '@babel/types';
   import type { BabelTransformerArgs } from 'metro-babel-transformer';
@@ -134,7 +134,7 @@ declare module 'metro-transform-worker/src/utils/assetTransformer' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.81.3/packages/metro-transform-worker/src/utils/getMinifier.js
+// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/utils/getMinifier.js
 declare module 'metro-transform-worker/src/utils/getMinifier' {
   import type { Minifier } from 'metro-transform-worker/src/index';
   function getMinifier(minifierPath: string): Minifier;

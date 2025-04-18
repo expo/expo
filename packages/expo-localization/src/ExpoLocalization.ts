@@ -38,14 +38,20 @@ const USES_FAHRENHEIT = [
   'KY',
 ];
 
-export function addLocaleListener(listener: (event) => void): EventSubscription {
+export function addLocaleListener(
+  // NOTE(@kitten): We never use the event's data
+  listener: (event?: unknown) => void
+): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
-export function addCalendarListener(listener: (event) => void): EventSubscription {
+export function addCalendarListener(
+  // NOTE(@kitten): We never use the event's data
+  listener: (event?: unknown) => void
+): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
@@ -54,6 +60,12 @@ export function addCalendarListener(listener: (event) => void): EventSubscriptio
 
 export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
+}
+
+interface NavigatorLocaleProperties {
+  systemLanguage?: string;
+  browserLanguage?: string;
+  userLanguage?: string;
 }
 
 export default {
@@ -87,9 +99,9 @@ export default {
     }
     const locale =
       navigator.language ||
-      navigator['systemLanguage'] ||
-      navigator['browserLanguage'] ||
-      navigator['userLanguage'] ||
+      (navigator as NavigatorLocaleProperties)['systemLanguage'] ||
+      (navigator as NavigatorLocaleProperties)['browserLanguage'] ||
+      (navigator as NavigatorLocaleProperties)['userLanguage'] ||
       this.locales[0];
     return locale;
   },
@@ -167,8 +179,8 @@ export default {
         measurementSystem: null,
         currencyCode: null,
         currencySymbol: null,
-        langageCurrencyCode: null,
-        langageCurrencySymbol: null,
+        languageCurrencyCode: null,
+        languageCurrencySymbol: null,
         // On web, we don't have a way to get the region code, except from the language tag. `regionCode` and `languageRegionCode` are the same.
         regionCode: region || null,
         languageRegionCode: region || null,

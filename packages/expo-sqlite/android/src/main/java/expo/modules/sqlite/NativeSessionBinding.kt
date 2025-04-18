@@ -6,7 +6,7 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import java.io.Closeable
 
-@Suppress("KotlinJniMissingFunction")
+@Suppress("KotlinJniMissingFunction", "FunctionName")
 @DoNotStrip
 internal class NativeSessionBinding : Closeable {
   @DoNotStrip

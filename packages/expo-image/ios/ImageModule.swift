@@ -209,8 +209,7 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    // By default Animated WebP is not supported
-    SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+    SDImageCodersManager.shared.addCoder(WebPCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)

@@ -277,7 +277,7 @@ function useRegisterCurrentActivity(activity: UserActivity) {
   }, [activityId]);
 }
 
-function deepObjectCompare(a: any, b: any) {
+function deepObjectCompare(a: any, b: any): boolean {
   if (typeof a !== typeof b) {
     return false;
   }

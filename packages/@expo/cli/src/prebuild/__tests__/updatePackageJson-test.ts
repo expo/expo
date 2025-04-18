@@ -269,13 +269,11 @@ describe(updatePkgDependencies, () => {
       expo: 'version-from-project',
     });
     expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`instead of recommended ${chalk.bold('expo@version-from-template')}`)
+    );
+    expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        `instead of recommended ${[
-          `expo@version-from-template`,
-          `react-native@version-from-template-required-1`,
-        ]
-          .map((dep) => chalk.bold(dep))
-          .join(', ')}`
+        `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
       )
     );
   });

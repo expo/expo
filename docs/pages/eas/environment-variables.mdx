@@ -429,9 +429,9 @@ export default {
 
 <Collapsible summary="Differences between handling environment variables in EAS CLI and Expo CLI">
 
-One of the differences between using environment variables with the Expo framework and EAS is that EAS CLI itself does not support loading **.env** files to set environment variables when resolving the expo config. Instead, it's recommended to use the EAS environment variables management system with EAS CLI commands to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
+One of the differences between using environment variables with the Expo framework and EAS is that EAS CLI itself does not support loading **.env** files to set environment variables when resolving the app config. Instead, it's recommended to use the EAS environment variables management system with EAS CLI commands to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
 
-- Local app config resolution, done by EAS CLI when preparing the expo config
+- Local app config resolution, done by EAS CLI when preparing the app config
 - Remote jobs happening on EAS servers, which often don't have access to your local **.env** files that are git ignored
 
 Using `eas update` is the one exception to this rule. By default, for backward compatibility reasons, it uses **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).

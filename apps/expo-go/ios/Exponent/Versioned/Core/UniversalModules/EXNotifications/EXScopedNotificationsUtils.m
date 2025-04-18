@@ -1,8 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-// TODO: rework the new Swift Notification code for ExpoGo
-
-/*
 #import "EXScopedNotificationsUtils.h"
 
 @implementation EXScopedNotificationsUtils
@@ -32,6 +29,12 @@
 {
   NSString *scopeFromCategoryId = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:identifier].scopeKey;
   return [scopeFromCategoryId isEqualToString:scopeKey];
+}
+
++ (NSString *)getUnscopedIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
+{
+  ScopedIdentifierComponents components = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:scopedIdentifier];
+  return components.identifier;
 }
 
 + (ScopedIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
@@ -94,4 +97,3 @@
 }
 
 @end
- */

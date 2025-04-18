@@ -4,17 +4,48 @@
 
 ### 🛠 Breaking changes
 
-- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Exported missing config plugin. ([#36177](https://github.com/expo/expo/pull/36177) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+## 0.9.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2025-04-08
+
+### 🛠 Breaking changes
+
+- [Android] Add zoom, tilt, bearing to StreetView position ([#35938](https://github.com/expo/expo/pull/35938) by [@jakex7](https://github.com/jakex7))
+
+## 0.8.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [Android] fix updating cameraPosition prop ([#35883](https://github.com/expo/expo/pull/35883) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+- Migrated SwiftUI views with backward compatible `WithHostingView`. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
 
 ## 0.7.3 - 2025-02-14
 

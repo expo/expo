@@ -107,14 +107,12 @@ export function triggersToScreens(
 
     // The state object is the current state from the rootNavigator
     // We need to work out the state for just this trigger
-    if (layoutRouteNode.route) {
-      while (state?.state) {
-        const previousState = state;
-        if (previousState.name === layoutRouteNode.route) break;
-        state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
-      }
-      routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
+    while (state?.state) {
+      const previousState = state;
+      if (previousState.name === layoutRouteNode.route) break;
+      state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
     }
+    routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
 
     const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
     if (!routeNode) {

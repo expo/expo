@@ -5,7 +5,7 @@ declare const _default: {
      */
     readonly Gravity: number;
     isAvailableAsync(): Promise<boolean>;
-    _handleMotion(motion: any): void;
+    _handleMotion(motion: DeviceMotionEvent): void;
     getPermissionsAsync: typeof getPermissionsAsync;
     requestPermissionsAsync: typeof requestPermissionsAsync;
     startObserving(): void;

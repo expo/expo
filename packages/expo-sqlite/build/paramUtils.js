@@ -38,6 +38,7 @@ export function normalizeParams(...params) {
  * @hidden
  */
 export function composeRow(columnNames, columnValues) {
+    // TODO(cedric): make these types more generic and tighten the returned object type based on provided column names/values
     const row = {};
     if (columnNames.length !== columnValues.length) {
         throw new Error(`Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValues.length}`);
@@ -61,6 +62,7 @@ export function composeRows(columnNames, columnValuesList) {
     }
     const results = [];
     for (const columnValues of columnValuesList) {
+        // TODO(cedric): make these types more generic and tighten the returned object type based on provided column names/values
         const row = {};
         for (let i = 0; i < columnNames.length; i++) {
             row[columnNames[i]] = columnValues[i];

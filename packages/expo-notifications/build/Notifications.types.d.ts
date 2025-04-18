@@ -487,7 +487,7 @@ export interface NotificationRequest {
     trigger: NotificationTrigger;
 }
 /**
- * An object which represents notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
+ * An object which represents notification content that you pass in as a part of `NotificationRequestInput`.
  */
 export type NotificationContentInput = {
     /**
@@ -696,6 +696,7 @@ export type NotificationCategoryOptions = {
      */
     showSubtitle?: boolean;
     /**
+     * @deprecated the option is ignored by iOS. This option will be removed in a future release.
      * Indicates whether to allow notifications to be automatically read by Siri when the user is using AirPods.
      * @default false
      */

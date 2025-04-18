@@ -33,7 +33,7 @@ export declare function requestMediaLibraryPermissionsAsync(writeOnly?: boolean)
  * ```
  */
 export declare const useMediaLibraryPermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
+    writeOnly?: boolean;
 }> | undefined) => [MediaLibraryPermissionResponse | null, () => Promise<MediaLibraryPermissionResponse>, () => Promise<MediaLibraryPermissionResponse>];
 /**
  * Check or request permissions to access the camera.
@@ -47,16 +47,16 @@ export declare const useMediaLibraryPermissions: (options?: PermissionHookOption
 export declare const useCameraPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this
- * happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost
+ * happens, we lose the data selected using the `ImagePicker`. However, you can retrieve the lost
  * data by calling `getPendingResultAsync`. You can test this functionality by turning on
  * `Don't keep activities` in the developer options.
  * @return
- * - **On Android:** a promise that resolves to an array of objects of exactly same type as in
+ * - **On Android:** a promise that resolves to an object of exactly same type as in
  * `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker`
- * finished successfully. Otherwise, to the array of [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
- * - **On other platforms:** an empty array.
+ * finished successfully. Otherwise, an object of type [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
+ * - **On other platforms:** `null`
  */
-export declare function getPendingResultAsync(): Promise<(ImagePickerResult | ImagePickerErrorResult)[]>;
+export declare function getPendingResultAsync(): Promise<ImagePickerResult | ImagePickerErrorResult | null>;
 /**
  * Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`.
  * On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be

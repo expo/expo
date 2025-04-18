@@ -3,6 +3,7 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
 import { InlineHelp } from 'ui/components/InlineHelp';
+import { PageHeader } from 'ui/components/PageHeader';
 
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
@@ -15,8 +16,6 @@ import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
-import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
-import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import {
@@ -40,6 +39,8 @@ export default function DocumentationPage({
   platforms,
   hideTOC,
   modificationDate,
+  searchRank,
+  searchPosition,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
@@ -141,6 +142,8 @@ export default function DocumentationPage({
         {(version === 'unversioned' ||
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+        {searchRank && <meta name="searchRank" content={String(searchRank)} />}
+        {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
       </DocumentationHead>
       <div
         className={mergeClasses(
@@ -158,15 +161,15 @@ export default function DocumentationPage({
           </InlineHelp>
         )}
         {title && (
-          <PageTitle
+          <PageHeader
             title={title}
             description={description}
             sourceCodeUrl={sourceCodeUrl}
             packageName={packageName}
             iconUrl={iconUrl}
+            platforms={platforms}
           />
         )}
-        {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
         {children}
       </main>

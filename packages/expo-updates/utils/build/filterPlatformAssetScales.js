@@ -1,7 +1,7 @@
 "use strict";
 // copied from https://github.com/react-native-community/cli/blob/48136adfb814d335e957e22129d049c4a05c8759/packages/cli/src/commands/bundle/filterPlatformAssetScales.ts
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filterPlatformAssetScales = void 0;
+exports.filterPlatformAssetScales = filterPlatformAssetScales;
 const ALLOWED_SCALES = {
     ios: [1, 2, 3],
 };
@@ -29,4 +29,3 @@ function filterPlatformAssetScales(platform, scales) {
     }
     return result;
 }
-exports.filterPlatformAssetScales = filterPlatformAssetScales;

@@ -8,13 +8,15 @@ import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
+import { CalendarsScreens } from '../screens/CalendarsScreen';
+import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens: ScreenConfig[] = [
+export const ScreensList: ScreenConfig[] = [
   {
     getComponent() {
       return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
@@ -180,21 +182,9 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
-    },
-    name: 'ContactDetail',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/ErrorScreen'));
     },
     name: 'Errors',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/EventsScreen'));
-    },
-    name: 'Events',
   },
   {
     getComponent() {
@@ -425,11 +415,17 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'ViewShot',
   },
-  ...ModulesCoreScreens,
-  ...AudioScreens,
 ];
 
-export const screenApiItems: ScreenApiItem[] = Screens.map(({ name, route }) => ({
+export const Screens: ScreenConfig[] = [
+  ...ScreensList,
+  ...ModulesCoreScreens,
+  ...AudioScreens,
+  ...ContactsScreens,
+  ...CalendarsScreens,
+];
+
+export const screenApiItems: ScreenApiItem[] = ScreensList.map(({ name, route }) => ({
   name,
   route: '/apis/' + (route ?? name.toLowerCase()),
   isAvailable: true,

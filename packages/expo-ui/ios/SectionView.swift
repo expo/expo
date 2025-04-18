@@ -10,12 +10,12 @@ class SectionProps: ExpoSwiftUI.ViewProps {
 let IPAD_OFFSET: CGFloat = 30
 let IPHONE_OFFSET: CGFloat = 40
 
-struct SectionView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: SectionProps
+struct SectionView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: SectionProps
 
   var body: some View {
     let form = Form {
-      Section(header: Text(props.title ?? "")) {
+      Section(header: Text(props.title ?? "").textCase(nil)) {
         UnwrappedChildren { child, isHostingView in
           child
             .if(!isHostingView) {

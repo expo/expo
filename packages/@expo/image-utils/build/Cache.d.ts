@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { ImageOptions } from './Image.types';
 export declare function createCacheKey(fileSource: string, properties: string[]): string;
 export declare function createCacheKeyWithDirectoryAsync(projectRoot: string, type: string, icon: ImageOptions): Promise<string>;

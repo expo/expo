@@ -2,6 +2,7 @@
  * Get the dev server address.
  */
 
+import { PROTOCOL_VERSION } from './ProtocolVersion';
 import type { ConnectionInfo } from './devtools.types';
 
 export function getConnectionInfo(): Omit<ConnectionInfo, 'pluginName'> {
@@ -10,6 +11,7 @@ export function getConnectionInfo(): Omit<ConnectionInfo, 'pluginName'> {
     .url.replace(/^https?:\/\//, '')
     .replace(/\/?$/, '') as string;
   return {
+    protocolVersion: PROTOCOL_VERSION,
     sender: 'app',
     devServer,
   };

@@ -98,7 +98,16 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-location` repository](https://github.com/expo/expo/tree/main/packages/expo-location#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **ios** project manually, then you need to add the `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescription` and `NSLocationWhenInUseUsageDescription` keys to your project's **ios/[app]/Info.plist**:
+
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use your location</string>
+```
 
 </ConfigReactNative>
 
@@ -130,7 +139,6 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
   <array>
     <string>location</string>
   </array>
-</key>
 ```
 
 </Collapsible>
@@ -210,6 +218,14 @@ If you call [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundperm
 Remember that the user has the option of granting your app `When In Use` authorization instead. You must always be prepared to run with `When In Use` permission.
 
 </Collapsible>
+
+## Deferred locations
+
+When using background locations, you can configure the location manager to defer updates. This helps save battery by reducing update frequency. You can set updates to trigger only after the device has moved a certain distance or after a specified time interval.
+
+Deferred updates are configured through [`LocationTaskOptions`](#locationtaskoptions) using the [`deferredUpdatesDistance`](#locationtaskoptions), [`deferredUpdatesInterval`](#locationtaskoptions) and [`deferredTimeout`](#locationtaskoptions) properties.
+
+> Deferred locations apply only when the app is in the background.
 
 ## Usage
 

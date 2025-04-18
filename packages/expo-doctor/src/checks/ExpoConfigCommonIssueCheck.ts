@@ -18,7 +18,7 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
     dynamicConfigPath,
   }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
-    let advice;
+    const advice = [];
 
     // compare SDK version in package.json with installed expo package version
     // If these don't match, it almost certainly means the user specified expo.sdkVersion in their app.json/ app.config.js
@@ -28,7 +28,7 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
       issues.push(
         "It appears that expo.sdkVersion is defined in your app.json/ app.config.js. This can cause 'expo install' to install dependency versions for the wrong SDK. SDK version is determined by the version of the expo package installed in your project."
       );
-      advice = 'Remove expo.sdkVersion from your app.json/ app.config.js.';
+      advice.push('Remove expo.sdkVersion from your app.json/ app.config.js.');
     }
 
     if (hasUnusedStaticConfig) {
@@ -42,17 +42,16 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
           myStaticConfigPath
         )} file in your project, but your ${path.basename(
           myDynamicConfigPath
-        )} is not using the values from it. Remove the static app.json, or use its values in your dynamic app.config.js. ${learnMore(
+        )} is not using the values from it.`
+      );
+      advice.push(
+        `Remove the static app.json, or use its values in your dynamic app.config.js. ${learnMore(
           'https://docs.expo.dev/workflow/configuration'
         )}`
       );
     }
 
-    return {
-      isSuccessful: issues.length === 0,
-      issues,
-      advice,
-    };
+    return { isSuccessful: issues.length === 0, issues, advice };
   }
 }
 

@@ -649,7 +649,7 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "newArchEnabled",
             "type": "property",
-            "value": "false",
+            "value": "true",
           },
           {
             "type": "empty",
@@ -727,6 +727,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          },
+          {
+            "key": "expo.edgeToEdgeEnabled",
+            "type": "property",
+            "value": "false",
           },
         ],
         "manifest": {
@@ -1046,6 +1055,13 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "name": "android:windowOptOutEdgeToEdgeEnforcement",
+                      "tools:targetApi": "35",
+                    },
+                    "_": "true",
+                  },
+                  {
+                    "$": {
                       "name": "colorPrimary",
                     },
                     "_": "@color/colorPrimary",
@@ -1166,7 +1182,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
-          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1666,7 +1681,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
-            "key": "newArchEnabled",
+            "type": "comment",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          },
+          {
+            "key": "expo.edgeToEdgeEnabled",
             "type": "property",
             "value": "false",
           },
@@ -2111,7 +2130,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
-          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {

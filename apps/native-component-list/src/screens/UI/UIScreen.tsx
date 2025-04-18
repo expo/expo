@@ -85,6 +85,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'List component',
+    route: 'ui/list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'BottomSheet component',
+    route: 'ui/bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetScreen'));
+    },
+  },
+  {
     name: 'Stepper component',
     route: 'ui/stepper',
     options: {},
@@ -94,14 +110,24 @@ export const UIScreens = [
   },
 ];
 if (Platform.OS === 'ios') {
-  UIScreens.push({
-    name: 'Gauge component',
-    route: 'ui/gauge',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./GaugeScreen'));
+  UIScreens.push(
+    {
+      name: 'Gauge component',
+      route: 'ui/gauge',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./GaugeScreen'));
+      },
     },
-  });
+    {
+      name: 'SwiftUI container',
+      route: 'ui/swiftui-container',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./SwiftUIContainerScreen'));
+      },
+    }
+  );
 }
 
 export default function UIScreen() {

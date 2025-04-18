@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPendingSpawnAsync = void 0;
+exports.createPendingSpawnAsync = createPendingSpawnAsync;
 function createPendingSpawnAsync(actionAsync, spawnAsync) {
     // Manually rsolve the child promise whenever the prepending async action is resolved.
     // Avoid `childReject` to prevent "unhandled promise rejection" for one of the two promises.
@@ -23,5 +23,4 @@ function createPendingSpawnAsync(actionAsync, spawnAsync) {
     pendingPromise.child = child;
     return pendingPromise;
 }
-exports.createPendingSpawnAsync = createPendingSpawnAsync;
 //# sourceMappingURL=spawn.js.map

@@ -59,7 +59,12 @@ You can configure `expo-local-authentication` using its built-in [config plugin]
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-local-authentication` repository](https://github.com/expo/expo/tree/main/packages/expo-local-authentication#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **ios** project manually, then you need to add `NSFaceIDUsageDescription` key to your **ios/[app]/Info.plist**:
+
+```xml Info.plist
+<key>NSFaceIDUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use FaceID</string>
+```
 
 </ConfigReactNative>
 

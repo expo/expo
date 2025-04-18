@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(semver.gte(row['sqlite_version()'], '3.45.3')).toBe(true);
+      expect(semver.gte(row['sqlite_version()'], '3.49.1')).toBe(true);
       await db.closeAsync();
     });
 
@@ -218,6 +218,24 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       expect(results[0].j).toBeCloseTo(23.4);
       await db.closeAsync();
     }, 30000);
+
+    it('should support sqlite db backup', async () => {
+      const srcDb = await SQLite.openDatabaseAsync('test.db');
+      await srcDb.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const destDb = await SQLite.openDatabaseAsync(':memory:');
+      await SQLite.backupDatabaseAsync({
+        sourceDatabase: srcDb,
+        destDatabase: destDb,
+      });
+      const results = await destDb.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await srcDb.closeAsync();
+      await destDb.closeAsync();
+    });
   });
 
   describe('Statements', () => {
@@ -229,8 +247,8 @@ CREATE TABLE IF NOT EXISTS nulling (id INTEGER PRIMARY KEY NOT NULL, x NUMERIC, 
 `);
       await db.runAsync('INSERT INTO nulling (x, y) VALUES (?, ?)', [null, null]);
       const statement = await db.prepareAsync('INSERT INTO nulling (x, y) VALUES (?, ?)');
-      statement.executeAsync(null, null);
-      statement.finalizeAsync();
+      await statement.executeAsync(null, null);
+      await statement.finalizeAsync();
 
       const results = await db.getAllAsync<{ x: number | null; y: number | null }>(
         'SELECT * FROM nulling'

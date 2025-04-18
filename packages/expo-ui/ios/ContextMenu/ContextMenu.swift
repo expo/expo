@@ -35,21 +35,21 @@ struct MenuItems: View {
   var body: some View {
     ForEach(fromElements ?? []) { elem in
       if let button = elem.button {
-        ExpoUI.Button().environmentObject(button)
+        ExpoUI.Button(props: button)
       }
 
       if let picker = elem.picker {
-        ExpoUI.PickerView().environmentObject(picker)
+        ExpoUI.PickerView(props: picker)
       }
 
       if let `switch` = elem.switch {
-        ExpoUI.SwitchView().environmentObject(`switch`).environmentObject(shadowNodeProxy)
+        ExpoUI.SwitchView(props: `switch`).environmentObject(shadowNodeProxy)
       }
 
       if let submenu = elem.submenu {
         SinglePressContextMenu(
           elements: submenu.elements,
-          activationElement: ExpoUI.Button().environmentObject(submenu.button),
+          activationElement: ExpoUI.Button(props: submenu.button),
           props: props
         )
       }
@@ -108,29 +108,29 @@ struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View>: 
   }
 }
 
-struct ContextMenuPreview: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ContextMenuPreviewProps
+struct ContextMenuPreview: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ContextMenuPreviewProps
 
   var body: some View {
     Children()
   }
 }
 
-struct ContextMenuActivationElement: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ContextMenuActivationElementProps
+struct ContextMenuActivationElement: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ContextMenuActivationElementProps
 
   var body: some View {
     Children()
   }
 }
 
-struct ContextMenu: ExpoSwiftUI.View {
-  @EnvironmentObject var props: ContextMenuProps
+struct ContextMenu: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: ContextMenuProps
 
   var body: some View {
     if props.activationMethod == .singlePress {
       let activationElement = props.children?.filter({
-        $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
+        ExpoSwiftUI.isHostingViewOfType(view: $0, viewType: ContextMenuActivationElement.self)
       })
       SinglePressContextMenu(
         elements: props.elements,
@@ -139,10 +139,10 @@ struct ContextMenu: ExpoSwiftUI.View {
       )
     } else {
       let preview = props.children?.filter({
-        $0.view is ExpoSwiftUI.HostingView<ContextMenuPreviewProps, ContextMenuPreview>
+        ExpoSwiftUI.isHostingViewOfType(view: $0, viewType: ContextMenuPreview.self)
       })
       let activationElement = props.children?.filter({
-        $0.view is ExpoSwiftUI.HostingView<ContextMenuActivationElementProps, ContextMenuActivationElement>
+        ExpoSwiftUI.isHostingViewOfType(view: $0, viewType: ContextMenuActivationElement.self)
       })
       if preview?.count ?? 0 > 0 {
         LongPressContextMenuWithPreview(

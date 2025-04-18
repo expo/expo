@@ -2,17 +2,16 @@
 package host.exp.exponent
 
 import android.Manifest
-import android.app.ActivityManager.RecentTaskInfo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.lifecycle.get
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
 import host.exp.expoview.BuildConfig
@@ -27,6 +26,7 @@ class LauncherActivity : AppCompatActivity() {
   lateinit var kernel: Kernel
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     if (BuildConfig.DEBUG) {
       // Need WRITE_EXTERNAL_STORAGE for method tracing
@@ -45,30 +45,6 @@ class LauncherActivity : AppCompatActivity() {
     // Kernel's JS needs to be started for the dev menu to work when the app is launched through the deep link.
     kernel.startJSKernel(this)
     kernel.handleIntent(this, intent)
-
-    // Delay to prevent race condition where finish() is called before service starts.
-    Handler(mainLooper).postDelayed(
-      Runnable {
-        try {
-          // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
-          RecentTaskInfo::class.java.getDeclaredField("numActivities")
-          for (task in kernel.tasks) {
-            if (task.taskInfo.id == taskId) {
-              if (task.taskInfo.numActivities == 1) {
-                finishAndRemoveTask()
-                return@Runnable
-              } else {
-                break
-              }
-            }
-          }
-        } catch (e: Exception) {
-          // just go straight to finish()
-        }
-        finish()
-      },
-      100
-    )
   }
 
   override fun onStop() {

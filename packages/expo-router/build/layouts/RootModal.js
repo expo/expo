@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootModalProvider = exports.RootModalContext = void 0;
+exports.RootModalContext = void 0;
+exports.RootModalProvider = RootModalProvider;
 const react_1 = require("react");
 exports.RootModalContext = (0, react_1.createContext)({
     root: true,
@@ -22,5 +23,4 @@ function RootModalProvider({ children }) {
     }));
     return <exports.RootModalContext.Provider value={state}>{children}</exports.RootModalContext.Provider>;
 }
-exports.RootModalProvider = RootModalProvider;
 //# sourceMappingURL=RootModal.js.map

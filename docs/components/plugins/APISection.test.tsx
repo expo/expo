@@ -30,9 +30,10 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(26);
-    expect(screen.getAllByRole('table')).toHaveLength(12);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(27);
+    expect(screen.getAllByRole('table')).toHaveLength(11);
+    expect(screen.queryAllByText('Interfaces')).toHaveLength(1);
 
     expect(screen.queryByText('Event Subscriptions'));
     expect(screen.queryByText('Components'));
@@ -43,7 +44,6 @@ describe('APISection', () => {
 
     expect(screen.queryAllByText('Constants')).toHaveLength(0);
     expect(screen.queryAllByText('Hooks')).toHaveLength(0);
-    expect(screen.queryAllByText('Interfaces')).toHaveLength(0);
 
     expect(container).toMatchSnapshot();
   });
@@ -53,9 +53,9 @@ describe('APISection', () => {
       <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(11);
-    expect(screen.getAllByRole('table')).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
+    expect(screen.getAllByRole('table')).toHaveLength(5);
 
     expect(screen.queryByText('Methods'));
     expect(screen.queryByText('Enums'));

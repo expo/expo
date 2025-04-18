@@ -37,9 +37,13 @@ beforeEach(() => {
     mockProperty(
       ExpoLocalization,
       property as keyof typeof ExpoLocalization,
-      fakeLocalization[property]
+      fakeLocalization[property as keyof typeof ExpoLocalization]
     );
-    mockProperty(Localization, property as keyof typeof Localization, fakeLocalization[property]);
+    mockProperty(
+      Localization,
+      property as keyof typeof Localization,
+      fakeLocalization[property as keyof typeof fakeLocalization]
+    );
   }
   mockProperty(
     ExpoLocalization,
@@ -52,12 +56,12 @@ afterEach(() => {
   unmockAllProperties();
 });
 
-function validateString(result) {
+function validateString(result: unknown): asserts result is string {
   expect(typeof result).toBe('string');
-  expect(result.length).toBeGreaterThan(0);
+  expect((result as string).length).toBeGreaterThan(0);
 }
 
-function validateStringArray(result) {
+function validateStringArray(result: unknown): asserts result is string[] {
   expect(result).toBeDefined();
   expect(Array.isArray(result)).toBe(true);
 }
@@ -148,6 +152,6 @@ describe(`Localization works with i18n-js`, () => {
     const expoPredictedLangTag = Localization.locale.split('-')[0];
     const translation = i18n.translations[expoPredictedLangTag];
 
-    expect(translation[target]).toBe(i18n.t(target));
+    expect((translation as any)[target]).toBe(i18n.t(target));
   });
 });

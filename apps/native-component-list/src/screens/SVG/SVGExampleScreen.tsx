@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import examples from './examples';
 
-type Links = { SVGExample: { title?: string; key: string } };
+type Links = { SVGExample: { title?: string; key?: string } };
 
 type Props = StackScreenProps<Links, 'SVGExample'>;
 
@@ -25,7 +25,7 @@ export default function SVGExampleScreen(props: Props) {
   const renderNoExample = React.useCallback(() => <Text>No example found.</Text>, []);
 
   const renderContent = () => {
-    const example = examples[props.route.params.key];
+    const example = props.route.params.key && examples[props.route.params.key];
     if (!example) {
       return renderNoExample();
     }

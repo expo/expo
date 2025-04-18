@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateConfig = void 0;
+exports.validateConfig = validateConfig;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
 /**
@@ -136,6 +136,7 @@ const schema = {
                     },
                     nullable: true,
                 },
+                enableBundleCompression: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
@@ -239,4 +240,3 @@ function validateConfig(config) {
     }
     return config;
 }
-exports.validateConfig = validateConfig;

@@ -371,10 +371,8 @@ it(`verifies calendar trigger handling`, async () => {
     input.content,
     {
       type: 'calendar',
-      repeats: undefined,
-      value: {
-        ...input.trigger,
-      },
+      repeats: false,
+      ...input.trigger,
     }
   );
 
@@ -390,11 +388,9 @@ it(`verifies calendar trigger handling`, async () => {
     input.content,
     {
       type: 'calendar',
-      repeats: undefined,
-      value: {
-        ...input.trigger,
-        second: 10,
-      },
+      repeats: false,
+      ...input.trigger,
+      second: 10,
     }
   );
 
@@ -412,10 +408,8 @@ it(`verifies calendar trigger handling`, async () => {
     {
       type: 'calendar',
       repeats: true,
-      value: {
-        ...input.trigger,
-        second: 10,
-      },
+      ...input.trigger,
+      second: 10,
     }
   );
 });

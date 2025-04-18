@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import { URLListener } from './Linking.types';
 
 export default {
-  addListener(eventName, listener: URLListener): { remove(): void } {
+  addListener(eventName: 'onURLReceived' | string, listener: URLListener): { remove(): void } {
     invariant(
       eventName === 'onURLReceived',
       `Linking.addListener(): ${eventName} is not a valid event`
@@ -13,7 +13,8 @@ export default {
       return { remove() {} };
     }
 
-    const nativeListener = (nativeEvent) => listener({ url: window.location.href, nativeEvent });
+    const nativeListener = (nativeEvent: MessageEvent) =>
+      listener({ url: window.location.href, nativeEvent });
     window.addEventListener('message', nativeListener, false);
     return {
       remove: () => {

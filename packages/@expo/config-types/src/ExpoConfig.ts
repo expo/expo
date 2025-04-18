@@ -213,6 +213,10 @@ export interface ExpoConfig {
      * Whether to disable the built-in expo-updates anti-bricking measures. Defaults to false. If set to true, this will allow overriding certain configuration options from the JS API, which is liable to leave an app in a bricked state if not done carefully. This should not be used in production.
      */
     disableAntiBrickingMeasures?: boolean;
+    /**
+     * Enable debugging of native code with updates enabled. Defaults to false. If set to true, the EX_UPDATES_NATIVE_DEBUG environment variable will be set in Podfile.properties.json and gradle.properties. This causes Xcode and Android Studio debug builds to be built with expo-updates enabled, and JS debugging (with dev client or packager) disabled. This should not be used in production.
+     */
+    useNativeDebug?: boolean;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -284,6 +288,15 @@ export interface ExpoConfig {
      * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
      */
     reactServerFunctions?: boolean;
+    /**
+     * Experimentally enable downloading cached builds from remote.
+     */
+    remoteBuildCache?: {
+      /**
+       * Service provider for remote builds.
+       */
+      provider?: 'eas';
+    };
   };
   /**
    * Internal properties for developer tools
@@ -789,6 +802,10 @@ export interface Android {
    * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
   version?: string;
+  /**
+   * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
+   */
+  edgeToEdgeEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
   /**
