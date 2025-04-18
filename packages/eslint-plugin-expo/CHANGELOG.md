@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add lint rules for Expo DOM Components and the "use dom" directive.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
