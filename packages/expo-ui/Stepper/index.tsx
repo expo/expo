@@ -1,7 +1,6 @@
-import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src/types';
+import { ViewEvent } from '../src/types';
 
 export type StepperProps = {
   /**
@@ -41,11 +40,6 @@ export type StepperProps = {
 type NativeStepperProps = Omit<StepperProps, 'onValueChange'> &
   ViewEvent<'onValueChanged', { value: number }>;
 
-const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeView(
-  'ExpoUI',
-  'StepperView'
-);
-
 export function transformStepperProps(props: StepperProps): NativeStepperProps {
   return {
     ...props,
@@ -58,5 +52,5 @@ export function transformStepperProps(props: StepperProps): NativeStepperProps {
 }
 
 export function Stepper(props: StepperProps) {
-  return <StepperNativeView {...transformStepperProps(props)} />;
+  return null;
 }
