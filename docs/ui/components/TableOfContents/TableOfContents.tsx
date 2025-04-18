@@ -1,8 +1,8 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
-import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
+import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import { useRouter } from 'next/router';
 import {
   PropsWithChildren,
@@ -178,7 +178,9 @@ export const TableOfContents = forwardRef<
 
   // Group headings for versions pages
   const groupedHeadings = useMemo(() => {
-    if (!isVersionsPath) return null;
+    if (!isVersionsPath) {
+      return null;
+    }
 
     const groups: GroupedHeading[] = [];
     const level1And2Headings = displayedHeadings.filter(h => h.level <= BASE_HEADING_LEVEL + 1);
@@ -189,7 +191,9 @@ export const TableOfContents = forwardRef<
     // Group children under their parents
     for (const parent of parentHeadings) {
       const parentIndex = displayedHeadings.findIndex(h => h.slug === parent.slug);
-      if (parentIndex === -1) continue;
+      if (parentIndex === -1) {
+        continue;
+      }
 
       // Find all child headings that follow this parent until the next parent
       const childHeadings: Heading[] = [];
@@ -265,14 +269,15 @@ export const TableOfContents = forwardRef<
           {groupedHeadings.map(group => {
             const isParentActive = group.parent.slug === activeSlug;
             const isGroupExpanded = !!expandedGroups[group.parent.slug];
-            const hasActiveChild = group.children.some(child => child.slug === activeSlug);
 
             return (
               <div key={group.parent.slug}>
                 <div
                   className="group flex cursor-pointer items-center"
-                  onClick={() => toggleGroup(group.parent.slug)}>
-                  <div className="flex h-full items-center justify-center self-start pt-[5px]">
+                  onClick={() => {
+                    toggleGroup(group.parent.slug);
+                  }}>
+                  <div className="flex h-full items-center justify-center self-start pt-[4px]">
                     {isGroupExpanded ? (
                       <ChevronDownIcon className="icon-xs text-icon-secondary" />
                     ) : (
@@ -319,18 +324,18 @@ export const TableOfContents = forwardRef<
           {/* Finally render any headings that come after the last group */}
           {(() => {
             const lastGroupIndex = displayedHeadings.findIndex(
-              h =>
-                groupedHeadings.length > 0 &&
-                groupedHeadings[groupedHeadings.length - 1].parent.slug === h.slug
+              h => groupedHeadings.length > 0 && groupedHeadings.at(-1).parent.slug === h.slug
             );
 
-            if (lastGroupIndex === -1) return null;
+            if (lastGroupIndex === -1) {
+              return null;
+            }
 
             // Find where the last group's children end
             let lastChildIndex = lastGroupIndex;
-            const lastGroup = groupedHeadings[groupedHeadings.length - 1];
+            const lastGroup = groupedHeadings.at(-1);
             if (lastGroup.children.length > 0) {
-              const lastChildSlug = lastGroup.children[lastGroup.children.length - 1].slug;
+              const lastChildSlug = lastGroup.children.at(-1).slug;
               lastChildIndex = displayedHeadings.findIndex(h => h.slug === lastChildSlug);
             }
 
