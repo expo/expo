@@ -36,18 +36,7 @@ it('loads expected modules by default', async () => {
 
 it('runs `npx expo lint --help`', async () => {
   const results = await executeExpoAsync(projectRoot, ['lint', '--help']);
-  expect(results.stdout).toMatchInlineSnapshot(`
-    "
-      Info
-        Utility to run ESLint. Prompts to install and configure if not yet set up.
-
-      Usage
-        $ npx expo lint
-
-      Options
-        -h, --help    Usage info
-    "
-  `);
+  expect(results.stdout).toMatchSnapshot();
 });
 
 it('runs `npx expo lint` to install lint in a project', async () => {
@@ -80,6 +69,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
       (value) => !value.startsWith('.tarballs/eslint-config-expo')
     )
   ).toStrictEqual([
+    expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
     'App.js',
     'app.json',
     'bun.lock',
@@ -122,6 +112,7 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
       (value) => !value.startsWith('.tarballs/eslint-config-expo')
     )
   ).toStrictEqual([
+    expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
     'App.js',
     'app.json',
     'bun.lock',

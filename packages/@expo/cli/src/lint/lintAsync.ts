@@ -24,12 +24,7 @@ export const lintAsync = async (
   const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
   require('@expo/env').load(projectRoot);
 
-  // TODO: Can we safely assert TypeScript is required?
-
-  // const { TypeScriptProjectPrerequisite } = await import(
-  //   '../start/doctor/typescript/TypeScriptProjectPrerequisite.js'
-  // );
-  // await new TypeScriptProjectPrerequisite(projectRoot).bootstrapAsync();
+  // TODO: Perhaps we should assert that TypeScript is required.
 
   const prerequisite = new ESLintProjectPrerequisite(projectRoot);
   if (!(await prerequisite.assertAsync())) {

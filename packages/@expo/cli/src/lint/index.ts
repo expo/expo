@@ -8,6 +8,11 @@ export const expoLint: Command = async (argv) => {
     {
       // Other options are parsed manually.
       '--help': Boolean,
+      '--no-cache': Boolean,
+      '--fix': Boolean,
+      '--quiet': Boolean,
+      '--no-ignore': Boolean,
+
       // Aliases
       '-h': '--help',
     },
@@ -24,7 +29,7 @@ export const expoLint: Command = async (argv) => {
       chalk`npx expo lint {dim [path...] -- [eslint options]}`,
 
       [
-        chalk`[path...]                  List of files and directories to lint.`,
+        chalk`[path...]                  List of files and directories to lint`,
         chalk`--ext {dim <string>}             Additional file extensions to lint. {dim Default: .js, .jsx, .ts, .tsx, .mjs, .cjs}`,
         chalk`--config {dim <path>}            Custom ESLint config file`,
         `--no-cache                 Check all files, instead of changes between runs`,
@@ -34,7 +39,7 @@ export const expoLint: Command = async (argv) => {
         chalk`--ignore-pattern {dim <string>}  Patterns of files to ignore`,
         `--quiet                    Only report errors`,
         chalk`--max-warnings {dim <number>}    Number of warnings to trigger nonzero exit code`,
-        `-h, --help          Usage info`,
+        `-h, --help                 Usage info`,
       ].join('\n'),
       [
         '',
