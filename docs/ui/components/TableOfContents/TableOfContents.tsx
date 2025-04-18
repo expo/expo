@@ -68,7 +68,6 @@ export const TableOfContents = forwardRef<
     function didActiveSlugChanged() {
       updateSelfScroll();
 
-      // Auto-expand the group that contains the active heading when in versions path
       if (isVersionsPath && activeSlug && groupedHeadings) {
         for (const group of groupedHeadings) {
           const childInGroup = group.children.find(child => child.slug === activeSlug);
@@ -176,7 +175,6 @@ export const TableOfContents = forwardRef<
       head.level <= BASE_HEADING_LEVEL + maxNestingDepth && head.title.toLowerCase() !== 'see also'
   );
 
-  // Group headings for versions pages
   const groupedHeadings = useMemo(() => {
     if (!isVersionsPath) {
       return null;
@@ -185,17 +183,14 @@ export const TableOfContents = forwardRef<
     const groups: GroupedHeading[] = [];
     const level1And2Headings = displayedHeadings.filter(h => h.level <= BASE_HEADING_LEVEL + 1);
 
-    // Find level 2 headings (components, props, etc.)
     const parentHeadings = level1And2Headings.filter(h => h.level === BASE_HEADING_LEVEL + 1);
 
-    // Group children under their parents
     for (const parent of parentHeadings) {
       const parentIndex = displayedHeadings.findIndex(h => h.slug === parent.slug);
       if (parentIndex === -1) {
         continue;
       }
 
-      // Find all child headings that follow this parent until the next parent
       const childHeadings: Heading[] = [];
       let i = parentIndex + 1;
 
@@ -241,9 +236,7 @@ export const TableOfContents = forwardRef<
       </CALLOUT>
 
       {isVersionsPath && groupedHeadings ? (
-        // Render using collapsible groups for /versions/ pages
         <>
-          {/* First render any headings that come before the first group */}
           {displayedHeadings
             .slice(
               0,
@@ -264,8 +257,6 @@ export const TableOfContents = forwardRef<
                 />
               );
             })}
-
-          {/* Then render the grouped headings */}
           {groupedHeadings.map(group => {
             const isParentActive = group.parent.slug === activeSlug;
             const isGroupExpanded = !!expandedGroups[group.parent.slug];
@@ -321,22 +312,25 @@ export const TableOfContents = forwardRef<
             );
           })}
 
-          {/* Finally render any headings that come after the last group */}
           {(() => {
+            if (groupedHeadings.length === 0) {
+              return null;
+            }
+
+            const lastGroup = groupedHeadings.at(-1)!;
             const lastGroupIndex = displayedHeadings.findIndex(
-              h => groupedHeadings.length > 0 && groupedHeadings.at(-1).parent.slug === h.slug
+              h => h.slug === lastGroup.parent.slug
             );
 
             if (lastGroupIndex === -1) {
               return null;
             }
 
-            // Find where the last group's children end
             let lastChildIndex = lastGroupIndex;
-            const lastGroup = groupedHeadings.at(-1);
+
             if (lastGroup.children.length > 0) {
-              const lastChildSlug = lastGroup.children.at(-1).slug;
-              lastChildIndex = displayedHeadings.findIndex(h => h.slug === lastChildSlug);
+              const lastChild = lastGroup.children.at(-1)!;
+              lastChildIndex = displayedHeadings.findIndex(h => h.slug === lastChild.slug);
             }
 
             return displayedHeadings.slice(lastChildIndex + 1).map(heading => {
