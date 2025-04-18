@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 13.1.2 — 2025-04-14

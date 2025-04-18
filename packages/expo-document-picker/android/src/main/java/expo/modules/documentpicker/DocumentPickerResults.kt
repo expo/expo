@@ -1,5 +1,6 @@
 package expo.modules.documentpicker
 
+import android.net.Uri
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -13,7 +14,7 @@ data class DocumentPickerResult(
 
 data class DocumentInfo(
   @Field
-  val uri: String,
+  val uri: Uri,
 
   @Field
   val name: String,
