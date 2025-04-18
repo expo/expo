@@ -1,7 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
-import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import { useRouter } from 'next/compat/router';
 import {
@@ -303,11 +302,12 @@ export const TableOfContents = forwardRef<
                     toggleGroup(group.parent.slug);
                   }}>
                   <div className="flex h-full items-center justify-center self-start pt-[4px]">
-                    {isGroupExpanded ? (
-                      <ChevronDownIcon className="icon-xs text-icon-secondary" />
-                    ) : (
-                      <ChevronRightIcon className="icon-xs text-icon-secondary" />
-                    )}
+                    <ChevronDownIcon
+                      className={mergeClasses(
+                        'icon-xs text-icon-secondary transition-transform duration-150',
+                        !isGroupExpanded && '-rotate-90'
+                      )}
+                    />
                   </div>
                   <div className="w-full">
                     <TableOfContentsLink
