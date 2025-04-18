@@ -1,6 +1,9 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
+import { useRouter } from 'next/router';
 import {
   PropsWithChildren,
   RefObject,
@@ -10,6 +13,7 @@ import {
   useRef,
   useImperativeHandle,
   useEffect,
+  useMemo,
 } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
@@ -33,6 +37,11 @@ export type TableOfContentsHandles = {
   handleContentScroll?: (contentScrollPosition: number) => void;
 };
 
+interface GroupedHeading {
+  parent: Heading;
+  children: Heading[];
+}
+
 export const TableOfContents = forwardRef<
   TableOfContentsHandles,
   HeadingManagerProps & TableOfContentsProps
@@ -40,6 +49,10 @@ export const TableOfContents = forwardRef<
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  const router = useRouter();
+  const isVersionsPath = router.asPath.startsWith('/versions/');
 
   const slugScrollingTo = useRef<string | null>(null);
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
@@ -54,6 +67,17 @@ export const TableOfContents = forwardRef<
   useEffect(
     function didActiveSlugChanged() {
       updateSelfScroll();
+
+      // Auto-expand the group that contains the active heading when in versions path
+      if (isVersionsPath && activeSlug && groupedHeadings) {
+        for (const group of groupedHeadings) {
+          const childInGroup = group.children.find(child => child.slug === activeSlug);
+          if (childInGroup) {
+            setExpandedGroups(prev => ({ ...prev, [group.parent.slug]: true }));
+            break;
+          }
+        }
+      }
     },
     [activeSlug]
   );
@@ -140,10 +164,56 @@ export const TableOfContents = forwardRef<
     }
   }
 
+  function toggleGroup(slug: string) {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [slug]: !prev[slug],
+    }));
+  }
+
   const displayedHeadings = headings.filter(
     head =>
       head.level <= BASE_HEADING_LEVEL + maxNestingDepth && head.title.toLowerCase() !== 'see also'
   );
+
+  // Group headings for versions pages
+  const groupedHeadings = useMemo(() => {
+    if (!isVersionsPath) return null;
+
+    const groups: GroupedHeading[] = [];
+    const level1And2Headings = displayedHeadings.filter(h => h.level <= BASE_HEADING_LEVEL + 1);
+
+    // Find level 2 headings (components, props, etc.)
+    const parentHeadings = level1And2Headings.filter(h => h.level === BASE_HEADING_LEVEL + 1);
+
+    // Group children under their parents
+    for (const parent of parentHeadings) {
+      const parentIndex = displayedHeadings.findIndex(h => h.slug === parent.slug);
+      if (parentIndex === -1) continue;
+
+      // Find all child headings that follow this parent until the next parent
+      const childHeadings: Heading[] = [];
+      let i = parentIndex + 1;
+
+      while (
+        i < displayedHeadings.length &&
+        displayedHeadings[i].level > parent.level &&
+        (i === parentIndex + 1 || displayedHeadings[i - 1].level !== BASE_HEADING_LEVEL + 1)
+      ) {
+        childHeadings.push(displayedHeadings[i]);
+        i++;
+      }
+
+      if (childHeadings.length > 0) {
+        groups.push({
+          parent,
+          children: childHeadings,
+        });
+      }
+    }
+
+    return groups;
+  }, [displayedHeadings, isVersionsPath]);
 
   return (
     <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
@@ -165,21 +235,142 @@ export const TableOfContents = forwardRef<
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-      {displayedHeadings.map(heading => {
-        const isActive = heading.slug === activeSlug;
-        return (
-          <TableOfContentsLink
-            key={heading.slug}
-            heading={heading}
-            onClick={event => {
-              handleLinkClick(event, heading);
-            }}
-            isActive={isActive}
-            ref={isActive ? activeItemRef : undefined}
-            shortenCode
-          />
-        );
-      })}
+
+      {isVersionsPath && groupedHeadings ? (
+        // Render using collapsible groups for /versions/ pages
+        <>
+          {/* First render any headings that come before the first group */}
+          {displayedHeadings
+            .slice(
+              0,
+              displayedHeadings.findIndex(h => groupedHeadings.some(g => g.parent.slug === h.slug))
+            )
+            .map(heading => {
+              const isActive = heading.slug === activeSlug;
+              return (
+                <TableOfContentsLink
+                  key={heading.slug}
+                  heading={heading}
+                  onClick={event => {
+                    handleLinkClick(event, heading);
+                  }}
+                  isActive={isActive}
+                  ref={isActive ? activeItemRef : undefined}
+                  shortenCode
+                />
+              );
+            })}
+
+          {/* Then render the grouped headings */}
+          {groupedHeadings.map(group => {
+            const isParentActive = group.parent.slug === activeSlug;
+            const isGroupExpanded = !!expandedGroups[group.parent.slug];
+            const hasActiveChild = group.children.some(child => child.slug === activeSlug);
+
+            return (
+              <div key={group.parent.slug}>
+                <div
+                  className="group flex cursor-pointer items-center"
+                  onClick={() => toggleGroup(group.parent.slug)}>
+                  <div className="flex size-[2] items-center justify-center">
+                    {isGroupExpanded ? (
+                      <ChevronDownIcon className="icon-xs text-icon-secondary" />
+                    ) : (
+                      <ChevronRightIcon className="icon-xs text-icon-secondary" />
+                    )}
+                  </div>
+                  <div className="w-full">
+                    <TableOfContentsLink
+                      key={group.parent.slug}
+                      heading={group.parent}
+                      onClick={event => {
+                        event.stopPropagation();
+                        handleLinkClick(event, group.parent);
+                      }}
+                      isActive={isParentActive}
+                      ref={isParentActive ? activeItemRef : undefined}
+                      shortenCode
+                    />
+                  </div>
+                </div>
+
+                {isGroupExpanded &&
+                  group.children.map(child => {
+                    const isChildActive = child.slug === activeSlug;
+                    return (
+                      <div className="ml-4" key={child.slug}>
+                        <TableOfContentsLink
+                          key={child.slug}
+                          heading={child}
+                          onClick={event => {
+                            handleLinkClick(event, child);
+                          }}
+                          isActive={isChildActive}
+                          ref={isChildActive ? activeItemRef : undefined}
+                          shortenCode
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })}
+
+          {/* Finally render any headings that come after the last group */}
+          {(() => {
+            const lastGroupIndex = displayedHeadings.findIndex(
+              h =>
+                groupedHeadings.length > 0 &&
+                groupedHeadings[groupedHeadings.length - 1].parent.slug === h.slug
+            );
+
+            if (lastGroupIndex === -1) return null;
+
+            // Find where the last group's children end
+            let lastChildIndex = lastGroupIndex;
+            const lastGroup = groupedHeadings[groupedHeadings.length - 1];
+            if (lastGroup.children.length > 0) {
+              const lastChildSlug = lastGroup.children[lastGroup.children.length - 1].slug;
+              lastChildIndex = displayedHeadings.findIndex(h => h.slug === lastChildSlug);
+            }
+
+            return displayedHeadings.slice(lastChildIndex + 1).map(heading => {
+              const isActive = heading.slug === activeSlug;
+              return (
+                <div key={heading.slug}>
+                  <TableOfContentsLink
+                    key={heading.slug}
+                    heading={heading}
+                    onClick={event => {
+                      handleLinkClick(event, heading);
+                    }}
+                    isActive={isActive}
+                    ref={isActive ? activeItemRef : undefined}
+                    shortenCode
+                  />
+                </div>
+              );
+            });
+          })()}
+        </>
+      ) : (
+        // Default non-collapsible rendering for other pages
+        displayedHeadings.map(heading => {
+          const isActive = heading.slug === activeSlug;
+          return (
+            <TableOfContentsLink
+              key={heading.slug}
+              heading={heading}
+              onClick={event => {
+                handleLinkClick(event, heading);
+              }}
+              isActive={isActive}
+              ref={isActive ? activeItemRef : undefined}
+              shortenCode
+            />
+          );
+        })
+      )}
     </nav>
   );
 });
