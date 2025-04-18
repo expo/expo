@@ -1,9 +1,9 @@
 import { Button } from '@expo/ui/Button';
-import { ColorPicker } from '@expo/ui/ColorPicker';
-import { Label } from '@expo/ui/Label';
-import { List, ListStyle } from '@expo/ui/List';
 import { Picker } from '@expo/ui/Picker';
 import { Switch } from '@expo/ui/Switch';
+import { ColorPicker } from '@expo/ui/swift-ui/ColorPicker';
+import { Label } from '@expo/ui/swift-ui/Label';
+import { List, ListStyle } from '@expo/ui/swift-ui/List';
 import * as React from 'react';
 
 export default function ListScreen() {
