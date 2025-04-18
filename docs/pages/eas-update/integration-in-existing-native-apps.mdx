@@ -178,7 +178,7 @@ The following instructions assume you have an app written in Swift, with one or 
 4. Override the `bundleUrl()` method to return the correct bundle URL for updates, if the updates system is running.
 5. The `didFinishLaunchingWithOptions()` method needs to perform two steps:
    1. Initialize the `ExpoReactNativeFactory` used later to create the React Native root view.
-   2. Call `AppController.initializeWithoutStarting()` . This creates the controller instance, but defers the rest of the updates startup procedure until it is needed.
+   2. Call `AppController.initializeWithoutStarting()`. This creates the controller instance, but defers the rest of the updates startup procedure until it is needed.
 
 ```swift ios/<your-app-name>/AppDelegate.swift
 import Expo
