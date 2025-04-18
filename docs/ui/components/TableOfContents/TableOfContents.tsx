@@ -3,7 +3,7 @@ import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpI
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import {
   PropsWithChildren,
   RefObject,
@@ -53,7 +53,7 @@ export const TableOfContents = forwardRef<
   const hasInitialized = useRef(false);
 
   const router = useRouter();
-  const isVersionsPath = router.asPath.startsWith('/versions/');
+  const isVersionsPath = router?.asPath?.startsWith('/versions/');
 
   const slugScrollingTo = useRef<string | null>(null);
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
