@@ -272,7 +272,7 @@ export const TableOfContents = forwardRef<
                 <div
                   className="group flex cursor-pointer items-center"
                   onClick={() => toggleGroup(group.parent.slug)}>
-                  <div className="flex size-[2] items-center justify-center">
+                  <div className="flex h-full items-center justify-center self-start pt-[5px]">
                     {isGroupExpanded ? (
                       <ChevronDownIcon className="icon-xs text-icon-secondary" />
                     ) : (
@@ -298,7 +298,7 @@ export const TableOfContents = forwardRef<
                   group.children.map(child => {
                     const isChildActive = child.slug === activeSlug;
                     return (
-                      <div className="ml-4" key={child.slug}>
+                      <div className="ml-3" key={child.slug}>
                         <TableOfContentsLink
                           key={child.slug}
                           heading={child}
