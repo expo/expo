@@ -4,6 +4,7 @@ maxHeadingDepth: 4
 description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools.
 ---
 
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
 
@@ -339,6 +340,24 @@ This command will be disabled if your project is configured to use `metro` for b
 <Terminal cmd={['$ npx expo prebuild']} />
 
 Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild/).
+
+## Lint
+
+<Terminal cmd={['$ npx expo lint']} />
+
+Linting helps enforce best practices and ensure your code is consistent. The `npx expo lint` command will setup ESLint with Expo-specific settings and run the `npx eslint` command with options that are optimized for the Expo framework. You can fix all automatically fixable issues by running `npx expo lint --fix`.
+
+Running `npx expo lint` targets all files in the **/src**, **/app**, and **/components** directories by default. You can pass custom files or directories to lint by passing them as arguments, e.g. `npx expo lint ./utils constants.ts`.
+
+All files matching `.js, .jsx, .ts, .tsx, .mjs, .cjs` extensions will be linted by default, you can customize the extensions by passing the `--ext` flag. For example, to lint only `.ts` and `.tsx` files, you can run: `npx expo lint --ext .ts,.tsx` or `npx expo lint --ext .js --tsx .tsx`.
+
+If you need additional customization, you can pass extra arguments using the `--` operator. For example, to pass the `--no-error-on-unmatched-pattern` flag to ESLint, you can run: `npx expo lint -- --no-error-on-unmatched-pattern`. If you need even more customization, you can use `npx eslint` directly.
+
+<BoxLink
+  title="Linting in Expo"
+  description="Learn more about ensuring best practices with ESLint."
+  href="/guides/using-eslint"
+/>
 
 ## Config
 

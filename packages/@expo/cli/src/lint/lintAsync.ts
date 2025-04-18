@@ -74,6 +74,7 @@ export const lintAsync = async (
   options.ext.forEach((ext) => {
     eslintArgs.push('--ext', ext);
   });
+
   eslintArgs.push(`--fix=${options.fix}`);
   eslintArgs.push(`--cache=${options.cache}`);
 
@@ -84,20 +85,20 @@ export const lintAsync = async (
     eslintArgs.push('--no-ignore');
   }
   options.ignorePattern.forEach((pattern) => {
-    eslintArgs.push('--ignore-pattern', pattern);
+    eslintArgs.push(`--ignore-pattern=${pattern}`);
   });
 
-  options.fixType.forEach((type) => {
-    eslintArgs.push('--fix-type', type);
-  });
+  eslintArgs.push(...options.fixType.map((type) => `--fix-type=${type}`));
+
   if (options.quiet) {
     eslintArgs.push('--quiet');
   }
-  if (options.maxWarnings) {
+
+  if (options.maxWarnings && options.maxWarnings >= 0) {
     eslintArgs.push(`--max-warnings=${options.maxWarnings.toString()}`);
   }
 
-  const cacheDir = path.join(projectRoot, '.expo', 'eslint');
+  const cacheDir = path.join(projectRoot, '.expo', 'cache', 'eslint/');
   // Add other defaults
   eslintArgs.push(`--cache-location=${cacheDir}`);
 
