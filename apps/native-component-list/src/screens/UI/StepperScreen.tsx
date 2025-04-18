@@ -1,6 +1,6 @@
 import { Button } from '@expo/ui/Button';
 import { Section } from '@expo/ui/Section';
-import { Stepper } from '@expo/ui/components/Stepper';
+import { Stepper } from '@expo/ui/Stepper';
 import * as React from 'react';
 
 import { Page } from '../../components/Page';
