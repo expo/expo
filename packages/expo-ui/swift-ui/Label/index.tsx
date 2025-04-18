@@ -1,4 +1,5 @@
-import { StyleProp, Text, ViewStyle } from 'react-native';
+import { requireNativeView } from 'expo';
+import { StyleProp, ViewStyle } from 'react-native';
 
 export type LabelProps = {
   /**
@@ -22,13 +23,15 @@ export type LabelProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('ExpoUI', 'LabelView');
+
 /**
- * Renders a native label view, which could be used in a [`List`](#list) or [`Section`](#section).
+ * Renders a native label view, which could be used in a list or section.
  *
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
  * @platform ios
  */
 export function Label(props: LabelProps) {
-  return <Text>{props.title}</Text>;
+  return <LabelNativeView {...props} />;
 }
