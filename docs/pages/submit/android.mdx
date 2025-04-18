@@ -155,6 +155,7 @@ You can use [EAS Workflows](/eas-workflows/get-started/) to build and submit you
      # @info #
      submit_android:
        name: Submit to Google Play Store
+       needs: [build_android]
        type: submit
        params:
          platform: android
