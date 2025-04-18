@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 
-data class DocumentDetails(val name: String, val uri: String, val size: Int?, val mimeType: String?)
+data class DocumentDetails(val name: String, val uri: String, val size: Long?, val mimeType: String?)
 
 class DocumentDetailsReader(private val context: Context) {
   fun read(uri: Uri): DocumentDetails? {
@@ -18,7 +18,7 @@ class DocumentDetailsReader(private val context: Context) {
         val uriString = uri.toString()
         val size = cursor.getColumnIndex(OpenableColumns.SIZE).let { sizeColumnIndex ->
           if (!cursor.isNull(sizeColumnIndex)) {
-            cursor.getInt(sizeColumnIndex)
+            cursor.getLong(sizeColumnIndex)
           } else {
             null
           }

@@ -22,5 +22,5 @@ data class DocumentInfo(
   val mimeType: String?,
 
   @Field
-  val size: Int?
+  val size: Long?
 ) : Record
