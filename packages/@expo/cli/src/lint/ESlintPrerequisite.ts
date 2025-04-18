@@ -56,7 +56,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
       await JsonFile.setAsync(
         path.join(this.projectRoot, 'package.json'),
         'scripts',
-        typeof scripts === 'object' ? { ...scripts, lint: 'eslint .' } : { lint: 'eslint .' },
+        typeof scripts === 'object' ? { ...scripts, lint: 'expo lint' } : { lint: 'expo lint' },
         { json5: false }
       );
     }

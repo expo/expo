@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add more options to `npx expo lint` command.
+
 ### 🐛 Bug fixes
 
 - Fix support for using build variants with remote build cache ([#36165](https://github.com/expo/expo/pull/36165) by [@gabrieldonadel](https://github.com/gabrieldonadel))
