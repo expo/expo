@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
+- [Android] Avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
