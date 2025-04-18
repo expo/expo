@@ -120,10 +120,12 @@ import { View, Pressable } from 'react-native';
 export default function Page() {
   return (
     <View>
+
       <Link
         href="/user/bacon">
         View user (id inline)
       </Link>
+
       <Link
         href={{
           pathname: '/user/[id]',
@@ -131,9 +133,11 @@ export default function Page() {
         }}>
         View user (id in params in href)
       </Link>
+
       <Pressable onPress={() => router.navigate('/user', { id: 'bacon' })}>
         <Text>View user (imperative)</Text>
       </Pressable>
+
     </View>
   );
 }
@@ -162,7 +166,7 @@ All variables in the link URL are accessible to the receiving page via the `useL
 For example, if you have a link like this:
 
 ```tsx
-<Link href="/users?limit=20">View users</Link>
+<Link href="/users/bacon?limit=20">View users</Link>
 ```
 
 Then you can read the parameters on the other end like this:
@@ -172,6 +176,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { View, Text } from 'react-native';
 
 export default function Users() {
+  // id=bacon & limit=20
   const { id, limit } = useLocalSearchParams();
 
   return (
