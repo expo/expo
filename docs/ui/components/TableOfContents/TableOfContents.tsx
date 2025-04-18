@@ -49,7 +49,8 @@ export const TableOfContents = forwardRef<
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [expandedGroupSlugs, setExpandedGroupSlugs] = useState<Set<string>>(new Set());
+  const hasInitialized = useRef(false);
 
   const router = useRouter();
   const isVersionsPath = router.asPath.startsWith('/versions/');
@@ -62,34 +63,31 @@ export const TableOfContents = forwardRef<
       handleContentScroll(contentRef.current.getScrollTop());
     }
     setReducedMotion(prefersReducedMotion());
-  }, []);
 
-  useEffect(
-    function didActiveSlugChanged() {
-      updateSelfScroll();
+    if (!hasInitialized.current && isVersionsPath && groupedHeadings && activeSlug) {
+      const groupForActiveSlug = groupedHeadings.find(
+        group =>
+          group.parent.slug === activeSlug ||
+          group.children.some(child => child.slug === activeSlug)
+      );
 
-      if (isVersionsPath && activeSlug && groupedHeadings) {
-        for (const group of groupedHeadings) {
-          const childInGroup = group.children.find(child => child.slug === activeSlug);
-          if (childInGroup) {
-            setExpandedGroups(prev => ({ ...prev, [group.parent.slug]: true }));
-            break;
-          }
-        }
+      if (groupForActiveSlug) {
+        setExpandedGroupSlugs(new Set([groupForActiveSlug.parent.slug]));
       }
-    },
-    [activeSlug]
-  );
+
+      hasInitialized.current = true;
+    }
+  }, []);
 
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
   function handleContentScroll(contentScrollPosition: number) {
+    setShowScrollTop(contentScrollPosition > 120);
+
     for (const { ref, slug } of headings) {
       if (!ref?.current) {
         continue;
       }
-
-      setShowScrollTop(contentScrollPosition > 120);
 
       if (
         ref.current.offsetTop >=
@@ -133,10 +131,28 @@ export const TableOfContents = forwardRef<
     }
   }
 
+  function expandGroupForSlug(slug: string) {
+    if (!isVersionsPath || !groupedHeadings) {
+      return;
+    }
+
+    const groupForThisSlug = groupedHeadings.find(
+      group => group.parent.slug === slug || group.children.some(child => child.slug === slug)
+    );
+
+    if (groupForThisSlug) {
+      const groupSlug = groupForThisSlug.parent.slug;
+      if (!expandedGroupSlugs.has(groupSlug)) {
+        setExpandedGroupSlugs(prev => new Set([...prev, groupSlug]));
+      }
+    }
+  }
+
   function handleLinkClick(event: MouseEvent, { slug, ref, type }: Heading) {
     event.preventDefault();
-
     slugScrollingTo.current = slug;
+    setActiveSlug(slug);
+    expandGroupForSlug(slug);
 
     const scrollOffset = type === 'inlineCode' ? 35 : 21;
 
@@ -148,6 +164,11 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', '#' + slug);
     }
+  }
+
+  function handleChildLinkClick(event: MouseEvent, heading: Heading) {
+    event.stopPropagation();
+    handleLinkClick(event, heading);
   }
 
   function handleTopClick(event: MouseEvent) {
@@ -164,10 +185,15 @@ export const TableOfContents = forwardRef<
   }
 
   function toggleGroup(slug: string) {
-    setExpandedGroups(prev => ({
-      ...prev,
-      [slug]: !prev[slug],
-    }));
+    setExpandedGroupSlugs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(slug)) {
+        newSet.delete(slug);
+      } else {
+        newSet.add(slug);
+      }
+      return newSet;
+    });
   }
 
   const displayedHeadings = headings.filter(
@@ -214,6 +240,13 @@ export const TableOfContents = forwardRef<
     return groups;
   }, [displayedHeadings, isVersionsPath]);
 
+  useEffect(
+    function didActiveSlugChanged() {
+      updateSelfScroll();
+    },
+    [activeSlug]
+  );
+
   return (
     <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
       <CALLOUT
@@ -259,13 +292,14 @@ export const TableOfContents = forwardRef<
             })}
           {groupedHeadings.map(group => {
             const isParentActive = group.parent.slug === activeSlug;
-            const isGroupExpanded = !!expandedGroups[group.parent.slug];
+            const isGroupExpanded = expandedGroupSlugs.has(group.parent.slug);
 
             return (
               <div key={group.parent.slug}>
                 <div
                   className="group flex cursor-pointer items-center"
-                  onClick={() => {
+                  onClick={event => {
+                    event.stopPropagation();
                     toggleGroup(group.parent.slug);
                   }}>
                   <div className="flex h-full items-center justify-center self-start pt-[4px]">
@@ -299,7 +333,7 @@ export const TableOfContents = forwardRef<
                           key={child.slug}
                           heading={child}
                           onClick={event => {
-                            handleLinkClick(event, child);
+                            handleChildLinkClick(event, child);
                           }}
                           isActive={isChildActive}
                           ref={isChildActive ? activeItemRef : undefined}
@@ -353,7 +387,6 @@ export const TableOfContents = forwardRef<
           })()}
         </>
       ) : (
-        // Default non-collapsible rendering for other pages
         displayedHeadings.map(heading => {
           const isActive = heading.slug === activeSlug;
           return (
