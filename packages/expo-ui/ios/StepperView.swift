@@ -15,7 +15,7 @@ class StepperProps: ExpoSwiftUI.ViewProps {
 struct StepperView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: StepperProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
-  
+
   init(props: StepperProps) {
     self.props = props
   }
