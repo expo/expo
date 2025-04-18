@@ -1,5 +1,6 @@
 import { GoogleMaps } from 'expo-maps';
 import { Alert, View } from 'react-native';
+
 import { polylineCoordinates } from '../data';
 
 export default function MapsCameraControlsScreen() {
