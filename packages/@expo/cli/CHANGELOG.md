@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add more options to `npx expo lint` command.
+- Add more options to `npx expo lint` command. ([#36262](https://github.com/expo/expo/pull/36262) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
