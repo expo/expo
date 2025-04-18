@@ -1,9 +1,9 @@
-import { Button } from '@expo/ui/Button';
-import { ColorPicker } from '@expo/ui/ColorPicker';
-import { Picker } from '@expo/ui/Picker';
-import { Section } from '@expo/ui/Section';
-import { Slider } from '@expo/ui/Slider';
-import { Switch } from '@expo/ui/Switch';
+import { Button } from '@expo/ui/swift-ui/Button';
+import { ColorPicker } from '@expo/ui/swift-ui/ColorPicker';
+import { Picker } from '@expo/ui/swift-ui/Picker';
+import { Section } from '@expo/ui/swift-ui/Section';
+import { Slider } from '@expo/ui/swift-ui/Slider';
+import { Switch } from '@expo/ui/swift-ui/Switch';
 import * as React from 'react';
 import { Text } from 'react-native';
 export default function SectionScreen() {

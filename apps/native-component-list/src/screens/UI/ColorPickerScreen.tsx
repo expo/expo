@@ -1,5 +1,5 @@
-import { ColorPicker } from '@expo/ui/ColorPicker';
-import { Switch } from '@expo/ui/Switch';
+import { ColorPicker } from '@expo/ui/swift-ui/ColorPicker';
+import { Switch } from '@expo/ui/swift-ui/Switch';
 import * as React from 'react';
 import { Dimensions, ScrollView, Text } from 'react-native';
 

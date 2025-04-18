@@ -1,4 +1,4 @@
-import { Switch } from '@expo/ui/Switch';
+import { Switch } from '@expo/ui/swift-ui/Switch';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';

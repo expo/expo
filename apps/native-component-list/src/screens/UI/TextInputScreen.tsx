@@ -1,4 +1,4 @@
-import { TextInput } from '@expo/ui/TextInput';
+import { TextInput } from '@expo/ui/swift-ui/TextInput';
 import * as React from 'react';
 import { Text } from 'react-native';
 

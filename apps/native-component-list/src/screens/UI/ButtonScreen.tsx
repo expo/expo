@@ -1,4 +1,4 @@
-import { Button } from '@expo/ui/Button';
+import { Button } from '@expo/ui/swift-ui/Button';
 import * as React from 'react';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
 

@@ -1,4 +1,4 @@
-import { Slider } from '@expo/ui/Slider';
+import { Slider } from '@expo/ui/swift-ui/Slider';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';

@@ -1,7 +1,7 @@
-import { Button } from '@expo/ui/Button';
-import { ContextMenu, Submenu } from '@expo/ui/ContextMenu';
-import { Picker } from '@expo/ui/Picker';
-import { Switch } from '@expo/ui/Switch';
+import { Button } from '@expo/ui/swift-ui/Button';
+import { ContextMenu, Submenu } from '@expo/ui/swift-ui/ContextMenu';
+import { Picker } from '@expo/ui/swift-ui/Picker';
+import { Switch } from '@expo/ui/swift-ui/Switch';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
@@ -28,14 +28,11 @@ export default function ContextMenuScreen() {
         <ContextMenu style={{ width: 150, height: 50 }}>
           <ContextMenu.Items>
             <Button
-              systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+              systemImage="person.crop.circle.badge.xmark"
               onPress={() => console.log('Pressed1')}>
               Hello
             </Button>
-            <Button
-              variant="bordered"
-              systemImage={{ ios: 'heart' }}
-              onPress={() => console.log('Pressed2')}>
+            <Button variant="bordered" systemImage="heart" onPress={() => console.log('Pressed2')}>
               I love
             </Button>
             <Picker
@@ -68,10 +65,10 @@ export default function ContextMenuScreen() {
               label="Will u marry doggos?"
               onValueChange={setSwitch2Checked}
             />
-            <Button role="destructive" systemImage={{ ios: 'hand.thumbsdown' }}>
+            <Button role="destructive" systemImage="hand.thumbsdown">
               I don't like doggos 😡
             </Button>
-            <Submenu button={<Button systemImage={{ ios: 'heart.slash' }}>Evil submenu</Button>}>
+            <Submenu button={<Button systemImage="heart.slash">Evil submenu</Button>}>
               <Button>I hate</Button>
               <Button>doggos</Button>
               <Submenu button={<Button>👹Very evil submenu 👺</Button>}>
@@ -92,7 +89,8 @@ export default function ContextMenuScreen() {
           </ContextMenu.Preview>
         </ContextMenu>
       </Section>
-      {Platform.OS === 'android' && (
+      {/* TODO: Bring back Android examples */}
+      {/* {Platform.OS === 'android' && (
         <Section title="Colorful Context Menu">
           <ContextMenu color="#e3b7ff">
             <ContextMenu.Trigger>
@@ -136,7 +134,7 @@ export default function ContextMenuScreen() {
             </ContextMenu.Items>
           </ContextMenu>
         </Section>
-      )}
+      )} */}
     </View>
   );
 }
