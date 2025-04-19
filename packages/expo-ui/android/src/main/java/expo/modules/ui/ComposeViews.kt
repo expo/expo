@@ -41,7 +41,7 @@ enum class HorizontalArrangement(val value: String) : Enumerable {
   }
 }
 
-enum class VerticalArrangement(val value: String) : Enumerable{
+enum class VerticalArrangement(val value: String) : Enumerable {
   TOP("top"),
   BOTTOM("bottom"),
   CENTER("center"),
@@ -105,7 +105,7 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value,
+      modifier = props.modifier.value
     ) {
       Children()
     }
@@ -120,7 +120,7 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value,
+      modifier = props.modifier.value
     ) {
       Children()
     }
@@ -175,15 +175,15 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
       color = colorToComposeColor(props.color.value),
       style = TextStyle(
         fontSize = props.fontSize.value.sp,
-        fontWeight = props.fontWeight.value.toComposeFontWeight(),
+        fontWeight = props.fontWeight.value.toComposeFontWeight()
       ),
-      modifier = props.modifier.value,
+      modifier = props.modifier.value
     )
   }
 }
 
-class ContainerView(context: Context, appContext: AppContext)
-  : ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
+class ContainerView(context: Context, appContext: AppContext) :
+  ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
   override fun Content() {
     for (index in 0..<this.size) {
