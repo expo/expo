@@ -1,4 +1,70 @@
----
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Dr.Dona</Text>
+      <Text style={styles.subtitle}>Tibbiy kontent, slayd va reels yaratish ilovasi</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>AI kontent yaratish</Text>
+        <Text>- Maqolalar, postlar va izohlar</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Slaydlar tayyorlash</Text>
+        <Text>- Har bir mavzu uchun avtomatik slaydlar</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Reels ssenariylar</Text>
+        <Text>- 30-60 soniyalik ssenariylar va ekran matnlari</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Kitoblar kutubxonasi</Text>
+        <Text>- Yuklangan PDF tibbiy kitoblarni o‘qish</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Multitil qo‘llab-quvvatlash</Text>
+        <Text>- O‘zbek, Rus, Ingliz</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#fff0f3',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#cc0022',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  section: {
+    marginBottom: 20,
+    backgroundColor: '#ffe6eb',
+    padding: 15,
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#b3002d',
+    marginBottom: 5,
+  },
+});--
 title: app.json / app.config.js
 description: A reference of available properties in Expo app config.
 maxHeadingDepth: 5
