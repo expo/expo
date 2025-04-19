@@ -457,6 +457,36 @@ export default ({ config }) => {
     expect(expoConfig.web.runtimeVersion).toBeUndefined();
   });
 
+  it('should not contain updates section when SourceSkips.ExpoConfigUpdatesSection is set', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+export default ({ config }) => {
+  config.updates = {
+    url: 'https://u.expo.dev/123',
+    enabled: true,
+    fallbackToCacheTimeout: 0,
+    checkAutomatically: 'ON_ERROR_RECOVERY'
+  };
+  return config;
+};`
+    );
+    const sources = await getExpoConfigSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', {
+        sourceSkips: SourceSkips.ExpoConfigUpdatesSection,
+      })
+    );
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig).not.toBeNull();
+    expect(expoConfig.updates).toBeUndefined();
+  });
+
   it('should keep runtimeVersion when SourceSkips.ExpoConfigRuntimeVersionIfString and runtime version is a policy', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.writeFileSync(

@@ -60,4 +60,7 @@ export enum SourceSkips {
 
   /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
   ExpoConfigExtraSection = 1 << 12,
+
+  /** The [updates](https://docs.expo.dev/versions/latest/config/app/#updates) section in app.json */
+  ExpoConfigUpdatesSection = 1 << 13,
 }

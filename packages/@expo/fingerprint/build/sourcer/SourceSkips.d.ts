@@ -42,5 +42,7 @@ export declare enum SourceSkips {
      */
     GitIgnore = 2048,
     /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
-    ExpoConfigExtraSection = 4096
+    ExpoConfigExtraSection = 4096,
+    /** The [updates](https://docs.expo.dev/versions/latest/config/app/#updates) section in app.json */
+    ExpoConfigUpdatesSection = 8192
 }

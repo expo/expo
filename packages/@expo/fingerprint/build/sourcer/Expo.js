@@ -171,6 +171,9 @@ function normalizeExpoConfig(config, projectRoot, options) {
         delete normalizedConfig?.extra?.eas;
         delete normalizedConfig?.updates?.url;
     }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigUpdatesSection) {
+        delete normalizedConfig?.updates;
+    }
     if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAssets) {
         delete normalizedConfig.icon;
         delete normalizedConfig.splash;

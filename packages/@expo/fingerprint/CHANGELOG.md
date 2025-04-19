@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+Add `SourceSkips.ExpoConfigEASUpdates` to ignore all EAS updates config to be excluded from the fingerpint.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
