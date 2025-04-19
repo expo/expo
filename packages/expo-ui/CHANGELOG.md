@@ -2,29 +2,7 @@
 
 ## Unpublished
 
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- [Android] Fixed `DatePicker` causing out of memory exception. ([#36227](https://github.com/expo/expo/pull/36227) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
-
-## 0.1.1-alpha.2 — 2025-04-14
-
-_This version does not introduce any user-facing changes._
-
-## 0.1.1-alpha.1 — 2025-04-11
-
-_This version does not introduce any user-facing changes._
-
-## 0.1.1-alpha.0 — 2025-04-10
-
-_This version does not introduce any user-facing changes._
-
-## 0.1.0-alpha.0 — 2025-04-04
+- Add `Stepper` view on iOS. ([#35525](https://github.com/expo/expo/pull/35525) by [@andrew-levy](https://github.com/andrew-levy))
 
 ### 🛠 Breaking changes
 

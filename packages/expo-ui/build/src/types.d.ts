@@ -12,6 +12,7 @@ export type * from '../Section';
 export type * from '../Slider';
 export type * from '../Switch';
 export type * from '../TextInput';
+export type * from '../Stepper';
 /**
  * @hidden
  */
