@@ -1,5 +1,5 @@
-import { StyleSheet, Platform } from 'react-native';
 import { Image } from 'expo-image';
+import { Platform, StyleSheet } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
