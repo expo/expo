@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- Support `expo-doctor --quiet` ([#36113](https://github.com/expo/expo/pull/36113) by [@ianzone](https://github.com/ianzone))
 ### 🐛 Bug fixes
 
 ### 💡 Others
