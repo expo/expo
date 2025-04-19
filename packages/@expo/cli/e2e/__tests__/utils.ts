@@ -19,6 +19,9 @@ export { getTemporaryPath } from '../utils/path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
+// Set this to true to enable caching and prevent rerunning yarn installs
+const testingLocally = !process.env.CI;
+
 export const projectRoot = getTemporaryPath();
 
 /** Get the directory relative to the default project root. */
@@ -111,12 +114,14 @@ export async function createFromFixtureAsync(
 
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
+      const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           log('Created and linked tarball for dependencies', tarball);
           dependencies[pkg] = tarball.packageReference;
+          resolutions[pkg] = tarball.packageReference;
         }
       }
 
@@ -125,6 +130,7 @@ export async function createFromFixtureAsync(
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           log('Created and linked tarball for devDependencies', tarball);
           devDependencies[pkg] = tarball.packageReference;
+          resolutions[pkg] = tarball.packageReference;
         }
       }
 
@@ -133,6 +139,7 @@ export async function createFromFixtureAsync(
         ...fixturePkg,
         dependencies,
         devDependencies,
+        resolutions,
         scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
     }
@@ -168,9 +175,6 @@ export async function createFromFixtureAsync(
   return projectRoot;
 }
 
-// Set this to true to enable caching and prevent rerunning yarn installs
-const testingLocally = !process.env.CI;
-
 export async function setupTestProjectWithOptionsAsync(
   name: string,
   fixtureName: string,
@@ -197,10 +201,12 @@ export async function setupTestProjectWithOptionsAsync(
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  assert(
-    exp.sdkVersion === sdkVersion,
-    `Expected exp.sdkVersion to be ${sdkVersion}, but it is set to ${exp.sdkVersion} for ${projectRoot} project.`
-  );
+  if (!linkExpoPackages?.includes('expo')) {
+    assert(
+      exp.sdkVersion === sdkVersion,
+      `Expected exp.sdkVersion to be ${sdkVersion}, but it is set to ${exp.sdkVersion} for ${projectRoot} project.`
+    );
+  }
   return projectRoot;
 }
 

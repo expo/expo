@@ -1,3 +1,5 @@
+import { type NodePath } from '@babel/core';
+import * as t from '@babel/types';
 export declare function hasModule(name: string): boolean;
 /** Determine which bundler is being used. */
 export declare function getBundler(caller?: any): "metro" | "webpack" | null;
@@ -15,3 +17,4 @@ export declare function getIsServer(caller?: any): boolean;
 export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;
 export declare function getInlineEnvVarsEnabled(caller?: any): boolean;
 export declare function getAsyncRoutes(caller?: any): boolean;
+export declare function createAddNamedImportOnce(t: typeof import('@babel/types')): (path: NodePath<t.Node>, name: string, source: string) => any;

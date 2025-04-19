@@ -1,32 +1,68 @@
-import { ConfigAPI, NodePath, PluginObj, types } from '@babel/core';
+import { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
+
+import { createAddNamedImportOnce, getIsProd } from './common';
 
 const debug = require('debug')('expo:babel:env-vars');
 
-export function expoInlineEnvVars(api: ConfigAPI & { types: typeof types }): PluginObj {
-  const { types: t } = api;
+export function expoInlineEnvVars(api: ConfigAPI & { types: typeof t }): PluginObj {
+  const isProduction = api.caller(getIsProd);
 
-  function isFirstInAssign(path: NodePath<types.MemberExpression>) {
+  function isFirstInAssign(path: NodePath<t.MemberExpression>) {
     return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
   }
 
+  let addEnvImport: () => t.Identifier;
+
+  const publicEnvVars = new Set<string>();
+
   return {
-    name: 'expo-inline-production-environment-variables',
+    name: 'expo-inline-or-reference-env-vars',
+    pre(file) {
+      const addNamedImportOnce = createAddNamedImportOnce(t);
+
+      addEnvImport = () => {
+        return addNamedImportOnce(file.path, 'env', 'expo/virtual/env');
+      };
+    },
     visitor: {
       MemberExpression(path, state) {
         const filename = state.filename;
         if (path.get('object').matchesPattern('process.env')) {
-          // @ts-expect-error: missing types
+          // @ts-expect-error
           const key = path.toComputedKey();
           if (
             t.isStringLiteral(key) &&
             !isFirstInAssign(path) &&
             key.value.startsWith('EXPO_PUBLIC_')
           ) {
-            debug('Inlining environment variable in %s: %s', filename, key.value);
-            path.replaceWith(t.valueToNode(process.env[key.value]));
+            const envVar = key.value;
+            debug(
+              `${isProduction ? 'Inlining' : 'Referencing'} environment variable in %s: %s`,
+              filename,
+              envVar
+            );
+
+            publicEnvVars.add(envVar);
+            if (isProduction) {
+              path.replaceWith(t.valueToNode(process.env[envVar]));
+            } else {
+              path.replaceWith(t.memberExpression(addEnvImport(), t.identifier(envVar)));
+            }
           }
         }
       },
     },
+    post(file) {
+      assertExpoMetadata(file.metadata);
+      file.metadata.publicEnvVars = Array.from(publicEnvVars);
+    },
   };
+}
+
+function assertExpoMetadata(metadata: any): asserts metadata is {
+  publicEnvVars?: string[];
+} {
+  if (!metadata || typeof metadata !== 'object') {
+    throw new Error('Expected Babel state.file.metadata to be an object');
+  }
 }
