@@ -39,9 +39,7 @@ async function findModulesAsync(providedOptions) {
             if (maybeIsolatedModulesPath) {
                 searchPaths.add(maybeIsolatedModulesPath);
             }
-            // we ignore the `exclude` option for custom native modules
-            if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
-                !expoModuleConfig.supportsPlatform(options.platform)) {
+            if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
             // add the current revision to the results
