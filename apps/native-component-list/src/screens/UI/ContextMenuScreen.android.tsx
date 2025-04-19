@@ -1,23 +1,23 @@
-import { Button, Picker, Switch, ContextMenu, Submenu } from '@expo/ui/jetpack-compose';
-import { useVideoPlayer, VideoView } from 'expo-video';
+// import { Button, Picker, Switch, ContextMenu, Submenu } from '@expo/ui/jetpack-compose';
+// import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, /* StyleSheet, */ Text } from 'react-native';
 
-import { Section } from '../../components/Page';
+// import { Section } from '../../components/Page';
 
-const videoLink =
-  'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
+// const videoLink =
+//   'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
 
 export default function ContextMenuScreen() {
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(1);
-  const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
-  const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
+  // const [selectedIndex, setSelectedIndex] = React.useState<number | null>(1);
+  // const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
+  // const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
 
-  const player = useVideoPlayer(videoLink, (player) => {
-    player.loop = true;
-    player.muted = true;
-    player.play();
-  });
+  // const player = useVideoPlayer(videoLink, (player) => {
+  //   player.loop = true;
+  //   player.muted = true;
+  //   player.play();
+  // });
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -74,19 +74,19 @@ ContextMenuScreen.navigationOptions = {
   title: 'Context Menu',
 };
 
-const styles = StyleSheet.create({
-  menuIcon: {
-    width: 32,
-    height: 32,
-  },
-  longPressMenu: {
-    width: 200,
-    height: 200,
-  },
-  preview: {
-    width: 300,
-    height: 200,
-    padding: 20,
-    backgroundColor: '#ffeeee',
-  },
-});
+// const styles = StyleSheet.create({
+//   menuIcon: {
+//     width: 32,
+//     height: 32,
+//   },
+//   longPressMenu: {
+//     width: 200,
+//     height: 200,
+//   },
+//   preview: {
+//     width: 300,
+//     height: 200,
+//     padding: 20,
+//     backgroundColor: '#ffeeee',
+//   },
+// });
