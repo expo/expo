@@ -13,7 +13,8 @@ class AudioSource(
 
 class AudioMode(
   @Field val shouldPlayInBackground: Boolean = false,
-  @Field val shouldRouteThroughEarpiece: Boolean?
+  @Field val shouldRouteThroughEarpiece: Boolean?,
+  @Field val interruptionMode: InterruptionMode?
 ) : Record
 
 // Data class because we want `equals`
@@ -74,4 +75,9 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
     HE_AAC -> MediaRecorder.AudioEncoder.HE_AAC
     AAC_ELD -> MediaRecorder.AudioEncoder.AAC_ELD
   }
+}
+
+enum class InterruptionMode(val value: String) : Enumerable {
+  DO_NOT_MIX("doNotMix"),
+  DUCK_OTHERS("duckOthers")
 }

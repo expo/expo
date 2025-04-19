@@ -255,6 +255,12 @@ export type AudioMode = {
      */
     interruptionMode: InterruptionMode;
     /**
+     * Determines how the audio session interacts with other sessions on Android.
+     *
+     * @platform android
+     */
+    interruptionModeAndroid: InterruptionModeAndroid;
+    /**
      * Whether the audio session allows recording.
      *
      * @default false
@@ -273,4 +279,5 @@ export type AudioMode = {
     shouldRouteThroughEarpiece: boolean;
 };
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
+export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
 //# sourceMappingURL=Audio.types.d.ts.map

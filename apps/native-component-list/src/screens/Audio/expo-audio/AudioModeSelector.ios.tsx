@@ -6,7 +6,10 @@ import Button from '../../../components/Button';
 import ListButton from '../../../components/ListButton';
 
 export default function AudioModeSelector() {
-  const [state, setState] = React.useState<{ next: AudioMode; current: AudioMode }>({
+  const [state, setState] = React.useState<{
+    next: Partial<AudioMode>;
+    current: Partial<AudioMode>;
+  }>({
     next: {
       interruptionMode: 'mixWithOthers',
       playsInSilentMode: false,

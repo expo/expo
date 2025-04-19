@@ -39,6 +39,7 @@ class AudioPlayer(
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
+    .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .build(),
   appContext
 ) {
@@ -60,7 +61,6 @@ class AudioPlayer(
   val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000f else 0f
 
   init {
-    player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     addPlayerListeners()
     source?.let {
       setMediaSource(source)
