@@ -66,20 +66,20 @@ data class DateTimePickerProps(
 
 @SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)
-class DateTimePickerView(context: Context, appContext: AppContext) : ExpoComposeView<DateTimePickerProps>(context, appContext) {
+class DateTimePickerView(context: Context, appContext: AppContext) :
+  ExpoComposeView<DateTimePickerProps>(context, appContext, withHostingView = true) {
   override val props = DateTimePickerProps()
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 
-  init {
-    setContent {
-      if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-        ExpoTimePicker(props = props) {
-          onDateSelected(it)
-        }
-      } else {
-        ExpoDatePicker(props = props) {
-          onDateSelected(it)
-        }
+  @Composable
+  override fun Content() {
+    if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
+      ExpoTimePicker(props = props) {
+        onDateSelected(it)
+      }
+    } else {
+      ExpoDatePicker(props = props) {
+        onDateSelected(it)
       }
     }
   }

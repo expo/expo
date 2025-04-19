@@ -1,6 +1,7 @@
 package expo.modules.maps
 
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -24,26 +25,25 @@ data class GoogleStreetViewProps(
 class GoogleStreetView(
   context: Context,
   appContext: AppContext
-) : ExpoComposeView<GoogleStreetViewProps>(context, appContext) {
+) : ExpoComposeView<GoogleStreetViewProps>(context, appContext, withHostingView = true) {
   override val props = GoogleStreetViewProps()
 
-  init {
-    setContent {
-      key(props.position.value.coordinates.toString()) {
-        StreetView(
-          streetViewPanoramaOptionsFactory = {
-            props.position.value.let { camera ->
-              StreetViewPanoramaOptions()
-                .position(camera.coordinates.toLatLng())
-                .panoramaCamera(StreetViewPanoramaCamera(camera.zoom, camera.tilt, camera.bearing))
-            }
-          },
-          isPanningGesturesEnabled = props.isPanningGesturesEnabled.value,
-          isStreetNamesEnabled = props.isStreetNamesEnabled.value,
-          isUserNavigationEnabled = props.isUserNavigationEnabled.value,
-          isZoomGesturesEnabled = props.isZoomGesturesEnabled.value
-        )
-      }
+  @Composable
+  override fun Content() {
+    key(props.position.value.coordinates.toString()) {
+      StreetView(
+        streetViewPanoramaOptionsFactory = {
+          props.position.value.let { camera ->
+            StreetViewPanoramaOptions()
+              .position(camera.coordinates.toLatLng())
+              .panoramaCamera(StreetViewPanoramaCamera(camera.zoom, camera.tilt, camera.bearing))
+          }
+        },
+        isPanningGesturesEnabled = props.isPanningGesturesEnabled.value,
+        isStreetNamesEnabled = props.isStreetNamesEnabled.value,
+        isUserNavigationEnabled = props.isUserNavigationEnabled.value,
+        isZoomGesturesEnabled = props.isZoomGesturesEnabled.value
+      )
     }
   }
 }

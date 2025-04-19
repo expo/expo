@@ -45,7 +45,8 @@ data class GoogleMapsViewProps(
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
-class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
+class GoogleMapsView(context: Context, appContext: AppContext) :
+  ExpoComposeView<GoogleMapsViewProps>(context, appContext, withHostingView = true) {
   override val props = GoogleMapsViewProps()
 
   private val onMapLoaded by EventDispatcher<Unit>()
@@ -62,75 +63,74 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
 
-  init {
-    setContent {
-      cameraState = updateCameraState()
-      val markerState = markerStateFromProps()
-      val locationSource = locationSourceFromProps()
+  @Composable
+  override fun Content() {
+    cameraState = updateCameraState()
+    val markerState = markerStateFromProps()
+    val locationSource = locationSourceFromProps()
 
-      GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraState,
-        uiSettings = props.uiSettings.value.toMapUiSettings(),
-        properties = props.properties.value.toMapProperties(),
-        onMapLoaded = {
-          onMapLoaded(Unit)
-          wasLoaded.value = true
-        },
-        onMapClick = { latLng ->
-          onMapClick(
-            Coordinates(latLng.latitude, latLng.longitude)
+    GoogleMap(
+      modifier = Modifier.fillMaxSize(),
+      cameraPositionState = cameraState,
+      uiSettings = props.uiSettings.value.toMapUiSettings(),
+      properties = props.properties.value.toMapProperties(),
+      onMapLoaded = {
+        onMapLoaded(Unit)
+        wasLoaded.value = true
+      },
+      onMapClick = { latLng ->
+        onMapClick(
+          Coordinates(latLng.latitude, latLng.longitude)
+        )
+      },
+      onMapLongClick = { latLng ->
+        onMapLongClick(
+          Coordinates(latLng.latitude, latLng.longitude)
+        )
+      },
+      onPOIClick = { poi ->
+        onPOIClick(
+          POIRecord(
+            poi.name,
+            Coordinates(poi.latLng.latitude, poi.latLng.longitude)
           )
-        },
-        onMapLongClick = { latLng ->
-          onMapLongClick(
-            Coordinates(latLng.latitude, latLng.longitude)
-          )
-        },
-        onPOIClick = { poi ->
-          onPOIClick(
-            POIRecord(
-              poi.name,
-              Coordinates(poi.latLng.latitude, poi.latLng.longitude)
-            )
-          )
-        },
-        onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
-          {
-            // Override onMyLocationButtonClick with default behavior to update manualCameraControl
-            appContext.mainQueue.launch {
-              cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
-              manualCameraControl = false
-            }
-            true
+        )
+      },
+      onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
+        {
+          // Override onMyLocationButtonClick with default behavior to update manualCameraControl
+          appContext.mainQueue.launch {
+            cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+            manualCameraControl = false
           }
-        },
-        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
-        locationSource = locationSource
-      ) {
-        for ((marker, state) in markerState.value) {
-          val icon = getIconDescriptor(marker)
-
-          Marker(
-            state = state,
-            title = marker.title,
-            snippet = marker.snippet,
-            draggable = marker.draggable,
-            icon = icon,
-            onClick = {
-              onMarkerClick(
-                // We can't send icon to js, because it's not serializable
-                // So we need to remove it from the marker record
-                MarkerRecord(
-                  title = marker.title,
-                  snippet = marker.snippet,
-                  coordinates = marker.coordinates
-                )
-              )
-              !marker.showCallout
-            }
-          )
+          true
         }
+      },
+      mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
+      locationSource = locationSource
+    ) {
+      for ((marker, state) in markerState.value) {
+        val icon = getIconDescriptor(marker)
+
+        Marker(
+          state = state,
+          title = marker.title,
+          snippet = marker.snippet,
+          draggable = marker.draggable,
+          icon = icon,
+          onClick = {
+            onMarkerClick(
+              // We can't send icon to js, because it's not serializable
+              // So we need to remove it from the marker record
+              MarkerRecord(
+                title = marker.title,
+                snippet = marker.snippet,
+                coordinates = marker.coordinates
+              )
+            )
+            !marker.showCallout
+          }
+        )
       }
     }
   }
