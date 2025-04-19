@@ -1,5 +1,6 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
+import './react-meta-tags';
 import 'expo-asset';
 
 import Constants from 'expo-constants';

@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add shims for React 19 meta tags on native.
+- Add improved error messages for React DOM elements on native.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
