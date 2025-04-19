@@ -64,33 +64,45 @@ const renderTypeDeclarationTable = (
 
 const renderTypeMethodEntry = (
   { children, signatures, comment }: TypeDeclarationContentData,
-  sdkVersion: string
+  sdkVersion: string,
+  inline: boolean = false
 ): ReactNode => {
   const baseSignature = signatures?.[0];
 
-  if (baseSignature?.type) {
+  if (!baseSignature?.type) {
+    return null;
+  }
+
+  const content = (
+    <>
+      <RawH4 className="!mb-3">
+        <MONOSPACE>
+          {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+          {` => `}
+          <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
+        </MONOSPACE>
+      </RawH4>
+      <APICommentTextBlock comment={comment} />
+      <Table>
+        <APIParamsTableHeadRow mainCellLabel="Parameter" />
+        <tbody>
+          {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        </tbody>
+      </Table>
+    </>
+  );
+
+  if (inline) {
+    return <div className="border-t border-secondary p-4 pt-2.5">{content}</div>;
+  } else {
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
         className="!mb-0">
-        <RawH4 className="!mb-3">
-          <MONOSPACE>
-            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
-            {` => `}
-            <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
-          </MONOSPACE>
-        </RawH4>
-        <APICommentTextBlock comment={comment} />
-        <Table>
-          <APIParamsTableHeadRow mainCellLabel="Parameter" />
-          <tbody>
-            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
-          </tbody>
-        </Table>
+        {content}
       </APIBox>
     );
   }
-  return null;
 };
 
 const renderTypePropertyRow = (
@@ -247,7 +259,7 @@ const renderType = (
           )}
           {propMethodDefinitions.map(
             propType =>
-              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion, true)
           )}
         </div>
       );
