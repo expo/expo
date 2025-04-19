@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Improve ability to open stacks from command line.
 - Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
 
 ## 0.24.2 — 2025-04-14
