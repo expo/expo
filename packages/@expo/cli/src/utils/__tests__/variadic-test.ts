@@ -19,6 +19,41 @@ describe(parseVariadicArguments, () => {
       flags: { '--yarn': true, '-g': true },
     });
   });
+  it(`parses complex with string arrays`, () => {
+    expect(
+      parseVariadicArguments(
+        [
+          'bacon',
+          '@evan/bacon',
+          '--yarn=one',
+          '-g',
+          '@evan/bacon/foobar.js',
+          '--pattern',
+          './1',
+          '--pattern',
+          '2.js',
+          '--arr',
+          'a,b,c',
+          '--',
+          '--npm',
+        ],
+        ['--pattern', '--arr', '--yarn']
+      )
+    ).toEqual({
+      variadic: ['bacon', '@evan/bacon', '@evan/bacon/foobar.js'],
+      extras: ['--npm'],
+      flags: { '--yarn': 'one', '-g': true, '--pattern': ['./1', '2.js'], '--arr': 'a,b,c' },
+    });
+  });
+
+  it(`groups known flags as an array across formats`, () => {
+    expect(parseVariadicArguments(['--yarn=one', '--yarn', '--yarn', 'two'], ['--yarn'])).toEqual({
+      variadic: [],
+      extras: [],
+      flags: { '--yarn': ['one', true, 'two'] },
+    });
+  });
+
   it(`parses too many extras`, () => {
     expect(() => parseVariadicArguments(['avo', '--', '--npm', '--'])).toThrow(
       /Unexpected multiple --/

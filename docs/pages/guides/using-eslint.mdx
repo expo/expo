@@ -66,7 +66,7 @@ Add a `script` to your **package.json** to run ESLint.
 ```json package.json
 {
   "scripts": {
-    "lint": "eslint ."
+    "lint": "expo lint"
   }
 }
 ```
@@ -81,7 +81,7 @@ You can replace the `.` with specific directories or files to lint. For example,
 
 > **info** **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
 
-You can lint your code manually from the command line with the `expo lint` script:
+You can lint your code manually from the command line with the `npx expo lint` script:
 
 <Tabs>
 
@@ -99,9 +99,6 @@ Running the above command will run the `lint` script from **package.json**.
 <Terminal
   cmd={[
     '# Example output for npx expo lint command',
-    '',
-    '$ npm run eslint .',
-    '/app/node_modules/.bin/eslint .',
     '',
     '/app/components/HelloWave.tsx',
     '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
