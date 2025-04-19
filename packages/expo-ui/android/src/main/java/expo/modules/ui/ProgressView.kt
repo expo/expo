@@ -20,7 +20,7 @@ import java.util.EnumSet
 
 enum class ProgressVariant(val value: String) : Enumerable {
   CIRCULAR("circular"),
-  LINEAR("linear"),
+  LINEAR("linear")
 }
 
 class ProgressColors : Record {
@@ -35,8 +35,8 @@ data class ProgressProps(
   val elementColors: MutableState<ProgressColors> = mutableStateOf(ProgressColors())
 ) : ComposeProps
 
-class ProgressView(context: Context, appContext: AppContext)
-  : ExpoComposeView<ProgressProps>(context, appContext, withHostingView = true) {
+class ProgressView(context: Context, appContext: AppContext) :
+  ExpoComposeView<ProgressProps>(context, appContext, withHostingView = true) {
   override val props = ProgressProps()
 
   @Composable
@@ -56,7 +56,7 @@ class ProgressView(context: Context, appContext: AppContext)
                 progress = { progress },
                 color = composeColor,
                 trackColor = trackColor,
-                drawStopIndicator = {},
+                drawStopIndicator = {}
               )
             } else {
               LinearProgressIndicator(color = composeColor, trackColor = trackColor)
@@ -69,12 +69,12 @@ class ProgressView(context: Context, appContext: AppContext)
               CircularProgressIndicator(
                 progress = { progress },
                 color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
+                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor
               )
             } else {
               CircularProgressIndicator(
                 color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor
               )
             }
           }

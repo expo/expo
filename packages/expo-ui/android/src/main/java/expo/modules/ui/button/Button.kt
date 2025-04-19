@@ -127,8 +127,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
   }
 }
 
-class Button(context: Context, appContext: AppContext)
-  : ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
+class Button(context: Context, appContext: AppContext) :
+  ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
   override val props = ButtonProps()
   private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 

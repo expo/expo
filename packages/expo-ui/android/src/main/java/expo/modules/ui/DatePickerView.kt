@@ -66,8 +66,8 @@ data class DateTimePickerProps(
 
 @SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)
-class DateTimePickerView(context: Context, appContext: AppContext)
-  : ExpoComposeView<DateTimePickerProps>(context, appContext, withHostingView = true) {
+class DateTimePickerView(context: Context, appContext: AppContext) :
+  ExpoComposeView<DateTimePickerProps>(context, appContext, withHostingView = true) {
   override val props = DateTimePickerProps()
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 

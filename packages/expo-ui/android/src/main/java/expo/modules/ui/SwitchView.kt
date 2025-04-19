@@ -114,8 +114,8 @@ fun ThemedHybridSwitch(
   }
 }
 
-class SwitchView(context: Context, appContext: AppContext)
-  : ExpoComposeView<SwitchProps>(context, appContext, withHostingView = true) {
+class SwitchView(context: Context, appContext: AppContext) :
+  ExpoComposeView<SwitchProps>(context, appContext, withHostingView = true) {
   override val props = SwitchProps()
   private val onValueChange by EventDispatcher<ValueChangeEvent>()
 

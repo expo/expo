@@ -29,7 +29,6 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.ui.button.ButtonColors
 
 class PickerColors : Record {
   @Field
@@ -76,8 +75,8 @@ data class PickerProps(
   val variant: MutableState<String> = mutableStateOf("segmented")
 ) : ComposeProps
 
-class PickerView(context: Context, appContext: AppContext)
-  : ExpoComposeView<PickerProps>(context, appContext, withHostingView = true) {
+class PickerView(context: Context, appContext: AppContext) :
+  ExpoComposeView<PickerProps>(context, appContext, withHostingView = true) {
   override val props = PickerProps()
   private val onOptionSelected by EventDispatcher()
 

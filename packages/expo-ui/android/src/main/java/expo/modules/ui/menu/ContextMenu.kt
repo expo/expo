@@ -114,8 +114,8 @@ data class ContextMenuDispatchers(
   val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchValueChangeEvent>
 )
 
-class ContextMenu(context: Context, appContext: AppContext)
-  : ExpoComposeView<ContextMenuProps>(context, appContext, withHostingView = true) {
+class ContextMenu(context: Context, appContext: AppContext) :
+  ExpoComposeView<ContextMenuProps>(context, appContext, withHostingView = true) {
   override val props = ContextMenuProps()
   val expanded = mutableStateOf(false)
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()

@@ -41,8 +41,8 @@ data class SliderProps(
   val elementColors: MutableState<SliderColors> = mutableStateOf(SliderColors())
 ) : ComposeProps
 
-class SliderView(context: Context, appContext: AppContext)
-  : ExpoComposeView<SliderProps>(context, appContext, withHostingView = true) {
+class SliderView(context: Context, appContext: AppContext) :
+  ExpoComposeView<SliderProps>(context, appContext, withHostingView = true) {
   override val props = SliderProps()
   private val onValueChanged by EventDispatcher()
 
