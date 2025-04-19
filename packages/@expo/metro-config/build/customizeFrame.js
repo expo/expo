@@ -110,6 +110,8 @@ function getDefaultCustomizeFrame() {
                     'Suspense',
                     // React Native
                     'RCTView',
+                    'RCTScrollView',
+                    'RCTScrollContentView',
                     // React Native Screens
                     'RNSScreen',
                     'RNSScreenContentWrapper',
