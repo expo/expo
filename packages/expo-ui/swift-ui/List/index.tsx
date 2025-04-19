@@ -1,6 +1,19 @@
+import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../src/types';
+import { ViewEvent } from '../../src/types';
+
+const ListNativeView: React.ComponentType<NativeListProps> | null =
+  requireNativeView<NativeListProps>('ExpoUI', 'ListView');
+
+function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeListProps, 'children'> {
+  return {
+    ...props,
+    onDeleteItem: ({ nativeEvent: { index } }) => props?.onDeleteItem?.(index),
+    onMoveItem: ({ nativeEvent: { from, to } }) => props?.onMoveItem?.(from, to),
+    onSelectionChange: ({ nativeEvent: { selection } }) => props?.onSelectionChange?.(selection),
+  };
+}
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 
@@ -94,6 +107,16 @@ export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'o
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export function List({ children }: ListProps) {
-  return children;
+export function List(props: ListProps) {
+  const { children, ...nativeProps } = props;
+
+  if (!ListNativeView) {
+    return null;
+  }
+
+  return (
+    <ListNativeView {...transformListProps(nativeProps)} style={[props.style, { flex: 1 }]}>
+      {children}
+    </ListNativeView>
+  );
 }
