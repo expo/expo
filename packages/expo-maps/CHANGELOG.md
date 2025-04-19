@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 - Exported missing config plugin. ([#36177](https://github.com/expo/expo/pull/36177) by [@lukmccall](https://github.com/lukmccall))

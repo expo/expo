@@ -17,4 +17,19 @@ export var AppleMapsMapType;
      */
     AppleMapsMapType["IMAGERY"] = "IMAGERY";
 })(AppleMapsMapType || (AppleMapsMapType = {}));
+/**
+ * The style of the polyline.
+ * @platform ios
+ */
+export var AppleMapsContourStyle;
+(function (AppleMapsContourStyle) {
+    /**
+     * A straight line.
+     */
+    AppleMapsContourStyle["STRAIGHT"] = "STRAIGHT";
+    /**
+     * A geodesic line.
+     */
+    AppleMapsContourStyle["GEODESIC"] = "GEODESIC";
+})(AppleMapsContourStyle || (AppleMapsContourStyle = {}));
 //# sourceMappingURL=AppleMaps.types.js.map

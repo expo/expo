@@ -42,6 +42,31 @@ export type GoogleMapsMarker = {
 /**
  * @platform android
  */
+export type GoogleMapsPolyline = {
+  /**
+   * The coordinates of the polyline.
+   */
+  coordinates: Coordinates[];
+
+  /**
+   * The color of the polyline.
+   */
+  color?: string;
+
+  /**
+   * The width of the polyline.
+   */
+  width?: number;
+
+  /**
+   * Whether the polyline is geodesic.
+   */
+  geodesic?: boolean;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleMapsUserLocation = {
   /**
    * User location coordinates.
@@ -215,6 +240,11 @@ export type GoogleMapsViewProps = {
   markers?: GoogleMapsMarker[];
 
   /**
+   * The array of polylines to display on the map.
+   */
+  polylines?: GoogleMapsPolyline[];
+
+  /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
   uiSettings?: GoogleMapsUISettings;
@@ -259,6 +289,11 @@ export type GoogleMapsViewProps = {
    * Lambda invoked when the marker is clicked
    */
   onMarkerClick?: (event: GoogleMapsMarker) => void;
+
+  /**
+   * Lambda invoked when the polyline is clicked.
+   */
+  onPolylineClick?: (event: GoogleMapsPolyline) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.

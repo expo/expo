@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import SwiftUI
+import ExpoModulesCore
 import MapKit
 
 struct Coordinate: Record {
@@ -60,6 +60,30 @@ struct MapAnnotation: Record, Identifiable {
   }
 }
 
+struct ExpoAppleMapPolyline: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var strokeColor: Color = .blue
+  @Field var strokeWidth: Double = 4
+  @Field var contourStyle: String = "straight"
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0))
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
 struct MapUISettings: Record {
   @Field var compassEnabled: Bool = true
   @Field var myLocationButtonEnabled: Bool = true
@@ -71,6 +95,21 @@ struct MapProperties: Record {
   @Field var mapType: MapType = .standard
   @Field var isTrafficEnabled: Bool = false
   @Field var selectionEnabled: Bool = true
+}
+
+enum MapContourStyle: String, Enumerable {
+  case straight = "STRAIGHT"
+  case geodesic = "GEODESIC"
+
+  @available(iOS 17.0, *)
+  func toContourStyle() -> MapPolyline.ContourStyle {
+    switch self {
+    case .straight:
+      return .straight
+    case .geodesic:
+      return .geodesic
+    }
+  }
 }
 
 enum MapType: String, Enumerable {

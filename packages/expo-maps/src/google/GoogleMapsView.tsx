@@ -35,8 +35,10 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onMapLongClick,
       onPOIClick,
       onMarkerClick,
+      onPolylineClick,
       onCameraMove,
       markers,
+      polylines,
       ...props
     },
     ref
@@ -56,7 +58,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativePOIClick = useNativeEvent(onPOIClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
-
+    const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const parsedMarkers = markers?.map((marker) => ({
       ...marker,
       // @ts-expect-error
@@ -71,12 +73,14 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         {...props}
         ref={nativeRef}
         markers={parsedMarkers}
+        polylines={polylines}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
         onMapLongClick={onNativeMapLongClick}
         onPOIClick={onNativePOIClick}
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
+        onPolylineClick={onNativePolylineClick}
       />
     );
   }

@@ -25,7 +25,7 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
  * @platform ios
  */
 export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewProps>(
-  ({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }, ref) => {
+  ({ onMapClick, onMarkerClick, onCameraMove, onPolylineClick, annotations, ...props }, ref) => {
     const nativeRef = React.useRef<AppleMapsViewType>(null);
     React.useImperativeHandle(ref, () => ({
       setCameraPosition(config?: CameraPosition) {
@@ -36,7 +36,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     const onNativeMapClick = useNativeEvent(onMapClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
-
+    const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const parsedAnnotations = annotations?.map((annotation) => ({
       ...annotation,
       // @ts-expect-error
@@ -55,6 +55,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
         onMapClick={onNativeMapClick}
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
+        onPolylineClick={onNativePolylineClick}
       />
     );
   }
