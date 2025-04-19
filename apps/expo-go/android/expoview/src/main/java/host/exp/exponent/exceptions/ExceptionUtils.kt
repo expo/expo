@@ -61,11 +61,32 @@ object ExceptionUtils {
     return null
   }
 
+  fun exceptionToPlainText(exception: Exception): String {
+    if (exception is ManifestException) {
+      return """
+${exceptionToErrorHeader(exception)}
+
+${replaceHtml(exception.errorMessage)}
+
+How to fix this error:
+${replaceHtml(exception.fixInstructions)}
+      """.trimIndent()
+    }
+    return exception.toString()
+  }
+
   fun exceptionToCanRetry(exception: Exception): Boolean {
     if (exception is ManifestException) {
       return exception.canRetry
     }
     return true
+  }
+
+  private fun replaceHtml(input: String?): String {
+    return input
+      ?.replace("<br>", "\n")
+      ?.replace("<b>", "")
+      ?.replace("</b>", "") ?: ""
   }
 
   private fun getUserErrorMessage(exception: Exception?, context: Context): String? {
