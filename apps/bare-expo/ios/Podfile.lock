@@ -50,6 +50,9 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.30.4):
     - ExpoModulesCore
+  - EXNotifications/Tests (0.30.4):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - Expo (53.0.0-preview.7):
     - DoubleConversion
     - ExpoModulesCore
@@ -3006,6 +3009,7 @@ DEPENDENCIES:
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
+  - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
@@ -3602,7 +3606,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 96fe8e11fc4e243db06df7b7f198796fb26fbf24
-  EXNotifications: 5e4c23cfc1ab5b86e75ec9255f1849ac95a8bd1d
+  EXNotifications: a9ccd9a6f795132644b9d1be7571690c5ad906b6
   Expo: 484fcc97508bd7651f66d9ce5a18a7dfcf93eeb5
   expo-dev-client: e054e2917cfefe95a694ab9b6682c97503ef2f7a
   expo-dev-launcher: bcab4f541ef4c35ca7a080d56b6384001b60d3a3

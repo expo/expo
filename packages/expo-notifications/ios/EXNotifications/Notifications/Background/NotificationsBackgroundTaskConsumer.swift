@@ -28,7 +28,8 @@ class NotificationsBackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
   }
 
   func didBecomeReadyToExecute(withData data: [AnyHashable: Any]?) {
-    self.task?.execute(withData: data, withError: nil)
+    let result = BackgroundEventTransformer.transform(data)
+    self.task?.execute(withData: result, withError: nil)
   }
 
   func didRegisterTask(_ task: EXTaskInterface) {

@@ -60,7 +60,7 @@ class NotificationDataTest {
     val notificationData = NotificationData(data)
     assertEquals(true, notificationData.shouldUseDefaultVibrationPattern)
     assertEquals(false, notificationData.autoDismiss)
-    assertEquals(true, notificationData.sticky)
+    assertEquals(true, notificationData.isSticky)
 
     assertEquals(true, notificationData.shouldPlayDefaultSound)
   }

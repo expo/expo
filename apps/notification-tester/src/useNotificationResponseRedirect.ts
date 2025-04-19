@@ -20,10 +20,11 @@ export function useNotificationResponseRedirect() {
     function redirect(response: NotificationResponse) {
       addItemToStorage({
         source: 'MOUNT_RESPONSE_RECEIVED',
-        data: response.actionIdentifier,
+        data: { id: response.actionIdentifier, text: response.userText },
       });
       const url = response?.notification.request.content.data?.url;
       if (url) {
+        // @ts-expect-error: string is not assignable to router urls
         router.push(url);
       }
     }
