@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Update docs ([#36130](https://github.com/expo/expo/pull/36130) by [@benjaminkomen](https://github.com/benjaminkomen)
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `DatePicker` causing out of memory exception. ([#36227](https://github.com/expo/expo/pull/36227) by [@lukmccall](https://github.com/lukmccall))
