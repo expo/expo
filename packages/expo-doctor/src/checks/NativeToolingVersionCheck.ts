@@ -4,6 +4,8 @@ import path from 'path';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
+import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
   if (process.platform !== 'darwin') {
@@ -25,13 +27,30 @@ async function checkCocoapodsVersionAsync(): Promise<string | null> {
   return null;
 }
 
+async function checkMinimumXcodeVersionAsync(
+  sdkVersion: string | undefined
+): Promise<string | null> {
+  const { xcodeVersion } = await getXcodeVersionAsync();
+
+  if (!xcodeVersion || !sdkVersion) {
+    return null;
+  }
+
+  if (semver.lt(sdkVersion, '52.0.0') && semver.gt(xcodeVersion, '16.2.0')) {
+    return `SDK ${sdkVersion} is compatible with Xcode 16.2 or lower. You are using Xcode ${xcodeVersion}. `;
+  }
+
+  return null;
+}
+
 export class NativeToolingVersionCheck implements DoctorCheck {
   description = 'Check native tooling versions';
 
   sdkVersionRange = '*';
 
-  async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
 
     const hasPodfile = fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
 
@@ -39,13 +58,24 @@ export class NativeToolingVersionCheck implements DoctorCheck {
       const checkResult = await checkCocoapodsVersionAsync();
       if (checkResult) {
         issues.push(checkResult);
+        advice.push(`Update your native tooling to the recommended versions.`);
       }
+    }
+
+    const checkResult = await checkMinimumXcodeVersionAsync(exp.sdkVersion);
+    if (checkResult) {
+      issues.push(checkResult);
+      advice.push(
+        `Use a compatible Xcode version for your SDK version. ${learnMore(
+          'https://expo.fyi/expo-sdk-xcode-compatibility'
+        )}`
+      );
     }
 
     return {
       isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length ? [`Update your native tooling to the recommended versions.`] : [],
+      advice,
     };
   }
 }
