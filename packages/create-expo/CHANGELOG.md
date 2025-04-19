@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- add template and example links to the default output ([#36235](https://github.com/expo/expo/pull/36235) by [@vonovak](https://github.com/vonovak))
+
 ## 3.3.3 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
