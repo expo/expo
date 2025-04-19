@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35292](https://github.com/expo/expo/pull/35292) by [@behenate](https://github.com/behenate))
+
 ## 2.1.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
