@@ -14,7 +14,7 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
-#import <ExpoModulesCore/TestingSyncJSCallInvoker.h>
+#import <ExpoModulesCore/TestingJSCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -45,7 +45,7 @@
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = std::make_shared<expo::TestingSyncJSCallInvoker>(_runtime);
+    _jsCallInvoker = std::make_shared<expo::TestingJSCallInvoker>(_runtime);
   }
   return self;
 }

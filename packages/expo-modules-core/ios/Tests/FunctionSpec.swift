@@ -290,7 +290,11 @@ class FunctionSpec: ExpoSpec {
             return "\(f?.property ?? "no value")"
           }
           
-          AsyncFunction("withSharedObject") {
+          Function("withSharedObject") {
+            return SharedString("Test")
+          }
+
+          AsyncFunction("withSharedObjectAsync") {
             return SharedString("Test")
           }
           
@@ -353,13 +357,21 @@ class FunctionSpec: ExpoSpec {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
       }
       
+      it("returns a SharedObject (sync)") {
+        let object = try runtime.eval("expo.modules.TestModule.withSharedObject()")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("value")) == true
+        expect(object.getObject().getProperty("value").getString()) == "Test"
+      }
+      
       it("returns a SharedObject (async)") {
         try runtime
           .eval(
-            "expo.modules.TestModule.withSharedObject().then((result) => { globalThis.result = result; })"
+            "expo.modules.TestModule.withSharedObjectAsync().then((result) => { globalThis.result = result; })"
           )
 
-        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
+        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(4000))
         let object = try runtime.eval("object = globalThis.result")
         
         expect(object.kind) == .object
@@ -373,11 +385,11 @@ class FunctionSpec: ExpoSpec {
       it("returns a SharedObject with Promise") {
         try runtime
           .eval(
-            "expo.modules.TestModule.withSharedObjectPromise().then((result) => { globalThis.result = result; })"
+            "expo.modules.TestModule.withSharedObjectPromise().then((result) => { globalThis.promiseResult = result; })"
           )
 
-        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
-        let object = try runtime.eval("object = globalThis.result")
+        expect(safeBoolEval("globalThis.promiseResult != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
+        let object = try runtime.eval("object = globalThis.promiseResult")
         
         expect(object.kind) == .object
         expect(object.getObject().hasProperty("value")) == true

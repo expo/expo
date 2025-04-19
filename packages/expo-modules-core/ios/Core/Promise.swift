@@ -20,12 +20,13 @@ public struct Promise: AnyArgument {
 
   public func resolve(_ value: Any? = nil) {
     if let value = value as? AnySharedObject {
-      let result = Conversions.convertFunctionResult(
-        value,
-        appContext: appContext,
-        dynamicType: type(of: value).getDynamicType()
-      )
-      resolver(result)
+      resolver(JavaScriptSharedObjectBinding.init {
+        return Conversions.convertFunctionResult(
+          value,
+          appContext: appContext,
+          dynamicType: type(of: value).getDynamicType()
+        ) as! JavaScriptObject
+      })
       return
     }
     resolver(value)
