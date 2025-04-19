@@ -53,8 +53,11 @@ export async function manipulateAsync(
   return result;
 }
 
-export function useImageManipulator(source: string | SharedRef<'image'>): ImageManipulatorContext {
-  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(source), [source]);
+export function useImageManipulator(
+  source: string | SharedRef<'image'>,
+  headers?: Record<string, string>
+): ImageManipulatorContext {
+  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(source, headers), [source]);
 }
 
 export { ExpoImageManipulator as ImageManipulator };
