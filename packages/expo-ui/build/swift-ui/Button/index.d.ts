@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src/types';
+import { ViewEvent } from '../../types';
 /**
  * The role of the button.
  * - `default` - The default button role.

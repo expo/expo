@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src/types';
+import { ViewEvent } from '../../types';
 export type SliderProps = {
     /**
      * Custom styles for the slider component.

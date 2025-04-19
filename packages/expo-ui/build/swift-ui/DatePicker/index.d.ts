@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src/types';
+import { ViewEvent } from '../../types';
 export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 export type DateTimePickerProps = {
