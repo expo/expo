@@ -15,7 +15,7 @@ import expo.modules.kotlin.AppContext
 abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext,
-  private val withHostingView: Boolean = false,
+  private val withHostingView: Boolean = false
 ) : ExpoView(context, appContext) {
   open val props: T? = null
 
