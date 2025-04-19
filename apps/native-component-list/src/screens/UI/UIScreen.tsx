@@ -121,6 +121,16 @@ if (Platform.OS === 'ios') {
     }
   );
 }
+if (Platform.OS === 'android') {
+  UIScreens.push({
+    name: 'Compose container',
+    route: 'ui/compose-container',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ComposeContainerScreen'));
+    },
+  });
+}
 
 export default function UIScreen() {
   const apis: ListElement[] = UIScreens.map((screen) => {

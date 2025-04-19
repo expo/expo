@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added low-level `jetpack-compose` export. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `DatePicker` causing out of memory exception. ([#36227](https://github.com/expo/expo/pull/36227) by [@lukmccall](https://github.com/lukmccall))
