@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
