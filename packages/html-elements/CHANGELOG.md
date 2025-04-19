@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Upgrade to React 19 and remove compiled build code.
+- Upgrade to React 19 and remove compiled build code. ([#36273](https://github.com/expo/expo/pull/36273) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
