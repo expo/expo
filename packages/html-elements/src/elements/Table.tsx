@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
@@ -6,37 +6,37 @@ import { TableText, TableTextProps } from '../primitives/Table';
 import Text, { TextProps } from '../primitives/Text';
 import View, { ViewProps } from '../primitives/View';
 
-export const Table = forwardRef((props: ViewProps, ref) => {
-  return <View {...props} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export function Table(props: ViewProps) {
+  return <View {...props} />;
+}
 
-export const THead = forwardRef((props: ViewProps, ref) => {
-  return <View {...props} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export function THead(props: ViewProps) {
+  return <View {...props} />;
+}
 
-export const TBody = forwardRef((props: ViewProps, ref) => {
-  return <View {...props} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export function TBody(props: ViewProps) {
+  return <View {...props} />;
+}
 
-export const TFoot = forwardRef((props: ViewProps, ref) => {
-  return <View {...props} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export function TFoot(props: ViewProps) {
+  return <View {...props} />;
+}
 
-export const TH = forwardRef((props: TableTextProps, ref: any) => {
-  return <TableText {...props} style={[styles.th, props.style]} ref={ref} />;
-}) as ComponentType<TableTextProps>;
+export function TH(props: TableTextProps) {
+  return <TableText {...props} style={[styles.th, props.style]} />;
+}
 
-export const TR = forwardRef((props: ViewProps, ref) => {
-  return <View {...props} style={[styles.tr, props.style]} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export function TR(props: ViewProps) {
+  return <View {...props} style={[styles.tr, props.style]} />;
+}
 
-export const TD = forwardRef((props: TableTextProps, ref: any) => {
-  return <TableText {...props} style={[styles.td, props.style]} ref={ref} />;
-}) as ComponentType<TableTextProps>;
+export function TD(props: TableTextProps) {
+  return <TableText {...props} style={[styles.td, props.style]} />;
+}
 
-export const Caption = forwardRef((props: TextProps, ref: any) => {
-  return <Text {...props} style={[styles.caption, props.style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function Caption(props: TextProps) {
+  return <Text {...props} style={[styles.caption, props.style]} />;
+}
 
 const styles = StyleSheet.create({
   caption: {

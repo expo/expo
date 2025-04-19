@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Upgrade to React 19 and remove compiled build code.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
