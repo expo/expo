@@ -1,4 +1,4 @@
-export * as Generated from './Generated';
+export * as Next from './Next';
 export * from './BottomSheet';
 export * from './Button';
 export * from './ColorPicker';

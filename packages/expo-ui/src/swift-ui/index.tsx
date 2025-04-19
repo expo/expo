@@ -1,7 +1,4 @@
-// These components were mostly automatically generated and are not quite as
-// complete in terms of the APIs exposed as the equivalents exported individually.
-// This is temporary and we should migrate these and merge implementations.
-export * as Generated from './Generated';
+export * as Next from './Next';
 
 export * from './BottomSheet';
 export * from './Button';
