@@ -28,6 +28,7 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
+const routing_js_1 = require("../../global-state/routing.js");
 const href_1 = require("../../link/href");
 const useLinkHooks_1 = require("../../link/useLinkHooks");
 const normalizeRoutePath = (path) => {
@@ -282,6 +283,7 @@ function useRouter_UNSTABLE() {
         back,
         forward,
         prefetch,
+        linkTo: routing_js_1.linkTo,
     };
 }
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {

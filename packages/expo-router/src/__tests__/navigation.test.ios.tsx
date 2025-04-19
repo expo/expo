@@ -1534,11 +1534,11 @@ it('should always prefer static routes over dynamic ones', async () => {
   renderRouter(
     {
       // Uses Layouts at different levels to create different hoisting for each group
-      '(tabs)/nested/_layout': () => null,
+      '(tabs)/nested/_layout': () => <Slot />,
       '(tabs)/nested/index': () => null,
       '(tabs)/nested/[fruit]': () => null,
       '(tabs)/nested/orange': () => null,
-      '(stack)/_layout': () => null,
+      '(stack)/_layout': () => <Slot />,
       '(stack)/nested/banana': () => null,
       '(stack)/nested/[fruit]': () => null,
       'nested/grape': () => null,
@@ -1637,6 +1637,7 @@ it('respects nested unstable settings', async () => {
 
 describe('navigation action fallbacks', () => {
   function runPushTest() {
+    // This page does not exist
     act(() => router.navigate('/'));
     expect(screen).toHavePathname('/');
 
@@ -1652,6 +1653,7 @@ describe('navigation action fallbacks', () => {
   }
 
   function runReplaceTest() {
+    // This page does not exist
     act(() => router.navigate('/'));
     expect(screen).toHavePathname('/');
 

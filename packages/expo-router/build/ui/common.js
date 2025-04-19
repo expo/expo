@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
 exports.triggersToScreens = triggersToScreens;
 exports.stateToAction = stateToAction;
+const constants_1 = require("../constants");
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
@@ -59,7 +60,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             console.warn(`Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`);
             continue;
         }
-        if (routeNode.generated && routeNode.internal && routeNode.route.includes('+not-found')) {
+        if (routeNode.generated && routeNode.internal && routeNode.route.includes(constants_1.NOT_FOUND_NAME)) {
             if (process.env.NODE_ENV !== 'production') {
                 console.warn(`Tab trigger '${trigger.name}' has the href '${trigger.href}' which points to a +not-found route.`);
             }

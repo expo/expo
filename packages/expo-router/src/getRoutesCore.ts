@@ -1,4 +1,5 @@
 import type { DynamicConvention, RouteNode } from './Route';
+import { NOT_FOUND_NAME } from './constants';
 import {
   matchArrayGroupName,
   matchDeepDynamicRouteName,
@@ -558,8 +559,8 @@ function getFileMeta(
     throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
   }
 
-  // Nested routes cannot start with the '+' character, except for the '+not-found' route
-  if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
+  // Nested routes cannot start with the '+' character, except for the NOT_FOUND_NAME route
+  if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== NOT_FOUND_NAME) {
     const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
     throw new Error(
       `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
@@ -652,9 +653,9 @@ export function generateDynamic(path: string): DynamicConvention[] | null {
   const dynamic = path
     .split('/')
     .map((part): DynamicConvention | null => {
-      if (part === '+not-found') {
+      if (part === NOT_FOUND_NAME) {
         return {
-          name: '+not-found',
+          name: NOT_FOUND_NAME,
           deep: true,
           notFound: true,
         };
@@ -683,11 +684,11 @@ function appendSitemapRoute(directory: DirectoryNode, options: Options) {
 }
 
 function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
-  if (!directory.files.has('+not-found') && options.getSystemRoute) {
-    directory.files.set('+not-found', [
+  if (!directory.files.has(NOT_FOUND_NAME) && options.getSystemRoute) {
+    directory.files.set(NOT_FOUND_NAME, [
       options.getSystemRoute({
         type: 'route',
-        route: '+not-found',
+        route: NOT_FOUND_NAME,
       }),
     ]);
   }

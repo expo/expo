@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getServerManifest = getServerManifest;
 exports.parseParameter = parseParameter;
+const constants_1 = require("./constants");
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
 function isNotFoundRoute(route) {
@@ -137,7 +138,7 @@ function getNamedParametrizedRoute(route) {
     return {
         namedParameterizedRoute: segments
             .map((segment, index) => {
-            if (segment === '+not-found' && index === segments.length - 1) {
+            if (segment === constants_1.NOT_FOUND_NAME && index === segments.length - 1) {
                 segment = '[...not-found]';
             }
             if (/^\[.*\]$/.test(segment)) {

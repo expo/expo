@@ -28,7 +28,7 @@ const TabTrigger_1 = require("./TabTrigger");
 const common_1 = require("./common");
 const useComponent_1 = require("./useComponent");
 const Route_1 = require("../Route");
-const hooks_1 = require("../hooks");
+const router_store_1 = require("../global-state/router-store");
 const href_1 = require("../link/href");
 const url_1 = require("../utils/url");
 const Navigator_1 = require("../views/Navigator");
@@ -110,7 +110,7 @@ function useTabsWithTriggers(options) {
     const routeNode = (0, Route_1.useRouteNode)();
     const contextKey = (0, Route_1.useContextKey)();
     const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
-    const routeInfo = (0, hooks_1.useRouteInfo)();
+    const routeInfo = (0, router_store_1.useRouteInfo)();
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
     }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseRouteSegments = parseRouteSegments;
 exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
 exports.getReactNavigationConfig = getReactNavigationConfig;
+const constants_1 = require("./constants");
 const matchers_1 = require("./matchers");
 // `[page]` -> `:page`
 // `page` -> `page`
@@ -11,7 +12,7 @@ function convertDynamicRouteToReactNavigation(segment) {
     if (segment === 'index') {
         return '';
     }
-    if (segment === '+not-found') {
+    if (segment === constants_1.NOT_FOUND_NAME) {
         return '*not-found';
     }
     const rest = (0, matchers_1.matchDeepDynamicRouteName)(segment);

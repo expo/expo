@@ -52,7 +52,7 @@ it('deep link to a redirect', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -89,7 +89,7 @@ it('deep link to a dynamic redirect', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toEqual({
+  expect(store.state).toEqual({
     routes: [
       {
         name: '__root',
@@ -132,7 +132,7 @@ it('keeps extra params as query params', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -169,7 +169,7 @@ it('can redirect from single to catch all', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toEqual({
+  expect(store.state).toEqual({
     routes: [
       {
         name: '__root',
@@ -207,7 +207,7 @@ it('can push to a redirect', () => {
     bar: () => <Text testID="bar" />,
   });
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -227,7 +227,7 @@ it('can push to a redirect', () => {
 
   act(() => router.push('/foo'));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],

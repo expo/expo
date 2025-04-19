@@ -1,4 +1,5 @@
 import type { RouteNode } from './Route';
+import { NOT_FOUND_NAME } from './constants';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
 export type Screen =
@@ -17,7 +18,7 @@ function convertDynamicRouteToReactNavigation(segment: string): string {
   if (segment === 'index') {
     return '';
   }
-  if (segment === '+not-found') {
+  if (segment === NOT_FOUND_NAME) {
     return '*not-found';
   }
 

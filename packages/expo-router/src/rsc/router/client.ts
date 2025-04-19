@@ -39,7 +39,7 @@ import { Text } from 'react-native';
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';
 import { prefetchRSC, Root, Slot, useRefetch } from './host.js';
-import type { NavigationOptions } from '../../global-state/routing.js';
+import { linkTo, type NavigationOptions } from '../../global-state/routing.js';
 import type { Router as ClassicExpoRouterType } from '../../imperative-api';
 import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
 import { resolveHref } from '../../link/href';
@@ -378,6 +378,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     back,
     forward,
     prefetch,
+    linkTo,
   };
 }
 

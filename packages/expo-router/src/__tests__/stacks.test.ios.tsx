@@ -128,7 +128,7 @@ test('dismissAll nested', () => {
   // The last route should include a sub-state for /one/_layout
   // It will have three routes  (/one/index, /one/page, /one/two)
   // The last route should include a sub-state for /one/two/_layout
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -255,7 +255,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/two/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -370,7 +370,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one');
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -522,7 +522,7 @@ describe('singular', () => {
       }
     );
 
-    expect(screen).toHaveRouterState({
+    expect(store.state).toEqual({
       routes: [
         {
           name: '__root',
@@ -549,7 +549,7 @@ describe('singular', () => {
     // Normally pushing would add a new route, but since we have singular set to true
     // Nothing should happen, as the current route is already the same as the target route
     act(() => router.push('/apple'));
-    expect(screen).toHaveRouterState({
+    expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -587,7 +587,7 @@ describe('singular', () => {
 
     // Adding a new screen with different params should work
     act(() => router.push('/banana'));
-    expect(screen).toHaveRouterState({
+    expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -634,7 +634,7 @@ describe('singular', () => {
     // Normally pushing would add a new route, but since we have singular set to true
     // It rearranges the Stack to move /apple to the current route
     act(() => router.push('/apple'));
-    expect(screen).toHaveRouterState({
+    expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],

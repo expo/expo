@@ -1,4 +1,4 @@
-import { NavigationOptions } from './global-state/routing';
+import { LinkToOptions, NavigationOptions } from './global-state/routing';
 import { Href, Route, RouteInputParams } from './types';
 /**
  * Returns `router` object for imperative navigation API.
@@ -29,6 +29,10 @@ export type Router = {
      * Navigates to the provided [`href`](#href) using a push operation if possible.
      */
     push: (href: Href, options?: NavigationOptions) => void;
+    /**
+     * Navigates to the provided [`href`](#href) with the specified event.
+     */
+    linkTo: (href: Href, options: LinkToOptions) => void;
     /**
      * Navigates to the provided [`href`](#href).
      */

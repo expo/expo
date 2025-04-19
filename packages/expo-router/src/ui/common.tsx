@@ -2,13 +2,14 @@ import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navig
 import { ViewProps, View, SafeAreaView } from 'react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
-import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
+import { NOT_FOUND_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
+import { UrlObject } from '../routeInfo';
 
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<
@@ -122,7 +123,7 @@ export function triggersToScreens(
       continue;
     }
 
-    if (routeNode.generated && routeNode.internal && routeNode.route.includes('+not-found')) {
+    if (routeNode.generated && routeNode.internal && routeNode.route.includes(NOT_FOUND_NAME)) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(
           `Tab trigger '${trigger.name}' has the href '${trigger.href}' which points to a +not-found route.`

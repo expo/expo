@@ -8,6 +8,7 @@
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
 import type { RouteNode } from './Route';
+import { NOT_FOUND_NAME } from './constants';
 import { getContextKey, matchGroupName } from './matchers';
 import { sortRoutes } from './sortRoutes';
 
@@ -247,7 +248,7 @@ function getNamedParametrizedRoute(route: string) {
   return {
     namedParameterizedRoute: segments
       .map((segment, index) => {
-        if (segment === '+not-found' && index === segments.length - 1) {
+        if (segment === NOT_FOUND_NAME && index === segments.length - 1) {
           segment = '[...not-found]';
         }
         if (/^\[.*\]$/.test(segment)) {

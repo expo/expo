@@ -1,4 +1,5 @@
 import type { RouteNode } from './Route';
+import { NOT_FOUND_NAME } from './constants';
 import { getRoutes as getRoutesCore, type Options as OptionsCore } from './getRoutesCore';
 import type { RequireContext } from './types';
 
@@ -45,17 +46,17 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           dynamic: null,
           children: [],
         };
-      } else if (route === '+not-found' && type === 'route') {
+      } else if (route === NOT_FOUND_NAME && type === 'route') {
         return {
           loadRoute: () => ({
             default: () => null,
           }),
           type: 'route',
-          route: '+not-found',
+          route: NOT_FOUND_NAME,
           contextKey: 'expo-router/build/views/Unmatched.js',
           generated: true,
           internal: true,
-          dynamic: [{ name: '+not-found', deep: true, notFound: true }],
+          dynamic: [{ name: NOT_FOUND_NAME, deep: true, notFound: true }],
           children: [],
         };
       } else if ((type === 'redirect' || type === 'rewrite') && defaults) {

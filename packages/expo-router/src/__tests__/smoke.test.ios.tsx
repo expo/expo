@@ -1,11 +1,12 @@
-import React, { Text } from 'react-native';
+import React, { useState } from 'react';
+import { Text } from 'react-native';
 
-import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
+import { Slot, router, useGlobalSearchParams, useLocalSearchParams, usePathname } from '../exports';
 import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
-import { act, renderRouter, screen } from '../testing-library';
+import { act, fireEvent, render, renderRouter, screen } from '../testing-library';
 
 it('404', () => {
   renderRouter(
@@ -309,4 +310,48 @@ it('can redirect during the initial render', () => {
 
   expect(screen).toHavePathname('/test');
   expect(screen.getByTestId('test')).toBeOnTheScreen();
+});
+
+it('can update state while navigating', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[slug]': function Index() {
+        const [state, setState] = useState('initialState');
+        const { slug: local } = useLocalSearchParams();
+        const { slug: global } = useGlobalSearchParams();
+        return (
+          <Text
+            testID={local.toString()}
+            onPress={() => {
+              setState('updatedState');
+              router.push('/next');
+            }}>
+            {JSON.stringify({ state, local, global })}
+          </Text>
+        );
+      },
+    },
+    {
+      initialUrl: '/initial',
+    }
+  );
+
+  const initial = screen.getByTestId('initial');
+  expect(initial).toHaveTextContent(
+    '{"state":"initialState","local":"initial","global":"initial"}'
+  );
+
+  // Set the state for the current screen and then navigate to a new screen
+  fireEvent.press(initial);
+
+  const next = screen.getByTestId('next');
+  expect(next).toHaveTextContent('{"state":"initialState","local":"next","global":"next"}');
+  expect(initial).toHaveTextContent('{"state":"updatedState","local":"initial","global":"next"}');
+
+  // When we go back, the state should be updated
+  act(() => router.back());
+  expect(initial).toHaveTextContent(
+    '{"state":"updatedState","local":"initial","global":"initial"}'
+  );
 });

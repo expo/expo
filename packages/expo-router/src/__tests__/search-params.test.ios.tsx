@@ -23,7 +23,7 @@ describe('push', () => {
     testRouter.push('/page'); // Duplicate pushes are allowed pushes the new '/page'
     testRouter.push('/page?c=true');
 
-    expect(store.rootState).toStrictEqual({
+    expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -97,7 +97,7 @@ describe('push', () => {
     testRouter.back();
     testRouter.back();
 
-    expect(store.rootState).toEqual({
+    expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -154,7 +154,7 @@ describe('navigate', () => {
     testRouter.navigate('/page'); // Will not create new screen are we are already on page
     testRouter.navigate('/page?c=true');
 
-    expect(store.rootState).toStrictEqual({
+    expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -203,7 +203,7 @@ describe('navigate', () => {
     testRouter.navigate('/b');
     testRouter.navigate('/c');
 
-    expect(store.rootState).toStrictEqual({
+    expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -261,7 +261,7 @@ describe('navigate', () => {
 
     testRouter.dismissAll();
 
-    expect(store.rootState).toStrictEqual({
+    expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
@@ -313,7 +313,7 @@ describe('replace', () => {
     testRouter.replace('/page?a=true'); // This will clear the previous route
     testRouter.push('/page?c=true');
 
-    expect(store.rootState).toStrictEqual({
+    expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],

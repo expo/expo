@@ -33,7 +33,7 @@ import { isTabTrigger } from './TabTrigger';
 import { SafeAreaViewSlot, ScreenTrigger, triggersToScreens } from './common';
 import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
-import { useRouteInfo } from '../hooks';
+import { useRouteInfo } from '../global-state/router-store';
 import { resolveHref } from '../link/href';
 import { shouldLinkExternally } from '../utils/url';
 import { NavigatorContext, NavigatorContextValue } from '../views/Navigator';

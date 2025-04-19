@@ -24,29 +24,48 @@ it('toHavePathnameWithParams', () => {
   expect(screen).toHavePathnameWithParams('/home?test=true');
 });
 
-// This test is currently broken in React Navigation v7 as @react-navigation/routers still has the prerenderRoutes key
-it.skip('toHaveRouterState', () => {
+it('toHaveRouterState', () => {
   renderRouter(['[slug]', '[...catchAll]', 'directory/page'], { initialUrl: '/home?test=true' });
+
   act(() => router.navigate('/directory/page'));
+
   expect(screen).toHaveRouterState({
-    index: 1,
+    index: 0,
     key: expect.any(String),
-    routeNames: ['_sitemap', 'directory/page', '[slug]', '[...catchAll]', '+not-found'],
+    preloadedRoutes: [],
+    routeNames: ['__root'],
     routes: [
       {
         key: expect.any(String),
-        name: '[slug]',
+        name: '__root',
         params: {
           slug: 'home',
-          test: 'true',
         },
-        path: '/home?test=true',
-      },
-      {
-        key: expect.any(String),
-        name: 'directory/page',
-        params: {},
-        path: undefined,
+        state: {
+          index: 1,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['_sitemap', 'directory/page', '[slug]', '[...catchAll]', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '[slug]',
+              params: {
+                slug: 'home',
+                test: 'true',
+              },
+              path: '/home?test=true',
+            },
+            {
+              key: expect.any(String),
+              name: 'directory/page',
+              params: {},
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
       },
     ],
     stale: false,

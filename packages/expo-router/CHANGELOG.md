@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Refactor route state to utilize useStateForPath() ([#36199](https://github.com/expo/expo/pull/36199) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 5.0.2-preview.4 — 2025-04-14

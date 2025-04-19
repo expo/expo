@@ -3,102 +3,88 @@ import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { type RouterStore } from './router-store';
-import { ResultState } from '../fork/getStateFromPath';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import {
   emitDomDismiss,
   emitDomDismissAll,
   emitDomGoBack,
-  emitDomLinkEvent,
   emitDomSetParams,
-} from '../link/useDomComponentNavigation';
+  emitDomLinkEvent,
+} from '../dom/domComponentNavigation';
+import { ResultState } from '../fork/getStateFromPath';
+import { applyRedirects } from '../getRoutesRedirects';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
+import { store } from './router-store';
 import { shouldLinkExternally } from '../utils/url';
-
-function assertIsReady(store: RouterStore) {
-  if (!store.navigationRef.isReady()) {
-    throw new Error(
-      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-    );
-  }
-}
 
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 
-export function navigate(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
+export function navigate(url: Href, options?: NavigationOptions) {
+  return linkTo(url, { ...options, event: 'NAVIGATE' });
 }
 
-export function reload(this: RouterStore) {
+export function reload() {
   // TODO(EvanBacon): add `reload` support.
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
-export function prefetch(this: RouterStore, href: Href, options?: NavigationOptions) {
-  return linkTo.bind(this)(resolveHref(href), { ...options, event: 'PRELOAD' });
+export function prefetch(href: Href, options?: NavigationOptions) {
+  return linkTo(href, { ...options, event: 'PRELOAD' });
 }
 
-export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
+export function push(url: Href, options?: NavigationOptions) {
+  return linkTo(url, { ...options, event: 'PUSH' });
 }
 
-export function dismiss(this: RouterStore, count?: number) {
+export function dismiss(count?: number) {
   if (emitDomDismiss(count)) {
     return;
   }
-  this.navigationRef?.dispatch(StackActions.pop(count));
+  store.navigationRef?.dispatch(StackActions.pop(count));
 }
 
-export function dismissTo(this: RouterStore, href: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
+export function dismissTo(href: Href, options?: NavigationOptions) {
+  return linkTo(href, { ...options, event: 'POP_TO' });
 }
 
-export function replace(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
+export function replace(url: Href, options?: NavigationOptions) {
+  return linkTo(url, { ...options, event: 'REPLACE' });
 }
 
-export function dismissAll(this: RouterStore) {
+export function dismissAll() {
   if (emitDomDismissAll()) {
     return;
   }
-  this.navigationRef?.dispatch(StackActions.popToTop());
+  store.navigationRef?.dispatch(StackActions.popToTop());
 }
 
-export function goBack(this: RouterStore) {
+export function goBack() {
   if (emitDomGoBack()) {
     return;
   }
-  assertIsReady(this);
-  this.navigationRef?.current?.goBack();
+  store.assertIsReady();
+  store.navigationRef.goBack();
 }
 
-export function canGoBack(this: RouterStore): boolean {
+export function canGoBack(): boolean {
   if (IS_DOM) {
     throw new Error(
       'canGoBack imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  // Return a default value here if the navigation hasn't mounted yet.
-  // This can happen if the user calls `canGoBack` from the Root Layout route
-  // before mounting a navigator. This behavior exists due to React Navigation being dynamically
-  // constructed at runtime. We can get rid of this in the future if we use
-  // the static configuration internally.
-  if (!this.navigationRef.isReady()) {
-    return false;
-  }
-  return this.navigationRef?.current?.canGoBack() ?? false;
+  store.assertIsReady();
+  return store.navigationRef?.current?.canGoBack() ?? false;
 }
 
-export function canDismiss(this: RouterStore): boolean {
+export function canDismiss(): boolean {
   if (IS_DOM) {
     throw new Error(
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = this.rootState;
+  let state = store.state;
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
@@ -114,14 +100,13 @@ export function canDismiss(this: RouterStore): boolean {
 }
 
 export function setParams(
-  this: RouterStore,
   params: Record<string, undefined | string | number | (string | number)[]> = {}
 ) {
   if (emitDomSetParams(params)) {
     return;
   }
-  assertIsReady(this);
-  return (this.navigationRef?.current?.setParams as any)(params);
+  store.assertIsReady();
+  return (store.navigationRef?.current?.setParams as any)(params);
 }
 
 export type LinkToOptions = {
@@ -146,8 +131,11 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 };
 
-export function linkTo(this: RouterStore, originalHref: string, options: LinkToOptions = {}) {
-  let href: string | undefined = originalHref;
+export function linkTo(href: Href, options: LinkToOptions = {}) {
+  store.assertIsReady();
+  if (typeof href !== 'string') {
+    href = resolveHref(href);
+  }
 
   if (emitDomLinkEvent(href, options)) {
     return;
@@ -162,8 +150,8 @@ export function linkTo(this: RouterStore, originalHref: string, options: LinkToO
     return;
   }
 
-  assertIsReady(this);
-  const navigationRef = this.navigationRef.current;
+  store.assertIsReady();
+  const navigationRef = store.navigationRef.current;
 
   if (navigationRef == null) {
     throw new Error(
@@ -171,7 +159,7 @@ export function linkTo(this: RouterStore, originalHref: string, options: LinkToO
     );
   }
 
-  if (!this.linking) {
+  if (!store.linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
 
@@ -181,16 +169,17 @@ export function linkTo(this: RouterStore, originalHref: string, options: LinkToO
   }
 
   const rootState = navigationRef.getRootState();
+  const routeInfo = store.getRouteInfo();
 
-  href = resolveHrefStringWithSegments(href, this.routeInfo, options);
-  href = this.applyRedirects(href);
+  href = resolveHrefStringWithSegments(href, routeInfo, options);
+  href = applyRedirects(href, store.redirects);
 
   // If the href is undefined, it means that the redirect has already been handled the navigation
   if (!href) {
     return;
   }
 
-  const state = this.linking.getStateFromPath!(href, this.linking.config);
+  const state = store.linking.getStateFromPath(href, store.linking.config);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

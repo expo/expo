@@ -4,6 +4,7 @@ exports.getRoutes = getRoutes;
 exports.getIgnoreList = getIgnoreList;
 exports.extrapolateGroups = extrapolateGroups;
 exports.generateDynamic = generateDynamic;
+const constants_1 = require("./constants");
 const matchers_1 = require("./matchers");
 const url_1 = require("./utils/url");
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -400,8 +401,8 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
         throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
     }
-    // Nested routes cannot start with the '+' character, except for the '+not-found' route
-    if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
+    // Nested routes cannot start with the '+' character, except for the NOT_FOUND_NAME route
+    if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== constants_1.NOT_FOUND_NAME) {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
         throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
@@ -481,9 +482,9 @@ function generateDynamic(path) {
     const dynamic = path
         .split('/')
         .map((part) => {
-        if (part === '+not-found') {
+        if (part === constants_1.NOT_FOUND_NAME) {
             return {
-                name: '+not-found',
+                name: constants_1.NOT_FOUND_NAME,
                 deep: true,
                 notFound: true,
             };
@@ -508,11 +509,11 @@ function appendSitemapRoute(directory, options) {
     }
 }
 function appendNotFoundRoute(directory, options) {
-    if (!directory.files.has('+not-found') && options.getSystemRoute) {
-        directory.files.set('+not-found', [
+    if (!directory.files.has(constants_1.NOT_FOUND_NAME) && options.getSystemRoute) {
+        directory.files.set(constants_1.NOT_FOUND_NAME, [
             options.getSystemRoute({
                 type: 'route',
-                route: '+not-found',
+                route: constants_1.NOT_FOUND_NAME,
             }),
         ]);
     }

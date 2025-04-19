@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = void 0;
 exports.getRoutes = getRoutes;
 exports.getExactRoutes = getExactRoutes;
+const constants_1 = require("./constants");
 const getRoutesCore_1 = require("./getRoutesCore");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -48,17 +49,17 @@ function getRoutes(contextModule, options = {}) {
                     children: [],
                 };
             }
-            else if (route === '+not-found' && type === 'route') {
+            else if (route === constants_1.NOT_FOUND_NAME && type === 'route') {
                 return {
                     loadRoute: () => ({
                         default: () => null,
                     }),
                     type: 'route',
-                    route: '+not-found',
+                    route: constants_1.NOT_FOUND_NAME,
                     contextKey: 'expo-router/build/views/Unmatched.js',
                     generated: true,
                     internal: true,
-                    dynamic: [{ name: '+not-found', deep: true, notFound: true }],
+                    dynamic: [{ name: constants_1.NOT_FOUND_NAME, deep: true, notFound: true }],
                     children: [],
                 };
             }

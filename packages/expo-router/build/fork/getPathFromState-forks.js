@@ -42,6 +42,7 @@ exports.getPathWithConventionsCollapsed = getPathWithConventionsCollapsed;
 exports.isDynamicPart = isDynamicPart;
 const native_1 = require("@react-navigation/native");
 const queryString = __importStar(require("query-string"));
+const constants_1 = require("../constants");
 const matchers_1 = require("../matchers");
 function validatePathConfig({ preserveDynamicRoutes, preserveGroups, shouldEncodeURISegment, ...options }) {
     (0, native_1.validatePathConfig)(options);
@@ -95,7 +96,7 @@ function getPathWithConventionsCollapsed({ pattern, route, params, preserveGroup
         if (p.startsWith('*')) {
             if (preserveDynamicRoutes) {
                 if (name === 'not-found') {
-                    return '+not-found';
+                    return constants_1.NOT_FOUND_NAME;
                 }
                 return `[...${name}]`;
             }

@@ -101,7 +101,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   });
 
   // Initial stale state
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -121,7 +121,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
 
   act(() => router.push('/orange', { withAnchor: true }));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -191,7 +191,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   });
 
   // Initial stale state
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -211,7 +211,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
 
   act(() => router.push('/orange'));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],

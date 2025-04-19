@@ -2,6 +2,7 @@ import { validatePathConfig as RNValidatePathConfig, type Route } from '@react-n
 import * as queryString from 'query-string';
 
 import type { Options, State, StringifyConfig } from './getPathFromState';
+import { NOT_FOUND_NAME } from '../constants';
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
 export type ExpoOptions = {
@@ -112,7 +113,7 @@ export function getPathWithConventionsCollapsed({
       if (p.startsWith('*')) {
         if (preserveDynamicRoutes) {
           if (name === 'not-found') {
-            return '+not-found';
+            return NOT_FOUND_NAME;
           }
 
           return `[...${name}]`;

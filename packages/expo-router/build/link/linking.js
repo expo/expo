@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPathFromState = exports.getStateFromPath = void 0;
 exports.getInitialURL = getInitialURL;
 exports.getRootURL = getRootURL;
-exports.addEventListener = addEventListener;
+exports.subscribe = subscribe;
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
@@ -45,6 +45,7 @@ Object.defineProperty(exports, "getPathFromState", { enumerable: true, get: func
 const getStateFromPath_1 = require("../fork/getStateFromPath");
 Object.defineProperty(exports, "getStateFromPath", { enumerable: true, get: function () { return getStateFromPath_1.getStateFromPath; } });
 const useLinking_1 = require("../fork/useLinking");
+const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
@@ -95,7 +96,7 @@ function parseExpoGoUrlFromListener(url) {
     }
     return url;
 }
-function addEventListener(nativeLinking, store) {
+function subscribe(nativeLinking, redirects) {
     return (listener) => {
         let callback;
         const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
@@ -103,7 +104,7 @@ function addEventListener(nativeLinking, store) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
                 let href = parseExpoGoUrlFromListener(url);
-                href = store.applyRedirects(href);
+                href = (0, getRoutesRedirects_1.applyRedirects)(href, redirects);
                 if (href && nativeLinking?.redirectSystemPath) {
                     href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
                 }
@@ -114,7 +115,7 @@ function addEventListener(nativeLinking, store) {
         }
         else {
             callback = async ({ url }) => {
-                let href = store.applyRedirects(url);
+                let href = (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
                 if (href && nativeLinking?.redirectSystemPath) {
                     href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
                 }
