@@ -185,6 +185,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * An array of video tracks available for the current video.
    *
+   * > On iOS, when using a HLS source, make sure that the uri contains `.m3u8` extension or that the [`contentType`](#contenttype) property of the [`VideoSource`](#videosource) has been set to `'hls'`. Otherwise, the video tracks will not be available.
+   *
    * @platform android
    * @platform ios
    */
@@ -310,6 +312,16 @@ export type VideoSource =
        * @platform ios
        */
       useCaching?: boolean;
+
+      /**
+       * Specifies the content type of the video source. When set to 'auto' the player will try to automatically determine the content type.
+       *
+       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+       * @default 'auto'
+       * @platform android
+       * @platform ios
+       */
+      contentType?: ContentType;
     };
 
 /**
@@ -451,6 +463,19 @@ export type BufferOptions = {
    */
   readonly prioritizeTimeOverSizeThreshold?: boolean;
 };
+
+/**
+ * Specifies the content type of the source.
+ *
+ * - `auto`: The player will automatically determine the content type of the video.
+ * - `progressive`: The player will use progressive download content type. This is the default `ContentType` when the uri does not contain an extension.
+ * - `hls`: The player will use HLS content type.
+ * - `dash`: The player will use DASH content type (Android-only).
+ * - `smoothStreaming`: The player will use SmoothStreaming content type (Android-only).
+ *
+ * @default `auto`
+ */
+export type ContentType = 'auto' | 'progressive' | 'hls' | 'dash' | 'smoothStreaming';
 
 /**
  * Specifies the audio mode that the player should use. Audio mode is set on per-app basis, if there are multiple players playing and

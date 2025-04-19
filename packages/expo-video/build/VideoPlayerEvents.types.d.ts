@@ -206,7 +206,7 @@ export type AvailableSubtitleTracksChangeEventPayload = {
 /**
  * Data delivered with the [`sourceLoad`](#videoplayerevents) event, contains information about the video source that has finished loading.
  */
-type SourceLoadEventPayload = {
+export type SourceLoadEventPayload = {
     /**
      * The video source that has been loaded.
      */
@@ -217,6 +217,8 @@ type SourceLoadEventPayload = {
     duration: number;
     /**
      * Video tracks available for the loaded video source.
+     *
+     * > On iOS, when using a HLS source, make sure that the uri contains `.m3u8` extension or that the [`contentType`](#contenttype) property of the [`VideoSource`](#videosource) has been set to `'hls'`. Otherwise, the video tracks will not be available.
      */
     availableVideoTracks: VideoTrack[];
     /**
@@ -224,5 +226,4 @@ type SourceLoadEventPayload = {
      */
     availableSubtitleTracks: SubtitleTrack[];
 };
-export {};
 //# sourceMappingURL=VideoPlayerEvents.types.d.ts.map

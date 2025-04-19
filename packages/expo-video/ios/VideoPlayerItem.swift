@@ -15,7 +15,7 @@ class VideoPlayerItem: CachingPlayerItem {
 
   init(url: URL, videoSource: VideoSource, avUrlAssetOptions: [String: Any]? = nil) {
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8"
+    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
     let canCache = Self.canCache(videoSource: videoSource)
     let shouldCache = videoSource.useCaching && canCache
 
