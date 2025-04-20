@@ -9,4 +9,4 @@ if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
   args+=("--watch")
 fi
 
-"$script_dir/expo-module-tsc" --noEmit "${args[@]}"
+"$script_dir/expo-module-tsc.sh" --noEmit "${args[@]}"

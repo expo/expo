@@ -23,6 +23,29 @@ get_relative_files() {
 }
 
 
+copy_file_by_checksum() {
+  local source=$1
+  local target=$2
+  if command -v rsync > /dev/null 2>&1; then
+    rsync --checksum "$source" "$target"
+  else
+    echo "$(basename $0): rsync not found. falling back with md5sum..."
+    # Fallback for windows environment without rsync like Git for Windows
+    if [[ ! -f "$target" ]]; then
+      echo "Copying new file: $target"
+      mkdir -p "$(dirname $target)"
+      cp "$source" "$target"
+    else
+      local s_checksum=$(md5sum "$source" | awk '{print $1}')
+      local t_checksum=$(md5sum "$target" | awk '{print $1}')
+      if [[ "$s_checksum" != "$t_checksum" ]]; then
+        echo "Copying different file: $target"
+        cp "$source" "$target"
+      fi
+    fi
+  fi
+}
+
 # syncs the source file if the target file is missing or the existing file contains `@generated`.
 # usage: sync_file_if_missing "/path/source_path" "/path/target_path"
 sync_file_if_missing() {
@@ -30,7 +53,7 @@ sync_file_if_missing() {
   local target=$2
   # echo "sync_file_if_missing $source -> $target"
   if [ ! -f "$target" ] || grep --quiet "@generated" "$target"; then
-    rsync --checksum "$source" "$target"
+    copy_file_by_checksum "$source" "$target"
   fi
 }
 
@@ -41,7 +64,7 @@ sync_file_if_present() {
   local target=$2
   # echo "sync_file_if_present $source -> $target"
   if [ -f "$target" ] && grep --quiet "@generated" "$target"; then
-    rsync --checksum "$source" "$target"
+    copy_file_by_checksum "$source" "$target"
   fi
 }
 

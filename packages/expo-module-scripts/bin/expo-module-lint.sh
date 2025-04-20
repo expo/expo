@@ -30,4 +30,4 @@ else
   args+=("src")
 fi
 
-"$script_dir/expo-module-eslint" "${args[@]}"
+"$script_dir/expo-module-eslint.sh" "${args[@]}"
