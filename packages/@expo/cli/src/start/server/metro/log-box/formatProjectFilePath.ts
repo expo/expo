@@ -1,3 +1,4 @@
+import path from 'node:path';
 import type { StackFrame } from 'stacktrace-parser';
 
 export type MetroStackFrame = StackFrame & { collapse?: boolean };
@@ -6,24 +7,13 @@ export function formatProjectFilePath(projectRoot: string, file?: string | null)
   if (file == null) {
     return '<unknown>';
   }
-
-  return pathRelativeToPath(file.replace(/\\/g, '/'), projectRoot.replace(/\\/g, '/')).replace(
-    /\?.*$/,
-    ''
-  );
-}
-
-function pathRelativeToPath(path: string, relativeTo: string, sep = '/') {
-  const relativeToParts = relativeTo.split(sep);
-  const pathParts = path.split(sep);
-  let i = 0;
-  while (i < relativeToParts.length && i < pathParts.length) {
-    if (relativeToParts[i] !== pathParts[i]) {
-      break;
-    }
-    i++;
+  if (file === '<anonymous>') {
+    return file;
   }
-  return pathParts.slice(i).join(sep);
+
+  return path
+    .relative(projectRoot.replace(/\\/g, '/'), file.replace(/\\/g, '/'))
+    .replace(/\?.*$/, '');
 }
 
 export function getStackFormattedLocation(projectRoot: string, frame: MetroStackFrame) {
