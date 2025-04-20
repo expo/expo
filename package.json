@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "setup:docs": "bash ./scripts/download-dependencies.sh",
-    "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
+    "setup:native": "bash ./scripts/download-dependencies.sh && bash ./scripts/setup-react-android.sh",
     "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",

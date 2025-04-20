@@ -3,12 +3,17 @@
 sdk_manager="sdkmanager"
 
 # Fallback to ANDROID_SDK_ROOT if sdkmanager is not found
-if ! [ -x "$(command -v ${sdk_manager})" ]; then
+if ! command -v ${sdk_manager} > /dev/null 2>&1; then
   sdk_manager="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
 fi
 
+# Fallback to sdkmanager.bat if sdkmanager is not found (for git-bash on Windows)
+if ! command -v ${sdk_manager} > /dev/null 2>&1; then
+  sdk_manager="sdkmanager.bat"
+fi
+
 # Ensure the `sdkmanager` is installed for React Android
-if ! [ -x "$(command -v ${sdk_manager})" ]; then
+if ! command -v ${sdk_manager} > /dev/null 2>&1; then
   echo "Error: You need to install Android SDK tools before proceeding. You can install these through Android Studio. Make sure that you also install the CLI tools and that sdkmanager can be found in your PATH."
   exit 1
 fi
