@@ -16,4 +16,4 @@ class <%- project.moduleName %> extends NativeModule<<%- project.moduleName %>Ev
   }
 };
 
-export default registerWebModule(<%- project.moduleName %>);
+export default registerWebModule(<%- project.moduleName %>, '<%- project.moduleName %>');

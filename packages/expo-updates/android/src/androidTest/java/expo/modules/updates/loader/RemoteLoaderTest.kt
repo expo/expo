@@ -127,8 +127,8 @@ class RemoteLoaderTest {
   @Test
   fun testRemoteLoader_AssetExists_BothDbAndDisk() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists on disk
-    every { mockLoaderFiles.fileExists(any()) } answers {
-      firstArg<File>().toString().contains("489ea2f19fa850b65653ab445637a181")
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("489ea2f19fa850b65653ab445637a181")
     }
 
     val existingAsset = AssetEntity("489ea2f19fa850b65653ab445637a181.jpg", ".jpg")
@@ -155,7 +155,7 @@ class RemoteLoaderTest {
   @Test
   fun testRemoteLoader_AssetExists_DbOnly() {
     // return false when asked if file 489ea2f19fa850b65653ab445637a181 exists on disk
-    every { mockLoaderFiles.fileExists(any()) } returns false
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } returns false
 
     val existingAsset = AssetEntity("489ea2f19fa850b65653ab445637a181.jpg", ".jpg")
     existingAsset.relativePath = "489ea2f19fa850b65653ab445637a181.jpg"

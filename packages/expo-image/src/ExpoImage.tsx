@@ -26,6 +26,10 @@ function withDeprecatedNativeEvent<NativeEvent>(
 }
 
 class ExpoImage extends React.PureComponent<ImageNativeProps> {
+  // NOTE(@kitten): native methods
+  startAnimating!: () => Promise<unknown> | unknown;
+  stopAnimating!: () => Promise<unknown> | unknown;
+
   onLoadStart = () => {
     this.props.onLoadStart?.();
   };

@@ -6,9 +6,8 @@ it(`calls the lockPlatformAsync platform API with only iOS properties`, async ()
     screenOrientationConstantAndroid: 1,
   };
 
-  const screenOrientationArrayIOS = [];
   const iOSProperties = {
-    screenOrientationArrayIOS,
+    screenOrientationArrayIOS: [],
   };
   const badProperties = {
     bad: 'shouldnt be here',
@@ -20,7 +19,7 @@ it(`calls the lockPlatformAsync platform API with only iOS properties`, async ()
     ...badProperties,
   });
 
-  expect(ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith(screenOrientationArrayIOS);
+  expect(ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith([]);
 });
 
 it(`throws when lockPlatformAsync is called with unsupported types in its iOS properties`, async () => {

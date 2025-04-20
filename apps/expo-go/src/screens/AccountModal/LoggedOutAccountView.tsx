@@ -143,7 +143,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
         setAccountName(primaryAccountName);
         setIsFinishedAuthenticating(true);
       }
-    } catch (e) {
+    } catch (e: any) {
       // TODO(wschurman): Put this into Sentry
       console.error({ e });
       setAuthenticationError(e.message);

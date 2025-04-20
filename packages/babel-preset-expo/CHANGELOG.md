@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 13.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2025-04-11
+
+### 💡 Others
+
+- Throwing an error if people having `import.meta` in code but not enabled `unstable_transformImportMeta`. ([#36074](https://github.com/expo/expo/pull/36074) by [@kudo](https://github.com/kudo))
+
+## 13.1.2 — 2025-04-11
+
+### 🎉 New features
+
+- Update React Compiler support for React 19. ([#36081](https://github.com/expo/expo/pull/36081) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 13.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

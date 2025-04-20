@@ -28,7 +28,7 @@ Consider the following navigation tree:
   ]}
 />
 
-In the **app/(tabs)\_layout.tsx** file, return a `Tabs` component:
+In the **app/(tabs)/\_layout.tsx** file, return a `Tabs` component:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
@@ -105,7 +105,7 @@ export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen name="(feed)" options={{ title: 'Feed' }} />
-      <Tabs.Screen name="search" options={{ title: 'Search' }} />
+      <Tabs.Screen name="(search)" options={{ title: 'Search' }} />
     </Tabs>
   );
 }

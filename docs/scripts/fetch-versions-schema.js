@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inc } from 'semver';
 
-import { VERSIONS, LATEST_VERSION } from '../constants/versions.js';
+import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '../constants/versions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -42,7 +42,7 @@ VERSIONS.filter(version => version.includes('.')).forEach(async version => {
   await getSchemaAsync(version);
 });
 
-const nextVersion = inc(LATEST_VERSION, 'major');
+const nextVersion = inc(BETA_VERSION ?? LATEST_VERSION, 'major');
 
 await getSchemaAsync(nextVersion, true);
 

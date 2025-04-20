@@ -2649,6 +2649,256 @@ sign-out operation.
     class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
     data-heading="true"
   >
+    Interfaces
+    <a
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      href="#interfaces"
+      id="interfaces"
+    >
+      <span
+        class="flex self-center text-inherit leading-none select-none"
+      >
+        <svg
+          aria-label="permalink"
+          class="icon-sm shrink-0"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </span>
+    </a>
+  </h2>
+  <div
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        data-heading="true"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          Subscription
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          href="#subscription"
+          id="subscription"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        A subscription object that allows to conveniently remove an event listener from the emitter.
+      </p>
+    </div>
+    <p
+      class="tracking-[-0.006rem] flex border-y border-palette-gray4 bg-subtle px-4 py-2 text-2xs font-medium text-tertiary"
+      data-text="true"
+    >
+      <span
+        class="leading-[1.6154] text-inherit items-center group flex gap-1"
+        data-text="true"
+      >
+        Subscription Methods
+        <a
+          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+          href="#subscription-methods"
+          id="subscription-methods"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </span>
+    </p>
+    <div
+      class="border-b border-palette-gray4 last:border-b-0"
+    >
+      <div
+        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+      >
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+          data-heading="true"
+        >
+          <code
+            class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+            data-text="true"
+          >
+            remove()
+          </code>
+          <a
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+            href="#remove"
+            id="remove"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
+            >
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h3>
+      </div>
+      <div
+        class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      >
+        <p
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          data-text="true"
+        >
+          Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
+        </p>
+        <div
+          class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        >
+          <div
+            class="flex flex-row items-center gap-2"
+          >
+            <svg
+              class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="corner-down-right-outline-icon"
+              >
+                <path
+                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <span
+              class="text-xs font-medium text-tertiary"
+            >
+              Returns:
+            </span>
+          </div>
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+            data-text="true"
+          >
+            void
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h2
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    data-heading="true"
+  >
     Types
     <a
       class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
@@ -3772,7 +4022,7 @@ for more details.
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'default'
@@ -3783,7 +4033,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'short'
@@ -3794,7 +4044,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'medium'
@@ -3805,7 +4055,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'long'
@@ -3816,7 +4066,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'abbreviated'
@@ -4744,155 +4994,6 @@ OAuth 2.0 protocol
               >
                 -
               </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
-  >
-    <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
-    >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
-        data-heading="true"
-      >
-        <code
-          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
-          data-text="true"
-        >
-          Subscription
-        </code>
-        <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
-          href="#subscription"
-          id="subscription"
-        >
-          <span
-            class="flex self-center text-inherit leading-none select-none"
-          >
-            <svg
-              aria-label="permalink"
-              class="shrink-0 icon-xs"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </h3>
-    </div>
-    <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-    >
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-        data-text="true"
-      >
-        A subscription object that allows to conveniently remove an event listener from the emitter.
-      </p>
-    </div>
-    <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-    />
-    <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
-    >
-      <table
-        class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
-      >
-        <thead
-          class="border-b border-b-default bg-subtle"
-        >
-          <tr
-            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
-          >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-default font-medium"
-                data-text="true"
-              >
-                remove
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
-                data-text="true"
-              >
-                <span
-                  class="text-quaternary"
-                >
-                  (
-                </span>
-                <span
-                  class="text-quaternary"
-                >
-                  ) =&gt;
-                </span>
-                 
-                void
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-              >
-                <p
-                  class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
-                >
-                  Removes an event listener for which the subscription has been created.
-After calling this function, the listener will no longer receive any events from the emitter.
-                </p>
-              </div>
             </td>
           </tr>
         </tbody>
@@ -7946,6 +8047,256 @@ On iOS, the
     class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
     data-heading="true"
   >
+    Interfaces
+    <a
+      class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
+      href="#interfaces"
+      id="interfaces"
+    >
+      <span
+        class="flex self-center text-inherit leading-none select-none"
+      >
+        <svg
+          aria-label="permalink"
+          class="icon-sm shrink-0"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </span>
+    </a>
+  </h2>
+  <div
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
+  >
+    <div
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+    >
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+        data-heading="true"
+      >
+        <code
+          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+          data-text="true"
+        >
+          Subscription
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+          href="#subscription"
+          id="subscription"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
+    </div>
+    <div
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    >
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        data-text="true"
+      >
+        A subscription object that allows to conveniently remove an event listener from the emitter.
+      </p>
+    </div>
+    <p
+      class="tracking-[-0.006rem] flex border-y border-palette-gray4 bg-subtle px-4 py-2 text-2xs font-medium text-tertiary"
+      data-text="true"
+    >
+      <span
+        class="leading-[1.6154] text-inherit items-center group flex gap-1"
+        data-text="true"
+      >
+        Subscription Methods
+        <a
+          class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+          href="#subscription-methods"
+          id="subscription-methods"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </span>
+    </p>
+    <div
+      class="border-b border-palette-gray4 last:border-b-0"
+    >
+      <div
+        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
+      >
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
+          data-heading="true"
+        >
+          <code
+            class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
+            data-text="true"
+          >
+            remove()
+          </code>
+          <a
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
+            href="#remove"
+            id="remove"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
+            >
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h3>
+      </div>
+      <div
+        class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      >
+        <p
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          data-text="true"
+        >
+          Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
+        </p>
+        <div
+          class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        >
+          <div
+            class="flex flex-row items-center gap-2"
+          >
+            <svg
+              class="translate-z shrink-0 icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <g
+                id="corner-down-right-outline-icon"
+              >
+                <path
+                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
+            <span
+              class="text-xs font-medium text-tertiary"
+            >
+              Returns:
+            </span>
+          </div>
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+            data-text="true"
+          >
+            void
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h2
+    class="text-default text-[25px] font-bold leading-[1.4] tracking-[-0.021rem] mb-3.5 mt-8 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1"
+    data-heading="true"
+  >
     Types
     <a
       class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-5"
@@ -8360,7 +8711,7 @@ On iOS, the
       Acceptable values are:
        
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         'never'
@@ -8371,7 +8722,7 @@ On iOS, the
          | 
       </span>
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 mb-px"
         data-text="true"
       >
         number
@@ -8633,155 +8984,6 @@ in order to enable/disable the permission.
                   data-text="true"
                 >
                   Determines the status of the permission.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
-  >
-    <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
-    >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
-        data-heading="true"
-      >
-        <code
-          class="leading-[1.6154] text-default font-medium !wrap-anywhere !text-base !leading-snug"
-          data-text="true"
-        >
-          Subscription
-        </code>
-        <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] scroll-m-8"
-          href="#subscription"
-          id="subscription"
-        >
-          <span
-            class="flex self-center text-inherit leading-none select-none"
-          >
-            <svg
-              aria-label="permalink"
-              class="shrink-0 icon-xs"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </h3>
-    </div>
-    <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-    >
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-        data-text="true"
-      >
-        A subscription object that allows to conveniently remove an event listener from the emitter.
-      </p>
-    </div>
-    <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-    />
-    <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
-    >
-      <table
-        class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
-      >
-        <thead
-          class="border-b border-b-default bg-subtle"
-        >
-          <tr
-            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
-          >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle even:[&_summary]:bg-element even:[&_blockquote]:bg-default"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-default font-medium"
-                data-text="true"
-              >
-                remove
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
-                data-text="true"
-              >
-                <span
-                  class="text-quaternary"
-                >
-                  (
-                </span>
-                <span
-                  class="text-quaternary"
-                >
-                  ) =&gt;
-                </span>
-                 
-                void
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:!mb-0 [table_&]:px-0"
-              >
-                <p
-                  class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
-                >
-                  Removes an event listener for which the subscription has been created.
-After calling this function, the listener will no longer receive any events from the emitter.
                 </p>
               </div>
             </td>

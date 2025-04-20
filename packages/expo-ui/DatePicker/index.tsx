@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import { Platform } from 'expo-modules-core';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
 
 import { ViewEvent } from '../src/types';
 
@@ -78,12 +78,23 @@ type NativeDatePickerProps = Omit<
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
   const { iosVariant, androidVariant, ...rest } = props;
+  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
+
+  // On Android, the picker’s minWidth and minHeight must be 12dp.
+  // Otherwise, the picker will crash the app.
+  const minSize = PixelRatio.getPixelSizeForLayoutSize(12);
+
+  // However, when users pass the minWidth and minHeight props, we trust that they know what they are doing.
+  const parsedMinWidth = minWidth ? minSize : undefined;
+  const parsedMinHeight = minHeight ? minSize : undefined;
+
   return {
     ...rest,
     onDateSelected: ({ nativeEvent: { date } }) => {
       props?.onDateSelected?.(new Date(date));
     },
     variant: Platform.OS === 'ios' ? iosVariant : androidVariant,
+    style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
   };
 }
 

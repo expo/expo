@@ -1,1 +1,1 @@
-{"version":3,"file":"EventEmitter.d.ts","sourceRoot":"","sources":["../src/EventEmitter.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAInE,YAAY,EAAE,iBAAiB,EAAE,MAAM,gCAAgC,CAAC;wBACzB,OAAO,YAAY;AAAlE,wBAAmE"}
+{"version":3,"file":"EventEmitter.d.ts","sourceRoot":"","sources":["../src/EventEmitter.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAInE;;GAEG;AACH,MAAM,WAAW,iBAAiB;IAChC;;;OAGG;IACH,MAAM,IAAI,IAAI,CAAC;CAChB;wBAE8C,OAAO,YAAY;AAAlE,wBAAmE"}

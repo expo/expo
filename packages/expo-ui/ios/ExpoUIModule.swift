@@ -22,5 +22,15 @@ public class ExpoUIModule: Module {
     View(GaugeView.self)
     View(ListView.self)
     View(LabelView.self)
+
+    View(SwiftUIContainer.self)
+    View(SwiftUIForm.self)
+    View(SwiftUISection.self)
+    View(SwiftUIHStack.self)
+    View(SwiftUIVStack.self)
+    View(SwiftUIText.self)
+    View(SwiftUIButton.self)
+    View(SwiftUIPicker.self)
+    View(SwiftUISwitch.self)
   }
 }

@@ -179,7 +179,7 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
 
 - (BOOL)isReactRootView:(UIView*)view
 {
-  return [view isKindOfClass:RCTRootView.class] || [view isKindOfClass:RCTSurfaceHostingView.class];
+  return [view isKindOfClass:RCTSurfaceHostingView.class];
 }
 
 @end

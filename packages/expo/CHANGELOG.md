@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 53.0.0-preview.7 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.6 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.5 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.4 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 53.0.0-preview.3 — 2025-04-10
 
 _This version does not introduce any user-facing changes._
@@ -23,6 +39,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Added `globalThis.__ExpoImportMetaRegistry`. ([#34755](https://github.com/expo/expo/pull/34755) by [@kudo](https://github.com/kudo))
+- Add `react-native-edge-to-edge` as a dependency. ([#35812](https://github.com/expo/expo/pull/35812) by [@behenate](https://github.com/behenate))
 
 ## 53.0.0-preview.0 — 2025-04-04
 

@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '16.1.1'
+version = '16.1.2'
 
 android {
   namespace "expo.modules.imagepicker"
   defaultConfig {
     versionCode 22
-    versionName "16.1.1"
+    versionName "16.1.2"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   testOptions {

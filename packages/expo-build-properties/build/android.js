@@ -93,6 +93,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.useDayNightTheme',
         propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
     },
+    {
+        propName: 'android.enableBundleCompression',
+        propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

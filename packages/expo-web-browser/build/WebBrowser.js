@@ -118,14 +118,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    let result;
-    try {
-        result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
-    }
-    catch {
-        return { type: WebBrowserResultType.LOCKED };
-    }
-    return result;
+    return await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
 }
 // @needsAudit
 /**

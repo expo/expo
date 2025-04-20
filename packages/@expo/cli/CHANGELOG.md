@@ -8,7 +8,37 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for using build variants with remote build cache ([#36165](https://github.com/expo/expo/pull/36165) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
+
+## 0.24.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.0 — 2025-04-11
+
+### 🎉 New features
+
+- Output recommended versions in prebuild ([#35941](https://github.com/expo/expo/pull/35941) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Add a warning for users to upgrade their `eas-cli` when using `remoteBuildCache`. ([#36103](https://github.com/expo/expo/pull/36103) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.23.4 — 2025-04-11
+
+### 💡 Others
+
+- Mark `--https` as deprecated in favor of `--tunnel`. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `eas-cli fingerprint:generate` to generate fingerprints for remote builds cache. ([#36085](https://github.com/expo/expo/pull/36085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.23.3 — 2025-04-10
 

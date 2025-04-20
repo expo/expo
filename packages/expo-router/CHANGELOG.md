@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 5.0.2-preview.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.3 — 2025-04-11
+
+### 💡 Others
+
+- bump @radix-ui/react-slot ([#36089](https://github.com/expo/expo/pull/36089) by [@leonhh](https://github.com/leonhh))
+
+## 5.0.2-preview.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.2-preview.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._
@@ -38,6 +52,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Add static redirects to config plugin. ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+- Add `router.preload(<href>)` and `<Link preload href={}>` to error boundary. ([#34558](https://github.com/expo/expo/pull/34558) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
