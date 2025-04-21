@@ -1,3 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
-export default requireNativeModule('ExpoFontUtils');
+export default requireOptionalNativeModule('ExpoFontUtils');

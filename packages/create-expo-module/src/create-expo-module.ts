@@ -73,7 +73,7 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
- * @param command An object from `commander`.
+ * @param options An options object for `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
   if (options.local) {
@@ -110,7 +110,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
-  logEventAsync(eventCreateExpoModule(packageManager, options));
+  await logEventAsync(eventCreateExpoModule(packageManager, options));
 
   await newStep('Creating the module from template files', async (step) => {
     await createModuleFromTemplate(packagePath, targetDir, data);
@@ -159,8 +159,8 @@ async function main(target: string | undefined, options: CommandOptions) {
             'Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true'
           );
         }
-      } catch (e: any) {
-        step.fail(e.toString());
+      } catch (error: any) {
+        step.fail(error.toString());
       }
     });
   }
@@ -251,12 +251,13 @@ async function getTemplateVersion(isLocal: boolean) {
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
-    let tarballUrl: string | null = null;
+    const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+
     try {
-      tarballUrl = await getNpmTarballUrl(
-        isLocal ? 'expo-module-template-local' : 'expo-module-template',
-        templateVersion
-      );
+      await downloadTarball({
+        url: await getNpmTarballUrl(packageName, templateVersion),
+        dir: targetDir,
+      });
     } catch {
       console.log();
       console.warn(
@@ -264,18 +265,13 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
           "Couldn't download the versioned template from npm, falling back to the latest version."
         )
       );
-      tarballUrl = await getNpmTarballUrl(
-        isLocal ? 'expo-module-template-local' : 'expo-module-template',
-        'latest'
-      );
+      await downloadTarball({
+        url: await getNpmTarballUrl(packageName, 'latest'),
+        dir: targetDir,
+      });
     }
 
-    await downloadTarball({
-      url: tarballUrl,
-      dir: targetDir,
-    });
-
-    step.succeed('Downloaded module template from npm');
+    step.succeed('Downloaded module template from npm registry.');
 
     return path.join(targetDir, 'package');
   });
@@ -324,7 +320,7 @@ async function createGitRepositoryAsync(targetDir: string) {
       stdio: 'ignore',
       cwd: targetDir,
     });
-    debug(chalk.dim('New project is already inside of a Git repo, skipping git init.'));
+    debug(chalk.dim('New project is already inside of a Git repository, skipping `git init`.'));
     return null;
   } catch (e: any) {
     if (e.errno === 'ENOENT') {
@@ -460,7 +456,7 @@ function printFurtherInstructions(
 
     console.log();
     console.log(
-      'To start developing your module, navigate to the directory and open iOS and Android projects of the example app'
+      'To start developing your module, navigate to the directory and open Android and iOS projects of the example app'
     );
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
@@ -471,7 +467,7 @@ function printFurtherInstructions(
 function printFurtherLocalInstructions(slug: string, name: string) {
   console.log();
   console.log(`You can now import this module inside your application.`);
-  console.log(`For example, you can add this line to your App.js or App.tsx file:`);
+  console.log(`For example, you can add this line to your App.tsx or App.js file:`);
   console.log(`${chalk.gray.italic(`import ${name} from './modules/${slug}';`)}`);
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
