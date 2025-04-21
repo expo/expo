@@ -36,8 +36,19 @@ async function checkMinimumXcodeVersionAsync(
     return null;
   }
 
-  if (semver.lt(sdkVersion, '52.0.0') && semver.gt(xcodeVersion, '16.2.0')) {
-    return `SDK ${sdkVersion} is compatible with Xcode 16.2 or lower. You are using Xcode ${xcodeVersion}. `;
+  // Table of SDK version compatibility with Xcode versions
+  const compatibilityTable: Record<string, string> = {
+    '51': '<=16.2.0',
+  };
+
+  const majorSdkVersion = semver.major(sdkVersion).toString();
+
+  if (compatibilityTable[majorSdkVersion]) {
+    const requiredXcodeVersion = compatibilityTable[majorSdkVersion];
+
+    if (!semver.satisfies(xcodeVersion, requiredXcodeVersion)) {
+      return `Your Expo SDK version ${majorSdkVersion} is not compatible with Xcode ${xcodeVersion}. Required Xcode version: ${requiredXcodeVersion}.`;
+    }
   }
 
   return null;
