@@ -8,11 +8,19 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.24.3 — 2025-04-21
+
+### 🐛 Bug fixes
+
 - Fix support for using build variants with remote build cache ([#36165](https://github.com/expo/expo/pull/36165) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Drop `internal-ip` and determine local network IP address and gateway with UDP sockets. ([#35102](https://github.com/expo/expo/pull/35102) by [@kitten](https://github.com/kitten))
+- Improve ability to open stacks from command line. ([#36272](https://github.com/expo/expo/pull/36272) by [@EvanBacon](https://github.com/EvanBacon))
 - Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
 
 ## 0.24.2 — 2025-04-14
