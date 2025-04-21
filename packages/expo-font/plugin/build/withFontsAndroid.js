@@ -32,8 +32,9 @@ const withXmlFontsAndroid = (config, fonts) => {
     return (0, config_plugins_1.withMainApplication)(config, async (config) => {
         const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
         await promises_1.default.mkdir(fontsDir, { recursive: true });
-        const isJava = config.modResults.language === 'java';
-        config.modResults.contents = (0, codeMod_1.addImports)(config.modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], isJava);
+        const modResults = config.modResults;
+        const isJava = modResults.language === 'java';
+        modResults.contents = (0, codeMod_1.addImports)(modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], isJava);
         Promise.all(fonts.map(async ({ fontName, files }) => {
             const xmlFileName = (0, utils_1.normalizeFilename)(fontName);
             const resolvedFonts = await (0, utils_1.resolveXmlFontPaths)(files, config.modRequest.projectRoot);
@@ -44,7 +45,7 @@ const withXmlFontsAndroid = (config, fonts) => {
                 const destPath = path_1.default.join(fontsDir, path_1.default.basename(file.font));
                 await promises_1.default.copyFile(path_1.default.resolve(__dirname, file.font), destPath);
             }));
-            config.modResults.contents = (0, codeMod_1.appendContentsInsideDeclarationBlock)(config.modResults.contents, 'onCreate', `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `);
+            modResults.contents = (0, codeMod_1.appendContentsInsideDeclarationBlock)(modResults.contents, 'onCreate', `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `);
         }));
         return config;
     });
