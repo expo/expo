@@ -45,7 +45,7 @@ export class NativeToolingVersionCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
-      // advice currently tightly coupled with issues in code copied from doctor
+      advice: issues.length ? [`Update your native tooling to the recommended versions.`] : [],
     };
   }
 }

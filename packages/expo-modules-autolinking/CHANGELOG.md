@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Removed restriction preventing local expo modules from being excluded from autolinking. ([#36117](https://github.com/expo/expo/pull/36117) by [@wuguishifu](https://github.com/wuguishifu))
+
 ### 🐛 Bug fixes
 
+- Fixed Android building error on Windows. ([#36179](https://github.com/expo/expo/pull/36179) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 2.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
 
 ## 2.1.3 — 2025-04-11
 

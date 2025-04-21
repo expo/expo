@@ -734,16 +734,20 @@ export async function getAlbumAsync(title: string): Promise<Album> {
  * given asset from the current album to the new one, however it's also possible to move it by
  * passing `false` as `copyAsset` argument.
  * In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
+ * > On Android, it's not possible to create an empty album. You must provide an existing asset to copy or move into the album or an uri of a local file, which will be used to create an initial asset for the album.
  * @param albumName Name of the album to create.
- * @param asset An [Asset](#asset) or its ID (required on Android).
- * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it.
+ * @param asset An [Asset](#asset) or its ID. On Android you either need to provide an asset or a localUri.
+ * @param initialAssetLocalUri A URI to the local media file, which will be used to create the initial asset inside the album. It must contain an extension. On Android it
+ * must be a local path, so it must start with `file:///`. If the `asset` was provided, this parameter will be ignored.
+ * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it. This parameter is ignored if `asset` was not provided.
  * Defaults to `true`.
  * @return Newly created [`Album`](#album).
  */
 export async function createAlbumAsync(
   albumName: string,
   asset?: AssetRef,
-  copyAsset: boolean = true
+  copyAsset: boolean = true,
+  initialAssetLocalUri?: string
 ): Promise<Album> {
   if (!MediaLibrary.createAlbumAsync) {
     throw new UnavailabilityError('MediaLibrary', 'createAlbumAsync');
@@ -751,9 +755,15 @@ export async function createAlbumAsync(
 
   const assetId = getId(asset);
 
-  if (Platform.OS === 'android' && (typeof assetId !== 'string' || assetId.length === 0)) {
+  if (
+    Platform.OS === 'android' &&
+    (typeof assetId !== 'string' || assetId.length === 0) &&
+    !initialAssetLocalUri
+  ) {
     // it's not possible to create empty album on Android, so initial asset must be provided
-    throw new Error('MediaLibrary.createAlbumAsync must be called with an asset on Android.');
+    throw new Error(
+      'MediaLibrary.createAlbumAsync must be called with an asset or a localUri on Android.'
+    );
   }
   if (!albumName || typeof albumName !== 'string') {
     throw new Error('Invalid argument "albumName". It must be a string!');
@@ -763,9 +773,9 @@ export async function createAlbumAsync(
   }
 
   if (Platform.OS === 'ios') {
-    return await MediaLibrary.createAlbumAsync(albumName, assetId);
+    return await MediaLibrary.createAlbumAsync(albumName, assetId, initialAssetLocalUri);
   }
-  return await MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
+  return await MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset, initialAssetLocalUri);
 }
 
 // @needsAudit

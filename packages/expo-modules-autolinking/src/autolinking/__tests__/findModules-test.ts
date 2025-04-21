@@ -441,4 +441,17 @@ describe(findModulesAsync, () => {
       }),
     ]);
   });
+
+  it('should not link modules excluded by `options.exclude`', async () => {
+    const searchPath = path.join(expoRoot, 'node_modules');
+    addMockedModule('expo-module', { globCwd: searchPath });
+
+    const result = await findModulesAsync({
+      searchPaths: [searchPath],
+      platform: 'ios',
+      projectRoot: expoRoot,
+      exclude: ['expo-module'],
+    });
+    expect(result['expo-module']).toBeUndefined();
+  });
 });

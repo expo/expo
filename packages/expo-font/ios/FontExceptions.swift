@@ -36,3 +36,15 @@ internal final class UnregisteringFontFailedException: GenericException<CFError>
     "Unregistering font failed with message: '\(param.localizedDescription)'"
   }
 }
+
+internal final class CreateImageException: Exception {
+  override var reason: String {
+    "Could not create image"
+  }
+}
+
+internal final class SaveImageException: GenericException<String> {
+  override var reason: String {
+    "Could not save image to '\(param)'"
+  }
+}

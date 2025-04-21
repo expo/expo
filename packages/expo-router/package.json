@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "5.0.2-preview.3",
+  "version": "5.0.2-preview.4",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -105,7 +105,7 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/metro-runtime": "5.0.1",
+    "@expo/metro-runtime": "5.0.2",
     "@expo/server": "^0.6.2",
     "@radix-ui/react-slot": "1.2.0",
     "@react-navigation/bottom-tabs": "^7.3.10",

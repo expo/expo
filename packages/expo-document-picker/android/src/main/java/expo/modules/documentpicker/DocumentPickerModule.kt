@@ -73,7 +73,7 @@ class DocumentPickerModule : Module() {
     }
   }
 
-  private fun copyDocumentToCacheDirectory(documentUri: Uri, name: String): String? {
+  private fun copyDocumentToCacheDirectory(documentUri: Uri, name: String): Uri? {
     val outputFilePath = FileUtilities.generateOutputPath(
       context.cacheDir,
       "DocumentPicker",
@@ -90,7 +90,7 @@ class DocumentPickerModule : Module() {
       e.printStackTrace()
       return null
     }
-    return Uri.fromFile(outputFile).toString()
+    return Uri.fromFile(outputFile)
   }
 
   private fun handleSingleSelection(intent: Intent?) {
@@ -129,13 +129,6 @@ class DocumentPickerModule : Module() {
       } ?: throw FailedToCopyToCacheException()
     }
 
-    return details?.let { it ->
-      DocumentInfo(
-        uri = it.uri,
-        name = it.name,
-        mimeType = it.mimeType,
-        size = it.size
-      )
-    } ?: throw FailedToReadDocumentException()
+    return details ?: throw FailedToReadDocumentException()
   }
 }
