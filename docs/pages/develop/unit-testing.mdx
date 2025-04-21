@@ -21,13 +21,11 @@ import { CODE } from '~/ui/components/Text';
 
 You will also use the [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) library, which is a Jest preset that mocks the native part of the Expo SDK and handles most of the configuration required for your Expo project.
 
+> **info** **Note:** While unit testing is a useful practice for library development, you might not need it for your app since unit tests on rendering aren't useful. You can look into E2E testing with [Maestro](/eas/workflows/reference/e2e-tests/) for your app.
+
 ## Installation and configuration
 
-If you have created your project using the [default Expo template](/get-started/create-a-project/), you can skip this section. The `jest-expo` and other required dev dependencies are already installed and configured.
-
-<Collapsible summary={<>Manual installation instructions for <CODE>jest-expo</CODE></>}>
-
-If you have created your project using [different template](/more/create-expo/#--template), follow the instructions below to install and configure `jest-expo` in your project.
+After creating your Expo project, follow the instructions below to install and configure `jest-expo` in your project:
 
 <Step label="1">
 
@@ -71,7 +69,19 @@ Open **package.json**, add a script for running tests, and add the preset for us
 
 </Step>
 
-</Collapsible>
+<Step label="3">
+
+In **package.json**, add `jest-expo` as a preset so that a base for Jest's configuration is set up:
+
+```json package.json
+{
+  "jest": {
+    "preset": "jest-expo"
+  }
+}
+```
+
+</Step>
 
 <Collapsible summary={<>Additional configuration for using <CODE>transformIgnorePatterns</CODE></>}>
 
