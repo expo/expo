@@ -100,6 +100,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./BottomSheetScreen'));
     },
   },
+  {
+    name: 'Stepper component',
+    route: 'ui/stepper',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
 ];
 if (Platform.OS === 'ios') {
   UIScreens.push(
