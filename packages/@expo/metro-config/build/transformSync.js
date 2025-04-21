@@ -66,6 +66,7 @@ function transformSync(src, babelConfig, { hermesParser }) {
 function parseWithHermes(src, babelConfig) {
     const sourceAst = require('hermes-parser').parse(src, {
         babel: true,
+        reactRuntimeTarget: '19',
         sourceType: babelConfig.sourceType,
     });
     return babel.transformFromAstSync(sourceAst, src, babelConfig);

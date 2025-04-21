@@ -1,3 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
-export default requireNativeModule('ExpoFontUtils');
+import { requireOptionalNativeModule } from 'expo-modules-core';
+export default requireOptionalNativeModule('ExpoFontUtils');
 //# sourceMappingURL=ExpoFontUtils.js.map

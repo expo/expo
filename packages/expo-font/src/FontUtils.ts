@@ -1,3 +1,4 @@
+import { UnavailabilityError } from 'expo-modules-core';
 import { processColor } from 'react-native';
 
 import ExpoFontUtils from './ExpoFontUtils';
@@ -15,6 +16,10 @@ export async function renderToImageAsync(
   glyphs: string,
   options?: RenderToImageOptions
 ): Promise<string> {
+  if (!ExpoFontUtils) {
+    throw new UnavailabilityError('expo-font', 'ExpoFontUtils.renderToImageAsync');
+  }
+
   return await ExpoFontUtils.renderToImageAsync(glyphs, {
     ...options,
     color: options?.color ? processColor(options.color) : undefined,

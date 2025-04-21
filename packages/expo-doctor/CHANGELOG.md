@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.12.11 — 2025-04-21
+
+### 💡 Others
+
 - Formatting improvements. ([#36151](https://github.com/expo/expo/pull/36151) by [@keith-kurak](https://github.com/keith-kurak))
 - Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
 
