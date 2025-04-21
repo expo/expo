@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
+
 ## 2.3.5 — 2025-04-14
 
 ### 🐛 Bug fixes
