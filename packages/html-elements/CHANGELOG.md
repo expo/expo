@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch web testing to `@testing-library/react`. ([#36293](https://github.com/expo/expo/pull/36293) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.12.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
