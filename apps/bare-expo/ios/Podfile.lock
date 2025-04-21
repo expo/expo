@@ -50,7 +50,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.30.5):
     - ExpoModulesCore
-  - Expo (53.0.0-preview.8):
+  - Expo (53.0.0-preview.9):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -448,7 +448,7 @@ PODS:
   - ExpoFileSystem/Tests (18.1.5):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoFont (13.2.0):
+  - ExpoFont (13.2.1):
     - ExpoModulesCore
   - ExpoGL (15.1.3):
     - ExpoModulesCore
@@ -3603,7 +3603,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 96fe8e11fc4e243db06df7b7f198796fb26fbf24
   EXNotifications: 12fa00c4dad613a9a467508fbba64ea72658fc3b
-  Expo: 2ae2476734144da3990f103e90b095cf6897f0e8
+  Expo: 865cefc1da592436a657570e8d36ffdb4be36bfd
   expo-dev-client: e054e2917cfefe95a694ab9b6682c97503ef2f7a
   expo-dev-launcher: f3b159f7502e7fd151da0270369e960a91b74663
   expo-dev-menu: 5e8163ae654f5374c46bb05a52619197a9bd6f82
@@ -3626,7 +3626,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 2102ba774399bc55fd8c0d0db883cde3d33d1b90
   ExpoDomWebView: da59066310b7f773ed77d53c5462a8784a43af97
   ExpoFileSystem: d11940d82a12051aa6dec6ca87609bef67b34132
-  ExpoFont: c327dfd3c476e07f921e1941bb9210162e840f3c
+  ExpoFont: 6552f3622658ef93009cebf083678a0b7581a939
   ExpoGL: 902b516dc87de3cc2406cbee13f9e2da2d06a4bf
   ExpoHaptics: 2e8b3b8e63c20e1c363e06c583b544894c7b7b9b
   ExpoImage: 3cc509c6acb353d8d20f6528f2777197929ca9b5
