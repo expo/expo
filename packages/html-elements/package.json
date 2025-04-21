@@ -37,6 +37,16 @@
   "jest": {
     "projects": [
       {
+        "preset": "jest-expo/web",
+        "setupFilesAfterEnv": [
+          "<rootDir>/jest-setup.js"
+        ],
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
+      },
+      {
+        
         "preset": "jest-expo/ios",
         "modulePathIgnorePatterns": [
           "<rootDir>/babel/"
@@ -47,13 +57,8 @@
         "modulePathIgnorePatterns": [
           "<rootDir>/babel/"
         ]
-      },
-      {
-        "preset": "jest-expo/web",
-        "modulePathIgnorePatterns": [
-          "<rootDir>/babel/"
-        ]
       }
+    
     ]
   },
   "devDependencies": {
