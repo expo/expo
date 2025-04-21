@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
-- Added react-native 0.77 support. ([#36204](https://github.com/expo/expo/pull/36204) by [@kudo](https://github.com/kudo))
-- Added react-native 0.78 support. ([#36205](https://github.com/expo/expo/pull/36205) by [@kudo](https://github.com/kudo))
-- Added react-native 0.79 support. ([#36206](https://github.com/expo/expo/pull/36206) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.12.0 — 2025-04-21
+
+### 🎉 New features
+
+- Added react-native 0.77 support. ([#36204](https://github.com/expo/expo/pull/36204) by [@kudo](https://github.com/kudo))
+- Added react-native 0.78 support. ([#36205](https://github.com/expo/expo/pull/36205) by [@kudo](https://github.com/kudo))
+- Added react-native 0.79 support. ([#36206](https://github.com/expo/expo/pull/36206) by [@kudo](https://github.com/kudo))
 
 ## 0.11.8 — 2025-04-14
 

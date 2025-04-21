@@ -10,7 +10,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
-    "expo": "~53.0.0-preview.7",
+    "expo": "~53.0.0-preview.8",
     "expo-linking": "~7.1.2",
     "expo-router": "^5.0.2-preview.4",
     "expo-splash-screen": "~0.30.4",
@@ -20,7 +20,7 @@
     "react-native-screens": "4.10.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "~13.1.4"
+    "babel-preset-expo": "~13.1.5"
   },
   "private": true
 }
