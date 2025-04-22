@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add new check for compatible Xcode version. ([#32130](https://github.com/expo/expo/pull/35961) by [@betomoedano](https://github.com/betomoedano))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.13.0 — 2025-04-22
+
+### 🎉 New features
+
+- Add new check for compatible Xcode version. ([#32130](https://github.com/expo/expo/pull/35961) by [@betomoedano](https://github.com/betomoedano))
 
 ## 1.12.11 — 2025-04-21
 

@@ -38,7 +38,7 @@
     "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
-    "@expo/config": "~11.0.3",
+    "@expo/config": "~11.0.4",
     "@expo/env": "~1.0.3",
     "@expo/json-file": "~9.1.2",
     "@expo/spawn-async": "^1.7.2",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^4.1.2",
+    "expo-module-scripts": "^4.1.3",
     "sass": "^1.60.0"
   },
   "publishConfig": {
