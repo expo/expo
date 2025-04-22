@@ -1,13 +1,15 @@
 import { type ConfigPlugin } from 'expo/config-plugins';
 export type FontObject = {
-    path: string;
-    family: string;
-    weight: number;
-    style?: 'normal' | 'italic';
+    fontFamily: string;
+    fontDefinitions: {
+        path: string;
+        weight: number;
+        style?: 'normal' | 'italic' | undefined;
+    }[];
 };
 export type Font = string | FontObject;
 export type FontProps = {
-    fonts?: string[];
+    fonts?: Font[];
     android?: {
         fonts?: Font[];
     };

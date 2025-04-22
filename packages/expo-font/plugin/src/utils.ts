@@ -1,8 +1,18 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-export function toAndroidResourceString(string: string) {
-  return string.replace(/(-| )/, '_').toLowerCase();
+// rule: File-based resource names must contain only lowercase a-z, 0-9, or underscore
+export function toValidAndroidResourceName(value: string) {
+  const valueWithoutFileExtension = path.parse(value).name;
+
+  const withUnderscores = valueWithoutFileExtension
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2');
+
+  return withUnderscores
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_');
 }
 
 export async function resolveFontPaths(fonts: string[], projectRoot: string) {
@@ -21,15 +31,4 @@ export async function resolveFontPaths(fonts: string[], projectRoot: string) {
     .filter(
       (p) => p.endsWith('.ttf') || p.endsWith('.otf') || p.endsWith('.woff') || p.endsWith('.woff2')
     );
-}
-
-type GroupedObject<T> = { [key: string]: T[] };
-
-export function groupBy<T>(array: T[], key: keyof T): GroupedObject<T> {
-  return array.reduce((result: GroupedObject<T>, item: T) => {
-    const keyValue = item[key] as string;
-    result[keyValue] = result[keyValue] || [];
-    result[keyValue].push(item);
-    return result;
-  }, {});
 }

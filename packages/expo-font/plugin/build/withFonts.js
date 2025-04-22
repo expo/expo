@@ -8,7 +8,14 @@ const withFonts = (config, props) => {
     if (!props) {
         return config;
     }
-    const iosFonts = [...(props.fonts ?? []), ...(props.ios?.fonts ?? [])];
+    const iosFonts = [
+        ...(props.fonts
+            ?.map((it) => {
+            return typeof it === 'string' ? it : it.fontDefinitions.map((font) => font.path);
+        })
+            .flat() ?? []),
+        ...(props.ios?.fonts ?? []),
+    ];
     if (iosFonts.length > 0) {
         config = (0, withFontsIos_1.withFontsIos)(config, iosFonts);
     }

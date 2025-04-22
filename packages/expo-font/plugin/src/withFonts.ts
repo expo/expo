@@ -6,16 +6,18 @@ import { withFontsIos } from './withFontsIos';
 const pkg = require('expo-font/package.json');
 
 export type FontObject = {
-  path: string;
-  family: string;
-  weight: number;
-  style?: 'normal' | 'italic';
+  fontFamily: string;
+  fontDefinitions: {
+    path: string;
+    weight: number;
+    style?: 'normal' | 'italic' | undefined;
+  }[];
 };
 
 export type Font = string | FontObject;
 
 export type FontProps = {
-  fonts?: string[];
+  fonts?: Font[];
   android?: {
     fonts?: Font[];
   };
@@ -29,7 +31,14 @@ const withFonts: ConfigPlugin<FontProps> = (config, props) => {
     return config;
   }
 
-  const iosFonts = [...(props.fonts ?? []), ...(props.ios?.fonts ?? [])];
+  const iosFonts = [
+    ...(props.fonts
+      ?.map((it) => {
+        return typeof it === 'string' ? it : it.fontDefinitions.map((font) => font.path);
+      })
+      .flat() ?? []),
+    ...(props.ios?.fonts ?? []),
+  ];
 
   if (iosFonts.length > 0) {
     config = withFontsIos(config, iosFonts);

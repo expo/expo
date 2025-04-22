@@ -5,7 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Added support for font weights when using embedded font on Android. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
+
+- [Android] Added support for font weight styles (through XML font definitions) to config plugin. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
 
 ### 🐛 Bug fixes
 

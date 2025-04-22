@@ -10,13 +10,10 @@ import {
 import path from 'path';
 
 import { resolveFontPaths } from './utils';
-import type { Font } from './withFonts';
 
-export const withFontsIos: ConfigPlugin<Font[]> = (config, fonts) => {
-  const fontPaths = fonts.map((font) => (typeof font === 'string' ? font : font.path));
-
-  config = addFontsToTarget(config, fontPaths);
-  config = addFontsToPlist(config, fontPaths);
+export const withFontsIos: ConfigPlugin<string[]> = (config, fonts) => {
+  config = addFontsToTarget(config, fonts);
+  config = addFontsToPlist(config, fonts);
   return config;
 };
 
