@@ -33,14 +33,15 @@ describe('getLocalAssetUri', () => {
     expect(uri).toBeNull();
   });
 
+  // the type declaration marks __DEV__ as read-only
   describe('production', () => {
     beforeAll(() => {
-      // @ts-ignore: the type declaration marks __DEV__ as read-only
+      // eslint-disable-next-line no-global-assign
       __DEV__ = false;
     });
 
     afterAll(() => {
-      // @ts-ignore: the type declaration marks __DEV__ as read-only
+      // eslint-disable-next-line no-global-assign
       __DEV__ = true;
     });
 

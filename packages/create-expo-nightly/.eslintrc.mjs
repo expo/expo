@@ -1,4 +1,4 @@
-const config = require('expo-module-scripts/eslintrc.base.js');
+import config from 'expo-module-scripts/eslintrc.base.js';
 
 config.rules = {
   ...config.rules,
@@ -12,4 +12,4 @@ config.rules = {
   'import/extensions': ['error', 'ignorePackages'],
 };
 
-module.exports = config;
+export default config;
