@@ -6,7 +6,7 @@ public class AppDelegate: ExpoAppDelegate {
   public override func applicationDidFinishLaunching(_ notification: Notification) {
     self.moduleName = "main"
     self.initialProps = [:]
-    
+
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
