@@ -88,6 +88,7 @@ The default configuration in **tsconfig.json** is user-friendly and encourages a
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
   }
@@ -106,6 +107,7 @@ For example, to import `Button` component from **src/components/Button.tsx** usi
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -151,6 +153,7 @@ To enable absolute imports from a project's root directory, define [`compilerOpt
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": "./"
   }
