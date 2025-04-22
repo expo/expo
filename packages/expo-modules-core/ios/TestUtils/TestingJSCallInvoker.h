@@ -16,6 +16,7 @@ namespace expo {
 
 /**
  * Dummy CallInvoker.
+ * Async functions are invoked on the main thread on iOS.
  * Used in the test environment to check the async flow.
  */
 class TestingJSCallInvoker : public react::CallInvoker {
