@@ -1,7 +1,8 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-#ifndef MainThreadInvoker_h
-#define MainThreadInvoker_h
+#pragma once
+
+#ifdef __cplusplus
 
 #include <functional>
 
@@ -10,4 +11,4 @@ public:
   static void invokeOnMainThread(const std::function<void()> task);
 };
 
-#endif
+#endif // __cplusplus

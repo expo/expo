@@ -1,6 +1,8 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-#include "MainThreadInvoker.h"
+#ifdef __cplusplus
+
+#import <ExpoModulesCore/MainThreadInvoker.h>
 #import <Foundation/Foundation.h>
 
 void MainThreadInvoker::invokeOnMainThread(const std::function<void()> task) {
@@ -13,3 +15,5 @@ void MainThreadInvoker::invokeOnMainThread(const std::function<void()> task) {
       dispatch_async(dispatch_get_main_queue(), block);
   }
 }
+
+#endif // __cplusplus

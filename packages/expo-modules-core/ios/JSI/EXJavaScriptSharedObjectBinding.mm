@@ -5,12 +5,14 @@
 
 @implementation EXJavaScriptSharedObjectBinding
 
-- (nonnull instancetype)initWith:(EXJavaScriptObject* (^_Nonnull)(void))getter {
+- (nonnull instancetype)initWithGetter:(EXJavaScriptObjectBindingGetter) getter
+{
   self.getter = getter;
   return self;
 }
 
-- (EXJavaScriptObject*)get {
+- (EXJavaScriptObject *)get
+{
   auto obj = self.getter();
   return obj;
 }

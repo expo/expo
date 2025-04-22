@@ -25,6 +25,7 @@ public struct Promise: AnyArgument {
           value,
           appContext: appContext,
           dynamicType: type(of: value).getDynamicType()
+          // swiftlint:disable:next force_cast
         ) as! JavaScriptObject
       })
       return
