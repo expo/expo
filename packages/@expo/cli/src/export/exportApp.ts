@@ -321,6 +321,36 @@ export async function exportAppAsync(
         domComponentAssetsMetadata,
       });
       files.set('metadata.json', { contents: JSON.stringify(contents) });
+      
+      Object.entries(bundles).forEach(([platform, bundle]) => {
+      // Dev Client min manifest.
+      
+      files.set(`index.${platform}.json`, { contents: JSON.stringify({
+          "id": "bb6ddfdd-81d5-4e2f-9e45-f0ab83021762",
+          // "createdAt": "2025-04-21T23:56:07.282Z",
+          createdAt: new Date().toISOString(),
+          "runtimeVersion": "exposdk:53.0.0",
+          "launchAsset": {
+            "key": "bundle",
+            "contentType": "application/javascript",
+            // "url": "/_expo/static/js/ios/entry-3be485b02cab8c7ae112fd4fc8b632df.js"
+            url: "/" + bundle.artifacts[0].filename.replace(/^\/+/, ''),
+          },
+          "metadata": {},
+          "extra": {
+            "expoClient": exp,
+            // "expoClient": {
+            //   "scheme": "apr21dc"
+            // },
+            "expoGo": {
+              "developer": {
+                "tool": "expo-cli"
+              }
+            }
+          }
+                
+      }) });
+    });
     }
 
     // Additional web-only steps...

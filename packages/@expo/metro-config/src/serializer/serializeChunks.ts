@@ -176,9 +176,7 @@ export async function graphToSerialAssetsAsync(
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
   const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
   const publicPath = isExporting
-    ? graph.transformOptions.platform === 'web'
-      ? `/assets?export_path=${assetPublicUrl}`
-      : assetPublicUrl
+    ? `/assets?export_path=${assetPublicUrl}`
     : '/assets/?unstable_path=.';
 
   // TODO: Convert to serial assets

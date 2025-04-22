@@ -67,10 +67,14 @@ public extension Optional {
 @objc(EXManifestsManifest)
 @objcMembers
 public class Manifest: NSObject {
+
+  public var baseUrl: String?
+
   private let rawManifestJSONInternal: [String: Any]
 
-  public required init(rawManifestJSON: [String: Any]) {
+  public required init(rawManifestJSON: [String: Any], baseUrl: String?) {
     rawManifestJSONInternal = rawManifestJSON
+    self.baseUrl = baseUrl
   }
 
   public override var debugDescription: String {

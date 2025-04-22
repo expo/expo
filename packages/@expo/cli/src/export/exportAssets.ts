@@ -152,6 +152,16 @@ export async function exportAssetsAsync(
       outputDirectory: outputDir,
       baseUrl,
     });
+  } else {
+    // Do assets like export embed to support dev client + EAS Hosting.
+    await Promise.all(Object.entries(bundles).map(([platform, bundle]) => {
+    return persistMetroAssetsAsync(projectRoot, bundle.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      baseUrl,
+      // iosAssetCatalogDirectory: options.assetCatalogDest,
+    })
+  }));
   }
 
   const assets: BundleAssetWithFileHashes[] = uniqBy(

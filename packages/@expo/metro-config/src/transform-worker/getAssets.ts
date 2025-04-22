@@ -109,7 +109,7 @@ export async function getUniversalAssetData(
   const data = await ensureOtaAssetHashesAsync(metroAssetData);
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
-  if (platform === 'web' && publicPath.includes('?export_path=')) {
+  if (publicPath.includes('?export_path=')) {
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.

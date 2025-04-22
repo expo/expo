@@ -50,7 +50,23 @@ public class ExpoUpdatesManifest: Manifest {
   }
 
   public override func bundleUrl() -> String {
-    return launchAsset().requiredValue(forKey: "url")
+      let asset = launchAsset();
+   
+   // let url: String = launchAsset().requiredValue(forKey: "url") as! String
+
+   guard let url = asset["url"] as? String else {
+     return ""
+   }
+
+   // If baseUrl and url starts with "/", then append like `new URL(url, baseUrl).href`
+   if let baseUrl = baseUrl, url.hasPrefix("/"), let base = URL(string: baseUrl),
+      let url = URL(string: url, relativeTo: base) {
+     
+     // append the two strings
+     return url.absoluteString
+   }
+   
+    return url;
   }
 
   public override func expoClientConfigRootObject() -> [String: Any]? {

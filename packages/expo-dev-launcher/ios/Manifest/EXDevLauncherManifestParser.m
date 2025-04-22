@@ -91,7 +91,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       onError([[NSError alloc] initWithDomain:@"DevelopmentClient" code:1 userInfo:details]);
       return;
     }
-    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject];
+    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject baseUrl:self.url.absoluteString];
     onParsed(manifest);
   }];
 }

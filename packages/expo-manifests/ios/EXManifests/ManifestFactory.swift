@@ -5,11 +5,11 @@ import Foundation
 @objc(EXManifestsManifestFactory)
 @objcMembers
 public class ManifestFactory: NSObject {
-  public static func manifest(forManifestJSON: [String: Any]) -> Manifest {
+  public static func manifest(forManifestJSON: [String: Any], baseUrl: String?) -> Manifest {
     if forManifestJSON["metadata"] != nil {
-      return ExpoUpdatesManifest(rawManifestJSON: forManifestJSON)
+      return ExpoUpdatesManifest(rawManifestJSON: forManifestJSON, baseUrl: baseUrl)
     }
 
-    return EmbeddedManifest(rawManifestJSON: forManifestJSON)
+    return EmbeddedManifest(rawManifestJSON: forManifestJSON, baseUrl: baseUrl)
   }
 }
