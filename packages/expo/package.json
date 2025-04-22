@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.11",
+  "version": "53.0.0-preview.9",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -10,7 +10,11 @@
     "*.fx.web.tsx",
     "./src/winter/*.ts"
   ],
-  "bin": "bin/cli",
+  "bin": {
+    "expo": "bin/cli",
+    "expo-modules-autolinking": "bin/autolinking",
+    "fingerprint": "bin/fingerprint"
+  },
   "files": [
     "android",
     "bin",
@@ -68,30 +72,32 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.21.8",
-    "@expo/config": "~10.0.5",
-    "@expo/config-plugins": "~9.0.10",
-    "@expo/fingerprint": "0.11.2",
-    "@expo/metro-config": "0.19.4",
+    "@expo/cli": "0.24.3",
+    "@expo/config": "~11.0.3",
+    "@expo/config-plugins": "~9.1.5",
+    "@expo/fingerprint": "0.12.2",
+    "@expo/metro-config": "0.20.5",
     "@expo/vector-icons": "^14.0.0",
-    "babel-preset-expo": "~12.0.2",
-    "expo-asset": "~11.0.1",
-    "expo-constants": "~17.0.3",
-    "expo-file-system": "~18.0.4",
-    "expo-font": "~13.0.1",
-    "expo-keep-awake": "~14.0.1",
-    "expo-modules-autolinking": "2.0.2",
-    "expo-modules-core": "2.0.6",
+    "babel-preset-expo": "~13.1.5",
+    "expo-asset": "~11.1.2",
+    "expo-constants": "~17.1.2",
+    "expo-file-system": "~18.1.5",
+    "expo-font": "~13.2.1",
+    "expo-keep-awake": "~14.1.2",
+    "expo-modules-autolinking": "2.1.5",
+    "expo-modules-core": "2.3.6",
+    "react-native-edge-to-edge": "1.6.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "@types/react": "~19.0.10",
     "@types/react-test-renderer": "^19.0.0",
-    "expo-module-scripts": "^4.0.2",
+    "expo-module-scripts": "^4.1.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.0-rc.2",
+    "react-native": "0.79.1",
     "ws": "^8.18.0"
   },
   "peerDependencies": {

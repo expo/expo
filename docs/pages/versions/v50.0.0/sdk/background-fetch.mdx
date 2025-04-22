@@ -31,7 +31,15 @@ You can check out [the relevant GitHub issue](https://github.com/expo/expo/issue
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-background-fetch` repository](https://github.com/expo/expo/tree/main/packages/expo-background-fetch#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **ios** project manually, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>fetch</string>
+  </array>
+</key>
+```
 
 </ConfigReactNative>
 

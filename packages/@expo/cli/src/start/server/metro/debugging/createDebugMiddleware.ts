@@ -1,15 +1,17 @@
-import chalk from 'chalk';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
-import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { TerminalReporter } from '../TerminalReporter';
 import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 
 const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 
-export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
+export function createDebugMiddleware(
+  metroBundler: MetroBundlerDevServer,
+  reporter: TerminalReporter
+) {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
   const { createDevMiddleware } =
@@ -20,8 +22,14 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     serverBaseUrl: metroBundler
       .getUrlCreator()
       .constructUrl({ scheme: 'http', hostType: 'localhost' }),
-    logger: createLogger(chalk.bold('Debug:')),
+    logger: createLogger(reporter),
     unstable_customInspectorMessageHandler: createHandlersFactory(),
+    // TODO: Forward all events to the shared Metro log reporter. Do this when we have opinions on how all logs should be presented.
+    // unstable_eventReporter: {
+    //   logEvent(event) {
+    //     reporter.update(event);
+    //   },
+    // },
     unstable_experiments: {
       // Enable the Network tab in React Native DevTools
       enableNetworkInspector: true,
@@ -43,13 +51,22 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
 }
 
 function createLogger(
-  logPrefix: string
+  reporter: TerminalReporter
 ): Parameters<typeof import('@react-native/dev-middleware').createDevMiddleware>[0]['logger'] {
   return {
-    info: (...args) => Log.log(logPrefix, ...args),
-    warn: (...args) => Log.warn(logPrefix, ...args),
-    error: (...args) => Log.error(logPrefix, ...args),
+    info: makeLogger(reporter, 'info'),
+    warn: makeLogger(reporter, 'warn'),
+    error: makeLogger(reporter, 'error'),
   };
+}
+
+function makeLogger(reporter: TerminalReporter, level: 'info' | 'warn' | 'error') {
+  return (...data: any[]) =>
+    reporter.update({
+      type: 'unstable_server_log',
+      level,
+      data,
+    });
 }
 
 /**

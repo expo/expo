@@ -4,13 +4,44 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.28.5 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2025-04-14
+
+### 🎉 New features
+
+- [Android] Added `EX_UPDATES_COPY_EMBEDDED_ASSETS` flag which is false by default, to not copy embedded assets. ([#36059](https://github.com/expo/expo/pull/36059) by [@kudo](https://github.com/kudo))
+
+## 0.28.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Remove a few long-deprecated typescript types. ([#34215](https://github.com/expo/expo/pull/34215) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
-- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
 - Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
@@ -31,6 +62,13 @@
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - Drop `fbemitter` in favor of custom emitter. ([#35317](https://github.com/expo/expo/pull/35317) by [@kitten](https://github.com/kitten))
 - E2E tests for custom init. ([#35569](https://github.com/expo/expo/pull/35569) by [@douglowder](https://github.com/douglowder))
+- Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+
+## 0.27.4 - 2025-03-18
+
+### 🎉 New features
+
+- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
 
 ## 0.27.3 - 2025-03-11
 

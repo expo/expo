@@ -19,6 +19,7 @@ export type CommandOptions = {
   force: boolean;
   canary: boolean;
   deps: boolean;
+  skipAndroidArtifacts: boolean;
 
   /* exclusive options that affect what the command does */
   listUnpublished: boolean;

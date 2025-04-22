@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
+exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
+exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
@@ -13,8 +14,9 @@ class ExpoAndroidProjectConfig {
     modules;
     publication;
     gradleAarProjects;
+    shouldUsePublicationScriptPath;
     isDefault;
-    constructor(name, path, modules, publication, gradleAarProjects, 
+    constructor(name, path, modules, publication, gradleAarProjects, shouldUsePublicationScriptPath, 
     /**
      * Whether this project is the root one.
      */
@@ -24,6 +26,7 @@ class ExpoAndroidProjectConfig {
         this.modules = modules;
         this.publication = publication;
         this.gradleAarProjects = gradleAarProjects;
+        this.shouldUsePublicationScriptPath = shouldUsePublicationScriptPath;
         this.isDefault = isDefault;
     }
 }
@@ -98,10 +101,10 @@ class ExpoModuleConfig {
     androidProjects(defaultProjectName) {
         const androidProjects = [];
         // Adding the "root" Android project - it might not be valide.
-        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, !this.rawConfig.android?.path // it's default project because path is not defined
+        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
         ));
         this.rawConfig.android?.projects?.forEach((project) => {
-            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules, project.publication, project.gradleAarProjects));
+            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules, project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
         });
         return androidProjects;
     }
@@ -145,5 +148,4 @@ function requireAndResolveExpoModuleConfig(path) {
     // TODO: Support for `*.js` files, not only static `*.json`.
     return new ExpoModuleConfig(require(path));
 }
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 //# sourceMappingURL=ExpoModuleConfig.js.map

@@ -1,5 +1,3 @@
-import expo.modules.plugin.gradle.ExpoModuleExtension
-
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
@@ -9,11 +7,14 @@ expoModule {
   canBePublished false
 }
 
+group = "host.exp.exponent"
+version = "5.1.4"
+
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "5.0.17"
+    versionName "5.1.4"
   }
 
   buildTypes {

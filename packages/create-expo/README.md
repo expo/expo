@@ -121,3 +121,5 @@ Some characters aren't allowed in certain places, that's why Create Expo App app
 Due to some limitations with `npm pack`, some files are handled differently.
 
 - `gitignore` → Renamed to `.gitignore` due to `npm pack` skipping `.gitignore` files, see [npm/npm#1862](https://github.com/npm/npm/issues/1862)
+
+The directories `.vscode`, `.eas`, `.github`, `.cursor` can be included in templates if they use an underscore instead of a dot, e.g. `_vscode` instead of `.vscode`.

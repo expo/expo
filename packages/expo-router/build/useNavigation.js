@@ -1,10 +1,10 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigation = void 0;
+exports.useNavigation = useNavigation;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const router_store_1 = require("./global-state/router-store");
@@ -66,7 +66,7 @@ function useNavigation(parent) {
     let navigation = (0, native_1.useNavigation)();
     const initialNavigation = navigation;
     const segments = (0, hooks_1.useSegments)();
-    const targetNavigatorContextKey = react_1.default.useMemo(() => {
+    let targetNavigatorContextKey = react_1.default.useMemo(() => {
         if (!parent) {
             return;
         }
@@ -109,6 +109,8 @@ function useNavigation(parent) {
         }
         return contextKey;
     }, [segments, parent]);
+    // Remove the root Slot to generate the correct context key
+    targetNavigatorContextKey = targetNavigatorContextKey?.replace('/__root', '');
     if (targetNavigatorContextKey !== undefined) {
         navigation = navigation.getParent(targetNavigatorContextKey);
     }
@@ -123,5 +125,4 @@ function useNavigation(parent) {
     }
     return navigation;
 }
-exports.useNavigation = useNavigation;
 //# sourceMappingURL=useNavigation.js.map

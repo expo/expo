@@ -1,4 +1,3 @@
-/// <reference types="xcode" />
 import { ConfigPlugin, type XcodeProject } from '@expo/config-plugins';
 export declare const withIosSplashXcodeProject: ConfigPlugin;
 /**

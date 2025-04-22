@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -8,9 +9,20 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 'use client';
-"use strict";
+/**
+ * Copyright © 2024 650 Industries.
+ * Copyright © 2024 2023 Daishi Kato
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
+exports.Link = void 0;
+exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
+exports.Router = Router;
+exports.ServerRouter = ServerRouter;
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -272,7 +284,6 @@ function useRouter_UNSTABLE() {
         prefetch,
     };
 }
-exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {
     // const unstable_shouldRenderPrev = (_err: unknown) => {
     //   const shouldSkip = routerData[0];
@@ -309,7 +320,6 @@ function Router({ routerData = DEFAULT_ROUTER_DATA }) {
     const unstable_onFetchData = () => { };
     return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialParams, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter, { routerData }));
 }
-exports.Router = Router;
 const notAvailableInServer = (name) => () => {
     throw new Error(`${name} is not in the server`);
 };
@@ -326,7 +336,6 @@ function ServerRouter({ children, route }) {
         },
     }, children));
 }
-exports.ServerRouter = ServerRouter;
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, 

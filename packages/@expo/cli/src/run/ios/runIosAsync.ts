@@ -1,9 +1,11 @@
+import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../../log';
+import { hasDirectDevClientDependency } from '../../start/detectDevClient';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -12,6 +14,7 @@ import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { uploadRemoteBuildCache, resolveRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
@@ -38,6 +41,18 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  const projectConfig = getConfig(projectRoot);
+  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache && props.isSimulator) {
+    const localPath = await resolveRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      runOptions: options,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
 
   if (options.rebundle) {
     Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
@@ -89,6 +104,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   let binaryPath: string;
+  let shouldUpdateBuildCache = false;
   if (options.binary) {
     binaryPath = await getValidBinaryPathAsync(options.binary, props);
     Log.log('Using custom binary path:', binaryPath);
@@ -113,6 +129,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     // Find the path to the built app binary, this will be used to install the binary
     // on a device.
     binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+    shouldUpdateBuildCache = true;
   }
   debug('Binary path:', binaryPath);
 
@@ -165,6 +182,14 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     logProjectLogsLocation();
   } else {
     await manager.stopAsync();
+  }
+
+  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
+    await uploadRemoteBuildCache(projectRoot, {
+      platform: 'ios',
+      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      buildPath: binaryPath,
+    });
   }
 }
 

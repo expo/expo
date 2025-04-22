@@ -127,11 +127,11 @@ export default function AccelerometerScreen() {
         {Array(COUNT)
           .fill(null)
           .map((_, index) => {
-            const props = { key: `ball-${index}`, index, position };
+            const props = { index, position };
             if (shouldUseReanimated) {
-              return <ReanimatedBall {...props} />;
+              return <ReanimatedBall key={`ball-${index}`} {...props} />;
             } else {
-              return <AnimatedBall {...props} />;
+              return <AnimatedBall key={`ball-${index}`} {...props} />;
             }
           })}
       </Container>

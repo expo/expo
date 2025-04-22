@@ -321,6 +321,101 @@ jobs:
     # @end #
 ```
 
+## Interpolation
+
+You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
+
+### `after` and `needs`
+
+When you specify an upstream job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job produces a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Example usage:
+
+```yaml
+jobs:
+  setup:
+    outputs:
+      date: ${{ steps.current_date.outputs.date }}
+    steps:
+      - id: current_date
+        run: |
+          DATE=$(date +"%Y.%-m.%-d")
+          set-output date "$DATE"
+
+  build_ios:
+    needs: [setup]
+    type: build
+    env:
+      # You might use process.env.VERSION_SUFFIX to customize
+      # app version in your dynamic app config.
+      VERSION_SUFFIX: ${{ needs.setup.outputs.date }}
+    params:
+      platform: ios
+      profile: development
+```
+
+### `github`
+
+To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
+
+```json
+{
+  "event_name": "pull_request" | "push" | "schedule" | "workflow_dispatch",
+  "sha": string,
+  "ref": string, // e.g. refs/heads/main
+  "ref_name": string, // e.g. main
+  "ref_type": "branch" | "tag" | "other"
+}
+```
+
+If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    # @info #
+    if: ${{ github.ref_name == 'main' }}
+    # @end #
+    params:
+      platform: ios
+      profile: production
+```
+
+### `success()`, `failure()`
+
+`success()` returns `true` only if no previous job has failed. `failure()` returns `true` if any previous job has failed.
+
+### `fromJSON()`, `toJSON()`
+
+`fromJSON()` is `JSON.parse()`, and `toJSON()` is `JSON.stringify()`. You can use them to consume or produce JSON outputs.
+
+Example usage:
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+
+  print_debug_info:
+    needs: [publish_update]
+    steps:
+      - run: |
+          echo "First update group: ${{ needs.publish_update.outputs.first_update_group_id }}"
+          echo "Second update group: ${{ fromJSON(needs.publish_update.outputs.updates_json || '[]')[1].group }}"
+```
+
 ## Pre-packaged jobs
 
 ### `jobs.<job_id>.type`
@@ -474,6 +569,16 @@ jobs:
       profile: string # optional, default: production
 ```
 
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "android_package_id": string | null // Submitted Android package ID. https://expo.fyi/android-package
+}
+```
+
 #### `update`
 
 Publishes an update using [EAS Update](/eas-update/introduction/).
@@ -489,6 +594,15 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
+  "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
 ```
 
 #### `maestro`
@@ -533,8 +647,6 @@ jobs:
     # @end #
 ```
 
-{/* vale off */}
-
 | Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                                |
 | ---------------------------------- | ---- | ---------------- | --------- | ------------------------------------ |
 | linux-medium                       | 4    | 16               | 14        | Default worker.                      |
@@ -544,13 +656,18 @@ jobs:
 | macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
 | macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
 
-{/* vale on */}
-
 > **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 
 ### `jobs.<job_id>.outputs`
 
-A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
+A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the `set-output` function within a job step.
+
+Downstream jobs can access these outputs using the following expressions within [interpolation contexts](#interpolation):
+
+- `needs.<job_id>.outputs.<output_name>`
+- `after.<job_id>.outputs.<output_name>`
+
+Here, `<job_id>` refers to the identifier of the upstream job, and `<output_name>` refers to the specific output variable you want to access.
 
 In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
 
@@ -771,7 +888,7 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                      |
-| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink

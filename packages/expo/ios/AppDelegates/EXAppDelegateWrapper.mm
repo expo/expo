@@ -2,9 +2,9 @@
 
 #import <Expo/EXAppDelegateWrapper.h>
 
-#import <ExpoModulesCore/EXReactRootViewFactory.h>
-#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
-#import <ExpoModulesCore/EXReactNativeFactoryDelegate.h>
+#import <Expo/EXReactRootViewFactory.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
+#import <Expo/EXReactNativeFactoryDelegate.h>
 #import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -69,8 +69,7 @@
 }
 #else
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
-  [super applicationDidFinishLaunching:notification];
+{ 
   return [_expoAppDelegate applicationDidFinishLaunching:notification];
 }
 

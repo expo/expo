@@ -26,7 +26,9 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
     project.logger.quiet("Using expo modules")
 
-    val (projects, prebuiltProjects) = config.allProjects.partition { project -> project.publication == null }
+    val (prebuiltProjects, projects) = config.allProjects.partition { project ->
+      project.usePublication
+    }
 
     project.withSubprojects(projects) { subproject ->
       // Ensures that dependencies are resolved before the project is evaluated.

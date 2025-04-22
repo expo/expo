@@ -7,11 +7,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as React from 'react';
+import { ViewProps } from 'react-native-web/dist/exports/View/types';
 /**
  * This is the View from react-native-web copied out in order to supply a custom `__element` property.
  * In the past, you could use `createElement` to create an element with a custom HTML element, but this changed
  * somewhere between 0.14...0.17.
  */
-declare const View: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<ViewProps>>;
+declare function View(props: ViewProps): React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+declare namespace View {
+    var displayName: string;
+}
 export default View;
 //# sourceMappingURL=RNWView.d.ts.map

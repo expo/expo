@@ -157,6 +157,33 @@ describe(withBuildProperties, () => {
     }).rejects.toThrow();
   });
 
+  it('should not overwrite existing properties by undefined properties', async () => {
+    // Run withPodfileProperties twice
+    // The first run to pass `ccacheEnabled: true`, and the second run to pass empty props.
+    // Ultimately, ccacheEnabled should be true
+    const { modResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { ccacheEnabled: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: {},
+        mod: withPodfileProperties,
+        modResults,
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'apple.ccacheEnabled': 'true',
+    });
+  });
+
   it('generates the apple.ccacheEnabled property', async () => {
     const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
       {},

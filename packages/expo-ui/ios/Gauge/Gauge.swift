@@ -3,9 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct GaugeView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: GaugeProps
+struct GaugeView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: GaugeProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+
+  init(props: GaugeProps) {
+    self.props = props
+  }
 
   var body: some View {
 #if !os(tvOS)

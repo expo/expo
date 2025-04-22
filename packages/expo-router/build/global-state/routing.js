@@ -15,19 +15,40 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
+exports.navigate = navigate;
+exports.reload = reload;
+exports.prefetch = prefetch;
+exports.push = push;
+exports.dismiss = dismiss;
+exports.dismissTo = dismissTo;
+exports.replace = replace;
+exports.dismissAll = dismissAll;
+exports.goBack = goBack;
+exports.canGoBack = canGoBack;
+exports.canDismiss = canDismiss;
+exports.setParams = setParams;
+exports.linkTo = linkTo;
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
-const non_secure_1 = require("nanoid/non-secure");
 const react_native_1 = require("react-native");
 const href_1 = require("../link/href");
 const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
@@ -41,38 +62,34 @@ function assertIsReady(store) {
 function navigate(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
-exports.navigate = navigate;
 function reload() {
     // TODO(EvanBacon): add `reload` support.
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
-exports.reload = reload;
+function prefetch(href, options) {
+    return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
+}
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
-exports.push = push;
 function dismiss(count) {
     if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
         return;
     }
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
-exports.dismiss = dismiss;
 function dismissTo(href, options) {
     return this.linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
 }
-exports.dismissTo = dismissTo;
 function replace(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
-exports.replace = replace;
 function dismissAll() {
     if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
         return;
     }
     this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
-exports.dismissAll = dismissAll;
 function goBack() {
     if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
         return;
@@ -80,7 +97,6 @@ function goBack() {
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-exports.goBack = goBack;
 function canGoBack() {
     if (dom_1.IS_DOM) {
         throw new Error('canGoBack imperative method is not supported. Pass the property to the DOM component instead.');
@@ -95,7 +111,6 @@ function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-exports.canGoBack = canGoBack;
 function canDismiss() {
     if (dom_1.IS_DOM) {
         throw new Error('canDismiss imperative method is not supported. Pass the property to the DOM component instead.');
@@ -112,7 +127,6 @@ function canDismiss() {
     }
     return false;
 }
-exports.canDismiss = canDismiss;
 function setParams(params = {}) {
     if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
         return;
@@ -120,8 +134,8 @@ function setParams(params = {}) {
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-exports.setParams = setParams;
-function linkTo(href, options = {}) {
+function linkTo(originalHref, options = {}) {
+    let href = originalHref;
     if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
         return;
     }
@@ -146,15 +160,19 @@ function linkTo(href, options = {}) {
     }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
+    href = this.applyRedirects(href);
+    // If the href is undefined, it means that the redirect has already been handled the navigation
+    if (!href) {
+        return;
+    }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor));
+    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
 }
-exports.linkTo = linkTo;
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor) {
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -180,6 +198,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||
+            // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
             (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
         if (didActionAndCurrentStateDiverge) {
             break;
@@ -209,32 +228,14 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         params = payload;
         actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
     }
-    // Expo Router uses only three actions, but these don't directly translate to all navigator actions
-    if (type === 'PUSH') {
-        // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
+    if (type === 'PUSH' && navigationState.type !== 'stack') {
         type = 'NAVIGATE';
-        /*
-         * The StackAction.PUSH does not work correctly with Expo Router.
-         *
-         * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
-         * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
-         * When you try and push to a screen with the same ID, no navigation will occur
-         * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
-         *
-         * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
-         *
-         * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
-         * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
-         *
-         */
-        if (navigationState.type === 'stack') {
-            rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
-        }
     }
-    if (navigationState.type === 'expo-tab') {
+    else if (navigationState.type === 'expo-tab') {
         type = 'JUMP_TO';
     }
-    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
+    else if (type === 'REPLACE' &&
+        (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
     }
     if (withAnchor !== undefined) {
@@ -261,6 +262,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
             // key: rootPayload.key,
             name: rootPayload.screen,
             params: rootPayload.params,
+            singular,
         },
     };
 }

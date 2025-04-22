@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(semver.gte(row['sqlite_version()'], '3.45.3')).toBe(true);
+      expect(semver.gte(row['sqlite_version()'], '3.49.1')).toBe(true);
       await db.closeAsync();
     });
 
@@ -247,8 +247,8 @@ CREATE TABLE IF NOT EXISTS nulling (id INTEGER PRIMARY KEY NOT NULL, x NUMERIC, 
 `);
       await db.runAsync('INSERT INTO nulling (x, y) VALUES (?, ?)', [null, null]);
       const statement = await db.prepareAsync('INSERT INTO nulling (x, y) VALUES (?, ?)');
-      statement.executeAsync(null, null);
-      statement.finalizeAsync();
+      await statement.executeAsync(null, null);
+      await statement.finalizeAsync();
 
       const results = await db.getAllAsync<{ x: number | null; y: number | null }>(
         'SELECT * FROM nulling'

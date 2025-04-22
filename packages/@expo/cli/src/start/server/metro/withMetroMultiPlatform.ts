@@ -836,6 +836,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+    );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as http from 'http';
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 /**

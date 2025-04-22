@@ -14,7 +14,6 @@ import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer;
 import expo.modules.notifications.notifications.channels.AndroidXNotificationsChannelsProvider;
 import expo.modules.notifications.service.delegates.ExpoNotificationLifecycleListener;
-import expo.modules.notifications.tokens.PushTokenManager;
 
 public class NotificationsPackage extends BasePackage {
 
@@ -27,7 +26,6 @@ public class NotificationsPackage extends BasePackage {
   @Override
   public List<SingletonModule> createSingletonModules(Context context) {
     return Arrays.asList(
-      new PushTokenManager(),
       mNotificationManager
     );
   }

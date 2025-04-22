@@ -9,6 +9,7 @@ import {
   Talks,
   JoinTheCommunity,
 } from '~/ui/components/Home/sections';
+import { ExploreExamples } from '~/ui/components/Home/sections/ExploreExamples';
 
 function Home() {
   return (
@@ -24,6 +25,7 @@ function Home() {
       <QuickStart />
       <DiscoverMore />
       <ExploreAPIs />
+      <ExploreExamples />
       <Talks />
       <JoinTheCommunity />
     </DocumentationPage>

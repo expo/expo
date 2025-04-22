@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 15.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.1 — 2025-04-09
+
+### 💡 Others
+
+- Expo AV has now been deprecated. ([#36020](https://github.com/expo/expo/pull/36020) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.1.0 — 2025-04-04
+
+### 💡 Others
+
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.0.2 - 2025-01-10

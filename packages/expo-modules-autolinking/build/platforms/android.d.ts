@@ -1,4 +1,5 @@
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision, ResolveOptions } from '../types';
+export declare function getConfiguration(options: ResolveOptions): Record<string, any> | undefined;
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -6,6 +7,7 @@ export declare function generatePackageListAsync(modules: ModuleDescriptorAndroi
 export declare function isAndroidProject(projectRoot: string): boolean;
 export declare function resolveModuleAsync(packageName: string, revision: PackageRevision): Promise<ModuleDescriptorAndroid | null>;
 export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: string): Promise<ExtraDependencies | null>;
+export declare function resolveGradlePropertyAsync(projectNativeRoot: string, propertyKey: string): Promise<string | null>;
 /**
  * Converts the package name to Android's project name.
  *   `/` path will transform as `-`

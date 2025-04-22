@@ -10,6 +10,7 @@ import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
+import { Prefetch } from '../Prefetch';
 import { Slot } from '../ui/Slot';
 
 export interface LinkComponent {
@@ -131,6 +132,8 @@ function ExpoRouterLink(
     target,
     download,
     withAnchor,
+    dangerouslySingular: singular,
+    prefetch,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
@@ -158,6 +161,7 @@ function ExpoRouterLink(
     event,
     relativeToDirectory,
     withAnchor,
+    dangerouslySingular: singular,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
@@ -167,11 +171,11 @@ function ExpoRouterLink(
     props.onPress(e);
   };
 
-  const Element = asChild ? Slot : Text;
+  const Component = asChild ? Slot : Text;
 
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-  return (
-    <Element
+  const element = (
+    <Component
       ref={ref}
       {...props}
       {...hrefAttrs}
@@ -184,6 +188,15 @@ function ExpoRouterLink(
         default: { onPress },
       })}
     />
+  );
+
+  return prefetch ? (
+    <>
+      <Prefetch href={href} />
+      {element}
+    </>
+  ) : (
+    element
   );
 }
 

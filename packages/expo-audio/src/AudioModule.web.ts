@@ -63,6 +63,9 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     };
 
   return new Promise((resolve, reject) => {
+    // TODO(@kitten): The types indicates that this is incorrect.
+    // Please check whether this is correct!
+    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
@@ -82,8 +85,8 @@ function getStatusFromMedia(
   const status: AudioStatus = {
     id,
     isLoaded: true,
-    duration: media.duration * 1000,
-    currentTime: media.currentTime * 1000,
+    duration: media.duration,
+    currentTime: media.currentTime,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',
     currentQueueIndex: player.currentQueueIndex, // todo: implement
@@ -121,6 +124,7 @@ export class AudioPlayerWeb
 
   private src: AudioSource = null;
   private media: HTMLAudioElement;
+  // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
   private interval = 100;
   private isPlaying = false;
   private loaded = false;
@@ -149,11 +153,11 @@ export class AudioPlayerWeb
   }
 
   get duration(): number {
-    return this.media.duration * 1000;
+    return this.media.duration;
   }
 
   get currentTime(): number {
-    return this.media.currentTime * 1000;
+    return this.media.currentTime;
   }
 
   get paused(): boolean {
@@ -331,7 +335,7 @@ export class AudioPlayerWeb
   }
 
   async seekTo(seconds: number): Promise<void> {
-    this.media.currentTime = seconds / 1000;
+    this.media.currentTime = seconds;
   }
 
   private _loadTrackAtIndex(index: number): void {

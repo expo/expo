@@ -1,4 +1,3 @@
-/// <reference types="../src/types/globals.d.ts" />
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import type { ConnectionInfo, DevToolsPluginClientOptions, HandshakeMessageParams } from './devtools.types';
 export interface EventSubscription {

@@ -49,8 +49,8 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
       if (!sTokenListenersReferences.containsKey(listener)) {
         sTokenListenersReferences[listener] = WeakReference(listener)
         // Since it's a new listener and we know of a last valid token, let's let them know.
-        if (sLastToken != null) {
-          listener.onNewToken(sLastToken)
+        sLastToken?.let {
+          listener.onNewToken(it)
         }
       }
     }

@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/test-suite-macos.yml
+      - apps/bare-expo/macos/**
       - packages/expo/**
       - packages/expo-asset/**
       - packages/expo-constants/**

@@ -1,6 +1,7 @@
 package expo.modules.plugin.configuration
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
@@ -8,7 +9,8 @@ import kotlinx.serialization.modules.SerializersModule
 data class ExpoAutolinkingConfig(
   val modules: List<ExpoModule> = emptyList(),
   val extraDependencies: List<MavenRepo> = emptyList(),
-  val coreFeatures: List<String> = emptyList()
+  val coreFeatures: List<String> = emptyList(),
+  val configuration: Configuration = Configuration()
 ) {
   /**
    * Returns all gradle projects from all modules.
@@ -54,6 +56,15 @@ data class ExpoAutolinkingConfig(
   }
 }
 
+@Serializable
+data class Configuration(
+  val buildFromSource: List<String> = emptyList<String>()
+) {
+  val buildFromSourceRegex by lazy {
+    buildFromSource.map { it.toRegex() }
+  }
+}
+
 /**
  * Object representing a maven repository
  */
@@ -92,7 +103,19 @@ data class GradleProject(
   val sourceDir: String,
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
-  val modules: List<String> = emptyList()
+  val modules: List<String> = emptyList(),
+  val shouldUsePublicationScriptPath: String? = null,
+  @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
+) {
+  /**
+   * Returns whether the publication was defined and should be used.
+   */
+  val usePublication: Boolean
+    get() = publication != null && configuration.shouldUsePublication
+}
+
+data class GradleProjectConfiguration(
+  var shouldUsePublication: Boolean = false
 )
 
 /**

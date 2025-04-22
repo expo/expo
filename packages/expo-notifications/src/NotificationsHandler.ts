@@ -110,7 +110,8 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
           const behavior = await handler.handleNotification(notification);
           await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
           handler.handleSuccess?.(id);
-        } catch (error) {
+        } catch (error: any) {
+          // TODO(@kitten): This callback expects specific Error types, but we never narrow the type before calling this callback
           handler.handleError?.(id, error);
         }
       }

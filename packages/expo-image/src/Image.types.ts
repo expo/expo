@@ -18,12 +18,12 @@ export type ImageSource = {
    * Can be specified if known at build time, in which case the value
    * will be used to set the default `<Image/>` component dimension.
    */
-  width?: number;
+  width?: number | null;
   /**
    * Can be specified if known at build time, in which case the value
    * will be used to set the default `<Image/>` component dimension.
    */
-  height?: number;
+  height?: number | null;
 
   /**
    * A string used to generate the image [`placeholder`](#placeholder). For example,
@@ -64,6 +64,19 @@ export type ImageSource = {
    * @platform ios
    */
   isAnimated?: boolean;
+
+  /**
+   * Whether to use the Apple system WebP codec.
+   *
+   * When set to `true`, use the Apple system WebP codec from `SDWebImageAWebPCoder`.
+   * When set to `false`, use the libwebp codec from `SDWebImageWebPCoder`.
+   * The Apple system WebP codec is faster and uses less memory, but it has some issues with animated WebP images.
+   * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+   *
+   * @default true
+   * @platform ios
+   */
+  useAppleWebpCodec?: boolean;
 };
 
 /**
@@ -363,8 +376,8 @@ export interface ImageNativeProps extends ImageProps {
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
-  nativeViewRef?: React.RefObject<ExpoImage>;
-  containerViewRef?: React.RefObject<View>;
+  nativeViewRef?: React.RefObject<ExpoImage | null>;
+  containerViewRef?: React.RefObject<View | null>;
 }
 
 /**

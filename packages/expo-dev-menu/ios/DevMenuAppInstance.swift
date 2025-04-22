@@ -2,6 +2,7 @@
 
 import React
 import ReactAppDependencyProvider
+import React_RCTAppDelegate
 
 @objc
 class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
@@ -9,13 +10,13 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
-  var reactNativeFactory: EXDevClientReactNativeFactory?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   init(manager: DevMenuManager) {
     self.manager = manager
     super.init()
     self.dependencyProvider = RCTAppDependencyProvider()
-    self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
+    self.reactNativeFactory = RCTReactNativeFactory(delegate: self)
   }
 
   func setBridge(_ bridge: RCTBridge) {

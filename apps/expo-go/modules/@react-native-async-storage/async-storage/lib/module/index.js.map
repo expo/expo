@@ -1,1 +1,1 @@
-{"version":3,"names":["AsyncStorage","useAsyncStorage"],"sources":["index.ts"],"sourcesContent":["import AsyncStorage from \"./AsyncStorage\";\n\nexport { useAsyncStorage } from \"./hooks\";\n\nexport type { AsyncStorageStatic } from \"./types\";\n\nexport default AsyncStorage;\n"],"mappings":"AAAA,OAAOA,YAAY,MAAM,gBAAgB;AAEzC,SAASC,eAAe,QAAQ,SAAS;AAIzC,eAAeD,YAAY"}
+{"version":3,"names":["AsyncStorage","useAsyncStorage"],"sourceRoot":"../../src","sources":["index.ts"],"mappings":";;AAAA,OAAOA,YAAY,MAAM,gBAAgB;AAEzC,SAASC,eAAe,QAAQ,SAAS;AAIzC,eAAeD,YAAY","ignoreList":[]}

@@ -57,6 +57,7 @@ jobs:
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
+          version: 3.11.1
           reporter: github-pr-check
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'

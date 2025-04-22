@@ -4,9 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 17.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
