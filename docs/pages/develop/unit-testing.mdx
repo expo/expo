@@ -21,8 +21,6 @@ import { CODE } from '~/ui/components/Text';
 
 You will also use the [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) library, which is a Jest preset that mocks the native part of the Expo SDK and handles most of the configuration required for your Expo project.
 
-> **info** **Note:** While unit testing is a useful practice for library development, you might not need it for your app since unit tests on rendering aren't useful. See configuring [E2E tests with Maestro](/eas/workflows/reference/e2e-tests/) guide.
-
 ## Installation and configuration
 
 After creating your Expo project, follow the instructions below to install and configure `jest-expo` in your project:
@@ -147,7 +145,7 @@ To install it, run the following command:
 
 </Tabs>
 
-> **warning** **Deprecated:** For **SDK 52 and below**, if you are using the default Expo template, after installing this library, you can uninstall the `react-test-renderer` and `@types/react-test-renderer` from your project's dev dependencies. The `react-test-renderer` has been deprecated and will no longer be maintained in the React 19 and above. See [React's documentation for more information](https://react.dev/warnings/react-test-renderer).
+> **warning** **Deprecated:** `@testing-library/react-native` replaces the deprecated `react-test-renderer` because `react-test-renderer` does not support React 19 and above. Remove the deprecated library from your project if you are currently using it. See [React's documentation for more information](https://react.dev/warnings/react-test-renderer).
 
 ## Unit test
 
@@ -249,6 +247,8 @@ Alternatively, you can have multiple **\_\_tests\_\_** sub-directories for diffe
 It's all about preferences, and it is up to you to decide how you want to organize your project directory.
 
 ## Snapshot test
+
+> **info** **Note:** While unit testing is a useful practice for library development, you might not need it for your app since unit tests on rendering aren't useful. See configuring [E2E tests with Maestro](/eas/workflows/reference/e2e-tests/) guide.
 
 A [snapshot test](https://jestjs.io/docs/en/snapshot-testing) is used to make sure that UI stays consistent, especially when a project is working with global styles that are potentially shared across components.
 
