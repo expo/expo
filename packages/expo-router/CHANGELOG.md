@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace the deprecated "shadow\*" style props with the new "boxShadow" style prop ([#36310](https://github.com/expo/expo/pull/36310) by [@saviocmc](https://github.com/saviocmc))
+
 ## 5.0.2-preview.5 — 2025-04-22
 
 _This version does not introduce any user-facing changes._
