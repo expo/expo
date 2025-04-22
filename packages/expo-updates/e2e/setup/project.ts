@@ -360,13 +360,13 @@ async function preparePackageJson(
       '@types/react': '~19.0.10',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
-      'ts-node': '10.9.1',
-      typescript: '5.2.2',
+      'ts-node': '10.9.2',
+      typescript: '5.8.3',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
-      typescript: '5.2.2',
+      typescript: '5.8.3',
       '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
     },
   };
