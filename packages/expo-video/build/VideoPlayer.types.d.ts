@@ -265,7 +265,7 @@ export type VideoSource = string | number | null | {
      */
     useCaching?: boolean;
     /**
-     * Specifies the content type of the video source. When set to 'auto' the player will try to automatically determine the content type.
+     * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
      *
      * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
      * @default 'auto'
