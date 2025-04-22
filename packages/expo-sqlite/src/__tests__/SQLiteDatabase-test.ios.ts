@@ -105,11 +105,7 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test2', 456);
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
-    for await (const _row of db.getEachAsync<TestEntity>(
-      'SELECT * FROM test ORDER BY intValue DESC'
-    )) {
-      break;
-    }
+    db.getEachAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC');
     const mockStatement = await mockPrepareAsync.mock.results[0].value;
     expect(mockStatement.nativeStatement.finalizeAsync).toHaveBeenCalled();
   });
@@ -123,9 +119,7 @@ describe('Database', () => {
   INSERT INTO test (value, intValue) VALUES ('test2', 456);
   INSERT INTO test (value, intValue) VALUES ('test3', 789);
   `);
-    for (const _row of db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
-      break;
-    }
+    db.getEachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC');
     const mockStatement = await mockPrepareSync.mock.results[0].value;
     expect(mockStatement.nativeStatement.finalizeSync).toHaveBeenCalled();
   });
