@@ -1,11 +1,22 @@
 import { requireNativeView } from 'expo';
+import { useState } from 'react';
 import { Platform } from 'react-native';
 const HostNativeView = Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIHost') : null;
 export function Host(props) {
+    const { matchContents, onLayoutContent, style, ...restProps } = props;
+    const [containerStyle, setContainerStyle] = useState(null);
     if (!HostNativeView) {
         return null;
     }
-    return <HostNativeView {...props}/>;
+    return (<HostNativeView onLayoutContent={(e) => {
+            onLayoutContent?.(e);
+            if (matchContents) {
+                setContainerStyle({
+                    width: e.nativeEvent.width,
+                    height: e.nativeEvent.height,
+                });
+            }
+        }} style={[containerStyle, style]} matchContents={matchContents} {...restProps}/>);
 }
 const FormNativeView = Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIForm') : null;
 export function Form(props) {
