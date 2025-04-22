@@ -1,11 +1,13 @@
-import fs from 'fs/promises';
+// @ts-check
 
-export type StartMode = 'BUILD' | 'TEST' | 'BUILD_AND_TEST';
+const fs = require('fs/promises');
 
 /**
  * Parse the start mode from the command line arguments.
+ * @param {string} programFilename
+ * @returns {'BUILD' | 'TEST' | 'BUILD_AND_TEST'}
  */
-export function getStartMode(programFilename: string): StartMode {
+function getStartMode(programFilename) {
   const programIndex = process.argv.findIndex((argv) => argv === programFilename);
   const startModeArg = process.argv[programIndex + 1];
   if (startModeArg === '--build') {
@@ -19,16 +21,14 @@ export function getStartMode(programFilename: string): StartMode {
 
 /**
  * Generate Maestro flow yaml file
+ * @param {{ appId: string; workflowFile: string; confirmFirstRunPrompt?: boolean; }} params
+ * @returns {Promise<void>}
  */
-export async function createMaestroFlowAsync({
+async function createMaestroFlowAsync({
   appId,
   workflowFile,
   confirmFirstRunPrompt,
-}: {
-  appId: string;
-  workflowFile: string;
-  confirmFirstRunPrompt?: boolean;
-}): Promise<void> {
+}) {
   const inputFile = require('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS;
   const contents = [
@@ -68,8 +68,9 @@ appId: ${appId}
 
 /**
  * Ensure a directory exists.
+ * @param {string} dirPath
  */
-export async function ensureDirAsync(dirPath: string) {
+async function ensureDirAsync(dirPath) {
   try {
     await fs.mkdir(dirPath, { recursive: true });
   } catch (e) {
@@ -81,13 +82,19 @@ export async function ensureDirAsync(dirPath: string) {
 
 /**
  * Retry an async function a number of times with a delay between each attempt.
+ * @template T
+ * @param {() => Promise<T>} fn
+ * @param {number} retries
+ * @param {number=} delayAfterErrorMs
+ * @returns {Promise<T>}
  */
-export async function retryAsync<T>(
-  fn: () => Promise<T>,
-  retries: number,
-  delayAfterErrorMs: number = 5000
-): Promise<T> {
-  let lastError: Error | undefined;
+async function retryAsync(
+  fn,
+  retries,
+  delayAfterErrorMs = 5000
+) {
+  /** @types {Error | undefined} */
+  let lastError;
   for (let i = 0; i < retries; ++i) {
     try {
       return await fn();
@@ -101,14 +108,27 @@ export async function retryAsync<T>(
 
 /**
  * Check if a file exists.
+ * @param {string} file
+ * @returns {Promise<boolean>}
  */
-export async function fileExistsAsync(file: string): Promise<boolean> {
+async function fileExistsAsync(file) {
   return (await fs.stat(file).catch(() => null))?.isFile() ?? false;
 }
 
 /**
  * Delay for a number of milliseconds.
+ * @param {number} timeMs
+ * @returns {Promise<void>}
  */
-export async function delayAsync(timeMs: number): Promise<void> {
+async function delayAsync(timeMs) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
+
+module.exports = {
+  getStartMode,
+  createMaestroFlowAsync,
+  ensureDirAsync,
+  fileExistsAsync,
+  retryAsync,
+  delayAsync,
+};
