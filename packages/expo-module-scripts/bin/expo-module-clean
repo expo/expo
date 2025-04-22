@@ -1,16 +1,19 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import fs from 'node:fs';
+import path from 'node:path';
 
-if [[ ! -f package.json ]]; then
-  echo "The current working directory is not a package's root directory"
-  exit 1
-fi
+if (!fs.existsSync(path.join(process.cwd(), 'package.json'))) {
+  console.error('The current working directory is not a package\'s root directory');
+  process.exit(1);
+}
 
-directory=$1
-# Support `yarn clean plugin` to delete ./plugin/build/
-if [[ -n $directory ]]; then
-  rm -rf "$directory/build"
-else
-  rm -rf build
-fi
+const directory = process.argv[2];
+const pathToRemove = directory
+  ? path.join(process.cwd(), directory, 'build')
+  : path.join(process.cwd(), 'build');
+
+if (fs.existsSync(pathToRemove)) {
+  fs.rmSync(pathToRemove, { recursive: true });
+}

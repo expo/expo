@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 
-const fs = require('fs');
-const { globSync } = require('glob');
-const path = require('path');
+import { globSync } from 'glob';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+export const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function replaceAll(current, replacement, content) {
   const regexp = new RegExp(escapeRegExp('${' + current + '}'), 'g');
@@ -14,7 +17,7 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function removeUnapplicableSections(name, content) {
+function removeInapplicableSections(name, content) {
   const opener = `<!--- remove for ${name} --->`;
   const closer = `<!--- end remove for ${name} --->`;
   let nextContent = content;
@@ -40,7 +43,7 @@ function removeOptionals(content) {
 const DEFAULT_HOMEPAGE = 'https://docs.expo.dev/versions/latest/';
 
 function generateREADME() {
-  const template = path.join(__dirname, '..', 'templates', 'README.md');
+  const template = path.join(dirname, '..', 'templates', 'README.md');
   let readme = fs.readFileSync(template, 'utf8');
   const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
   const packageName = pkg.name;
@@ -70,11 +73,11 @@ function generateREADME() {
 
     readme = replaceAll('podName', podName, readme);
   } else {
-    readme = removeUnapplicableSections('no-ios', readme);
+    readme = removeInapplicableSections('no-ios', readme);
   }
 
   if (isInterface) {
-    readme = removeUnapplicableSections('interfaces', readme);
+    readme = removeInapplicableSections('interfaces', readme);
   } else {
     let docName;
     if (homepage === DEFAULT_HOMEPAGE || homepage.startsWith('https://github.com')) {
@@ -124,13 +127,13 @@ function generateREADME() {
 
           readme = replaceAll('androidPackageName', androidPackageName, readme);
         } else {
-          readme = removeUnapplicableSections('no-package', readme);
+          readme = removeInapplicableSections('no-package', readme);
         }
       }
 
       readme = replaceAll('androidPackagePath', androidPackagePath, readme);
     } else {
-      readme = removeUnapplicableSections('no-android', readme);
+      readme = removeInapplicableSections('no-android', readme);
     }
   }
   return removeOptionals(readme);

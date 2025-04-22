@@ -447,7 +447,6 @@ declare module 'react-native-web/dist/modules/pick' {
 
 // See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useElementLayout/index.js
 declare module 'react-native-web/dist/modules/useElementLayout' {
-  import type { ElementType } from 'react';
   import type { LayoutEvent } from 'react-native-web/dist/types';
 
   export default function useElementLayout(
