@@ -3,18 +3,18 @@ import { NativeSyntheticEvent, Platform, StyleProp, ViewStyle } from 'react-nati
 
 import { type ViewEvent } from '../types';
 
-//#region Container Component
-export type ContainerProps = {
+//#region Host Component
+export type HostProps = {
   children: React.ReactNode;
   style: StyleProp<ViewStyle>;
 };
-const ContainerNativeView: React.ComponentType<ContainerProps> | null =
-  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIContainer') : null;
-export function Container(props: ContainerProps) {
-  if (!ContainerNativeView) {
+const HostNativeView: React.ComponentType<HostProps> | null =
+  Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIHost') : null;
+export function Host(props: HostProps) {
+  if (!HostNativeView) {
     return null;
   }
-  return <ContainerNativeView {...props} />;
+  return <HostNativeView {...props} />;
 }
 //#endregion
 

@@ -1,11 +1,11 @@
 import { requireNativeView } from 'expo';
 import { Platform } from 'react-native';
-const ContainerNativeView = Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIContainer') : null;
-export function Container(props) {
-    if (!ContainerNativeView) {
+const HostNativeView = Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIHost') : null;
+export function Host(props) {
+    if (!HostNativeView) {
         return null;
     }
-    return <ContainerNativeView {...props}/>;
+    return <HostNativeView {...props}/>;
 }
 const FormNativeView = Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIForm') : null;
 export function Form(props) {
