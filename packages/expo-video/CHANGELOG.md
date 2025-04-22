@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `contentType` field to `VideoSource`. ([#36234](https://github.com/expo/expo/pull/36234) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
