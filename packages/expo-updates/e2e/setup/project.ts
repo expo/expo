@@ -505,7 +505,7 @@ function transformAppJsonForE2E(
   projectName: string,
   runtimeVersion: string,
   isTV: boolean
-) {
+): Record<string, any> {
   const plugins: any[] = [
     'expo-updates',
     [
