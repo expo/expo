@@ -10,7 +10,7 @@ public class AppDelegate: ExpoAppDelegate {
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
-    
+
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 

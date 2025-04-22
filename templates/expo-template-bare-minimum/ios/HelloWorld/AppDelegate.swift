@@ -44,4 +44,3 @@ public class AppDelegate: ExpoAppDelegate {
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   // Extension point for config-plugins
 }
-
