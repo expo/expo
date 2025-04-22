@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed adding SwiftUI views to navigation header ([#36305](https://github.com/expo/expo/pull/36305) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 2.3.6 — 2025-04-21
