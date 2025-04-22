@@ -12,7 +12,7 @@ class AppDelegate: ExpoAppDelegate {
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     self.moduleName = "main"
     self.initialProps = [:]
-    
+
     let delegate = ReactNativeDelegate()
     let factory = ExpoGoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
