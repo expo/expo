@@ -69,6 +69,7 @@ import host.exp.expoview.Exponent.BundleListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -906,11 +907,13 @@ class Kernel : KernelInterface() {
     )
     if (exception is ManifestException) {
       kernelScope.launch {
-        ExponentPackageLogger.send(
-          exception.manifestUrl,
-          ExceptionUtils.exceptionToPlainText(exception),
-          ExponentPackageLogger.LogLevel.ERROR
-        )
+        withContext(Dispatchers.IO) {
+          ExponentPackageLogger.send(
+            exception.manifestUrl,
+            ExceptionUtils.exceptionToPlainText(exception),
+            ExponentPackageLogger.LogLevel.ERROR
+          )
+        }
       }
     }
   }
