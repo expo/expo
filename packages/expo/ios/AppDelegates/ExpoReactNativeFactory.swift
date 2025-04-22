@@ -3,7 +3,7 @@
 import React_RCTAppDelegate
 
 public class ExpoReactNativeFactory: RCTReactNativeFactory {
-  private let reactDelegate =  ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
+  private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
     // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory
