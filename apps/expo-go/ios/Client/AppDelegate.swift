@@ -2,6 +2,8 @@
 
 import Expo
 import FirebaseCore
+import ReactAppDependencyProvider
+
 
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
@@ -10,7 +12,13 @@ class AppDelegate: ExpoAppDelegate {
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     self.moduleName = "main"
     self.initialProps = [:]
+    
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoGoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
 
+    self.reactNativeFactoryDelegate = delegate
+    self.reactNativeFactory = factory
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
     self.automaticallyLoadReactNativeWindow = false
 
@@ -22,14 +30,6 @@ class AppDelegate: ExpoAppDelegate {
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-#else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
   }
 
   override func applicationWillEnterForeground(_ application: UIApplication) {
@@ -53,3 +53,5 @@ class AppDelegate: ExpoAppDelegate {
     window.makeKeyAndVisible()
   }
 }
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {}

@@ -5,7 +5,6 @@
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore-Swift.h>
 #import <Expo/RCTAppDelegateUmbrella.h>
-#import <Expo/EXReactNativeFactoryDelegate.h>
 #import <Expo-Swift.h>
 #import <EXUpdatesInterface-Swift.h>
 #import <EXUpdates-Swift.h>
@@ -26,6 +25,7 @@
 #import "EXKernelDevKeyCommands.h"
 #import "EXClientReleaseType.h"
 #import "EXGoReactNativeFeatureFlags.h"
+#import "ExpoGoReactNativeFactory.h"
 #import "EXUtil.h"
 #import "EXReactAppManager.h"
 #import "EXProgressHUD.h"
