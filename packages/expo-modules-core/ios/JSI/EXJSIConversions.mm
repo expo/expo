@@ -8,6 +8,7 @@
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
+
 namespace expo {
 
 /**
