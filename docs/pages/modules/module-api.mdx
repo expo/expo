@@ -211,7 +211,7 @@ AsyncFunction("suspendFunction") Coroutine { message: String ->
 
 Defines event names that the module can send to JavaScript.
 
-> **Note**: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
+> **Note:** This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
 
 <CodeBlocksTable>
 
@@ -309,7 +309,7 @@ Such async functions automatically receive an instance of the native view as the
 
 ```swift
 View(UITextView.self) {
-  Prop("text") { ... }
+  Prop("text") { /* @hide ... */ /* @end */ }
 
   AsyncFunction("focus") { (view: UITextView) in
     view.becomeFirstResponder()
@@ -319,7 +319,7 @@ View(UITextView.self) {
 
 ```kotlin
 View(TextView::class) {
-  Prop("text") { ... }
+  Prop("text") { /* @hide ... */ /* @end */ }
 
   AsyncFunction("focus") { view: TextView ->
     view.requestFocus()
@@ -359,7 +359,7 @@ Prop("background") { view: View, @ColorInt color: Int ->
 
 </CodeBlocksTable>
 
-> **Note** Props of function type (callbacks) are not supported yet.
+> **Note:** Props of function type (callbacks) are not supported yet.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnCreate">
@@ -391,42 +391,42 @@ Defines module's lifecycle listener that is called when the app context owning t
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> **Note** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnAppEntersBackground" platforms={["ios"]}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> **Note** This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnAppBecomesActive" platforms={["ios"]}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> **Note** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityEntersForeground" platforms={["android"]}>
 
 Defines the activity lifecycle listener that is called right after the activity is resumed.
 
-> **Note** This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityEntersBackground" platforms={["android"]}>
 
 Defines the activity lifecycle listener that is called right after the activity is paused.
 
-> **Note** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityDestroys" platforms={["android"]}>
 
 Defines the activity lifecycle listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> **Note** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </PaddedAPIBox>
 
@@ -444,12 +444,12 @@ Defines the activity lifecycle listener that is called when the activity launche
 
 ```kotlin Kotlin
 AsyncFunction('someFunc') {
-  ...
+  /* @hide ... */ /* @end */
   activity.startActivityForResult(someIntent, SOME_REQUEST_CODE)
 }
 
 OnActivityResult { activity, payload ->
-  ...
+  /* @hide ... */ /* @end */
 }
 ```
 
@@ -468,7 +468,7 @@ This property can only be used within a [`View`](#view) closure.
 
 ```kotlin Kotlin
 GroupView<ViewGroup> {
-  AddChildView { parent, child, index -> ... }
+  AddChildView { parent, child, index -> /* @hide ... */ /* @end */}
 }
 ```
 
@@ -717,7 +717,7 @@ enum FileEncoding: String, Enumerable {
 struct FileReadOptions: Record {
   @Field
   var encoding: FileEncoding = .utf8
-  // ...
+  /* @hide ... */ /* @end */
 }
 ```
 
@@ -731,7 +731,7 @@ enum class FileEncoding(val value: String) : Enumerable {
 class FileReadOptions : Record {
   @Field
   val encoding: FileEncoding = FileEncoding.utf8
-  // ...
+  /* @hide ... */ /* @end */
 }
 ```
 
@@ -987,7 +987,7 @@ class LinearGradientView: ExpoView {}
 public class LinearGradientModule: Module {
   public func definition() -> ModuleDefinition {
     View(LinearGradientView.self) {
-      // ...
+      /* @hide ... */ /* @end */
     }
   }
 }
@@ -1002,7 +1002,7 @@ class LinearGradientView(
 class LinearGradientModule : Module() {
   override fun definition() = ModuleDefinition {
     View(LinearGradientView::class) {
-      // ...
+      /* @hide ... */ /* @end */
     }
   }
 }
@@ -1123,7 +1123,7 @@ Some events are connected to a certain view. For example, the touch event should
 
 To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
 
-> **Note**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
+> **Note:**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
 
 <CodeBlocksTable>
 
@@ -1134,8 +1134,7 @@ class CameraViewModule: Module {
       Events(
         "onCameraReady"
       )
-
-      // ...
+      /* @hide ... */ /* @end */
     }
   }
 }
@@ -1158,8 +1157,7 @@ class CameraViewModule : Module() {
       Events(
         "onCameraReady"
       )
-
-      // ...
+      /* @hide ... */ /* @end */
     }
   }
 }

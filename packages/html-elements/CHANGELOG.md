@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Upgrade to React 19 and remove compiled build code. ([#36273](https://github.com/expo/expo/pull/36273) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Switch web testing to `@testing-library/react`. ([#36293](https://github.com/expo/expo/pull/36293) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.12.2 — 2025-04-14
 

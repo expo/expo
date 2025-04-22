@@ -1,13 +1,13 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React, { ComponentType } from 'react';
 
 import View from '../primitives/RNWView';
 import { ViewProps } from '../primitives/View';
 
 function createView(nativeProps: ViewProps & { __element: string }): ComponentType<ViewProps> {
-  return forwardRef((props: ViewProps, ref) => {
+  return function Dom(props: ViewProps) {
     // @ts-expect-error - View and ViewProps have no properties in common
-    return <View {...nativeProps} {...props} ref={ref} />;
-  }) as ComponentType<ViewProps>;
+    return <View {...nativeProps} {...props} />;
+  };
 }
 
 export const Table = createView({ __element: 'table' });
