@@ -10,11 +10,11 @@ public class AppDelegate: ExpoAppDelegate {
   ) -> Bool {
     self.moduleName = "main"
     self.initialProps = [:]
-    
+
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
-    
+
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 

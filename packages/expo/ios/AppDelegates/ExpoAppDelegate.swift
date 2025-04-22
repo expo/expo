@@ -31,8 +31,8 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
 #if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
     reactNativeFactory?.startReactNative(
-      withModuleName: self.moduleName, 
-      in: window, 
+      withModuleName: self.moduleName,
+      in: window,
       launchOptions: launchOptions)
 #elseif os(macOS)
     if let rootView = reactNativeFactory?.rootViewFactory.view(
@@ -60,7 +60,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
     }
 #endif
   }
-  
+
   public func recreateRootView(
     withBundleURL: URL?,
     moduleName: String?,
