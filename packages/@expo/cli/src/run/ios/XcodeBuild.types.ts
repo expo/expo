@@ -1,4 +1,5 @@
 import { OSType } from '../../start/platforms/ios/simctl';
+import { RemoteBuildCacheProvider } from '../remoteBuildCache';
 import { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = 'Debug' | 'Release';
@@ -43,6 +44,7 @@ export type BuildProps = {
   /** Should use derived data for builds. */
   buildCache: boolean;
   scheme: string;
+  buildCacheProvider?: RemoteBuildCacheProvider;
 
   /** Options that were used to create the eager bundle in release builds. */
   eagerBundleOptions?: string;

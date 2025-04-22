@@ -8,6 +8,7 @@ import { isDevClientBuild } from './helpers';
 import { Log } from '../../log';
 import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
 import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
+import { CalculateFingerprintHashProps, RemoteBuildCachePlugin } from '../../run/remoteBuildCache';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 
 const debug = require('debug')('expo:eas-remote-build-cache') as typeof console.log;
@@ -74,14 +75,15 @@ export async function uploadEASRemoteBuildCache({
   buildPath,
 }: {
   projectRoot: string;
+  runOptions: AndroidRunOptions | IosRunOptions;
   platform: ModPlatform;
   fingerprintHash: string;
   buildPath?: string;
-}): Promise<void> {
+}) {
   const easJsonPath = path.join(projectRoot, 'eas.json');
   if (!fs.existsSync(easJsonPath)) {
-    debug('eas.json not found, skip checking for remote builds');
-    return;
+    debug('eas.json not found, skip uploading builds');
+    return null;
   }
 
   try {
@@ -106,18 +108,17 @@ export async function uploadEASRemoteBuildCache({
     // }
     const json = JSON.parse(results.stdout.trim());
     Log.log(chalk`{whiteBright \u203A} {bold Build successfully uploaded: ${json?.url}}`);
+    return json?.url;
   } catch (error) {
     debug('eas-cli error:', error);
   }
+  return null;
 }
 
 export async function calculateEASFingerprintHashAsync({
   projectRoot,
   platform,
-}: {
-  projectRoot: string;
-  platform: ModPlatform;
-}): Promise<string | null> {
+}: CalculateFingerprintHashProps): Promise<string | null> {
   // prefer using `eas fingerprint:generate` because it automatically upload sources
   try {
     const results = await spawnAsync(
@@ -137,3 +138,9 @@ export async function calculateEASFingerprintHashAsync({
   }
   return null;
 }
+
+export const EASRemoteBuildCacheProvider: RemoteBuildCachePlugin = {
+  resolveRemoteBuildCache: resolveEASRemoteBuildCache,
+  uploadRemoteBuildCache: uploadEASRemoteBuildCache,
+  calculateFingerprintHash: calculateEASFingerprintHashAsync,
+};

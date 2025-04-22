@@ -15,7 +15,11 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
-import { resolveRemoteBuildCache, uploadRemoteBuildCache } from '../remoteBuildCache';
+import {
+  resolveRemoteBuildCache,
+  resolveRemoteBuildCacheProvider,
+  uploadRemoteBuildCache,
+} from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
@@ -27,10 +31,15 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   require('@expo/env').load(projectRoot);
 
   const projectConfig = getConfig(projectRoot);
-  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache) {
-    const localPath = await resolveRemoteBuildCache(projectRoot, {
+  const buildCacheProvider = resolveRemoteBuildCacheProvider(
+    projectConfig.exp.experiments?.remoteBuildCache?.provider,
+    projectRoot
+  );
+  if (!options.binary && buildCacheProvider) {
+    const localPath = await resolveRemoteBuildCache({
+      projectRoot,
       platform: 'android',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      provider: buildCacheProvider,
       runOptions: options,
     });
     if (localPath) {
@@ -121,11 +130,13 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await manager.stopAsync();
   }
 
-  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
-    await uploadRemoteBuildCache(projectRoot, {
+  if (options.binary && shouldUpdateBuildCache && buildCacheProvider) {
+    await uploadRemoteBuildCache({
+      projectRoot,
       platform: 'android',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      provider: buildCacheProvider,
       buildPath: options.binary,
+      runOptions: options,
     });
   }
 }
