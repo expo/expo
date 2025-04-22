@@ -272,7 +272,6 @@ function processTalks(talks, type = 'video') {
 }
 
 export async function exportTalksData() {
-  // eslint-disable-next-line import/no-unresolved
   const { TALKS, PODCASTS, LIVE_STREAMS, YOUTUBE_VIDEOS } = await import('./talks.js');
   return {
     title: 'Additional Resources',
