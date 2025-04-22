@@ -196,7 +196,9 @@ extension ExpoSwiftUI {
       super.didMoveToWindow()
 
       if window != nil, let parentController = reactViewController() {
-        parentController.addChild(hostingController)
+        if (parentController as? UINavigationController == nil) {
+          parentController.addChild(hostingController)
+        }
         addSubview(hostingController.view)
         #if os(iOS) || os(tvOS)
         hostingController.didMove(toParent: parentController)
