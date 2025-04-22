@@ -1,5 +1,6 @@
-import React
 import Expo
+import React
+import ReactAppDependencyProvider
 
 @UIApplicationMain
 public class AppDelegate: ExpoAppDelegate {
@@ -10,15 +11,14 @@ public class AppDelegate: ExpoAppDelegate {
     self.moduleName = "main"
     self.initialProps = [:]
 
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
 
-  public override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-#else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
+    reactNativeFactoryDelegate = delegate
+    reactNativeFactory = factory
+
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
   // Linking API
@@ -40,3 +40,8 @@ public class AppDelegate: ExpoAppDelegate {
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
   }
 }
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
+}
+
