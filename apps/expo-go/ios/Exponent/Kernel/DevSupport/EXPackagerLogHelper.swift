@@ -26,11 +26,13 @@ import React
   private var bundleURL: URL
   private var pendingMessage: String?
   private var logLevel: EXPackagerLogLevel
+  private let operationQueue = OperationQueue()
   private var onComplete: (() -> Void)?
 
   @objc init(bundleURL: URL, level: EXPackagerLogLevel) {
     self.bundleURL = bundleURL
     self.logLevel = level
+    self.operationQueue.qualityOfService = .utility
   }
 
   deinit {
@@ -136,9 +138,7 @@ import React
     }
 
     socket?.delegate = self
-
-    let queue = DispatchQueue(label: "host.exp.Exponent.EXPackagerLogHelper")
-    socket?.delegateDispatchQueue = queue
+    socket?.delegateDispatchQueue = operationQueue.underlyingQueue
     socket?.open()
   }
 }
