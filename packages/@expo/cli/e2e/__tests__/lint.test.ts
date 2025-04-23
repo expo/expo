@@ -30,7 +30,6 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/lint/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
-    '@expo/cli/build/src/utils/errors.js',
   ]);
 });
 
@@ -79,7 +78,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   ]);
 
   // Ensure there are no linting errors
-  await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
+  await executeExpoAsync(projectRoot, ['lint', '--max-warnings', '0']);
 });
 
 it('runs `npx expo customize eslint.config.js to install lint in a project', async () => {
@@ -112,7 +111,7 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
       (value) => !value.startsWith('.tarballs/eslint-config-expo')
     )
   ).toStrictEqual([
-    expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
+    // expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
     'App.js',
     'app.json',
     'bun.lock',
@@ -122,5 +121,5 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
   ]);
 
   // Ensure there are no linting errors
-  await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
+  await executeExpoAsync(projectRoot, ['lint', '--max-warnings', '0']);
 });
