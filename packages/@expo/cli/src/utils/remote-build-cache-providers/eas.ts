@@ -5,10 +5,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { isDevClientBuild } from './helpers';
+import { CalculateFingerprintHashProps, RemoteBuildCachePlugin, RunOptions } from './types';
 import { Log } from '../../log';
-import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
-import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
-import { CalculateFingerprintHashProps, RemoteBuildCachePlugin } from '../../run/remoteBuildCache';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 
 const debug = require('debug')('expo:eas-remote-build-cache') as typeof console.log;
@@ -22,7 +20,7 @@ export async function resolveEASRemoteBuildCache({
   projectRoot: string;
   platform: ModPlatform;
   fingerprintHash: string;
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
 }): Promise<string | null> {
   const easJsonPath = path.join(projectRoot, 'eas.json');
   if (!fs.existsSync(easJsonPath)) {
@@ -75,7 +73,7 @@ export async function uploadEASRemoteBuildCache({
   buildPath,
 }: {
   projectRoot: string;
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
   platform: ModPlatform;
   fingerprintHash: string;
   buildPath?: string;

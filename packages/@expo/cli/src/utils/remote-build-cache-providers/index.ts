@@ -4,9 +4,7 @@ import resolveFrom from 'resolve-from';
 
 import { EASRemoteBuildCacheProvider } from './eas';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
-import { RemoteBuildCachePlugin, RemoteBuildCacheProvider } from './types';
-import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
-import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
+import { RemoteBuildCachePlugin, RemoteBuildCacheProvider, RunOptions } from './types';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
@@ -46,7 +44,7 @@ export async function resolveRemoteBuildCache({
   projectRoot: string;
   platform: ModPlatform;
   provider: RemoteBuildCacheProvider;
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
 }): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync({
     projectRoot,
@@ -75,7 +73,7 @@ export async function uploadRemoteBuildCache({
   platform: ModPlatform;
   provider: RemoteBuildCacheProvider;
   buildPath: string;
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
 }): Promise<void> {
   const fingerprintHash = await calculateFingerprintHashAsync({
     projectRoot,
@@ -109,7 +107,7 @@ async function calculateFingerprintHashAsync({
   projectRoot: string;
   platform: ModPlatform;
   provider: RemoteBuildCacheProvider;
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
 }): Promise<string | null> {
   if (provider.plugin.calculateFingerprintHash) {
     return await provider.plugin.calculateFingerprintHash(

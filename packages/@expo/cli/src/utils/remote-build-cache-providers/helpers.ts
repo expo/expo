@@ -1,14 +1,13 @@
 import fs from 'fs';
 
-import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
-import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
+import { RunOptions } from './types';
 import { hasDirectDevClientDependency } from '../../start/detectDevClient';
 
 export function isDevClientBuild({
   runOptions,
   projectRoot,
 }: {
-  runOptions: AndroidRunOptions | IosRunOptions;
+  runOptions: RunOptions;
   projectRoot: string;
 }) {
   if (!hasDirectDevClientDependency(projectRoot)) {

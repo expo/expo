@@ -1,5 +1,5 @@
 import { OSType } from '../../start/platforms/ios/simctl';
-import { RemoteBuildCacheProvider } from '../remoteBuildCache';
+import { RemoteBuildCacheProvider } from '../../utils/remote-build-cache-providers/types';
 import { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = 'Debug' | 'Release';

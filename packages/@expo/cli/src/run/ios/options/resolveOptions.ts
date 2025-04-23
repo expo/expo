@@ -5,7 +5,7 @@ import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
 import { isOSType } from '../../../start/platforms/ios/simctl';
 import { profile } from '../../../utils/profile';
-import { resolveRemoteBuildCacheProvider } from '../../remoteBuildCache';
+import { resolveRemoteBuildCacheProvider } from '../../../utils/remote-build-cache-providers';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import { BuildProps, Options } from '../XcodeBuild.types';
 
