@@ -1,5 +1,8 @@
-import { ESLint } from 'eslint8';
+import { ESLint } from 'eslint';
 import process from 'process';
+
+// const { ESLint } = require('eslint');
+// const process = require('process');
 
 const [, , configString, ...filePatterns] = process.argv;
 const config = JSON.parse(configString);

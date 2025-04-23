@@ -1,4 +1,4 @@
-const eslint = require('eslint8');
+const eslint = require('eslint');
 const path = require('path');
 
 const checkPrettierRulesAsync = require('./tools/checkPrettierRulesAsync');
@@ -13,7 +13,6 @@ it(`has a React Native config`, () => {
       new eslint.ESLint({
         baseConfig: getBaseConfig(),
         overrideConfigFile: configFile,
-        useEslintrc: false,
       }),
   ).not.toThrow();
 });
@@ -24,7 +23,6 @@ it(`lints with the React Native config`, async () => {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
       ignore: false,
-      useEslintrc: false,
     },
     ['fixtures/*all*', 'fixtures/*native*'],
   );

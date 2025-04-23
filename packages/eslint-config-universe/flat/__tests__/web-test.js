@@ -1,32 +1,30 @@
-const eslint = require('eslint8');
+const eslint = require('eslint');
 const path = require('path');
 
 const checkPrettierRulesAsync = require('./tools/checkPrettierRulesAsync');
 const getBaseConfig = require('./tools/getBaseConfig');
 const lintAsync = require('./tools/lintAsync');
 
-const configFile = path.resolve(__dirname, '../native.js');
+const configFile = path.resolve(__dirname, '../web.js');
 
-it(`has a React Native config`, () => {
+it(`has a web config`, () => {
   expect(
     () =>
       new eslint.ESLint({
         baseConfig: getBaseConfig(),
         overrideConfigFile: configFile,
-        useEslintrc: false,
       }),
   ).not.toThrow();
 });
 
-it(`lints with the React Native config`, async () => {
+it(`lints with the web config`, async () => {
   const results = await lintAsync(
     {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
       ignore: false,
-      useEslintrc: false,
     },
-    ['fixtures/*all*', 'fixtures/*native*'],
+    ['fixtures/*all*', 'fixtures/*web*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
@@ -36,7 +34,7 @@ it(`lints with the React Native config`, async () => {
 }, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
-  const { success, message } = await checkPrettierRulesAsync(configFile, 'native');
+  const { success, message } = await checkPrettierRulesAsync(configFile, 'web');
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
 }, 10000);
