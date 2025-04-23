@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [web] Add playsInline prop ([#36335](https://github.com/expo/expo/pull/36335) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

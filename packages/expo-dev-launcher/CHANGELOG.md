@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix duplicated modals ([#36326](https://github.com/expo/expo/pull/36326) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 5.1.4 — 2025-04-21
