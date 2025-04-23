@@ -37,7 +37,7 @@
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-preset-expo": "~13.1.5",
     "commander": "^12.1.0",
-    "eslint-config-universe": "^14.2.0",
+    "eslint-config-universe": "^14.3.0",
     "glob": "^10.4.2",
     "jest-expo": "~53.0.0-preview.3",
     "jest-snapshot-prettier": "npm:prettier@^2",
