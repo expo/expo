@@ -5115,9 +5115,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-universe@file:../packages/eslint-config-universe::locator=expo-docs%40workspace%3A.":
-  version: 14.2.0
-  resolution: "eslint-config-universe@file:../packages/eslint-config-universe#../packages/eslint-config-universe::hash=851e9c&locator=expo-docs%40workspace%3A."
+"eslint-config-universe@npm:^14.3.0":
+  version: 14.3.0
+  resolution: "eslint-config-universe@npm:14.3.0"
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:^8.29.1"
     "@typescript-eslint/parser": "npm:^8.29.1"
@@ -5135,7 +5135,7 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/6209442edeee51f662fbe597d5a5d2e1078493a75231e1ac505f2f6dfa32a6a51b8d8068a83dfc6732acd358a3f221713fe27c6aad647728fd807b7c82db567f
+  checksum: 10c0/807657ec4530c6e4f0512685f5ef341e1cf8b660b0c06b97ed8432d115577c79fb907fdd57938e26543315cb7be294e7b2b43951e97516a92a6bcc605ef54bf6
   languageName: node
   linkType: hard
 
@@ -5789,7 +5789,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     eslint: "npm:^9.24.0"
     eslint-config-next: "npm:^15.3.1"
-    eslint-config-universe: "file:../packages/eslint-config-universe"
+    eslint-config-universe: "npm:^14.3.0"
     eslint-plugin-lodash: "npm:^8.0.0"
     eslint-plugin-mdx: "npm:^3.4.1"
     eslint-plugin-tailwindcss: "npm:^3.18.0"

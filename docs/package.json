@@ -95,7 +95,7 @@
     "axios": "^1.8.4",
     "eslint": "^9.24.0",
     "eslint-config-next": "^15.3.1",
-    "eslint-config-universe": "file:../packages/eslint-config-universe",
+    "eslint-config-universe": "^14.3.0",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.4.1",
     "eslint-plugin-tailwindcss": "^3.18.0",
