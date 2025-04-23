@@ -3,6 +3,7 @@
  * while the dev server is running.
  */
 import { test, expect } from '@playwright/test';
+import { platform } from 'node:process';
 
 import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -16,6 +17,13 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 test.describe('router-e2e with spaces', () => {
+  if (platform === 'win32') {
+    test.skip('skipping on windows', () => {
+      // This test is skipped on Windows due to an issue with expo-module-scripts when cloning a project outside of the repo.
+    });
+    return;
+  }
+
   let expoStart: ReturnType<typeof createExpoStart>;
 
   let projectRoot: string = '';
