@@ -745,6 +745,7 @@ function makePage(file) {
     // TODO(cedric): refactor href into url
     href: url,
     isNew: data.isNew ?? undefined,
+    isAlpha: data.isAlpha ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
   };
