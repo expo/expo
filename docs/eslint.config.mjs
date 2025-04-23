@@ -176,7 +176,16 @@ export default defineConfig([
       '@typescript-eslint/prefer-includes': 'warn',
       '@typescript-eslint/prefer-readonly': 'warn',
       '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
-      '@typescript-eslint/prefer-ts-expect-error': 'warn',
+      '@typescript-eslint/ban-ts-comment': [
+        'warn',
+        {
+          minimumDescriptionLength: 3,
+          'ts-check': false,
+          'ts-expect-error': 'allow-with-description',
+          'ts-ignore': true,
+          'ts-nocheck': true,
+        },
+      ],
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': [
         'warn',
