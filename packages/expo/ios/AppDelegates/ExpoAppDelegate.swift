@@ -27,6 +27,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
 
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
 #if os(iOS) || os(tvOS)
+    window = UIWindow(frame: UIScreen.main.bounds)
     reactNativeFactory?.startReactNative(
       withModuleName: defaultModuleName,
       in: window,
