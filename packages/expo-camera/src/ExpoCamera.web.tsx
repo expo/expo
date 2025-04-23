@@ -117,6 +117,10 @@ const ExponentCamera = ({
       async launchModernScanner() {
         console.warn('launchModernScanner is not supported on web.');
       },
+      async getAvailableLenses() {
+        console.warn('getAvailableLenses is not supported on web.');
+        return [];
+      },
     }),
     [native.mediaTrackSettings, props.onPictureSaved]
   );
