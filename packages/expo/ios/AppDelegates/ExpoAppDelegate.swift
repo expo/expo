@@ -44,7 +44,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
         backing: .buffered,
         defer: false)
 
-      window.title = moduleName
+      window.title = defaultModuleName
       window.autorecalculatesKeyViewLoop = true
 
       let rootViewController = NSViewController()
