@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runs \`npx expo lint --help\` 1`] = `
+"
+  Info
+    Lint all files in /src, /app, /components directories with ESLint
+
+  Usage
+    $ npx expo lint [path...] -- [eslint options]
+
+  Options
+    [path...]                  List of files and directories to lint
+    --ext <string>             Additional file extensions to lint. Default: .js, .jsx, .ts, .tsx, .mjs, .cjs
+    --config <path>            Custom ESLint config file
+    --no-cache                 Check all files, instead of changes between runs
+    --fix                      Automatically fix problems
+    --fix-type <string>        Specify the types of fixes to apply. Example: problem, suggestion, layout
+    --no-ignore                Disable use of ignore files and patterns
+    --ignore-pattern <string>  Patterns of files to ignore
+    --quiet                    Only report errors
+    --max-warnings <number>    Number of warnings to trigger nonzero exit code
+    -h, --help                 Usage info
+
+  Additional options can be passed to npx eslint by using --
+    $ npx expo lint -- --no-error-on-unmatched-pattern
+    > npx eslint --no-error-on-unmatched-pattern ...
+"
+`;
