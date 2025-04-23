@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "14.3.0",
+  "version": "14.2.0",
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "files": [
     "README.md",
     "default.js",
-    "native.js",
+    "native.js", 
     "node.js",
     "web.js",
     "shared",
