@@ -292,6 +292,6 @@ it('runs `npx expo prebuild --platform ios` after building Android', async () =>
     templateTarball.relativePath,
   ]);
 
-  // Ensure there was no errors
+  // Ensure there are no errors
   expect(command).toMatchObject({ stderr: '' });
 });
