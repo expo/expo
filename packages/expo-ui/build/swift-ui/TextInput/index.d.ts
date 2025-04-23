@@ -58,7 +58,7 @@ export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & V
     value: string;
 }>;
 /**
- * Renders a `TextInput` component.
+ * Renders a `TextInput` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
