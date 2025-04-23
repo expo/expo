@@ -23,8 +23,8 @@
     "native.js",
     "node.js",
     "web.js",
-    "shared",
-    "flat"
+    "shared/!(__tests__)/**",
+    "flat/!(__tests__)/**"
   ],
   "jest": {
     "testMatch": [
