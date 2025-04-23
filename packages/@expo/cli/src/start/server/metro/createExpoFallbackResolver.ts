@@ -68,7 +68,7 @@ const getModuleDescriptionWithResolver = (
   let filePath: string | undefined;
   let packageMeta: PackageMeta | undefined | null;
   try {
-    const resolution = resolve(`${originModuleName}/package.json`);
+    const resolution = resolve(path.join(originModuleName, 'package.json'));
     if (resolution.type !== 'sourceFile') {
       debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
       return null;
@@ -155,7 +155,7 @@ export function createFallbackModuleResolver({
     // We don't need to modify `nodeModulesPaths` since it's guaranteed to contain the project's node modules paths
     const context: ResolutionContext = {
       ...immutableContext,
-      originModulePath: `${projectRoot}/package.json`,
+      originModulePath: path.join(projectRoot, 'package.json'),
     };
     return (_moduleDescriptionsCache[originModuleName] = getModuleDescriptionWithResolver(
       context,
