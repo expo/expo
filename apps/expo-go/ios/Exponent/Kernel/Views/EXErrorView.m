@@ -138,7 +138,14 @@
   }
   
   // Send error to cli/packager
-  [EXPackagerLogHelper logError:[NSString stringWithFormat:@"%@\n\n%@\n\nHow to fix this error:\n\n%@", errorHeader, [errorDetail stringByReplacingOccurrencesOfString:@"**" withString:@""], errorFixInstructions] withBundleUrl:_appRecord.appLoader.manifestUrl];
+  if (errorHeader != nil && errorDetail != nil) {
+    NSString* cleanedDetails = [errorDetail stringByReplacingOccurrencesOfString:@"**" withString:@""];
+    if (errorFixInstructions != nil) {
+      [EXPackagerLogHelper logError:[NSString stringWithFormat:@"%@\n\n%@\n\nHow to fix this error:\n\n%@", errorHeader, cleanedDetails, errorFixInstructions] withBundleUrl:_appRecord.appLoader.manifestUrl];
+    } else {
+      [EXPackagerLogHelper logError:[NSString stringWithFormat:@"%@\n\n%@", errorHeader, cleanedDetails] withBundleUrl:_appRecord.appLoader.manifestUrl];
+    }
+  }
 
   [self _resetUIState];
 }
