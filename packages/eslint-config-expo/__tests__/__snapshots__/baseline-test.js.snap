@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lints with the default config: fixtures/all-00.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-00.js 1`] = `
 {
   "errorCount": 7,
   "fatalErrorCount": 0,
@@ -156,7 +156,7 @@ function *gen() {}
 }
 `;
 
-exports[`lints with the default config: fixtures/all-01.ts 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-01.ts 1`] = `
 {
   "errorCount": 6,
   "fatalErrorCount": 0,
@@ -278,7 +278,7 @@ function _fn(...args: any): void {}
 }
 `;
 
-exports[`lints with the default config: fixtures/all-02.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-02.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -331,7 +331,7 @@ function unused2() {
 }
 `;
 
-exports[`lints with the default config: fixtures/all-03.ts 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-03.ts 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -415,7 +415,7 @@ function tsUnused2() {
 }
 `;
 
-exports[`lints with the default config: fixtures/all-04.ts 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-04.ts 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -451,7 +451,7 @@ exports[`lints with the default config: fixtures/all-04.ts 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/all-05.ts 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-05.ts 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -484,7 +484,7 @@ exports[`lints with the default config: fixtures/all-05.ts 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/all-06.ts 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-06.ts 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -638,7 +638,7 @@ export const objectShorthandTest: {} | null = null;",
 }
 `;
 
-exports[`lints with the default config: fixtures/all-07.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/all-07.js 1`] = `
 {
   "errorCount": 3,
   "fatalErrorCount": 0,
@@ -744,7 +744,7 @@ export default a + b + c + d + e;",
 }
 `;
 
-exports[`lints with the default config: fixtures/web-native-00.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/web-native-00.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -757,7 +757,7 @@ exports[`lints with the default config: fixtures/web-native-00.js 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/web-native-01.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/web-native-01.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -770,7 +770,7 @@ exports[`lints with the default config: fixtures/web-native-01.js 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/web-native-02.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/web-native-02.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -783,7 +783,7 @@ exports[`lints with the default config: fixtures/web-native-02.js 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/web-native-03.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/web-native-03.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
@@ -796,7 +796,7 @@ exports[`lints with the default config: fixtures/web-native-03.js 1`] = `
 }
 `;
 
-exports[`lints with the default config: fixtures/web-native-04.js 1`] = `
+exports[`lints with the default config: fixtures/baseline/web-native-04.js 1`] = `
 {
   "errorCount": 2,
   "fatalErrorCount": 0,

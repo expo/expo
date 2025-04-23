@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lints custom rules: fixtures/rule-require.js 1`] = `
+{
+  "errorCount": 0,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 0,
+}
+`;
