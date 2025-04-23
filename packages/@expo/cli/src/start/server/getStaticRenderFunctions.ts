@@ -87,14 +87,14 @@ export async function createMetroEndpointAsync(
   return url;
 }
 
-export function evalMetroAndWrapFunctions<T = Record<string, any>>(
+export async function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string,
   isExporting: boolean
-): T {
+): Promise<T> {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
-  const contents = evalMetroNoHandling(projectRoot, script, filename);
+  const contents = await evalMetroNoHandling(projectRoot, script, filename);
 
   if (!contents) {
     // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
@@ -128,7 +128,12 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+import crypto from 'node:crypto';
+
+// Runs import that isn't transformed by Expo CLI.
+const specialRequire = require('@expo/cli/add-module.js');
+
+export async function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
   augmentLogs(projectRoot);
 
   // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
@@ -140,5 +145,14 @@ export function evalMetroNoHandling(projectRoot: string, src: string, filename: 
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(requireString, 'eval-metro-bundle')(src, filename);
+  const md5 = crypto.createHash('md5').update(src).digest('hex');
+
+  const tempDir = path.join(projectRoot, '.expo/server');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, md5 + '.mjs');
+  await fs.promises.writeFile(moduleId, src);
+
+  console.log('Server module:', moduleId);
+
+  return (await specialRequire(moduleId)).default;
 }

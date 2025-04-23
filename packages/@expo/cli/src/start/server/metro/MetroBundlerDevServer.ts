@@ -453,7 +453,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.setupHmr(url);
     }
 
-    return evalMetroAndWrapFunctions(
+    return await evalMetroAndWrapFunctions(
       this.projectRoot,
       res.src,
       res.filename,
@@ -1377,7 +1377,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
+      return await evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {
@@ -1781,7 +1781,7 @@ function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+  return str.replace(/^(__r\(.*\);)$/gm, 'export default $1');
 }
 
 async function sourceMapStringAsync(

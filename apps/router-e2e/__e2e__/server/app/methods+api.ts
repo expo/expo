@@ -2,7 +2,7 @@
 export function GET() {
   return new Response(
     JSON.stringify({
-      method: 'get',
+      method: import.meta.url,
     })
   );
 }
