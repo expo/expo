@@ -173,7 +173,7 @@ export const VideoView = forwardRef((props, ref) => {
                 hasToSetupAudioContext.current = true;
                 maybeSetupAudioContext();
             }
-        }} disablePictureInPicture={!props.allowsPictureInPicture} src={getSourceUri(props.player?.src) ?? ''}/>);
+        }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? ''}/>);
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map
