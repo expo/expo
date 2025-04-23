@@ -23,7 +23,13 @@ public class AppDelegate: ExpoAppDelegate {
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 
+#if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(
+      withModuleName: "main",
+      in: window,
+      launchOptions: launchOptions)
+#endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
@@ -72,7 +78,13 @@ public class AppDelegate: ExpoAppDelegate {
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 
+#if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(
+      withModuleName: "main",
+      in: window,
+      launchOptions: launchOptions)
+#endif
 
 // @generated begin react-native-maps-init - expo prebuild (DO NOT MODIFY) sync-d167568d212e7a4ec24615c397330e087bc93758
 #if canImport(GoogleMaps)
@@ -126,7 +138,13 @@ public class AppDelegate: ExpoAppDelegate {
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 
+#if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(
+      withModuleName: "main",
+      in: window,
+      launchOptions: launchOptions)
+#endif
 
 // @generated begin react-native-maps-init - expo prebuild (DO NOT MODIFY) sync-d167568d212e7a4ec24615c397330e087bc93758
 #if canImport(GoogleMaps)
