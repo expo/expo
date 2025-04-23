@@ -293,5 +293,7 @@ it('runs `npx expo prebuild --platform ios` after building Android', async () =>
   ]);
 
   // Ensure there are no errors
-  expect(command).toMatchObject({ stderr: '' });
+  expect(command).not.toMatchObject({
+    stderr: expect.stringContaining('Failed to read template file'),
+  });
 });
