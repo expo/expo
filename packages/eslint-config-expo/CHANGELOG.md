@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Disallow `require()` for source files and continue to allow for assets. ([#36346](https://github.com/expo/expo/pull/36346) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 9.1.0 — 2025-04-23
+
+### 🎉 New features
+
+- Disallow `require()` for source files and continue to allow for assets. ([#36346](https://github.com/expo/expo/pull/36346) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.0.3 — 2025-04-22
 

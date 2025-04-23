@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added `matchContents` to SwiftUI.Host. ([#36312](https://github.com/expo/expo/pull/36312) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.1.1-alpha.4 — 2025-04-23
+
+### 🎉 New features
+
+- Added `matchContents` to SwiftUI.Host. ([#36312](https://github.com/expo/expo/pull/36312) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

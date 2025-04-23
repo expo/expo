@@ -2,8 +2,6 @@
 
 ## Unpublished
 
-- Make `NavigationBar` methods no-op when edge-to-edge is enabled. ([#36330](https://github.com/expo/expo/pull/36330) by [@zoontek](https://github.com/zoontek))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -11,6 +9,10 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.2.1 — 2025-04-23
+
+- Make `NavigationBar` methods no-op when edge-to-edge is enabled. ([#36330](https://github.com/expo/expo/pull/36330) by [@zoontek](https://github.com/zoontek))
 
 ## 4.2.0 — 2025-04-21
 

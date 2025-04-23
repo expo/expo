@@ -17,7 +17,7 @@ apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 
 group = 'host.exp.exponent'
-version = '2.3.7'
+version = '2.3.8'
 
 // List of features that are required by linked modules
 def coreFeatures = project.findProperty("coreFeatures") ?: []
@@ -70,7 +70,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.3.7"
+    versionName "2.3.8"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
