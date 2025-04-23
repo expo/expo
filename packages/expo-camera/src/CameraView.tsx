@@ -276,6 +276,8 @@ export default class CameraView extends Component<CameraViewProps> {
 
   /**
    * Stops recording if any is in progress.
+   * @platform android
+   * @platform ios
    */
   stopRecording() {
     this._cameraRef.current?.stopRecording();

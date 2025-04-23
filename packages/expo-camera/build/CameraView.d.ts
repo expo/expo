@@ -139,6 +139,8 @@ export default class CameraView extends Component<CameraViewProps> {
     toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
+     * @platform android
+     * @platform ios
      */
     stopRecording(): void;
     _onCameraReady: () => void;

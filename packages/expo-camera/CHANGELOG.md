@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Web] Remove `forwardRef` from Camera component. ([#36320](https://github.com/expo/expo/pull/36320) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.1.3 — 2025-04-21
 
 ### 💡 Others

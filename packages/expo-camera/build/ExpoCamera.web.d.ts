@@ -6,6 +6,6 @@ export interface ExponentCameraRef {
     resumePreview: () => Promise<void>;
     pausePreview: () => Promise<void>;
 }
-declare const ExponentCamera: import("react").ForwardRefExoticComponent<Omit<PropsWithChildren<CameraNativeProps>, "ref"> & import("react").RefAttributes<ExponentCameraRef>>;
+declare const ExponentCamera: ({ facing, poster, ref, ...props }: PropsWithChildren<CameraNativeProps>) => import("react").JSX.Element;
 export default ExponentCamera;
 //# sourceMappingURL=ExpoCamera.web.d.ts.map
