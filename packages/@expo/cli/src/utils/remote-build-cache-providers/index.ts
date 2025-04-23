@@ -1,49 +1,14 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
-import fs from 'fs';
 import resolveFrom from 'resolve-from';
 
-import { type Options as AndroidRunOptions } from './android/resolveOptions';
-import { type Options as IosRunOptions } from './ios/XcodeBuild.types';
-import { EASRemoteBuildCacheProvider } from '../utils/remote-build-cache-providers/eas';
+import { EASRemoteBuildCacheProvider } from './eas';
+import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
+import { RemoteBuildCachePlugin, RemoteBuildCacheProvider } from './types';
+import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
+import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
-
-export type ResolveRemoteBuildCacheProps = {
-  projectRoot: string;
-  platform: ModPlatform;
-  runOptions: AndroidRunOptions | IosRunOptions;
-  fingerprintHash: string;
-};
-export type UploadRemoteBuildCacheProps = {
-  projectRoot: string;
-  buildPath: string;
-  runOptions: AndroidRunOptions | IosRunOptions;
-  fingerprintHash: string;
-  platform: ModPlatform;
-};
-export type CalculateFingerprintHashProps = {
-  projectRoot: string;
-  platform: ModPlatform;
-  runOptions: AndroidRunOptions | IosRunOptions;
-};
-
-export type RemoteBuildCacheProvider<T = any> = {
-  plugin: RemoteBuildCachePlugin<T>;
-  options: T;
-};
-
-export type RemoteBuildCachePlugin<T = any> = {
-  resolveRemoteBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
-  uploadRemoteBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
-  calculateFingerprintHash?: (
-    props: CalculateFingerprintHashProps,
-    options: T
-  ) => Promise<string | null>;
-};
-
-// Default plugin entry file name.
-export const pluginFileName = 'buildCacheProvider.plugin.js';
 
 export const resolveRemoteBuildCacheProvider = (
   provider:
@@ -93,12 +58,10 @@ export async function resolveRemoteBuildCache({
     return null;
   }
 
-  await provider.plugin.resolveRemoteBuildCache(
+  return await provider.plugin.resolveRemoteBuildCache(
     { fingerprintHash, platform, runOptions, projectRoot },
     provider.options
   );
-
-  return null;
 }
 
 export async function uploadRemoteBuildCache({
@@ -173,16 +136,44 @@ function importFingerprintForDev(projectRoot: string): null | typeof import('@ex
   }
 }
 
+/**
+ * Resolve the provider plugin from a node module or package.
+ * If the module or package does not include a provider plugin, this function throws.
+ * The resolution is done in following order:
+ *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
+ *     - Resolve the provider plugin as-is
+ *   2. Does the module have a valid provider plugin in the `main` field?
+ *     - Resolve the `main` entry point as provider plugin
+ */
+function resolvePluginFilePathForModule(projectRoot: string, pluginReference: string) {
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
+    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
+    if (pluginScriptFile) {
+      return pluginScriptFile;
+    }
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    // Try to resole the `main` entry as config plugin
+    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      return packageMainEntry;
+    }
+  }
+
+  throw new Error(
+    `Failed to resolve provider plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`
+  );
+}
+
 // Resolve the module function and assert type
 export function resolvePluginFunction(
   projectRoot: string,
   pluginReference: string
 ): RemoteBuildCachePlugin {
-  const { filePath: pluginFile } = resolvePluginForModule(projectRoot, pluginReference);
+  const pluginFile = resolvePluginFilePathForModule(projectRoot, pluginReference);
 
   try {
     let plugin = require(pluginFile);
-
     if (plugin?.default != null) {
       plugin = plugin.default;
     }
@@ -196,78 +187,5 @@ export function resolvePluginFunction(
       // Add error linking to the docs of how create a valid provider plugin
     }
     throw error;
-  }
-}
-
-/**
- * Resolve the provider plugin from a node module or package.
- * If the module or package does not include a provider plugin, this function throws.
- * The resolution is done in following order:
- *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
- *     - Resolve the provider plugin as-is
- *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
- *   3. Does the module have a valid provider plugin in the `main` field?
- *     - Resolve the `main` entry point as provider plugin
- */
-function resolvePluginForModule(
-  projectRoot: string,
-  pluginReference: string
-): { filePath: string } {
-  if (moduleNameIsDirectFileReference(pluginReference)) {
-    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
-    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
-    if (pluginScriptFile) {
-      return {
-        filePath: pluginScriptFile,
-      };
-    }
-  } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
-    const pluginPackageFile = resolveFrom.silent(
-      projectRoot,
-      `${pluginReference}/${pluginFileName}`
-    );
-    if (pluginPackageFile && fileExists(pluginPackageFile)) {
-      return { filePath: pluginPackageFile };
-    }
-    // Try to resole the `main` entry as config plugin
-    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
-    if (packageMainEntry) {
-      return { filePath: packageMainEntry };
-    }
-  }
-
-  throw new Error(
-    `Failed to resolve provider plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`
-  );
-}
-
-function moduleNameIsDirectFileReference(name: string): boolean {
-  // Check if path is a file. Matches lines starting with: . / ~/
-  if (name.match(/^(\.|~\/|\/)/g)) {
-    return true;
-  }
-
-  const slashCount = name.split('/')?.length;
-  // Orgs (like @expo/config ) should have more than one slash to be a direct file.
-  if (name.startsWith('@')) {
-    return slashCount > 2;
-  }
-
-  // Regular packages should be considered direct reference if they have more than one slash.
-  return slashCount > 1;
-}
-
-function moduleNameIsPackageReference(name: string): boolean {
-  const slashCount = name.split('/')?.length;
-  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
-}
-
-export function fileExists(file: string): boolean {
-  try {
-    return fs.statSync(file).isFile();
-  } catch {
-    return false;
   }
 }

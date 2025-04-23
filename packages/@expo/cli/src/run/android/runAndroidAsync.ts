@@ -12,14 +12,14 @@ import { assembleAsync, installAsync } from '../../start/platforms/android/gradl
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
-import { getSchemesForAndroidAsync } from '../../utils/scheme';
-import { ensureNativeProjectAsync } from '../ensureNativeProject';
-import { logProjectLogsLocation } from '../hints';
 import {
   resolveRemoteBuildCache,
   resolveRemoteBuildCacheProvider,
   uploadRemoteBuildCache,
-} from '../remoteBuildCache';
+} from '../../utils/remote-build-cache-providers';
+import { getSchemesForAndroidAsync } from '../../utils/scheme';
+import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');

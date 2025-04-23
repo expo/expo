@@ -4,25 +4,28 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../../log';
-import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
-import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
-import { setNodeEnv } from '../../utils/nodeEnv';
-import { ensurePortAvailabilityAsync } from '../../utils/port';
-import { profile } from '../../utils/profile';
-import { getSchemesForIosAsync } from '../../utils/scheme';
-import { ensureNativeProjectAsync } from '../ensureNativeProject';
-import { logProjectLogsLocation } from '../hints';
-import { uploadRemoteBuildCache, resolveRemoteBuildCache } from '../remoteBuildCache';
-import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
+import * as Log from '../../log';
+import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
+import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { CommandError } from '../../utils/errors';
+import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
+import { profile } from '../../utils/profile';
+import {
+  resolveRemoteBuildCache,
+  uploadRemoteBuildCache,
+} from '../../utils/remote-build-cache-providers';
+import { getSchemesForIosAsync } from '../../utils/scheme';
+import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { logProjectLogsLocation } from '../hints';
+import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -52,11 +55,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     if (localPath) {
       options.binary = localPath;
     }
-  }
-
-  let x = 1;
-  if (x > 0) {
-    return;
   }
 
   if (options.rebundle) {
