@@ -11,6 +11,14 @@ public class AppDelegate: ExpoAppDelegate {
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
 
+#if os(iOS) || os(tvOS)
+    window = UIWindow(frame: UIScreen.main.bounds)
+    reactNativeFactory?.startReactNative(
+      withModuleName: "main",
+      in: window,
+      launchOptions: launchOptions)
+#endif
+
     return super.applicationDidFinishLaunching(notification)
   }
 }

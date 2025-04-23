@@ -16,8 +16,6 @@ class AppDelegate: ExpoAppDelegate {
 
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
-    // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
-    automaticallyLoadReactNativeWindow = false
 
     FirebaseApp.configure()
 

@@ -22,17 +22,8 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
   /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
 
-  /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
-  public var automaticallyLoadReactNativeWindow = true
-
-  func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-#if os(iOS) || os(tvOS)
-    window = UIWindow(frame: UIScreen.main.bounds)
-    reactNativeFactory?.startReactNative(
-      withModuleName: defaultModuleName,
-      in: window,
-      launchOptions: launchOptions)
-#elseif os(macOS)
+  func loadMacOSWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+#if os(macOS)
     if let rootView = reactNativeFactory?.rootViewFactory.view(
       withModuleName: defaultModuleName,
       initialProperties: defaultInitialProps,
@@ -132,9 +123,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    if automaticallyLoadReactNativeWindow {
-      loadReactNativeWindow(launchOptions: launchOptions)
-    }
+    loadMacOSWindow(launchOptions: launchOptions)
 
     ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
       // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
