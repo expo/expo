@@ -26,6 +26,7 @@ export {
   VideoSize,
   SubtitleTrack,
   VideoTrack,
+  ContentType,
 } from './VideoPlayer.types';
 
 export {
@@ -37,4 +38,5 @@ export {
   MutedChangeEventPayload,
   TimeUpdateEventPayload,
   SourceChangeEventPayload,
+  SourceLoadEventPayload,
 } from './VideoPlayerEvents.types';

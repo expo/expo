@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 9.0.3 — 2025-04-22
+
+### 🎉 New features
+
+- use `react/recommended` plugin. ([#36265](https://github.com/expo/expo/pull/36265) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.0.2 — 2025-04-11
 
 ### 🐛 Bug fixes

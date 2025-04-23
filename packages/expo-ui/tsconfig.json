@@ -2,8 +2,8 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "outDir": "./build",
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": false
   },
-  "include": ["./components", "src/types.ts"],
+  "include": ["./src/**/*"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
 }

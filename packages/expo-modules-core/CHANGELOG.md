@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 2.3.7 — 2025-04-22
+
+### 🐛 Bug fixes
+
+- Fixed adding SwiftUI views to navigation header ([#36305](https://github.com/expo/expo/pull/36305) by [@jakex7](https://github.com/jakex7))
+
+## 2.3.6 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
 
 ## 2.3.5 — 2025-04-14
 

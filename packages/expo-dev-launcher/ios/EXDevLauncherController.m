@@ -93,7 +93,6 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 
   [modules addObject:[RCTDevMenu new]];

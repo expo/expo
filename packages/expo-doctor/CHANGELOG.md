@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.13.0 — 2025-04-22
+
+### 🎉 New features
+
+- Add new check for compatible Xcode version. ([#32130](https://github.com/expo/expo/pull/35961) by [@betomoedano](https://github.com/betomoedano))
+
+## 1.12.11 — 2025-04-21
+
+### 💡 Others
+
 - Formatting improvements. ([#36151](https://github.com/expo/expo/pull/36151) by [@keith-kurak](https://github.com/keith-kurak))
 - Exclude `@expo/*` packages from the New Architecture compatibility check. ([#36175](https://github.com/expo/expo/pull/36175) by [@Simek](https://github.com/Simek))
 

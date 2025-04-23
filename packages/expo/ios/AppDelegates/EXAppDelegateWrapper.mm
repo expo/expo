@@ -2,9 +2,7 @@
 
 #import <Expo/EXAppDelegateWrapper.h>
 
-#import <Expo/EXReactRootViewFactory.h>
 #import <Expo/RCTAppDelegateUmbrella.h>
-#import <Expo/EXReactNativeFactoryDelegate.h>
 #import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -81,12 +79,12 @@
 
 - (UIViewController *)createRootViewController
 {
-  return [_expoAppDelegate createRootViewController];
+  return [_expoAppDelegate.reactNativeFactoryDelegate createRootViewController];
 }
 
 - (void)customizeRootView:(UIView *)rootView
 {
-  [_expoAppDelegate customizeRootView:rootView];
+  [_expoAppDelegate.reactNativeFactoryDelegate customizeRootView:rootView];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
@@ -112,11 +110,11 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return [_expoAppDelegate getModuleInstanceFromClass:moduleClass];
+  return [_expoAppDelegate.reactNativeFactoryDelegate getModuleInstanceFromClass:moduleClass];
 }
 
 - (Class)getModuleClassFromName:(const char *)name {
-  return [_expoAppDelegate getModuleClassFromName:name];
+  return [_expoAppDelegate.reactNativeFactoryDelegate getModuleClassFromName:name];
 }
 
 

@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.video.UnsupportedDRMTypeException
 import expo.modules.video.buildExpoVideoMediaSource
+import expo.modules.video.enums.ContentType
 import java.io.Serializable
 
 @OptIn(UnstableApi::class)
@@ -24,7 +25,8 @@ class VideoSource(
   @Field var drm: DRMOptions? = null,
   @Field var metadata: VideoMetadata? = null,
   @Field var headers: Map<String, String>? = null,
-  @Field var useCaching: Boolean = false
+  @Field var useCaching: Boolean = false,
+  @Field val contentType: ContentType = ContentType.AUTO
 ) : Record, Serializable {
   private fun toMediaId(): String {
     return "uri:${this.uri}" +
@@ -36,7 +38,8 @@ class VideoSource(
       "DRMHeadersValues:${this.drm?.headers?.values?.joinToString { it }}}" +
       "NotificationDataTitle:${this.metadata?.title}" +
       "NotificationDataSecondaryText:${this.metadata?.artist}" +
-      "NotificationDataArtwork:${this.metadata?.artwork?.path}"
+      "NotificationDataArtwork:${this.metadata?.artwork?.path}" +
+      "ContentType:${this.contentType.value}"
   }
 
   fun toMediaSource(context: Context): MediaSource? {
@@ -48,6 +51,9 @@ class VideoSource(
     .Builder()
     .apply {
       setUri(parseLocalAssetId(uri, context))
+      contentType.toMimeTypeString()?.let {
+        setMimeType(it)
+      }
       drm?.let {
         if (it.type.isSupported()) {
           setDrmConfiguration(it.toDRMConfiguration())
