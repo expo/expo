@@ -1,4 +1,4 @@
-import { router, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 
 export default function Hash() {
