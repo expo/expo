@@ -62,6 +62,7 @@
     "@expo/spawn-async": "^1.7.2",
     "eslint": "^9.24.0",
     "jest": "^29.7.0",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "eslint8": "npm:eslint@^8.57.1"
   }
 }
