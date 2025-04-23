@@ -5115,9 +5115,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-universe@npm:^14.3.0":
-  version: 14.3.0
-  resolution: "eslint-config-universe@npm:14.3.0"
+"eslint-config-universe@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "eslint-config-universe@npm:15.0.0"
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:^8.29.1"
     "@typescript-eslint/parser": "npm:^8.29.1"
@@ -5135,7 +5135,7 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/807657ec4530c6e4f0512685f5ef341e1cf8b660b0c06b97ed8432d115577c79fb907fdd57938e26543315cb7be294e7b2b43951e97516a92a6bcc605ef54bf6
+  checksum: 10c0/2b2b3e0468241964dd19bfa98c9cfa27a770be26b384427eeda52631efea472bc0a5b4f9bf90c87201fae1f691e722b1f25ef779ef5ee52a3f7cbadb671a4466
   languageName: node
   linkType: hard
 
@@ -5789,7 +5789,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     eslint: "npm:^9.24.0"
     eslint-config-next: "npm:^15.3.1"
-    eslint-config-universe: "npm:^14.3.0"
+    eslint-config-universe: "npm:^15.0.0"
     eslint-plugin-lodash: "npm:^8.0.0"
     eslint-plugin-mdx: "npm:^3.4.1"
     eslint-plugin-tailwindcss: "npm:^3.18.0"
