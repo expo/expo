@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
 import { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
@@ -26,6 +26,13 @@ export default class CameraView extends Component<CameraViewProps> {
      * The list varies across Android devices but is the same for every iOS.
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
+    /**
+     * Returns the available lenses for the currently selected camera.
+     *
+     * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+     * @platform ios
+     */
+    getAvailableLensesAsync(): Promise<string[]>;
     /**
      * Returns an object with the supported features of the camera on the current device.
      */
@@ -132,9 +139,14 @@ export default class CameraView extends Component<CameraViewProps> {
     toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
+     * @platform android
+     * @platform ios
      */
     stopRecording(): void;
     _onCameraReady: () => void;
+    _onAvailableLensesChanged: ({ nativeEvent }: {
+        nativeEvent: AvailableLenses;
+    }) => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {
             message: string;

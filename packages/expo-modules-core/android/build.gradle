@@ -2,25 +2,19 @@ import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
-  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+  repositories {
+    mavenCentral()
+  }
 
-  if (KOTLIN_MAJOR_VERSION >= 2) {
-    repositories {
-      mavenCentral()
-    }
-
-    dependencies {
-      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-    }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
   }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
-if (KOTLIN_MAJOR_VERSION >= 2) {
-  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-}
 
 group = 'host.exp.exponent'
 version = '2.3.7'
@@ -105,12 +99,6 @@ android {
     buildConfig true
     prefab true
     compose true
-  }
-
-  if (KOTLIN_MAJOR_VERSION < 2) {
-    composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.14"
-    }
   }
 
   packagingOptions {

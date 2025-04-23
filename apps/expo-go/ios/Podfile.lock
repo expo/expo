@@ -62,6 +62,8 @@ PODS:
     - ExpoModulesCore
   - ExpoAsset (11.1.2):
     - ExpoModulesCore
+  - ExpoAudio (0.4.2):
+    - ExpoModulesCore
   - ExpoBackgroundFetch (13.1.3):
     - ExpoModulesCore
   - ExpoBackgroundTask (0.2.4):
@@ -2853,6 +2855,7 @@ DEPENDENCIES:
   - Expo (from `../../../packages/expo`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
+  - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
@@ -3089,6 +3092,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
+  ExpoAudio:
+    :path: "../../../packages/expo-audio/ios"
   ExpoBackgroundFetch:
     :path: "../../../packages/expo-background-fetch/ios"
   ExpoBackgroundTask:
@@ -3400,6 +3405,7 @@ SPEC CHECKSUMS:
   Expo: 8968cac151cfad8835644eda4c58cecd72e841db
   ExpoAppleAuthentication: b1b48e4b0b84699f2c38b7210a3c9b0fef4b301f
   ExpoAsset: 6ed36a13e3817a85b0991032ac44d69bb41297c6
+  ExpoAudio: a19999a254a62b9ce8b4243386af300474c159fd
   ExpoBackgroundFetch: a902c5ec702bb7cbd76c2e60445b438c9d68e201
   ExpoBackgroundTask: 16fa0d74878f99a01a39b7aa2bbe8d2267b19256
   ExpoBattery: b5ca5288f89d7d8478ca131b3f95e95d921d0faf
@@ -3586,6 +3592,6 @@ SPEC CHECKSUMS:
   Yoga: d15f5aa644c466e917569ac43b19cbf17975239a
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: a281d730cb159bd3316f12fe0fa826633ca90be1
+PODFILE CHECKSUM: b43e8fd68aecb83928c36a03bb11448210e1072a
 
 COCOAPODS: 1.16.2

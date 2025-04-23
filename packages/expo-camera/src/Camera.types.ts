@@ -226,6 +226,14 @@ export type PictureSavedListener = (event: {
 /**
  * @hidden
  */
+export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLenses }) => void;
+
+// @docsMissing
+export type AvailableLenses = { lenses: string[] };
+
+/**
+ * @hidden
+ */
 export type CameraReadyListener = () => void;
 
 /**
@@ -390,6 +398,13 @@ export type CameraViewProps = ViewProps & {
    */
   pictureSize?: string;
   /**
+   * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailableaensesasync).
+   * You can read more about the available lenses in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   * @platform ios
+   * @default 'builtInWideAngleCamera'
+   */
+  selectedLens?: string;
+  /**
    * A boolean to enable or disable the torch.
    * @default false
    */
@@ -452,6 +467,12 @@ export type CameraViewProps = ViewProps & {
    * @platform ios
    */
   onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
+  /**
+   * Callback invoked when the cameras available lenses change.
+   * @param event result object that contains a `lenses` property containing an array of available lenses.
+   * @platform ios
+   */
+  onAvailableLensesChanged?: (event: AvailableLenses) => void;
 };
 
 /**
@@ -462,6 +483,7 @@ export interface CameraViewRef {
     options: CameraPictureOptions
   ) => Promise<CameraCapturedPicture | PictureRef>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
+  readonly getAvailableLenses: () => Promise<string[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;
@@ -482,6 +504,7 @@ export type CameraNativeProps = {
   onBarcodeScanned?: (event: { nativeEvent: BarcodeScanningResult }) => void;
   onPictureSaved?: PictureSavedListener;
   onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
+  onAvailableLensesChanged?: AvailableLensesChangedListener;
   facing?: string;
   flashMode?: string;
   enableTorch?: boolean;

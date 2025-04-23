@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Support selecting which lens to use for the camera. ([#36233](https://github.com/expo/expo/pull/36233) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Web] Remove `forwardRef` from Camera component. ([#36320](https://github.com/expo/expo/pull/36320) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.1.3 — 2025-04-21
 
