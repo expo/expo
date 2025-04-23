@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove `moduleName` and `initialProps` from the `AppDelegate`.
+
 ## 53.0.0-preview.11 — 2025-04-23
 
 ### 🎉 New features

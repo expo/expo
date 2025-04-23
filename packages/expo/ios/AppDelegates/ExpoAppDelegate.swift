@@ -16,22 +16,19 @@ import ReactAppDependencyProvider
 open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationDelegate {
   @objc public var reactNativeFactory: RCTReactNativeFactory?
   @objc public var reactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate?
+  private let defaultModuleName = "main"
+  private let defaultInitialProps = [AnyHashable: Any]()
 
   /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
-
-  /// From RCTAppDelegate
-  @objc public var moduleName: String = ""
-  @objc public var initialProps: [AnyHashable: Any]?
 
   /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
   public var automaticallyLoadReactNativeWindow = true
 
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
 #if os(iOS) || os(tvOS)
-    window = UIWindow(frame: UIScreen.main.bounds)
     reactNativeFactory?.startReactNative(
-      withModuleName: self.moduleName,
+      withModuleName: defaultModuleName,
       in: window,
       launchOptions: launchOptions)
 #elseif os(macOS)
@@ -87,22 +84,19 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
       }
     }
 
-    self.moduleName = moduleName ?? ""
-    self.initialProps = initialProps
-
     let rootView: UIView
     if let factory = rootViewFactory as? ExpoReactRootViewFactory {
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
-        withModuleName: self.moduleName as String,
-        initialProperties: self.initialProps ?? [:],
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps ?? defaultInitialProps,
         launchOptions: launchOptions ?? [:]
       )
     } else {
       rootView = rootViewFactory.view(
-        withModuleName: self.moduleName as String,
-        initialProperties: self.initialProps,
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps ?? defaultInitialProps,
         launchOptions: launchOptions
       )
     }

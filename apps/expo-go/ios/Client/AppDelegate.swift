@@ -10,17 +10,14 @@ class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    self.moduleName = "main"
-    self.initialProps = [:]
-
     let delegate = ReactNativeDelegate()
     let factory = ExpoGoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    self.reactNativeFactoryDelegate = delegate
-    self.reactNativeFactory = factory
+    reactNativeFactoryDelegate = delegate
+    reactNativeFactory = factory
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
-    self.automaticallyLoadReactNativeWindow = false
+    automaticallyLoadReactNativeWindow = false
 
     FirebaseApp.configure()
 

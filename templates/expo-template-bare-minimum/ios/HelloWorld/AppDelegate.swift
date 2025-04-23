@@ -8,15 +8,14 @@ public class AppDelegate: ExpoAppDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    self.moduleName = "main"
-    self.initialProps = [:]
-
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
+
+    window = UIWindow(frame: UIScreen.main.bounds)
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
