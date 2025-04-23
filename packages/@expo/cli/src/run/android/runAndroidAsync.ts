@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -14,7 +13,6 @@ import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import {
   resolveRemoteBuildCache,
-  resolveRemoteBuildCacheProvider,
   uploadRemoteBuildCache,
 } from '../../utils/remote-build-cache-providers';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
@@ -30,26 +28,21 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   setNodeEnv(isProduction ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
-  const projectConfig = getConfig(projectRoot);
-  const buildCacheProvider = resolveRemoteBuildCacheProvider(
-    projectConfig.exp.experiments?.remoteBuildCache?.provider,
-    projectRoot
-  );
-  if (!options.binary && buildCacheProvider) {
+  await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
+
+  const props = await resolveOptionsAsync(projectRoot, options);
+
+  if (!options.binary && props.buildCacheProvider) {
     const localPath = await resolveRemoteBuildCache({
       projectRoot,
       platform: 'android',
-      provider: buildCacheProvider,
+      provider: props.buildCacheProvider,
       runOptions: options,
     });
     if (localPath) {
       options.binary = localPath;
     }
   }
-
-  await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
-
-  const props = await resolveOptionsAsync(projectRoot, options);
 
   debug('Package name: ' + props.packageName);
   Log.log('› Building app...');
@@ -130,11 +123,11 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await manager.stopAsync();
   }
 
-  if (options.binary && shouldUpdateBuildCache && buildCacheProvider) {
+  if (options.binary && shouldUpdateBuildCache && props.buildCacheProvider) {
     await uploadRemoteBuildCache({
       projectRoot,
       platform: 'android',
-      provider: buildCacheProvider,
+      provider: props.buildCacheProvider,
       buildPath: options.binary,
       runOptions: options,
     });
