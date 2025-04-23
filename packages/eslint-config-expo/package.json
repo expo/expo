@@ -22,8 +22,7 @@
     "default.js",
     "flat.js",
     "flat",
-    "utils",
-    "!**/__tests__/**"
+    "utils"
   ],
   "jest": {
     "testMatch": [
