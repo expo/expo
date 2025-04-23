@@ -1,19 +1,23 @@
-import React
 import Expo
+import React
+import ReactAppDependencyProvider
 
 public class AppDelegate: ExpoAppDelegate {
   public override func applicationDidFinishLaunching(_ notification: Notification) {
     self.moduleName = "main"
     self.initialProps = [:]
 
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeFactoryDelegate = delegate
+    reactNativeFactory = factory
+
     return super.applicationDidFinishLaunching(notification)
   }
+}
 
-  public override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-#else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
-  }
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
 }

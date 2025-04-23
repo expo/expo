@@ -13,8 +13,9 @@ import ReactAppDependencyProvider
  TODO vonovak check macOS support once RN macOS 78 goes out
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryProvider, UIApplicationDelegate, UISceneDelegate {
-  public var reactNativeFactory: RCTReactNativeFactory?
+open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationDelegate {
+  @objc public var reactNativeFactory: RCTReactNativeFactory?
+  @objc public var reactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate?
 
   /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
@@ -23,19 +24,16 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
   @objc public var moduleName: String = ""
   @objc public var initialProps: [AnyHashable: Any]?
 
-  @objc public let reactDelegate = ExpoReactDelegate(
-    handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
-  )
-
   /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
   public var automaticallyLoadReactNativeWindow = true
 
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-    self.dependencyProvider = RCTAppDependencyProvider()
-    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
 #if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
-    reactNativeFactory?.startReactNative(withModuleName: self.moduleName, in: window, launchOptions: launchOptions)
+    reactNativeFactory?.startReactNative(
+      withModuleName: self.moduleName,
+      in: window,
+      launchOptions: launchOptions)
 #elseif os(macOS)
     if let rootView = reactNativeFactory?.rootViewFactory.view(
       withModuleName: self.moduleName as String,
@@ -63,24 +61,18 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
 #endif
   }
 
-  @objc
-  open override func createRootViewController() -> UIViewController {
-    return reactDelegate.createRootViewController()
-  }
-
-  @objc public override func recreateRootView(
+  public func recreateRootView(
     withBundleURL: URL?,
     moduleName: String?,
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) -> UIView {
-    guard let reactNativeFactory = self.reactNativeFactory else {
-      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
+    guard let delegate = self.reactNativeFactoryDelegate,
+    let rootViewFactory = self.reactNativeFactory?.rootViewFactory else {
+      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppDelegate")
     }
 
-    let rootViewFactory = reactNativeFactory.rootViewFactory
-
-    if self.newArchEnabled() {
+    if delegate.newArchEnabled() {
       // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
       assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     } else {
@@ -95,13 +87,8 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
       }
     }
 
-    if let moduleName = moduleName {
-      self.moduleName = moduleName
-    }
-
-    if let initialProps = initialProps {
-      self.initialProps = initialProps
-    }
+    self.moduleName = moduleName ?? ""
+    self.initialProps = initialProps
 
     let rootView: UIView
     if let factory = rootViewFactory as? ExpoReactRootViewFactory {
@@ -121,11 +108,6 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
     }
 
     return rootView
-  }
-
-  open override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
-    return bridge.bundleURL ?? bundleURL()
   }
 
   // MARK: - Initializing the App
@@ -593,13 +575,6 @@ open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, ReactNativeFactoryPr
     return parsedSubscribers.isEmpty ? infoPlistOrientations : subscribersMask
   }
 #endif
-
-  // MARK: - ExpoAppDelegateSubscriberProtocol
-
-  @objc
-  open override func customize(_ rootView: RCTRootView) {
-    ExpoAppDelegateSubscriberRepository.subscribers.forEach { $0.customizeRootView?(rootView) }
-  }
 }
 
 #if os(iOS)

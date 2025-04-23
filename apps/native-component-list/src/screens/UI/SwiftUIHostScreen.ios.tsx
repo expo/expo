@@ -2,7 +2,7 @@ import { Next as SwiftUI } from '@expo/ui/swift-ui';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function SwiftUIContainerScreen() {
+export default function SwiftUIHostScreen() {
   const [playSounds, setPlaySounds] = useState(true);
   const [sendReadReceipts, setSendReadReceipts] = useState(false);
 
@@ -12,7 +12,7 @@ export default function SwiftUIContainerScreen() {
   const [selectedProfileImageSizeIndex, setSelectedProfileImageSizeIndex] = useState<number>(0);
 
   return (
-    <SwiftUI.Container style={{ flex: 1 }}>
+    <SwiftUI.Host style={{ flex: 1 }}>
       <SwiftUI.Form>
         {/* Notifications Section */}
         <SwiftUI.Section title="Notifications">
@@ -77,7 +77,7 @@ export default function SwiftUIContainerScreen() {
           </View>
         </SwiftUI.HStack>
       </SwiftUI.VStack>
-    </SwiftUI.Container>
+    </SwiftUI.Host>
   );
 }
 
@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
   },
 });
 
-SwiftUIContainerScreen.navigationOptions = {
-  title: 'SwiftUI Container',
+SwiftUIHostScreen.navigationOptions = {
+  title: 'SwiftUI Host',
 };

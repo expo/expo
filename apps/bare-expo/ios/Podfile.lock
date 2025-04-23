@@ -43,14 +43,17 @@ PODS:
     - React-Core
   - EXJSONUtils (0.15.0)
   - EXJSONUtils/Tests (0.15.0)
-  - EXManifests (0.16.1):
+  - EXManifests (0.16.2):
     - ExpoModulesCore
-  - EXManifests/Tests (0.16.1):
+  - EXManifests/Tests (0.16.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.30.5):
+  - EXNotifications (0.30.6):
     - ExpoModulesCore
-  - Expo (53.0.0-preview.9):
+  - EXNotifications/Tests (0.30.6):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - Expo (53.0.0-preview.10):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -77,7 +80,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-client (5.1.2):
+  - expo-dev-client (5.1.3):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -506,7 +509,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.3.2):
     - ExpoModulesCore
-  - ExpoModulesCore (2.3.6):
+  - ExpoModulesCore (2.3.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -531,7 +534,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (2.3.6):
+  - ExpoModulesCore/Tests (2.3.7):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -603,7 +606,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.1.4):
     - ExpoModulesCore
-  - ExpoSplashScreen (0.30.4):
+  - ExpoSplashScreen (0.30.5):
     - ExpoModulesCore
   - ExpoSQLite (15.2.6):
     - ExpoModulesCore
@@ -617,7 +620,7 @@ PODS:
     - ExpoModulesCore
   - ExpoUI (0.1.1-alpha.3):
     - ExpoModulesCore
-  - ExpoVideo (2.1.3):
+  - ExpoVideo (2.1.4):
     - ExpoModulesCore
   - ExpoVideoThumbnails (9.1.1):
     - ExpoModulesCore
@@ -628,7 +631,7 @@ PODS:
   - EXTaskManager (13.1.3):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.28.5):
+  - EXUpdates (0.28.6):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -658,7 +661,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.28.5):
+  - EXUpdates/Tests (0.28.6):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3006,6 +3009,7 @@ DEPENDENCIES:
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
+  - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
@@ -3593,18 +3597,18 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: a97859cac8efb2f5411b2052e61841b349813a4a
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 2d9d3631681fc426f9c4ade4d7cf6fc2d19baa46
   EXApplication: 11b2bbe282966309a86145fc642090b6e5b356cc
   EXAV: 796c01cfbe714ce51fb0712636780b3b6feb1248
   EXConstants: 98e2e1043294fc2347346fb14b9577dfedc936f7
   EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
-  EXManifests: 96fe8e11fc4e243db06df7b7f198796fb26fbf24
-  EXNotifications: 12fa00c4dad613a9a467508fbba64ea72658fc3b
-  Expo: 865cefc1da592436a657570e8d36ffdb4be36bfd
-  expo-dev-client: e054e2917cfefe95a694ab9b6682c97503ef2f7a
+  EXManifests: b4d81cc31f8066688af062a90e7df84fbb7ec0e7
+  EXNotifications: d5e92c80908c453bdbabeff479267b33460be299
+  Expo: 8968cac151cfad8835644eda4c58cecd72e841db
+  expo-dev-client: 51224080f335b835320d63e1e8492845272db45d
   expo-dev-launcher: f3b159f7502e7fd151da0270369e960a91b74663
   expo-dev-menu: 5e8163ae654f5374c46bb05a52619197a9bd6f82
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
@@ -3644,7 +3648,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 46bd054644d21d5f9b45133ee84d4dae88d88bc3
   ExpoMediaLibrary: 60053a0009c25a3cb51fbec01780c218e0dabdda
   ExpoMeshGradient: acfe68781e91c17a5a6c13f1db6b72eb6979d1d5
-  ExpoModulesCore: 81eaa2d14fc966315f36fa4d83c98386644e69e2
+  ExpoModulesCore: b4b9c7f121c59a2a6c2d53efe9b5f5a5593b0eb0
   ExpoModulesTestCore: c87ba2da38070e3483a3049453a4dc898b972eb2
   ExpoNetwork: 6f180b30dbd5c901d031e6b27d98b64210d0dc91
   ExpoPrint: c8503279ddcc615c133ea050f860d06cd53d9855
@@ -3655,24 +3659,24 @@ SPEC CHECKSUMS:
   ExpoSharing: 1c46b8ab9a8270bdf768e2a0ab4e933dbeb946e9
   ExpoSMS: fc9049fe70687d3a3abbc3ae5017e99b559105c4
   ExpoSpeech: f3d011e275ec35599af615eac697af7b4b12f60e
-  ExpoSplashScreen: 92f1fd1311f394f593db1217fec876463cdbfd6d
+  ExpoSplashScreen: 2c1d6c6f0209addc266148e34e801a09519fedb1
   ExpoSQLite: 59178dcaa3f9d4607c22267e04f015d83c7386dd
   ExpoStoreReview: 71c78d4d2bc2d73a5d627abe087be0f3d1366ffd
   ExpoSymbols: c18d77c79084429a7ceee414e58a934b10f39121
   ExpoSystemUI: 44aee2033c4a9d4d726c7c4cda8703949bdbb08e
   ExpoTrackingTransparency: a41393a982b6559dd8070b4a8811a88ad8197996
   ExpoUI: f2b3a4f8504fdd6bbe8c92b75d2d0ea6821a5b4b
-  ExpoVideo: c4d0eb3335d815916b52f330b6812ab8311faa9a
+  ExpoVideo: 6e20b668ad31a1c6fbe7435f8bae709e0ca2ba61
   ExpoVideoThumbnails: da367aa489d7dc28f95fbca69ff7247f25ff1f7a
   ExpoWebBrowser: 6fc49efcf19ec4a5b2d32cceacf41187e7d015a0
   EXStructuredHeaders: 32bec6771c2db18c4cd47cecae530d1d06cdf972
   EXTaskManager: cb0885162e1ce32b49169fc9009bc4fab962b602
-  EXUpdates: 611168921bd6b16378bd098bcc4736a26a811fba
+  EXUpdates: eb237c103472204cb31335d5d0157dc41b3cb98b
   EXUpdatesInterface: 64f35449b8ef89ce08cdd8952a4d119b5de6821d
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: abbac80c6f89e71a8c55c7e92ec015c8a9496753
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: c32f2e405098bc1ebe30630a051ddce6f21d3c2e
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
