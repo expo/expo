@@ -23,7 +23,7 @@ public class ExpoUIModule: Module {
     View(ListView.self)
     View(LabelView.self)
 
-    View(SwiftUIContainer.self)
+    View(SwiftUIHost.self)
     View(SwiftUIForm.self)
     View(SwiftUISection.self)
     View(SwiftUIHStack.self)

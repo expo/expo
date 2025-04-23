@@ -1,9 +1,9 @@
 import { StyleProp, ViewStyle } from 'react-native';
-export type ContainerProps = {
+export type HostProps = {
     children: React.ReactNode;
     style: StyleProp<ViewStyle>;
 };
-export declare function Container(props: ContainerProps): import("react").JSX.Element | null;
+export declare function Host(props: HostProps): import("react").JSX.Element | null;
 export type FormProps = {
     children: React.ReactNode;
 };

@@ -107,11 +107,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'SwiftUI container',
-    route: 'ui/swiftui-container',
+    name: 'SwiftUI Host',
+    route: 'ui/swiftui-host',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwiftUIContainerScreen'));
+      return optionalRequire(() => require('./SwiftUIHostScreen'));
     },
   },
 ];

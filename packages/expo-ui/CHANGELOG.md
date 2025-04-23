@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Renamed `<SwiftUI.Container>` to `<SwiftUI.Host>`. ([#36311](https://github.com/expo/expo/pull/36311) by [@kudo](https://github.com/kudo))
+
 ## 0.1.1-alpha.3 — 2025-04-21
 
 ### 🐛 Bug fixes
