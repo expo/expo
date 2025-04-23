@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Disallow `require()` for source files and continue to allow for assets.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
