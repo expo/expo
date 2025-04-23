@@ -24,7 +24,6 @@ export default class CameraView extends Component<CameraViewProps> {
      * Get picture sizes that are supported by the device.
      * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
      * The list varies across Android devices but is the same for every iOS.
-     *
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
     /**
