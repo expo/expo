@@ -14,11 +14,13 @@ jest.mock('../resolveDevice', () => ({
   })),
 }));
 
+const fixture = { ...rnFixture, 'package.json': JSON.stringify({}) };
+
 describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`resolves default options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
     expect(await resolveOptionsAsync('/', {})).toEqual({
       buildCache: true,
@@ -34,7 +36,7 @@ describe(resolveOptionsAsync, () => {
     });
   });
   it(`resolves complex options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
     jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
