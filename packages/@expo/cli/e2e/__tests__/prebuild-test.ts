@@ -255,3 +255,43 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
+
+// Regression test for https://github.com/expo/expo/issues/36289
+it('runs `npx expo prebuild --platform ios` after building Android', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'regression-expo-36289',
+    'with-blank',
+    { reuseExisting: false }
+  );
+
+  const templateTarball = await createPackageTarball(
+    projectRoot,
+    'templates/expo-template-bare-minimum'
+  );
+
+  // Execute prebuild for android
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--platform=android',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
+
+  // Create the `android/.gradle` folder that Gradle creates, and create the empty `android/.gradle/vcs-1/gc.properties` file
+  // We can also run `./gradlew :app:assembleDebug` but that's an expensive operation.
+  await fs.mkdir(path.join(projectRoot, 'android/.gradle/vcs-1'), { recursive: true });
+  await fs.writeFile(path.join(projectRoot, 'android/.gradle/vcs-1/gc.properties'), '');
+
+  // Execute prebuild for iOS
+  const command = await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--platform=ios',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
+
+  // Ensure there was no errors
+  expect(command).toMatchObject({ stderr: '' });
+});
