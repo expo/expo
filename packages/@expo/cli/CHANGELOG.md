@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Exclude directories from prebuild "magic string" renaming operations. ([#36325](https://github.com/expo/expo/pull/36325) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.24.3 — 2025-04-21
