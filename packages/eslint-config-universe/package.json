@@ -51,7 +51,7 @@
     "globals": "^16.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=9",
+    "eslint": ">=8.10",
     "prettier": ">=3"
   },
   "peerDependenciesMeta": {
