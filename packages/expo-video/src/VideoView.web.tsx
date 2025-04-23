@@ -205,6 +205,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         }
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
+      playsInline={props.playsInline}
       src={getSourceUri(props.player?.src) ?? ''}
     />
   );
