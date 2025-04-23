@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Disallow `require()` for source files and continue to allow for assets.
+- Disallow `require()` for source files and continue to allow for assets. ([#36346](https://github.com/expo/expo/pull/36346) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
