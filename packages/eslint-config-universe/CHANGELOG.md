@@ -5,11 +5,16 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Add support for flat config ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.0.0 — 2025-04-23
+
+### 🎉 New features
+
+- Add support for flat config ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
 
 ## 14.2.0 — 2025-04-09
 
