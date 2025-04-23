@@ -75,7 +75,8 @@ export default defineConfig([
     'pages/versions/latest',
     '**/public',
     'scripts/generate-llms/talks.js',
-    'README.md', // TODO (Kadi): ignored because cannot be parsed by eslintMdx
+    'README.md',
+    'next-env.d.ts',
   ]),
   universeWebConfig,
   universeNodeConfig,
