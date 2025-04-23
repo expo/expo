@@ -89,7 +89,7 @@ export const lintAsync = async (
     eslintArgs.push('--quiet');
   }
 
-  if (options.maxWarnings && options.maxWarnings >= 0) {
+  if (options.maxWarnings != null && options.maxWarnings >= 0) {
     eslintArgs.push(`--max-warnings=${options.maxWarnings.toString()}`);
   }
 

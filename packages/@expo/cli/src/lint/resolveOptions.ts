@@ -84,7 +84,7 @@ export async function resolveArgsAsync(
       ignore: !getBooleanArg('--no-ignore', flags['--no-ignore']),
       ignorePattern: splitCommaSeparatedList('--ignore-pattern', flags['--ignore-pattern']),
       quiet: !!getBooleanArg('--quiet', flags['--quiet']),
-      maxWarnings: Number(flags['--max-warnings']) || -1,
+      maxWarnings: Number(flags['--max-warnings']) ?? -1,
     }),
     extras,
   };
