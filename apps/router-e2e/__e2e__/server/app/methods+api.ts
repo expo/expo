@@ -1,5 +1,8 @@
+import path from 'path';
+
 /** @type {import('expo-router/server').RequestHandler} */
 export function GET() {
+  console.log('hey:', path.join('a', 'b'));
   return new Response(
     JSON.stringify({
       method: import.meta.url,

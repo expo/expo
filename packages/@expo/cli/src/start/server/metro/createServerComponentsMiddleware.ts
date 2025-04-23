@@ -664,5 +664,5 @@ function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+  return str.replace(/^(__r\(.*\);)$/gm, 'export default $1');
 }

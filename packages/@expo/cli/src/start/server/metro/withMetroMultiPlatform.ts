@@ -75,7 +75,17 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = () => null;`;
+          const isServer = true; // TODO
+
+          //           if (isServer) {
+          //             return `
+          // // script.mjs (ESM module)
+          // import { createRequire } from 'node:module';
+          // global.$$require_external = createRequire(import.meta.url);
+          // `;
+          //           }
+
+          return `global.$$require_external ??= (moduleId) => { throw new Error(\`Node.js standard library module $\{moduleId} is not available in this JavaScript environment\`); }`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
