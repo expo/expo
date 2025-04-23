@@ -176,8 +176,15 @@ export function resolvePluginFunction(
       plugin = plugin.default;
     }
 
-    if (typeof plugin !== 'function') {
-      throw new Error(`The provider plugin "${pluginReference}" must export a function.`);
+    if (
+      typeof plugin !== 'object' ||
+      typeof plugin.resolveRemoteBuildCache !== 'function' ||
+      typeof plugin.uploadRemoteBuildCache !== 'function'
+    ) {
+      throw new Error(`
+        The provider plugin "${pluginReference}" must export an object containing
+        the resolveRemoteBuildCache and uploadRemoteBuildCache functions.
+      `);
     }
     return plugin;
   } catch (error) {

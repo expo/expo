@@ -14,7 +14,13 @@ jest.mock('../resolveDevice', () => ({
   })),
 }));
 
-const fixture = { ...rnFixture, 'package.json': JSON.stringify({}) };
+const fixture = {
+  ...rnFixture,
+  'package.json': JSON.stringify({}),
+  'node_modules/expo/package.json': JSON.stringify({
+    version: '53.0.0',
+  }),
+};
 
 describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
