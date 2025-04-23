@@ -1,7 +1,14 @@
 import { StyleProp, ViewStyle } from 'react-native';
 export type HostProps = {
     children: React.ReactNode;
-    style: StyleProp<ViewStyle>;
+    style?: StyleProp<ViewStyle>;
+    matchContents?: boolean;
+    onLayoutContent?: (event: {
+        nativeEvent: {
+            width: number;
+            height: number;
+        };
+    }) => void;
 };
 export declare function Host(props: HostProps): import("react").JSX.Element | null;
 export type FormProps = {
