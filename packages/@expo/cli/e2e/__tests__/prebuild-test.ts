@@ -257,7 +257,8 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
 });
 
 // Regression test for https://github.com/expo/expo/issues/36289
-it('runs `npx expo prebuild --platform ios` after building Android', async () => {
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --platform ios` after building Android', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'regression-expo-36289',
     'with-blank',
