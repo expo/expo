@@ -1,4 +1,4 @@
-import { ModPlatform } from '@expo/config-plugins';
+import { Platform } from '@expo/config';
 
 import { type Options as AndroidRunOptions } from '../../run/android/resolveOptions';
 import { type Options as IosRunOptions } from '../../run/ios/XcodeBuild.types';
@@ -7,7 +7,7 @@ export type RunOptions = AndroidRunOptions | IosRunOptions;
 
 export type ResolveRemoteBuildCacheProps = {
   projectRoot: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
   runOptions: RunOptions;
   fingerprintHash: string;
 };
@@ -16,11 +16,11 @@ export type UploadRemoteBuildCacheProps = {
   buildPath: string;
   runOptions: RunOptions;
   fingerprintHash: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
 };
 export type CalculateFingerprintHashProps = {
   projectRoot: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
   runOptions: RunOptions;
 };
 

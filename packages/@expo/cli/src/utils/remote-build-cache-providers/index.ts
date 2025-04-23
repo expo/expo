@@ -1,5 +1,4 @@
-import { ExpoConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import { ExpoConfig, Platform } from '@expo/config';
 import resolveFrom from 'resolve-from';
 
 import { EASRemoteBuildCacheProvider } from './eas';
@@ -42,7 +41,7 @@ export async function resolveRemoteBuildCache({
   runOptions,
 }: {
   projectRoot: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
   provider: RemoteBuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
@@ -70,7 +69,7 @@ export async function uploadRemoteBuildCache({
   runOptions,
 }: {
   projectRoot: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
   provider: RemoteBuildCacheProvider;
   buildPath: string;
   runOptions: RunOptions;
@@ -105,7 +104,7 @@ async function calculateFingerprintHashAsync({
   runOptions,
 }: {
   projectRoot: string;
-  platform: ModPlatform;
+  platform: Omit<Platform, 'web'>;
   provider: RemoteBuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
