@@ -20,7 +20,7 @@
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "lint": "expo lint"
+    "lint": "expo lint __e2e__"
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.2",
