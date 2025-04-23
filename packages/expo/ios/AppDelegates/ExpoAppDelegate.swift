@@ -90,13 +90,13 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
-        initialProperties: initialProps ?? defaultInitialProps,
+        initialProperties: initialProps,
         launchOptions: launchOptions ?? [:]
       )
     } else {
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
-        initialProperties: initialProps ?? defaultInitialProps,
+        initialProperties: initialProps,
         launchOptions: launchOptions
       )
     }

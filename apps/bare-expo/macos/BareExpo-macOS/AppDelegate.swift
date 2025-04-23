@@ -10,7 +10,7 @@ public class AppDelegate: ExpoAppDelegate {
 
     reactNativeFactoryDelegate = delegate
     reactNativeFactory = factory
-    
+
     window = UIWindow(frame: UIScreen.main.bounds)
 
     return super.applicationDidFinishLaunching(notification)
