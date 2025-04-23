@@ -123,8 +123,6 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    loadMacOSWindow(launchOptions: launchOptions)
-
     ExpoAppDelegateSubscriberRepository.subscribers.forEach { subscriber in
       // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
       _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
@@ -145,10 +143,8 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
   }
 
   open func applicationDidFinishLaunching(_ notification: Notification) {
-    if automaticallyLoadReactNativeWindow {
-      let launchOptions = notification.userInfo as? [String: Any]
-      loadReactNativeWindow(launchOptions: launchOptions)
-    }
+    let launchOptions = notification.userInfo as? [String: Any]
+    loadMacOSWindow(launchOptions: launchOptions)
 
     ExpoAppDelegateSubscriberRepository
       .subscribers
