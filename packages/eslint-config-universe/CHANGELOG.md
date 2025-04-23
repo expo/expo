@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow both eslint@8 and eslint@9 in peer deps ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
+
 ### 💡 Others
 
 ## 15.0.0 — 2025-04-23
