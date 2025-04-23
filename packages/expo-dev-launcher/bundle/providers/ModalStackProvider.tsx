@@ -65,8 +65,8 @@ export function ModalStackProvider({ children, modalStack = defaultModalStack })
           style={[StyleSheet.absoluteFillObject]}>
           {modals.map((item) => (
             <ModalScreen
-              key={item.key}
               {...item}
+              key={item.key}
               onClose={item.pop}
               onPopEnd={item.onPopEnd}
               onPushEnd={item.onPushEnd}
@@ -82,8 +82,16 @@ type ModalScreenProps = StackItem & {
   onClose: () => void;
 };
 
-function ModalScreen({ status, data }: ModalScreenProps) {
+function ModalScreen({ status, data, onPushEnd, onPopEnd }: ModalScreenProps) {
   const { element } = data;
+
+  React.useEffect(() => {
+    if (status === 'pushing') {
+      onPushEnd();
+    } else if (status === 'popping') {
+      onPopEnd();
+    }
+  }, [status]);
 
   return (
     <Animated.View
