@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Web] Remove `forwardRef` from Camera component.
+
 ## 16.1.3 — 2025-04-21
 
 ### 💡 Others

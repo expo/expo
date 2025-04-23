@@ -199,9 +199,7 @@ export default {
   async getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },
-  /* async getSupportedRatios(camera: ExponentCameraRef): Promise<string[]> {
-    // TODO: Support on web
-  },
+  /*
   async record(
     options?: CameraRecordingOptions,
     camera: ExponentCameraRef
