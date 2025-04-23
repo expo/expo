@@ -33,8 +33,8 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
       launchOptions: launchOptions)
 #elseif os(macOS)
     if let rootView = reactNativeFactory?.rootViewFactory.view(
-      withModuleName: self.moduleName as String,
-      initialProperties: self.initialProps,
+      withModuleName: defaultModuleName,
+      initialProperties: defaultInitialProps,
       launchOptions: launchOptions
     ) {
       let frame = NSRect(x: 0, y: 0, width: 1280, height: 720)
