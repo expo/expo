@@ -50,7 +50,6 @@ class AppDelegate: ExpoAppDelegate {
 }
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     bridge.bundleURL ?? bundleURL()
   }
