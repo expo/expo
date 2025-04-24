@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Droped support for Kotlin < `2.0.0`.
-- Removes `Jetpack Compose` integration if not needed.
+- Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.3.7 — 2025-04-22
 
