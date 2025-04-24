@@ -165,6 +165,28 @@ export function LogBoxInspector({
 
   const headerTitle = HEADER_TITLE_MAP[log.level] ?? log.type;
 
+  const headerBlurRef = React.useRef<HTMLDivElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  // Transition the opacity of the header blur when the scroll position changes.
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    const headerBlurElement = headerBlurRef.current;
+
+    if (scrollElement && headerBlurElement) {
+      const handleScroll = () => {
+        const scrollTop = scrollElement.scrollTop;
+        const opacity = Math.min(scrollTop / 16, 1);
+        headerBlurElement.style.opacity = `${opacity}`;
+      };
+
+      scrollElement.addEventListener('scroll', handleScroll);
+      return () => {
+        scrollElement.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [scrollRef, headerBlurRef]);
+
   return (
     <>
       <div className={styles.overlay}>
@@ -178,6 +200,7 @@ export function LogBoxInspector({
           }}
         />
         <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
+          <div className={styles.headerBlur} ref={headerBlurRef} />
           <div
             style={{
               position: 'sticky',
@@ -200,55 +223,57 @@ export function LogBoxInspector({
             />
           </div>
 
-          <ErrorMessageHeader
-            collapsed={collapsed}
-            onPress={() => setCollapsed(!collapsed)}
-            message={log.message}
-            level={log.level}
-            title={headerTitle}
-          />
-
-          <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-            {uniqueBy(
-              uniqueBy(Object.entries(log.codeFrame), ([, value]) => {
-                return [value.fileName, value.location?.column, value.location?.row].join(':');
-              }),
-              ([, value]) => {
-                return value.content;
-              }
-            ).map(([key, codeFrame]) => (
-              <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
-            ))}
-
-            {log.isMissingModuleError && (
-              <InstallMissingModule
-                moduleName={log.isMissingModuleError}
-                projectRoot={projectRoot ?? ''}
-              />
-            )}
-
-            {!!log?.componentStack?.length && (
-              <StackTraceList
-                type="component"
-                projectRoot={projectRoot}
-                stack={log.getAvailableStack('component')}
-                symbolicationStatus={log.getStackStatus('component')}
-                // eslint-disable-next-line react/jsx-no-bind
-                onRetry={_handleRetry.bind(_handleRetry, 'component')}
-              />
-            )}
-            <StackTraceList
-              type="stack"
-              projectRoot={projectRoot}
-              stack={log.getAvailableStack('stack')}
-              symbolicationStatus={log.getStackStatus('stack')}
-              // eslint-disable-next-line react/jsx-no-bind
-              onRetry={_handleRetry.bind(_handleRetry, 'stack')}
+          <div className={styles.scroll} ref={scrollRef}>
+            <ErrorMessageHeader
+              collapsed={collapsed}
+              onPress={() => setCollapsed(!collapsed)}
+              message={log.message}
+              level={log.level}
+              title={headerTitle}
             />
+
+            <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+              {uniqueBy(
+                uniqueBy(Object.entries(log.codeFrame), ([, value]) => {
+                  return [value.fileName, value.location?.column, value.location?.row].join(':');
+                }),
+                ([, value]) => {
+                  return value.content;
+                }
+              ).map(([key, codeFrame]) => (
+                <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
+              ))}
+
+              {log.isMissingModuleError && (
+                <InstallMissingModule
+                  moduleName={log.isMissingModuleError}
+                  projectRoot={projectRoot ?? ''}
+                />
+              )}
+
+              {!!log?.componentStack?.length && (
+                <StackTraceList
+                  type="component"
+                  projectRoot={projectRoot}
+                  stack={log.getAvailableStack('component')}
+                  symbolicationStatus={log.getStackStatus('component')}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onRetry={_handleRetry.bind(_handleRetry, 'component')}
+                />
+              )}
+              <StackTraceList
+                type="stack"
+                projectRoot={projectRoot}
+                stack={log.getAvailableStack('stack')}
+                symbolicationStatus={log.getStackStatus('stack')}
+                // eslint-disable-next-line react/jsx-no-bind
+                onRetry={_handleRetry.bind(_handleRetry, 'stack')}
+              />
+            </div>
+            {!isDismissable && (
+              <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
+            )}
           </div>
-          {!isDismissable && (
-            <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
-          )}
         </div>
       </div>
     </>

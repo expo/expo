@@ -2,7 +2,7 @@
   position: fixed;
 
   /* Add top safe area */
-  top: calc(1vh + env(safe-area-inset-top, 2vh));
+  top: calc(2vh + env(safe-area-inset-top, 2vh));
   right: 0;
   bottom: 0;
   left: 0;
@@ -20,12 +20,11 @@
   margin: 0 auto;
   max-width: var(--expo-log-max-width);
   width: 100%;
-  max-height: calc(100% - 56px);
+  /* max-height: calc(100% - 56px); */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  gap: 0.5rem;
-  overflow-y: auto;
-  
+  /* gap: 0.5rem; */
+
   /* Wrap horizontal contents */
   overflow-x: hidden;
   background-color: var(--expo-log-color-background);
@@ -33,10 +32,28 @@
   flex: 1;
   flex-direction: column;
   position: relative;
-  padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
+  /* padding-bottom: calc(var(--expo-log-footer-height) + 1rem); */
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 200ms ease-out forwards;
+}
+
+.scroll {
+  /* Padding added to give the progressive blur some room to animate in. */
+  padding-top: 16px;
+
+
+  gap: 0.5rem;
+  
+  overflow-y: auto;
+  background-color: var(--expo-log-color-background);
+  /* Wrap horizontal contents */
+  overflow-x: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: calc(var(--expo-log-footer-height) + 1rem);
 }
 
 .bg {
@@ -102,6 +119,21 @@
   overflow: hidden;
 }
 
+.headerBlur {
+  background: linear-gradient(to top, transparent, var(--expo-log-color-background));
+  mask-image: linear-gradient(to bottom, var(--expo-log-color-background) 50%, transparent);
+  backdrop-filter: blur(4px);
+  height: 48px;
+  min-height: 48px;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Fade manually */
+  opacity: 0;
+}
 
 /* md-visible */
 @media screen and (min-width: 576px) {
