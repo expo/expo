@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Droped support for Kotlin < `2.0.0`.
+- Droped support for Kotlin < `2.0.0`. ([#36323](https://github.com/expo/expo/pull/36323) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.3.7 — 2025-04-22
 
