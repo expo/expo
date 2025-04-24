@@ -64,18 +64,20 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧐 Check packages
-        run: |
-          echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] ||
-            ${{ steps.filter.outputs.module-scripts }} == "true"; then
-            # Check all packages on scheduled events or if requested by workflow_dispatch event.
-            bin/expotools check-packages --all
-          else
-            # On push event check packages changed since previous remote head.
-            # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
-            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }} --core
-          fi
+      - name: 🧐 Check all packages
+        if:
+          github.event_name == 'schedule' ||
+          github.event.inputs.checkAll == 'check-all' ||
+          steps.filter.outputs.module-scripts == 'true'
+        run: bin/expotools check-packages --all
+      - name: 🧐 Check changed packages
+        if:
+          github.event_name != 'schedule' &&
+          github.event.inputs.checkAll != 'check-all' &&
+          steps.filter.outputs.module-scripts != 'true'
+        env:
+          SINCE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: bin/expotools check-packages --since $SINCE --core
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
