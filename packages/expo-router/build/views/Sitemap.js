@@ -149,14 +149,14 @@ const styles = react_native_1.StyleSheet.create({
         paddingVertical: 16,
         borderBottomWidth: 1,
         borderColor: '#313538',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 3,
-        },
-        shadowOpacity: 0.33,
-        shadowRadius: 3,
-        elevation: 8,
+        boxShadow: [
+            {
+                color: 'rgba(0, 0, 0, 0.33)',
+                offsetX: 0,
+                offsetY: 3,
+                blurRadius: 3,
+            },
+        ],
     },
     headerContent: {
         flexDirection: 'row',
