@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Droped support for Kotlin < `2.0.0`.
+- Removes `Jetpack Compose` integration if not needed.
 
 ## 2.3.7 — 2025-04-22
 
