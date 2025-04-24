@@ -47,11 +47,11 @@
   },
   "devDependencies": {
     "eslint": "^9.18.0",
+    "eslint8": "npm:eslint@^8.57.1",
     "eslint-plugin-prettier": "^5.2.1",
-    "prettier": "^3.4.2",
-    "eslint8": "npm:eslint@^8.57.1"
+    "prettier": "^3.4.2"
   },
   "peerDependencies": {
-    "eslint": "^8 || ^9"
+    "eslint": ">=8.10"
   }
 }
