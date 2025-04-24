@@ -15,6 +15,7 @@ type BabelPresetExpoPlatformOptions = {
     jsxImportSource?: string;
     lazyImports?: boolean;
     disableImportExportTransform?: boolean;
+    disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
