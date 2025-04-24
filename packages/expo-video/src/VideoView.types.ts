@@ -84,6 +84,12 @@ export interface VideoViewProps extends ViewProps {
   allowsPictureInPicture?: boolean;
 
   /**
+   * Determines whether a video should be played "inline", that is, within the element's playback area.
+   * @platform web
+   */
+  playsInline?: boolean;
+
+  /**
    * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
    * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
    *

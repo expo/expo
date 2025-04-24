@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { useState } from 'react';
 import { NativeSyntheticEvent, Platform, StyleProp, ViewStyle } from 'react-native';
 
 import { type ViewEvent } from '../types';
@@ -6,15 +7,34 @@ import { type ViewEvent } from '../types';
 //#region Host Component
 export type HostProps = {
   children: React.ReactNode;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+  matchContents?: boolean;
+  onLayoutContent?: (event: { nativeEvent: { width: number; height: number } }) => void;
 };
 const HostNativeView: React.ComponentType<HostProps> | null =
   Platform.OS === 'ios' ? requireNativeView('ExpoUI', 'SwiftUIHost') : null;
 export function Host(props: HostProps) {
+  const { matchContents, onLayoutContent, style, ...restProps } = props;
+  const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
   if (!HostNativeView) {
     return null;
   }
-  return <HostNativeView {...props} />;
+  return (
+    <HostNativeView
+      onLayoutContent={(e) => {
+        onLayoutContent?.(e);
+        if (matchContents) {
+          setContainerStyle({
+            width: e.nativeEvent.width,
+            height: e.nativeEvent.height,
+          });
+        }
+      }}
+      style={[containerStyle, style]}
+      matchContents={matchContents}
+      {...restProps}
+    />
+  );
 }
 //#endregion
 

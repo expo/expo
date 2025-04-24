@@ -21,7 +21,6 @@ import {
   parseCommentContent,
   getCommentOrSignatureComment,
   getTagData,
-  renderParams,
   renderDefaultValue,
   renderIndexSignature,
   getCommentContent,
@@ -30,6 +29,7 @@ import {
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
+import { APIMethodParamRows } from './components/APIMethodParamRows';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -177,7 +177,9 @@ const renderType = (
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
-            {signature.parameters && renderParams(signature.parameters, sdkVersion)}
+            {signature.parameters && (
+              <APIMethodParamRows parameters={signature.parameters} sdkVersion={sdkVersion} />
+            )}
           </div>
         ) : null}
         {signature?.type && (

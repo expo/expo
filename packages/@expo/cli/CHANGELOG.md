@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.24.4 — 2025-04-23
+
+### 🎉 New features
+
 - Add more options to `npx expo lint` command. ([#36262](https://github.com/expo/expo/pull/36262) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Exclude directories from prebuild "magic string" renaming operations. ([#36325](https://github.com/expo/expo/pull/36325) by [@byCedric](https://github.com/byCedric))
 
 ## 0.24.3 — 2025-04-21
 

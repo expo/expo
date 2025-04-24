@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useMemo } from 'react';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from 'ui/components/InlineHelp';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { CODE, P, createPermalinkedComponent } from '~/ui/components/Text';
 

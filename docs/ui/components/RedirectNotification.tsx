@@ -1,6 +1,7 @@
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, PropsWithChildren } from 'react';
-import { InlineHelp } from 'ui/components/InlineHelp';
+
+import { InlineHelp } from '~/ui/components/InlineHelp';
 
 type Props = PropsWithChildren<{
   showForQuery?: string;

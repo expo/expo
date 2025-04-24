@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Support selecting which lens to use for the camera. ([#36233](https://github.com/expo/expo/pull/36233) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.1.4 — 2025-04-23
+
+### 🎉 New features
+
+- [iOS] Support selecting which lens to use for the camera. ([#36233](https://github.com/expo/expo/pull/36233) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
