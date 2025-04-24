@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Check name is not empty, fix `CUICatalog: Invalid asset name supplied: ''` error in iOS.
+
 ### 💡 Others
 
 ## 2.1.4 — 2025-04-14
