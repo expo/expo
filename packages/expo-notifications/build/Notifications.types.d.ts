@@ -586,7 +586,7 @@ export interface Notification {
 }
 /**
  * An object which represents user's interaction with the notification.
- * > **Note:** If the user taps on a notification `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
+ * > **Note:** If the user taps on a notification, `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
  */
 export interface NotificationResponse {
     notification: Notification;
@@ -594,13 +594,21 @@ export interface NotificationResponse {
     userText?: string;
 }
 /**
- * An object which represents behavior that should be applied to the incoming notification.
+ * An object which represents behavior that should be applied to the incoming notification. On Android, this influences whether the notification is shown, a sound is played, and priority. On iOS, this maps directly to [`UNNotificationPresentationOptions`](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions).
  * > On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is.
  * > This setting will also override any channel-specific sounds you may have configured.
  */
 export interface NotificationBehavior {
-    shouldShowAlert: boolean;
+    /**
+     * @deprecated instead, specify `shouldShowBanner` and / or `shouldShowList`
+     * */
+    shouldShowAlert?: boolean;
+    shouldShowBanner: boolean;
+    shouldShowList: boolean;
     shouldPlaySound: boolean;
+    /**
+     * @platform ios
+     */
     shouldSetBadge: boolean;
     priority?: AndroidNotificationPriority;
 }

@@ -35,7 +35,8 @@ let handleTimeoutSubscription = null;
  *
  * Notifications.setNotificationHandler({
  *   handleNotification: async () => ({
- *     shouldShowAlert: true,
+ *     shouldShowBanner: true,
+ *     shouldShowList: true,
  *     shouldPlaySound: false,
  *     shouldSetBadge: false,
  *   }),
@@ -61,6 +62,9 @@ export function setNotificationHandler(handler) {
             try {
                 const mappedNotification = mapNotification(notification);
                 const behavior = await handler.handleNotification(mappedNotification);
+                if (behavior.shouldShowAlert) {
+                    console.warn('[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.');
+                }
                 await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
                 handler.handleSuccess?.(id);
             }
