@@ -13,6 +13,36 @@ const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = require("fs");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
+// Helper for timestamp logging
+let lastLogTime = Date.now();
+const isDebug = process.env.EXPO_DEBUG === '1';
+function formatTime(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+}
+function log(message, level = 'info') {
+    let finalMessage = message;
+    if (isDebug) {
+        const now = new Date();
+        const currentTime = now.getTime();
+        const delta = currentTime - lastLogTime;
+        const formattedTime = formatTime(now);
+        const formattedDelta = `+${delta}ms`;
+        finalMessage = `[${formattedTime}] [${formattedDelta}] ${message}`;
+        lastLogTime = currentTime;
+    }
+    if (level === 'warn') {
+        // Keep chalk colors for warnings
+        console.warn(finalMessage);
+    }
+    else {
+        // Keep chalk colors for info logs
+        console.log(finalMessage);
+    }
+}
 class CocoaPodsError extends Error {
     code;
     cause;
@@ -77,16 +107,16 @@ class CocoaPodsPackageManager {
         }
         const silent = !!spawnOptions.ignoreStdio;
         try {
-            !silent && console.log(`\u203A Attempting to install CocoaPods CLI with Gem`);
+            !silent && log(`› Attempting to install CocoaPods CLI with Gem`);
             await CocoaPodsPackageManager.gemInstallCLIAsync(nonInteractive, spawnOptions);
-            !silent && console.log(`\u203A Successfully installed CocoaPods CLI with Gem`);
+            !silent && log(`› Successfully installed CocoaPods CLI with Gem`);
             return true;
         }
         catch (error) {
             if (!silent) {
-                console.log(chalk_1.default.yellow(`\u203A Failed to install CocoaPods CLI with Gem`));
-                console.log(chalk_1.default.red(error.stderr ?? error.message));
-                console.log(`\u203A Attempting to install CocoaPods CLI with Homebrew`);
+                log(chalk_1.default.yellow(`› Failed to install CocoaPods CLI with Gem`), 'warn');
+                log(chalk_1.default.red(error.stderr ?? error.message));
+                log(`› Attempting to install CocoaPods CLI with Homebrew`);
             }
             try {
                 await CocoaPodsPackageManager.brewInstallCLIAsync(spawnOptions);
@@ -102,23 +132,23 @@ class CocoaPodsPackageManager {
                         throw new CocoaPodsError('Homebrew installation appeared to succeed but CocoaPods CLI not found in PATH and unable to link.', 'NO_CLI', error);
                     }
                 }
-                !silent && console.log(`\u203A Successfully installed CocoaPods CLI with Homebrew`);
+                !silent && log(`› Successfully installed CocoaPods CLI with Homebrew`);
                 return true;
             }
             catch (error) {
                 !silent &&
-                    console.warn(chalk_1.default.yellow(`\u203A Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`));
+                    log(chalk_1.default.yellow(`› Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`), 'warn');
                 throw new CocoaPodsError(`Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`, 'NO_CLI', error);
             }
         }
     }
     static isAvailable(projectRoot, silent) {
         if (process.platform !== 'darwin') {
-            !silent && console.log(chalk_1.default.red('CocoaPods is only supported on macOS machines'));
+            !silent && log(chalk_1.default.red('CocoaPods is only supported on macOS machines'));
             return false;
         }
         if (!CocoaPodsPackageManager.isUsingPods(projectRoot)) {
-            !silent && console.log(chalk_1.default.yellow('CocoaPods is not supported in this project'));
+            !silent && log(chalk_1.default.yellow('CocoaPods is not supported in this project'));
             return false;
         }
         return true;
@@ -225,7 +255,7 @@ class CocoaPodsPackageManager {
                     props.spinner.text = chalk_1.default.bold(warning);
                 }
                 if (!this.silent) {
-                    console.warn(chalk_1.default.yellow(warning));
+                    log(chalk_1.default.yellow(warning), 'warn');
                 }
             }
             return await this.handleInstallErrorAsync({ error, ...props });
@@ -266,21 +296,11 @@ class CocoaPodsPackageManager {
         throw new Error('Unimplemented');
     }
     // Private
-    async podRepoUpdateAsync() {
-        try {
-            await this._runAsync(['repo', 'update']);
-        }
-        catch (error) {
-            error.message = error.message || (error.stderr ?? error.stdout);
-            throw new CocoaPodsError('The command `pod install --repo-update` failed', 'COMMAND_FAILED', error);
-        }
-    }
-    // Exposed for testing
     async _runAsync(args) {
         if (!this.silent) {
-            console.log(`> pod ${args.join(' ')}`);
+            log(`> pod ${args.join(' ')}`);
         }
-        const promise = (0, spawn_async_1.default)('pod', [
+        const podProcess = (0, spawn_async_1.default)('pod', [
             ...args,
             // Enables colors while collecting output.
             '--ansi',
@@ -293,14 +313,42 @@ class CocoaPodsPackageManager {
             // currently this means we lose out on the ansi colors unless passing the `--ansi` flag to every command.
             stdio: 'pipe',
         });
-        if (!this.silent) {
-            // If not silent, pipe the stdout/stderr to the terminal.
-            // We only do this when the `stdio` is set to `pipe` (collect the results for parsing), `inherit` won't contain `promise.child`.
-            if (promise.child.stdout) {
-                promise.child.stdout.pipe(process.stdout);
+        // Capture and log stdout/stderr if not silent and debug is enabled
+        if (!this.silent && podProcess.child) {
+            const logStream = (stream, level) => {
+                let buffer = '';
+                stream.on('data', (chunk) => {
+                    buffer += chunk.toString();
+                    let newlineIndex;
+                    while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+                        const line = buffer.slice(0, newlineIndex);
+                        log(line, level);
+                        buffer = buffer.slice(newlineIndex + 1);
+                    }
+                });
+                stream.on('end', () => {
+                    if (buffer.length > 0) {
+                        log(buffer, level); // Log any remaining data
+                    }
+                });
+            };
+            if (podProcess.child.stdout) {
+                logStream(podProcess.child.stdout, 'info');
+            }
+            if (podProcess.child.stderr) {
+                logStream(podProcess.child.stderr, 'warn');
             }
         }
-        return await promise;
+        else if (!this.silent && podProcess.child) {
+            // Original piping logic if not in debug mode
+            if (podProcess.child.stdout) {
+                podProcess.child.stdout.pipe(process.stdout);
+            }
+            if (podProcess.child.stderr) {
+                podProcess.child.stderr.pipe(process.stderr);
+            }
+        }
+        return await podProcess;
     }
 }
 exports.CocoaPodsPackageManager = CocoaPodsPackageManager;
