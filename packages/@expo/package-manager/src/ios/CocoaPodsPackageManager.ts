@@ -9,23 +9,14 @@ import path from 'path';
 let lastLogTime = Date.now();
 const isDebug = process.env.EXPO_DEBUG === '1';
 
-function formatTime(date: Date): string {
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-  return `${hours}:${minutes}:${seconds}:${milliseconds}`;
-}
-
 function log(message: string, level: 'info' | 'warn' = 'info') {
   let finalMessage = message;
   if (isDebug) {
     const now = new Date();
     const currentTime = now.getTime();
     const delta = currentTime - lastLogTime;
-    const formattedTime = formatTime(now);
     const formattedDelta = `+${delta}ms`;
-    finalMessage = `[${formattedTime}] [${formattedDelta}] ${message}`;
+    finalMessage = `[${formattedDelta}] ${message}`;
     lastLogTime = currentTime;
   }
 

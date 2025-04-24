@@ -54,6 +54,7 @@ export declare class CocoaPodsPackageManager {
     removeLockfileAsync(): Promise<void>;
     uninstallAsync(): Promise<void>;
     private _runAsync;
+    private podRepoUpdateAsync;
 }
 export declare function getPodUpdateMessage(output: string): {
     updatePackage: string | null;

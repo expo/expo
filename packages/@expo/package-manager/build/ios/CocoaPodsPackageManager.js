@@ -16,22 +16,14 @@ const path_1 = __importDefault(require("path"));
 // Helper for timestamp logging
 let lastLogTime = Date.now();
 const isDebug = process.env.EXPO_DEBUG === '1';
-function formatTime(date) {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
-}
 function log(message, level = 'info') {
     let finalMessage = message;
     if (isDebug) {
         const now = new Date();
         const currentTime = now.getTime();
         const delta = currentTime - lastLogTime;
-        const formattedTime = formatTime(now);
         const formattedDelta = `+${delta}ms`;
-        finalMessage = `[${formattedTime}] [${formattedDelta}] ${message}`;
+        finalMessage = `[${formattedDelta}] ${message}`;
         lastLogTime = currentTime;
     }
     if (level === 'warn') {
@@ -295,7 +287,7 @@ class CocoaPodsPackageManager {
     async uninstallAsync() {
         throw new Error('Unimplemented');
     }
-    // Private
+    // Exposed for testing
     async _runAsync(args) {
         if (!this.silent) {
             log(`> pod ${args.join(' ')}`);
@@ -349,6 +341,16 @@ class CocoaPodsPackageManager {
             }
         }
         return await podProcess;
+    }
+    // Private
+    async podRepoUpdateAsync() {
+        try {
+            await this._runAsync(['repo', 'update']);
+        }
+        catch (error) {
+            error.message = error.message || (error.stderr ?? error.stdout);
+            throw new CocoaPodsError('The command `pod install --repo-update` failed', 'COMMAND_FAILED', error);
+        }
     }
 }
 exports.CocoaPodsPackageManager = CocoaPodsPackageManager;
