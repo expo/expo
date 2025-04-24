@@ -1,6 +1,6 @@
 {
   "name": "expo-template-bare-minimum",
-  "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+  "description": "This bare project template includes a minimal setup for using Expo with React Native.",
   "license": "0BSD",
   "version": "53.0.14",
   "main": "index.js",

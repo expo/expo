@@ -39,6 +39,22 @@ public class AppDelegate: ExpoAppDelegate {
     let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
   }
+
+  // Explicitly define remote notification delegates to ensure compatibility with third-party libraries and config plugins
+  public override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+  }
+  public override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
+    super.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+  }
+  public override func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
+    super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+  }
+  // end Explicitly define remote notification delegates
 }
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
