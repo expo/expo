@@ -187,8 +187,8 @@ For a simple component, where you're not explicitly asserting against or invokin
 
 ```tsx app.test.ts
 renderRouter({
-  index: jest.fn(() => <MyComponent />)
-})
+  index: jest.fn(() => <MyComponent />),
+});
 ```
 
 If you wish to assert against navigation actions, you may need to mock the `router` function, as well as any other functions you wish to assert against:
@@ -217,7 +217,7 @@ renderRouter(
   },
   {
     initialUrl: '/some-path',
-  },
+  }
 );
 ```
 
