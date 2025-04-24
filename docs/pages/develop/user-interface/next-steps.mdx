@@ -1,31 +1,177 @@
----
-title: Next steps
-description: A list of useful resources to learn more about implementing navigation and UI in your app.
-hideTOC: true
----
+// Ravi's Camera App - Fully Advanced Version with iPhone 16 Style UI
+// Framework: React Native (Expo + Advanced Camera)
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import { Settings02Icon } from '@expo/styleguide-icons/outline/Settings02Icon';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
+import Slider from '@react-native-community/slider';
+import { Camera } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 
-import { BoxLink } from '~/ui/components/BoxLink';
+const { width } = Dimensions.get('window');
 
-<BoxLink
-  title="Use TypeScript"
-  Icon={Settings02Icon}
-  description="An in-depth guide on configuring an Expo project with TypeScript or migrating an existing JavaScript project."
-  href="/guides/typescript/"
-/>
+export default function RavisCamera() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [focus, setFocus] = useState(0);
+  const [iso, setIso] = useState(100);
+  const [shutter, setShutter] = useState(1 / 60);
+  const [ev, setEv] = useState(0);
+  const [brightness, setBrightness] = useState(0.5);
+  const [weather, setWeather] = useState("Loading...");
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [filter, setFilter] = useState("none");
 
-<BoxLink
-  title="Icons"
-  Icon={BookOpen02Icon}
-  description="Learn how to use various types of icons in your Expo app, including vector icons, custom icon fonts, icon images, and icon buttons."
-  href="/guides/icons/"
-/>
+  const cameraRef = useRef(null);
 
-<BoxLink
-  title="ESLint and Prettier"
-  Icon={BookOpen02Icon}
-  description="A guide on configuring ESLint and Prettier to format Expo projects."
-  href="/guides/using-eslint/"
-/>
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+
+      const loc = await Location.requestForegroundPermissionsAsync();
+      if (loc.status === 'granted') {
+        const locData = await Location.getCurrentPositionAsync({});
+        setLocation(locData);
+        fetchWeather(locData.coords.latitude, locData.coords.longitude);
+      }
+    })();
+  }, []);
+
+  const fetchWeather = async (lat, lon) => {
+    try {
+      const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=YOUR_API_KEY&q=${lat},${lon}`);
+      const json = await res.json();
+      setWeather(`${json.current.condition.text}, ${json.current.temp_c}°C`);
+    } catch (error) {
+      setWeather("Weather unavailable");
+    }
+  };
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      let photo = await cameraRef.current.takePictureAsync();
+      setCapturedPhoto(photo.uri);
+    }
+  };
+
+  const applyFilter = (filterType) => {
+    setFilter(filterType);
+  };
+
+  const getFilterStyle = () => {
+    switch (filter) {
+      case 'mono':
+        return { filter: 'grayscale(1)' };
+      case 'sepia':
+        return { filter: 'sepia(1)' };
+      case 'cool':
+        return { tintColor: 'lightblue' };
+      case 'warm':
+        return { tintColor: 'orange' };
+      default:
+        return {};
+    }
+  };
+
+  if (hasPermission === null) return <View />;
+  if (hasPermission === false) return <Text>No access to camera</Text>;
+
+  return (
+    <View style={styles.container}>
+      <Camera
+        style={styles.camera}
+        type={type}
+        ref={cameraRef}
+        autoFocus={Camera.Constants.AutoFocus.on}
+      >
+        <View style={styles.topBar}>
+          <Text style={styles.weather}>{weather}</Text>
+        </View>
+        <View style={styles.controlBar}>
+          <TouchableOpacity onPress={() => setType(
+            type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back
+          )}>
+            <Ionicons name="camera-reverse-outline" size={28} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={takePicture} style={styles.captureButton}>
+            <View style={styles.innerCircle} />
+          </TouchableOpacity>
+        </View>
+      </Camera>
+
+      <View style={styles.sliderContainer}>
+        <View style={styles.controlSlider}><Text style={styles.label}>Focus</Text><Slider minimumValue={0} maximumValue={1} value={focus} onValueChange={setFocus} style={styles.slider} /></View>
+        <View style={styles.controlSlider}><Text style={styles.label}>ISO</Text><Slider minimumValue={100} maximumValue={800} value={iso} onValueChange={setIso} style={styles.slider} /></View>
+        <View style={styles.controlSlider}><Text style={styles.label}>Shutter</Text><Slider minimumValue={1 / 4000} maximumValue={1 / 30} value={shutter} onValueChange={setShutter} style={styles.slider} /></View>
+        <View style={styles.controlSlider}><Text style={styles.label}>EV</Text><Slider minimumValue={-3} maximumValue={3} value={ev} onValueChange={setEv} style={styles.slider} /></View>
+        <View style={styles.controlSlider}><Text style={styles.label}>Brightness</Text><Slider minimumValue={0} maximumValue={1} value={brightness} onValueChange={setBrightness} style={styles.slider} /></View>
+      </View>
+
+      {capturedPhoto && (
+        <View style={styles.previewContainer}>
+          <Image source={{ uri: capturedPhoto }} style={[styles.preview, getFilterStyle()]} />
+          <Text style={styles.label}>Filter:</Text>
+          <View style={styles.filterRow}>
+            {['none', 'mono', 'sepia', 'cool', 'warm'].map(f => (
+              <TouchableOpacity key={f} onPress={() => applyFilter(f)} style={styles.filterButton}>
+                <Text style={{ color: 'white' }}>{f}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+  camera: { flex: 2, borderRadius: 20, overflow: 'hidden' },
+  topBar: { position: 'absolute', top: 50, left: 20, right: 20, alignItems: 'center' },
+  weather: { color: 'white', fontSize: 16, fontWeight: '500' },
+  controlBar: {
+    position: 'absolute',
+    bottom: 40,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#fff',
+    borderWidth: 6,
+    borderColor: '#bbb',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#fff'
+  },
+  sliderContainer: { flex: 1, backgroundColor: '#111', padding: 15, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+  label: { color: '#aaa', fontSize: 14, marginBottom: 4 },
+  controlSlider: { marginBottom: 10 },
+  slider: { width: '100%' },
+  previewContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    backgroundColor: '#222',
+    padding: 10,
+    borderRadius: 10,
+    zIndex: 99,
+  },
+  preview: { width: width - 40, height: 200, resizeMode: 'cover', borderRadius: 10 },
+  filterRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 },
+  filterButton: { padding: 5, backgroundColor: '#444', borderRadius: 5 },
+});
