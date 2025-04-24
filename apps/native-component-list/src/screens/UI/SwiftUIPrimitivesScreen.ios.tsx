@@ -1,8 +1,18 @@
-import { Next as SwiftUI } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Switch,
+  Picker,
+  Section,
+  Button,
+  Text,
+  Form,
+  VStack,
+  HStack,
+} from '@expo/ui/swift-ui-primitives';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
 
-export default function SwiftUIHostScreen() {
+export default function SwiftUIPrimitivesScreen() {
   const [playSounds, setPlaySounds] = useState(true);
   const [sendReadReceipts, setSendReadReceipts] = useState(false);
 
@@ -13,12 +23,12 @@ export default function SwiftUIHostScreen() {
 
   return (
     <ScrollView>
-      <SwiftUI.Host matchContents>
-        <SwiftUI.Form>
+      <Host matchContents useViewportSizeMeasurement>
+        <Form>
           {/* Notifications Section */}
-          <SwiftUI.Section title="Notifications">
-            <SwiftUI.Picker
-              variant="automatic"
+          <Section title="Notifications">
+            <Picker
+              variant="menu"
               label="Notify Me About"
               options={notifyOptions}
               selectedIndex={selectedNotifyIndex}
@@ -26,25 +36,25 @@ export default function SwiftUIHostScreen() {
                 setSelectedNotifyIndex(index);
               }}
             />
-            <SwiftUI.Switch
+            <Switch
               label="Play notification sounds"
               value={playSounds}
               onValueChange={setPlaySounds}
             />
-            <SwiftUI.Switch
+            <Switch
               label="Send read receipts"
               value={sendReadReceipts}
               onValueChange={setSendReadReceipts}
             />
-            <SwiftUI.Text weight="regular" size={17}>
+            <Text weight="regular" size={17}>
               plain text
-            </SwiftUI.Text>
-          </SwiftUI.Section>
+            </Text>
+          </Section>
 
           {/* User Profiles Section */}
-          <SwiftUI.Section title="User Profiles">
-            <SwiftUI.Picker
-              variant="automatic"
+          <Section title="User Profiles">
+            <Picker
+              variant="menu"
               label="Profile Image Size"
               options={profileImageSizes}
               selectedIndex={selectedProfileImageSizeIndex}
@@ -52,35 +62,37 @@ export default function SwiftUIHostScreen() {
                 setSelectedProfileImageSizeIndex(index);
               }}
             />
-            <SwiftUI.Button
+            <Button
               onPress={() => {
                 alert('Fake cache cleared');
               }}>
               Clear Image Cache
-            </SwiftUI.Button>
-          </SwiftUI.Section>
-        </SwiftUI.Form>
-      </SwiftUI.Host>
+            </Button>
+          </Section>
+        </Form>
+      </Host>
 
-      <SwiftUI.Host style={{ height: 300 }}>
-        <SwiftUI.VStack spacing={20} frame={{ height: 300 }}>
-          <SwiftUI.HStack spacing={20}>
-            <SwiftUI.Text>H0V0</SwiftUI.Text>
-            <SwiftUI.Text>H1V0</SwiftUI.Text>
-          </SwiftUI.HStack>
-          <SwiftUI.HStack spacing={20}>
-            <SwiftUI.Text>H0V1</SwiftUI.Text>
-            <SwiftUI.Text>H1V1</SwiftUI.Text>
-          </SwiftUI.HStack>
+      <Host style={{ height: 300 }}>
+        <VStack spacing={20} frame={{ height: 300 }}>
+          <HStack spacing={20}>
+            <Text>H0V0</Text>
+            <Text>H1V0</Text>
+          </HStack>
+          <HStack>
+            <HStack spacing={20}>
+              <Text>H0V1</Text>
+              <Text>H1V1</Text>
+            </HStack>
+          </HStack>
 
           {/* NOTE: To host UIView inside SwiftUI, we may need fixed size */}
-          <SwiftUI.HStack frame={{ width: 300, height: 100 }}>
+          <HStack frame={{ width: 300, height: 100 }}>
             <View style={[styles.uiView, { width: 300, height: 100 }]}>
-              <Text style={styles.uiViewText}>Text in UIView</Text>
+              <RNText style={styles.uiViewText}>Text in UIView</RNText>
             </View>
-          </SwiftUI.HStack>
-        </SwiftUI.VStack>
-      </SwiftUI.Host>
+          </HStack>
+        </VStack>
+      </Host>
     </ScrollView>
   );
 }
@@ -103,6 +115,6 @@ const styles = StyleSheet.create({
   },
 });
 
-SwiftUIHostScreen.navigationOptions = {
-  title: 'SwiftUI Host',
+SwiftUIPrimitivesScreen.navigationOptions = {
+  title: 'SwiftUI primitives',
 };
