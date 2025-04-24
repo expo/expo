@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix throwing an error inside `getOrientation` when the `currentActivity` is not available.
+
 ### 💡 Others
 
 ## 14.1.2 — 2025-04-14
