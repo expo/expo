@@ -9,7 +9,6 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "appleTeamId": "C8D8QTF339",
       "supportsTablet": true,
       "bundleIdentifier": "com.vonovak.microfoam"
     },
