@@ -4,7 +4,8 @@
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,11 @@
     "flat",
     "utils"
   ],
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
+  },
   "author": "Expo",
   "license": "MIT",
   "bugs": {
@@ -42,7 +48,8 @@
   "devDependencies": {
     "eslint": "^9.18.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "eslint8": "npm:eslint@^8.57.1"
   },
   "peerDependencies": {
     "eslint": "^8 || ^9"
