@@ -18,7 +18,8 @@ if (Platform.OS !== 'web') {
 
   Notifications?.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
+      shouldShowList: true,
+      shouldShowBanner: true,
       shouldPlaySound: true,
       shouldSetBadge: true,
     }),
