@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Always enable `import.meta` polyfill for server bundles.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
