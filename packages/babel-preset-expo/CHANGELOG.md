@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
+
 ## 13.1.4 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
