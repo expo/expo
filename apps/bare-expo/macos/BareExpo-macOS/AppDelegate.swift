@@ -26,11 +26,11 @@ public class AppDelegate: ExpoAppDelegate {
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   // Extension point for config-plugins
 
-  open override func sourceURL(for bridge: RCTBridge) -> URL? {
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
     bridge.bundleURL ?? bundleURL()
   }
 
-  open override func bundleURL() -> URL? {
+  override func bundleURL() -> URL? {
 #if DEBUG
     return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
 #else
