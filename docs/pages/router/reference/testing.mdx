@@ -8,6 +8,13 @@ import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
 Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quickly create in-memory Expo Router apps that are pre-configured for testing.
 
+If you're coming to `expo-router` with an existing unit-testing setup, there are two broad categories of changes you may need to make. 
+
+1. Use `renderRouter` instead of `render` for any components that utilize `expo-router` functionality, even if you're not explicitly testing it in the unit test. 
+2. With `renderRouter`, you now have the ability to easily write integration tests that span multiple components, and you may wish to adjust your tests accordingly. 
+
+See the examples at the end of this section for how to implement these changes, and more information on how to assert against navigation actions with `expo-router`. 
+
 ## Configuration
 
 Before you proceed, ensure you have set up `jest-expo` according to the [Unit testing with Jest](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/start/quick-start) in your project.
@@ -173,3 +180,68 @@ expect(screen).toHaveRouterState({
 ```
 
 </PaddedAPIBox>
+
+## Examples
+
+For a simple component, where you're not explicitly asserting against or invoking any `expo-router` behavior, you may simply need to render with `renderRouter` instead of `render`. If you're not testing route `pathname`s, then you can simply do this by rendering your component as the `index`: 
+
+```tsx app.test.ts
+  renderRouter({
+    index: jest.fn(() => <MyComponent />)
+  })
+```
+
+If you wish to assert against navigation actions, you may need to mock the `router` function, as well as any other functions you wish to assert against:
+
+```tsx app.test.ts
+jest.mock('expo-router', () => ({
+  ...jest.requireActual('expo-router'),
+ useLocalSearchParams: jest.fn().mockImplementation(() => ({ // or use `mockReturnValue`
+    someParam: foo-param,
+  router: {
+    navigate: jest.fn(),
+  },
+}));
+
+...
+
+expect(router.navigate).toHaveBeenCalledWith('/profile');
+```
+
+If you're asserting against any specific `pathname` values, you'll need to change the pathname you use in `renderRouter` to whatever the pathname will actually be. This means you'll also need to use the `initialUrl` option: 
+
+```tsx app.test.ts
+    renderRouter(
+      {
+        '/some-path': jest.fn(() => <MyComponent />),
+      },
+      {
+        initialUrl: '/some-path',
+      },
+    );
+```
+
+### Using `renderRouter`s full potential
+
+Because `renderRouter` provides a mock router which can render multiple components on independent routes, you can easily set up integration tests that involve multiple components. 
+
+```tsx app.test.ts
+renderRouter(
+      {
+        home: jest.fn(() => <Home />)
+        'some-path': jest.fn(() => <Profile />),
+      },
+      {
+        initialUrl: '/some-path',
+      },
+    );
+
+    const user = userEvent.setup()
+
+    // ... assert against `<Profile>` component
+
+    await user.press(screen.getByRole('button', {name: /go home/i}))
+    expect(screen).toHavePathname('/home') // custom matcher made available by expo-router's `screen`
+    // now, you can assert against the rendered <Home /> component!
+```
+
