@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Check name is not empty, fix `CUICatalog: Invalid asset name supplied: ''` error in iOS.
+- Check name is not empty, fix `CUICatalog: Invalid asset name supplied: ''` error in iOS. ([#36294](https://github.com/expo/expo/pull/36294) by [@Innei](https://github.com/Innei))
 
 ### 💡 Others
 
