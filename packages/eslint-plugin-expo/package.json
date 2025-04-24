@@ -41,7 +41,7 @@
     "node": ">=18.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=8 <9"
+    "eslint": ">=8.10"
   },
   "license": "MIT"
 }
