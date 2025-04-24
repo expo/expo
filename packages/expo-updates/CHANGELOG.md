@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.28.6 — 2025-04-22
