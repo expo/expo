@@ -1,6 +1,6 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform android
@@ -42,7 +42,7 @@ export type GoogleMapsPolyline = {
     /**
      * The color of the polyline.
      */
-    color?: string;
+    color?: ProcessedColorValue | string | null;
     /**
      * The width of the polyline.
      */

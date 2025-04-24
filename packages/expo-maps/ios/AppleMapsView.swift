@@ -219,11 +219,9 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
     }
   }
 
-  private func polyline(
-    at tap: CLLocationCoordinate2D,
-    threshold: CLLocationDistance = 20
-  ) -> ExpoAppleMapPolyline? {
+  private func polyline(at tap: CLLocationCoordinate2D) -> ExpoAppleMapPolyline? {
     let tapPoint = MKMapPoint(tap)
+    let threshold = props.properties.polylineTapThreshold
 
     return props.polylines.first { line in
       let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)

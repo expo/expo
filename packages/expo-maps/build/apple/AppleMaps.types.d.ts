@@ -1,6 +1,6 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform ios
@@ -93,6 +93,13 @@ export type AppleMapsProperties = {
      * If true, the user can select a location on the map to get more information.
      */
     selectionEnabled?: boolean;
+    /**
+     * The maximum distance in meters from a tap of a polyline for it to be considered a hit.
+     * If the distance is greater than the threshold, the polyline is not considered a hit.
+     * If a hit occurs, the `onPolylineClick` event will be triggered.
+     * Defaults to 20 meters.
+     */
+    polylineTapThreshold?: number;
 };
 /**
  * @platform ios
@@ -123,7 +130,7 @@ export type AppleMapsPolyline = {
     /**
      * The color of the polyline.
      */
-    strokeColor?: string;
+    strokeColor?: ProcessedColorValue | string | null;
     /**
      * The width of the polyline.
      */

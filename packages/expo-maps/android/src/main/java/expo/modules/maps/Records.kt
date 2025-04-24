@@ -72,7 +72,7 @@ data class PolylineRecord(
   val geodesic: Boolean = false,
 
   @Field
-  val color: String = "#000000",
+  val color: Int = 0xFF0000FF.toInt(),
 
   @Field
   val width: Float = 10f,

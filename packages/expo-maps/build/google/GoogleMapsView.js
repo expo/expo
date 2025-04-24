@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, processColor } from 'react-native';
 let NativeView = null;
 if (Platform.OS === 'android') {
     NativeView = requireNativeView('ExpoGoogleMaps');
@@ -31,6 +31,10 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const parsedPolylines = polylines?.map((polyline) => ({
+        ...polyline,
+        color: polyline.color ? processColor(polyline.color) : undefined,
+    }));
     const parsedMarkers = markers?.map((marker) => ({
         ...marker,
         // @ts-expect-error
@@ -39,6 +43,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={polylines} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick}/>);
+    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick}/>);
 });
 //# sourceMappingURL=GoogleMapsView.js.map

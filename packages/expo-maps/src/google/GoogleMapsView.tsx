@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import type {
   GoogleMapsViewProps,
@@ -59,6 +59,12 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+
+    const parsedPolylines = polylines?.map((polyline) => ({
+      ...polyline,
+      color: polyline.color ? processColor(polyline.color) : undefined,
+    }));
+
     const parsedMarkers = markers?.map((marker) => ({
       ...marker,
       // @ts-expect-error
@@ -73,7 +79,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         {...props}
         ref={nativeRef}
         markers={parsedMarkers}
-        polylines={polylines}
+        polylines={parsedPolylines}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
         onMapLongClick={onNativeMapLongClick}
