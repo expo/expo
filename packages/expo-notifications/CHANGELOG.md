@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+
 ## 0.30.7 — 2025-04-23
 
 _This version does not introduce any user-facing changes._
