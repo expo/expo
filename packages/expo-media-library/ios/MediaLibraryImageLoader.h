@@ -1,11 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#if __has_include(<React/RCTImageURLLoader.h>)
+#pragma once
 
-#import <React/RCTImageURLLoader.h>
+#import <Foundation/Foundation.h>
 
-@interface MediaLibraryImageLoader : NSObject <RCTImageURLLoader>
+@interface MediaLibraryImageLoader : NSObject
 
 @end
-
-#endif
