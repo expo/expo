@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView } from 'react-native';
 
 import { Ansi } from '../AnsiHighlight';
@@ -109,6 +109,27 @@ export function CodeFrame({
   headerAction?: React.ReactNode;
   title: React.ReactNode;
 }) {
+  const leftBlurRef = React.useRef<HTMLDivElement>(null);
+  const scrollTextRef = React.useRef<HTMLDivElement>(null);
+
+  // Transition the opacity of the header blur when the scroll position changes.
+  useEffect(() => {
+    const scrollElement = scrollTextRef.current;
+    const leftBlurElement = leftBlurRef.current;
+    if (scrollElement == null || leftBlurElement == null) {
+      return;
+    }
+
+    const handleScroll = () => {
+      leftBlurElement.style.opacity = String(scrollElement.scrollLeft / 20);
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll);
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrollTextRef, leftBlurRef]);
+
   // Try to match the Expo docs
   return (
     <div
@@ -120,50 +141,24 @@ export function CodeFrame({
       }}>
       <header className={styles.header}>
         <span
-          data-text="true"
           style={{
-            color: 'inherit',
-            fontSize: 15,
-            lineHeight: 1.25,
-            letterSpacing: '-0.009rem',
             display: 'flex',
-
             width: '100%',
-            overflowX: 'auto',
-            alignItems: 'center',
-            gap: 8,
             position: 'relative',
-            fontWeight: '600',
-            // className="text-default text-[15px] leading-[1.6] tracking-[-0.009rem] flex min-h-10 w-full items-center gap-2 py-1 pr-4 font-medium !leading-tight"
+            overflowX: 'hidden',
           }}>
-          {headerIcon}
+          <span ref={scrollTextRef} className={styles.headerScrollText}>
+            <span className={styles.headerIconWrapper} style={{}}>
+              {headerIcon}
+            </span>
 
-          <span
-            style={{
-              overflowWrap: 'break-word',
-              fontFamily: 'var(--expo-log-font-mono)',
-              whiteSpace: 'nowrap',
-              overflow: 'auto',
-              color: 'var(--expo-log-color-label)',
-              paddingRight: 16,
-            }}>
-            {title}
+            <span className={styles.headerText}>{title}</span>
           </span>
 
+          <span ref={leftBlurRef} className={styles.blurGradientLR} />
           {/* R-L gradient to fade contents */}
-          <span
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: 20,
-              background:
-                'linear-gradient(to left, var(--expo-log-color-background) 0%, rgba(0, 0, 0, 0) 100%)',
-            }} /* absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-default to-transparent */
-          />
+          <span className={styles.blurGradientRL} />
         </span>
-
         {headerAction}
       </header>
 

@@ -11,6 +11,7 @@
   align-content: center;
   align-items: center;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
