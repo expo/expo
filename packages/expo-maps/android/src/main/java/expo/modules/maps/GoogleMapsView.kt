@@ -118,7 +118,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         polylineState.forEach { (polyline, coordinates) ->
           Polyline(
             points = coordinates,
-            color = Color(polyline.color.toColorInt()),
+            color = Color(polyline.color),
             geodesic = polyline.geodesic,
             width = polyline.width,
             clickable = true,
