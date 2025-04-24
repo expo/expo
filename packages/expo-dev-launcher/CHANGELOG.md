@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [iOS] Remove usage of deprecated `SFAuthenticationSession` for user login. ([#36395](https://github.com/expo/expo/pull/36395) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] enable edge-to-edge
 
 ## 5.1.5 — 2025-04-23
 
