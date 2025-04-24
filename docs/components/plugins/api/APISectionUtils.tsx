@@ -41,9 +41,7 @@ import {
   replaceableTypes,
   sdkVersionHardcodedTypeLinks,
 } from './APIStaticData';
-import { APIParamRow } from './components/APIParamRow';
-import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
+import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -402,25 +400,6 @@ export const resolveTypeName = (
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
-  const hasDescription = Boolean(parameters.some(param => param.comment));
-  return (
-    <Table containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
-      <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
-      <tbody>
-        {parameters?.map(param => (
-          <APIParamRow
-            key={param.name}
-            param={param}
-            sdkVersion={sdkVersion}
-            showDescription={hasDescription}
-          />
-        ))}
-      </tbody>
-    </Table>
-  );
-};
-
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
     ? parameters
@@ -529,8 +508,6 @@ export const getMethodName = (
 
   return methodName;
 };
-
-export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
