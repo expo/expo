@@ -14,7 +14,7 @@ import { LogBoxMessage } from './LogBoxMessage';
 
 import './ErrorOverlay.css';
 
-// import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
+import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
 export function ErrorToastContainer() {
   useRejectionHandler();

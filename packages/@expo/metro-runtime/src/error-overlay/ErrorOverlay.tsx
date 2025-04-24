@@ -186,6 +186,7 @@ export function LogBoxInspector({
         scrollElement.removeEventListener('scroll', handleScroll);
       };
     }
+    return () => {};
   }, [scrollRef, headerBlurRef]);
 
   return (
