@@ -18,8 +18,8 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 }
 
 extension MKMapPoint {
-  /// Perpendicular distance (in metres) from `self` to the
-  /// line segment **AB**.
+  // Perpendicular distance (in metres) from `self` to the
+  // line segment **AB**.
   func distance(toSegmentFrom a: MKMapPoint, to b: MKMapPoint) -> CLLocationDistance {
     let dx = b.x - a.x
     let dy = b.y - a.y
@@ -35,7 +35,8 @@ extension MKMapPoint {
 
     let proj = MKMapPoint(
       x: a.x + clamped * dx,
-      y: a.y + clamped * dy)
+      y: a.y + clamped * dy
+    )
 
     return distance(to: proj)
   }
