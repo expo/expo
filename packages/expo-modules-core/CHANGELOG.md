@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
+
 ## 2.3.8 — 2025-04-23
 
 ### 💡 Others
