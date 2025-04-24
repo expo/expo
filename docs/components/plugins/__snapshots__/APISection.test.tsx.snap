@@ -243,27 +243,31 @@ not appear on the screen.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -1335,27 +1339,31 @@ This should come from the user field of an
         class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-default"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -3038,27 +3046,31 @@ which contains all of the pertinent user and credential information.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -3965,27 +3977,31 @@ may be
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -4151,27 +4167,31 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -4478,27 +4498,31 @@ None of these options are required.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -4825,27 +4849,31 @@ You must include the ID string of the user to sign out.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -5715,27 +5743,31 @@ OAuth 2.0 protocol
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -6404,27 +6436,31 @@ for more details.
         class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-default"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -6445,27 +6481,31 @@ You will still need to handle null values for any fields you request.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -6685,27 +6725,31 @@ for more details.
         class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
-        <div
-          class="select-none mt-1"
+        <svg
+          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            class="translate-z shrink-0 icon-xs text-icon-secondary"
-            fill="currentColor"
-            role="img"
-            viewBox="0 0 24 24"
+          <g
+            id="info-circle-duotone-icon"
           >
-            <g
-              id="info-circle-solid-icon"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                fill-rule="evenodd"
-                id="Solid"
-              />
-            </g>
-          </svg>
-        </div>
+            <path
+              d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+              fill="currentColor"
+              id="Fill"
+              opacity="0.12"
+            />
+            <path
+              d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
         <div
           class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
         >
@@ -7443,27 +7487,31 @@ exports[`APISection expo-pedometer 1`] = `
             class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
             data-testid="callout-container"
           >
-            <div
-              class="select-none mt-1"
+            <svg
+              class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                class="translate-z shrink-0 icon-xs text-icon-default"
-                fill="currentColor"
-                role="img"
-                viewBox="0 0 24 24"
+              <g
+                id="info-circle-duotone-icon"
               >
-                <g
-                  id="info-circle-solid-icon"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                    fill-rule="evenodd"
-                    id="Solid"
-                  />
-                </g>
-              </svg>
-            </div>
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
             <div
               class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
             >
@@ -7980,27 +8028,31 @@ provided with a single argument that is
             class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
             data-testid="callout-container"
           >
-            <div
-              class="select-none mt-1"
+            <svg
+              class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+              fill="none"
+              role="img"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                class="translate-z shrink-0 icon-xs text-icon-default"
-                fill="currentColor"
-                role="img"
-                viewBox="0 0 24 24"
+              <g
+                id="info-circle-duotone-icon"
               >
-                <g
-                  id="info-circle-solid-icon"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-                    fill-rule="evenodd"
-                    id="Solid"
-                  />
-                </g>
-              </svg>
-            </div>
+                <path
+                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                  fill="currentColor"
+                  id="Fill"
+                  opacity="0.12"
+                />
+                <path
+                  d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  id="Icon"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </g>
+            </svg>
             <div
               class="w-full text-default last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
             >

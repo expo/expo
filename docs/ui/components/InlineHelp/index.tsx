@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
-import { AlertCircleSolidIcon } from '@expo/styleguide-icons/solid/AlertCircleSolidIcon';
-import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
-import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
-import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
+import { AlertCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/AlertCircleDuotoneIcon';
+import { AlertTriangleDuotoneIcon } from '@expo/styleguide-icons/duotone/AlertTriangleDuotoneIcon';
+import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircleDuotoneIcon';
+import { XSquareDuotoneIcon } from '@expo/styleguide-icons/duotone/XSquareDuotoneIcon';
 import {
   Children,
   HTMLAttributes,
@@ -17,7 +17,7 @@ type CalloutType = 'default' | 'important' | 'warning' | 'error' | 'info' | 'inf
 type Props = PropsWithChildren<{
   type?: CalloutType;
   className?: string;
-  icon?: ComponentType<HTMLAttributes<SVGSVGElement>> | string;
+  icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   size?: 'sm' | 'md';
 }>;
 
@@ -49,8 +49,8 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
   return (
     <blockquote
       className={mergeClasses(
-        'mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs',
-        size === 'sm' && 'px-3 py-2.5',
+        'mb-4 flex gap-2.5 rounded-md border border-default bg-subtle py-3 pl-3.5 pr-4 shadow-xs',
+        size === 'sm' && 'gap-2 px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
         getCalloutColor(finalType),
@@ -59,18 +59,13 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
         className
       )}
       data-testid="callout-container">
-      <div className={mergeClasses('mt-1 select-none', size === 'sm' && 'mt-1')}>
-        {typeof icon === 'string' ? (
-          icon
-        ) : (
-          <Icon
-            className={mergeClasses(
-              size === 'sm' ? 'icon-xs' : 'icon-sm',
-              getCalloutIconColor(finalType)
-            )}
-          />
+      <Icon
+        className={mergeClasses(
+          'mt-1 select-none',
+          size === 'sm' ? 'icon-xs mt-[3px]' : 'icon-sm',
+          getCalloutIconColor(finalType)
         )}
-      </div>
+      />
       <div
         className={mergeClasses(
           'w-full leading-normal text-default',
@@ -121,13 +116,13 @@ function getCalloutColor(type: CalloutType) {
 function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => JSX.Element {
   switch (type) {
     case 'warning':
-      return AlertTriangleSolidIcon;
+      return AlertTriangleDuotoneIcon;
     case 'important':
-      return AlertCircleSolidIcon;
+      return AlertCircleDuotoneIcon;
     case 'error':
-      return XSquareSolidIcon;
+      return XSquareDuotoneIcon;
     default:
-      return InfoCircleSolidIcon;
+      return InfoCircleDuotoneIcon;
   }
 }
 
