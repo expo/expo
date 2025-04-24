@@ -2,6 +2,7 @@ import { createAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
+import CreateAudioQueuePlayer from './CreateAudioQueuePlayer';
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 import HeadingText from '../../../components/HeadingText';
@@ -17,12 +18,17 @@ export default function CreateAudioPlayerScreen(props: any) {
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Player</HeadingText>
       <AudioPlayer style={styles.player} />
+
+      <HeadingText>Create Queue player</HeadingText>
+      <CreateAudioQueuePlayer style={styles.player} />
     </ScrollView>
   );
 }
-const player = createAudioPlayer({
-  uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
-});
+const player = createAudioPlayer([
+  {
+    uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+  },
+]);
 
 function AudioPlayer({ style }: { style?: StyleProp<ViewStyle> }) {
   const status = useAudioPlayerStatus(player);

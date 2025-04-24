@@ -13,10 +13,10 @@ export declare class NativeAudioModule extends NativeModule {
 }
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
-     * Initializes a new audio player instance with the given source.
+     * Initializes a new audio player instance with the given sources.
      * @hidden
      */
-    constructor(source: AudioSource, updateInterval: number);
+    constructor(sources: AudioSource[], updateInterval: number);
     /**
      * Unique identifier for the player object.
      */
@@ -83,9 +83,54 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     pause(): void;
     /**
+     * Clears the queue and stops the playback.
+     */
+    clearQueue(): void;
+    /**
      * Replaces the current audio source with a new one.
+     * Internally uses the queue functionality (equivalent to setQueue([source])).
+     * Maintains backward compatibility with previous replace behavior.
      */
     replace(source: AudioSource): void;
+    /**
+     * Sets a queue of audio sources to be played in sequence.
+     * @param sources The array of audio sources.
+     */
+    setQueue(sources: AudioSource[]): void;
+    /**
+     * The current queue of audio sources.
+     */
+    getCurrentQueue(): AudioSource[];
+    /**
+     * The current index of the queue. Returns null if no track loaded
+     */
+    getCurrentQueueIndex(): number | null;
+    /**
+     * Adds tracks to the queue at an optionally specified index.
+     * @param tracks Array of AudioSource objects that will be added
+     * @param insertBeforeIndex The index of the track that will be located immediately after the inserted tracks. Set it to null to add at the end of the queue
+     */
+    addToQueue(tracks: AudioSource[], insertBeforeIndex?: number): void;
+    /**
+     * Removes tracks from the queue.
+     * If the current track is removed, the next track will be activated.
+     * If the current track was the last track in the queue, the first track will be activated.
+     * @param tracks The AudioSource objects that will be removed
+     */
+    removeFromQueue(tracks: AudioSource[]): void;
+    /**
+     * Skips to a track in the queue.
+     * @param index The track index
+     */
+    skipToQueueIndex(index: number): void;
+    /**
+     * Skips to the next track in the queue.
+     */
+    skipToNext(): void;
+    /**
+     * Skips to the previous track in the queue.
+     */
+    skipToPrevious(): void;
     /**
      * Seeks the playback by the given number of seconds.
      * @param seconds The number of seconds to seek by.

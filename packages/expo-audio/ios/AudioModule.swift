@@ -77,10 +77,15 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(from: source)
+      Constructor { (sources: [AudioSource]?, updateInterval: Double) -> AudioPlayer in
+        let avPlayer = AudioUtils.createAVPlayer()
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         AudioComponentRegistry.shared.add(player)
+
+        if let sources = sources, !sources.isEmpty {
+          try player.setQueue(sources: sources)
+        }
+
         return player
       }
 
@@ -167,7 +172,48 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.replaceCurrentSource(source: source)
+        player.setQueue(sources: [source])
+      }
+
+      Function("setQueue") { (player, sources: [AudioSource]) in
+        player.setQueue(sources: sources)
+      }
+
+      Function("getCurrentQueue") { player in
+        player.getCurrentQueue()
+      }
+
+      Function("getCurrentQueueIndex") { player -> Any in
+        let index = player.getCurrentQueueIndex()
+
+        if index >= 0 {
+          return index
+        }
+      return NSNull()
+      }
+
+      Function("addToQueue") { (player, sources: [AudioSource], insertBeforeIndex: Int?) in
+        player.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
+      }
+
+      Function("removeFromQueue") { (player, sources: [AudioSource]) in
+        player.removeFromQueue(sources: sources)
+      }
+
+      Function("clearQueue") { player in
+        player.clearQueue()
+      }
+
+      Function("skipToQueueIndex") { (player, index: Int) in
+        player.skipToQueueIndex(index: index)
+      }
+
+      Function("skipToNext") { player in
+        player.skipToNext()
+      }
+
+      Function("skipToPrevious") { player in
+        player.skipToPrevious()
       }
 
       Function("pause") { player in

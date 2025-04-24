@@ -83,12 +83,7 @@ struct AudioUtils {
   }
   #endif
 
-  static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
-    if let source, let url = source.uri {
-      let asset = AVURLAsset(url: url, options: source.headers)
-      let item = AVPlayerItem(asset: asset)
-      return AVPlayer(playerItem: item)
-    }
+  static func createAVPlayer() -> AVPlayer {
     return AVPlayer()
   }
 

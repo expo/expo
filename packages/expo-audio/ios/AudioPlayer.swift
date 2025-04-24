@@ -19,6 +19,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
   var samplingEnabled = false
 
+  private var audioQueue: AudioQueue?
+
   // MARK: Observers
   private var timeToken: Any?
   private var cancellables = Set<AnyCancellable>()
@@ -40,6 +42,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.interval = interval
     super.init(ref)
 
+    self.audioQueue = AudioQueue(player: ref, audioPlayer: self)
+
     setupPublisher()
   }
 
@@ -53,6 +57,42 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   var isBuffering: Bool {
     playerIsBuffering()
+  }
+
+  func getCurrentQueue() -> [[String: Any]] {
+    return audioQueue?.getCurrentQueue() ?? []
+  }
+
+  func getCurrentQueueIndex() -> Int {
+    return audioQueue?.currentIndex ?? -1
+  }
+
+  func addToQueue(sources: [AudioSource], insertBeforeIndex: Int? = nil) {
+    audioQueue?.addToQueue(sources: sources, insertBeforeIndex: insertBeforeIndex)
+  }
+
+  func clearQueue() {
+    audioQueue?.clearQueue()
+  }
+
+  func removeFromQueue(sources: [AudioSource]) {
+    audioQueue?.removeFromQueue(sources: sources)
+  }
+
+  func skipToQueueIndex(index: Int) {
+    audioQueue?.skipToIndex(index)
+  }
+
+  func skipToNext() {
+    audioQueue?.skipToNext()
+  }
+
+  func skipToPrevious() {
+    audioQueue?.skipToPrevious()
+  }
+
+  func setQueue(sources: [AudioSource]) {
+    audioQueue?.setQueue(sources: sources)
   }
 
   func play(at rate: Float) {
@@ -75,7 +115,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   func currentStatus() -> [String: Any] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
-    return [
+    var statusDict: [String: Any] = [
       "id": id,
       "currentTime": currentTime,
       "playbackState": statusToString(status: ref.status),
@@ -91,6 +131,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]
+
+    // Add queue index if it exists and is valid
+    if let index = audioQueue?.currentIndex, index >= 0 {
+      statusDict["currentQueueIndex"] = index
+    } else {
+      // if no queue items exist, set to null. Queue index will be -1 internally
+      statusDict["currentQueueIndex"] = NSNull()
+    }
+
+    return statusDict
   }
 
   func updateStatus(with dict: [String: Any]) {
@@ -120,23 +170,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         }
       }
       .store(in: &cancellables)
-  }
-
-  func replaceCurrentSource(source: AudioSource) {
-    let wasPlaying = ref.timeControlStatus == .playing
-    let wasSamplingEnabled = samplingEnabled
-    ref.pause()
-
-    // Remove the audio tap if it is active
-    if samplingEnabled {
-      setSamplingEnabled(enabled: false)
-    }
-    ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
-    shouldInstallAudioTap = wasSamplingEnabled
-
-    if wasPlaying {
-      ref.play()
-    }
   }
 
   private func playerIsBuffering() -> Bool {

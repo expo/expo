@@ -29,6 +29,7 @@ export type AudioStatus = {
     reasonForWaitingToPlay: string;
     mute: boolean;
     duration: number;
+    currentQueueIndex: number | null;
     playing: boolean;
     loop: boolean;
     didJustFinish: boolean;

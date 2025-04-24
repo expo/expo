@@ -26,15 +26,42 @@ AudioModule.AudioPlayer.prototype.replace = function (source: AudioSource) {
   return replace.call(this, resolveSource(source));
 };
 
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const setQueue = AudioModule.AudioPlayer.prototype.setQueue;
+AudioModule.AudioPlayer.prototype.setQueue = function (sources: AudioSource[]) {
+  const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+  return setQueue.call(this, resolvedSources);
+};
+
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const addToQueue = AudioModule.AudioPlayer.prototype.addToQueue;
+AudioModule.AudioPlayer.prototype.addToQueue = function (
+  sources: AudioSource[],
+  insertBeforeIndex?: number
+) {
+  const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+  return addToQueue.call(this, resolvedSources, insertBeforeIndex);
+};
+
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
+const removeFromQueue = AudioModule.AudioPlayer.prototype.removeFromQueue;
+AudioModule.AudioPlayer.prototype.removeFromQueue = function (sources: AudioSource[]) {
+  const resolvedSources = sources.map((source) => resolveSource(source)).filter(Boolean);
+  return removeFromQueue.call(this, resolvedSources);
+};
+
 // @docsMissing
 export function useAudioPlayer(
-  source: AudioSource = null,
+  sources: AudioSource | AudioSource[] = null,
   updateInterval: number = 500
 ): AudioPlayer {
-  const parsedSource = resolveSource(source);
+  const parsedSources = (Array.isArray(sources) ? sources : [sources])
+    .map(resolveSource)
+    .filter(Boolean);
+
   return useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
-    [JSON.stringify(parsedSource)]
+    () => new AudioModule.AudioPlayer(parsedSources, updateInterval),
+    [JSON.stringify(parsedSources)]
   );
 }
 
@@ -100,11 +127,14 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
  * @param updateInterval
  */
 export function createAudioPlayer(
-  source: AudioSource | string | number | null = null,
+  source: AudioSource | AudioSource[] | string | number | null = null,
   updateInterval: number = 500
 ): AudioPlayer {
-  const parsedSource = resolveSource(source);
-  return new AudioModule.AudioPlayer(parsedSource, updateInterval);
+  const parsedSources = (Array.isArray(source) ? source : [source])
+    .map(resolveSource)
+    .filter(Boolean);
+
+  return new AudioModule.AudioPlayer(parsedSources, updateInterval);
 }
 
 // @docsMissing

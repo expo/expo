@@ -22,6 +22,23 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.4.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2025-04-04
+
+### 🎉 New features
+
+- Audio player queue support ([#35609](https://github.com/expo/expo/pull/35609) by [@mihailapuste](https://github.com/mihailapuste))
 - [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
