@@ -85,14 +85,12 @@
   border-bottom: 1px solid var(--expo-log-color-border);
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-  
+
   position: relative;
 }
 
 .headerIconWrapper {
   display: none;
-  
-
 }
 .headerText {
   padding-left: 12px;
@@ -101,7 +99,6 @@
   white-space: nowrap;
   color: var(--expo-log-color-label);
   padding-right: 16px;
-
 }
 
 .blurGradientRL {
@@ -140,12 +137,12 @@
   .headerText {
     padding-left: 0px;
   }
-  
+
   .headerIconWrapper {
     display: block;
     min-width: 1rem;
-  height: 1rem;
-  padding-left: 16px;
+    height: 1rem;
+    padding-left: 16px;
   }
   .header {
     padding-left: 0px;
