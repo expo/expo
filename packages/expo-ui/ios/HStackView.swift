@@ -3,14 +3,14 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SwiftUIHStackProps: ExpoSwiftUI.ViewProps {
+internal final class HStackViewProps: ExpoSwiftUI.ViewProps {
   @Field var spacing: Double?
   @Field var padding: Double?
   @Field var frame: [String: Double]?
 }
 
-struct SwiftUIHStack: ExpoSwiftUI.View {
-  @ObservedObject var props: SwiftUIHStackProps
+internal struct HStackView: ExpoSwiftUI.View {
+  @ObservedObject var props: HStackViewProps
 
   var body: some View {
     HStack(spacing: CGFloat(props.spacing ?? 0)) {

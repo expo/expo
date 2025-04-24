@@ -6,10 +6,6 @@ import { ViewEvent } from '../../types';
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 export type TextInputProps = {
     /**
-     * Additional styles to apply to the TextInput.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
      */
     defaultValue?: string;
@@ -60,5 +56,12 @@ export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & V
 /**
  * Renders a `TextInput` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
-export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
+export declare function TextInput(props: TextInputProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
+/**
+ * `<TextInput>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function TextInputPrimitive(props: TextInputProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
