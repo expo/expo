@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix importing polyfills.
+
 ### 💡 Others
 
 ## 0.20.7 — 2025-04-25
