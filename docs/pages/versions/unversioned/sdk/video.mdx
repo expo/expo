@@ -17,8 +17,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 #### Known issues&ensp;<PlatformTags platforms={['android']} />
 
-When two [`VideoView`](#videoview) components are overlapping and have the [`contentFit`](#contentfit) prop set to [`cover`](#videocontentfit), one of the videos may be displayed out of bounds. This is a [known upstream issue](https://github.com/androidx/media/issues/1107). In order to work around the issue use the [`surfaceType`](#surfacetype) prop and set it to [`textureView`](#surfacetype-1).
-
+When two [`VideoView`](#videoview) components are overlapping and have the [`contentFit`](#contentfit) prop set to [`cover`](#videocontentfit), one of the videos may be displayed out of bounds. This is a [known upstream issue](https://github.com/androidx/media/issues/1107). To work around this issue, use the [`surfaceType`](#surfacetype) prop and set it to [`textureView`](#surfacetype-1).
 
 ## Installation
 

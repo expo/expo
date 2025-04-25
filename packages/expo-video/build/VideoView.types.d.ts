@@ -9,8 +9,8 @@ import type { VideoPlayer } from './VideoPlayer.types';
 export type VideoContentFit = 'contain' | 'cover' | 'fill';
 /**
  * Describes the type of the surface used to render the video.
- * - `surfaceView`: Uses the SurfaceView to render the video. This value should be used in the majority of cases. Provides significantly lower power consumption, better performance, and more features.
- * - `textureView`: Uses the TextureView to render the video. Should be used in cases where the SurfaceView is not supported or causes issues (for example overlapping video views).
+ * - `surfaceView`: Uses the `SurfaceView` to render the video. This value should be used in the majority of cases. Provides significantly lower power consumption, better performance, and more features.
+ * - `textureView`: Uses the `TextureView` to render the video. Should be used in cases where the SurfaceView is not supported or causes issues (for example, overlapping video views).
  *
  * You can learn more about surface types in the official [ExoPlayer documentation](https://developer.android.com/media/media3/ui/playerview#surfacetype).
  * @platform android
