@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Move virtual RSC client boundary entry point to `expo`.
+- Move virtual RSC client boundary entry point to `expo`. ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.24.5 — 2025-04-25
 
