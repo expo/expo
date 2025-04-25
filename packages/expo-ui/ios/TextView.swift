@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SwiftUITextProps: ExpoSwiftUI.ViewProps {
+internal final class TextViewProps: ExpoSwiftUI.ViewProps {
   @Field var text: String = ""
   @Field var weight: String?
   @Field var design: String?
@@ -11,8 +11,8 @@ final class SwiftUITextProps: ExpoSwiftUI.ViewProps {
   @Field var lineLimit: Int?
 }
 
-struct SwiftUIText: ExpoSwiftUI.View {
-  @ObservedObject var props: SwiftUITextProps
+internal struct TextView: ExpoSwiftUI.View {
+  @ObservedObject var props: TextViewProps
 
   private func getFontWeight() -> Font.Weight {
     switch props.weight {

@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { Children, useMemo } from 'react';
+import { Host } from '../Host';
 import { transformChildrenToElementArray } from './utils';
 const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
 const MenuNativeTriggerView = requireNativeView('ExpoUI', 'ContextMenuActivationElement');
@@ -34,7 +35,21 @@ export function Preview(props) {
     return <MenuNativePreviewView {...props}/>;
 }
 /**
- * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
+ * `<ContextMenu>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+function ContextMenuPrimitive(props) {
+    const eventHandlersMap = {};
+    const initialChildren = Children.map(props.children, (c) => c.type.tag === Items.tag ? c.props.children : null);
+    const processedElements = useMemo(() => transformChildrenToElementArray(initialChildren, eventHandlersMap), [initialChildren]);
+    const createEventHandler = (handlerType) => (event) => {
+        const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
+        handler?.(event);
+    };
+    return (<MenuNativeView elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} {...props}/>);
+}
+/**
+ * `ContextMenuPrimitive` allows you to create a context menu, which can be used to provide additional options to the user.
  *
  * There are some platform-specific differences in the behavior of the context menu:
  * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
@@ -43,17 +58,15 @@ export function Preview(props) {
  * - Android does not support showing a `Picker` element in the context menu.
  */
 function ContextMenu(props) {
-    const eventHandlersMap = {};
-    const initialChildren = Children.map(props.children, (c) => c.type.tag === Items.tag ? c.props.children : null);
-    const processedElements = useMemo(() => transformChildrenToElementArray(initialChildren, eventHandlersMap), [initialChildren]);
-    const createEventHandler = (handlerType) => (event) => {
-        const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
-        handler?.(event);
-    };
-    return (<MenuNativeView style={props.style} elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} {...props}/>);
+    return (<Host style={props.style} matchContents>
+      <ContextMenuPrimitive {...props}/>
+    </Host>);
 }
+ContextMenuPrimitive.Trigger = Trigger;
+ContextMenuPrimitive.Preview = Preview;
+ContextMenuPrimitive.Items = Items;
 ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
-export { ContextMenu };
+export { ContextMenuPrimitive, ContextMenu };
 //# sourceMappingURL=index.js.map

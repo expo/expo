@@ -1,11 +1,9 @@
 import { requireNativeView } from 'expo';
-import { Dimensions, NativeSyntheticEvent, StyleProp, View, ViewStyle } from 'react-native';
+import { Dimensions, NativeSyntheticEvent } from 'react-native';
+
+import { Host } from '../Host';
 
 export type BottomSheetProps = {
-  /**
-   * Optional styles to apply to the `BottomSheet` component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The children of the `BottomSheet` component.
    */
@@ -38,14 +36,19 @@ export function transformBottomSheetProps(props: BottomSheetProps): NativeBottom
   };
 }
 
+/**
+ * `<BottomSheet>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function BottomSheetPrimitive(props: BottomSheetProps) {
+  return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
+}
+
 export function BottomSheet(props: BottomSheetProps) {
   const { width } = Dimensions.get('window');
   return (
-    <View>
-      <BottomSheetNativeView
-        style={{ position: 'absolute', width }}
-        {...transformBottomSheetProps(props)}
-      />
-    </View>
+    <Host style={{ width }}>
+      <BottomSheetPrimitive {...props} />
+    </Host>
   );
 }

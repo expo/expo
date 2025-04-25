@@ -3,11 +3,11 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SwiftUIFormProps: ExpoSwiftUI.ViewProps {
+internal final class FormViewProps: ExpoSwiftUI.ViewProps {
 }
 
-struct SwiftUIForm: ExpoSwiftUI.View {
-  @ObservedObject var props: SwiftUIFormProps
+internal struct FormView: ExpoSwiftUI.View {
+  @ObservedObject var props: FormViewProps
 
   var body: some View {
     let form = Form {

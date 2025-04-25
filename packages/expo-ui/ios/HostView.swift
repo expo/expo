@@ -3,27 +3,27 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SwiftUIHostProps: ExpoSwiftUI.ViewProps {
-  @Field var matchContents: Bool = false
+internal final class HostViewProps: ExpoSwiftUI.ViewProps {
+  @Field var useViewportSizeMeasurement: Bool = false
   var onLayoutContent = EventDispatcher()
 }
 
-struct SwiftUIHost: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
-  @ObservedObject var props: SwiftUIHostProps
+internal struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: HostViewProps
 
   var body: some View {
-    var isUsingMatchContents: Bool = props.matchContents
+    var useViewportSizeMeasurement: Bool = props.useViewportSizeMeasurement
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      isUsingMatchContents = props.matchContents
+      useViewportSizeMeasurement = props.useViewportSizeMeasurement
     } else {
-      log.warn("matchContents is not supported on iOS/tvOS < 16.0")
-      isUsingMatchContents = false
+      log.warn("useViewportSizeMeasurement is not supported on iOS/tvOS < 16.0")
+      useViewportSizeMeasurement = false
     }
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
-      let HostLayout = isUsingMatchContents
-        ? AnyLayout(MatchContentsLayout())
+      let HostLayout = useViewportSizeMeasurement
+        ? AnyLayout(ViewportSizeMeasurementLayout())
         : AnyLayout(ZStackLayout(alignment: .topLeading))
       return HostLayout {
         Children()
@@ -54,11 +54,11 @@ struct SwiftUIHost: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 }
 
 /**
- A Layout designed for the `matchContents` behavior.
- If parent's proposedViewSize is zero or nil, it will try to use screen size to expand it's children size.
+ A Layout designed for the `useViewportSizeMeasurement` behavior.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
-private struct MatchContentsLayout: Layout {
+private struct ViewportSizeMeasurementLayout: Layout {
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
     let proposalWidth = proposal.width ?? 0
@@ -108,7 +108,7 @@ private struct MatchContentsLayout: Layout {
  A ViewModifier that listens for view size change the dispatch the `onLayoutContent` event
  */
 private struct GeometryChangeModifier: ViewModifier {
-  let props: SwiftUIHostProps
+  let props: HostViewProps
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
     props.onLayoutContent([
