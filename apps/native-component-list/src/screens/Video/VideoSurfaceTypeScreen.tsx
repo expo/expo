@@ -1,4 +1,3 @@
-import { Platform } from 'expo-modules-core';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
@@ -38,22 +37,14 @@ function ProblematicOverlap({
 }
 
 export default function VideoDRMScreen() {
-  const player1 = useVideoPlayer(bigBuckBunnySource, (player) => {
+  const initializePlayer = (player: VideoPlayer) => {
     player.loop = true;
     player.play();
-  });
-  const player2 = useVideoPlayer(bigBuckBunnySource, (player) => {
-    player.loop = true;
-    player.play();
-  });
-  const player3 = useVideoPlayer(bigBuckBunnySource, (player) => {
-    player.loop = true;
-    player.play();
-  });
-  const player4 = useVideoPlayer(bigBuckBunnySource, (player) => {
-    player.loop = true;
-    player.play();
-  });
+  };
+  const player1 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
+  const player2 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
+  const player3 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
+  const player4 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
 
   return (
     <View style={styles.contentContainer}>

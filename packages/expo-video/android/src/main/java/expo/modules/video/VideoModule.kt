@@ -56,8 +56,12 @@ class VideoModule : Module() {
       VideoManager.cache.clear()
     }
 
-    View(SurfaceVideoView::class, videoViewDefinitionBody<SurfaceVideoView>())
-    View(TextureVideoView::class, videoViewDefinitionBody<TextureVideoView>())
+    View(SurfaceVideoView::class) {
+      VideoViewComponent<SurfaceVideoView>()
+    }
+    View(TextureVideoView::class) {
+      VideoViewComponent<TextureVideoView>()
+    }
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource? ->
@@ -322,67 +326,53 @@ class VideoModule : Module() {
 }
 
 @androidx.annotation.OptIn(UnstableApi::class)
-private inline fun <reified T : VideoView> videoViewDefinitionBody(): ViewDefinitionBuilder<T>.() -> Unit {
-  return {
-    Events(
-      "onPictureInPictureStart",
-      "onPictureInPictureStop",
-      "onFullscreenEnter",
-      "onFullscreenExit"
-    )
-
-    Prop("player") { view: T, player: VideoPlayer ->
-      view.videoPlayer = player
+private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewComponent() {
+  Events(
+    "onPictureInPictureStart",
+    "onPictureInPictureStop",
+    "onFullscreenEnter",
+    "onFullscreenExit"
+  )
+  Prop("player") { view: T, player: VideoPlayer ->
+    view.videoPlayer = player
+  }
+  Prop("nativeControls") { view: T, useNativeControls: Boolean ->
+    view.useNativeControls = useNativeControls
+  }
+  Prop("contentFit") { view: T, contentFit: ContentFit ->
+    view.contentFit = contentFit
+  }
+  Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
+    view.autoEnterPiP = autoEnterPiP
+  }
+  Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
+    view.allowsFullscreen = allowsFullscreen ?: true
+  }
+  Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
+    val linearPlayback = requiresLinearPlayback ?: false
+    view.playerView.applyRequiresLinearPlayback(linearPlayback)
+    view.videoPlayer?.requiresLinearPlayback = linearPlayback
+  }
+  AsyncFunction("enterFullscreen") { view: T ->
+    view.enterFullscreen()
+  }.runOnQueue(Queues.MAIN)
+  AsyncFunction("exitFullscreen") {
+    throw MethodUnsupportedException("exitFullscreen")
+  }
+  AsyncFunction("startPictureInPicture") { view: T ->
+    runWithPiPMisconfigurationSoftHandling(true) {
+      view.enterPictureInPicture()
     }
-
-    Prop("nativeControls") { view: T, useNativeControls: Boolean ->
-      view.useNativeControls = useNativeControls
-    }
-
-    Prop("contentFit") { view: T, contentFit: ContentFit ->
-      view.contentFit = contentFit
-    }
-
-    Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
-      view.autoEnterPiP = autoEnterPiP
-    }
-
-    Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
-      view.allowsFullscreen = allowsFullscreen ?: true
-    }
-
-    Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
-      val linearPlayback = requiresLinearPlayback ?: false
-      view.playerView.applyRequiresLinearPlayback(linearPlayback)
-      view.videoPlayer?.requiresLinearPlayback = linearPlayback
-    }
-
-    AsyncFunction("enterFullscreen") { view: T ->
-      view.enterFullscreen()
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("exitFullscreen") {
-      throw MethodUnsupportedException("exitFullscreen")
-    }
-
-    AsyncFunction("startPictureInPicture") { view: T ->
-      runWithPiPMisconfigurationSoftHandling(true) {
-        view.enterPictureInPicture()
-      }
-    }
-
-    AsyncFunction("stopPictureInPicture") {
-      throw MethodUnsupportedException("stopPictureInPicture")
-    }
-
-    OnViewDestroys {
-      VideoManager.unregisterVideoView(it)
-    }
-
-    OnViewDidUpdateProps { view ->
-      if (view.playerView.useController != view.useNativeControls) {
-        view.playerView.useController = view.useNativeControls
-      }
+  }
+  AsyncFunction("stopPictureInPicture") {
+    throw MethodUnsupportedException("stopPictureInPicture")
+  }
+  OnViewDestroys {
+    VideoManager.unregisterVideoView(it)
+  }
+  OnViewDidUpdateProps { view ->
+    if (view.playerView.useController != view.useNativeControls) {
+      view.playerView.useController = view.useNativeControls
     }
   }
 }
