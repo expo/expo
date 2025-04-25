@@ -240,11 +240,11 @@ button.
 not appear on the screen.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1336,11 +1336,11 @@ This should come from the user field of an
       
 
       <blockquote
-        class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -3043,11 +3043,11 @@ After calling this function, the listener will no longer receive any events from
 which contains all of the pertinent user and credential information.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -3974,11 +3974,11 @@ may be
         A value to specify the style for formatting a name.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -4164,11 +4164,11 @@ for more details.
 You must include the ID string of the user whose credentials you'd like to refresh.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -4495,11 +4495,11 @@ OAuth 2.0 protocol
 None of these options are required.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -4846,11 +4846,11 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -5740,11 +5740,11 @@ OAuth 2.0 protocol
         .
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -6433,11 +6433,11 @@ for more details.
       
 
       <blockquote
-        class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -6478,11 +6478,11 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -6722,11 +6722,11 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
         data-testid="callout-container"
       >
         <svg
-          class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-secondary"
+          class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7484,11 +7484,11 @@ exports[`APISection expo-pedometer 1`] = `
           
 
           <blockquote
-            class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
             data-testid="callout-container"
           >
             <svg
-              class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
               fill="none"
               role="img"
               stroke="currentColor"
@@ -8025,11 +8025,11 @@ provided with a single argument that is
           
 
           <blockquote
-            class="flex gap-2 rounded-md border border-default bg-subtle px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
             data-testid="callout-container"
           >
             <svg
-              class="translate-z shrink-0 mt-1 select-none icon-xs text-icon-default"
+              class="translate-z shrink-0 select-none icon-xs mt-[3px] text-icon-default"
               fill="none"
               role="img"
               stroke="currentColor"
