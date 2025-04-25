@@ -78,7 +78,7 @@ export const Notifier = () => {
 
     const responseListener = addNotificationResponseReceivedListener((response) => {
       setResponse(response);
-      console.log(`${Platform.OS} saw response for ${JSON.stringify(response, null, 2)}`);
+      console.log(`${Platform.OS} saw response: ${JSON.stringify(response, null, 2)}`);
     });
 
     console.log(`${Platform.OS} added listeners`);
