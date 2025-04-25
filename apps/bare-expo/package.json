@@ -53,7 +53,7 @@
     "@shopify/flash-list": "1.7.6",
     "expo": "~53.0.0-preview.12",
     "expo-build-properties": "~0.14.5",
-    "expo-camera": "~16.1.4",
+    "expo-camera": "~16.1.5",
     "expo-dev-client": "~5.1.4",
     "expo-image": "~2.1.5",
     "expo-insights": "~0.9.2",
@@ -79,7 +79,7 @@
     "@babel/core": "^7.20.0",
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
-    "babel-preset-expo": "~13.1.6",
+    "babel-preset-expo": "~13.1.7",
     "expo-module-scripts": "^4.1.5",
     "jest": "^29.3.1"
   },

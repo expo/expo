@@ -221,10 +221,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (6.1.5):
+  - expo-dev-menu (6.1.6):
     - DoubleConversion
-    - expo-dev-menu/Main (= 6.1.5)
-    - expo-dev-menu/ReactNativeCompatibles (= 6.1.5)
+    - expo-dev-menu/Main (= 6.1.6)
+    - expo-dev-menu/ReactNativeCompatibles (= 6.1.6)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.11.18.00)
@@ -248,7 +248,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - expo-dev-menu-interface (1.10.0)
-  - expo-dev-menu/Main (6.1.5):
+  - expo-dev-menu/Main (6.1.6):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -278,7 +278,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (6.1.5):
+  - expo-dev-menu/ReactNativeCompatibles (6.1.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -302,7 +302,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (6.1.5):
+  - expo-dev-menu/SafeAreaView (6.1.6):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -327,7 +327,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (6.1.5):
+  - expo-dev-menu/Tests (6.1.6):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -355,7 +355,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (6.1.5):
+  - expo-dev-menu/UITests (6.1.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -382,7 +382,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (6.1.5):
+  - expo-dev-menu/Vendored (6.1.6):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -425,7 +425,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.1.3):
     - ExpoModulesCore
-  - ExpoCamera (16.1.4):
+  - ExpoCamera (16.1.5):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -3610,7 +3610,7 @@ SPEC CHECKSUMS:
   Expo: d6d8059c42e806704ee42aca1fe535247ee77977
   expo-dev-client: f662edfd51cf6dab89039e74376f9d7325041a0d
   expo-dev-launcher: 888a12114521ed2bb9a71059e4cd149ef73c8682
-  expo-dev-menu: 2d3deb68a67565a789ce1b60719eabdc882a176c
+  expo-dev-menu: b3805cd343e6a2eff4938e99f34be643649c434f
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
   ExpoAppleAuthentication: 19f706eb712f471e22cf0d9032e60a7a4c644a25
   ExpoAsset: 45dee7e6983fbc07166d6146551a89ad40284e54
@@ -3621,7 +3621,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 99c451a8d1c58967e9e494b8f763f588737f9e68
   ExpoBrightness: a737d877f15f4edabd7e566bbfce2fc95764cbb0
   ExpoCalendar: bc08f4497fc72abe077e2d4dc5e537ac5bf54de1
-  ExpoCamera: 09d46155ea8bbd1fd8d78e9f88f1c0ba3dceed5e
+  ExpoCamera: d09358d80c41d62accaf6119330d5d834ea317fc
   ExpoCellular: d3f89c9c253490c6a66367202ae1438949cc0677
   ExpoClipboard: 9f9324e5fb8795502e02690b1c88b25284bf0403
   ExpoContacts: eeefe43c5dcf7b9acab50578643664206e87b276

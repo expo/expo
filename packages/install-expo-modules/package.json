@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@expo/config": "~11.0.5",
-    "@expo/config-plugins": "~9.1.6",
+    "@expo/config-plugins": "~9.1.7",
     "@expo/package-manager": "^1.8.3",
     "@types/prompts": "^2.0.6",
     "@types/semver": "^7.0.0",

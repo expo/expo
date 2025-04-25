@@ -21,7 +21,7 @@
     "expo-background-fetch": "~13.1.4",
     "expo-brightness": "~13.1.3",
     "expo-calendar": "~14.1.3",
-    "expo-camera": "~16.1.4",
+    "expo-camera": "~16.1.5",
     "expo-cellular": "~7.1.3",
     "expo-checkbox": "~4.1.3",
     "expo-constants": "~17.1.3",

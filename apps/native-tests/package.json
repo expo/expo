@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "expo": "~53.0.0-preview.12",
-    "expo-camera": "~16.1.4",
+    "expo-camera": "~16.1.5",
     "expo-dev-client": "~5.1.4",
     "expo-image": "~2.1.5",
     "expo-notifications": "~0.31.0",

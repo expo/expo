@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 13.1.6 — 2025-04-23
 
 ### 🎉 New features
