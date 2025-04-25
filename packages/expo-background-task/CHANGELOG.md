@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Removed throwing an exception if registerTaskAsync/unregisterTaskAsync is called on a task that is already registered/unregistered
+- Removed throwing an exception if registerTaskAsync/unregisterTaskAsync is called on a task that is already registered/unregistered ([#36393](https://github.com/expo/expo/pull/36393) by [@chrfalch](https://github.com/chrfalch))
 
 ## 0.2.4 — 2025-04-14
 
