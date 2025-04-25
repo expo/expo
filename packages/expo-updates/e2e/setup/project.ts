@@ -78,7 +78,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
   return expoDependencyChunks.flat();
 }
 
-const expoResolutions = {};
+const expoResolutions: { [key: string]: string } = {};
 
 /**
  * Executes `npm pack` on one of the Expo packages used in updates E2E
@@ -376,7 +376,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.79.0-0rc2',
+        'react-native': 'npm:react-native-tvos@0.79.1-0',
         '@react-native-tvos/config-tv': '^0.1.1',
       },
       expo: {
