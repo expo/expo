@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Move virtual RSC client boundary entry point to `expo`.
+
 ## 0.24.5 — 2025-04-25
 
 _This version does not introduce any user-facing changes._
