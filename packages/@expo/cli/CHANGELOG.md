@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Inject web stream support when bundling for native platforms.
+- Inject web stream support when bundling for native platforms. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

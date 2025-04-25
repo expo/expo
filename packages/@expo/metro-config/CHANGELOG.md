@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Shim web streams when bundling for the server.
+- Shim web streams when bundling for the server. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.20.7 — 2025-04-25
 

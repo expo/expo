@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add web stream support globally.
+- Add web stream support globally. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
