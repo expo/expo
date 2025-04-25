@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add <Screen.Protected /> ([#36243](https://github.com/expo/expo/pull/36243) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

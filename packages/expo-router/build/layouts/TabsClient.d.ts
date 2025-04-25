@@ -105,6 +105,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: undefined;
 }, "children">> & React.RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<TabsProps, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
+    Protected: typeof import("../views/Protected").Protected;
 };
 export default Tabs;
 //# sourceMappingURL=TabsClient.d.ts.map
