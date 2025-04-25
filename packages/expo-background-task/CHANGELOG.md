@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed throwing an exception if registerTaskAsync/unregisterTaskAsync is called on a task that is already registered/unregistered
+
 ## 0.2.4 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
