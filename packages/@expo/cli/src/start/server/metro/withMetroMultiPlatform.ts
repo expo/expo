@@ -844,7 +844,9 @@ export async function withMetroMultiPlatformAsync(
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(
-      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
+      // For virtual modules
+      path.join(require.resolve('expo/package.json'), '..')
     );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
