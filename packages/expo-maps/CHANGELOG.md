@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Lower minimum supported version to iOS 17.
+
 ## 0.9.4 — 2025-04-21
 
 ### 🐛 Bug fixes
