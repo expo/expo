@@ -62,7 +62,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
      *   - the foreground main Activity
      *   - the background [NotificationForwarderActivity] Activity that send notification clicked events through broadcast
      */
-    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent, notificationResponse: NotificationResponse): PendingIntent {
+    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent): PendingIntent {
       var intentFlags = PendingIntent.FLAG_UPDATE_CURRENT
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         // The intent may include `RemoteInput` from `TextInputNotificationAction`.
@@ -141,9 +141,9 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     if (!isAppInForeground()) {
       // do not run in foreground for better alignment with iOS
       // iOS doesn't run background tasks for notification responses at all
-      runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
+      runTaskManagerTasks(context.applicationContext, notificationResponse.toBundle())
     }
-    if (notificationResponse.action.opensAppToForeground()) {
+    if (notificationResponse.action.opensAppToForeground) {
       openAppToForeground(context, notificationResponse)
     }
     // NOTE the listeners are not set up when the app is killed
