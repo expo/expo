@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Move async-require and fast refresh to `expo`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable async require by default.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

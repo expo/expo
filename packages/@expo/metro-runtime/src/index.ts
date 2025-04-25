@@ -6,10 +6,11 @@
  */
 
 import './location/install';
-// IMPORT POSITION MATTERS FOR FAST REFRESH ON WEB
-import './effects';
-// vvv EVERYTHING ELSE vvv
-import './async-require';
+
+if (__DEV__) {
+  // @ts-expect-error: TODO: Remove this when we remove the log box.
+  globalThis.__expo_dev_resetErrors = require('./error-overlay/LogBox').default.clearAllLogs;
+}
 
 import '@expo/metro-runtime/rsc/virtual';
 import '@expo/metro-runtime/rsc/runtime';

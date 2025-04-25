@@ -1,7 +1,18 @@
-import HMRClient from '../../HMRClient';
-import LoadingView from '../../LoadingView';
+import HMRClient from '../hmr';
+
 import { fetchThenEvalAsync } from '../fetchThenEval';
 import { loadBundleAsync } from '../loadBundle';
+import { DeviceEventEmitter } from 'react-native-web';
+
+jest.mock('react-native-web', () => {
+  const og = jest.requireActual('react-native-web');
+  return {
+    ...og,
+    DeviceEventEmitter: {
+      emit: jest.fn(),
+    },
+  };
+});
 
 jest.mock('../fetchThenEval', () => ({
   fetchThenEvalAsync: jest.fn(async () => {}),
@@ -22,8 +33,10 @@ afterEach(() => {
 it('loads a bundle', async () => {
   process.env.NODE_ENV = 'development';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
+
+  expect(DeviceEventEmitter.emit).not.toBeCalled();
+  expect(DeviceEventEmitter.emit).not.toBeCalled();
+
   const url = `/Second.bundle?modulesOnly=true`;
   expect(HMRClient.registerBundle).toBeCalledWith(url);
   expect(fetchThenEvalAsync).toBeCalledWith(url);
@@ -31,8 +44,9 @@ it('loads a bundle', async () => {
 it('loads a bundle in production', async () => {
   process.env.NODE_ENV = 'production';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
+  expect(DeviceEventEmitter.emit).not.toBeCalled();
+  expect(DeviceEventEmitter.emit).not.toBeCalled();
+
   const url = `/Second.bundle?modulesOnly=true`;
   expect(HMRClient.registerBundle).not.toBeCalled();
   expect(fetchThenEvalAsync).toBeCalledWith(url);

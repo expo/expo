@@ -8,12 +8,23 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
+// @ts-expect-error: no types for MetroHMRClient
 import MetroHMRClient from 'metro-runtime/src/modules/HMRClient';
+// @ts-expect-error: no types
+import { DeviceEventEmitter } from 'react-native-web';
+
 import prettyFormat, { plugins } from 'pretty-format';
 
-import LoadingView from './LoadingView';
-import LogBox from './error-overlay/LogBox';
-import getDevServer from './getDevServer';
+// Ensure events are sent so custom Fast Refresh views are shown.
+function showLoading(message: string, _type: 'load' | 'refresh') {
+  DeviceEventEmitter.emit('devLoadingView:showMessage', {
+    message,
+  });
+}
+
+function hideLoading() {
+  DeviceEventEmitter.emit('devLoadingView:hide', {});
+}
 
 const pendingEntryPoints: string[] = [];
 
@@ -82,13 +93,13 @@ const HMRClient: HMRClientNativeInterface = {
     const hasUpdates = hmrClient!.hasPendingUpdates();
 
     if (hasUpdates) {
-      LoadingView.showMessage('Refreshing...', 'refresh');
+      showLoading('Refreshing...', 'refresh');
     }
     try {
       hmrClient.enable();
     } finally {
       if (hasUpdates) {
-        LoadingView.hide();
+        hideLoading();
       }
     }
 
@@ -153,7 +164,18 @@ const HMRClient: HMRClientNativeInterface = {
     const client = new MetroHMRClient(`${serverScheme}://${window.location.host}/hot`);
     hmrClient = client;
 
-    const { fullBundleUrl } = getDevServer();
+    const fullBundleUrl = (() => {
+      if (document?.currentScript && 'src' in document.currentScript) {
+        return document.currentScript.src;
+      }
+
+      const bundleUrl = new URL(location.href);
+
+      bundleUrl.searchParams.set('platform', process.env.EXPO_OS ?? 'web');
+
+      return bundleUrl.toString();
+    })();
+
     pendingEntryPoints.push(
       // HMRServer understands regular bundle URLs, so prefer that in case
       // there are any important URL parameters we can't reconstruct from
@@ -180,23 +202,24 @@ const HMRClient: HMRClientNativeInterface = {
       didConnect = true;
 
       if (client.isEnabled() && !isInitialUpdate) {
-        LoadingView.showMessage('Refreshing...', 'refresh');
+        showLoading('Refreshing...', 'refresh');
       }
     });
 
     client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBox.clearAllLogs();
+        globalThis.__expo_dev_resetErrors?.();
+        // LogBox.clearAllLogs();
       }
     });
 
     client.on('update-done', () => {
-      LoadingView.hide();
+      hideLoading();
     });
 
     client.on('error', (data: { type: string; message: string }) => {
-      LoadingView.hide();
+      hideLoading();
 
       if (data.type === 'GraphNotFoundError') {
         client.close();
@@ -213,7 +236,7 @@ const HMRClient: HMRClientNativeInterface = {
     });
 
     client.on('close', (closeEvent: { code: number; reason: string }) => {
-      LoadingView.hide();
+      hideLoading();
 
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5

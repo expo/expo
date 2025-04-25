@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable async requires by default.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
