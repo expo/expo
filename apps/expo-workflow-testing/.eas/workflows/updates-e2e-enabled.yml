@@ -20,6 +20,7 @@ jobs:
       - uses: eas/checkout
       - name: Check changed paths
         id: changed_paths
+        working_directory: ../..
         outputs: [result, error]
         env:
           GIT_AUTHOR_NAME: "Douglas Lowder"
@@ -28,7 +29,7 @@ jobs:
           node ./packages/expo-updates/bin/check-for-changed-paths/index.js
           ${{ github.event_name }}
           main
-          .eas/workflows/updates-e2e-enabled.yml
+          apps/expo-workflow-testing/.eas/workflows/updates-e2e-enabled.yml
           'packages/@expo/cli/**'
           'packages/@expo/config-plugins/**'
           'packages/@expo/env/**'
@@ -70,6 +71,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E enabled project
         id: setup
+        working_directory: ../..        
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
@@ -78,13 +80,13 @@ jobs:
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         run: |
           yarn generate-test-update-bundles
           npx pod-install
       - name: Build E2E project (debug and release)
         id: build
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         run: |
           npx detox build -c ios.debug
           npx detox build -c ios.release
@@ -93,7 +95,7 @@ jobs:
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         run: |
           npx detox test -c ios.debug          
           npx detox test -c ios.release
@@ -114,6 +116,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E enabled project
         id: setup
+        working_directory: ../..        
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
@@ -122,7 +125,7 @@ jobs:
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
@@ -132,7 +135,7 @@ jobs:
           device_name: pixel_4
       - name: Build E2E project (debug and release)
         id: build
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
@@ -144,7 +147,7 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         run: |
           yarn check-android-emulator
           npx detox test -c android.debug
