@@ -6,7 +6,10 @@ import { RedirectConfig } from './getRoutesCore';
 import { StoreRedirects } from './global-state/router-store';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
-export function applyRedirects(url: string, redirects: StoreRedirects[] | undefined): string {
+export function applyRedirects(
+  url: string | null | undefined,
+  redirects: StoreRedirects[] | undefined
+) {
   if (typeof url !== 'string') {
     return url;
   }

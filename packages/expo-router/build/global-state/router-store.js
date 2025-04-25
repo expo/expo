@@ -40,8 +40,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
 exports.useStore = useStore;
 exports.useRouteInfo = useRouteInfo;
-exports.useStoreRootState = useStoreRootState;
-exports.useStoreRouteInfo = useStoreRouteInfo;
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
@@ -51,8 +49,6 @@ const getLinkingConfig_1 = require("../getLinkingConfig");
 const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
 const routeInfo_1 = require("./routeInfo");
-const routing_1 = require("./routing");
-const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const useScreens_1 = require("../useScreens");
 const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
@@ -122,42 +118,6 @@ exports.store = {
         if (!storeRef.current.navigationRef.isReady()) {
             throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
         }
-    },
-    // TODO: Clean up all functions below here
-    navigate: (url, options) => routing_1.navigate.bind(exports.store)(url, options),
-    push: (url, options) => routing_1.push.bind(exports.store)(url, options),
-    dismiss: (count) => routing_1.dismiss.bind(exports.store)(count),
-    dismissAll: () => routing_1.dismissAll.bind(exports.store)(),
-    dismissTo: (url, options) => routing_1.dismissTo.bind(exports.store)(url, options),
-    canDismiss: () => routing_1.canDismiss.bind(exports.store)(),
-    replace: (url, options) => routing_1.replace.bind(exports.store)(url, options),
-    goBack: () => routing_1.goBack.bind(exports.store)(),
-    canGoBack: () => routing_1.canGoBack.bind(exports.store)(),
-    reload: () => routing_1.reload.bind(exports.store)(),
-    prefetch: (url, options) => routing_1.prefetch.bind(exports.store)(url, options),
-    linkTo: (url, options) => routing_1.linkTo.bind(exports.store)(url, options),
-    setParams: (params) => routing_1.setParams.bind(exports.store)(params),
-    routeInfoSnapshot() {
-        return exports.store.getRouteInfo();
-    },
-    cleanup() { },
-    subscribeToRootState(callback) {
-        callback();
-    },
-    applyRedirects(url, redirects = storeRef.current.redirects) {
-        if (typeof url !== 'string') {
-            return;
-        }
-        return (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
-    },
-    get rootState() {
-        return exports.store.state;
-    },
-    get routeInfo() {
-        return exports.store.getRouteInfo();
-    },
-    rootStateSnapshot() {
-        return exports.store.state;
     },
 };
 function useStore(context, linkingConfigOptions, serverUrl) {
@@ -239,17 +199,5 @@ const routeInfoSubscribe = (callback) => {
 };
 function useRouteInfo() {
     return (0, react_1.useSyncExternalStore)(routeInfoSubscribe, exports.store.getRouteInfo, exports.store.getRouteInfo);
-}
-/**
- * @deprecated Use useNavigation() instead.
- */
-function useStoreRootState() {
-    return (0, native_1.useNavigation)().getParent('__root').getState();
-}
-/**
- * @deprecated Please use useRouterInfo()
- */
-function useStoreRouteInfo() {
-    return useRouteInfo();
 }
 //# sourceMappingURL=router-store.js.map

@@ -13,10 +13,6 @@ import { router } from '../imperative-api';
 // re-export everything
 export * from '@testing-library/react-native';
 
-afterAll(() => {
-  store.cleanup();
-});
-
 export type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
@@ -65,17 +61,15 @@ export function renderRouter(
    * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
    * (that the app will briefly be in the right state, but then update to an invalid state)
    */
-  store.subscribeToRootState(() => jest.runOnlyPendingTimers());
-
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
-      return store.routeInfoSnapshot().pathname;
+      return store.getRouteInfo().pathname;
     },
     getSegments(this: RenderResult): string[] {
-      return store.routeInfoSnapshot().segments;
+      return store.getRouteInfo().segments;
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
-      return store.routeInfoSnapshot().params;
+      return store.getRouteInfo().params;
     },
     getPathnameWithParams(this: RenderResult): string {
       return store.getRouteInfo().pathnameWithParams;

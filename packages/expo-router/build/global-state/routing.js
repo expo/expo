@@ -46,56 +46,57 @@ exports.canGoBack = canGoBack;
 exports.canDismiss = canDismiss;
 exports.setParams = setParams;
 exports.linkTo = linkTo;
-const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
+const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
 const matchers_1 = require("../matchers");
+const router_store_1 = require("./router-store");
 const url_1 = require("../utils/url");
-function assertIsReady(store) {
-    if (!store.navigationRef.isReady()) {
+function assertIsReady() {
+    if (!router_store_1.store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
 function navigate(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
+    return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
 function reload() {
     // TODO(EvanBacon): add `reload` support.
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 function prefetch(href, options) {
-    return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
+    return linkTo((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
 }
 function push(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
+    return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
-function dismiss(count) {
+function dismiss(count = 1) {
     if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
         return;
     }
-    this.navigationRef?.dispatch(native_1.StackActions.pop(count));
+    router_store_1.store.navigationRef?.dispatch({ type: 'POP', payload: { count } });
 }
 function dismissTo(href, options) {
-    return this.linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
+    return linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
 }
 function replace(url, options) {
-    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
+    return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
 function dismissAll() {
     if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
         return;
     }
-    this.navigationRef?.dispatch(native_1.StackActions.popToTop());
+    router_store_1.store.navigationRef?.dispatch({ type: 'POP_TO_TOP' });
 }
 function goBack() {
     if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
         return;
     }
-    assertIsReady(this);
-    this.navigationRef?.current?.goBack();
+    assertIsReady();
+    router_store_1.store.navigationRef?.current?.goBack();
 }
 function canGoBack() {
     if (dom_1.IS_DOM) {
@@ -106,16 +107,16 @@ function canGoBack() {
     // before mounting a navigator. This behavior exists due to React Navigation being dynamically
     // constructed at runtime. We can get rid of this in the future if we use
     // the static configuration internally.
-    if (!this.navigationRef.isReady()) {
+    if (!router_store_1.store.navigationRef.isReady()) {
         return false;
     }
-    return this.navigationRef?.current?.canGoBack() ?? false;
+    return router_store_1.store.navigationRef?.current?.canGoBack() ?? false;
 }
 function canDismiss() {
     if (dom_1.IS_DOM) {
         throw new Error('canDismiss imperative method is not supported. Pass the property to the DOM component instead.');
     }
-    let state = this.rootState;
+    let state = router_store_1.store.state;
     // Keep traversing down the state tree until we find a stack navigator that we can pop
     while (state) {
         if (state.type === 'stack' && state.routes.length > 1) {
@@ -131,8 +132,8 @@ function setParams(params = {}) {
     if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
         return;
     }
-    assertIsReady(this);
-    return (this.navigationRef?.current?.setParams)(params);
+    assertIsReady();
+    return (router_store_1.store.navigationRef?.current?.setParams)(params);
 }
 function linkTo(originalHref, options = {}) {
     originalHref = typeof originalHref == 'string' ? originalHref : (0, href_1.resolveHref)(originalHref);
@@ -147,12 +148,12 @@ function linkTo(originalHref, options = {}) {
         Linking.openURL(href);
         return;
     }
-    assertIsReady(this);
-    const navigationRef = this.navigationRef.current;
+    assertIsReady();
+    const navigationRef = router_store_1.store.navigationRef.current;
     if (navigationRef == null) {
         throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");
     }
-    if (!this.linking) {
+    if (!router_store_1.store.linking) {
         throw new Error('Attempted to link to route when no routes are present');
     }
     if (href === '..' || href === '../') {
@@ -160,13 +161,13 @@ function linkTo(originalHref, options = {}) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
-    href = this.applyRedirects(href);
+    href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
+    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects);
     // If the href is undefined, it means that the redirect has already been handled the navigation
     if (!href) {
         return;
     }
-    const state = this.linking.getStateFromPath(href, this.linking.config);
+    const state = router_store_1.store.linking.getStateFromPath(href, router_store_1.store.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;

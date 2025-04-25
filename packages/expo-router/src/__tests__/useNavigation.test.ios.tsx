@@ -78,7 +78,7 @@ it('can resolve the root navigator via "/" when nested', () => {
   expect(navigation?.getId()).toBe('');
 });
 
-it.only('can resolve a parent navigator via relative paths', () => {
+it('can resolve a parent navigator via relative paths', () => {
   let navigation: Navigation;
 
   renderRouter({

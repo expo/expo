@@ -2,7 +2,14 @@ import { addGlobalDomEventListener } from 'expo/dom/global';
 import React from 'react';
 
 import type { RouterStore } from '../global-state/router-store';
-import type { LinkToOptions } from '../global-state/routing';
+import {
+  dismiss,
+  dismissAll,
+  goBack,
+  linkTo,
+  setParams,
+  type LinkToOptions,
+} from '../global-state/routing';
 
 const ROUTER_LINK_TYPE = '$$router_link';
 const ROUTER_DISMISS_ALL_TYPE = '$$router_dismissAll';
@@ -49,19 +56,19 @@ export function useDomComponentNavigation(store: RouterStore) {
     return addGlobalDomEventListener<any>(({ type, data }) => {
       switch (type) {
         case ROUTER_LINK_TYPE:
-          store.linkTo(data.href, data.options);
+          linkTo(data.href, data.options);
           break;
         case ROUTER_DISMISS_ALL_TYPE:
-          store.dismissAll();
+          dismissAll();
           break;
         case ROUTER_DISMISS_TYPE:
-          store.dismiss(data.count);
+          dismiss(data.count);
           break;
         case ROUTER_BACK_TYPE:
-          store.goBack();
+          goBack();
           break;
         case ROUTER_SET_PARAMS_TYPE:
-          store.setParams(data.params);
+          setParams(data.params);
           break;
       }
     });
