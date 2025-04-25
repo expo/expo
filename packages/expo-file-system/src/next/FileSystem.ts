@@ -122,7 +122,7 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   readableStream() {
-    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
   }
 
   writableStream() {
