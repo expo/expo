@@ -112,7 +112,7 @@ describe('Basic tests', () => {
     await device.terminateApp();
   });
 
-  xit('reloads', async () => {
+  it('reloads', async () => {
     Server.start(Update.serverPort, protocolVersion);
     await device.installApp();
     await device.launchApp({
