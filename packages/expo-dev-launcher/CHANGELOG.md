@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove usage of deprecated `SFAuthenticationSession` for user login.
+
 ## 5.1.5 — 2025-04-23
 
 ### 🐛 Bug fixes

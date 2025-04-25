@@ -1,19 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import SafariServices
-import React
+import AuthenticationServices
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 
 public class DevLauncherAuth: Module {
   private var redirectPromise: Promise?
-  private var authSession: SFAuthenticationSession?
+  private var authSession: ASWebAuthenticationSession?
+  private let presentationContext = DevLauncherAuthPresentationContext()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoDevLauncherAuth")
 
-    AsyncFunction("openAuthSessionAsync") { (authURL: URL, redirectURL: String, promise: Promise) in
+    AsyncFunction("openAuthSessionAsync") { (authURL: URL, _: String, promise: Promise) in
       if self.redirectPromise != nil {
         throw WebBrowserAlreadyPresentedException()
       }
@@ -33,21 +33,19 @@ public class DevLauncherAuth: Module {
         }
         self?.flowDidFinish()
       }
+      
+      // With ASWebAuthenticationSession, all that is required for the callbackURLScheme is the scheme defined in CFBundleURLSchemes.
+      // ://auth is not necessary.
+      let scheme = getAuthScheme()
 
-      self.authSession = SFAuthenticationSession(url: authURL, callbackURLScheme: redirectURL, completionHandler: completionHandler)
+      self.authSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: scheme, completionHandler: completionHandler)
+      self.authSession?.presentationContextProvider = presentationContext
+      self.authSession?.prefersEphemeralWebBrowserSession = true
       self.authSession?.start()
-    }
+    }.runOnQueue(.main)
 
     AsyncFunction("getAuthSchemeAsync") { () -> String in
-      if let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] {
-        for urlType in urlTypes {
-          if let schemes = urlType["CFBundleURLSchemes"] as? [String], !schemes.isEmpty {
-            return schemes[0]
-          }
-        }
-      }
-
-      return DEV_LAUNCHER_DEFAULT_SCHEME
+      getAuthScheme()
     }
 
     AsyncFunction("setSessionAsync") { (session: String?) in
@@ -58,8 +56,25 @@ public class DevLauncherAuth: Module {
       return UserDefaults.standard.string(forKey: "expo-session-secret")
     }
   }
+  
+  private func getAuthScheme() -> String {
+    guard let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] else {
+      return DEV_LAUNCHER_DEFAULT_SCHEME
+    }
+    
+    return urlTypes.compactMap { urlType in
+      (urlType["CFBundleURLSchemes"] as? [String])?.first
+    }.first ?? DEV_LAUNCHER_DEFAULT_SCHEME
+  }
 
   private func flowDidFinish() {
     self.redirectPromise = nil
+  }
+}
+
+private class DevLauncherAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
+  func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    let window = UIApplication.shared.windows.first { $0.isKeyWindow }
+    return window ?? ASPresentationAnchor()
   }
 }
