@@ -10,12 +10,13 @@ import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } 
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { INTERNAL_SLOT_NAME } from './constants';
+import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
-import { ExpoLinkingOptions, INTERNAL_SLOT_NAME } from './getLinkingConfig';
+import { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
-import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
@@ -127,7 +128,7 @@ function ContextNavigator({
 
   const store = useStore(context, linking, serverUrl);
 
-  useDomComponentNavigation(store);
+  useDomComponentNavigation();
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();

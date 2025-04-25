@@ -42,11 +42,11 @@ const react_1 = require("react");
 const getStateFromPath_forks_1 = require("./fork/getStateFromPath-forks");
 const matchers_1 = require("./matchers");
 function applyRedirects(url, redirects) {
-    if (typeof url !== 'string') {
+    if (typeof url !== 'string' || !redirects) {
         return url;
     }
     const nextUrl = (0, getStateFromPath_forks_1.cleanPath)(url);
-    const redirect = redirects?.find(([regex]) => regex.test(nextUrl));
+    const redirect = redirects.find(([regex]) => regex.test(nextUrl));
     if (!redirect) {
         return url;
     }

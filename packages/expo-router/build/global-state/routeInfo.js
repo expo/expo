@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultRouteInfo = void 0;
 exports.getRouteInfoFromState = getRouteInfoFromState;
+const constants_1 = require("../constants");
 const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
 exports.defaultRouteInfo = {
     unstable_globalHref: '',
@@ -17,8 +18,8 @@ function getRouteInfoFromState(state) {
     if (!state)
         return exports.defaultRouteInfo;
     let route = state.routes[0];
-    if (route.name !== '__root') {
-        throw new Error(`Expected the first route to be '__root', but got ${route.name}`);
+    if (route.name !== constants_1.INTERNAL_SLOT_NAME) {
+        throw new Error(`Expected the first route to be ${constants_1.INTERNAL_SLOT_NAME}, but got ${route.name}`);
     }
     state = route.state;
     const segments = [];

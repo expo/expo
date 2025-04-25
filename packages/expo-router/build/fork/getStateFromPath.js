@@ -41,7 +41,7 @@ const native_1 = require("@react-navigation/native");
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const expo = __importStar(require("./getStateFromPath-forks"));
-const getLinkingConfig_1 = require("../getLinkingConfig");
+const constants_1 = require("../constants");
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -385,7 +385,7 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 config.exact !== true
                     ? joinPaths(parentPattern || '', config.path || '')
                     : config.path || '';
-            if (screen !== getLinkingConfig_1.INTERNAL_SLOT_NAME) {
+            if (screen !== constants_1.INTERNAL_SLOT_NAME) {
                 configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
             }
         }

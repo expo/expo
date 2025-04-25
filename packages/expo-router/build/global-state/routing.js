@@ -49,11 +49,11 @@ exports.linkTo = linkTo;
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
+const router_store_1 = require("./router-store");
+const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
-const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
 const matchers_1 = require("../matchers");
-const router_store_1 = require("./router-store");
 const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
@@ -74,7 +74,7 @@ function push(url, options) {
     return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
 function dismiss(count = 1) {
-    if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
+    if ((0, emitDomEvent_1.emitDomDismiss)(count)) {
         return;
     }
     router_store_1.store.navigationRef?.dispatch({ type: 'POP', payload: { count } });
@@ -86,13 +86,13 @@ function replace(url, options) {
     return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
 function dismissAll() {
-    if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
+    if ((0, emitDomEvent_1.emitDomDismissAll)()) {
         return;
     }
     router_store_1.store.navigationRef?.dispatch({ type: 'POP_TO_TOP' });
 }
 function goBack() {
-    if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
+    if ((0, emitDomEvent_1.emitDomGoBack)()) {
         return;
     }
     assertIsReady();
@@ -129,7 +129,7 @@ function canDismiss() {
     return false;
 }
 function setParams(params = {}) {
-    if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
+    if ((0, emitDomEvent_1.emitDomSetParams)(params)) {
         return;
     }
     assertIsReady();
@@ -138,7 +138,7 @@ function setParams(params = {}) {
 function linkTo(originalHref, options = {}) {
     originalHref = typeof originalHref == 'string' ? originalHref : (0, href_1.resolveHref)(originalHref);
     let href = originalHref;
-    if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+    if ((0, emitDomEvent_1.emitDomLinkEvent)(href, options)) {
         return;
     }
     if ((0, url_1.shouldLinkExternally)(href)) {

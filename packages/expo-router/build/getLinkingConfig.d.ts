@@ -1,10 +1,9 @@
 import { LinkingOptions } from '@react-navigation/native';
 import { RouteNode } from './Route';
 import { UrlObject } from './global-state/routeInfo';
-import { StoreRedirects } from './global-state/router-store';
+import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
-export declare const INTERNAL_SLOT_NAME = "__root";
 export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
     screens: {
         __root: {
