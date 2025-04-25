@@ -168,6 +168,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     readonly availableVideoTracks: VideoTrack[];
     /**
      * Initializes a new video player instance with the given source.
+     *
+     * @param source The source of the video to be played.
+     * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
      * @hidden
      */
     constructor(source: VideoSource, useSynchronousReplace?: boolean);
@@ -182,7 +185,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     /**
      * Replaces the current source with a new one.
      *
-     * > On iOS this method loads the asset data synchronously on the UI thread and can block it for extended periods of time.
+     * > On iOS, this method loads the asset data synchronously on the UI thread and can block it for extended periods of time.
      * > Use `replaceAsync` to load the asset asynchronously and avoid UI lags.
      *
      * > This method will be deprecated in the future.
@@ -191,7 +194,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     /**
      * Replaces the current source with a new one, while offloading loading of the asset to a different thread.
      *
-     * > On Android and Web this method is equivalent to `replace`.
+     * > On Android and Web, this method is equivalent to `replace`.
      */
     replaceAsync(source: VideoSource): Promise<void>;
     /**
