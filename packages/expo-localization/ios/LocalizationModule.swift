@@ -6,9 +6,11 @@ import ExpoModulesCore
 let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
-let OBSERVED_EVENTS: Set<NSNotification.Name> = [
+let OBSERVED_EVENTS: Set<Notification.Name> = [
+  // swiftlint:disable legacy_objc_type
   UIApplication.significantTimeChangeNotification,
   NSLocale.currentLocaleDidChangeNotification
+  // swiftlint:enable legacy_objc_type
 ]
 
 public class LocalizationModule: Module {
