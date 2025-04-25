@@ -63,10 +63,16 @@ const getLinkingConfig_1 = require("../getLinkingConfig");
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-function getStateFromPath(
+function getStateFromPath(path, options, 
+// START FORK
+segments = []
 // END FORK
-path, options) {
-    const { initialRoutes, configs, configWithRegexes } = getConfigResources(options, this?.routeInfo?.segments);
+) {
+    const { initialRoutes, configs, configWithRegexes } = getConfigResources(options, 
+    // START FORK
+    segments
+    // END FORK
+    );
     const screens = options?.screens;
     // START FORK
     const expoPath = expo.getUrlWithReactNavigationConcessions(path);

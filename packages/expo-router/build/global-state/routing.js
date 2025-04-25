@@ -135,6 +135,7 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 function linkTo(originalHref, options = {}) {
+    originalHref = typeof originalHref == 'string' ? originalHref : (0, href_1.resolveHref)(originalHref);
     let href = originalHref;
     if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
         return;

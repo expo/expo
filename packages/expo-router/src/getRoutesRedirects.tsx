@@ -1,7 +1,36 @@
+import * as Linking from 'expo-linking';
 import { createElement } from 'react';
 
+import { cleanPath } from './fork/getStateFromPath-forks';
 import { RedirectConfig } from './getRoutesCore';
+import { StoreRedirects } from './global-state/router-store';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+
+export function applyRedirects(url: string, redirects: StoreRedirects[] | undefined): string {
+  if (typeof url !== 'string') {
+    return url;
+  }
+
+  const nextUrl = cleanPath(url);
+  const redirect = redirects?.find(([regex]) => regex.test(nextUrl));
+
+  if (!redirect) {
+    return url;
+  }
+
+  // If the redirect is external, open the URL
+  if (redirect[2]) {
+    let href = redirect[1].destination;
+    if (href.startsWith('//') && process.env.EXPO_OS !== 'web') {
+      href = `https:${href}`;
+    }
+
+    Linking.openURL(href);
+    return href;
+  }
+
+  return applyRedirects(convertRedirect(url, redirect[1]), redirects);
+}
 
 export function getRedirectModule(route: string) {
   return {

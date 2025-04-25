@@ -1,15 +1,13 @@
 import './expect';
 import './mocks';
 
-import { NavigationState, PartialState } from '@react-navigation/native';
 import { act, render, RenderResult, screen } from '@testing-library/react-native';
 import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
-import { getPathFromState } from '../fork/getPathFromState';
 import { ExpoLinkingOptions } from '../getLinkingConfig';
-import { store } from '../global-state/router-store';
+import { ReactNavigationState, store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
 // re-export everything
@@ -29,7 +27,7 @@ type Result = ReturnType<typeof render> & {
   getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
-  getRouterState(): NavigationState<any> | PartialState<any>;
+  getRouterState(): ReactNavigationState | undefined;
 };
 
 declare global {
@@ -39,7 +37,7 @@ declare global {
       toHavePathnameWithParams(pathname: string): R;
       toHaveSegments(segments: string[]): R;
       toHaveSearchParams(params: Record<string, string | string[]>): R;
-      toHaveRouterState(state: Record<string, unknown>): R;
+      getRouterState(): ReactNavigationState | undefined;
     }
   }
 }
@@ -80,10 +78,10 @@ export function renderRouter(
       return store.routeInfoSnapshot().params;
     },
     getPathnameWithParams(this: RenderResult): string {
-      return getPathFromState(store.rootState!, store.linking!.config);
+      return store.getRouteInfo().pathnameWithParams;
     },
     getRouterState(this: RenderResult) {
-      return store.rootStateSnapshot();
+      return store.state;
     },
   });
 }

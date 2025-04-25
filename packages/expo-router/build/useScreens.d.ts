@@ -1,4 +1,4 @@
-import type { EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners } from '@react-navigation/native';
+import { type EventMapBase, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';

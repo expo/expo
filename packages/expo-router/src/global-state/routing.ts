@@ -3,7 +3,6 @@ import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import {
@@ -16,6 +15,7 @@ import {
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
+import { RouterStore } from './router-store';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -146,7 +146,8 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 };
 
-export function linkTo(this: RouterStore, originalHref: string, options: LinkToOptions = {}) {
+export function linkTo(this: RouterStore, originalHref: Href, options: LinkToOptions = {}) {
+  originalHref = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
   let href: string | undefined = originalHref;
 
   if (emitDomLinkEvent(href, options)) {
