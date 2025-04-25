@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Lower minimum supported version to iOS 17.
+- [iOS] Lower minimum supported version to iOS 17. ([#36400](https://github.com/expo/expo/pull/36400) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.9.4 — 2025-04-21
 
