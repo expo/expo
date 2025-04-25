@@ -27,22 +27,11 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 
 public class NotificationSerializer {
-  public static Bundle toBundle(NotificationResponse response) {
-    Bundle serializedResponse = new Bundle();
-    serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
-    serializedResponse.putBundle("notification", toBundle(response.getNotification()));
-    if (response instanceof TextInputNotificationResponse) {
-      serializedResponse.putString("userText", ((TextInputNotificationResponse) response).getUserText());
-    }
-    return serializedResponse;
-  }
 
   public static Bundle toBundle(Notification notification) {
     Bundle serializedNotification = new Bundle();
