@@ -19,6 +19,9 @@ const pl = {
   morning: 'rano',
 };
 
+/**
+ * @deprecated
+ */
 const fakeLocalization: Partial<typeof ExpoLocalization> = {
   locale: 'en-US',
   locales: ['en-US', 'fr'],
@@ -31,6 +34,34 @@ const fakeLocalization: Partial<typeof ExpoLocalization> = {
   decimalSeparator: '.',
   digitGroupingSeparator: ',',
 };
+
+const fakeLocaleNewApi: Localization.Locale[] = [
+  {
+    currencyCode: 'USD',
+    decimalSeparator: '.',
+    digitGroupingSeparator: ',',
+    languageCode: 'en',
+    languageRegionCode: 'US',
+    languageScriptCode: 'Latn',
+    languageTag: 'en-US',
+    regionCode: 'US',
+    currencySymbol: '$',
+    measurementSystem: 'metric',
+    textDirection: 'ltr',
+    temperatureUnit: 'celsius',
+    languageCurrencyCode: 'USD',
+    languageCurrencySymbol: '$',
+  },
+];
+
+const fakeCalendarNewApi: Localization.Calendar[] = [
+  {
+    calendar: Localization.CalendarIdentifier.GREGORIAN,
+    uses24hourClock: false,
+    firstWeekday: Localization.Weekday.SUNDAY,
+    timeZone: 'America/Los_Angeles',
+  },
+];
 
 beforeEach(() => {
   for (const property of Object.keys(fakeLocalization)) {
@@ -50,6 +81,16 @@ beforeEach(() => {
     'getLocalizationAsync',
     jest.fn(async () => fakeLocalization)
   );
+  mockProperty(
+    Localization,
+    'getLocales',
+    jest.fn(() => fakeLocaleNewApi)
+  );
+  mockProperty(
+    Localization,
+    'getCalendars',
+    jest.fn(() => fakeCalendarNewApi)
+  );
 });
 
 afterEach(() => {
@@ -67,7 +108,7 @@ function validateStringArray(result: unknown): asserts result is string[] {
 }
 
 describe(`Localization methods`, () => {
-  it(`expect async to return locale`, async () => {
+  it(`expect deprecated getLocalizationAsync to return locale`, async () => {
     const {
       currency,
       decimalSeparator,
@@ -93,9 +134,45 @@ describe(`Localization methods`, () => {
     validateString(digitGroupingSeparator);
     validateString(currency);
   });
+
+  it('expect getLocales to return an array of locales with valid properties', () => {
+    const locales = Localization.getLocales();
+    expect(Array.isArray(locales)).toBe(true);
+    expect(locales.length).toBeGreaterThan(0);
+
+    locales.forEach((locale) => {
+      expect(locale).toHaveProperty('currencyCode');
+      expect(locale).toHaveProperty('decimalSeparator');
+      expect(locale).toHaveProperty('digitGroupingSeparator');
+      expect(locale).toHaveProperty('languageCode');
+      expect(locale).toHaveProperty('languageRegionCode');
+      expect(locale).toHaveProperty('languageScriptCode');
+      expect(locale).toHaveProperty('languageTag');
+      expect(locale).toHaveProperty('regionCode');
+      expect(locale).toHaveProperty('currencySymbol');
+      expect(locale).toHaveProperty('measurementSystem');
+      expect(locale).toHaveProperty('textDirection');
+      expect(locale).toHaveProperty('temperatureUnit');
+      expect(locale).toHaveProperty('languageCurrencyCode');
+      expect(locale).toHaveProperty('languageCurrencySymbol');
+    });
+  });
+
+  it('expect getCalendars to return an array of calendars with valid properties', () => {
+    const calendars = Localization.getCalendars();
+    expect(Array.isArray(calendars)).toBe(true);
+    expect(calendars.length).toBeGreaterThan(0);
+
+    calendars.forEach((calendar) => {
+      expect(calendar).toHaveProperty('calendar');
+      expect(calendar).toHaveProperty('timeZone');
+      expect(calendar).toHaveProperty('uses24hourClock');
+      expect(calendar).toHaveProperty('firstWeekday');
+    });
+  });
 });
 
-describe(`Localization defines constants`, () => {
+describe(`Localization defines deprecated constants`, () => {
   it('Gets the region', async () => {
     validateString(Localization.region);
   });
@@ -138,7 +215,25 @@ describe(`Localization defines constants`, () => {
   });
 });
 
-describe(`Localization works with i18n-js`, () => {
+describe('New Localization API works with i18n-js', () => {
+  it('expect language to match strings (en, pl, fr supported)', async () => {
+    const [locale] = Localization.getLocales();
+    i18n.locale = locale.languageTag;
+    i18n.translations = { en, fr, pl };
+    i18n.missingTranslationPrefix = 'EE: ';
+    i18n.fallbacks = true;
+    const target = 'good';
+
+    i18n.locale = locale.languageTag;
+
+    const expoPredictedLangTag = locale.languageTag.split('-')[0];
+    const translation = i18n.translations[expoPredictedLangTag];
+
+    expect((translation as any)[target]).toBe(i18n.t(target));
+  });
+});
+
+describe(`Deprecated localization API works with i18n-js`, () => {
   i18n.locale = Localization.locale;
   i18n.translations = { en, fr, pl };
   i18n.missingTranslationPrefix = 'EE: ';
