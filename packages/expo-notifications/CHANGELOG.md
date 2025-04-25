@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.31.0 — 2025-04-25
+
+### 🛠 Breaking changes
+
+- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

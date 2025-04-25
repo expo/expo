@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 53.0.0-preview.12 — 2025-04-25
+
+### 💡 Others
+
 - [iOS] Remove `moduleName` and `initialProps` from the `AppDelegate`. ([#36338](https://github.com/expo/expo/pull/36338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 53.0.0-preview.11 — 2025-04-23
