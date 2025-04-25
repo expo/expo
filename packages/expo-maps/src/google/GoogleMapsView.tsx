@@ -62,7 +62,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
-      color: polyline.color ? processColor(polyline.color) : undefined,
+      color: processColor(polyline.color) ?? undefined,
     }));
 
     const parsedMarkers = markers?.map((marker) => ({

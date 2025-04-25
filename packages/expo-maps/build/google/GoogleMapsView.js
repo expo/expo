@@ -33,7 +33,7 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const parsedPolylines = polylines?.map((polyline) => ({
         ...polyline,
-        color: polyline.color ? processColor(polyline.color) : undefined,
+        color: processColor(polyline.color) ?? undefined,
     }));
     const parsedMarkers = markers?.map((marker) => ({
         ...marker,

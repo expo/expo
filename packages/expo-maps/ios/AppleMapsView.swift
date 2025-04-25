@@ -105,7 +105,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
 
         ForEach(props.polylines) { polyline in
           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
-            .stroke(polyline.strokeColor, lineWidth: polyline.strokeWidth)
+            .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
@@ -143,8 +143,8 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
             }
             props.onPolylineClick([
               "id": hit.id,
-              "strokeColor": hit.strokeColor,
-              "strokeWidth": hit.strokeWidth,
+              "color": hit.color,
+              "width": hit.width,
               "contourStyle": hit.contourStyle,
               "coordinates": coords
             ])

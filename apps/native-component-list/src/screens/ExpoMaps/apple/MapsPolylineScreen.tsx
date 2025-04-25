@@ -21,8 +21,8 @@ export default function MapsCameraControlsScreen() {
         }}
         polylines={[
           {
-            strokeColor: '#ff0000',
-            strokeWidth: 20,
+            color: '#ff0000',
+            width: 20,
             coordinates: polylineCoordinates,
           },
         ]}

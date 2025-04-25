@@ -42,7 +42,7 @@ export type GoogleMapsPolyline = {
     /**
      * The color of the polyline.
      */
-    color?: ProcessedColorValue | string | null;
+    color?: ProcessedColorValue | string;
     /**
      * The width of the polyline.
      */

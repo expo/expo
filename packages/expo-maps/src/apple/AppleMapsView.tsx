@@ -43,7 +43,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
-      strokeColor: polyline.strokeColor ? processColor(polyline.strokeColor) : undefined,
+      color: processColor(polyline.color) ?? undefined,
     }));
 
     const parsedAnnotations = annotations?.map((annotation) => ({
