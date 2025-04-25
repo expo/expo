@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `web-streams-polyfill` in favor of `expo` support.
+
 ## 18.1.6 — 2025-04-25
 
 _This version does not introduce any user-facing changes._

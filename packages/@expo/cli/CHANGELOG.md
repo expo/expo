@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Inject web stream support when bundling for native platforms.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

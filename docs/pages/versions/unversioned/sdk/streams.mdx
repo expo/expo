@@ -1,0 +1,32 @@
+---
+title: Streams
+description: Standard Stream API available on all Expo-supported platforms.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
+packageName: 'expo'
+platforms: ['android', 'ios', 'web', 'tvos']
+---
+
+The standard `ReadableStream` API is available on all Expo-supported platforms.
+
+## Installation
+
+This API is part of the `expo` package when using Metro. Global support for `ReadableStream`, `WritableStream` and `TransformStream` are available without import on native to match the behavior of web and server environments. Refer to the [browser and server runtime support](https://caniuse.com/streams) for web and Node.js.
+
+## Usage
+
+```js
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue('Hello');
+    controller.enqueue('World');
+    controller.close();
+  },
+});
+const reader = stream.getReader();
+reader.read().then(({ done, value }) => {
+  console.log(value); // Hello
+});
+reader.read().then(({ done, value }) => {
+  console.log(value); // World
+});
+```

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add web stream support globally.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

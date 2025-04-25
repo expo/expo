@@ -96,7 +96,13 @@ function withWebPolyfills(
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId, virtualEnvVarId];
+    return [
+      ...polyfills,
+      virtualModuleId,
+      virtualEnvVarId,
+      // Removed on server platforms during the transform.
+      require.resolve('expo/virtual/streams.js'),
+    ];
   };
 
   return {
