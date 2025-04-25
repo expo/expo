@@ -84,6 +84,17 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
+  const isReactCanaryEnabled =
+    (exp.experiments?.reactServerComponentRoutes ||
+      serverActionsEnabled ||
+      exp.experiments?.reactCanary) ??
+    false;
+
+  if (isReactCanaryEnabled) {
+    // The fast resolver is required for React canary to work as it can switch the node_modules location for react imports.
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -138,12 +149,9 @@ export async function loadMetroConfigAsync(
   }
 
   if (serverActionsEnabled) {
-    Log.warn(`Experimental React Server Functions are enabled.`);
-    if (!exp.experiments?.reactServerComponentRoutes) {
-      Log.warn(
-        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
-      );
-    }
+    Log.warn(
+      `React Server Functions (beta) are enabled. Route rendering mode: ${exp.experiments?.reactServerComponentRoutes ? 'server' : 'client'}`
+    );
   }
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
@@ -153,11 +161,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponentRoutes ||
-        serverActionsEnabled ||
-        exp.experiments?.reactCanary) ??
-      false,
+    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
@@ -189,17 +193,17 @@ export async function instantiateMetroAsync(
 }> {
   const projectRoot = metroBundler.projectRoot;
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    {
-      exp,
-      isExporting,
-      getMetroBundler() {
-        return metro.getBundler().getBundler();
-      },
-    }
-  );
+  const {
+    config: metroConfig,
+    setEventReporter,
+    reporter,
+  } = await loadMetroConfigAsync(projectRoot, options, {
+    exp,
+    isExporting,
+    getMetroBundler() {
+      return metro.getBundler().getBundler();
+    },
+  });
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
@@ -210,7 +214,10 @@ export async function instantiateMetroAsync(
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
+      metroBundler,
+      reporter
+    );
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());

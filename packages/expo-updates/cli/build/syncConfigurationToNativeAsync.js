@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.syncConfigurationToNativeAsync = void 0;
+exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
@@ -26,19 +26,19 @@ async function syncConfigurationToNativeAsync(options) {
             break;
     }
 }
-exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
 async function syncConfigurationToNativeAndroidAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: false,
+        isPublicConfig: false, // This must be false or it will drop codesigning config
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     // sync AndroidManifest.xml
     const androidManifestPath = await config_plugins_1.AndroidConfig.Paths.getAndroidManifestAsync(options.projectRoot);
     if (!androidManifestPath) {
         throw new Error(`Could not find AndroidManifest.xml in project directory: "${options.projectRoot}"`);
     }
     const androidManifest = await config_plugins_1.AndroidConfig.Manifest.readAndroidManifestAsync(androidManifestPath);
-    const updatedAndroidManifest = await config_plugins_1.AndroidConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, androidManifest);
+    const updatedAndroidManifest = await config_plugins_1.AndroidConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, androidManifest, packageVersion);
     await config_plugins_1.AndroidConfig.Manifest.writeAndroidManifestAsync(androidManifestPath, updatedAndroidManifest);
     // sync strings.xml
     const stringsJSONPath = await config_plugins_1.AndroidConfig.Strings.getProjectStringsXMLPathAsync(options.projectRoot);
@@ -50,11 +50,12 @@ async function syncConfigurationToNativeAndroidAsync(options) {
 }
 async function syncConfigurationToNativeIosAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: false,
+        isPublicConfig: false, // This must be false or it will drop codesigning config
         skipSDKVersionRequirement: true,
     });
+    const packageVersion = require('../../package.json').version;
     const expoPlist = await readExpoPlistAsync(options.projectRoot);
-    const updatedExpoPlist = await config_plugins_1.IOSConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, expoPlist);
+    const updatedExpoPlist = await config_plugins_1.IOSConfig.Updates.setUpdatesConfigAsync(options.projectRoot, exp, expoPlist, packageVersion);
     await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
 }
 async function readExpoPlistAsync(projectDir) {

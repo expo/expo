@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { AlertCircleSolidIcon } from '@expo/styleguide-icons/solid/AlertCircleSolidIcon';
 import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
 import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
@@ -11,7 +12,7 @@ import {
   type ReactNode,
 } from 'react';
 
-type CalloutType = 'default' | 'warning' | 'error' | 'info' | 'info-light';
+type CalloutType = 'default' | 'important' | 'warning' | 'error' | 'info' | 'info-light';
 
 type Props = PropsWithChildren<{
   type?: CalloutType;
@@ -40,7 +41,9 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
   const extractedType = extractType(contentChildren);
-  const finalType = ['warning', 'error', 'info'].includes(extractedType) ? extractedType : type;
+  const finalType = ['warning', 'error', 'info', 'important'].includes(extractedType)
+    ? extractedType
+    : type;
   const Icon = icon ?? getCalloutIcon(finalType);
 
   return (
@@ -89,6 +92,13 @@ function getCalloutColor(type: CalloutType) {
         `selection:bg-palette-yellow5 dark:selection:bg-palette-yellow6`,
         `dark:[&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5`
       );
+    case 'important':
+      return mergeClasses(
+        'border-palette-purple7 bg-palette-purple3',
+        `[&_code]:border-palette-purple5 [&_code]:bg-palette-purple4`,
+        `selection:bg-palette-purple5 dark:selection:bg-palette-purple6`,
+        `dark:[&_code]:border-palette-purple6 dark:[&_code]:bg-palette-purple5`
+      );
     case 'error':
       return mergeClasses(
         'border-danger bg-danger',
@@ -99,7 +109,7 @@ function getCalloutColor(type: CalloutType) {
       return mergeClasses(
         'border-info bg-info',
         `[&_code]:border-palette-blue5 [&_code]:bg-palette-blue4`,
-        `dark:selection:bg-palette-yellow6`
+        `dark:selection:bg-palette-blue6`
       );
     case 'info-light':
       return mergeClasses('bg-default');
@@ -112,6 +122,8 @@ function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement
   switch (type) {
     case 'warning':
       return AlertTriangleSolidIcon;
+    case 'important':
+      return AlertCircleSolidIcon;
     case 'error':
       return XSquareSolidIcon;
     default:
@@ -123,6 +135,8 @@ function getCalloutIconColor(type: CalloutType) {
   switch (type) {
     case 'warning':
       return 'text-warning';
+    case 'important':
+      return 'text-palette-purple11';
     case 'error':
       return 'text-danger';
     case 'info':

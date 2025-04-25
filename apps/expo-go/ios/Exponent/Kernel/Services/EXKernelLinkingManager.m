@@ -4,6 +4,7 @@
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
+#import "EXUtil.h"
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
 
@@ -98,7 +99,7 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   if (components) {
     return ([components.scheme isEqualToString:@"exp"] ||
             [components.scheme isEqualToString:@"exps"] ||
-            [[self class] _isExpoHostedUrlComponents:components]
+            [EXUtil isExpoHostedUrlComponents:components]
             );
   }
   return NO;
@@ -127,7 +128,7 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   // since this is used in a few places we need to keep the legacy option around for compat
   if (useLegacy) {
     [path appendString:kEXExpoLegacyDeepLinkSeparator];
-  } else if ([[self class] _isExpoHostedUrlComponents:components]) {
+  } else if ([EXUtil isExpoHostedUrlComponents:components]) {
     [path appendString:kEXExpoDeepLinkSeparator];
   }
   components.path = path;
@@ -183,25 +184,6 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   }
 
   return [components URL];
-}
-
-+ (BOOL)isExpoHostedUrl: (NSURL *)url
-{
-  return [[self class] _isExpoHostedUrlComponents:[NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES]];
-}
-
-+ (BOOL)_isExpoHostedUrlComponents: (NSURLComponents *)components
-{
-  if (components.host) {
-    return [components.host isEqualToString:@"exp.host"] ||
-      [components.host isEqualToString:@"expo.io"] ||
-      [components.host isEqualToString:@"exp.direct"] ||
-      [components.host isEqualToString:@"expo.test"] ||
-      [components.host hasSuffix:@".exp.host"] ||
-      [components.host hasSuffix:@".exp.direct"] ||
-      [components.host hasSuffix:@".expo.test"];
-  }
-  return NO;
 }
 
 + (BOOL)_isUrl:(NSURL *)urlToRoute deepLinkIntoAppWithManifestUrl:(NSURL *)manifestUrl

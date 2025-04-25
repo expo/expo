@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.regenerateDeclarations = exports.getWatchHandler = exports.version = void 0;
+exports.regenerateDeclarations = exports.version = void 0;
+exports.getWatchHandler = getWatchHandler;
 const _ctx_shared_1 = require("expo-router/_ctx-shared");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -52,11 +53,12 @@ function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.r
             shouldRegenerate = routeFiles.has(relativePath);
         }
         if (shouldRegenerate) {
-            regenerateFn(outputDir, ctx);
+            // TODO(@kitten): This was altered from `regenerateFn(outputDir, ctx)` which, as per the types, is incorrect
+            // It's unclear whether fixing this will have other unintended consequences!
+            regenerateFn(outputDir, {}, ctx);
         }
     };
 }
-exports.getWatchHandler = getWatchHandler;
 /**
  * Regenerate the declaration file.
  *

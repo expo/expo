@@ -17,5 +17,7 @@ export * as SplashScreen from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
+export type { RedirectConfig } from './getRoutesCore';
+export type { SingularOptions } from './useScreens';
 export type * from './types';
 //# sourceMappingURL=exports.d.ts.map

@@ -1,4 +1,31 @@
-import { createGlobFilter } from '../createFileTransform';
+import { createGlobFilter, modifyFileDuringPipe } from '../createFileTransform';
+
+describe(modifyFileDuringPipe, () => {
+  it(`renames _vscode to .vscode`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: 'package/_vscode/settings.json',
+        type: 'File',
+      }).path
+    ).toEqual('package/.vscode/settings.json');
+  });
+  it(`does not rename extraneous _ segments`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: '_package/_vscode/settings.json',
+        type: 'File',
+      }).path
+    ).toEqual('_package/.vscode/settings.json');
+  });
+  it(`does not rename multiple instances of _vscode`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: '_package/_vscode/foo/_vscode/settings.json',
+        type: 'File',
+      }).path
+    ).toEqual('_package/.vscode/foo/_vscode/settings.json');
+  });
+});
 
 describe(createGlobFilter, () => {
   it('returns true for files within glob pattern', () => {

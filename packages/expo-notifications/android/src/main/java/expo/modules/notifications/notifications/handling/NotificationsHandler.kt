@@ -6,27 +6,11 @@ import expo.modules.core.ModuleRegistry
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import expo.modules.notifications.NotificationWasAlreadyHandledException
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationBehavior
-
-class NotificationBehaviourRecord : Record {
-  @Field
-  val shouldShowAlert: Boolean = false
-
-  @Field
-  val shouldPlaySound: Boolean = false
-
-  @Field
-  val shouldSetBadge: Boolean = false
-
-  @Field
-  val priority: String? = null
-}
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 
 /**
  * [NotificationListener] responsible for managing app's reaction to incoming
@@ -86,7 +70,7 @@ open class NotificationsHandler : Module(), NotificationListener {
   }
 
   /**
-   * Called by the app with [NotificationBehaviourRecord] representing requested behavior
+   * Called by the app with [NotificationBehaviorRecord] representing requested behavior
    * that should be applied to the notification.
    *
    * @param identifier Identifier of the task which asked for behavior.
@@ -94,13 +78,13 @@ open class NotificationsHandler : Module(), NotificationListener {
    * @param promise    Promise to resolve once the notification is successfully presented
    * or fails to be presented.
    */
-  private fun handleNotificationAsync(identifier: String, behavior: NotificationBehaviourRecord, promise: Promise) {
+  private fun handleNotificationAsync(identifier: String, behavior: NotificationBehaviorRecord, promise: Promise) {
     val task = tasksMap[identifier]
       ?: throw NotificationWasAlreadyHandledException(identifier)
 
     with(behavior) {
       task.processNotificationWithBehavior(
-        NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priority),
+        behavior,
         promise
       )
     }

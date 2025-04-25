@@ -3,6 +3,7 @@ package expo.modules.updates.errorrecovery
 import android.os.Handler
 import android.os.HandlerThread
 import com.facebook.react.bridge.DefaultJSExceptionHandler
+import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
@@ -114,11 +115,8 @@ class ErrorRecovery(
       return
     }
 
-    val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
-      override fun handleException(e: Exception) {
-        this@ErrorRecovery.handleException(e)
-      }
-    }
+    val defaultJSExceptionHandler = JSExceptionHandler { e -> this@ErrorRecovery.handleException(e) }
+
     val devSupportManagerClass = devSupportManager.javaClass
     previousExceptionHandler = devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
       field.isAccessible = true

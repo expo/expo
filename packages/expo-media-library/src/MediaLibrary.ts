@@ -57,6 +57,8 @@ export type SortByKey =
   | 'duration';
 export type SortByValue = [SortByKey, boolean] | SortByKey;
 
+type InternalSortByValue = `${SortByKey} ${'ASC' | 'DESC'}`;
+
 export type MediaTypeObject = {
   audio: 'audio';
   photo: 'photo';
@@ -351,39 +353,39 @@ export {
   EventSubscription as Subscription,
 };
 
-function arrayize(item: any): any[] {
+function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {
     return item;
   }
   return item ? [item] : [];
 }
 
-function getId(ref: any): string | undefined {
+function getId(ref: string | undefined | { id?: string }): string | undefined {
   if (typeof ref === 'string') {
     return ref;
   }
   return ref ? ref.id : undefined;
 }
 
-function checkAssetIds(assetIds: any): void {
+function checkAssetIds(assetIds: unknown[]): asserts assetIds is string[] {
   if (assetIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Asset ID must be a string!');
   }
 }
 
-function checkAlbumIds(albumIds: any): void {
+function checkAlbumIds(albumIds: unknown[]): asserts albumIds is string[] {
   if (albumIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Album ID must be a string!');
   }
 }
 
-function checkMediaType(mediaType: any): void {
-  if (Object.values(MediaType).indexOf(mediaType) === -1) {
+function checkMediaType(mediaType: unknown): asserts mediaType is keyof MediaTypeObject {
+  if (Object.values(MediaType).indexOf(mediaType as any) === -1) {
     throw new Error(`Invalid mediaType: ${mediaType}`);
   }
 }
 
-function checkSortBy(sortBy: any): void {
+function checkSortBy(sortBy: unknown): asserts sortBy is SortByValue {
   if (Array.isArray(sortBy)) {
     checkSortByKey(sortBy[0]);
 
@@ -401,7 +403,8 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
-function sortByOptionToString(sortBy: any) {
+function sortByOptionToString(sortBy: SortByValue | undefined): InternalSortByValue {
+  checkSortBy(sortBy);
   if (Array.isArray(sortBy)) {
     return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
   }
@@ -542,17 +545,22 @@ export async function presentPermissionsPickerAsync(
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export async function createAssetAsync(localUri: string): Promise<Asset> {
+export async function createAssetAsync(localUri: string, album?: AlbumRef): Promise<Asset> {
   if (!MediaLibrary.createAssetAsync) {
     throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
   }
 
+  const albumId = getId(album);
+
   if (!localUri || typeof localUri !== 'string') {
     throw new Error('Invalid argument "localUri". It must be a string!');
   }
-  const asset = await MediaLibrary.createAssetAsync(localUri);
+  const asset = await MediaLibrary.createAssetAsync(localUri, albumId);
 
   if (Array.isArray(asset)) {
     // Android returns an array with asset, we need to pick the first item
@@ -726,16 +734,20 @@ export async function getAlbumAsync(title: string): Promise<Album> {
  * given asset from the current album to the new one, however it's also possible to move it by
  * passing `false` as `copyAsset` argument.
  * In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
+ * > On Android, it's not possible to create an empty album. You must provide an existing asset to copy or move into the album or an uri of a local file, which will be used to create an initial asset for the album.
  * @param albumName Name of the album to create.
- * @param asset An [Asset](#asset) or its ID (required on Android).
- * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it.
+ * @param asset An [Asset](#asset) or its ID. On Android you either need to provide an asset or a localUri.
+ * @param initialAssetLocalUri A URI to the local media file, which will be used to create the initial asset inside the album. It must contain an extension. On Android it
+ * must be a local path, so it must start with `file:///`. If the `asset` was provided, this parameter will be ignored.
+ * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it. This parameter is ignored if `asset` was not provided.
  * Defaults to `true`.
  * @return Newly created [`Album`](#album).
  */
 export async function createAlbumAsync(
   albumName: string,
   asset?: AssetRef,
-  copyAsset: boolean = true
+  copyAsset: boolean = true,
+  initialAssetLocalUri?: string
 ): Promise<Album> {
   if (!MediaLibrary.createAlbumAsync) {
     throw new UnavailabilityError('MediaLibrary', 'createAlbumAsync');
@@ -743,9 +755,15 @@ export async function createAlbumAsync(
 
   const assetId = getId(asset);
 
-  if (Platform.OS === 'android' && (typeof assetId !== 'string' || assetId.length === 0)) {
+  if (
+    Platform.OS === 'android' &&
+    (typeof assetId !== 'string' || assetId.length === 0) &&
+    !initialAssetLocalUri
+  ) {
     // it's not possible to create empty album on Android, so initial asset must be provided
-    throw new Error('MediaLibrary.createAlbumAsync must be called with an asset on Android.');
+    throw new Error(
+      'MediaLibrary.createAlbumAsync must be called with an asset or a localUri on Android.'
+    );
   }
   if (!albumName || typeof albumName !== 'string') {
     throw new Error('Invalid argument "albumName". It must be a string!');
@@ -755,9 +773,9 @@ export async function createAlbumAsync(
   }
 
   if (Platform.OS === 'ios') {
-    return await MediaLibrary.createAlbumAsync(albumName, assetId);
+    return await MediaLibrary.createAlbumAsync(albumName, assetId, initialAssetLocalUri);
   }
-  return await MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
+  return await MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset, initialAssetLocalUri);
 }
 
 // @needsAudit
@@ -820,20 +838,19 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   if (album != null && typeof options.album !== 'string') {
     throw new Error('Option "album" must be a string!');
   }
-
   if (after != null && Platform.OS === 'android' && isNaN(parseInt(getId(after) as string, 10))) {
     throw new Error('Option "after" must be a valid ID!');
   }
-
   if (first != null && first < 0) {
     throw new Error('Option "first" must be a positive integer!');
   }
 
-  options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
-  options.sortBy = options.sortBy.map(sortByOptionToString);
-
-  return await MediaLibrary.getAssetsAsync(options);
+  // TODO(@kitten): Add expected native types for `MediaLibrary`
+  return await MediaLibrary.getAssetsAsync({
+    ...options,
+    sortBy: options.sortBy.map(sortByOptionToString),
+  });
 }
 
 // @needsAudit

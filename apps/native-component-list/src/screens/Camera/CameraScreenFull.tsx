@@ -101,6 +101,7 @@ function Gestures({ children }: { children: React.ReactNode }) {
     </GestureDetector>
   );
 }
+
 export default function CameraScreen() {
   const camera = useRef<CameraView>(null);
   const [state, setState] = useState<State>({
@@ -277,7 +278,7 @@ export default function CameraScreen() {
     } else {
       await FileSystem.moveAsync({
         from: photo.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${photo.format}`,
       });
     }
     setState((state) => ({ ...state, newPhotos: true }));
@@ -293,7 +294,7 @@ export default function CameraScreen() {
   };
 
   const renderGallery = () => {
-    return <GalleryScreen onPress={toggleView} />;
+    return <GalleryScreen onPress={toggleView} photos={photos} />;
   };
 
   const renderNoPermissions = () => (

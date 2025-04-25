@@ -8,7 +8,7 @@
 import { DeviceEventEmitter } from 'react-native-web';
 
 // Ensure events are sent so custom Fast Refresh views are shown.
-function showMessage(message: string, type: 'load' | 'refresh') {
+function showMessage(message: string, _type: 'load' | 'refresh') {
   DeviceEventEmitter.emit('devLoadingView:showMessage', {
     message,
   });

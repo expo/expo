@@ -2,11 +2,72 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 53.0.0-preview.11 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0-preview.10 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.9 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.8 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.7 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.6 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.5 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.4 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.3 — 2025-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.1 — 2025-04-08
+
+### 💡 Others
+
+- Added `globalThis.__ExpoImportMetaRegistry`. ([#34755](https://github.com/expo/expo/pull/34755) by [@kudo](https://github.com/kudo))
+- Add `react-native-edge-to-edge` as a dependency. ([#35812](https://github.com/expo/expo/pull/35812) by [@behenate](https://github.com/behenate))
+
+## 53.0.0-preview.0 — 2025-04-04
+
 - Remove `transformOrigin` type override. ([#34183](https://github.com/expo/expo/pull/34183) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🛠 Breaking changes
 
+- Change expo/types export. ([#35484](https://github.com/expo/expo/pull/35484) by [@aleqsio](https://github.com/aleqsio))
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+- Remove `DevToolsPluginClient`'s `protected eventEmitter` property and drop `fbemitter`. ([#35376](https://github.com/expo/expo/pull/35376) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -14,8 +75,6 @@
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 - Add ExpoAppDelegate support for macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for macOS AppDelegate subscribers ([#35062](https://github.com/expo/expo/pull/35062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
@@ -25,6 +84,29 @@
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [apple] Move `AppDelegate` integration from `expo-modules-core` to `expo` package. ([#34985](https://github.com/expo/expo/pull/34985) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Add EXAppDelegateWrapper import to Expo.h ([#35172](https://github.com/expo/expo/pull/35172) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+
+## 52.0.41 - 2025-03-26
+
+### 💡 Others
+
+- Improve devtools plugins transport performance. ([#35581](https://github.com/expo/expo/pull/35581) by [@kudo](https://github.com/kudo))
+- Improve warning for incompatible devtools plugins. ([#35587](https://github.com/expo/expo/pull/35587) by [@kudo](https://github.com/kudo))
+- Re-export bin for `expo-modules-autolinking` and `fingerprint`. ([#35660](https://github.com/expo/expo/pull/35660) by [@kudo](https://github.com/kudo))
+
+## 52.0.40 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.39 - 2025-03-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.38 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Fixed `BlobManager` crash when passing `Blob` in our patched `FormData`. ([#35243](https://github.com/expo/expo/pull/35243) by [@kudo](https://github.com/kudo))
 
 ## 52.0.37 - 2025-02-20
 

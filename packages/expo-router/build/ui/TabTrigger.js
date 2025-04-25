@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useTabTrigger = exports.isTabTrigger = exports.TabTrigger = void 0;
+exports.TabTrigger = TabTrigger;
+exports.isTabTrigger = isTabTrigger;
+exports.useTabTrigger = useTabTrigger;
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -48,14 +50,12 @@ function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
       </react_native_1.Pressable>);
     }
 }
-exports.TabTrigger = TabTrigger;
 /**
  * @hidden
  */
 function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
-exports.isTabTrigger = isTabTrigger;
 /**
  * Utility hook creating custom `TabTrigger`.
  */
@@ -144,7 +144,6 @@ function useTabTrigger(options) {
         triggerProps,
     };
 }
-exports.useTabTrigger = useTabTrigger;
 const styles = react_native_1.StyleSheet.create({
     tabTrigger: {
         flexDirection: 'row',

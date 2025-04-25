@@ -10,7 +10,7 @@
 
 namespace expo {
 
-class ExpoViewProps final : public facebook::react::ViewProps {
+class ExpoViewProps : public facebook::react::ViewProps {
 public:
   ExpoViewProps() = default;
   ExpoViewProps(const facebook::react::PropsParserContext &context,

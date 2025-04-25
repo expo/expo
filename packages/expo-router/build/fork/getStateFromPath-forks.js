@@ -3,7 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseQueryParams = exports.getRouteConfigSorter = exports.appendIsInitial = exports.matchForEmptyPath = exports.stripBaseUrl = exports.spreadParamsAcrossAllStates = exports.handleUrlParams = exports.getParamValue = exports.replacePart = exports.isDynamicPart = exports.configRegExp = exports.assertScreens = exports.createConfig = exports.getUrlWithReactNavigationConcessions = exports.safelyDecodeURIComponent = exports.populateParams = void 0;
+exports.populateParams = populateParams;
+exports.safelyDecodeURIComponent = safelyDecodeURIComponent;
+exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
+exports.createConfig = createConfig;
+exports.assertScreens = assertScreens;
+exports.configRegExp = configRegExp;
+exports.isDynamicPart = isDynamicPart;
+exports.replacePart = replacePart;
+exports.getParamValue = getParamValue;
+exports.handleUrlParams = handleUrlParams;
+exports.spreadParamsAcrossAllStates = spreadParamsAcrossAllStates;
+exports.stripBaseUrl = stripBaseUrl;
+exports.matchForEmptyPath = matchForEmptyPath;
+exports.appendIsInitial = appendIsInitial;
+exports.getRouteConfigSorter = getRouteConfigSorter;
+exports.parseQueryParams = parseQueryParams;
+exports.cleanPath = cleanPath;
+exports.routePatternToRegex = routePatternToRegex;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const matchers_1 = require("../matchers");
 /**
@@ -19,7 +36,6 @@ function populateParams(routes, params) {
     }
     return routes;
 }
-exports.populateParams = populateParams;
 function safelyDecodeURIComponent(str) {
     try {
         return decodeURIComponent(str);
@@ -28,7 +44,6 @@ function safelyDecodeURIComponent(str) {
         return str;
     }
 }
-exports.safelyDecodeURIComponent = safelyDecodeURIComponent;
 function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
     let parsed;
     try {
@@ -55,7 +70,6 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         pathWithoutGroups,
     };
 }
-exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
 function createConfig(screen, pattern, routeNames, config = {}) {
     const parts = [];
     let isDynamic = false;
@@ -80,32 +94,28 @@ function createConfig(screen, pattern, routeNames, config = {}) {
         hasChildren,
         parts,
         userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
-        expandedRouteNames: routeNames.flatMap((name) => {
+        // Don't include the __root route name
+        expandedRouteNames: routeNames.slice(1).flatMap((name) => {
             return name.split('/');
         }),
     };
 }
-exports.createConfig = createConfig;
 function assertScreens(options) {
     if (!options?.screens) {
         throw Error("You must pass a 'screens' object to 'getStateFromPath' to generate a path.");
     }
 }
-exports.assertScreens = assertScreens;
 function configRegExp(config) {
     return config.pattern
         ? new RegExp(`^(${config.pattern.split('/').map(formatRegexPattern).join('')})$`)
         : undefined;
 }
-exports.configRegExp = configRegExp;
 function isDynamicPart(p) {
     return p.length > 1 && (p.startsWith(':') || p.startsWith('*'));
 }
-exports.isDynamicPart = isDynamicPart;
 function replacePart(p) {
     return p.replace(/^[:*]/, '').replace(/\?$/, '');
 }
-exports.replacePart = replacePart;
 function getParamValue(p, value) {
     if (p.startsWith('*')) {
         const values = value.split('/').filter((v) => v !== '');
@@ -115,7 +125,6 @@ function getParamValue(p, value) {
         return value;
     }
 }
-exports.getParamValue = getParamValue;
 function formatRegexPattern(it) {
     // Allow spaces in file path names.
     it = it.replace(' ', '%20');
@@ -154,14 +163,12 @@ function handleUrlParams(route, params) {
         }
     }
 }
-exports.handleUrlParams = handleUrlParams;
 function spreadParamsAcrossAllStates(state, params) {
     while (state) {
         const route = state.routes[0];
         route.params = Object.assign({}, route.params, params);
     }
 }
-exports.spreadParamsAcrossAllStates = spreadParamsAcrossAllStates;
 function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
@@ -170,7 +177,6 @@ function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.stripBaseUrl = stripBaseUrl;
 function matchForEmptyPath(configs) {
     // We need to add special handling of empty path so navigation to empty path also works
     // When handling empty path, we should only look at the root level config
@@ -196,7 +202,6 @@ function matchForEmptyPath(configs) {
         leafNodes.find((config) => config.path.startsWith('*') && config.regex.test('/'));
     return match;
 }
-exports.matchForEmptyPath = matchForEmptyPath;
 function appendIsInitial(initialRoutes) {
     const resolvedInitialPatterns = initialRoutes.map((route) => joinPaths(...route.parentScreens, route.initialRouteName));
     return function (config) {
@@ -206,7 +211,6 @@ function appendIsInitial(initialRoutes) {
         return config;
     };
 }
-exports.appendIsInitial = appendIsInitial;
 const joinPaths = (...paths) => []
     .concat(...paths.map((p) => p.split('/')))
     .filter(Boolean)
@@ -350,7 +354,6 @@ function getRouteConfigSorter(previousSegments = []) {
         return b.parts.length - a.parts.length;
     };
 }
-exports.getRouteConfigSorter = getRouteConfigSorter;
 function parseQueryParams(path, route, parseConfig, hash) {
     const searchParams = new URL(path, 'https://phony.example').searchParams;
     const params = Object.create(null);
@@ -374,31 +377,25 @@ function parseQueryParams(path, route, parseConfig, hash) {
     }
     return Object.keys(params).length ? params : undefined;
 }
-exports.parseQueryParams = parseQueryParams;
-/*** ????????? */
-// export function mutateRouteParams(
-//   route: ParsedRoute,
-//   params: object,
-//   { allowUrlParamNormalization = false } = {}
-// ) {
-//   route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
-//   for (const [name, value] of Object.entries(params)) {
-//     if (route.params?.[name]) {
-//       if (allowUrlParamNormalization) {
-//         route.params[name] = value;
-//       } else {
-//         if (process.env.NODE_ENV !== 'production') {
-//           console.warn(
-//             `Route '/${route.name}' with param '${name}' was specified both in the path and as a param, removing from path`
-//           );
-//         }
-//       }
-//     } else {
-//       route.params[name] = value;
-//     }
-//   }
-//   if (Object.keys(route.params).length === 0) {
-//     delete route.params;
-//   }
-// }
+function cleanPath(path) {
+    path = path
+        // let remaining = path
+        // END FORK
+        .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+        .replace(/^\//, '') // Remove extra leading slash
+        .replace(/\?.*$/, ''); // Remove query params which we will handle later
+    // Make sure there is a trailing slash
+    return path.endsWith('/') ? path : `${path}/`;
+}
+function routePatternToRegex(pattern) {
+    return new RegExp(`^(${pattern
+        .split('/')
+        .map((it) => {
+        if (it.startsWith(':')) {
+            return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+        }
+        return `${it === '*' ? '.*' : (0, escape_string_regexp_1.default)(it)}\\/`;
+    })
+        .join('')})`);
+}
 //# sourceMappingURL=getStateFromPath-forks.js.map

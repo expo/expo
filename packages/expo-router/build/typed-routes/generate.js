@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTypedRoutesDeclarationFile = void 0;
+exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 const getRoutes_1 = require("../getRoutes");
 const matchers_1 = require("../matchers");
 // /[...param1]/ - Match [...param1]
@@ -14,9 +14,9 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
     let routeNode = null;
     try {
         routeNode = (0, getRoutes_1.getRoutes)(ctx, {
-            ignore: [/_layout\.[tj]sx?$/],
-            platformRoutes: false,
-            notFound: false,
+            ignore: [/_layout\.[tj]sx?$/], // Skip layout files
+            platformRoutes: false, // We don't need to generate platform specific routes
+            notFound: false, // We don't need +not-found routes either
             ignoreEntryPoints: true,
             ignoreRequireErrors: true,
             importMode: 'async', // Don't load the file
@@ -92,7 +92,6 @@ declare module 'expo-router' {
 }
 `;
 }
-exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 function groupRouteNodes(routeNode, groupedContextKeys = {
     static: new Set(),
     dynamic: new Map(),

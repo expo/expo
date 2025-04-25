@@ -1,7 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
-import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
@@ -201,8 +200,6 @@ export function getDefaultConfig(
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
-
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
@@ -216,7 +213,6 @@ export function getDefaultConfig(
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-    console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
@@ -246,7 +242,6 @@ export function getDefaultConfig(
         // This is removed for server platforms.
         web: ['browser'],
       },
-      unstable_conditionNames: ['require', 'import'],
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
@@ -262,8 +257,8 @@ export function getDefaultConfig(
     },
     cacheStores: [cacheStore],
     watcher: {
-      // strip starting dot from env files
-      additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
+      // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
+      additionalExts: ['env', 'local', 'development'],
     },
     serializer: {
       isThirdPartyModule(module) {

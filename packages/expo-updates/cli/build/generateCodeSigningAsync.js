@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateCodeSigningAsync = void 0;
+exports.generateCodeSigningAsync = generateCodeSigningAsync;
 const code_signing_certificates_1 = require("@expo/code-signing-certificates");
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = require("fs");
@@ -42,4 +42,3 @@ async function generateCodeSigningAsync(projectRoot, { certificateValidityDurati
     (0, log_1.log)(`Generated code signing certificate output in ${certificateOutputDir}.`);
     (0, log_1.log)(`To automatically configure this project for code signing, run \`yarn expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`);
 }
-exports.generateCodeSigningAsync = generateCodeSigningAsync;

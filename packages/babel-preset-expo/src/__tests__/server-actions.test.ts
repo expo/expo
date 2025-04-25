@@ -45,19 +45,15 @@ afterAll(() => {
   process.env = { ...originalEnv };
 });
 
-// import { createPlugin as createReactServerPlugin } from '../server-actions-plugin';
-
 function transformTest(sourceCode: string, customOptions: { filename?: string } = {}) {
   const options = {
     ...DEF_OPTIONS,
-    // plugins: [serverActionPlugin],
     caller: getCaller(ENABLED_CALLER),
     ...customOptions,
   };
 
   const results = babel.transform(sourceCode, options);
   if (!results) throw new Error('Failed to transform code');
-  //   console.log('results', results.code);
   const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
   // Parse again to ensure the output is valid code
@@ -573,9 +569,7 @@ export type Test = {
             filename: '/unknown.ts',
           }
         ).code
-      ).toMatchInlineSnapshot(
-        `"import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";"`
-      );
+      ).toMatchInlineSnapshot(`""`);
     });
   });
 });
@@ -1490,4 +1484,105 @@ export const Test = ({ foo }) => {
       return null;
     };"
   `);
+});
+
+describe('TypeScript', () => {
+  it('supports re-exporting entire modules as types: export { type X } from "..."', () => {
+    // The types should be removed from the output
+    expect(
+      transformTest(
+        `
+"use server";
+
+export type { X } from './bar';
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`""`);
+  });
+  it('supports re-exporting entire modules as types with valid exports: export { type X } from "..."', () => {
+    expect(
+      transformTest(
+        `
+"use server";
+  
+export type { X } from './bar';
+export { Y } from './bar';
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`
+      "/*rsc/actions: {"id":"file:///unknown.ts","names":["Y"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+      (() => _registerServerReference(Y, "file:///unknown.ts", "Y"))();
+      export { Y } from './bar';"
+    `);
+  });
+  it('supports re-exporting entire modules as types with valid exports: export { type X, Y } from "..."', () => {
+    expect(
+      transformTest(
+        `
+"use server";
+
+export { type X, Y } from './bar';
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`
+      "/*rsc/actions: {"id":"file:///unknown.ts","names":["Y"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+      (() => _registerServerReference(Y, "file:///unknown.ts", "Y"))();
+      export { Y } from './bar';"
+    `);
+  });
+  it('supports namespace type exports: export type * as X from "..."', () => {
+    expect(
+      transformTest(
+        `
+"use server";
+
+export type * as X from './bar';
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`""`);
+  });
+
+  it('supports re-exporting individual modules as types: export type { X } from "..."', () => {
+    expect(
+      transformTest(
+        `
+"use server";
+
+export { type Foo } from './bar';
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`"export {};"`);
+  });
+  it('supports ambient declaration exports', () => {
+    expect(
+      transformTest(
+        `
+"use server";
+
+export declare function foo(): void;
+export declare class MyClass {}
+`,
+        {
+          filename: '/unknown.ts',
+        }
+      ).code
+    ).toMatchInlineSnapshot(`""`);
+  });
 });

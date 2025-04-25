@@ -3,12 +3,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchGradlePropertyFirst = exports.convertPackageWithGradleToProjectName = exports.convertPackageToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.isAndroidProject = exports.generatePackageListAsync = void 0;
+exports.getConfiguration = getConfiguration;
+exports.generatePackageListAsync = generatePackageListAsync;
+exports.isAndroidProject = isAndroidProject;
+exports.resolveModuleAsync = resolveModuleAsync;
+exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+exports.resolveGradlePropertyAsync = resolveGradlePropertyAsync;
+exports.convertPackageToProjectName = convertPackageToProjectName;
+exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjectName;
+exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
+function getConfiguration(options) {
+    const buildFromSource = options.android?.buildFromSource;
+    if (buildFromSource) {
+        return { buildFromSource };
+    }
+    return undefined;
+}
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -20,12 +35,10 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
     }
     await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
-exports.generatePackageListAsync = generatePackageListAsync;
 function isAndroidProject(projectRoot) {
     return (fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle')) ||
         fs_1.default.existsSync(path_1.default.join(projectRoot, 'build.gradle.kts')));
 }
-exports.isAndroidProject = isAndroidProject;
 async function resolveModuleAsync(packageName, revision) {
     // TODO: Relative source dir should be configurable through the module config.
     // Don't link itself... :D
@@ -66,10 +79,14 @@ async function resolveModuleAsync(packageName, revision) {
             };
         });
         const { publication } = project;
+        const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+            ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
+            : undefined;
         return {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
+            ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),
         };
@@ -82,21 +99,28 @@ async function resolveModuleAsync(packageName, revision) {
         ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
     };
 }
-exports.resolveModuleAsync = resolveModuleAsync;
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
+    const extraMavenReposString = await resolveGradlePropertyAsync(projectNativeRoot, ANDROID_EXTRA_BUILD_DEPS_KEY);
+    if (extraMavenReposString) {
+        try {
+            return JSON.parse(extraMavenReposString);
+        }
+        catch { }
+    }
+    return null;
+}
+async function resolveGradlePropertyAsync(projectNativeRoot, propertyKey) {
     const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
     try {
         const contents = await fs_1.default.promises.readFile(propsFile, 'utf8');
-        const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
-        if (extraMavenReposString) {
-            const extraMavenRepos = JSON.parse(extraMavenReposString);
-            return extraMavenRepos;
+        const propertyValue = searchGradlePropertyFirst(contents, propertyKey);
+        if (propertyValue) {
+            return propertyValue;
         }
     }
     catch { }
     return null;
 }
-exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates the string to put into the generated package list.
  */
@@ -184,7 +208,6 @@ async function findAndroidPackagesAsync(modules) {
 function convertPackageToProjectName(packageName) {
     return packageName.replace(/^@/g, '').replace(/\W+/g, '-');
 }
-exports.convertPackageToProjectName = convertPackageToProjectName;
 /**
  * Converts the package name and gradle file path to Android's project name.
  *   `$` to indicate subprojects
@@ -201,7 +224,6 @@ function convertPackageWithGradleToProjectName(packageName, buildGradleFile) {
     const baseDir = path_1.default.dirname(buildGradleFile).replace(/\//g, '-');
     return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }
-exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjectName;
 /**
  * Given the contents of a `gradle.properties` file,
  * searches for a property with the given name.
@@ -225,5 +247,4 @@ function searchGradlePropertyFirst(contents, propertyName) {
     }
     return null;
 }
-exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 //# sourceMappingURL=android.js.map

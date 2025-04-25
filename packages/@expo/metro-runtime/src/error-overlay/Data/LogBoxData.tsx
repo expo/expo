@@ -66,7 +66,7 @@ type State = {
 const observers: Set<{ observer: Observer } & any> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
-let updateTimeout: null | ReturnType<typeof setImmediate> | ReturnType<typeof setTimeout> = null;
+let updateTimeout: null | ReturnType<typeof setTimeout> = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
@@ -111,20 +111,13 @@ export function isMessageIgnored(message: string): boolean {
   return false;
 }
 
-function setImmediateShim(callback: () => void) {
-  if (!global.setImmediate) {
-    return setTimeout(callback, 0);
-  }
-  return global.setImmediate(callback);
-}
-
 function handleUpdate(): void {
   if (updateTimeout == null) {
-    updateTimeout = setImmediateShim(() => {
+    updateTimeout = setTimeout(() => {
       updateTimeout = null;
       const nextState = getNextState();
       observers.forEach(({ observer }) => observer(nextState));
-    });
+    }, 0);
   }
 }
 
@@ -193,7 +186,7 @@ export function addLog(log: LogData): void {
 
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
-  setImmediate(() => {
+  setTimeout(() => {
     try {
       const stack = parseErrorStack(errorForStackTrace?.stack);
 
@@ -210,19 +203,19 @@ export function addLog(log: LogData): void {
     } catch (error) {
       reportUnexpectedLogBoxError(error);
     }
-  });
+  }, 0);
 }
 
 export function addException(error: ExtendedExceptionData): void {
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
-  setImmediate(() => {
+  setTimeout(() => {
     try {
       appendNewLog(new LogBoxLog(parseLogBoxException(error)));
     } catch (loggingError) {
       reportUnexpectedLogBoxError(loggingError);
     }
-  });
+  }, 0);
 }
 
 export function symbolicateLogNow(type: StackType, log: LogBoxLog) {
@@ -368,7 +361,7 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
       return { hasError: true };
     }
 
-    constructor(props) {
+    constructor(props: object) {
       super(props);
 
       if (process.env.NODE_ENV === 'development') {

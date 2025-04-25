@@ -1,4 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { CameraCapturedPicture } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
@@ -15,10 +16,6 @@ import {
 import Photo from './Photo';
 
 const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
-
-interface State {
-  selected: string[];
-}
 
 function useLoadedPhotos() {
   const [photos, setPhotos] = React.useState<string[]>([]);
@@ -39,41 +36,38 @@ function useLoadedPhotos() {
   return photos;
 }
 
-export default function GalleryScreen(props: TouchableOpacityProps & { photos?: string[] }) {
+export default function GalleryScreen(
+  props: TouchableOpacityProps & { photos?: CameraCapturedPicture[] }
+) {
   const photos = useLoadedPhotos();
-  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : (props.photos ?? [])} />;
+  const uris = props.photos?.map((photo) => photo.uri) ?? [];
+  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : uris} />;
 }
 
-class LoadedGalleryScreen extends React.Component<
-  TouchableOpacityProps & { photos: string[] },
-  State
-> {
-  readonly state: State = {
-    selected: [],
-  };
+function LoadedGalleryScreen(props: TouchableOpacityProps & { photos: string[] }) {
+  const [selectedPhotos, setSelectedPhotos] = React.useState<string[]>([]);
 
-  toggleSelection = (uri: string, isSelected: boolean) => {
-    this.setState(({ selected }) => {
+  const toggleSelection = (uri: string, isSelected: boolean) => {
+    setSelectedPhotos((selected) => {
+      let result = [];
       if (isSelected) {
-        selected.push(uri);
+        result = [...selected, uri];
       } else {
-        selected = selected.filter((item) => item !== uri);
+        result = selected.filter((item) => item !== uri);
       }
-      return { selected };
+      return result;
     });
   };
 
-  saveToGallery = async () => {
-    const photos = this.state.selected;
-
-    if (photos.length > 0) {
+  const saveToGallery = async () => {
+    if (selectedPhotos.length > 0) {
       const { status } = await MediaLibrary.requestPermissionsAsync();
 
       if (status !== 'granted') {
         throw new Error('User has denied the MediaLibrary permissions!');
       }
 
-      const promises = photos.map((photoUri) => {
+      const promises = selectedPhotos.map((photoUri) => {
         return MediaLibrary.createAssetAsync(photoUri);
       });
 
@@ -84,59 +78,55 @@ class LoadedGalleryScreen extends React.Component<
     }
   };
 
-  deletePhotos = async () => {
-    const photos = this.state.selected;
-
-    if (photos.length > 0) {
+  const deletePhotos = async () => {
+    if (selectedPhotos.length > 0) {
       const { status } = await MediaLibrary.requestPermissionsAsync();
 
       if (status !== 'granted') {
         throw new Error('User has denied the MediaLibrary permissions!');
       }
 
-      const promises = photos.map((photoUri) => {
+      const promises = selectedPhotos.map((photoUri) => {
         return FileSystem.deleteAsync(photoUri);
       });
 
       await Promise.all(promises);
-      this.setState({ selected: [] });
+      setSelectedPhotos([]);
     } else {
       alert('No photos to delete!');
     }
   };
 
-  renderPhoto = (fileName: string) => (
+  const renderPhoto = (fileName: string) => (
     <Photo
       key={fileName}
       uri={Platform.select({ web: fileName, default: `${PHOTOS_DIR}/${fileName}` })}
-      onSelectionToggle={this.toggleSelection}
+      onSelectionToggle={toggleSelection}
     />
   );
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.navbar}>
-          <TouchableOpacity style={styles.button} onPress={this.props.onPress}>
-            <MaterialIcons name="arrow-back" size={25} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={this.saveToGallery}>
-            <Text style={styles.whiteText}>Save selected to gallery</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ alignItems: 'center' }}>
-          {this.state.selected.length > 0 && (
-            <TouchableOpacity style={styles.button} onPress={this.deletePhotos}>
-              <Text style={styles.redText}>Delete selected photos</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <ScrollView>
-          <View style={styles.pictures}>{this.props.photos.map(this.renderPhoto)}</View>
-        </ScrollView>
+  return (
+    <View style={styles.container}>
+      <View style={styles.navbar}>
+        <TouchableOpacity style={styles.button} onPress={props.onPress}>
+          <MaterialIcons name="arrow-back" size={25} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={saveToGallery}>
+          <Text style={styles.whiteText}>Save selected to gallery</Text>
+        </TouchableOpacity>
       </View>
-    );
-  }
+      <View style={{ alignItems: 'center' }}>
+        {selectedPhotos.length > 0 && (
+          <TouchableOpacity style={styles.button} onPress={deletePhotos}>
+            <Text style={styles.redText}>Delete selected photos</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      <ScrollView>
+        <View style={styles.pictures}>{props.photos.map(renderPhoto)}</View>
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

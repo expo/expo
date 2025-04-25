@@ -1,4 +1,6 @@
-import { TextDecoder, TextEncoder } from 'util';
+/// <reference types="node" />
+
+import { TextDecoder, TextEncoder } from 'node:util';
 
 import MockWebSocket from './MockWebSocket';
 import { DevToolsPluginClient } from '../DevToolsPluginClient';
@@ -12,10 +14,12 @@ globalThis.WebSocket = MockWebSocket;
 globalThis.TextDecoder ??= TextDecoder;
 globalThis.TextEncoder ??= TextEncoder;
 
+const TEST_PROTOCOL_VERSION = 1;
+
 describe(`DevToolsPluginClient`, () => {
   let appClient: DevToolsPluginClient;
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
   const pluginName = 'testPlugin';
 
   beforeEach(async () => {
@@ -23,6 +27,7 @@ describe(`DevToolsPluginClient`, () => {
     testCaseCounter += 1;
     devServer = `localhost:${8000 + testCaseCounter}`;
     appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName,
@@ -41,7 +46,7 @@ describe(`DevToolsPluginClient`, () => {
 
 describe(`DevToolsPluginClient (browser <> app)`, () => {
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
   const pluginName = 'testPlugin';
   let appClient: DevToolsPluginClient;
   let browserClient: DevToolsPluginClient;
@@ -62,12 +67,14 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     const message = { foo: 'bar' };
 
     appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName,
       wsStore: new WebSocketBackingStore(),
     });
     browserClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'browser',
       pluginName,
@@ -87,12 +94,14 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
   it('should support ping-pong messages', async () => {
     appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName,
       wsStore: new WebSocketBackingStore(),
     });
     browserClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'browser',
       pluginName,
@@ -123,12 +132,14 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     const message = { foo: 'bar' };
 
     appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName,
       wsStore: new WebSocketBackingStore(),
     });
     browserClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'browser',
       pluginName: 'pluginB',
@@ -149,6 +160,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     const method = 'testMethod';
 
     appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName,
@@ -160,6 +172,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
 
     browserClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'browser',
       pluginName,
@@ -168,6 +181,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
     await delayAsync(100);
     const browserClient2 = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'browser',
       pluginName,
@@ -185,11 +199,39 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     expect(receivedMessages[0]).toEqual({ from: 'browserClient2' });
     await browserClient2.closeAsync();
   });
+
+  it('should terminate client from incompatible protocol version', async () => {
+    const spyConsoleInfo = jest.spyOn(console, 'info').mockImplementation(() => {});
+    const spyConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    appClient = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
+      devServer,
+      sender: 'app',
+      pluginName,
+      wsStore: new WebSocketBackingStore(),
+    });
+    browserClient = await createDevToolsPluginClient({
+      protocolVersion: -1,
+      devServer,
+      sender: 'browser',
+      pluginName,
+      wsStore: new WebSocketBackingStore(),
+    });
+
+    await delayAsync(100);
+    expect(spyConsoleWarn).toHaveBeenCalledWith(
+      `Received an incompatible devtools plugin handshake message - pluginName[${pluginName}]`
+    );
+    expect(browserClient.isConnected()).toBe(false);
+
+    spyConsoleInfo.mockRestore();
+    spyConsoleWarn.mockRestore();
+  });
 });
 
 describe(`DevToolsPluginClient - multiplexing`, () => {
   let testCaseCounter = 0;
-  let devServer;
+  let devServer: string;
 
   beforeEach(() => {
     // Connect to different devServer for each test case to avoid jest parallel test issues.
@@ -200,12 +242,14 @@ describe(`DevToolsPluginClient - multiplexing`, () => {
   it('should not close the websocket connection while there are alive clients', async () => {
     const wsStore = new WebSocketBackingStore();
     const appClient1 = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName: 'plugin1',
       wsStore,
     });
     const appClient2 = await createDevToolsPluginClient({
+      protocolVersion: TEST_PROTOCOL_VERSION,
       devServer,
       sender: 'app',
       pluginName: 'plugin2',

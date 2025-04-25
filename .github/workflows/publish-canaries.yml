@@ -23,8 +23,13 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           registry-url: https://registry.npmjs.org/
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches

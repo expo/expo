@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSerializerFromSerialProcessors = exports.createDefaultExportCustomSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
+exports.withExpoSerializers = withExpoSerializers;
+exports.withSerializerPlugins = withSerializerPlugins;
+exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
+exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -35,20 +38,18 @@ function withExpoSerializers(config, options = {}) {
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
-exports.withExpoSerializers = withExpoSerializers;
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 function withSerializerPlugins(config, processors, options = {}) {
-    const originalSerializer = config.serializer?.customSerializer;
-    return {
-        ...config,
-        serializer: {
-            ...config.serializer,
-            customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer ?? null, options),
-        },
-    };
+    const expoSerializer = createSerializerFromSerialProcessors(config, processors, config.serializer?.customSerializer ?? null, options);
+    // We can't object-spread the config, it loses the reference to the original config
+    // Meaning that any user-provided changes are not propagated to the serializer config
+    // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
+    config.serializer ??= {};
+    // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
+    config.serializer.customSerializer = expoSerializer;
+    return config;
 }
-exports.withSerializerPlugins = withSerializerPlugins;
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
     return async (entryPoint, preModules, graph, inputOptions) => {
         const isPossiblyDev = graph.transformOptions.hot;
@@ -86,8 +87,11 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         let premodulesToBundle = [...preModules];
         let bundleCode = null;
         let bundleMap = null;
-        if (config.serializer?.customSerializer) {
-            const bundle = await config.serializer?.customSerializer(entryPoint, premodulesToBundle, graph, options);
+        // Only invoke the custom serializer if it's not our serializer
+        // We write the Expo serializer back to the original config object, possibly falling into recursive loops
+        const originalCustomSerializer = unwrapOriginalSerializer(config.serializer?.customSerializer);
+        if (originalCustomSerializer) {
+            const bundle = await originalCustomSerializer(entryPoint, premodulesToBundle, graph, options);
             if (typeof bundle === 'string') {
                 bundleCode = bundle;
             }
@@ -163,10 +167,9 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         };
     };
 }
-exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
-    return async (entryPoint, preModules, graph, inputOptions) => {
+    const expoSerializer = async (entryPoint, preModules, graph, inputOptions) => {
         const context = {
             platform: graph.transformOptions?.platform,
             environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
@@ -228,17 +231,25 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
         }
         return JSON.stringify(assets);
     };
+    return Object.assign(expoSerializer, { __expoSerializer: true });
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return async (...props) => {
+    return wrapSerializerWithOriginal(originalSerializer, async (...props) => {
         for (const processor of processors) {
             if (processor) {
                 props = await processor(...props);
             }
         }
         return finalSerializer(...props);
-    };
+    });
 }
-exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
+function wrapSerializerWithOriginal(original, expo) {
+    return Object.assign(expo, { __originalSerializer: original });
+}
+function unwrapOriginalSerializer(serializer) {
+    if (!serializer || !('__originalSerializer' in serializer))
+        return null;
+    return serializer.__originalSerializer;
+}
 //# sourceMappingURL=withExpoSerializers.js.map

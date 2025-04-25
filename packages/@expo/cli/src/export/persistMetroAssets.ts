@@ -12,7 +12,7 @@ import fs from 'fs';
 import type { AssetData } from 'metro';
 import path from 'path';
 
-import { getAssetLocalPath } from './metroAssetLocalPath';
+import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
 import { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
@@ -43,6 +43,12 @@ export async function persistMetroAssetsAsync(
   if (outputDirectory == null) {
     Log.warn('Assets destination folder is not set, skipping...');
     return;
+  }
+
+  // For iOS, we need to ensure that the outputDirectory exists.
+  // The bundle code and images build phase script always tries to access this folder
+  if (platform === 'ios' && !fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, { recursive: true });
   }
 
   let assetsToCopy: AssetData[] = [];
@@ -77,6 +83,9 @@ export async function persistMetroAssetsAsync(
   } else {
     assetsToCopy = [...assets];
   }
+  if (platform === 'android') {
+    await createKeepFileAsync(assetsToCopy, outputDirectory);
+  }
 
   const batches: Record<string, string> = {};
 
@@ -104,6 +113,24 @@ export async function persistMetroAssetsAsync(
   if (!files) {
     await copyInBatchesAsync(batches);
   }
+}
+
+export async function createKeepFileAsync(
+  assets: AssetData[],
+  outputDirectory: string
+): Promise<void> {
+  if (!assets.length) {
+    return;
+  }
+  const assetsList = [];
+  for (const asset of assets) {
+    const prefix = drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
+    assetsList.push(`@${prefix}/${getResourceIdentifier(asset)}`);
+  }
+  const keepPath = path.join(outputDirectory, 'raw/keep.xml');
+  const content = `<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="${assetsList.join(',')}" />`;
+  await fs.promises.mkdir(path.dirname(keepPath), { recursive: true });
+  await fs.promises.writeFile(keepPath, content);
 }
 
 export function getAssetIdForLogGrouping(
@@ -193,7 +220,7 @@ export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
   });
 }
 
-function copy(src: string, dest: string, callback: (error: NodeJS.ErrnoException) => void): void {
+function copy(src: string, dest: string, callback: (error?: NodeJS.ErrnoException) => void): void {
   fs.mkdir(path.dirname(dest), { recursive: true }, (err?) => {
     if (err) {
       callback(err);

@@ -5,6 +5,8 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-updates'
 packageName: 'expo-updates'
 iconUrl: '/static/images/packages/expo-updates.png'
 platforms: ['android', 'ios', 'tvos']
+searchRank: 100
+searchPosition: 1
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
@@ -221,7 +223,7 @@ The library also provides a variety of constants to inspect the current update a
 
 You can configure your app to check for updates manually by doing the following steps:
 
-1. Set the `checkAutomatically` configuration value to `ERROR_RECOVERY_ONLY` or `NEVER` to disable the library's default launch behavior.
+1. Set the `checkAutomatically` configuration value to `ON_ERROR_RECOVERY` or `NEVER` to disable the library's default launch behavior.
 2. Add the following code to check for available updates, download them, and reload:
 
    ```jsx App.js

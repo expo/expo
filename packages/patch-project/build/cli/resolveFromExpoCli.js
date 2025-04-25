@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveFromExpoCli = void 0;
+exports.resolveFromExpoCli = resolveFromExpoCli;
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 let cachedCliPath = null;
@@ -17,5 +17,4 @@ function resolveFromExpoCli(projectRoot, moduleId) {
     }
     return path_1.default.join(cachedCliPath, moduleId);
 }
-exports.resolveFromExpoCli = resolveFromExpoCli;
 //# sourceMappingURL=resolveFromExpoCli.js.map

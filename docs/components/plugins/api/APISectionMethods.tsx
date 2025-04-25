@@ -2,6 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIMethodParamRows } from '~/components/plugins/api/components/APIMethodParamRows';
 import { H2 } from '~/ui/components/Text';
 
 import {
@@ -11,13 +12,7 @@ import {
   PropData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import {
-  getMethodName,
-  renderParams,
-  resolveTypeName,
-  getTagData,
-  getAllTagData,
-} from './APISectionUtils';
+import { getMethodName, resolveTypeName, getTagData, getAllTagData } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
@@ -100,7 +95,7 @@ export const renderMethod = (
         />
         {parameters && parameters.length > 0 && (
           <>
-            {renderParams(parameters, sdkVersion)}
+            <APIMethodParamRows parameters={parameters} sdkVersion={sdkVersion} />
             <br />
           </>
         )}

@@ -7,8 +7,8 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies && yarn fix-expo-go-rn-resolution",
-    "fix-expo-go-rn-resolution": "yarn --cwd apps/expo-go run fix-expo-go-rn-resolution",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
+    "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
@@ -20,17 +20,17 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.78.0",
+    "react-native": "0.79.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "@react-navigation/bottom-tabs": "^7.2.0",
-    "@react-navigation/core": "7.3.1",
-    "@react-navigation/drawer": "^7.1.1",
-    "@react-navigation/elements": "2.2.5",
-    "@react-navigation/native": "^7.0.14",
-    "@react-navigation/native-stack": "^7.2.0",
-    "@react-navigation/routers": "^7.1.2",
-    "@react-navigation/stack": "^7.1.1",
+    "@react-navigation/bottom-tabs": "7.3.10",
+    "@react-navigation/core": "7.8.5",
+    "@react-navigation/drawer": "7.3.9",
+    "@react-navigation/elements": "2.3.8",
+    "@react-navigation/native": "7.1.6",
+    "@react-navigation/native-stack": "7.3.10",
+    "@react-navigation/routers": "7.3.5",
+    "@react-navigation/stack": "7.2.10",
     "**/util": "~0.12.4"
   },
   "dependencies": {
@@ -42,6 +42,9 @@
     "yarn-deduplicate": "^6.0.2"
   },
   "volta": {
-    "node": "20.12.2"
+    "node": "22.14.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
   }
 }

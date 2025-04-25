@@ -79,7 +79,16 @@ describe(resolveOptionsAsync, () => {
 
   it(`runs ios on simulator`, async () => {
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', {});
 
@@ -121,7 +130,16 @@ describe(resolveOptionsAsync, () => {
     });
     jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', { device: '00008101-001964A22629003A' });
 

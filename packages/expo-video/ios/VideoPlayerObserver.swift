@@ -70,7 +70,7 @@ final class WeakPlayerObserverDelegate: Hashable {
 class VideoPlayerObserver {
   private weak var owner: VideoPlayer?
   var player: AVPlayer? {
-    owner?.pointer
+    owner?.ref
   }
   var delegates = Set<WeakPlayerObserverDelegate>()
   private var currentItem: VideoPlayerItem?
@@ -347,6 +347,9 @@ class VideoPlayerObserver {
       } else {
         status = .readyToPlay
       }
+    @unknown default:
+      log.error("Unhandled `AVPlayerItem.Status` value: \(playerItem.status), returning `.loading` as fallback. Add the missing case as soon as possible.")
+      status = .loading
     }
 
     if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {

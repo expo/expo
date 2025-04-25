@@ -11,11 +11,11 @@
 import React from 'react';
 import type { CheckboxEvent } from './Checkbox.types';
 declare const ExpoCheckbox: React.ForwardRefExoticComponent<import("react-native").ViewProps & {
-    value?: boolean | undefined;
-    disabled?: boolean | undefined;
-    color?: import("react-native").ColorValue | undefined;
-    onChange?: ((event: import("react-native").NativeSyntheticEvent<CheckboxEvent> | React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => void) | undefined;
-    onValueChange?: ((value: boolean) => void) | undefined;
+    value?: boolean;
+    disabled?: boolean;
+    color?: import("react-native").ColorValue;
+    onChange?: (event: import("react-native").NativeSyntheticEvent<CheckboxEvent> | React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => void;
+    onValueChange?: (value: boolean) => void;
 } & React.RefAttributes<unknown>>;
 export default ExpoCheckbox;
 export declare const name = "ExpoCheckbox";

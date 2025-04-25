@@ -15,8 +15,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
@@ -91,9 +91,9 @@ open class ExpoPresentationDelegate(
    * we (may) play a sound, but then bail out early. You cannot
    * set badge count without showing a notification.
    */
-  override fun presentNotification(notification: Notification, behavior: NotificationBehavior?) {
-    if (behavior?.shouldShowAlert() == false) {
-      if (behavior.shouldPlaySound()) {
+  override fun presentNotification(notification: Notification, behavior: NotificationBehaviorRecord?) {
+    if (behavior?.shouldPresentAlert == false) {
+      if (behavior.shouldPlaySound) {
         val sound = getNotificationSoundUri(notification) ?: Settings.System.DEFAULT_NOTIFICATION_URI
         RingtoneManager.getRingtone(
           context,
@@ -156,7 +156,7 @@ open class ExpoPresentationDelegate(
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehaviorRecord?): android.app.Notification =
     ExpoNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).apply {
       setAllowedBehavior(notificationBehavior)
     }.build()

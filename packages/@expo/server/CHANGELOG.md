@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 0.6.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 — 2025-04-04
+
+### 🎉 New features
+
+- Expo Router static redirects ([#34734](https://github.com/expo/expo/pull/34734) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.5.2 - 2025-03-11
+
+### 💡 Others
+
 - Replace `@remix-run/node` with `undici` / Node.js native Fetch polyfills. ([#34589](https://github.com/expo/expo/pull/34589) by [@kitten](https://github.com/kitten))
 
 ## 0.5.1 - 2025-01-19

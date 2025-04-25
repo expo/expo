@@ -36,7 +36,7 @@ If an update is available, you can use the `Updates.downloadAsync()` method to d
 <Collapsible summary="What are common patterns for checking for updates while the app is running?">
 
 - You can check for updates at various points in your app's lifecycle, such as [when it is foregrounded](https://reactnative.dev/docs/appstate) or at some interval. When an update is found, you may want to show a dialog to the user to prompt the user to update.
-- You can check for updates at launch and display your own custom loading screen, if it is very important for your use case to ensure that users always get the latest verison at launch.
+- You can check for updates at launch and display your own custom loading screen, if it is very important for your use case to ensure that users always get the latest version at launch.
 
 </Collapsible>
 
@@ -55,10 +55,9 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import * as Updates from 'expo-updates';
 
-export const setupBackgroundUpdates = async () => {
-  const BACKGROUND_TASK_NAME = 'task-run-expo-update';
+const BACKGROUND_TASK_NAME = 'task-run-expo-update';
 
-  // Define the background task - this must be done each time the app starts
+export const setupBackgroundUpdates = async () => {
   TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
     const update = await Updates.checkForUpdateAsync();
     if (update.isAvailable) {
@@ -68,14 +67,15 @@ export const setupBackgroundUpdates = async () => {
     return Promise.resolve();
   });
 
-  // Register the task if it was not previously registered
-  const isRegistered = TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
+  const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
   if (!isRegistered) {
     await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-      minimumInterval: 60 * 24, // 24 hours
+      minimumInterval: 60 * 24,
     });
   }
 };
+
+setupBackgroundUpdates();
 ```
 
 </Collapsible>
@@ -90,7 +90,7 @@ Reloading an update while the app is backgrounded can be a great way to ensure t
 
 ## Critical/mandatory updates
 
-There is no first-class support for critical/mandatory updates in the `expo-updates` library. However, you can implement your own logic to check for critical updates and apply them manually. The [expo/UpdatesAPIDemo repository](https://github.com/expo/UpdatesAPIDemo) contains an example of one way to approach this. You can combine that approach with the strategies above to check for updates.
+There is no first-class support for critical/mandatory updates in the `expo-updates` library. However, you can implement your own logic to check for critical updates and apply them manually. The [`expo/UpdatesAPIDemo` repository](https://github.com/expo/UpdatesAPIDemo) contains an example of one way to approach this. You can combine that approach with the strategies above to check for updates.
 
 ## Controlling which update to load from the client side
 

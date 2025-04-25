@@ -1,36 +1,14 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = exports.createStableModuleIdFactory = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = void 0;
+exports.createStableModuleIdFactory = createStableModuleIdFactory;
+exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
-const runtimeEnv = __importStar(require("@expo/env"));
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const chalk_1 = __importDefault(require("chalk"));
 const metro_cache_1 = require("metro-cache");
@@ -141,7 +119,6 @@ function createStableModuleIdFactory(root) {
         return memoizedGetModulePath(modulePath, scope);
     };
 }
-exports.createStableModuleIdFactory = createStableModuleIdFactory;
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
@@ -165,7 +142,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         // when sass isn't installed.
         sourceExts.push('scss', 'sass', 'css');
     }
-    const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
     const pkg = (0, config_1.getPackageJson)(projectRoot);
     const watchFolders = (0, getWatchFolders_1.getWatchFolders)(projectRoot);
     const nodeModulesPaths = (0, getModulesPaths_1.getModulesPaths)(projectRoot);
@@ -180,7 +156,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- React Native: ${reactNativePath}`);
         console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
         console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-        console.log(`- Env Files: ${envFiles}`);
         console.log(`- Sass: ${sassVersion}`);
         console.log(`- Reanimated: ${reanimatedVersion}`);
         console.log();
@@ -204,7 +179,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 // This is removed for server platforms.
                 web: ['browser'],
             },
-            unstable_conditionNames: ['require', 'import'],
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
             assetExts: metroDefaultValues.resolver.assetExts
@@ -219,8 +193,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         },
         cacheStores: [cacheStore],
         watcher: {
-            // strip starting dot from env files
-            additionalExts: envFiles.map((file) => file.replace(/^\./, '')),
+            // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
+            additionalExts: ['env', 'local', 'development'],
         },
         serializer: {
             isThirdPartyModule(module) {
@@ -313,7 +287,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
-exports.getDefaultConfig = getDefaultConfig;
 // re-export for legacy cases.
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
 function getPkgVersion(projectRoot, pkgName) {

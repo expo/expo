@@ -1,6 +1,7 @@
 import { ConfigPlugin, IOSConfig, withAppDelegate, withDangerousMod } from '@expo/config-plugins';
 import {
   addObjcImports,
+  addSwiftImports,
   insertContentsInsideObjcFunctionBlock,
   insertContentsInsideSwiftFunctionBlock,
 } from '@expo/config-plugins/build/ios/codeMod';
@@ -130,6 +131,107 @@ export function updateModulesAppDelegateObjcHeader(
 }
 
 export function updateModulesAppDelegateSwift(
+  contents: string,
+  sdkVersion: string | undefined
+): string {
+  if (sdkVersion) {
+    if (semver.lt(sdkVersion, '52.0.0')) {
+      return updateModulesAppDelegateSwiftLegacy(contents, sdkVersion);
+    }
+    if (semver.lt(sdkVersion, '53.0.0')) {
+      return updateModulesAppDelegateSwiftSdk52(contents, sdkVersion);
+    }
+  }
+
+  // Add imports if needed
+  if (!contents.match(/^import\s+Expo\s*$/m)) {
+    contents = addSwiftImports(contents, ['Expo']);
+  }
+
+  // Replace superclass with ExpoAppDelegate
+  contents = contents.replace(
+    /^(class\s+AppDelegate\s*:\s*)UIResponder,\s*UIApplicationDelegate(\W+)/m,
+    '$1ExpoAppDelegate$2'
+  );
+  // Remove non-overridable properties
+  contents = contents.replace(/^\s*var window: UIWindow\?\n/m, '');
+  contents = contents.replace(/^\s*var reactNativeDelegate: ReactNativeDelegate\?\n/m, '');
+  contents = contents.replace(/^\s*var reactNativeFactory: RCTReactNativeFactory\?\n/m, '');
+  // Add `override` keyword and return super call to didFinishLaunchingWithOptions
+  contents = contents.replace(
+    /\b(func application\([\s\S]+?didFinishLaunchingWithOptions launchOptions[\s\S]+?\{[\s\S]+?)(return true)([\s\S]+?\})/m,
+    'override $1return super.application(application, didFinishLaunchingWithOptions: launchOptions)$3'
+  );
+  // Remove implementation in didFinishLaunchingWithOptions,
+  // most of the code is not overridable from ExpoAppDelegate
+  contents = contents.replace(/^\s*let delegate = ReactNativeDelegate\(\)\n/m, '');
+  contents = contents.replace(
+    /^\s*let factory = RCTReactNativeFactory\(delegate: delegate\)\n/m,
+    ''
+  );
+  contents = contents.replace(/^\s*window = UIWindow\(frame: UIScreen\.main\.bounds\)\n/m, '');
+  contents = contents.replace(
+    /^\s*delegate.dependencyProvider = RCTAppDependencyProvider\(\)\n/m,
+    ''
+  );
+  contents = contents.replace(/^\s*reactNativeDelegate = delegate\n/m, '');
+  contents = contents.replace(/^\s*reactNativeFactory = factory\n/m, '');
+  contents = contents.replace(/^\s*window = UIWindow(frame: UIScreen.main.bounds)\n/m, '');
+  contents = contents.replace(
+    /^\s*factory\.startReactNative\([\s\S]+?withModuleName:\s*"(.+)",[\s\S]+?\)\n/m,
+    `\
+    self.moduleName = "$1"
+    self.initialProps = [:]`
+  );
+
+  // Remove derived `ReactNativeDelegate` class
+  contents = contents.replace(
+    /^class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate\s*?\{[\s\S]+?\n\}\n/m,
+    ''
+  );
+
+  // Add derived `bundleURL` in the `AppDelegate` class
+  if (!contents.match(/override func bundleURL\(\) -> URL\? \{/m)) {
+    contents = contents.replace(
+      /^(class\s+AppDelegate:.+\{[\s\S]+)(\n\})/m,
+      `$1
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }$2`
+    );
+  }
+
+  return contents;
+}
+
+function updateModulesAppDelegateSwiftSdk52(
+  contents: string,
+  sdkVersion: string | undefined
+): string {
+  // Add imports if needed
+  if (!contents.match(/^import\s+Expo\s*$/m)) {
+    contents = addSwiftImports(contents, ['Expo']);
+  }
+  // SDK 52 serves ExpoAppDelegate from ExpoModulesCore. We also need to import it.
+  if (!contents.match(/^import\s+ExpoModulesCore\s*$/m)) {
+    contents = addSwiftImports(contents, ['ExpoModulesCore']);
+  }
+
+  // Replace superclass with ExpoAppDelegate
+  contents = contents.replace(
+    /^(class\s+AppDelegate\s*:\s*)RCTAppDelegate(\W+)/m,
+    '$1ExpoAppDelegate$2'
+  );
+
+  return contents;
+}
+
+function updateModulesAppDelegateSwiftLegacy(
   contents: string,
   sdkVersion: string | undefined
 ): string {

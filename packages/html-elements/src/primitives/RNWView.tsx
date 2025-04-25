@@ -9,6 +9,7 @@
 import * as React from 'react';
 import StyleSheet from 'react-native-web/dist/exports/StyleSheet';
 import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext';
+import { ViewProps } from 'react-native-web/dist/exports/View/types';
 import createElement from 'react-native-web/dist/exports/createElement';
 import * as forwardedProps from 'react-native-web/dist/modules/forwardedProps';
 import pick from 'react-native-web/dist/modules/pick';
@@ -17,7 +18,6 @@ import { useLocaleContext, getLocaleDirection } from 'react-native-web/dist/modu
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 import usePlatformMethods from 'react-native-web/dist/modules/usePlatformMethods';
 import useResponderEvents from 'react-native-web/dist/modules/useResponderEvents';
-import { PlatformMethods, ViewProps } from 'react-native-web/dist/types';
 
 const forwardPropsList = Object.assign(
   {},
@@ -40,7 +40,10 @@ const forwardPropsList = Object.assign(
     pointerEvents: true,
   }
 );
-const pickProps = (props) => pick(props, forwardPropsList);
+
+function pickProps(props: React.ComponentProps<any>) {
+  return pick(props, forwardPropsList);
+}
 
 /**
  * This is the View from react-native-web copied out in order to supply a custom `__element` property.
@@ -48,7 +51,7 @@ const pickProps = (props) => pick(props, forwardPropsList);
  * somewhere between 0.14...0.17.
  */
 
-const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, forwardedRef) => {
+function View(props: ViewProps) {
   const {
     __element,
     hrefAttrs,
@@ -69,6 +72,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
     onSelectionChangeShouldSetResponderCapture,
     onStartShouldSetResponder,
     onStartShouldSetResponderCapture,
+    ref: forwardedRef,
     ...rest
   } = props as any;
 
@@ -80,7 +84,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   //   });
   // }
 
-  const hasTextAncestor = React.useContext(TextAncestorContext);
+  const hasTextAncestor = React.use(TextAncestorContext);
   const hostRef = React.useRef(null);
   const { direction: contextDirection } = useLocaleContext();
 
@@ -132,10 +136,16 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   const platformMethodsRef = usePlatformMethods(supportedProps);
   const setRef = useMergeRefs(hostRef, platformMethodsRef, forwardedRef);
 
-  supportedProps.ref = setRef;
-
-  return createElement(component, supportedProps, { writingDirection });
-});
+  return createElement(
+    component,
+    {
+      ...supportedProps,
+      ref: setRef,
+    },
+    // @ts-expect-error TODO(cedric): 'writingDirection' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'
+    { writingDirection }
+  );
+}
 
 if (__DEV__) {
   View.displayName = 'View';

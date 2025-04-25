@@ -29,6 +29,9 @@ import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
 import host.exp.exponent.storage.ExponentSharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -56,7 +59,8 @@ private const val UPDATE_ERROR_EVENT = "error"
 class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private val manifestUrl: String,
   private val callback: AppLoaderCallback,
-  private val useCacheOnly: Boolean = false
+  private val useCacheOnly: Boolean = false,
+  private val loaderScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
@@ -159,12 +163,14 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       callback.onError(e)
       return
     }
-    val logger = UpdatesLogger(context)
+    val logger = UpdatesLogger(context.filesDir)
     val fileDownloader = FileDownloader(context, configuration, logger)
-    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
+    loaderScope.launch {
+      startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
+    }
   }
 
-  private fun startLoaderTask(
+  private suspend fun startLoaderTask(
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
     directory: File,

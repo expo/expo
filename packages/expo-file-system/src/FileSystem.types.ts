@@ -293,7 +293,7 @@ export type InfoOptions = {
 
 export type RelocatingOptions = {
   /**
-   * URI or [SAF](#saf-uri) URI to the asset, file, or directory. See [supported URI schemes](#supported-uri-schemes-1).
+   * URI or [SAF](#saf-uri) URI to the asset, file, or directory. See [supported URI schemes](#supported-uri-schemes).
    */
   from: string;
   /**

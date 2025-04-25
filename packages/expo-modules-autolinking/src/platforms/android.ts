@@ -2,10 +2,23 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+import type {
+  ExtraDependencies,
+  ModuleDescriptorAndroid,
+  PackageRevision,
+  ResolveOptions,
+} from '../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
+
+export function getConfiguration(options: ResolveOptions): Record<string, any> | undefined {
+  const buildFromSource = options.android?.buildFromSource;
+  if (buildFromSource) {
+    return { buildFromSource };
+  }
+  return undefined;
+}
 
 /**
  * Generates Java file that contains all autolinked packages.
@@ -84,11 +97,15 @@ export async function resolveModuleAsync(
     });
 
     const { publication } = project;
+    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+      : undefined;
 
     return {
       name: project.name,
       sourceDir: projectPath,
       modules: project.modules ?? [],
+      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
       ...(publication ? { publication } : {}),
       ...(aarProjects?.length > 0 ? { aarProjects } : {}),
     };
@@ -107,13 +124,28 @@ export async function resolveModuleAsync(
 export async function resolveExtraBuildDependenciesAsync(
   projectNativeRoot: string
 ): Promise<ExtraDependencies | null> {
+  const extraMavenReposString = await resolveGradlePropertyAsync(
+    projectNativeRoot,
+    ANDROID_EXTRA_BUILD_DEPS_KEY
+  );
+  if (extraMavenReposString) {
+    try {
+      return JSON.parse(extraMavenReposString);
+    } catch {}
+  }
+  return null;
+}
+
+export async function resolveGradlePropertyAsync(
+  projectNativeRoot: string,
+  propertyKey: string
+): Promise<string | null> {
   const propsFile = path.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
   try {
     const contents = await fs.promises.readFile(propsFile, 'utf8');
-    const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
-    if (extraMavenReposString) {
-      const extraMavenRepos = JSON.parse(extraMavenReposString);
-      return extraMavenRepos;
+    const propertyValue = searchGradlePropertyFirst(contents, propertyKey);
+    if (propertyValue) {
+      return propertyValue;
     }
   } catch {}
   return null;

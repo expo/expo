@@ -92,7 +92,7 @@ on:
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
@@ -109,7 +109,9 @@ on:
     branches:
       - main
       - feature/**
-      # other branch names and globs
+      - !feature/test-** # other branch names and globs
+
+
     types:
       - opened
       # other event types
@@ -231,16 +233,17 @@ Default working directory to run the scripts in. Relative paths like "./assets" 
 
 Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
 
-| Tool        | Description                                                                |
-| ----------- | -------------------------------------------------------------------------- |
-| `node`      | Version of Node.js installed via `nvm`.                                    |
-| `yarn`      | Version of Yarn installed via `npm -g`.                                    |
-| `pnpm`      | Version of pnpm installed via `npm -g`.                                    |
-| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script. |
-| `ndk`       | Version of Android NDK installed through `sdkmanager`.                     |
-| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                |
-| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.               |
-| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.              |
+| Tool        | Description                                                                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                  |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                  |
+| `corepack`  | If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the beginning of build process. Defaults to false. |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                  |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                               |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                   |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                              |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                             |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                            |
 
 Example of workflow using `defaults.tools`:
 
@@ -250,7 +253,11 @@ defaults:
   tools:
     node: latest
     yarn: '2'
+    corepack: true
+    pnpm: '8'
+    bun: '1.0.0'
     fastlane: 2.224.0
+    cocoapods: 1.12.0
 
 on:
   push:
@@ -264,6 +271,23 @@ jobs:
       - name: Check Yarn version
         run: yarn --version # should print a concrete version, like 2.4.3
 ```
+
+## `concurrency`
+
+Configuration for concurrency control. Currently only allows setting `cancel_in_progress` for same-branch workflows.
+
+```yaml
+# @info #
+concurrency:
+  cancel_in_progress: true
+  group: ${{ workflow.filename }}-${{ github.ref }}
+# @end #
+```
+
+| Property             | Type      | Description                                                                                                                                             |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel_in_progress` | `boolean` | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
+| `group`              | `string`  | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
 
 ## Control flow
 
@@ -317,6 +341,101 @@ jobs:
     # @info #
     if: ${{ github.ref_name == 'main' }}
     # @end #
+```
+
+## Interpolation
+
+You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
+
+### `after` and `needs`
+
+When you specify an upstream job in `after` or `needs`, you can use its outputs in a downstream job. All jobs expose a `status` property. Most pre-packaged jobs also expose some outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job produces a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Example usage:
+
+```yaml
+jobs:
+  setup:
+    outputs:
+      date: ${{ steps.current_date.outputs.date }}
+    steps:
+      - id: current_date
+        run: |
+          DATE=$(date +"%Y.%-m.%-d")
+          set-output date "$DATE"
+
+  build_ios:
+    needs: [setup]
+    type: build
+    env:
+      # You might use process.env.VERSION_SUFFIX to customize
+      # app version in your dynamic app config.
+      VERSION_SUFFIX: ${{ needs.setup.outputs.date }}
+    params:
+      platform: ios
+      profile: development
+```
+
+### `github`
+
+To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
+
+```json
+{
+  "event_name": "pull_request" | "push" | "schedule" | "workflow_dispatch",
+  "sha": string,
+  "ref": string, // e.g. refs/heads/main
+  "ref_name": string, // e.g. main
+  "ref_type": "branch" | "tag" | "other"
+}
+```
+
+If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    # @info #
+    if: ${{ github.ref_name == 'main' }}
+    # @end #
+    params:
+      platform: ios
+      profile: production
+```
+
+### `success()`, `failure()`
+
+`success()` returns `true` only if no previous job has failed. `failure()` returns `true` if any previous job has failed.
+
+### `fromJSON()`, `toJSON()`
+
+`fromJSON()` is `JSON.parse()`, and `toJSON()` is `JSON.stringify()`. You can use them to consume or produce JSON outputs.
+
+Example usage:
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+
+  print_debug_info:
+    needs: [publish_update]
+    steps:
+      - run: |
+          echo "First update group: ${{ needs.publish_update.outputs.first_update_group_id }}"
+          echo "Second update group: ${{ fromJSON(needs.publish_update.outputs.updates_json || '[]')[1].group }}"
 ```
 
 ## Pre-packaged jobs
@@ -387,6 +506,29 @@ jobs:
       prod: boolean # optional
 ```
 
+#### `fingerprint`
+
+Calculates fingerprint of Android and iOS builds.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: fingerprint
+    # @end #
+```
+
+> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+This job outputs the following properties:
+
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
+```
+
 #### `get-build`
 
 Retrieves an existing build from EAS that matches the provided parameters.
@@ -434,7 +576,9 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment`, it uses the same environment used to create the build referenced in `build_id`.
+
+> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
 
 ```yaml
 jobs:
@@ -445,6 +589,16 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional, default: production
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "android_package_id": string | null // Submitted Android package ID. https://expo.fyi/android-package
+}
 ```
 
 #### `update`
@@ -464,20 +618,48 @@ jobs:
       channel: string # optional - cannot be used with branch
 ```
 
+This job outputs the following properties:
+
+```json
+{
+  "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
+  "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
+```
+
 #### `maestro`
 
 Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
 
 ```yaml
-maestro:
-  # @info #
-  type: maestro
-  # @end #
-  environment: production | preview | development # optional, defaults to preview
-  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
-  params:
-    build_id: string # required
-    flow_path: string | string[] # required
+jobs:
+  my_job:
+    # @info #
+    type: maestro
+    # @end #
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required
+      flow_path: string | string[] # required
+      shards: number # optional, defaults to 1
+      retries: number # optional, defaults to 1
+```
+
+#### `slack`
+
+Sends a message to a Slack channel using a webhook URL.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: slack
+    # @end #
+    params:
+      webhook_url: string # required
+      message: string # required if payload is not provided
+      payload: object # required if message is not provided
 ```
 
 ## Custom jobs
@@ -491,39 +673,30 @@ jobs:
       # ...
 ```
 
-### `jobs.<job_id>.runs_on`
+### `jobs.<job_id>.steps`
 
-Specifies the worker that will execute the job. Available only on custom jobs.
+A job contains a sequence of tasks called `steps`. Steps can run commands. `steps` may only be provided in custom jobs and `build` jobs.
 
 ```yaml
 jobs:
   my_job:
     # @info #
-    runs_on: linux-medium | linux-large |
-      linux-medium-nested-virtualization |
-      linux-large-nested-virtualization |
-      macos-medium | macos-large # optional, defaults to linux-medium
+    steps:
+      - name: My first step
+        run: echo "Hello World"
     # @end #
 ```
 
-{/* vale off */}
-
-| Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                                |
-| ---------------------------------- | ---- | ---------------- | --------- | ------------------------------------ |
-| linux-medium                       | 4    | 16               | 14        | Default worker.                      |
-| linux-large                        | 8    | 32               | 28        |                                      |
-| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators.    |
-| linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android Emulators.    |
-| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
-| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
-
-{/* vale on */}
-
-> **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
-
 ### `jobs.<job_id>.outputs`
 
-A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
+A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the `set-output` function within a job step.
+
+Downstream jobs can access these outputs using the following expressions within [interpolation contexts](#interpolation):
+
+- `needs.<job_id>.outputs.<output_name>`
+- `after.<job_id>.outputs.<output_name>`
+
+Here, `<job_id>` refers to the identifier of the upstream job, and `<output_name>` refers to the specific output variable you want to access.
 
 In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
 
@@ -548,19 +721,50 @@ jobs:
       # @end #
 ```
 
-### `jobs.<job_id>.steps`
+### `jobs.<job_id>.image`
 
-A job contains a sequence of tasks called `steps`. Steps can run commands.
+Specifies the VM image to use for the job. See [Infrastructure](/build-reference/infrastructure/) for available images.
 
 ```yaml
 jobs:
   my_job:
     # @info #
-    steps:
-      - name: My first step
-        run: echo "Hello World"
+    image: auto | string # optional, defaults to 'auto'
     # @end #
 ```
+
+### `jobs.<job_id>.runs_on`
+
+Specifies the worker that will execute the job. Available only on custom jobs.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    runs_on: linux-medium | linux-large |
+      linux-medium-nested-virtualization |
+      linux-large-nested-virtualization |
+      macos-medium | macos-large # optional, defaults to linux-medium
+    # @end #
+```
+
+{/* vale off */}
+
+| Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                             |
+| ---------------------------------- | ---- | ---------------- | --------- | --------------------------------- |
+| linux-medium                       | 4    | 16               | 14        | Default worker.                   |
+| linux-large                        | 8    | 32               | 28        |                                   |
+| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators. |
+| linux-large-nested-virtualization  | 4    | 32               | 28        | Allows running Android Emulators. |
+
+| Worker       | Efficiency cores | Unified memory (GiB RAM) | SSD (GiB) | Notes                                |
+| ------------ | ---------------- | ------------------------ | --------- | ------------------------------------ |
+| macos-medium | 5                | 20                       | 125       | Runs iOS jobs, including simulators. |
+| macos-large  | 10               | 40                       | 125       | Runs iOS jobs, including simulators. |
+
+{/* vale on */}
+
+> **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 
 ### `jobs.<job_id>.steps.<step>.id`
 
@@ -725,10 +929,8 @@ jobs:
 
 #### `eas/send_slack_message`
 
-Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel.
-The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
-With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation.
-For example, `'Build URL: ${{ eas.job.expoBuildUrl }}'`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
+Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: ${{ eas.job.expoBuildUrl }}`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
 Either "message" or "payload" has to be specified, but not both.
 
 ```yaml
@@ -746,7 +948,7 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                      |
-| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink

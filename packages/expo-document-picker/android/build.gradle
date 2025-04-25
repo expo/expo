@@ -3,13 +3,14 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-group = 'host.exp.exponent'
+group = "host.exp.exponent"
+version = "13.1.3"
 
 android {
   namespace "expo.modules.documentpicker"
   defaultConfig {
     versionCode 17
-    versionName '13.0.1'
+    versionName '13.1.3'
   }
 }
 

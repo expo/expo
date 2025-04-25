@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -16,20 +16,35 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
+exports.store = exports.RouterStore = void 0;
+exports.useExpoRouter = useExpoRouter;
+exports.useStoreRootState = useStoreRootState;
+exports.useStoreRouteInfo = useStoreRouteInfo;
+exports.useInitializeExpoRouter = useInitializeExpoRouter;
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
+const Linking = __importStar(require("expo-linking"));
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -37,11 +52,14 @@ const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
 const getPathFromState_1 = require("../fork/getPathFromState");
-// import { ResultState } from '../fork/getStateFromPath';
+const getStateFromPath_forks_1 = require("../fork/getStateFromPath-forks");
 const getLinkingConfig_1 = require("../getLinkingConfig");
+const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
+const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const useScreens_1 = require("../useScreens");
+const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -58,6 +76,9 @@ class RouterStore {
     nextState;
     routeInfo;
     splashScreenAnimationFrame;
+    // The expo-router config plugin
+    config;
+    redirects;
     navigationRef;
     navigationRefSubscription;
     rootStateSubscribers = new Set();
@@ -75,6 +96,7 @@ class RouterStore {
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
     reload = routing_1.reload.bind(this);
+    prefetch = routing_1.prefetch.bind(this);
     initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;
@@ -84,6 +106,18 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
+        this.config = expo_constants_1.default.expoConfig?.extra?.router;
+        // On the client, there is no difference between redirects and rewrites
+        this.redirects = [this.config?.redirects, this.config?.rewrites]
+            .filter(Boolean)
+            .flat()
+            .map((route) => {
+            return [
+                (0, getStateFromPath_forks_1.routePatternToRegex)((0, getReactNavigationConfig_1.parseRouteSegments)(route.source)),
+                route,
+                (0, url_1.shouldLinkExternally)(route.destination),
+            ];
+        });
         this.routeNode = (0, getRoutes_1.getRoutes)(context, {
             ...expo_constants_1.default.expoConfig?.extra?.router,
             ignoreEntryPoints: true,
@@ -101,11 +135,14 @@ class RouterStore {
         };
         if (this.routeNode) {
             // We have routes, so get the linking config and the root component
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this, this.routeNode, context, linkingConfigOptions);
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this, this.routeNode, context, {
+                ...expo_constants_1.default.expoConfig?.extra?.router,
+                ...linkingConfigOptions,
+            });
             this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
             // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
             // This will cause static rendering to fail, which once performs a single pass.
-            // If the initialURL is a string, we can preload the state and routeInfo, skipping React Navigation's async behavior.
+            // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
             const initialURL = this.linking?.getInitialURL?.();
             if (typeof initialURL === 'string') {
                 this.rootState = this.linking.getStateFromPath?.(initialURL, this.linking.config);
@@ -215,13 +252,32 @@ class RouterStore {
         href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
         return this.linking?.getStateFromPath?.(href, this.linking.config);
     }
+    applyRedirects(url) {
+        if (typeof url !== 'string') {
+            return url;
+        }
+        const nextUrl = (0, getStateFromPath_forks_1.cleanPath)(url);
+        const redirect = this.redirects?.find(([regex]) => regex.test(nextUrl));
+        if (!redirect) {
+            return url;
+        }
+        // If the redirect is external, open the URL
+        if (redirect[2]) {
+            let href = redirect[1].destination;
+            if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
+                href = `https:${href}`;
+            }
+            Linking.openURL(href);
+            return;
+        }
+        return this.applyRedirects((0, getRoutesRedirects_1.convertRedirect)(url, redirect[1]));
+    }
 }
 exports.RouterStore = RouterStore;
 exports.store = new RouterStore();
 function useExpoRouter() {
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToStore, exports.store.snapshot, exports.store.snapshot);
 }
-exports.useExpoRouter = useExpoRouter;
 function syncStoreRootState() {
     if (exports.store.navigationRef.isReady()) {
         const currentState = exports.store.navigationRef.getRootState();
@@ -234,17 +290,14 @@ function useStoreRootState() {
     syncStoreRootState();
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.rootStateSnapshot, exports.store.rootStateSnapshot);
 }
-exports.useStoreRootState = useStoreRootState;
 function useStoreRouteInfo() {
     syncStoreRootState();
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.routeInfoSnapshot, exports.store.routeInfoSnapshot);
 }
-exports.useStoreRouteInfo = useStoreRouteInfo;
 function useInitializeExpoRouter(context, options) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
     (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, options), [context]);
     useExpoRouter();
     return exports.store;
 }
-exports.useInitializeExpoRouter = useInitializeExpoRouter;
 //# sourceMappingURL=router-store.js.map

@@ -1,6 +1,6 @@
 {
   "name": "@expo/image-utils",
-  "version": "0.6.3",
+  "version": "0.7.2",
   "description": "A package used by Expo CLI for processing images",
   "main": "build/index.js",
   "scripts": {
@@ -43,8 +43,8 @@
   },
   "devDependencies": {
     "@types/getenv": "^0.7.0",
-    "@types/semver": "^6.0.0",
-    "expo-module-scripts": "^4.0.0"
+    "@types/semver": "^7.0.0",
+    "expo-module-scripts": "^4.1.4"
   },
   "publishConfig": {
     "access": "public"

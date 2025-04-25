@@ -22,7 +22,7 @@ export default {
     }
     return await isSensorEnabledAsync(eventName);
   },
-  _handleMotion(motion) {
+  _handleMotion(motion: DeviceMotionEvent) {
     // TODO: Bacon: Can rotation be calculated?
     DeviceEventEmitter.emit('deviceMotionDidUpdate', {
       acceleration: motion.acceleration,

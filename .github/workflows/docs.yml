@@ -26,7 +26,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 30000
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -57,6 +57,7 @@ jobs:
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
+          version: 3.11.1
           reporter: github-pr-check
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'

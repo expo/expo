@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
 import { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
@@ -27,6 +27,13 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
     /**
+     * Returns the available lenses for the currently selected camera.
+     *
+     * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+     * @platform ios
+     */
+    getAvailableLensesAsync(): Promise<string[]>;
+    /**
      * Returns an object with the supported features of the camera on the current device.
      */
     getSupportedFeatures(): {
@@ -42,8 +49,9 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     pausePreview(): Promise<void>;
     static ConversionTables: {
-        type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
-        flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
+        [prop: string]: unknown;
+        type: Record<keyof import("./Camera.types").CameraType, import("./Camera.types").CameraNativeProps["facing"]>;
+        flash: Record<keyof import("./Camera.types").FlashMode, import("./Camera.types").CameraNativeProps["flashMode"]>;
     };
     static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
@@ -131,9 +139,14 @@ export default class CameraView extends Component<CameraViewProps> {
     toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
+     * @platform android
+     * @platform ios
      */
     stopRecording(): void;
     _onCameraReady: () => void;
+    _onAvailableLensesChanged: ({ nativeEvent }: {
+        nativeEvent: AvailableLenses;
+    }) => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {
             message: string;

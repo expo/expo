@@ -11,13 +11,8 @@ type Props<ParamList extends object> = NavigationContainerProps & {
     fallback?: React.ReactNode;
     documentTitle?: DocumentTitleOptions;
 };
-export declare const NavigationContainer: <RootParamList extends object = ReactNavigation.RootParamList>(props: NavigationContainerProps & {
-    direction?: LocaleDirection | undefined;
-    linking?: LinkingOptions<RootParamList> | undefined;
-    fallback?: React.ReactNode;
-    documentTitle?: DocumentTitleOptions | undefined;
-} & {
-    ref?: React.Ref<NavigationContainerRef<RootParamList>> | undefined;
+export declare const NavigationContainer: <RootParamList extends object = ReactNavigation.RootParamList>(props: Props<RootParamList> & {
+    ref?: React.Ref<NavigationContainerRef<RootParamList>>;
 }) => React.ReactElement;
 export {};
 //# sourceMappingURL=NavigationContainer.d.ts.map

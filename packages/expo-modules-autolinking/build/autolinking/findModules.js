@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findModulesAsync = void 0;
+exports.findModulesAsync = findModulesAsync;
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
@@ -39,9 +39,7 @@ async function findModulesAsync(providedOptions) {
             if (maybeIsolatedModulesPath) {
                 searchPaths.add(maybeIsolatedModulesPath);
             }
-            // we ignore the `exclude` option for custom native modules
-            if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
-                !expoModuleConfig.supportsPlatform(options.platform)) {
+            if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
             // add the current revision to the results
@@ -72,7 +70,6 @@ async function findModulesAsync(providedOptions) {
         alwaysIncludedPackagesNames: nativeModuleNames,
     });
 }
-exports.findModulesAsync = findModulesAsync;
 /**
  * Returns the priority of the config at given path. Higher number means higher priority.
  */

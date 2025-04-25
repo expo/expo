@@ -123,4 +123,4 @@ class ExpoSpeech extends NativeModule<ExpoSpeechEvents> {
   maxSpeechInputLength = MAX_SPEECH_INPUT_LENGTH;
 }
 
-export default registerWebModule(ExpoSpeech);
+export default registerWebModule(ExpoSpeech, 'ExpoSpeech');

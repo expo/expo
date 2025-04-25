@@ -45,6 +45,9 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
+        // TODO(@kitten): The types indicates that this is incorrect.
+        // Please check whether this is correct!
+        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
@@ -56,8 +59,8 @@ function getStatusFromMedia(media, id) {
     const status = {
         id,
         isLoaded: true,
-        duration: media.duration * 1000,
-        currentTime: media.currentTime * 1000,
+        duration: media.duration,
+        currentTime: media.currentTime,
         playbackState: '',
         timeControlStatus: isPlaying ? 'playing' : 'paused',
         reasonForWaitingToPlay: '',
@@ -84,6 +87,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     shouldCorrectPitch = false;
     src = null;
     media;
+    // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
     interval = 100;
     isPlaying = false;
     loaded = false;
@@ -103,10 +107,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.loop = value;
     }
     get duration() {
-        return this.media.duration * 1000;
+        return this.media.duration;
     }
     get currentTime() {
-        return this.media.currentTime * 1000;
+        return this.media.currentTime;
     }
     get paused() {
         return this.media.paused;
@@ -142,7 +146,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media = this._createMediaElement();
     }
     async seekTo(seconds) {
-        this.media.currentTime = seconds / 1000;
+        this.media.currentTime = seconds;
     }
     // Not supported on web
     setAudioSamplingEnabled(enabled) {

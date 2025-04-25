@@ -44,6 +44,7 @@ export function transformSync(
 function parseWithHermes(src: string, babelConfig: babel.TransformOptions) {
   const sourceAst = require('hermes-parser').parse(src, {
     babel: true,
+    reactRuntimeTarget: '19',
     sourceType: babelConfig.sourceType,
   });
   return babel.transformFromAstSync(sourceAst, src, babelConfig);

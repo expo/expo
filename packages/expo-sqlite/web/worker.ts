@@ -1,8 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+/// <reference types="./wa-sqlite/types" />
+
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
+import { type Changeset } from '../src/NativeSession';
 import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
 import { AccessHandlePoolVFS } from './wa-sqlite/AccessHandlePoolVFS';
 import { MemoryVFS } from './wa-sqlite/MemoryVFS';
@@ -28,6 +31,8 @@ import {
 
 type DatabasePointer = number;
 type StatementPointer = number;
+type SessionPointer = number;
+
 interface DatabaseEntity {
   pointer: DatabasePointer;
   databasePath: string;
@@ -35,6 +40,9 @@ interface DatabaseEntity {
 }
 interface StatementEntity {
   pointer: StatementPointer;
+}
+interface SessionEntity {
+  pointer: SessionPointer;
 }
 
 const VFS_NAME_PERSISTENT = 'expo-sqlite';
@@ -49,6 +57,7 @@ let _vfsMemory: MemoryVFS | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
+const sessionIdMap = new Map<number, SessionEntity>();
 
 class SQLiteErrorException extends Error {}
 
@@ -83,6 +92,16 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
   let result: ResultType | undefined;
 
   switch (type) {
+    case 'backupDatabase': {
+      await backupDatabase(
+        data.destNativeDatabaseId,
+        data.destDatabaseName,
+        data.sourceNativeDatabaseId,
+        data.sourceDatabaseName
+      );
+      break;
+    }
+
     case 'close': {
       await closeDatabase(data.nativeDatabaseId);
       break;
@@ -164,6 +183,50 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
       break;
     }
 
+    case 'sessionCreate': {
+      await sessionCreate(data.nativeDatabaseId, data.nativeSessionId, data.dbName);
+      break;
+    }
+
+    case 'sessionAttach': {
+      await sessionAttach(data.nativeDatabaseId, data.nativeSessionId, data.table);
+      break;
+    }
+
+    case 'sessionEnable': {
+      await sessionEnable(data.nativeDatabaseId, data.nativeSessionId, data.enabled);
+      break;
+    }
+
+    case 'sessionClose': {
+      await sessionClose(data.nativeDatabaseId, data.nativeSessionId);
+      break;
+    }
+
+    case 'sessionCreateChangeset': {
+      result = await sessionCreateChangeset(data.nativeDatabaseId, data.nativeSessionId);
+      break;
+    }
+
+    case 'sessionCreateInvertedChangeset': {
+      result = await sessionCreateInvertedChangeset(data.nativeDatabaseId, data.nativeSessionId);
+      break;
+    }
+
+    case 'sessionApplyChangeset': {
+      await sessionApplyChangeset(data.nativeDatabaseId, data.nativeSessionId, data.changeset);
+      break;
+    }
+
+    case 'sessionInvertChangeset': {
+      result = await sessionInvertChangeset(
+        data.nativeDatabaseId,
+        data.nativeSessionId,
+        data.changeset
+      );
+      break;
+    }
+
     default: {
       throw new Error(`Unknown message type: ${type}`);
     }
@@ -173,6 +236,21 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
 }
 
 //#region Request handlers
+
+async function backupDatabase(
+  destNativeDatabaseId: number,
+  destDatabaseName: string,
+  sourceNativeDatabaseId: number,
+  sourceDatabaseName: string
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const destDb = databaseIdMap.get(destNativeDatabaseId);
+  if (!destDb) throw new Error(`Database not found - nativeDatabaseId[${destNativeDatabaseId}]`);
+  const sourceDb = databaseIdMap.get(sourceNativeDatabaseId);
+  if (!sourceDb)
+    throw new Error(`Database not found - nativeDatabaseId[${sourceNativeDatabaseId}]`);
+  await sqlite3.backup(destDb.pointer, destDatabaseName, sourceDb.pointer, sourceDatabaseName);
+}
 
 async function closeDatabase(nativeDatabaseId: number) {
   maybeFinalizeAllStatements(nativeDatabaseId);
@@ -437,6 +515,105 @@ async function step(
   return null;
 }
 
+async function sessionCreate(
+  nativeDatabaseId: number,
+  nativeSessionId: number,
+  dbName: string
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+
+  const session = sqlite3.session_create(dbEntity.pointer, dbName);
+  sessionIdMap.set(nativeSessionId, { pointer: session });
+}
+
+async function sessionAttach(
+  nativeDatabaseId: number,
+  nativeSessionId: number,
+  table: string | null
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+  const session = sessionIdMap.get(nativeSessionId);
+  if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
+
+  sqlite3.session_attach(session.pointer, table);
+}
+
+async function sessionEnable(
+  nativeDatabaseId: number,
+  nativeSessionId: number,
+  enabled: boolean
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+  const session = sessionIdMap.get(nativeSessionId);
+  if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
+
+  sqlite3.session_enable(session.pointer, enabled);
+}
+
+async function sessionClose(nativeDatabaseId: number, nativeSessionId: number): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+  const session = sessionIdMap.get(nativeSessionId);
+  if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
+
+  sessionIdMap.delete(nativeSessionId);
+  sqlite3.session_delete(session.pointer);
+}
+
+async function sessionCreateChangeset(
+  nativeDatabaseId: number,
+  nativeSessionId: number
+): Promise<Changeset> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+  const session = sessionIdMap.get(nativeSessionId);
+  if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
+
+  return sqlite3.session_changeset(session.pointer);
+}
+
+async function sessionCreateInvertedChangeset(
+  nativeDatabaseId: number,
+  nativeSessionId: number
+): Promise<Changeset> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+  const session = sessionIdMap.get(nativeSessionId);
+  if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
+
+  return sqlite3.session_changeset_inverted(session.pointer);
+}
+
+async function sessionApplyChangeset(
+  nativeDatabaseId: number,
+  nativeSessionId: number,
+  changeset: Changeset
+): Promise<void> {
+  const { sqlite3 } = await maybeInitAsync();
+  const dbEntity = databaseIdMap.get(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+
+  sqlite3.changeset_apply(dbEntity.pointer, changeset);
+}
+
+async function sessionInvertChangeset(
+  nativeDatabaseId: number,
+  nativeSessionId: number,
+  changeset: Changeset
+): Promise<Changeset> {
+  const { sqlite3 } = await maybeInitAsync();
+  return sqlite3.changeset_invert(changeset);
+}
+
 //#endregion Request handlers
 
 //#region Internal helpers
@@ -624,6 +801,9 @@ async function maybeInitAsync(): Promise<{
       }
     }
     _sqlite3.vfs_register(_vfsMemory, false);
+  }
+  if (_vfs == null || _vfsMemory == null) {
+    throw new Error('Invalid VFS state');
   }
   return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
 }

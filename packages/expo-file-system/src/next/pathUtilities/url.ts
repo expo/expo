@@ -28,6 +28,7 @@ const carriageReturnRegEx = /\r/g;
 const tabRegEx = /\t/g;
 const questionRegex = /\?/g;
 const hashRegex = /#/g;
+const spaceRegEx = / /g;
 
 function encodePathChars(filepath: string) {
   if (filepath.indexOf('%') !== -1) filepath = filepath.replace(percentRegEx, '%25');
@@ -36,6 +37,7 @@ function encodePathChars(filepath: string) {
   if (filepath.indexOf('\n') !== -1) filepath = filepath.replace(newlineRegEx, '%0A');
   if (filepath.indexOf('\r') !== -1) filepath = filepath.replace(carriageReturnRegEx, '%0D');
   if (filepath.indexOf('\t') !== -1) filepath = filepath.replace(tabRegEx, '%09');
+  if (filepath.indexOf(' ') !== -1) filepath = filepath.replace(spaceRegEx, '%20');
   return filepath;
 }
 

@@ -33,6 +33,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
+import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
 import expo.modules.medialibrary.albums.DeleteAlbums
 import expo.modules.medialibrary.albums.GetAlbum
 import expo.modules.medialibrary.albums.GetAlbums
@@ -40,7 +41,7 @@ import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 import expo.modules.medialibrary.albums.getAssetsInAlbums
 import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
 import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAsset
+import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
 import expo.modules.medialibrary.assets.DeleteAssets
 import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
@@ -104,16 +105,16 @@ class MediaLibraryModule : Module() {
     AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise, false)
+          CreateAssetWithAlbumId(context, localUri, promise, false)
             .execute()
         }
       }
     }
 
-    AsyncFunction("createAssetAsync") { localUri: String, promise: Promise ->
+    AsyncFunction("createAssetAsync") { localUri: String, albumId: String?, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise)
+          CreateAssetWithAlbumId(context, localUri, promise, true, albumId)
             .execute()
         }
       }
@@ -180,15 +181,27 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
+    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri?, promise: Promise ->
       throwUnlessPermissionsGranted {
         val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
-            CreateAlbum(context, albumName, assetId, copyAsset, promise)
-              .execute()
+            assetId?.let {
+              CreateAlbum(context, albumName, assetId, copyAsset, promise)
+                .execute()
+            }
+
+            initialAssetUri?.let {
+              CreateAlbumWithInitialFileUri(context, albumName, it, promise)
+                .execute()
+            }
           }
         }
-        runActionWithPermissions(if (copyAsset) emptyList() else listOf(assetId), action)
+        val assetIdList = if (!copyAsset && assetId != null) {
+          listOf(assetId)
+        } else {
+          emptyList()
+        }
+        runActionWithPermissions(assetIdList, action)
       }
     }
 

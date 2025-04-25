@@ -1,1 +1,3 @@
-export { Directory, File, Paths } from './FileSystem';
+export * from './FileSystem';
+
+export { type CreateOptions, type FileHandle } from './ExpoFileSystem.types';

@@ -1,7 +1,7 @@
 import { Text } from 'react-native';
 import { Link, router } from 'expo-router';
 
-export default function () {
+export default function Orange() {
   return (
     <>
       <Text testID="e2e-screen">Orange</Text>

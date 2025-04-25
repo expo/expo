@@ -1,7 +1,11 @@
 /* eslint-env browser */
 
-function createWebSocketConnection(path: string = '/message') {
-  const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer');
+declare namespace globalThis {
+  const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
+}
+
+function createWebSocketConnection(path: string = '/message'): WebSocket {
+  const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {
     throw new Error('Cannot create devtools websocket connections in embedded environments.');
@@ -9,7 +13,7 @@ function createWebSocketConnection(path: string = '/message') {
 
   const devServerUrl = new URL(devServer.url);
   const serverScheme = devServerUrl.protocol === 'https:' ? 'wss' : 'ws';
-  const WebSocket = require('react-native/Libraries/WebSocket/WebSocket');
+  const WebSocket = require('react-native/Libraries/WebSocket/WebSocket').default;
   return new WebSocket(`${serverScheme}://${devServerUrl.host}${path}`);
 }
 
@@ -22,10 +26,6 @@ createWebSocketConnection().onmessage = (message) => {
           if (data.params.platform && data.params.platform !== process.env.EXPO_OS) {
             return;
           }
-          console.log(
-            'HMR(Client): Reload received from server. Sending to listeners:',
-            globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.length
-          );
           if (!globalThis.__EXPO_RSC_RELOAD_LISTENERS__) {
             // server function-only mode
           } else {

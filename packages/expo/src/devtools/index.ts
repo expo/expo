@@ -7,7 +7,7 @@ import type { DevToolsPluginClientOptions } from './devtools.types';
 export { getDevToolsPluginClientAsync, DevToolsPluginClient };
 export type { DevToolsPluginClientOptions };
 // Export the EventSubscription type if people need to use explicit type from `addMessageListener`
-export type { EventSubscription } from 'fbemitter';
+export type { EventSubscription } from './DevToolsPluginClient';
 export { setEnableLogging } from './logger';
 
 /**
@@ -25,7 +25,7 @@ export function useDevToolsPluginClient(
       try {
         const client = await getDevToolsPluginClientAsync(pluginName, options);
         setClient(client);
-      } catch (e) {
+      } catch (e: any) {
         setError(new Error('Failed to setup client from useDevToolsPluginClient: ' + e.toString()));
       }
     }
@@ -33,7 +33,7 @@ export function useDevToolsPluginClient(
     async function teardown() {
       try {
         await client?.closeAsync();
-      } catch (e) {
+      } catch (e: any) {
         setError(
           new Error('Failed to teardown client from useDevToolsPluginClient: ' + e.toString())
         );

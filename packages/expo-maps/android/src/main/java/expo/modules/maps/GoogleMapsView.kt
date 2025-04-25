@@ -138,7 +138,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   @Composable
   private fun updateCameraState(): CameraPositionState {
     val cameraPosition = props.cameraPosition.value
-    cameraState = remember {
+    cameraState = remember(cameraPosition) {
       CameraPositionState(
         position = CameraPosition.fromLatLngZoom(
           cameraPosition.coordinates.toLatLng(),

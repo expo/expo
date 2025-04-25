@@ -4,12 +4,51 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.28.6 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.5 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2025-04-14
+
+### 🎉 New features
+
+- [Android] Added `EX_UPDATES_COPY_EMBEDDED_ASSETS` flag which is false by default, to not copy embedded assets. ([#36059](https://github.com/expo/expo/pull/36059) by [@kudo](https://github.com/kudo))
+
+## 0.28.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Remove a few long-deprecated typescript types. ([#34215](https://github.com/expo/expo/pull/34215) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+- Support for updates.useNativeDebug. ([#35468](https://github.com/expo/expo/pull/35468) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -25,10 +64,29 @@
 - Fixed build error on iOS Expo Go. ([#34485](https://github.com/expo/expo/pull/34485) by [@kudo](https://github.com/kudo))
 - Fixed Android unit test errors in BuilDataTest. ([#34510](https://github.com/expo/expo/pull/34510) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34806](https://github.com/expo/expo/pull/34806) by [@lukmccall](https://github.com/lukmccall))
-- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - Drop `fbemitter` in favor of custom emitter. ([#35317](https://github.com/expo/expo/pull/35317) by [@kitten](https://github.com/kitten))
+- E2E tests for custom init. ([#35569](https://github.com/expo/expo/pull/35569) by [@douglowder](https://github.com/douglowder))
+- Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+
+## 0.27.4 - 2025-03-18
+
+### 🎉 New features
+
+- Support brownfield apps with EX_UPDATES_CUSTOM_INIT flag. ([#35391](https://github.com/expo/expo/pull/35391) by [@douglowder](https://github.com/douglowder))
+
+## 0.27.3 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- Pass through the package version to config plugin sync utilities ([#35372](https://github.com/expo/expo/pull/35372) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.27.2 - 2025-02-26
+
+### 💡 Others
+
+- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.27.1 - 2025-02-21
 
