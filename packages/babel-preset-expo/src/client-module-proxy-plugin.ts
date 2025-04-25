@@ -5,7 +5,7 @@ import { ConfigAPI, template, types } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getPossibleProjectRoot, getIsReactServer } from './common';
+import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
 
 export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
   const isReactServer = api.caller(getIsReactServer);
@@ -45,7 +45,8 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
 
         const projectRoot = possibleProjectRoot || state.file.opts.root || '';
 
-        const outputKey = './' + getRelativePath(projectRoot, filePath);
+        // TODO: Replace with opaque paths in production.
+        const outputKey = './' + toPosixPath(getRelativePath(projectRoot, filePath));
         // const outputKey = isProd
         //   ? './' + getRelativePath(projectRoot, filePath)
         //   : url.pathToFileURL(filePath).href;

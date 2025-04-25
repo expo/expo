@@ -18,3 +18,7 @@ export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;
 export declare function getInlineEnvVarsEnabled(caller?: any): boolean;
 export declare function getAsyncRoutes(caller?: any): boolean;
 export declare function createAddNamedImportOnce(t: typeof import('@babel/types')): (path: NodePath<t.Node>, name: string, source: string) => any;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export declare function toPosixPath(filePath: string): string;

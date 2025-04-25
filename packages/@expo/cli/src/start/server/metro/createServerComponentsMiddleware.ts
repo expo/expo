@@ -204,7 +204,7 @@ export function createServerComponentsMiddleware(
       });
 
       // Match babel plugin.
-      const publicModuleId = './' + path.relative(projectRoot, entryPoint);
+      const publicModuleId = './' + toPosixPath(path.relative(projectRoot, entryPoint));
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(relativeName), outputName];

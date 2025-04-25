@@ -822,7 +822,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           Object.fromEntries(
             Array.from(ssrManifest.entries()).map(([key, value]) => [
               // Must match babel plugin.
-              './' + path.relative(this.projectRoot, path.join(serverRoot, key)),
+              './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
               [key, value],
             ])
           )

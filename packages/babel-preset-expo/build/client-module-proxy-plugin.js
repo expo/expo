@@ -35,7 +35,8 @@ function reactClientReferencesPlugin(api) {
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
                 const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-                const outputKey = './' + (0, node_path_1.relative)(projectRoot, filePath);
+                // TODO: Replace with opaque paths in production.
+                const outputKey = './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
                 // const outputKey = isProd
                 //   ? './' + getRelativePath(projectRoot, filePath)
                 //   : url.pathToFileURL(filePath).href;
