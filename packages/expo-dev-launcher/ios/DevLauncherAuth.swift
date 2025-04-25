@@ -33,7 +33,7 @@ public class DevLauncherAuth: Module {
         }
         self?.flowDidFinish()
       }
-      
+
       // With ASWebAuthenticationSession, all that is required for the callbackURLScheme is the scheme defined in CFBundleURLSchemes.
       // ://auth is not necessary.
       let scheme = getAuthScheme()
@@ -56,12 +56,12 @@ public class DevLauncherAuth: Module {
       return UserDefaults.standard.string(forKey: "expo-session-secret")
     }
   }
-  
+
   private func getAuthScheme() -> String {
     guard let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] else {
       return DEV_LAUNCHER_DEFAULT_SCHEME
     }
-    
+
     return urlTypes.compactMap { urlType in
       (urlType["CFBundleURLSchemes"] as? [String])?.first
     }.first ?? DEV_LAUNCHER_DEFAULT_SCHEME
