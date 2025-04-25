@@ -433,8 +433,8 @@ function pruneCustomTransformOptions(
 
   if (
     transformOptions.customTransformOptions?.clientBoundaries &&
-    // The client boundaries are only used in `@expo/metro-runtime/src/virtual.js` for production RSC exports.
-    !filePath.match(/\/@expo\/metro-runtime\/rsc\/virtual\.js$/)
+    // The client boundaries are only used in `expo/virtual/rsc.js` for production RSC exports.
+    !filePath.match(/\/expo\/virtual\/rsc\.js$/)
   ) {
     delete transformOptions.customTransformOptions.clientBoundaries;
   }
