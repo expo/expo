@@ -150,7 +150,7 @@ Changes the engine preset in `@react-native/babel-preset` based on the JavaScrip
 
 ### `unstable_transformImportMeta`
 
-Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false`.
+Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false` in client bundles and `true` for server bundles.
 
 > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
 
