@@ -17,6 +17,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 
 protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
+  func openLookAround(coordinate: Coordinate, promise: Promise)
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, AppleMapsViewProtocol {
@@ -36,6 +37,10 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
 
   func setCameraPosition(config: CameraPosition?) {
     appleMapsView?.setCameraPosition(config: config)
+  }
+
+  func openLookAround(coordinate: Coordinate, promise: Promise) {
+    appleMapsView?.openLookAround(coordinate: coordinate, promise: promise)
   }
 
   var body: some View {

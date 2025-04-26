@@ -1,14 +1,39 @@
 import SwiftUI
 import MapKit
+import ExpoModulesCore
 
 @available(iOS 17.0, *)
 struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject private var state = AppleMapsCameraState()
+  @ObservedObject private var state = AppleMapsViewiOS17State()
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+    }
+  }
+
+  func openLookAround(coordinate: Coordinate, promise: Promise) {
+    Task {
+      if state.lookAroundScene != nil {
+        promise.reject(LookAroundAlreadyPresentedException())
+        return
+      }
+
+      let scene = await getLookAroundScene(from: CLLocationCoordinate2D(
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude
+      ))
+
+      if scene == nil {
+        promise.reject(SceneUnavailableAtLocationException())
+        return
+      }
+
+      state.lookAroundScene = scene
+      state.lookAroundPresented = true
+
+      promise.resolve()
     }
   }
 
@@ -93,6 +118,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
+      .lookAroundViewer(isPresented: $state.lookAroundPresented, initialScene: state.lookAroundScene, allowsNavigation: true, showsRoadLabels: true, pointsOfInterest: .all, onDismiss: {
+        state.lookAroundScene = nil
+        state.lookAroundPresented = false
+      })
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }

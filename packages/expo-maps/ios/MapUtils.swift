@@ -15,3 +15,13 @@ func convertToMapCamera(position: CameraPosition) -> MapCameraPosition {
     )
   )
 }
+
+@available(iOS 17.0, *)
+func getLookAroundScene(from coordinate: CLLocationCoordinate2D) async -> MKLookAroundScene? {
+  do {
+    return try await MKLookAroundSceneRequest(coordinate: coordinate).scene
+  } catch {
+    print("Cannot retrieve Look Around scene: \(error.localizedDescription)")
+    return nil
+  }
+}
