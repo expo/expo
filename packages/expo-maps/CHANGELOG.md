@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added Look Around support. ([#36415](https://github.com/expo/expo/pull/36415) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
