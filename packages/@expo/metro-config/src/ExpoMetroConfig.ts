@@ -283,9 +283,11 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
         if (stdRuntime) {
           preModules.push(stdRuntime);
+        } else {
+          debug('@expo/metro-runtime not found, this may cause issues');
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
@@ -293,6 +295,8 @@ export function getDefaultConfig(
         const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
         if (metroRuntime) {
           preModules.push(metroRuntime);
+        } else {
+          debug('@expo/metro-runtime not found, this may cause issues');
         }
 
         return preModules;
