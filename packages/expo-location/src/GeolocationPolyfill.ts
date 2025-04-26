@@ -74,7 +74,7 @@ function watchPosition(
 ) {
   const watchId = LocationSubscriber.registerCallback(success);
 
-  ExpoLocation.watchPositionImplAsync(watchId, options).catch((err) => {
+  ExpoLocation.watchPositionImplAsync(watchId, options).catch((err: any) => {
     LocationSubscriber.unregisterCallback(watchId);
     error({ watchId, message: err.message, code: err.code });
   });

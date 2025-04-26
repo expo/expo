@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 0.1.1-alpha.5 — 2025-04-25
+
+### 💡 Others
+
+- Shared code between current views and the Next views (now called primitives). ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.4 — 2025-04-23
+
+### 🎉 New features
+
+- Added `matchContents` to SwiftUI.Host. ([#36312](https://github.com/expo/expo/pull/36312) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Renamed `<SwiftUI.Container>` to `<SwiftUI.Host>`. ([#36311](https://github.com/expo/expo/pull/36311) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.3 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `DatePicker` causing out of memory exception. ([#36227](https://github.com/expo/expo/pull/36227) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.1.1-alpha.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.1-alpha.1 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.1-alpha.0 — 2025-04-10
 
 _This version does not introduce any user-facing changes._
@@ -46,6 +76,7 @@ _This version does not introduce any user-facing changes._
 - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
 - Dismiss context menu when a menu item is tapped on Android ([#35365](https://github.com/expo/expo/pull/35365) by [@fobos531](https://github.com/fobos531))
 - Migrated SwiftUI views with backward compatible `WithHostingView`. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
+- Introduced `SwiftUI` components. ([#35555](https://github.com/expo/expo/pull/35555) by [@kudo](https://github.com/kudo))
 
 ## 0.0.2 — 2025-02-11
 

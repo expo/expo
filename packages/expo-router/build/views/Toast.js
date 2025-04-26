@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -45,9 +45,9 @@ function Toast({ children, filename, warning, }) {
     return (<react_native_1.View style={styles.container}>
       <react_native_1.Animated.View style={[
             styles.toast,
-            // @ts-expect-error: fixed is supported on web.
             {
                 position: react_native_1.Platform.select({
+                    // NOTE(@kitten): This isn't typed to support Web properties
                     web: 'fixed',
                     default: 'absolute',
                 }),

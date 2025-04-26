@@ -16,7 +16,8 @@ if (Platform.OS === 'android') {
 
 function useNativeEvent<T>(userHandler?: (data: T) => void) {
   return React.useCallback(
-    (event) => {
+    // TODO(@kitten): We unwrap a native payload here, but this isn't reflected in NativeView's prop types
+    (event: any) => {
       userHandler?.(event.nativeEvent);
     },
     [userHandler]

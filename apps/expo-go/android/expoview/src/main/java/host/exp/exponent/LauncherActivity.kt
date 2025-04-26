@@ -47,7 +47,6 @@ class LauncherActivity : AppCompatActivity() {
     kernel.startJSKernel(this)
     kernel.handleIntent(this, intent)
 
-    // Delay to prevent race condition where finish() is called before service starts.
     Handler(mainLooper).postDelayed(
       Runnable {
         try {

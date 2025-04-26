@@ -15,5 +15,9 @@ if (__DEV__ && Platform.OS === 'android' && NativeErrorManager) {
   });
 }
 
+declare namespace globalThis {
+  let ExpoModulesCore_CodedError: undefined | typeof CodedError;
+}
+
 // We have to export `CodedError` via global object to use in later in the C++ code.
 globalThis.ExpoModulesCore_CodedError = CodedError;

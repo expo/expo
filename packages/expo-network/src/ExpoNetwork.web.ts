@@ -48,4 +48,4 @@ class ExpoNetworkModule extends NativeModule<NetworkEvents> {
   }
 }
 
-export default registerWebModule(ExpoNetworkModule);
+export default registerWebModule(ExpoNetworkModule, 'ExpoNetwork');

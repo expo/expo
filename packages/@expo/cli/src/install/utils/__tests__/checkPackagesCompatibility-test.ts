@@ -57,7 +57,7 @@ describe(checkPackagesCompatibility, () => {
     expect(Log.warn).toHaveBeenCalledTimes(0);
   });
 
-  it(`does not fetch or warn when installing @expo-google-fonts/* packages`, async () => {
+  it(`does not fetch or warn when installing ignored packages`, async () => {
     let wasCalled = false;
 
     nock('https://reactnative.directory')
@@ -67,7 +67,11 @@ describe(checkPackagesCompatibility, () => {
         return {};
       });
 
-    await checkPackagesCompatibility(['@expo-google-fonts/inter']);
+    await checkPackagesCompatibility([
+      '@expo-google-fonts/inter',
+      '@expo/metro-runtime',
+      '@expo/styleguide',
+    ]);
 
     expect(wasCalled).toBe(false);
     expect(Log.warn).toHaveBeenCalledTimes(0);

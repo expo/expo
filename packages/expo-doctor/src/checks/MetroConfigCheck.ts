@@ -29,9 +29,7 @@ export class MetroConfigCheck implements DoctorCheck {
     return {
       isSuccessful: !issues.length,
       issues,
-      advice: issues.length
-        ? `Update your metro.config.js to extend @expo/metro-config.`
-        : undefined,
+      advice: issues.length ? [`Update your metro.config.js to extend @expo/metro-config.`] : [],
     };
   }
 }

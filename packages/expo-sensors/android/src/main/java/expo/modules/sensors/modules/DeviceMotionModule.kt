@@ -17,6 +17,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.SensorSubscription
 import java.lang.ref.WeakReference
 import android.Manifest
+import android.util.Log
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 
@@ -261,7 +262,13 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private fun getOrientation(): Int {
     val windowManager = appContext.reactContext?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      appContext.throwingActivity.display?.rotation
+      val activity = appContext.currentActivity
+      if (activity == null) {
+        Log.e(TAG, "[expo-sensors]: The currentActivity is no longer available")
+        0
+      } else {
+        activity.display?.rotation
+      }
     } else {
       @Suppress("DEPRECATION")
       windowManager?.defaultDisplay?.rotation
@@ -277,5 +284,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
     }
     return 0
+  }
+
+  companion object {
+    val TAG = DeviceMotionModule::class.simpleName
   }
 }

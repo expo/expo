@@ -92,19 +92,19 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncBodyWithoutArgs")
-  inline fun AsyncBody(crossinline body: () -> Any?): AsyncFunction {
+  inline fun AsyncBody(crossinline body: () -> Any?): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctionComponent = it
     }
   }
 
-  inline fun <reified R> AsyncBody(crossinline body: () -> R): AsyncFunction {
+  inline fun <reified R> AsyncBody(crossinline body: () -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctionComponent = it
     }
   }
 
-  inline fun <reified R, reified P0> AsyncBody(crossinline body: (p0: P0) -> R): AsyncFunction {
+  inline fun <reified R, reified P0> AsyncBody(crossinline body: (p0: P0) -> R): AsyncFunctionComponent {
     return if (P0::class == Promise::class) {
       AsyncFunctionWithPromiseComponent(name, emptyArray()) { _, promise -> body(promise as P0) }
     } else {
@@ -117,7 +117,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1> AsyncBody(crossinline body: (p0: P0, p1: P1) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1> AsyncBody(crossinline body: (p0: P0, p1: P1) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1>()) { (p0, p1) ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1)
@@ -127,7 +127,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0> AsyncBody(crossinline body: (p0: P0, p1: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0> AsyncBody(crossinline body: (p0: P0, p1: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>()) { (p0), promise ->
       enforceType<P0>(p0)
       body(p0, promise)
@@ -136,7 +136,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2) ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2)
@@ -146,7 +146,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>()) { (p0, p1), promise ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1, promise)
@@ -155,7 +155,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3) ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3)
@@ -165,7 +165,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1, reified P2> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2), promise ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2, promise)
@@ -174,7 +174,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4) ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4)
@@ -184,7 +184,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3), promise ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3, promise)
@@ -193,7 +193,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5) ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5)
@@ -203,7 +203,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4), promise ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4, promise)
@@ -212,7 +212,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6)
@@ -222,7 +222,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5), promise ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5, promise)
@@ -231,7 +231,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
       body(p0, p1, p2, p3, p4, p5, p6, p7)
@@ -241,7 +241,7 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   }
 
   @JvmName("AsyncFunctionWithPromise")
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R): AsyncFunction {
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncBody(crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6), promise ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6, promise)

@@ -11,6 +11,7 @@
 
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/SwiftUIViewProps.h>
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
 
@@ -89,7 +90,7 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 - (instancetype)init
 {
   if (self = [super init]) {
-    static const auto defaultProps = std::make_shared<const expo::ExpoViewProps>();
+    static const auto defaultProps = std::make_shared<const expo::SwiftUIViewProps>();
     _props = defaultProps;
   }
   return self;

@@ -17,12 +17,14 @@ const BlurView = forwardRef(({ tint = 'default', intensity = 50, style, ...props
             if (nativeProps.style) {
                 for (const key in nativeProps.style) {
                     if (key !== 'intensity') {
-                        blurViewRef.current.style[key] = nativeProps.style[key];
+                        blurViewRef.current.style[key] =
+                            nativeProps.style[key];
                     }
                 }
             }
             blurViewRef.current.style.backgroundColor = blurStyle.backgroundColor;
             blurViewRef.current.style.backdropFilter = blurStyle.backdropFilter;
+            // @ts-expect-error: Webkit-specific legacy property (let's not type this, since it's deprecated)
             blurViewRef.current.style['webkitBackdropFilter'] = blurStyle.WebkitBackdropFilter;
         },
     }), [intensity, tint]);

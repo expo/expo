@@ -2,14 +2,16 @@ import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
-  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+  // List of features that are required by linked modules
+  def coreFeatures = project.findProperty("coreFeatures") ?: []
+  ext.shouldIncludeCompose = coreFeatures.contains("compose")
 
-  if (KOTLIN_MAJOR_VERSION >= 2) {
-    repositories {
-      mavenCentral()
-    }
+  repositories {
+    mavenCentral()
+  }
 
-    dependencies {
+  dependencies {
+    if (shouldIncludeCompose) {
       classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     }
   }
@@ -18,15 +20,12 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
 
-if (KOTLIN_MAJOR_VERSION >= 2) {
+if (shouldIncludeCompose) {
   apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 }
 
 group = 'host.exp.exponent'
-version = '2.3.2'
-
-// List of features that are required by linked modules
-def coreFeatures = project.findProperty("coreFeatures") ?: []
+version = '2.3.9'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -76,7 +75,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.3.2"
+    versionName "2.3.9"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
@@ -104,13 +103,7 @@ android {
   buildFeatures {
     buildConfig true
     prefab true
-    compose true
-  }
-
-  if (KOTLIN_MAJOR_VERSION < 2) {
-    composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.14"
-    }
+    compose shouldIncludeCompose
   }
 
   packagingOptions {
@@ -167,6 +160,12 @@ android {
           // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
           srcDirs += 'src/rn74'
         }
+
+        if (shouldIncludeCompose) {
+          srcDirs += 'src/compose'
+        } else {
+          srcDirs += 'src/withoutCompose'
+        }
       }
     }
   }
@@ -195,7 +194,9 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
   api "androidx.core:core-ktx:1.13.1"
 
-  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+  if (shouldIncludeCompose) {
+    implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+  }
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 

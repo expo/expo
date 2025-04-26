@@ -1,4 +1,4 @@
-import type { EventMapBase, NavigationState, ParamListBase, RouteConfig, RouteProp, ScreenListeners } from '@react-navigation/native';
+import type { EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';
@@ -34,7 +34,7 @@ export declare function getQualifiedRouteComponent(value: RouteNode): React.Comp
     ({ route, navigation, ...props }: any): React.JSX.Element;
     displayName: string;
 };
-export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any, any>['options'];
+export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): ScreenProps['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 export declare function getSingularId(name: string, options?: {
     params?: Record<string, any> | undefined;

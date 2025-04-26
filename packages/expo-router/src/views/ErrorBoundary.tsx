@@ -69,7 +69,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   );
 }
 
-const COMMON_ERROR_STATUS = {
+const COMMON_ERROR_STATUS: Record<number, string | undefined> = {
   404: 'NOT_FOUND',
   500: 'INTERNAL_SERVER_ERROR',
   503: 'SERVICE_UNAVAILABLE',

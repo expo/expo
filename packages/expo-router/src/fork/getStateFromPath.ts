@@ -475,6 +475,7 @@ const createNormalizedConfigs = (
 
   parentScreens.push(screen);
 
+  // @ts-expect-error: TODO(@kitten): This is entirely untyped. The index access just flags this, but we're not typing the config properly here
   const config = routeConfig[screen];
 
   if (typeof config === 'string') {

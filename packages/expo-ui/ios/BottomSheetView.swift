@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class BottomSheetProps: ExpoSwiftUI.ViewProps {
+final class BottomSheetProps: ExpoSwiftUI.ViewProps {
   @Field var isOpened: Bool = false
   var onIsOpenedChange = EventDispatcher()
 }
@@ -31,7 +31,7 @@ private struct ReadHeightModifier: ViewModifier {
   }
 }
 
-struct BottomSheetView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
 
   @State private var isOpened = true

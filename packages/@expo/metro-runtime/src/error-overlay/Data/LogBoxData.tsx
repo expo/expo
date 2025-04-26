@@ -377,7 +377,7 @@ export function withSubscription(WrappedComponent: React.FC<object>) {
       return { hasError: true };
     }
 
-    constructor(props) {
+    constructor(props: object) {
       super(props);
 
       if (process.env.NODE_ENV === 'development') {

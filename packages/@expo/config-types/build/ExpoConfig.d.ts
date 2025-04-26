@@ -288,7 +288,10 @@ export interface ExpoConfig {
          * Experimentally enable downloading cached builds from remote.
          */
         remoteBuildCache?: {
-            provider: 'eas';
+            /**
+             * Service provider for remote builds.
+             */
+            provider?: 'eas';
         };
     };
     /**
@@ -795,6 +798,10 @@ export interface Android {
      * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
      */
     version?: string;
+    /**
+     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
+     */
+    edgeToEdgeEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
     /**

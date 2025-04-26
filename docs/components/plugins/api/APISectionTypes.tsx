@@ -4,6 +4,7 @@ import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIParamDetailsBlock } from '~/components/plugins/api/components/APIParamDetailsBlock';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, CODE, MONOSPACE, CALLOUT, RawH4, DEMI } from '~/ui/components/Text';
 
@@ -20,14 +21,15 @@ import {
   parseCommentContent,
   getCommentOrSignatureComment,
   getTagData,
-  renderParams,
   renderDefaultValue,
   renderIndexSignature,
   getCommentContent,
   listParams,
+  defineLiteralType,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
+import { APIMethodParamRows } from './components/APIMethodParamRows';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -35,24 +37,6 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
-};
-
-const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
-  const uniqueTypes = Array.from(
-    new Set(
-      types.map((t: TypeDefinitionData) => {
-        if ('head' in t) {
-          return t.head;
-        } else if ('value' in t) {
-          return t.value && typeof t.value;
-        }
-      })
-    )
-  );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
-    return <CODE>{uniqueTypes[0]}</CODE>;
-  }
-  return null;
 };
 
 const renderTypeDeclarationTable = (
@@ -80,37 +64,51 @@ const renderTypeDeclarationTable = (
 
 const renderTypeMethodEntry = (
   { children, signatures, comment }: TypeDeclarationContentData,
-  sdkVersion: string
+  sdkVersion: string,
+  inline: boolean = false
 ): ReactNode => {
   const baseSignature = signatures?.[0];
 
-  if (baseSignature?.type) {
+  if (!baseSignature?.type) {
+    return null;
+  }
+
+  const content = (
+    <>
+      <RawH4 className="!mb-3">
+        <MONOSPACE>
+          {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+          {` => `}
+          <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
+        </MONOSPACE>
+      </RawH4>
+      <APICommentTextBlock comment={comment} />
+      <Table>
+        <APIParamsTableHeadRow mainCellLabel="Parameter" />
+        <tbody>
+          {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        </tbody>
+      </Table>
+    </>
+  );
+
+  if (inline) {
+    return <div className="border-t border-secondary p-4 pt-2.5">{content}</div>;
+  } else {
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
         className="!mb-0">
-        <RawH4 className="!mb-3">
-          <MONOSPACE>
-            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
-            {` => `}
-            <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
-          </MONOSPACE>
-        </RawH4>
-        <APICommentTextBlock comment={comment} />
-        <Table>
-          <APIParamsTableHeadRow mainCellLabel="Parameter" />
-          <tbody>
-            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
-          </tbody>
-        </Table>
+        {content}
       </APIBox>
     );
   }
-  return null;
 };
 
-const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => {
-  const { name, flags, type, comment, defaultValue, signatures, kind } = x;
+const renderTypePropertyRow = (
+  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -148,14 +146,12 @@ const renderTypePropertyRow = (x: PropData, sdkVersion: string): JSX.Element => 
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
         {params?.map(param => (
-          <div
-            className="mt-2 flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5"
-            key={param.name}>
-            <MONOSPACE>
-              {param.name}: {resolveTypeName(param.type, sdkVersion)}
-            </MONOSPACE>
-            <APICommentTextBlock comment={param.comment} />
-          </div>
+          <APIParamDetailsBlock
+            key={param.name}
+            param={param}
+            sdkVersion={sdkVersion}
+            className="mt-2"
+          />
         ))}
       </Cell>
     </Row>
@@ -181,7 +177,9 @@ const renderType = (
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
-            {signature.parameters && renderParams(signature.parameters, sdkVersion)}
+            {signature.parameters && (
+              <APIMethodParamRows parameters={signature.parameters} sdkVersion={sdkVersion} />
+            )}
           </div>
         ) : null}
         {signature?.type && (
@@ -263,7 +261,7 @@ const renderType = (
           )}
           {propMethodDefinitions.map(
             propType =>
-              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion, true)
           )}
         </div>
       );
@@ -282,7 +280,7 @@ const renderType = (
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
-                <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
+                <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
                 {index + 1 !== literalTypes.length ? (
                   <span className="text-quaternary"> | </span>
                 ) : null}

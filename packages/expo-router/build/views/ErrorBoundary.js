@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorBoundary = ErrorBoundary;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");

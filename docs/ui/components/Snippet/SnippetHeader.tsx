@@ -33,11 +33,11 @@ export const SnippetHeader = ({
     )}>
     <LABEL
       className={mergeClasses(
-        'flex min-h-10 w-full items-center gap-2 py-1 pr-4 font-medium !leading-tight',
+        'flex min-h-10 w-full items-center gap-2 overflow-x-auto py-1 pr-4 font-medium !leading-tight',
         alwaysDark && 'text-palette-white'
       )}>
       {Icon && <Icon className="icon-sm shrink-0" />}
-      <span className="break-words">{title}</span>
+      <span className="break-words w-max max-w-[60dvw] truncate">{title}</span>
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
     </LABEL>
     {!!children && <div className="flex items-center justify-end">{children}</div>}
