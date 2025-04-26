@@ -130,6 +130,8 @@ export function StackTraceList({
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 2,
+                userSelect: 'none',
+                cursor: 'pointer',
               }}>
               <span
                 className={styles.collapseTitle}
