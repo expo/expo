@@ -69,7 +69,6 @@ export function LogBoxInspector({
   const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [closing, setClosing] = useState(false);
 
-  // TODO: Get this outside of the bundle.
   const projectRoot = meta?.projectRoot;
 
   const animateClosed = (callback: () => void) => {
@@ -250,37 +249,40 @@ export function LogBoxInspector({
               title={headerTitle}
             />
 
-            <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-              {codeFrames.map(([key, codeFrame]) => (
-                <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
-              ))}
+            {meta && (
+              <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+                {codeFrames.map(([key, codeFrame]) => (
+                  <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
+                ))}
 
-              {log.isMissingModuleError && (
-                <InstallMissingModule
-                  moduleName={log.isMissingModuleError}
-                  projectRoot={projectRoot ?? ''}
-                />
-              )}
+                {log.isMissingModuleError && (
+                  <InstallMissingModule
+                    moduleName={log.isMissingModuleError}
+                    projectRoot={projectRoot ?? ''}
+                  />
+                )}
 
-              {!!log?.componentStack?.length && (
+                {!!log?.componentStack?.length && (
+                  <StackTraceList
+                    type="component"
+                    projectRoot={projectRoot ?? ''}
+                    stack={log.getAvailableStack('component')}
+                    symbolicationStatus={log.getStackStatus('component')}
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onRetry={_handleRetry.bind(_handleRetry, 'component')}
+                  />
+                )}
                 <StackTraceList
-                  type="component"
-                  projectRoot={projectRoot}
-                  stack={log.getAvailableStack('component')}
-                  symbolicationStatus={log.getStackStatus('component')}
+                  type="stack"
+                  projectRoot={projectRoot ?? ''}
+                  stack={log.getAvailableStack('stack')}
+                  symbolicationStatus={log.getStackStatus('stack')}
                   // eslint-disable-next-line react/jsx-no-bind
-                  onRetry={_handleRetry.bind(_handleRetry, 'component')}
+                  onRetry={_handleRetry.bind(_handleRetry, 'stack')}
                 />
-              )}
-              <StackTraceList
-                type="stack"
-                projectRoot={projectRoot}
-                stack={log.getAvailableStack('stack')}
-                symbolicationStatus={log.getStackStatus('stack')}
-                // eslint-disable-next-line react/jsx-no-bind
-                onRetry={_handleRetry.bind(_handleRetry, 'stack')}
-              />
-            </div>
+              </div>
+            )}
+
             {!isDismissable && (
               <ErrorOverlayFooter message="Build-time errors can only be dismissed by fixing the issue." />
             )}
