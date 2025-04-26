@@ -28,13 +28,12 @@ function eventShouldPreventDefault(e) {
     return false;
 }
 function useLinkToPathProps({ href, ...options }) {
-    const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
             if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
                 return;
             }
-            linkTo(href, options);
+            router_store_1.store.linkTo(href, options);
         }
     };
     let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';

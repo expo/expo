@@ -1,4 +1,6 @@
 import { RedirectConfig } from './getRoutesCore';
+import { StoreRedirects } from './global-state/router-store';
+export declare function applyRedirects(url: string, redirects: StoreRedirects[] | undefined): string;
 export declare function getRedirectModule(route: string): {
     default: () => import("react").CElement<{
         href: string;

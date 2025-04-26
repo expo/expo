@@ -1,6 +1,6 @@
-import { type RouterStore } from './router-store';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
+import { RouterStore } from './router-store';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): void;
 export declare function reload(this: RouterStore): void;
@@ -32,5 +32,5 @@ export type LinkToOptions = {
      */
     dangerouslySingular?: SingularOptions;
 };
-export declare function linkTo(this: RouterStore, originalHref: string, options?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, originalHref: Href, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
