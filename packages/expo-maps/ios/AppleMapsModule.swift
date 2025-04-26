@@ -18,8 +18,8 @@ public class AppleMapsModule: Module {
         view.setCameraPosition(config: config)
       }
 
-      AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate, promise: Promise) in
-        view.openLookAround(coordinate: coordinates, promise: promise)
+      AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
+        try await view.openLookAround(coordinate: coordinates)
       }
     }
   }
