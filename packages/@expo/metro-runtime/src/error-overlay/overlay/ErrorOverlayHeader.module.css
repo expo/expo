@@ -57,3 +57,27 @@
   font-family: var(--expo-log-font-family);
   font-size: 0.75rem;
 }
+
+.pageButton {
+  border: none;
+  outline: none;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  width: 24px;
+  background-color: var(--expo-log-secondary-system-background);
+  padding: 2px;
+  transition: background-color 0.2s;
+  justify-content: center;
+
+  cursor: pointer;
+
+  &[aria-disabled] {
+    cursor: not-allowed;
+  }
+  &:not([aria-disabled]):hover {
+    background-color: var(--expo-log-secondary-system-background-hover);
+  }
+}

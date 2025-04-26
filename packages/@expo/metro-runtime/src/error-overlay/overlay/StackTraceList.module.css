@@ -34,16 +34,13 @@
 }
 
 .stackFrameTitle {
-  
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
-  
 }
 
 .stackFrameFile {
   font-size: 12px;
   font-weight: 300;
   opacity: 0.7;
-  
 }
