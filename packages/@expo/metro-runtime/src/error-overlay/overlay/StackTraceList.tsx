@@ -17,6 +17,138 @@ import {
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 
 import styles from './StackTraceList.module.css';
+
+function Transition({
+  children,
+  status,
+  onExitComplete,
+  isInitial,
+  index,
+  initialDelay = 50,
+}: {
+  children: React.ReactNode;
+  status: 'stable' | 'entering' | 'exiting';
+  onExitComplete: () => void;
+  isInitial: boolean;
+  index: number;
+  initialDelay?: number;
+}) {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    if (isInitial && status === 'stable') {
+      element.style.height = '0px';
+      element.style.opacity = '0';
+      setTimeout(() => {
+        element.style.height = `${element.scrollHeight}px`;
+        element.style.opacity = '1';
+      }, index * initialDelay);
+    } else if (status === 'entering') {
+      element.style.height = '0px';
+      element.style.opacity = '0';
+      requestAnimationFrame(() => {
+        element.style.height = `${element.scrollHeight}px`;
+        element.style.opacity = '1';
+      });
+    } else if (status === 'exiting') {
+      element.style.height = `${element.scrollHeight}px`;
+      element.style.opacity = '1';
+      requestAnimationFrame(() => {
+        element.style.height = '0px';
+        element.style.opacity = '0';
+      });
+    } else if (status === 'stable') {
+      element.style.height = `${element.scrollHeight}px`;
+      element.style.opacity = '1';
+    }
+  }, [status, isInitial, index]);
+
+  React.useEffect(() => {
+    if (status === 'exiting') {
+      const handleTransitionEnd = (e: TransitionEvent) => {
+        if (e.propertyName === 'height') {
+          onExitComplete();
+        }
+      };
+      ref.current?.addEventListener('transitionend', handleTransitionEnd);
+      return () => {
+        ref.current?.removeEventListener('transitionend', handleTransitionEnd);
+      };
+    }
+  }, [status, onExitComplete]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        overflow: 'hidden',
+        transition: 'height 0.3s ease, opacity 0.3s ease',
+      }}>
+      {children}
+    </div>
+  );
+}
+
+function List({
+  items,
+  showCollapsed,
+  isInitial,
+  initialDelay,
+}: {
+  items: { id: number; content: string; isCollapsed: boolean }[];
+  showCollapsed: boolean;
+  isInitial: boolean;
+  initialDelay: number;
+}) {
+  const [displayItems, setDisplayItems] = React.useState<
+    {
+      item: { id: number; content: string; isCollapsed: boolean };
+      status: 'stable' | 'entering' | 'exiting';
+    }[]
+  >(items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' })));
+
+  React.useEffect(() => {
+    const visibleItems = showCollapsed ? items : items.filter((item) => !item.isCollapsed);
+
+    setDisplayItems((prev) => {
+      const prevIds = new Set(prev.map((d) => d.item.id));
+      const newItems = visibleItems
+        .filter((item) => !prevIds.has(item.id))
+        .map((item) => ({ item, status: 'entering' }));
+      const updatedPrev = prev.map((d) => {
+        if (!visibleItems.some((item) => item.id === d.item.id)) {
+          return { ...d, status: 'exiting' };
+        }
+        return d;
+      });
+      return [...updatedPrev, ...newItems];
+    });
+  }, [showCollapsed, items]);
+
+  const onExitComplete = (id: number) => {
+    setDisplayItems((prev) => prev.filter((d) => d.item.id !== id));
+  };
+
+  return (
+    <div>
+      {displayItems.map((d, index) => (
+        <Transition
+          key={d.item.id}
+          status={d.status}
+          onExitComplete={() => onExitComplete(d.item.id)}
+          isInitial={isInitial}
+          initialDelay={initialDelay}
+          index={index}>
+          <div className="trace-content">{d.item.content}</div>
+        </Transition>
+      ))}
+    </div>
+  );
+}
+
 export function StackTraceList({
   onRetry,
   type,
@@ -36,12 +168,29 @@ export function StackTraceList({
   //   return stack?.some(({ collapse }) => !collapse);
   // });
 
-  const visibleStack = !stack
-    ? []
-    : collapsed === true
-      ? stack.filter(({ collapse }) => !collapse)
-      : stack;
   const stackCount = stack?.length;
+
+  const [isInitial, setIsInitial] = React.useState(true);
+
+  const initialDelay = 50;
+  const initialTimer = React.useRef<NodeJS.Timeout | null>(null);
+  React.useEffect(() => {
+    if (isInitial) {
+      const visibleCount = stack?.filter((frame) => !frame.collapse).length ?? 0;
+
+      initialTimer.current = setTimeout(
+        () => setIsInitial(false),
+        visibleCount * initialDelay + 500
+      );
+    }
+    return () => {
+      if (initialTimer.current) {
+        clearTimeout(initialTimer.current);
+        initialTimer.current = null;
+      }
+    };
+  }, [isInitial]);
+
   if (!stackCount) {
     return null;
   }
@@ -193,23 +342,33 @@ export function StackTraceList({
 
       {/* List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {visibleStack?.map((frame, index) => {
-          const { file, lineNumber } = frame;
-          const isLaunchable =
-            !isStackFileAnonymous(frame) &&
-            symbolicationStatus === 'COMPLETE' &&
-            file != null &&
-            lineNumber != null;
-          return (
-            <StackTraceItem
-              key={index}
-              isLaunchable={isLaunchable}
-              projectRoot={projectRoot}
-              frame={frame}
-              onPress={isLaunchable ? () => openFileInEditor(file, lineNumber) : undefined}
-            />
-          );
-        })}
+        <List
+          initialDelay={initialDelay}
+          items={stack.map((frame, index) => {
+            const { file, lineNumber } = frame;
+            const isLaunchable =
+              !isStackFileAnonymous(frame) &&
+              symbolicationStatus === 'COMPLETE' &&
+              file != null &&
+              lineNumber != null;
+
+            return {
+              id: index,
+              content: (
+                <StackTraceItem
+                  key={index}
+                  isLaunchable={isLaunchable}
+                  projectRoot={projectRoot}
+                  frame={frame}
+                  onPress={isLaunchable ? () => openFileInEditor(file, lineNumber) : undefined}
+                />
+              ),
+              isCollapsed: frame.collapse,
+            };
+          })}
+          showCollapsed={!collapsed}
+          isInitial={isInitial}
+        />
       </div>
     </div>
   );
