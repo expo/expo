@@ -9,7 +9,8 @@ import {
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { getInitialURLWithTimeout } from '../fork/useLinking';
-import { store, StoreRedirects } from '../global-state/router-store';
+import { applyRedirects } from '../getRoutesRedirects';
+import { StoreRedirects } from '../global-state/router-store';
 import { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -87,8 +88,8 @@ export function subscribe(
     if (isExpoGo) {
       // This extra work is only done in the Expo Go app.
       callback = async ({ url }) => {
-        let href: string | undefined = parseExpoGoUrlFromListener(url);
-        href = store.applyRedirects(href, redirects);
+        let href: string | undefined | null = parseExpoGoUrlFromListener(url);
+        href = applyRedirects(href, redirects);
         if (href && nativeLinking?.redirectSystemPath) {
           href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
         }
@@ -99,7 +100,7 @@ export function subscribe(
       };
     } else {
       callback = async ({ url }) => {
-        let href = store.applyRedirects(url, redirects);
+        let href = applyRedirects(url, redirects);
         if (href && nativeLinking?.redirectSystemPath) {
           href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
         }

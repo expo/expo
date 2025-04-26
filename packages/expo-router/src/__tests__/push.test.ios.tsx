@@ -22,7 +22,7 @@ it('stacks should always push a new route', () => {
   });
 
   // Initial stale state
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }], stale: true } }],
     stale: true,
   });
@@ -37,7 +37,7 @@ it('stacks should always push a new route', () => {
   act(() => router.push('/user/1'));
   act(() => router.push('/user/2'));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -238,7 +238,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
 
   testRouter.push('/d');
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -381,7 +381,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
 
   act(() => router.push('/a')); // Should push to the root stack
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -495,7 +495,7 @@ it('push should also add anchor routes', () => {
   });
 
   // Initial stale state
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -515,7 +515,7 @@ it('push should also add anchor routes', () => {
 
   act(() => router.push('/orange', { withAnchor: true }));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],

@@ -6,7 +6,7 @@ exports.getLinkingConfig = getLinkingConfig;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
-const router_store_1 = require("./global-state/router-store");
+const getRoutesRedirects_1 = require("./getRoutesRedirects");
 const linking_1 = require("./link/linking");
 exports.INTERNAL_SLOT_NAME = '__root';
 function getNavigationConfig(routes, metaOnly = true) {
@@ -48,14 +48,14 @@ function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serv
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
-                        initialUrl = router_store_1.store.applyRedirects(initialUrl, redirects);
+                        initialUrl = (0, getRoutesRedirects_1.applyRedirects)(initialUrl, redirects);
                         if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
-                            url = router_store_1.store.applyRedirects(url, redirects);
+                            url = (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }

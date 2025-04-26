@@ -3,8 +3,7 @@ import { GestureResponderEvent, Platform } from 'react-native';
 
 import { emitDomLinkEvent } from './useDomComponentNavigation';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
-import { store } from '../global-state/router-store';
-import { LinkToOptions } from '../global-state/routing';
+import { linkTo, LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import { shouldLinkExternally } from '../utils/url';
 
@@ -42,7 +41,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
       if (emitDomLinkEvent(href, options)) {
         return;
       }
-      store.linkTo(href, options);
+      linkTo(href, options);
     }
   };
 

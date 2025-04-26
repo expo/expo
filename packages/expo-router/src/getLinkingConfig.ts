@@ -4,8 +4,9 @@ import { Platform } from 'expo-modules-core';
 import { RouteNode } from './Route';
 import { Options, State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { applyRedirects } from './getRoutesRedirects';
 import { UrlObject } from './global-state/routeInfo';
-import { store, StoreRedirects } from './global-state/router-store';
+import { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
@@ -71,13 +72,13 @@ export function getLinkingConfig(
           initialUrl = serverUrl ?? getInitialURL();
 
           if (typeof initialUrl === 'string') {
-            initialUrl = store.applyRedirects(initialUrl, redirects);
+            initialUrl = applyRedirects(initialUrl, redirects);
             if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
-              url = store.applyRedirects(url, redirects);
+              url = applyRedirects(url, redirects);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }

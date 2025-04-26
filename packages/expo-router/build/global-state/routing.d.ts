@@ -1,19 +1,18 @@
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
-import { RouterStore } from './router-store';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
-export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): void;
-export declare function reload(this: RouterStore): void;
-export declare function prefetch(this: RouterStore, href: Href, options?: NavigationOptions): void;
-export declare function push(this: RouterStore, url: Href, options?: NavigationOptions): void;
-export declare function dismiss(this: RouterStore, count?: number): void;
-export declare function dismissTo(this: RouterStore, href: Href, options?: NavigationOptions): void;
-export declare function replace(this: RouterStore, url: Href, options?: NavigationOptions): void;
-export declare function dismissAll(this: RouterStore): void;
-export declare function goBack(this: RouterStore): void;
-export declare function canGoBack(this: RouterStore): boolean;
-export declare function canDismiss(this: RouterStore): boolean;
-export declare function setParams(this: RouterStore, params?: Record<string, undefined | string | number | (string | number)[]>): any;
+export declare function navigate(url: Href, options?: NavigationOptions): void;
+export declare function reload(): void;
+export declare function prefetch(href: Href, options?: NavigationOptions): void;
+export declare function push(url: Href, options?: NavigationOptions): void;
+export declare function dismiss(count?: number): void;
+export declare function dismissTo(href: Href, options?: NavigationOptions): void;
+export declare function replace(url: Href, options?: NavigationOptions): void;
+export declare function dismissAll(): void;
+export declare function goBack(): void;
+export declare function canGoBack(): boolean;
+export declare function canDismiss(): boolean;
+export declare function setParams(params?: Record<string, undefined | string | number | (string | number)[]>): any;
 export type LinkToOptions = {
     event?: string;
     /**
@@ -32,5 +31,5 @@ export type LinkToOptions = {
      */
     dangerouslySingular?: SingularOptions;
 };
-export declare function linkTo(this: RouterStore, originalHref: Href, options?: LinkToOptions): void;
+export declare function linkTo(originalHref: Href, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map

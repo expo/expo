@@ -45,7 +45,7 @@ Object.defineProperty(exports, "getPathFromState", { enumerable: true, get: func
 const getStateFromPath_1 = require("../fork/getStateFromPath");
 Object.defineProperty(exports, "getStateFromPath", { enumerable: true, get: function () { return getStateFromPath_1.getStateFromPath; } });
 const useLinking_1 = require("../fork/useLinking");
-const router_store_1 = require("../global-state/router-store");
+const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
@@ -104,7 +104,7 @@ function subscribe(nativeLinking, redirects) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
                 let href = parseExpoGoUrlFromListener(url);
-                href = router_store_1.store.applyRedirects(href, redirects);
+                href = (0, getRoutesRedirects_1.applyRedirects)(href, redirects);
                 if (href && nativeLinking?.redirectSystemPath) {
                     href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
                 }
@@ -115,7 +115,7 @@ function subscribe(nativeLinking, redirects) {
         }
         else {
             callback = async ({ url }) => {
-                let href = router_store_1.store.applyRedirects(url, redirects);
+                let href = (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
                 if (href && nativeLinking?.redirectSystemPath) {
                     href = await nativeLinking.redirectSystemPath({ path: href, initial: false });
                 }

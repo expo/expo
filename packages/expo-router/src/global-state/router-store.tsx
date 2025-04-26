@@ -2,10 +2,8 @@
 
 import {
   NavigationContainerRefWithCurrent,
-  NavigationProp,
   NavigationState,
   PartialState,
-  useNavigation,
   useNavigationContainerRef,
   useStateForPath,
 } from '@react-navigation/native';
@@ -20,25 +18,7 @@ import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { RedirectConfig } from '../getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
-import { Href, RequireContext } from '../types';
-import {
-  canDismiss,
-  canGoBack,
-  dismiss,
-  dismissAll,
-  dismissTo,
-  goBack,
-  linkTo,
-  LinkToOptions,
-  navigate,
-  NavigationOptions,
-  prefetch,
-  push,
-  reload,
-  replace,
-  setParams,
-} from './routing';
-import { applyRedirects } from '../getRoutesRedirects';
+import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
@@ -139,43 +119,6 @@ export const store = {
       );
     }
   },
-  // TODO: Clean up all functions below here
-  navigate: (url: Href, options?: NavigationOptions) => navigate.bind(store)(url, options),
-  push: (url: Href, options?: NavigationOptions) => push.bind(store)(url, options),
-  dismiss: (count?: number) => dismiss.bind(store)(count),
-  dismissAll: () => dismissAll.bind(store)(),
-  dismissTo: (url: Href, options?: NavigationOptions) => dismissTo.bind(store)(url, options),
-  canDismiss: () => canDismiss.bind(store)(),
-  replace: (url: Href, options?: NavigationOptions) => replace.bind(store)(url, options),
-  goBack: () => goBack.bind(store)(),
-  canGoBack: () => canGoBack.bind(store)(),
-  reload: () => reload.bind(store)(),
-  prefetch: (url: Href, options?: NavigationOptions) => prefetch.bind(store)(url, options),
-  linkTo: (url: Href, options?: LinkToOptions) => linkTo.bind(store)(url, options),
-  setParams: (params?: Record<string, undefined | string | number | (string | number)[]>) =>
-    setParams.bind(store)(params),
-  routeInfoSnapshot() {
-    return store.getRouteInfo();
-  },
-  cleanup() {},
-  subscribeToRootState(callback: () => void) {
-    callback();
-  },
-  applyRedirects(url?: string | null, redirects: StoreRedirects[] = storeRef.current.redirects) {
-    if (typeof url !== 'string') {
-      return;
-    }
-    return applyRedirects(url, redirects);
-  },
-  get rootState() {
-    return store.state;
-  },
-  get routeInfo() {
-    return store.getRouteInfo();
-  },
-  rootStateSnapshot() {
-    return store.state;
-  },
 };
 
 export function useStore(
@@ -273,18 +216,4 @@ const routeInfoSubscribe = (callback: () => void) => {
 
 export function useRouteInfo() {
   return useSyncExternalStore(routeInfoSubscribe, store.getRouteInfo, store.getRouteInfo);
-}
-
-/**
- * @deprecated Use useNavigation() instead.
- */
-export function useStoreRootState() {
-  return useNavigation<NavigationProp<object, never, string>>().getParent('__root')!.getState();
-}
-
-/**
- * @deprecated Please use useRouterInfo()
- */
-export function useStoreRouteInfo() {
-  return useRouteInfo();
 }
