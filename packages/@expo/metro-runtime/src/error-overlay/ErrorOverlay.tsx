@@ -19,6 +19,7 @@ import type { Message } from './Data/parseLogBoxLog';
 import { fetchProjectMetadataAsync, getFormattedStackTrace } from './devServerEndpoints';
 import styles from './ErrorOverlay.module.css';
 import { LogBoxMessage } from './LogBoxMessage';
+import { ShadowRoot } from './ShadowRoot';
 
 const HEADER_TITLE_MAP: Record<LogLevel, string> = {
   error: 'Console Error',
@@ -31,10 +32,16 @@ const HEADER_TITLE_MAP: Record<LogLevel, string> = {
 export function LogBoxInspectorContainer() {
   const { selectedLogIndex, logs } = useLogs();
   const log = logs[selectedLogIndex];
+
   if (log == null) {
     return null;
   }
-  return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
+
+  return (
+    <ShadowRoot>
+      <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />
+    </ShadowRoot>
+  );
 }
 
 function useDevServerMeta() {
@@ -426,9 +433,11 @@ export function presentGlobalErrorOverlay() {
   }
   const ErrorOverlay = LogBoxData.withSubscription(LogBoxInspectorContainer);
 
+  // TODO: Make this a shadow host
   // Create a new div with ID `error-overlay` element and render LogBoxInspector into it.
   const div = document.createElement('div');
   div.id = 'error-overlay';
+
   document.body.appendChild(div);
 
   currentRoot = ReactDOM.createRoot(div);

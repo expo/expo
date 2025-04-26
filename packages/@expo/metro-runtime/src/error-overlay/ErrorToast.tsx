@@ -16,30 +16,36 @@ import './ErrorOverlay.css';
 
 import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
+import { ShadowRoot } from './ShadowRoot';
+
 export function ErrorToastContainer() {
   useRejectionHandler();
   const { logs, isDisabled } = useLogs();
 
   // HACK / DEBUG / TESTING / NOSHIP: This is here to develop the UI for the error overlay.
   // DO NOT SHIP TO PROD!
-  // React.useEffect(() => {
-  //   // Open the UI for the last log
-  //   LogBoxData.setSelectedLog(0);
+  React.useEffect(() => {
+    // Open the UI for the last log
+    LogBoxData.setSelectedLog(0);
 
-  //   LogBoxData._appendNewLog(FIXTURES.component_error_thrown_in_render[0]);
+    LogBoxData._appendNewLog(FIXTURES.component_error_thrown_in_render[0]);
 
-  //   // Object.values(FIXTURES)
-  //   //   .flat()
-  //   //   .filter((log) => log.level !== 'syntax')
-  //   //   .map((log) => {
-  //   //     LogBoxData._appendNewLog(log);
-  //   //   });
-  // }, []);
+    // Object.values(FIXTURES)
+    //   .flat()
+    //   .filter((log) => log.level !== 'syntax')
+    //   .map((log) => {
+    //     LogBoxData._appendNewLog(log);
+    //   });
+  }, []);
 
   if (!logs.length || isDisabled) {
     return null;
   }
-  return <ErrorToastStack logs={logs} />;
+  return (
+    <ShadowRoot>
+      <ErrorToastStack logs={logs} />
+    </ShadowRoot>
+  );
 }
 
 function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
