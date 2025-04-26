@@ -13,7 +13,6 @@
     "build",
     "src",
     "rsc",
-    "symbolicate",
     "async-require.js",
     "async-require.d.ts",
     "error-overlay.js",

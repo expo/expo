@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `/symbolicate` import.
+
 ## 5.0.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
