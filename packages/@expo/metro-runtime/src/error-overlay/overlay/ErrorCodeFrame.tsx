@@ -130,6 +130,18 @@ export function CodeFrame({
     };
   }, [scrollTextRef, leftBlurRef]);
 
+  // Scroll to end of the text when it changes
+  useEffect(() => {
+    const scrollElement = scrollTextRef.current;
+    if (scrollElement == null) {
+      return;
+    }
+    scrollElement.scrollTo({
+      left: scrollElement.scrollWidth,
+      behavior: 'smooth',
+    });
+  }, [scrollTextRef, content]);
+
   // Try to match the Expo docs
   return (
     <div
