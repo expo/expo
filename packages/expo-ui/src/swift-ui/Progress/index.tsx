@@ -1,11 +1,9 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
+import { Host } from '../Host';
+
 export type CircularProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -17,10 +15,6 @@ export type CircularProgressProps = {
 };
 
 export type LinearProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -43,15 +37,39 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
 );
 
 /**
+ * `<CircularProgress>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function CircularProgressPrimitive(props: CircularProgressProps) {
+  return <NativeProgressView {...props} variant="circular" />;
+}
+
+/**
+ * `<LinearProgress>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function LinearProgressPrimitive(props: LinearProgressProps) {
+  return <NativeProgressView {...props} variant="linear" />;
+}
+
+/**
  * Renders a `CircularProgress` component.
  */
-export function CircularProgress(props: CircularProgressProps) {
-  return <NativeProgressView {...props} variant="circular" />;
+export function CircularProgress(props: CircularProgressProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <CircularProgressPrimitive {...props} />
+    </Host>
+  );
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
-export function LinearProgress(props: LinearProgressProps) {
-  return <NativeProgressView {...props} variant="linear" />;
+export function LinearProgress(props: LinearProgressProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <LinearProgressPrimitive {...props} />
+    </Host>
+  );
 }

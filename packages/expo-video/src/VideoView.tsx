@@ -1,7 +1,7 @@
 import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
-import NativeVideoView from './NativeVideoView';
+import NativeVideoView, { NativeTextureVideoView } from './NativeVideoView';
 import type { VideoPlayer } from './VideoPlayer.types';
 import type { VideoViewProps } from './VideoView.types';
 
@@ -64,6 +64,9 @@ export class VideoView extends PureComponent<VideoViewProps> {
     const { player, ...props } = this.props;
     const playerId = getPlayerId(player);
 
+    if (NativeTextureVideoView && this.props.surfaceType === 'textureView') {
+      return <NativeTextureVideoView {...props} player={playerId} ref={this.nativeRef} />;
+    }
     return <NativeVideoView {...props} player={playerId} ref={this.nativeRef} />;
   }
 }

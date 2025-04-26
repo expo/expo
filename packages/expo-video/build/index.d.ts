@@ -1,7 +1,7 @@
 export { isPictureInPictureSupported, clearVideoCacheAsync, setVideoCacheSizeAsync, getCurrentVideoCacheSize, } from './VideoModule';
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
-export { VideoContentFit, VideoViewProps } from './VideoView.types';
+export { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
 export { VideoThumbnail } from './VideoThumbnail';
 export { createVideoPlayer } from './VideoPlayer';
 export { VideoPlayer, VideoPlayerStatus, VideoSource, PlayerError, VideoMetadata, DRMType, DRMOptions, BufferOptions, AudioMixingMode, VideoThumbnailOptions, VideoSize, SubtitleTrack, VideoTrack, ContentType, } from './VideoPlayer.types';

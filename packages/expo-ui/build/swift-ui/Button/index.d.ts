@@ -43,10 +43,6 @@ export type ButtonProps = {
      */
     variant?: ButtonVariant;
     /**
-     * Additional styles to apply to the button.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * The text to display inside the button.
      */
     children: string;
@@ -72,7 +68,14 @@ export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children
  */
 export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
 /**
+ * `<Button>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function ButtonPrimitive(props: ButtonProps): import("react").JSX.Element;
+/**
  * Displays a native button component.
  */
-export declare function Button(props: ButtonProps): import("react").JSX.Element;
+export declare function Button(props: ButtonProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
