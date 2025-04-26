@@ -17,31 +17,6 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   let onCameraMove = EventDispatcher()
 }
 
-extension MKMapPoint {
-  // Perpendicular distance (in metres) from `self` to the
-  // line segment **AB**.
-  func distance(toSegmentFrom a: MKMapPoint, to b: MKMapPoint) -> CLLocationDistance {
-    let dx = b.x - a.x
-    let dy = b.y - a.y
-
-    // Degenerate segment => use point distance
-    guard dx != 0 || dy != 0 else {
-      return distance(to: a)
-    }
-
-    let t = ((x - a.x) * dx + (y - a.y) * dy) / (dx * dx + dy * dy)
-    // Clamp the projection to the segment
-    let clamped = max(0.0, min(1.0, t))
-
-    let proj = MKMapPoint(
-      x: a.x + clamped * dx,
-      y: a.y + clamped * dy
-    )
-
-    return distance(to: proj)
-  }
-}
-
 protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
 }

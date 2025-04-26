@@ -203,11 +203,13 @@ export type AppleMapsViewProps = {
 
   /**
    * Lambda invoked when the marker is clicked
+   * @platform ios 18.0+
    */
   onMarkerClick?: (event: AppleMapsMarker) => void;
 
   /**
    * Lambda invoked when the polyline is clicked
+   * @platform ios 18.0+
    */
   onPolylineClick?: (event: AppleMapsPolyline) => void;
 
