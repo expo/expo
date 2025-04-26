@@ -20,16 +20,20 @@
   opacity: var(--expo-log-opacity);
   color: var(--expo-log-color-label);
   cursor: pointer;
-  &:hover {
-    background-color: rgba(234.6, 234.6, 244.8, 0.1);
-    outline-color: var(--expo-log-color-label);
-  }
+
 
   /* aria-disabled */
   &[aria-disabled='true'] {
     background-color: transparent;
     color: var(--expo-log-color-label);
     cursor: unset;
+  }
+}
+
+@media (hover: hover) {
+  .stackFrame:hover {
+    background-color: rgba(234.6, 234.6, 244.8, 0.1);
+    outline-color: var(--expo-log-color-label);
   }
 }
 
