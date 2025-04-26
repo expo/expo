@@ -13,7 +13,6 @@ import { Pressable, Text, View } from 'react-native';
 import { LogBoxMessage } from './LogBoxMessage';
 
 import './ErrorOverlay.css';
-import styles from './ErrorToast.module.css';
 
 import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
@@ -96,7 +95,7 @@ function useSymbolicatedLog(log: LogBoxLog) {
   }, [log]);
 }
 
-export function ErrorToast(props: {
+function ErrorToast(props: {
   log: LogBoxLog;
   totalLogCount: number;
   level: 'warn' | 'error';
@@ -108,24 +107,52 @@ export function ErrorToast(props: {
   useSymbolicatedLog(log);
 
   return (
-    <button className={styles.toast} onClick={props.onPressOpen}>
-      <Count count={totalLogCount} />
+    <>
+      <style>
+        {`
+[data-expo-log-toast] {
+  background-color: #632e2c;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: 4px;
+  display: flex;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  border: 1px solid var(--expo-log-color-danger);
+  /* border: 1px solid var(--expo-log-color-border); */
+  cursor: pointer;
+  overflow: hidden;
+  flex: 1;
+  padding: 0 10px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
 
-      <Text
-        numberOfLines={1}
-        style={{
-          userSelect: 'none',
-          paddingLeft: 8,
-          color: 'var(--expo-log-color-label)',
-          flex: 1,
-          fontSize: 14,
-          lineHeight: 22,
-        }}>
-        {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
-      </Text>
+[data-expo-log-toast]:hover {
+  background-color: #924340;
+}
+`}
+      </style>
+      <button data-expo-log-toast onClick={props.onPressOpen}>
+        <Count count={totalLogCount} />
 
-      <Dismiss onPress={props.onPressDismiss} />
-    </button>
+        <Text
+          numberOfLines={1}
+          style={{
+            userSelect: 'none',
+            paddingLeft: 8,
+            color: 'var(--expo-log-color-label)',
+            flex: 1,
+            fontSize: 14,
+            lineHeight: 22,
+          }}>
+          {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
+        </Text>
+
+        <Dismiss onPress={props.onPressDismiss} />
+      </button>
+    </>
   );
 }
 

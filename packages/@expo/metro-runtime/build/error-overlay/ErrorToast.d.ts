@@ -10,13 +10,6 @@ import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog } from './Data/LogBoxLog';
 import './ErrorOverlay.css';
 export declare function ErrorToastContainer(): React.JSX.Element | null;
-export declare function ErrorToast(props: {
-    log: LogBoxLog;
-    totalLogCount: number;
-    level: 'warn' | 'error';
-    onPressOpen: () => void;
-    onPressDismiss: () => void;
-}): React.JSX.Element;
 declare const _default: {
     new (props: object): {
         componentDidCatch(err: Error & {

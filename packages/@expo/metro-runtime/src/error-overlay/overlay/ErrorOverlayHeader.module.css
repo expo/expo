@@ -74,10 +74,11 @@
 
   cursor: pointer;
 
-  &[aria-disabled] {
-    cursor: not-allowed;
-  }
-  &:not([aria-disabled]):hover {
-    background-color: var(--expo-log-secondary-system-background-hover);
-  }
+}
+
+.pageButton[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+.pageButton:not([aria-disabled]):hover {
+  background-color: var(--expo-log-secondary-system-background-hover);
 }
