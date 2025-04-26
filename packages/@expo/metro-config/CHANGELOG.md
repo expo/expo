@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- move virtual rsc entry to expo ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.20.7 — 2025-04-25
 
 _This version does not introduce any user-facing changes._
