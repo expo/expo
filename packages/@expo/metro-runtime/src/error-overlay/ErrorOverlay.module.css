@@ -136,6 +136,7 @@
   opacity: 0;
 }
 
+
 /* md-visible */
 @media screen and (min-width: 576px) {
   .overlay {
@@ -163,3 +164,5 @@
     --expo-log-max-width: 960px;
   }
 }
+
+

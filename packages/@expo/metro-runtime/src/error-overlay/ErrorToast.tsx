@@ -13,6 +13,7 @@ import { Pressable, Text, View } from 'react-native';
 import { LogBoxMessage } from './LogBoxMessage';
 
 import './ErrorOverlay.css';
+import styles from './ErrorToast.module.css';
 
 import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
@@ -107,7 +108,7 @@ export function ErrorToast(props: {
   useSymbolicatedLog(log);
 
   return (
-    <button data-expo-log-toast onClick={props.onPressOpen}>
+    <button className={styles.toast} onClick={props.onPressOpen}>
       <Count count={totalLogCount} />
 
       <Text
