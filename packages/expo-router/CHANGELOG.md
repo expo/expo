@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch useContext to use ([#36414](https://github.com/expo/expo/pull/36414) by [@marklawlor](https://github.com/marklawlor))
+
 ## 5.0.4 — 2025-05-01
 
 ### 🐛 Bug fixes
