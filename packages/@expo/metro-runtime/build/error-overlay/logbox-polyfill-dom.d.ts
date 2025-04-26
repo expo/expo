@@ -1,5 +1,6 @@
 import React from 'react';
-export default function LogBoxPolyfillDOM({ onDismiss, onMinimize, onChangeSelectedIndex, selectedIndex, platform, fetchJsonAsync, ...props }: {
+export default function LogBoxPolyfillDOM({ onDismiss, onMinimize, onChangeSelectedIndex, onCopyText, selectedIndex, platform, fetchJsonAsync, ...props }: {
+    onCopyText: (text: string) => void;
     fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
     platform: string | undefined;
     onDismiss: (index: number) => void;

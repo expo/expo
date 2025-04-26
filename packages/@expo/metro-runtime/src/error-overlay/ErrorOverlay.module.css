@@ -37,6 +37,7 @@
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 200ms ease-out forwards;
+
 }
 
 .scroll {
@@ -127,7 +128,7 @@
   height: 48px;
   min-height: 48px;
   position: absolute;
-  top: 48px;
+  top: 47px;
   left: 0;
   right: 0;
   z-index: 1;
