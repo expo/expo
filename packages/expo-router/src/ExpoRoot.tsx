@@ -12,8 +12,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions, INTERNAL_SLOT_NAME } from './getLinkingConfig';
-import { useInitializeExpoRouter } from './global-state/router-store';
+import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { StoreContext } from './global-state/storeContext';
 import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
@@ -43,6 +44,10 @@ const INITIAL_METRICS =
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
       }
     : undefined;
+
+const documentTitle = {
+  enabled: false,
+};
 
 /**
  * @hidden
@@ -120,10 +125,7 @@ function ContextNavigator({
     ? `${serverContext.location.pathname}${serverContext.location.search}`
     : undefined;
 
-  const store = useInitializeExpoRouter(context, {
-    ...linking,
-    serverUrl,
-  });
+  const store = useStore(context, linking, serverUrl);
 
   useDomComponentNavigation(store);
 
@@ -143,26 +145,27 @@ function ContextNavigator({
   }
 
   return (
-    <UpstreamNavigationContainer
-      ref={store.navigationRef}
-      initialState={store.initialState}
-      linking={store.linking as LinkingOptions<any>}
-      onUnhandledAction={onUnhandledAction}
-      documentTitle={{
-        enabled: false,
-      }}>
-      <ServerContext.Provider value={serverContext}>
-        <WrapperComponent>
-          <Content component={store.rootComponent} />
-        </WrapperComponent>
-      </ServerContext.Provider>
-    </UpstreamNavigationContainer>
+    <StoreContext.Provider value={store}>
+      <UpstreamNavigationContainer
+        ref={store.navigationRef}
+        initialState={store.state}
+        linking={store.linking as LinkingOptions<any>}
+        onUnhandledAction={onUnhandledAction}
+        documentTitle={documentTitle}
+        onReady={store.onReady}>
+        <ServerContext.Provider value={serverContext}>
+          <WrapperComponent>
+            <Content />
+          </WrapperComponent>
+        </ServerContext.Provider>
+      </UpstreamNavigationContainer>
+    </StoreContext.Provider>
   );
 }
 
-function Content({ component }: { component: ComponentType<any> }) {
+function Content() {
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    children: <Screen name={INTERNAL_SLOT_NAME} component={component} />,
+    children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
   });
 
   return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;

@@ -2,12 +2,9 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 export type SliderProps = {
-  /**
-   * Custom styles for the slider component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current value of the slider.
    * @default 0
@@ -63,6 +60,14 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
   };
 }
 
-export function Slider(props: SliderProps) {
+export function SliderPrimitive(props: SliderProps) {
   return <SliderNativeView {...transformSliderProps(props)} />;
+}
+
+export function Slider(props: SliderProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <SliderPrimitive {...props} />
+    </Host>
+  );
 }

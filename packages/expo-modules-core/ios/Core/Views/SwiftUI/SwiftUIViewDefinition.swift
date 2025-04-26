@@ -19,7 +19,8 @@ public extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views.
    */
-  func Children() -> some View { // swiftlint:disable:this identifier_name
+  // swiftlint:disable:next identifier_name
+  func Children() -> ForEach<[any ExpoSwiftUI.AnyChild], ObjectIdentifier, AnyView> {
     ForEach(props.children ?? [], id: \.id) { child in
       let view: any View = child.childView
       AnyView(view)

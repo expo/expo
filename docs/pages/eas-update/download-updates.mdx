@@ -67,12 +67,9 @@ export const setupBackgroundUpdates = async () => {
     return Promise.resolve();
   });
 
-  const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
-  if (!isRegistered) {
-    await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-      minimumInterval: 60 * 24,
-    });
-  }
+  await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
+    minimumInterval: 60 * 24,
+  });
 };
 
 setupBackgroundUpdates();

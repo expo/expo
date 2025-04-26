@@ -2,16 +2,12 @@ import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 import { Platform } from 'expo-modules-core';
 
 import { RouteNode } from './Route';
-import { State } from './fork/getPathFromState';
+import { Options, State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
-import { type RedirectConfig } from './getRoutesCore';
-import { RouterStore } from './global-state/router-store';
-import {
-  addEventListener,
-  getInitialURL,
-  getPathFromState,
-  getStateFromPath,
-} from './link/linking';
+import { applyRedirects } from './getRoutesRedirects';
+import { UrlObject } from './global-state/routeInfo';
+import { StoreRedirects } from './global-state/router-store';
+import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
 export const INTERNAL_SLOT_NAME = '__root';
@@ -28,21 +24,21 @@ export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true)
 }
 
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
-  getPathFromState?: typeof getPathFromState;
-  getStateFromPath?: typeof getStateFromPath;
+  getPathFromState: typeof getPathFromState;
+  getStateFromPath: typeof getStateFromPath;
 };
 
 export type LinkingConfigOptions = {
   metaOnly?: boolean;
   serverUrl?: string;
   getInitialURL?: typeof getInitialURL;
-  redirects?: RedirectConfig[];
+  redirects?: StoreRedirects[];
 };
 
 export function getLinkingConfig(
-  store: RouterStore,
   routes: RouteNode,
   context: RequireContext,
+  getRouteInfo: () => UrlObject,
   { metaOnly = true, serverUrl, redirects }: LinkingConfigOptions = {}
 ): ExpoLinkingOptions {
   // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
@@ -57,7 +53,6 @@ export function getLinkingConfig(
     : undefined;
 
   const config = getNavigationConfig(routes, metaOnly);
-  const boundGetStateFromPath = getStateFromPath.bind(store);
 
   return {
     prefixes: [],
@@ -77,13 +72,13 @@ export function getLinkingConfig(
           initialUrl = serverUrl ?? getInitialURL();
 
           if (typeof initialUrl === 'string') {
-            initialUrl = store.applyRedirects(initialUrl);
+            initialUrl = applyRedirects(initialUrl, redirects);
             if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
-              url = store.applyRedirects(url);
+              url = applyRedirects(url, redirects);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }
@@ -95,8 +90,10 @@ export function getLinkingConfig(
       }
       return initialUrl;
     },
-    subscribe: addEventListener(nativeLinking, store),
-    getStateFromPath: boundGetStateFromPath,
+    subscribe: subscribe(nativeLinking, redirects),
+    getStateFromPath: <ParamList extends object>(path: string, options?: Options<ParamList>) => {
+      return getStateFromPath(path, options, getRouteInfo().segments);
+    },
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {

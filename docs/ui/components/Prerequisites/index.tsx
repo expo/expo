@@ -90,7 +90,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               onClick={() => {
                 detailsRef?.current?.setAttribute('open', '');
               }}
-              className="ml-auto inline rounded-md p-1 hocus:bg-element"
+              className="ml-1 inline rounded-md p-1 hocus:bg-element"
               aria-label="Permalink">
               <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
             </LinkBase>

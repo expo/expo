@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.1.1 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 9.1.0 — 2025-04-23
 
 ### 🎉 New features

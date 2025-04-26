@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
 
+import { Host } from '../Host';
+
 /**
  * The type of `Gauge`.
  * @platform ios
@@ -55,10 +57,6 @@ export type GaugeProps = {
    * Color (or array of colors for gradient) of the `Gauge`.
    */
   color?: ColorValue | ColorValue[];
-  /**
-   * Optional style to apply to the `Gauge` component.
-   */
-  style?: StyleProp<ViewStyle>;
 };
 
 let GaugeNativeView: React.ComponentType<GaugeProps> | null;
@@ -68,12 +66,24 @@ if (Platform.OS === 'ios') {
 }
 
 /**
- * Renders a native `Gauge` component.
- * @platform ios
+ * `<Gauge>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
  */
-export function Gauge({ type = 'default', ...props }: GaugeProps) {
+export function GaugePrimitive({ type = 'default', ...props }: GaugeProps) {
   if (!GaugeNativeView) {
     return null;
   }
   return <GaugeNativeView type={type} {...props} />;
+}
+
+/**
+ * Renders a native `Gauge` component.
+ * @platform ios
+ */
+export function Gauge(props: GaugeProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <GaugePrimitive {...props} />
+    </Host>
+  );
 }

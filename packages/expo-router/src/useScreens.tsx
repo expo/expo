@@ -1,15 +1,18 @@
 'use client';
 
-import type {
-  EventMapBase,
-  NavigationState,
-  ParamListBase,
-  RouteProp,
-  ScreenListeners,
+import {
+  useIsFocused,
+  useStateForPath,
+  type EventMapBase,
+  type NavigationState,
+  type ParamListBase,
+  type RouteProp,
+  type ScreenListeners,
 } from '@react-navigation/native';
 import React from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import { store } from './global-state/router-store';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
@@ -237,6 +240,15 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     // Pass all other props to the component
     ...props
   }: any) {
+    const stateForPath = useStateForPath();
+    const isFocused = useIsFocused();
+
+    if (isFocused) {
+      const state = navigation.getState();
+      const isLeaf = !('state' in state.routes[state.index]);
+      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+    }
+
     return (
       <Route node={value} route={route}>
         <React.Suspense fallback={<SuspenseFallback route={value} />}>
