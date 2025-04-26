@@ -193,6 +193,7 @@ export class LogBoxLog {
     this.updateStatus(type, null, null, null);
     symbolicateStackAndCacheAsync(this.getStack(type)).then(
       (data) => {
+        console.log('LogBoxLog.symbolicate:', JSON.stringify(data, null, 2));
         this.updateStatus(type, null, data?.stack, data?.codeFrame);
       },
       (error) => {

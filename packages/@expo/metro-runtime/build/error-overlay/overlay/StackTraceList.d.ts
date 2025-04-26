@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JSX } from 'react';
+import React from 'react';
 import type { StackType } from '../Data/LogBoxLog';
 import { type MetroStackFrame } from '../devServerEndpoints';
 export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }: {
     type: StackType;
-    projectRoot?: string;
+    projectRoot: string;
     onRetry: () => void;
     stack: MetroStackFrame[] | null;
     symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
-}): JSX.Element | null;
+}): React.JSX.Element | null;
 //# sourceMappingURL=StackTraceList.d.ts.map

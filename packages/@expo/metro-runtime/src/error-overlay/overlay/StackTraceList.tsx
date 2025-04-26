@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { JSX, useState, type SVGProps } from 'react';
+import React, { useState, type SVGProps } from 'react';
 import { Pressable } from 'react-native';
 
 import type { StackType } from '../Data/LogBoxLog';
@@ -100,14 +100,14 @@ function List({
   isInitial,
   initialDelay,
 }: {
-  items: { id: number; content: JSX.Element; isCollapsed: boolean }[];
+  items: { id: number; content: React.ReactNode; isCollapsed: boolean }[];
   showCollapsed: boolean;
   isInitial: boolean;
   initialDelay: number;
 }) {
   const [displayItems, setDisplayItems] = React.useState<
     {
-      item: { id: number; content: JSX.Element; isCollapsed: boolean };
+      item: { id: number; content: React.ReactNode; isCollapsed: boolean };
       status: 'stable' | 'entering' | 'exiting';
     }[]
   >(items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' })));
@@ -145,7 +145,7 @@ function List({
           isInitial={isInitial}
           initialDelay={initialDelay}
           index={index}>
-          <div className="trace-content">{d.item.content}</div>
+          {d.item.content}
         </Transition>
       ))}
     </div>
@@ -160,7 +160,7 @@ export function StackTraceList({
   projectRoot,
 }: {
   type: StackType;
-  projectRoot?: string;
+  projectRoot: string;
   onRetry: () => void;
   stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
@@ -360,7 +360,7 @@ export function StackTraceList({
               lineNumber != null;
 
             return {
-              id: index,
+              id: String(index),
               content: (
                 <StackTraceItem
                   key={index}
@@ -370,7 +370,7 @@ export function StackTraceList({
                   onPress={isLaunchable ? () => openFileInEditor(file, lineNumber) : undefined}
                 />
               ),
-              isCollapsed: frame.collapse,
+              isCollapsed: !!frame.collapse,
             };
           })}
           showCollapsed={!collapsed}
@@ -389,9 +389,10 @@ function StackTraceItem({
 }: {
   isLaunchable: boolean;
   frame: MetroStackFrame;
-  projectRoot?: string;
+  projectRoot: string;
   onPress?: () => void;
 }) {
+  const fileName = getStackFormattedLocation(projectRoot, frame);
   return (
     <div
       aria-disabled={!isLaunchable ? true : undefined}
@@ -401,9 +402,7 @@ function StackTraceItem({
         opacity: frame.collapse === true ? 0.4 : 1,
       }}>
       <code className={styles.stackFrameTitle}>{frame.methodName}</code>
-      <code className={styles.stackFrameFile}>
-        {getStackFormattedLocation(projectRoot ?? '', frame)}
-      </code>
+      <code className={styles.stackFrameFile}>{fileName}</code>
     </div>
   );
 }

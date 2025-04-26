@@ -2,11 +2,13 @@ import { View } from 'react-native';
 import { StackTraceList } from '@expo/metro-runtime/src/error-overlay/overlay/StackTraceList';
 
 export default function App() {
+  const projectRoot = '/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e';
   return (
     <View style={{ flex: 1, gap: 16, backgroundColor: 'black' }}>
       <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <StackTraceList
           onRetry={() => {}}
+          projectRoot={projectRoot}
           symbolicationStatus="COMPLETE"
           stack={[
             {
@@ -47,6 +49,7 @@ export default function App() {
       </View>
       <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <StackTraceList
+          projectRoot={projectRoot}
           onRetry={() => {}}
           symbolicationStatus="PENDING"
           stack={[
@@ -72,6 +75,7 @@ export default function App() {
       </View>
       <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <StackTraceList
+          projectRoot={projectRoot}
           onRetry={() => {}}
           symbolicationStatus="FAILED"
           stack={[
@@ -98,6 +102,7 @@ export default function App() {
 
       <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <StackTraceList
+          projectRoot={projectRoot}
           onRetry={() => {}}
           symbolicationStatus="NONE"
           stack={[
