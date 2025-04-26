@@ -11,6 +11,14 @@ import path from 'path';
  */
 export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
+/**
+ * Repository root directory
+ */
+export const repoRoot = nullthrows(
+  process.env.EXPO_REPO_ROOT || process.env.EAS_BUILD_WORKINGDIR,
+  'EXPO_REPO_ROOT is not defined'
+);
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
