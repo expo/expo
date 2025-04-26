@@ -18,6 +18,7 @@
     "error-overlay.js",
     "error-overlay.d.ts",
     "assets",
+    "swap-rn-logbox.js",
     "!**/__tests__"
   ],
   "scripts": {

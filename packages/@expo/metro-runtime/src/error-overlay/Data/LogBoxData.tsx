@@ -371,7 +371,7 @@ const emitter = new NativeEventEmitter({
   removeListeners() {},
 });
 
-export function withSubscription(WrappedComponent: React.FC<object>) {
+export function withSubscription(WrappedComponent: React.FC<any>) {
   class RootDevErrorBoundary extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
       return { hasError: true };

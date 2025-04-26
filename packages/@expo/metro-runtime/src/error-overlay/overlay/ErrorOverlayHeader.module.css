@@ -9,6 +9,11 @@
   min-height: 48px;
   justify-content: space-between;
   position: relative;
+  /* no text select */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .leftGroup {
@@ -71,14 +76,13 @@
   padding: 2px;
   transition: background-color 0.2s;
   justify-content: center;
-
   cursor: pointer;
-
 }
 
 .pageButton[aria-disabled='true'] {
   cursor: not-allowed;
 }
+
 .pageButton:not([aria-disabled]):hover {
   background-color: var(--expo-log-secondary-system-background-hover);
 }

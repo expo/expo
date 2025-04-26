@@ -2,7 +2,7 @@
   position: fixed;
 
   /* Add top safe area */
-  top: calc(2vh + env(safe-area-inset-top, 2vh));
+  top: calc(1vh + env(safe-area-inset-top, 2vh));
   right: 0;
   bottom: 0;
   left: 0;

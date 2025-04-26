@@ -61,7 +61,7 @@ export declare function addIgnorePatterns(patterns: IgnorePattern[]): void;
 export declare function setDisabled(value: boolean): void;
 export declare function isDisabled(): boolean;
 export declare function observe(observer: Observer): Subscription;
-export declare function withSubscription(WrappedComponent: React.FC<object>): {
+export declare function withSubscription(WrappedComponent: React.FC<any>): {
     new (props: object): {
         componentDidCatch(err: Error & {
             componentStack?: string;
