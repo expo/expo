@@ -94,11 +94,11 @@ export class LogBoxLog {
   }
 
   getStackStatus(type: StackType) {
-    return this.symbolicated[type].status;
+    return this.symbolicated[type]?.status;
   }
 
   getAvailableStack(type: StackType): MetroStackFrame[] | null {
-    if (this.symbolicated[type].status === 'COMPLETE') {
+    if (this.symbolicated[type]?.status === 'COMPLETE') {
       return this.symbolicated[type].stack;
     }
     return this.getStack(type);
@@ -106,7 +106,7 @@ export class LogBoxLog {
 
   private flushCallbacks(type: StackType): void {
     const callbacks = this.callbacks.get(type);
-    const status = this.symbolicated[type].status;
+    const status = this.symbolicated[type]?.status;
     if (callbacks) {
       for (const callback of callbacks) {
         callback(status);
@@ -140,7 +140,7 @@ export class LogBoxLog {
     if (callback) {
       this.pushCallback(type, callback);
     }
-    const status = this.symbolicated[type].status;
+    const status = this.symbolicated[type]?.status;
 
     if (status === 'COMPLETE') {
       if (PRINT_FIXTURES) {
@@ -186,7 +186,7 @@ export class LogBoxLog {
   }
 
   private handleSymbolicate(type: StackType): void {
-    if (this.symbolicated[type].status === 'PENDING') {
+    if (this.symbolicated[type]?.status === 'PENDING') {
       return;
     }
 
@@ -207,7 +207,7 @@ export class LogBoxLog {
     stack?: MetroStackFrame[] | null,
     codeFrame?: CodeFrame | null
   ): void {
-    const lastStatus = this.symbolicated[type].status;
+    const lastStatus = this.symbolicated[type]?.status;
     if (error != null) {
       this.symbolicated[type] = {
         error,
@@ -232,7 +232,7 @@ export class LogBoxLog {
       };
     }
 
-    const status = this.symbolicated[type].status;
+    const status = this.symbolicated[type]?.status;
     if (lastStatus !== status) {
       if (['COMPLETE', 'FAILED'].includes(status)) {
         this.flushCallbacks(type);

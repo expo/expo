@@ -109,16 +109,8 @@
   bottom: 0;
   width: 20;
   pointer-events: none;
-
-  /* background: linear-gradient(to right, transparent, var(--expo-log-color-background));
-  mask-image: linear-gradient(to left, var(--expo-log-color-background) 50%, transparent); */
-  /* backdrop-filter: blur(4px); */
 }
 .blurGradientLR {
-  /* background: linear-gradient(to left, transparent, var(--expo-log-color-background));
-  mask-image: linear-gradient(to right, var(--expo-log-color-background) 50%, transparent);
-  backdrop-filter: blur(8px); */
-
   background: linear-gradient(to right, var(--expo-log-color-background) 0%, rgba(0, 0, 0, 0) 100%);
   border-top-left-radius: 6px;
   opacity: 0;

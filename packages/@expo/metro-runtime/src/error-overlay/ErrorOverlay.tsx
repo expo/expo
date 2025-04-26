@@ -187,6 +187,19 @@ export function LogBoxInspector({
     }
   }, [scrollRef, headerBlurRef]);
 
+  let codeFrames = log?.codeFrame
+    ? Object.entries(log.codeFrame).filter(([, value]) => value?.content)
+    : [];
+
+  codeFrames = uniqueBy(
+    uniqueBy(codeFrames, ([, value]) => {
+      return [value.fileName, value.location?.column, value.location?.row].join(':');
+    }),
+    ([, value]) => {
+      return value?.content;
+    }
+  );
+
   return (
     <>
       <div className={styles.overlay}>
@@ -233,14 +246,7 @@ export function LogBoxInspector({
             />
 
             <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
-              {uniqueBy(
-                uniqueBy(Object.entries(log.codeFrame), ([, value]) => {
-                  return [value.fileName, value.location?.column, value.location?.row].join(':');
-                }),
-                ([, value]) => {
-                  return value.content;
-                }
-              ).map(([key, codeFrame]) => (
+              {codeFrames.map(([key, codeFrame]) => (
                 <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />
               ))}
 

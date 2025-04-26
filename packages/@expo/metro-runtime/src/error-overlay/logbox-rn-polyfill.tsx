@@ -4,8 +4,10 @@ import { View, StyleSheet } from 'react-native';
 
 import LogBoxExpo from '@expo/metro-runtime/src/error-overlay/logbox-polyfill-dom';
 
-export default function LogBoxRNPolyfill(props: {
-  onDismiss: () => void;
+import * as LogBoxData from 'react-native/Libraries/LogBox/Data/LogBoxData';
+
+function LogBoxRNPolyfill(props: {
+  onDismiss: (index: number) => void;
   onMinimize: () => void;
   onChangeSelectedIndex: (index: number) => void;
   logs: any[];
@@ -19,6 +21,9 @@ export default function LogBoxRNPolyfill(props: {
 
       //  TODO: Serialize
       return {
+        symbolicated: log.symbolicated,
+        symbolicatedComponentStack: log.symbolicatedComponentStack,
+        componentCodeFrame: log.componentCodeFrame,
         level: log.level,
         type: log.type,
         message: log.message,
@@ -35,12 +40,17 @@ export default function LogBoxRNPolyfill(props: {
   }, [props.logs]);
 
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: 'transparent' }]}>
+    <View
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: 'rgba(255,0,0,0.2)', pointerEvents: 'box-none' },
+      ]}>
       <LogBoxExpo
         platform={process.env.EXPO_OS}
         dom={{
           contentInsetAdjustmentBehavior: 'never',
           containerStyle: {
+            pointerEvents: 'box-none',
             position: 'absolute',
             top: 0,
             left: 0,
@@ -48,18 +58,19 @@ export default function LogBoxRNPolyfill(props: {
             bottom: 0,
           },
           style: {
+            pointerEvents: 'box-none',
             flex: 1,
           },
         }}
         fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
           try {
-            console.log('fetchJsonAsync', input, init);
+            // console.log('fetchJsonAsync', input, init);
             const res = await fetch(input, init);
             const json = await res.json();
-            console.log('fetchJsonAsync.res', json);
+            // console.log('fetchJsonAsync.res', json);
             return json;
           } catch (e) {
-            console.log('fetchJsonAsync.error', e);
+            // console.log('fetchJsonAsync.error', e);
             throw e;
           }
         }}
@@ -72,3 +83,61 @@ export default function LogBoxRNPolyfill(props: {
     </View>
   );
 }
+
+function _LogBoxInspectorContainer({ selectedLogIndex, logs }) {
+  const _handleDismiss = (index: number) => {
+    // Here we handle the cases when the log is dismissed and it
+    // was either the last log, or when the current index
+    // is now outside the bounds of the log array.
+    console.log('LogBoxInspectorContainer._handleDismiss');
+    const logsArray = Array.from(logs);
+    // if (selectedLogIndex != null) {
+    //   if (logsArray.length - 1 <= 0) {
+    //     LogBoxData.setSelectedLog(-1);
+    //   } else if (selectedLogIndex >= logsArray.length - 1) {
+    //     LogBoxData.setSelectedLog(selectedLogIndex - 1);
+    //   }
+
+    //   LogBoxData.dismiss(logsArray[selectedLogIndex]);
+    // }
+    LogBoxData.dismiss(logsArray[index]);
+  };
+
+  const _handleMinimize = () => {
+    console.log('LogBoxInspectorContainer._handleMinimize');
+    LogBoxData.setSelectedLog(-1);
+  };
+
+  const _handleSetSelectedLog = (index) => {
+    console.log('LogBoxInspectorContainer._handleSetSelectedLog');
+
+    LogBoxData.setSelectedLog(index);
+  };
+
+  if (selectedLogIndex < 0) {
+    return null;
+  }
+
+  return (
+    <LogBoxRNPolyfill
+      onDismiss={_handleDismiss}
+      onMinimize={_handleMinimize}
+      onChangeSelectedIndex={_handleSetSelectedLog}
+      logs={logs}
+      selectedIndex={selectedLogIndex}
+    />
+  );
+  //   return (
+  //     <View style={StyleSheet.absoluteFill}>
+  //       <LogBoxInspector
+  //         onDismiss={_handleDismiss}
+  //         onMinimize={_handleMinimize}
+  //         onChangeSelectedIndex={_handleSetSelectedLog}
+  //         logs={props.logs}
+  //         selectedIndex={props.selectedLogIndex}
+  //       />
+  //     </View>
+  //   );
+}
+
+export default LogBoxData.withSubscription(_LogBoxInspectorContainer);

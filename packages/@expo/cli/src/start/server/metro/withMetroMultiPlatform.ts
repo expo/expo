@@ -660,6 +660,14 @@ export function withExtendedResolver(
           }
         }
 
+        if (normal.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
+          // '@expo/metro-runtime/swap-rn-logbox.js'
+          return {
+            ...result,
+            filePath: require.resolve('@expo/metro-runtime/swap-rn-logbox.js'),
+          };
+        }
+
         // When server components are enabled, redirect React Native's renderer to the canary build
         // this will enable the use hook and other requisite features from React 19.
         if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {

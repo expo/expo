@@ -173,17 +173,19 @@ export function CodeFrame({
           contentContainerStyle={{
             flexDirection: 'column',
           }}>
-          <Ansi
-            style={{
-              flexDirection: 'column',
-              color: 'var(--expo-log-color-label)',
-              fontSize: 12,
-              includeFontPadding: false,
-              lineHeight: 20,
-              fontFamily: 'var(--expo-log-font-mono)',
-            }}
-            text={content}
-          />
+          {content && (
+            <Ansi
+              style={{
+                flexDirection: 'column',
+                color: 'var(--expo-log-color-label)',
+                fontSize: 12,
+                includeFontPadding: false,
+                lineHeight: 20,
+                fontFamily: 'var(--expo-log-font-mono)',
+              }}
+              text={content}
+            />
+          )}
         </ScrollView>
       </div>
     </div>
