@@ -149,6 +149,29 @@ function List({
   );
 }
 
+function useContainerWidth() {
+  const [width, setWidth] = useState(0);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    if (ref.current) {
+      setWidth(ref.current.clientWidth);
+
+      const handleResize = () => {
+        if (ref.current) {
+          setWidth(ref.current.clientWidth);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [ref]);
+
+  return { width, ref };
+}
+
 export function StackTraceList({
   onRetry,
   type,
@@ -191,6 +214,8 @@ export function StackTraceList({
     };
   }, [isInitial]);
 
+  const { width: containerWidth, ref } = useContainerWidth();
+
   if (!stackCount) {
     return null;
   }
@@ -201,6 +226,7 @@ export function StackTraceList({
     <div style={{ marginTop: 5, display: 'flex', flexDirection: 'column', gap: 6 }}>
       {/* Header */}
       <div
+        ref={ref}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -263,7 +289,7 @@ export function StackTraceList({
         <Pressable onPress={() => setCollapsed(!collapsed)}>
           {({ hovered }) => (
             <div
-              title={collapseTitle}
+              title={collapseTitle.full}
               style={{
                 padding: 6,
                 borderRadius: 8,
@@ -286,7 +312,7 @@ export function StackTraceList({
                   userSelect: 'none',
                   color: 'rgba(234.6, 234.6, 244.8, 0.6)',
                 }}>
-                {collapseTitle}
+                {containerWidth > 440 ? collapseTitle.full : collapseTitle.short}
               </span>
 
               <svg
@@ -411,9 +437,12 @@ const JavaScriptIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean): string {
+function getCollapseMessage(
+  stackFrames: MetroStackFrame[],
+  collapsed: boolean
+): { short: string; full: string } {
   if (stackFrames.length === 0) {
-    return 'No frames to show';
+    return { full: 'No frames to show', short: 'No frames' };
   }
 
   const collapsedCount = stackFrames.reduce((count, { collapse }) => {
@@ -424,14 +453,18 @@ function getCollapseMessage(stackFrames: MetroStackFrame[], collapsed: boolean):
   }, 0);
 
   if (collapsedCount === 0) {
-    return 'Showing all frames';
+    return { full: 'Showing all frames', short: 'Show all' };
   }
+  const short = collapsed ? 'Show' : 'Hide';
 
   const framePlural = `frame${collapsedCount > 1 ? 's' : ''}`;
   if (collapsedCount === stackFrames.length) {
-    return `${collapsed ? 'Show' : 'Hide'}${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} ignore-listed ${framePlural}`;
+    return {
+      full: `${short}${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} ignore-listed ${framePlural}`,
+      short,
+    };
   } else {
     // Match the chrome inspector wording
-    return `${collapsed ? 'Show' : 'Hide'} ${collapsedCount} ignored-listed ${framePlural}`;
+    return { full: `${short} ${collapsedCount} ignored-listed ${framePlural}`, short };
   }
 }
