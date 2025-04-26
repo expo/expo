@@ -118,9 +118,15 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
-      .lookAroundViewer(isPresented: $state.lookAroundPresented, initialScene: state.lookAroundScene, allowsNavigation: true, showsRoadLabels: true, pointsOfInterest: .all, onDismiss: {
-        state.lookAroundScene = nil
-        state.lookAroundPresented = false
+      .lookAroundViewer(
+        isPresented: $state.lookAroundPresented,
+        initialScene: state.lookAroundScene,
+        allowsNavigation: true,
+        showsRoadLabels: true,
+        pointsOfInterest: .all,
+        onDismiss: {
+          state.lookAroundScene = nil
+          state.lookAroundPresented = false
       })
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
