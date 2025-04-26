@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useState, type SVGProps } from 'react';
-import type { GestureResponderEvent } from 'react-native';
 import { Pressable } from 'react-native';
 
 import type { StackType } from '../Data/LogBoxLog';
@@ -127,6 +126,8 @@ export function StackTraceList({
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 2,
+                userSelect: 'none',
+                cursor: 'pointer',
               }}>
               <span
                 className={styles.collapseTitle}

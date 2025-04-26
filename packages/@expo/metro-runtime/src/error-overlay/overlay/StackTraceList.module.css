@@ -1,7 +1,8 @@
 .collapseTitle {
   display: none;
 }
-@media screen and (min-width: 768px) {
+/* xs */
+@media screen and (min-width: 320px) {
   .collapseTitle {
     display: block;
   }
