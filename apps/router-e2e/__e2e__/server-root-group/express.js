@@ -7,7 +7,9 @@ const express = require('express');
 const compression = require('compression');
 const morgan = require('morgan');
 
+// eslint-disable-next-line no-undef
 const CLIENT_BUILD_DIR = path.join(__dirname, '../../dist-server-root-group/client');
+// eslint-disable-next-line no-undef
 const SERVER_BUILD_DIR = path.join(__dirname, '../../dist-server-root-group/server');
 
 const app = express();

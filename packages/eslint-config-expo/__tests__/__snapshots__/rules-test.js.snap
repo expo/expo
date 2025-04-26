@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lints custom rules: fixtures/rule-require.js 1`] = `
+{
+  "errorCount": 0,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints custom rules: fixtures/rule-require.ts 1`] = `
+{
+  "errorCount": 0,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 19,
+      "endColumn": 50,
+      "endLine": 2,
+      "line": 2,
+      "message": "A \`require()\` style import is forbidden.",
+      "messageId": "noRequireImports",
+      "nodeType": "CallExpression",
+      "ruleId": "@typescript-eslint/no-require-imports",
+      "severity": 1,
+    },
+  ],
+  "source": "// not allowed in TS files
+const something = require('./baseline/all-00.js');
+console.log(something);
+",
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 1,
+}
+`;

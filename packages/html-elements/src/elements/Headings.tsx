@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React, { ComponentType } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
@@ -16,11 +16,15 @@ function createHeadingComponent(level: HeadingLevel): ComponentType<TextProps> {
       accessibilityRole: 'header',
     },
   });
-  return forwardRef((props: TextProps, ref) => {
-    return (
-      <Text {...nativeProps} {...props} style={[styles[`h${level}`], props.style]} ref={ref} />
-    );
-  }) as ComponentType<TextProps>;
+  function Heading(props: TextProps) {
+    return <Text {...nativeProps} {...props} style={[styles[`h${level}`], props.style]} />;
+  }
+
+  if (__DEV__) {
+    Heading.displayName = `H${level}`;
+  }
+
+  return Heading;
 }
 
 export const H1 = createHeadingComponent(1);
@@ -29,15 +33,6 @@ export const H3 = createHeadingComponent(3);
 export const H4 = createHeadingComponent(4);
 export const H5 = createHeadingComponent(5);
 export const H6 = createHeadingComponent(6);
-
-if (__DEV__) {
-  H1.displayName = 'H1';
-  H2.displayName = 'H2';
-  H3.displayName = 'H3';
-  H4.displayName = 'H4';
-  H5.displayName = 'H5';
-  H6.displayName = 'H6';
-}
 
 // Default web styles: http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
 const styles = StyleSheet.create({

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 13.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
+
 ## 13.1.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

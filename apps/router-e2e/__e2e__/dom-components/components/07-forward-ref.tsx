@@ -1,14 +1,14 @@
 'use dom';
 
 import { useDOMImperativeHandle, type DOMImperativeFactory, type DOMProps } from 'expo/dom';
-import { forwardRef, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 export interface ForwardedImperativeRef extends DOMImperativeFactory {
   toggleWidth: () => void;
   updateText: (value: string) => void;
 }
 
-export default forwardRef<ForwardedImperativeRef, { dom?: DOMProps }>(function Page(props, ref) {
+export default function Page({ ref }: { dom?: DOMProps; ref: React.Ref<ForwardedImperativeRef> }) {
   const [text, setText] = useState('');
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -33,4 +33,4 @@ export default forwardRef<ForwardedImperativeRef, { dom?: DOMProps }>(function P
       {text}
     </div>
   );
-});
+}

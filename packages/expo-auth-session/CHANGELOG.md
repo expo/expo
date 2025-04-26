@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 6.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.3 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
 ## 6.1.2 — 2025-04-14
 
 ### 🐛 Bug fixes

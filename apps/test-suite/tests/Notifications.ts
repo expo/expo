@@ -24,7 +24,8 @@ import { isInteractive } from '../utils/Environment';
 export const name = 'Notifications';
 
 const behaviorEnableAll: NotificationBehavior = {
-  shouldShowAlert: true,
+  shouldShowList: true,
+  shouldShowBanner: true,
   shouldPlaySound: true,
   shouldSetBadge: true,
 };

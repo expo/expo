@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 5.0.2-preview.6 — 2025-04-25
+
+### 💡 Others
+
+- bump e2e tests to React 19 and fix lint ([#36344](https://github.com/expo/expo/pull/36344) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.2-preview.5 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.2-preview.4 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

@@ -21,7 +21,6 @@ import {
   parseCommentContent,
   getCommentOrSignatureComment,
   getTagData,
-  renderParams,
   renderDefaultValue,
   renderIndexSignature,
   getCommentContent,
@@ -30,6 +29,7 @@ import {
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
+import { APIMethodParamRows } from './components/APIMethodParamRows';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -64,33 +64,45 @@ const renderTypeDeclarationTable = (
 
 const renderTypeMethodEntry = (
   { children, signatures, comment }: TypeDeclarationContentData,
-  sdkVersion: string
+  sdkVersion: string,
+  inline: boolean = false
 ): ReactNode => {
   const baseSignature = signatures?.[0];
 
-  if (baseSignature?.type) {
+  if (!baseSignature?.type) {
+    return null;
+  }
+
+  const content = (
+    <>
+      <RawH4 className="!mb-3">
+        <MONOSPACE>
+          {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+          {` => `}
+          <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
+        </MONOSPACE>
+      </RawH4>
+      <APICommentTextBlock comment={comment} />
+      <Table>
+        <APIParamsTableHeadRow mainCellLabel="Parameter" />
+        <tbody>
+          {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        </tbody>
+      </Table>
+    </>
+  );
+
+  if (inline) {
+    return <div className="border-t border-secondary p-4 pt-2.5">{content}</div>;
+  } else {
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
         className="!mb-0">
-        <RawH4 className="!mb-3">
-          <MONOSPACE>
-            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
-            {` => `}
-            <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
-          </MONOSPACE>
-        </RawH4>
-        <APICommentTextBlock comment={comment} />
-        <Table>
-          <APIParamsTableHeadRow mainCellLabel="Parameter" />
-          <tbody>
-            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
-          </tbody>
-        </Table>
+        {content}
       </APIBox>
     );
   }
-  return null;
 };
 
 const renderTypePropertyRow = (
@@ -165,7 +177,9 @@ const renderType = (
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
-            {signature.parameters && renderParams(signature.parameters, sdkVersion)}
+            {signature.parameters && (
+              <APIMethodParamRows parameters={signature.parameters} sdkVersion={sdkVersion} />
+            )}
           </div>
         ) : null}
         {signature?.type && (
@@ -247,7 +261,7 @@ const renderType = (
           )}
           {propMethodDefinitions.map(
             propType =>
-              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion, true)
           )}
         </div>
       );

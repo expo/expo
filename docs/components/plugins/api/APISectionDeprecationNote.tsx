@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { BOLD } from '~/ui/components/Text';
 
 import { CommentData } from './APIDataTypes';

@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 16.1.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.4 — 2025-04-23
+
+### 🎉 New features
+
+- [iOS] Support selecting which lens to use for the camera. ([#36233](https://github.com/expo/expo/pull/36233) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Web] Remove `forwardRef` from Camera component. ([#36320](https://github.com/expo/expo/pull/36320) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.1.3 — 2025-04-21
+
+### 💡 Others
+
+- [iOS] Remove unnecessary async calls. ([#36222](https://github.com/expo/expo/pull/36222) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.1.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

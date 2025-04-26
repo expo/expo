@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.RemoteInput
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.*
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
@@ -102,7 +103,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param behavior Allowed notification behavior
      * @param receiver A receiver to which send the result of presenting the notification
      */
-    fun present(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
+    fun present(context: Context, notification: Notification, behavior: NotificationBehaviorRecord? = null, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
       doWork(
         context,

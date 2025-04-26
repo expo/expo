@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.node",
+  "extends": "expo-module-scripts/tsconfig.node",
   "include": ["./src", "./ts-declarations"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
