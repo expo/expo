@@ -127,7 +127,8 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         onDismiss: {
           state.lookAroundScene = nil
           state.lookAroundPresented = false
-      })
+        }
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
