@@ -24,11 +24,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+import host.exp.expoview.R
 
 // this needs to stay for versioning to work
 
@@ -100,6 +103,7 @@ fun SplashScreenImage(
     model = imageUrl,
     contentDescription = "Splash Screen Image",
     contentScale = resizeMode.toContentScale(),
+    loading = placeholder(R.drawable.project_default_icon),
     modifier = Modifier
       .width(width)
       .height(height)
