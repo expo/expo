@@ -55,10 +55,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.polylines) { polyline in
-           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
-             .stroke(polyline.color, lineWidth: polyline.width)
-             .tag(MapSelection<MKMapItem>(polyline.mapItem))
-         }
+          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+            .stroke(polyline.color, lineWidth: polyline.width)
+            .tag(MapSelection<MKMapItem>(polyline.mapItem))
+        }
 
         ForEach(props.annotations) { annotation in
           Annotation(
