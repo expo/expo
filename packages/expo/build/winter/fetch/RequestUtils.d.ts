@@ -1,4 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
 import { type NativeHeadersType } from './NativeRequest';
 /**
  * convert a ReadableStream to a Uint8Array
