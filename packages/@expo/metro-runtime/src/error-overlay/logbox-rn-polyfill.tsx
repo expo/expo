@@ -2,7 +2,7 @@ import React from 'react';
 
 import { View, StyleSheet } from 'react-native';
 
-import LogBoxExpo from '@expo/metro-runtime/src/error-overlay/logbox-polyfill-dom';
+import LogBoxPolyfillDOM from '@expo/metro-runtime/src/error-overlay/logbox-polyfill-dom';
 
 import * as LogBoxData from 'react-native/Libraries/LogBox/Data/LogBoxData';
 
@@ -39,13 +39,18 @@ function LogBoxRNPolyfill(props: {
     });
   }, [props.logs]);
 
+  // console.log('LogBoxRNPolyfill.logs', JSON.stringify(logs));
   return (
     <View
       style={[
         StyleSheet.absoluteFill,
-        { backgroundColor: 'rgba(255,0,0,0.2)', pointerEvents: 'box-none' },
+        {
+          backgroundColor: 'transparent',
+          // backgroundColor: 'rgba(255,0,0,0.2)',
+          pointerEvents: 'box-none',
+        },
       ]}>
-      <LogBoxExpo
+      <LogBoxPolyfillDOM
         platform={process.env.EXPO_OS}
         dom={{
           contentInsetAdjustmentBehavior: 'never',
@@ -61,6 +66,24 @@ function LogBoxRNPolyfill(props: {
             pointerEvents: 'box-none',
             flex: 1,
           },
+          suppressMenuItems: ['underline', 'lookup', 'translate'],
+          // menuItems: [
+          //   {
+          //     label: 'Copy',
+          //     key: 'copy',
+          //   },
+          //   {
+          //     label: '𝝠 Expo',
+          //     key: 'expo',
+          //   },
+          //   {
+          //     label: 'Share',
+          //     key: 'share',
+          //   },
+          // ],
+          // onCustomMenuSelection(event) {
+
+          // },
         }}
         fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
           try {
@@ -73,6 +96,9 @@ function LogBoxRNPolyfill(props: {
             // console.log('fetchJsonAsync.error', e);
             throw e;
           }
+        }}
+        onCopyText={(text: string) => {
+          require('react-native').Clipboard.setString(text);
         }}
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}

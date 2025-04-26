@@ -159,7 +159,12 @@ export function LogBoxInspector({
       errContents.push('', 'Call Stack', getFormattedStackTrace(projectRoot ?? '', stackTrace));
     }
 
-    navigator.clipboard.writeText(errContents.join('\n'));
+    if (typeof __polyfill_onCopyText === 'function') {
+      __polyfill_onCopyText(errContents.join('\n'));
+    } else {
+      // Fallback to the default copy function
+      navigator.clipboard.writeText(errContents.join('\n'));
+    }
   };
   const [collapsed, setCollapsed] = useState(true);
 
@@ -354,6 +359,7 @@ function ErrorMessageHeader(props: {
           style={{
             fontFamily: 'var(--expo-log-font-family)',
             padding: 8,
+            marginLeft: -4,
             backgroundColor: 'rgba(205, 97, 94, 0.2)',
             borderRadius: 8,
             fontWeight: '600',

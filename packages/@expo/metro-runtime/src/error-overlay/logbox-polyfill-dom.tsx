@@ -1,12 +1,11 @@
 'use dom';
 
-import { LogBoxInspector, LogBoxInspectorContainer } from './ErrorOverlay';
-import { LogBoxLog, LogContext } from './Data/LogBoxLog';
+import { LogBoxInspectorContainer } from './ErrorOverlay';
+import { LogBoxLog, LogContext, StackType } from './Data/LogBoxLog';
 import * as LogBoxData from './Data/LogBoxData';
 
-// const Foo = LogBoxData.withSubscription(LogBoxInspectorContainer);
-
 import React from 'react';
+import type { CodeFrame } from './devServerEndpoints';
 
 function useViewportMeta(content: string) {
   React.useEffect(() => {
@@ -31,12 +30,13 @@ export default function LogBoxPolyfillDOM({
   onDismiss,
   onMinimize,
   onChangeSelectedIndex,
-
+  onCopyText,
   selectedIndex,
   platform,
   fetchJsonAsync,
   ...props
 }: {
+  onCopyText: (text: string) => void;
   fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
   platform: string;
   onDismiss: (index: number) => void;
@@ -50,46 +50,53 @@ export default function LogBoxPolyfillDOM({
     // Convert from React Native style to Expo style LogBoxLog
     return Array.from(
       props.logs.map(
-        ({
-          symbolicated,
-          symbolicatedComponentStack,
-
-          codeFrame,
-          componentCodeFrame,
-
-          ...log
-        }) => {
-          // symbolicated: log.symbolicated,
-          // symbolicatedComponentStack: log.symbolicatedComponentStack,
-          // componentCodeFrame: log.componentCodeFrame,
-          // level: log.level,
-          // type: log.type,
-          // message: log.message,
-          // stack: log.stack,
-          // category: log.category,
-          // componentStack: log.componentStack,
-          // componentStackType: log.componentStackType,
-          // codeFrame: log.codeFrame,
-          // isComponentError: log.isComponentError,
-          // extraData: log.extraData,
-          // count: log.count,
-
-          const outputCodeFrame = {};
+        ({ symbolicated, symbolicatedComponentStack, codeFrame, componentCodeFrame, ...log }) => {
+          const outputCodeFrame: Partial<Record<StackType, CodeFrame>> = {};
 
           if (codeFrame) {
-            outputCodeFrame.stack = codeFrame.stack;
+            outputCodeFrame.stack = codeFrame;
           }
           if (componentCodeFrame) {
-            outputCodeFrame.component = componentCodeFrame.stack;
+            outputCodeFrame.component = componentCodeFrame;
           }
 
-          const outputSymbolicated = {};
+          const outputSymbolicated = {
+            stack: {
+              error: null,
+              stack: null,
+              status: 'NONE',
+            },
+            component: {
+              error: null,
+              stack: null,
+              status: 'NONE',
+            },
+          };
 
           if (symbolicated) {
-            outputSymbolicated.stack = symbolicated.stack;
+            outputSymbolicated.stack = symbolicated;
           }
           if (symbolicatedComponentStack) {
-            outputSymbolicated.component = symbolicatedComponentStack.stack;
+            outputSymbolicated.component = {
+              error: symbolicatedComponentStack.error,
+              stack: symbolicatedComponentStack.componentStack?.map((frame) => ({
+                // From the upstream style (incorrect)
+                // {
+                //   "fileName": "/Users/evanbacon/Documents/GitHub/expo/node_modules/react-native/Libraries/Components/View/View.js",
+                //   "location": { "row": 32, "column": 33 },
+                //   "content": "React.forwardRef$argument_0",
+                //   "collapse": false
+                // },
+
+                // To the stack frame style (correct)
+                column: frame.location?.column,
+                file: frame.fileName,
+                lineNumber: frame.location?.row,
+                methodName: frame.content,
+                collapse: frame.collapse,
+              })),
+              status: symbolicatedComponentStack.status,
+            };
           }
 
           return new LogBoxLog({
@@ -103,6 +110,7 @@ export default function LogBoxPolyfillDOM({
     );
   }, []);
 
+  globalThis.__polyfill_onCopyText = onCopyText;
   globalThis.__polyfill_platform = platform;
   globalThis.__polyfill_dom_fetchJsonAsync = fetchJsonAsync;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
