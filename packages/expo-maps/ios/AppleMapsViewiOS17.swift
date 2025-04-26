@@ -27,7 +27,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           )
           .tint(marker.tintColor)
         }
-          
+
         ForEach(props.polylines) { polyline in
           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
             .stroke(polyline.color, lineWidth: polyline.width)

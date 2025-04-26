@@ -53,7 +53,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           .tint(marker.tintColor)
           .tag(MapSelection(marker.mapItem))
         }
-        
+
         ForEach(props.polylines) { polyline in
            MapPolyline(coordinates: polyline.clLocationCoordinates2D)
              .stroke(polyline.color, lineWidth: polyline.width)
@@ -150,7 +150,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
     }
   }
-    
+
   private func handleSelectionChange(_ newSelection: MapSelection<MKMapItem>?) {
     guard let item = newSelection?.value else {
       return
