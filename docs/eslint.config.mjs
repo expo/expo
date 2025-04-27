@@ -18,25 +18,25 @@ const CORE_RULES = {
   'prettier/prettier': 'error',
   'no-void': ['warn', { allowAsStatement: true }],
   'no-return-await': 'off',
-  // 'import/order': [
-  //   'error',
-  //   {
-  //     groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
-  //     'newlines-between': 'always',
-  //     alphabetize: {
-  //       order: 'asc',
-  //     },
-  //     pathGroups: [
-  //       {
-  //         pattern: '~/**',
-  //         group: 'internal',
-  //       },
-  //     ],
-  //   },
-  // ],
+  'import/order': [
+    'error',
+    {
+      groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
+      'newlines-between': 'always',
+      alphabetize: {
+        order: 'asc',
+      },
+      pathGroups: [
+        {
+          pattern: '~/**',
+          group: 'internal',
+        },
+      ],
+    },
+  ],
   curly: 'warn',
   eqeqeq: ['error', 'always', { null: 'ignore' }],
-  // 'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'import/no-cycle': ['error', { maxDepth: '∞' }],
   'lodash/import-scope': [2, 'method'],
   'unicorn/new-for-builtins': 'warn',
   'unicorn/no-useless-spread': 'warn',
@@ -64,17 +64,17 @@ const CORE_RULES = {
 
 export default defineConfig([
   globalIgnores([
+    '**/.cache',
     '**/.next/',
     '**/.swc/',
     '**/.yarn/',
-    'types/global.d.ts',
-    '**/.cache',
     '**/.vale',
-    '**/out',
     '**/node_modules',
-    'pages/versions/latest',
+    '**/out',
     '**/public',
+    'pages/versions/latest',
     'scripts/generate-llms/talks.js',
+    'types/global.d.ts',
     'README.md',
     'next-env.d.ts',
   ]),
@@ -84,11 +84,6 @@ export default defineConfig([
 
   // Overrides needed to make flat config rules work
   {
-    rules: {
-      'import/order': 'off', // TODO (Kadi): enable and fix issues
-      'import/no-cycle': 'off', // TODO (Kadi): enable and fix issues
-      'import/no-named-as-default': 'off', // TODO (Kadi): for LightboxImage
-    },
     settings: {
       'import/resolver': {
         typescript: { project: './tsconfig.json' },

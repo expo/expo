@@ -3,10 +3,6 @@
 import ExpoModulesCore
 import UIKit
 
-let shouldShowAlertKey = "shouldShowAlert"
-let shouldPlaySoundKey = "shouldPlaySound"
-let shouldSetBadgeKey = "shouldSetBadge"
-
 public protocol SingleNotificationHandlerTaskDelegate: AnyObject {
   func taskDidFinish(_ task: SingleNotificationHandlerTask)
   func handleNotification(_ notification: UNNotification)
@@ -44,9 +40,8 @@ public class SingleNotificationHandlerTask {
     finish()
   }
 
-  public func processNotificationWithBehavior(_ behavior: [String: Bool]) -> Bool {
+  public func processNotificationWithOptions(_ options: UNNotificationPresentationOptions) -> Bool {
     if let completionHandler = completionHandler {
-      let options = presentationOptions(behavior)
       completionHandler(options)
       finish()
       return true
@@ -59,26 +54,5 @@ public class SingleNotificationHandlerTask {
     timer?.invalidate()
     self.completionHandler = nil
     delegate.taskDidFinish(self)
-  }
-
-  func presentationOptions(_ behavior: [String: Any]) -> UNNotificationPresentationOptions {
-    var options: UNNotificationPresentationOptions = []
-
-    // (Alert option was deprecated in iOS 14)
-    if let shouldShowAlert = behavior[shouldShowAlertKey] as? Bool, shouldShowAlert {
-      options.insert(.alert)
-    }
-
-    if let shouldPlaySound = behavior[shouldPlaySoundKey] as? Bool, shouldPlaySound {
-      options.insert(.sound)
-    }
-
-    if let shouldSetBadge = behavior[shouldSetBadgeKey] as? Bool, shouldSetBadge {
-      options.insert(.badge)
-    }
-
-    // TODO(iOS 14): use UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
-
-    return options
   }
 }

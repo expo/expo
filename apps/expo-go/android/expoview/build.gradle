@@ -134,7 +134,6 @@ dependencies {
   implementation 'androidx.compose.foundation:foundation-android:1.7.6'
 
   implementation 'com.github.bumptech.glide:compose:1.0.0-beta01'
-  implementation 'io.coil-kt.coil3:coil-network-okhttp:3.1.0'
   implementation 'androidx.compose.material3:material3:1.4.0-alpha10'
   implementation 'androidx.core:core-splashscreen:1.0.1'
 

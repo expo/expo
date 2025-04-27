@@ -7,7 +7,6 @@ const react_1 = require("react");
 const router_store_1 = require("../global-state/router-store");
 /** Returns a callback which is invoked when the navigation state has loaded. */
 function useLoadedNavigation() {
-    const { navigationRef } = (0, router_store_1.useExpoRouter)();
     const navigation = (0, native_1.useNavigation)();
     const isMounted = (0, react_1.useRef)(true);
     const pending = (0, react_1.useRef)([]);
@@ -27,13 +26,13 @@ function useLoadedNavigation() {
         }
     }, [navigation]);
     (0, react_1.useEffect)(() => {
-        if (navigationRef.current) {
+        if (router_store_1.store.navigationRef.current) {
             flush();
         }
     }, [flush]);
     const push = (0, react_1.useCallback)((fn) => {
         pending.current.push(fn);
-        if (navigationRef.current) {
+        if (router_store_1.store.navigationRef.current) {
             flush();
         }
     }, [flush]);

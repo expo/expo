@@ -20,22 +20,6 @@
   return self;
 }
 
-- (void)setModuleName:(NSString * _Nullable)moduleName {
-  _expoAppDelegate.moduleName = [moduleName copy];
-}
-
-- (NSString*) moduleName {
-  return _expoAppDelegate.moduleName;
-}
-
-- (void)setInitialProps:(NSDictionary * _Nullable)initialProps {
-  _expoAppDelegate.initialProps = initialProps;
-}
-
-- (NSDictionary*) initialProps {
-  return _expoAppDelegate.initialProps;
-}
-
 // This needs to be implemented, otherwise forwarding won't be called.
 // When the app starts, `UIApplication` uses it to check beforehand
 // which `UIApplicationDelegate` selectors are implemented.

@@ -16,22 +16,23 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.toAnyType
-import expo.modules.kotlin.views.ComposeViewProp
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ModuleDefinitionBuilderWithCompose
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
 import kotlin.reflect.typeOf
 
 const val DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
-@DefinitionMarker
 class ModuleDefinitionBuilder(
+  module: Module? = null
+) : ModuleDefinitionBuilderWithCompose(module)
+
+@DefinitionMarker
+open class InternalModuleDefinitionBuilder(
   @PublishedApi internal val module: Module? = null
 ) : ObjectDefinitionBuilder(
   module
@@ -72,7 +73,8 @@ class ModuleDefinitionBuilder(
     this.name = name
   }
 
-  fun registerViewDefinition(definition: ViewManagerDefinition) {
+  @PublishedApi
+  internal fun registerViewDefinition(definition: ViewManagerDefinition) {
     // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
     if (definition.name != null) {
       require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
@@ -91,25 +93,6 @@ class ModuleDefinitionBuilder(
 
     viewDefinitionBuilder.UseCSSProps()
 
-    body.invoke(viewDefinitionBuilder)
-    registerViewDefinition(viewDefinitionBuilder.build())
-  }
-
-  /**
-   * Creates the view manager definition that scopes other view-related definitions.
-   * Also collects all compose view props and generates setters.
-   */
-  @JvmName("ComposeView")
-  inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit = {}) {
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
-    P::class.memberProperties.forEach { prop ->
-      val kType = prop.returnType.arguments.first().type
-      if (kType != null) {
-        viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)
-      }
-    }
-
-    viewDefinitionBuilder.UseCSSProps()
     body.invoke(viewDefinitionBuilder)
     registerViewDefinition(viewDefinitionBuilder.build())
   }

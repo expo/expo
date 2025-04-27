@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 2.3.9 — 2025-04-25
+
+### 💡 Others
+
+- Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
+- Refined `Children` return type for SwiftUI integration. ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
+
 ## 2.3.8 — 2025-04-23
 
 ### 💡 Others

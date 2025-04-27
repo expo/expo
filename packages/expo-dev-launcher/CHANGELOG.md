@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 5.1.6 — 2025-04-25
+
+### 💡 Others
+
+- [iOS] Remove usage of deprecated `SFAuthenticationSession` for user login. ([#36395](https://github.com/expo/expo/pull/36395) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Enable edge-to-edge. ([#36363](https://github.com/expo/expo/pull/36363) by [@behenate](https://github.com/behenate))
+
 ## 5.1.5 — 2025-04-23
 
 ### 🐛 Bug fixes

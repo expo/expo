@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.1.5 — 2025-04-25
+
+### 🐛 Bug fixes
+
+- Fixed `CUICatalog: Invalid asset name supplied: ''` error on iOS when the path is empty. ([#36294](https://github.com/expo/expo/pull/36294) by [@Innei](https://github.com/Innei))
+
 ## 2.1.4 — 2025-04-14
 
 ### 🐛 Bug fixes
