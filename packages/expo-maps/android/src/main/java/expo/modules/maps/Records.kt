@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
+import java.util.UUID
 
 data class SetCameraPositionConfig(
   @Field
@@ -45,6 +46,9 @@ data class Coordinates(
 }
 
 data class MarkerRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
   @Field
   val coordinates: Coordinates = Coordinates(),
 

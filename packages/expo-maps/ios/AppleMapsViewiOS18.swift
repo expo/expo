@@ -79,6 +79,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       .onChange(of: state.selection) { _, newValue in
         if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
           props.onMarkerClick([
+            "id": marker.id,
             "title": marker.title,
             "tintColor": marker.tintColor,
             "systemImage": marker.systemImage,

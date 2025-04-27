@@ -9,6 +9,11 @@ import { CameraPosition, Coordinates } from '../shared.types';
  */
 export type GoogleMapsMarker = {
   /**
+   * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+   */
+  id?: string;
+
+  /**
    * The coordinates of the marker.
    */
   coordinates?: Coordinates;
