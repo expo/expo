@@ -1,24 +1,109 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+"use client"
 
-import { Terminal } from '~/ui/components/Snippet';
+import { useState } from "react"
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { Lock } from "lucide-react-native"
 
-System requirements:
+export default function AdminLoginScreen({ navigation }) {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+  const handleLogin = () => {
+    // This is a simple check - in a real app, you would validate against a secure backend
+    if (username === "admin" && password === "password") {
+      navigation.navigate("Admin")
+    } else {
+      Alert.alert("Login Failed", "Invalid username or password")
+    }
+  }
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Admin Login</Text>
+          <Text style={styles.subtitle}>Enter your credentials to access the admin dashboard</Text>
+        </View>
 
-To create a new project, run the following command:
+        <View style={styles.form}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput style={styles.input} value={username} onChangeText={setUsername} autoCapitalize="none" />
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
+          <Text style={styles.label}>Password</Text>
+          <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
 
-> You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Lock color="#fff" size={20} />
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  )
+}
 
-## Next step
-
-You have a project. Now it's time to set up your development environment so that you can start developing.
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 16,
+    justifyContent: "center",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#800020",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+  },
+  form: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  loginButton: {
+    backgroundColor: "#800020",
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 8,
+  },
+})
