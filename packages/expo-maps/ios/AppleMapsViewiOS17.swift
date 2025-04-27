@@ -23,7 +23,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       longitude: coordinate.longitude
     ))
     
-    if (scene == nil) {
+    if scene == nil {
       throw SceneUnavailableAtLocationException()
     }
 
