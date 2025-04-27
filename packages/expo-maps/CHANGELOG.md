@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `id` property to markers. ([#36422](https://github.com/expo/expo/pull/36422) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
