@@ -24,12 +24,16 @@ export default function MapsCameraPositionScreen() {
       <View style={styles.configurator}>
         <Button
           title="Open look around"
-          onPress={async () =>
-            await ref.current?.openLookAroundAsync({
-              latitude: 37.332753,
-              longitude: -122.005372,
-            })
-          }
+          onPress={async () => {
+            try {
+              await ref.current?.openLookAroundAsync({
+                latitude: 37.332753,
+                longitude: -122.005372,
+              });
+            } catch (error) {
+              console.error(error);
+            }
+          }}
         />
       </View>
     </View>

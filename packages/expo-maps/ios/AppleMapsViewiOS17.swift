@@ -13,28 +13,22 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
     }
   }
 
-  func openLookAround(coordinate: Coordinate, promise: Promise) {
-    Task {
-      if state.lookAroundScene != nil {
-        promise.reject(LookAroundAlreadyPresentedException())
-        return
-      }
-
-      let scene = await getLookAroundScene(from: CLLocationCoordinate2D(
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude
-      ))
-
-      if scene == nil {
-        promise.reject(SceneUnavailableAtLocationException())
-        return
-      }
-
-      state.lookAroundScene = scene
-      state.lookAroundPresented = true
-
-      promise.resolve()
+  func openLookAround(coordinate: Coordinate) async throws {
+    if state.lookAroundScene != nil {
+      throw LookAroundAlreadyPresentedException()
     }
+
+    let scene = try await getLookAroundScene(from: CLLocationCoordinate2D(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude
+    ))
+    
+    if (scene == nil) {
+      throw SceneUnavailableAtLocationException()
+    }
+
+    state.lookAroundScene = scene
+    state.lookAroundPresented = true
   }
 
   var body: some View {

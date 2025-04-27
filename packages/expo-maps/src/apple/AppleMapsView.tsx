@@ -32,7 +32,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
         nativeRef.current?.setCameraPosition(config);
       },
       async openLookAroundAsync(coordinates: Coordinates) {
-        await nativeRef.current?.openLookAroundAsync(coordinates);
+        nativeRef.current?.openLookAroundAsync(coordinates);
       },
     }));
 

@@ -22,7 +22,7 @@ export const AppleMapsView = React.forwardRef(({ onMapClick, onMarkerClick, onCa
             nativeRef.current?.setCameraPosition(config);
         },
         async openLookAroundAsync(coordinates) {
-            await nativeRef.current?.openLookAroundAsync(coordinates);
+            nativeRef.current?.openLookAroundAsync(coordinates);
         },
     }));
     const onNativeMapClick = useNativeEvent(onMapClick);
