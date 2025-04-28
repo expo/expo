@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix throwing an error inside `getOrientation` when the `currentActivity` is not available. ([#36369](https://github.com/expo/expo/pull/36369) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 14.1.3 — 2025-04-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix throwing an error inside `getOrientation` when the `currentActivity` is not available. ([#36369](https://github.com/expo/expo/pull/36369) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.1.2 — 2025-04-14
 

@@ -1,4 +1,12 @@
-import { Button, ColorPicker, Label, List, ListStyle, Picker, Switch } from '@expo/ui/swift-ui';
+import {
+  Button,
+  ColorPicker,
+  LabelPrimitive,
+  List,
+  ListStyle,
+  Picker,
+  Switch,
+} from '@expo/ui/swift-ui';
 import * as React from 'react';
 
 export default function ListScreen() {
@@ -93,7 +101,12 @@ export default function ListScreen() {
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
         {data.map((item, index) => (
-          <Label key={index} title={item.text} systemImage={item.systemImage} color={color} />
+          <LabelPrimitive
+            key={index}
+            title={item.text}
+            systemImage={item.systemImage}
+            color={color}
+          />
         ))}
       </List>
     </>

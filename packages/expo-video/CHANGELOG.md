@@ -6,7 +6,6 @@
 
 ### 🎉 New features
 
-- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
 - Introduce `replaceAsync` method, which doesn't load the asset on the main thread. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
@@ -15,7 +14,11 @@
 
 ### 💡 Others
 
-- Add warning about the `replace` being deprecated in the future. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
+## 2.1.6 — 2025-04-25
+
+### 🎉 New features
+
+- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
 
 ## 2.1.5 — 2025-04-23
 

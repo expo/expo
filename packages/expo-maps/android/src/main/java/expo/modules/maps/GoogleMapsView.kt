@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -26,6 +28,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.sharedobjects.SharedRef
@@ -34,11 +37,13 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
+import androidx.core.graphics.toColorInt
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
+  val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
@@ -54,6 +59,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private val onMapLongClick by EventDispatcher<Coordinates>()
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
+  private val onPolylineClick by EventDispatcher<PolylineRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
 
@@ -67,6 +73,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       cameraState = updateCameraState()
       val markerState = markerStateFromProps()
       val locationSource = locationSourceFromProps()
+      val polylineState by polylineStateFromProps()
 
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -108,6 +115,26 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
         locationSource = locationSource
       ) {
+        polylineState.forEach { (polyline, coordinates) ->
+          Polyline(
+            points = coordinates,
+            color = Color(polyline.color),
+            geodesic = polyline.geodesic,
+            width = polyline.width,
+            clickable = true,
+            onClick = {
+              onPolylineClick(
+                PolylineRecord(
+                  coordinates.map { Coordinates(it.latitude, it.longitude) },
+                  polyline.geodesic,
+                  polyline.color,
+                  polyline.width
+                )
+              )
+            }
+          )
+        }
+
         for ((marker, state) in markerState.value) {
           val icon = getIconDescriptor(marker)
 
@@ -204,6 +231,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       derivedStateOf {
         props.markers.value.map { marker ->
           marker to MarkerState(position = marker.coordinates.toLatLng())
+        }
+      }
+    }
+
+  @Composable
+  private fun polylineStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.polylines.value.map { polyline ->
+          polyline to polyline.coordinates.map { it.toLatLng() }
         }
       }
     }

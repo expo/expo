@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 
@@ -33,10 +34,6 @@ export type DateTimePickerProps = {
    */
   displayedComponents?: DisplayedComponents;
   /**
-   * Optional style to apply to the component.
-   */
-  style?: StyleProp<ViewStyle>;
-  /**
    * The tint color to use on the picker elements.
    */
   color?: string;
@@ -51,7 +48,19 @@ type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelect
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
   const { variant, ...rest } = props;
-  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
+  return {
+    ...rest,
+    onDateSelected: ({ nativeEvent: { date } }) => {
+      props?.onDateSelected?.(new Date(date));
+    },
+    variant,
+  };
+}
+
+function transformDateTimePickerStyle(
+  style: StyleProp<ViewStyle> | undefined
+): StyleProp<ViewStyle> {
+  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(style) || {};
 
   // On Android, the picker’s minWidth and minHeight must be 12dp.
   // Otherwise, the picker will crash the app.
@@ -61,14 +70,7 @@ export function transformDateTimePickerProps(props: DateTimePickerProps): Native
   const parsedMinWidth = minWidth ? minSize : undefined;
   const parsedMinHeight = minHeight ? minSize : undefined;
 
-  return {
-    ...rest,
-    onDateSelected: ({ nativeEvent: { date } }) => {
-      props?.onDateSelected?.(new Date(date));
-    },
-    variant,
-    style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
-  };
+  return [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }];
 }
 
 const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeView(
@@ -77,8 +79,21 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
 );
 
 /**
+ * `<DateTimePicker>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function DateTimePickerPrimitive(props: DateTimePickerProps) {
+  return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
+}
+
+/**
  * Renders a `DateTimePicker` component.
  */
-export function DateTimePicker(props: DateTimePickerProps) {
-  return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
+export function DateTimePicker(props: DateTimePickerProps & { style?: StyleProp<ViewStyle> }) {
+  const transformedStyle = transformDateTimePickerStyle(props.style);
+  return (
+    <Host style={transformedStyle} matchContents>
+      <DateTimePickerPrimitive {...props} />
+    </Host>
+  );
 }

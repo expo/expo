@@ -28,10 +28,6 @@ export type PickerProps = {
      */
     variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
     /**
-     * Optional style to apply to the picker component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Picker color. On iOS it only applies to the `'menu'` variant.
      */
     color?: string;
@@ -42,8 +38,15 @@ type NativePickerProps = PickerProps;
  */
 export declare function transformPickerProps(props: PickerProps): NativePickerProps;
 /**
+ * `<Picker>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function PickerPrimitive(props: PickerProps): import("react").JSX.Element;
+/**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
  */
-export declare function Picker(props: PickerProps): import("react").JSX.Element;
+export declare function Picker(props: PickerProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map
