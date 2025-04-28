@@ -1,0 +1,18 @@
+/* TODO: Ensure these don't end up in the user project in production. Maybe use :host */
+:root {
+  /* Some of these are based on UIKit colors in dark mode: https://github.com/EvanBacon/expo-apple-colors/blob/80f541c38c7fadcbd8a1fe85800eea0b3a97079b/colors.css#L1 */
+  --expo-log-color-border: #313538;
+  --expo-log-color-label: #edeef0;
+  --expo-log-color-background: #111113;
+  --expo-log-secondary-label: rgba(234.6, 234.6, 244.8, 0.6);
+  --expo-log-secondary-system-background: rgba(28.05, 28.05, 30.6, 1);
+  --expo-log-secondary-system-grouped-background: color(display-p3 0.095 0.098 0.105);
+  --expo-log-secondary-system-background-hover: color(display-p3 0.156 0.163 0.176);
+  --expo-log-color-danger: color(display-p3 0.861 0.403 0.387);
+  --expo-log-syntax-red: color(display-p3 0.861 0.403 0.387);
+  --expo-log-syntax-orange: color(display-p3 1 0.63 0.38);
+  --expo-log-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --expo-log-font-mono: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+}
