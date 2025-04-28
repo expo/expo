@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Shim web streams API when bundling for native client environments. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.20.7 — 2025-04-25
 
 _This version does not introduce any user-facing changes._
