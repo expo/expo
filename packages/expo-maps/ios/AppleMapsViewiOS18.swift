@@ -1,5 +1,5 @@
-import MapKit
 import SwiftUI
+import MapKit
 
 extension MKMapPoint {
   // Perpendicular distance (in metres) from `self` to the
@@ -33,8 +33,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition =
-        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -90,7 +89,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
-                "longitude": $0.longitude,
+                "longitude": $0.longitude
               ]
             }
             props.onPolylineClick([
@@ -98,14 +97,14 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               "color": hit.color,
               "width": hit.width,
               "contourStyle": hit.contourStyle,
-              "coordinates": coords,
+              "coordinates": coords
             ])
           }
 
           // Send an event of map click regardless
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude,
+            "longitude": coordinate.longitude
           ])
         }
       }
@@ -135,19 +134,17 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude,
+            "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading,
+          "bearing": context.camera.heading
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(
-        properties.mapType.toMapStyle(
-          showsTraffic: properties.isTrafficEnabled
-        )
-      )
+      .mapStyle(properties.mapType.toMapStyle(
+        showsTraffic: properties.isTrafficEnabled
+      ))
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
@@ -167,8 +164,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude,
-        ],
+          "longitude": marker.coordinates.longitude
+        ]
       ])
       return
     }
