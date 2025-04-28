@@ -7,7 +7,7 @@ public class AppleMapsModule: Module {
     Name("ExpoAppleMaps")
 
     Property("isMapsAvailable") {
-      if #available(iOS 18.0, *) {
+      if #available(iOS 17.0, *) {
         return true
       }
       return false

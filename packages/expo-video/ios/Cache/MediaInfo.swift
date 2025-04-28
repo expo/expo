@@ -65,7 +65,7 @@ class MediaInfo: Codable {
   }
 
   convenience init?(forResourceUrl url: URL) {
-    guard let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension) else {
+    guard let filePath = VideoAsset.pathForUrl(url: url, fileExtension: url.pathExtension) else {
       return nil
     }
     let mediaInfoPath = filePath + VideoCacheManager.mediaInfoSuffix

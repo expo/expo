@@ -1,15 +1,14 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
-import nullthrows from 'nullthrows';
 import path from 'path';
 
 import {
   initAsync,
+  repoRoot,
   setupUpdatesFingerprintE2EAppAsync,
   transformAppJsonForE2EWithFingerprint,
 } from './project';
 
-const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT);
 const workingDir = path.resolve(repoRoot, '..');
 
 /**
@@ -24,7 +23,7 @@ const workingDir = path.resolve(repoRoot, '..');
  */
 
 (async function () {
-  if (!process.env.EXPO_REPO_ROOT || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
+  if (!repoRoot || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
     throw new Error('Missing one or more environment variables; see instructions in e2e/README.md');
   }
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');

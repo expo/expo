@@ -132,6 +132,12 @@ async function transform(config, projectRoot, filename, data, options) {
             return worker.transform(config, projectRoot, filename, Buffer.from(`export default ${JSON.stringify(envFileParsed)};`), options);
         }
         if (
+        // Noop the streams polyfill in the server environment.
+        !isClientEnvironment &&
+            filename.match(/\/expo\/virtual\/streams\.js$/)) {
+            return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+        }
+        if (
         // Parsing the virtual env is client-only, on the server we use `process.env` directly.
         isClientEnvironment &&
             // Finally match the virtual env file.

@@ -58,6 +58,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     play(): void;
     pause(): void;
     replace(source: VideoSource): void;
+    replaceAsync(source: VideoSource): Promise<void>;
     seekBy(seconds: number): void;
     replay(): void;
     generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;

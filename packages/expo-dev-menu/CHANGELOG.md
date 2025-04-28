@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Enable edge-to-edge. ([#36370](https://github.com/expo/expo/pull/36370) by [@behenate](https://github.com/behenate))
+
 ## 6.1.6 — 2025-04-25
 
 _This version does not introduce any user-facing changes._

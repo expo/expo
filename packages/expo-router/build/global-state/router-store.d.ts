@@ -1,89 +1,41 @@
-import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
+import { NavigationContainerRefWithCurrent, NavigationState, PartialState, useStateForPath } from '@react-navigation/native';
 import { ComponentType } from 'react';
-import { LinkToOptions } from './routing';
-import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { RedirectConfig } from '../getRoutesCore';
-import { Href, RequireContext } from '../types';
-type ResultState = any;
-/**
- * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
- *
- * There should only be one instance of this class and be initialized via `useInitializeExpoRouter`
- */
-export declare class RouterStore {
-    routeNode: RouteNode | null;
-    rootComponent: ComponentType;
-    linking?: ExpoLinkingOptions;
-    private hasAttemptedToHideSplash;
-    initialState?: ResultState;
-    rootState?: ResultState;
-    nextState?: ResultState;
-    routeInfo?: UrlObject;
-    splashScreenAnimationFrame?: number;
-    config: any;
-    redirects?: (readonly [RegExp, RedirectConfig, boolean])[];
-    navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
-    navigationRefSubscription: () => void;
-    rootStateSubscribers: Set<() => void>;
-    storeSubscribers: Set<() => void>;
-    linkTo: (originalHref: string, options?: LinkToOptions | undefined) => void;
-    getSortedRoutes: () => RouteNode[];
-    goBack: () => void;
-    canGoBack: () => boolean;
-    push: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
-    dismiss: (count?: number | undefined) => void;
-    dismissTo: (href: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
-    replace: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
-    dismissAll: () => void;
-    canDismiss: () => boolean;
-    setParams: (params?: Record<string, string | number | (string | number)[] | undefined> | undefined) => any;
-    navigate: (url: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
-    reload: () => void;
-    prefetch: (href: string | import("../types").HrefObject, options?: import("./routing").NavigationOptions | undefined) => void;
-    initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, linkingConfigOptions?: LinkingConfigOptions): void;
-    updateState(state: ResultState, nextState?: any): void;
-    getRouteInfo(state: ResultState): UrlObject;
+import { UrlObject } from './routeInfo';
+import { RequireContext } from '../types';
+export type StoreRedirects = readonly [RegExp, RedirectConfig, boolean];
+export type ReactNavigationState = NavigationState | PartialState<NavigationState>;
+export type FocusedRouteState = NonNullable<ReturnType<typeof useStateForPath>>;
+export type RouterStore = typeof store;
+export declare const store: {
     shouldShowTutorial(): boolean;
-    /** Make sure these are arrow functions so `this` is correctly bound */
-    subscribeToRootState: (subscriber: () => void) => () => boolean;
-    subscribeToStore: (subscriber: () => void) => () => boolean;
-    snapshot: () => this;
-    rootStateSnapshot: () => any;
-    routeInfoSnapshot: () => UrlObject;
-    cleanup(): void;
-    getStateFromPath(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
-        type: string;
-        stale: false;
-    }>, "stale" | "routes">> & Readonly<{
-        stale?: true;
-        routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-    }> & {
-        state?: Partial<Omit<Readonly<{
-            key: string;
-            index: number;
-            routeNames: string[];
-            history?: unknown[];
-            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
-            type: string;
-            stale: false;
-        }>, "stale" | "routes">> & Readonly<{
-            stale?: true;
-            routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
-        }> & /*elided*/ any;
-    }) | undefined;
-    applyRedirects<T extends string | null | undefined>(url: T): T | undefined;
-}
-export declare const store: RouterStore;
-export declare function useExpoRouter(): RouterStore;
-export declare function useStoreRootState(): any;
-export declare function useStoreRouteInfo(): UrlObject;
-export declare function useInitializeExpoRouter(context: RequireContext, options: LinkingConfigOptions): RouterStore;
-export {};
+    readonly state: ReactNavigationState | undefined;
+    readonly focusedState: import("@react-navigation/core/lib/typescript/src/NavigationFocusedRouteStateContext").FocusedRouteState | undefined;
+    readonly navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly routeNode: RouteNode | null;
+    getRouteInfo(state?: FocusedRouteState | ReactNavigationState | undefined): UrlObject;
+    readonly redirects: StoreRedirects[];
+    readonly rootComponent: ComponentType<any>;
+    readonly linking: ExpoLinkingOptions | undefined;
+    setFocusedState(state: FocusedRouteState): void;
+    onReady(): void;
+    assertIsReady(): void;
+};
+export declare function useStore(context: RequireContext, linkingConfigOptions: LinkingConfigOptions, serverUrl?: string): {
+    shouldShowTutorial(): boolean;
+    readonly state: ReactNavigationState | undefined;
+    readonly focusedState: import("@react-navigation/core/lib/typescript/src/NavigationFocusedRouteStateContext").FocusedRouteState | undefined;
+    readonly navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly routeNode: RouteNode | null;
+    getRouteInfo(state?: FocusedRouteState | ReactNavigationState | undefined): UrlObject;
+    readonly redirects: StoreRedirects[];
+    readonly rootComponent: ComponentType<any>;
+    readonly linking: ExpoLinkingOptions | undefined;
+    setFocusedState(state: FocusedRouteState): void;
+    onReady(): void;
+    assertIsReady(): void;
+};
+export declare function useRouteInfo(): UrlObject;
 //# sourceMappingURL=router-store.d.ts.map

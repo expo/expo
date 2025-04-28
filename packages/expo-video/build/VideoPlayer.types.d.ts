@@ -168,9 +168,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     readonly availableVideoTracks: VideoTrack[];
     /**
      * Initializes a new video player instance with the given source.
+     *
+     * @param source The source of the video to be played.
+     * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
      * @hidden
      */
-    constructor(source: VideoSource);
+    constructor(source: VideoSource, useSynchronousReplace?: boolean);
     /**
      * Resumes the player.
      */
@@ -181,8 +184,19 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     pause(): void;
     /**
      * Replaces the current source with a new one.
+     *
+     * > On iOS, this method loads the asset data synchronously on the UI thread and can block it for extended periods of time.
+     * > Use `replaceAsync` to load the asset asynchronously and avoid UI lags.
+     *
+     * > This method will be deprecated in the future.
      */
-    replace(source: VideoSource): void;
+    replace(source: VideoSource, disableWarning?: boolean): void;
+    /**
+     * Replaces the current source with a new one, while offloading loading of the asset to a different thread.
+     *
+     * > On Android and Web, this method is equivalent to `replace`.
+     */
+    replaceAsync(source: VideoSource): Promise<void>;
     /**
      * Seeks the playback by the given number of seconds. The time to which the player seeks may differ from the specified requested time for efficiency,
      * depending on the encoding and what is currently buffered by the player. Use this function to implement playback controls that seek by specific amount of time,

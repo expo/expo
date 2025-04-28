@@ -1,11 +1,15 @@
 'use client';
 
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import { LocalRouteParamsContext } from './Route';
-import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { Router } from './imperative-api';
+import { INTERNAL_SLOT_NAME } from './constants';
+import { store, useRouteInfo } from './global-state/router-store';
+import { router, Router } from './imperative-api';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+
+export { useRouteInfo };
 
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -23,11 +27,9 @@ import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types'
  * ```
  */
 export function useRootNavigationState() {
-  return useStoreRootState();
-}
-
-export function useRouteInfo() {
-  return useStoreRouteInfo();
+  return useNavigation<NavigationProp<object, never, string>>()
+    .getParent(INTERNAL_SLOT_NAME)!
+    .getState();
 }
 
 /**
@@ -65,23 +67,7 @@ export function useNavigationContainerRef() {
  * ```
  */
 export function useRouter(): Router {
-  return React.useMemo(
-    () => ({
-      back: store.goBack,
-      canDismiss: store.canDismiss,
-      canGoBack: store.canGoBack,
-      dismiss: store.dismiss,
-      dismissAll: store.dismissAll,
-      dismissTo: store.dismissTo,
-      navigate: store.navigate,
-      prefetch: store.prefetch,
-      push: store.push,
-      reload: store.reload,
-      replace: store.replace,
-      setParams: store.setParams as Router['setParams'],
-    }),
-    []
-  );
+  return router;
 }
 
 /**
@@ -90,7 +76,7 @@ export function useRouter(): Router {
  * from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
 export function useUnstableGlobalHref(): string {
-  return useStoreRouteInfo().unstable_globalHref;
+  return useRouteInfo().unstable_globalHref;
 }
 
 /**
@@ -135,7 +121,7 @@ export function useSegments<TSegments extends Route = Route>(): RouteSegments<TS
  */
 export function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
 export function useSegments() {
-  return useStoreRouteInfo().segments;
+  return useRouteInfo().segments;
 }
 
 /**
@@ -156,7 +142,7 @@ export function useSegments() {
  * ```
  */
 export function usePathname(): string {
-  return useStoreRouteInfo().pathname;
+  return useRouteInfo().pathname;
 }
 
 /**
@@ -202,7 +188,7 @@ export function useGlobalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
-  return useStoreRouteInfo().params;
+  return useRouteInfo().params;
 }
 
 /**

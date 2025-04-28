@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.9.6 — 2025-04-26
+
+### 💡 Others
+
+- [iOS] Lower minimum supported version to iOS 17. ([#36400](https://github.com/expo/expo/pull/36400) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.9.5 — 2025-04-25
 

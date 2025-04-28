@@ -245,6 +245,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.playing = true;
     }
+    // The HTML5 player already offloads loading of the asset onto a different thread so we can keep the same
+    // implementation until `replace` is deprecated and removed.
+    async replaceAsync(source) {
+        return this.replace(source);
+    }
     seekBy(seconds) {
         this._mountedVideos.forEach((video) => {
             video.currentTime += seconds;
