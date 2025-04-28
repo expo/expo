@@ -14,13 +14,9 @@ import ReactAppDependencyProvider
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationDelegate {
-  @objc public var reactNativeFactory: RCTReactNativeFactory?
-  @objc public var reactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate?
+  @objc public var factory: RCTReactNativeFactory?
   private let defaultModuleName = "main"
   private let defaultInitialProps = [AnyHashable: Any]()
-
-  /// The window object, used to render the UIViewControllers
-  public var window: UIWindow?
 
   func loadMacOSWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
 #if os(macOS)
@@ -50,14 +46,18 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
 #endif
   }
 
+  public func bindReactNativeFactory(_ factory: RCTReactNativeFactory) {
+    self.factory = factory
+  }
+
   public func recreateRootView(
     withBundleURL: URL?,
     moduleName: String?,
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) -> UIView {
-    guard let delegate = self.reactNativeFactoryDelegate,
-    let rootViewFactory = self.reactNativeFactory?.rootViewFactory else {
+    guard let delegate = self.factory?.delegate,
+    let rootViewFactory = self.factory?.rootViewFactory else {
       fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppDelegate")
     }
 
