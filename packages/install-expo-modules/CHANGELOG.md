@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.12.3 — 2025-04-28
+
+### 💡 Others
+
 - Updated `AppDelegate.swift` change for SDK 53. ([#36445](https://github.com/expo/expo/pull/36445) by [@kudo](https://github.com/kudo))
 
 ## 0.12.2 — 2025-04-28
