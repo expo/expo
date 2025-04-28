@@ -108,7 +108,7 @@ Then, add your classes to Android and/or iOS `modules` in the [**expo-module.con
 
 ```json expo-module.config.json
 {
-  "ios": {
+  "apple": {
     "modules": ["MyModule"]
   },
   "android": {
@@ -133,3 +133,11 @@ export default requireNativeModule('MyModule');
 </Step>
 
 Now that the class is set up and linked, you can start to implement its functionality. See the [native module API](/modules/module-api/) reference page and links to [examples](/modules/module-api/#examples) from simple to moderately complex real-world modules to understand how to use the API.
+
+## Subscribing to application events
+
+// how to set up an expo module in your existing react native library to hook into appdelegate subscribers on ios and app lifecycler listeners on android
+
+https://github.com/bamlab/react-native-app-security/blob/main/ios/RNASAppLifecyleDelegate.swift
+
+For simple scenarios, it's also possible to integrate AppDelegate subscribers into native modules that are not Expo Modules ([example](https://github.com/react-native-google-signin/google-signin/blob/master/expo-module.config.json)).
