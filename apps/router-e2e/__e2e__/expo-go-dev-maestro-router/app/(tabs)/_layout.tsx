@@ -1,6 +1,6 @@
-import { Tabs, router } from 'expo-router';
+import { Tabs } from 'expo-router';
 
-export default function () {
+export default function Layout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" />

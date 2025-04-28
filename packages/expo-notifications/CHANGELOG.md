@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.31.0 — 2025-04-25
+
+### 🛠 Breaking changes
+
+- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+
 ## 0.30.7 — 2025-04-23
 
 _This version does not introduce any user-facing changes._

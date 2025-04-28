@@ -10,17 +10,12 @@ class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    self.moduleName = "main"
-    self.initialProps = [:]
-
     let delegate = ReactNativeDelegate()
     let factory = ExpoGoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    self.reactNativeFactoryDelegate = delegate
-    self.reactNativeFactory = factory
-    // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
-    self.automaticallyLoadReactNativeWindow = false
+    reactNativeFactoryDelegate = delegate
+    reactNativeFactory = factory
 
     FirebaseApp.configure()
 
@@ -54,4 +49,16 @@ class AppDelegate: ExpoAppDelegate {
   }
 }
 
-class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {}
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}

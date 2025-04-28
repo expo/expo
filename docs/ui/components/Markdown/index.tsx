@@ -1,6 +1,6 @@
 import type { ComponentType, PropsWithChildren } from 'react';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from 'ui/components/InlineHelp';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD, DEL } from '~/ui/components/Text';

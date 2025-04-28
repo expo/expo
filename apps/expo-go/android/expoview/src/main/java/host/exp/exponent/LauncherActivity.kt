@@ -2,6 +2,7 @@
 package host.exp.exponent
 
 import android.Manifest
+import android.app.ActivityManager.RecentTaskInfo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -45,6 +46,29 @@ class LauncherActivity : AppCompatActivity() {
     // Kernel's JS needs to be started for the dev menu to work when the app is launched through the deep link.
     kernel.startJSKernel(this)
     kernel.handleIntent(this, intent)
+
+    Handler(mainLooper).postDelayed(
+      Runnable {
+        try {
+          // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
+          RecentTaskInfo::class.java.getDeclaredField("numActivities")
+          for (task in kernel.tasks) {
+            if (task.taskInfo.id == taskId) {
+              if (task.taskInfo.numActivities == 1) {
+                finishAndRemoveTask()
+                return@Runnable
+              } else {
+                break
+              }
+            }
+          }
+        } catch (e: Exception) {
+          // just go straight to finish()
+        }
+        finish()
+      },
+      100
+    )
   }
 
   override fun onStop() {

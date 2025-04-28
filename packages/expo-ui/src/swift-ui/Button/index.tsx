@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 /**
  * The role of the button.
@@ -60,10 +61,6 @@ export type ButtonProps = {
    */
   variant?: ButtonVariant;
   /**
-   * Additional styles to apply to the button.
-   */
-  style?: StyleProp<ViewStyle>;
-  /**
    * The text to display inside the button.
    */
   children: string;
@@ -110,8 +107,21 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
 }
 
 /**
+ * `<Button>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function ButtonPrimitive(props: ButtonProps) {
+  return <ButtonNativeView {...transformButtonProps(props)} />;
+}
+
+/**
  * Displays a native button component.
  */
-export function Button(props: ButtonProps) {
-  return <ButtonNativeView {...transformButtonProps(props)} style={props.style} />;
+export function Button(props: ButtonProps & { style?: StyleProp<ViewStyle> }) {
+  const useViewportSizeMeasurement = props.style == null;
+  return (
+    <Host style={props.style} matchContents useViewportSizeMeasurement={useViewportSizeMeasurement}>
+      <ButtonPrimitive {...props} />
+    </Host>
+  );
 }

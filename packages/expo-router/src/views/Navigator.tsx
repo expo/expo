@@ -48,12 +48,16 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   const contextKey = useContextKey();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-  const { screens, children: nonScreenChildren } = useFilterScreenChildren(children, {
+  const {
+    screens,
+    children: nonScreenChildren,
+    protectedScreens,
+  } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
   });
 
-  const sortedScreens = useSortedScreens(screens ?? []);
+  const sortedScreens = useSortedScreens(screens ?? [], protectedScreens);
 
   router ||= StackRouter as unknown as T;
 
@@ -99,14 +103,14 @@ function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
 
   // Allows adding Screen components as children to configure routes.
-  const { screens } = useFilterScreenChildren([], {
+  const { screens, protectedScreens } = useFilterScreenChildren([], {
     contextKey,
   });
 
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
-    children: useSortedScreens(screens ?? []),
+    children: useSortedScreens(screens ?? [], protectedScreens),
   });
 
   return (

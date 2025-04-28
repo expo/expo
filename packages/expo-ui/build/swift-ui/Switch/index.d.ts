@@ -18,10 +18,6 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Optional style for the switch component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Picker color. On iOS, it only applies to the `menu` variant.
      */
     color?: string;
@@ -45,6 +41,16 @@ type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
  * @hidden
  */
 export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
-export declare function Switch(props: SwitchProps): import("react").JSX.Element;
+/**
+ * `<Switch>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function SwitchPrimitive(props: SwitchProps): import("react").JSX.Element;
+/**
+ * Displays a native switch component.
+ */
+export declare function Switch(props: SwitchProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

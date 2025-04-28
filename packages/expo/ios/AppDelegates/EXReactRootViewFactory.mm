@@ -41,8 +41,8 @@
 }
 
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
-                  initialProperties:(NSDictionary *)initialProperties
-                      launchOptions:(NSDictionary *)launchOptions
+                  initialProperties:(nullable NSDictionary *)initialProperties
+                      launchOptions:(nullable NSDictionary *)launchOptions
 {
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 }

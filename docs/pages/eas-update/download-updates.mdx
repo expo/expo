@@ -55,10 +55,9 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import * as Updates from 'expo-updates';
 
-export const setupBackgroundUpdates = async () => {
-  const BACKGROUND_TASK_NAME = 'task-run-expo-update';
+const BACKGROUND_TASK_NAME = 'task-run-expo-update';
 
-  // Define the background task - this must be done each time the app starts
+export const setupBackgroundUpdates = async () => {
   TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
     const update = await Updates.checkForUpdateAsync();
     if (update.isAvailable) {
@@ -68,14 +67,12 @@ export const setupBackgroundUpdates = async () => {
     return Promise.resolve();
   });
 
-  // Register the task if it was not previously registered
-  const isRegistered = TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
-  if (!isRegistered) {
-    await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-      minimumInterval: 60 * 24, // 24 hours
-    });
-  }
+  await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
+    minimumInterval: 60 * 24,
+  });
 };
+
+setupBackgroundUpdates();
 ```
 
 </Collapsible>

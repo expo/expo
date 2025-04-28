@@ -16,8 +16,9 @@ import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
 import { ScrollContainer } from '~/components/ScrollContainer';
-import { TableOfContentsLink } from '~/ui/components/TableOfContents';
 import { CALLOUT } from '~/ui/components/Text';
+
+import { TableOfContentsLink } from './TableOfContentsLink';
 
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;

@@ -175,21 +175,21 @@ The following instructions assume you have an app written in Swift, with one or 
 1. Modify **AppDelegate.swift** so that it extends `ExpoAppDelegate`.
 2. If you are not already doing so, add a public method to get the running `AppDelegate` instance, so that your custom view controller can access it later.
 3. Add a reference to the singleton instance of the `expo-updates` `AppController` class, which manages the updates system on iOS.
-4. Override the `bundleUrl()` method to return the correct bundle URL for updates, if the updates system is running.
+4. Add a new class, `CustomReactNativeFactoryDelegate`, that extends `ExpoReactNativeFactoryDelegate` and overrides the `bundleUrl()` method to return the correct bundle URL for updates, if the updates system is running.
 5. The `didFinishLaunchingWithOptions()` method needs to perform two steps:
-   1. Initialize the `ExpoReactNativeFactory` used later to create the React Native root view.
+   1. Initialize the `ExpoReactNativeFactory` using the `CustomReactNativeFactoryDelegate` created above. This will be used later to create the React Native root view.
    2. Call `AppController.initializeWithoutStarting()`. This creates the controller instance, but defers the rest of the updates startup procedure until it is needed.
 
 ```swift ios/<your-app-name>/AppDelegate.swift
 import Expo
 import EXUpdates
 import React
+import ReactAppDependencyProvider
 import UIKit
 
 @UIApplicationMain
 // Step 1
-class AppDelegate: EXAppDelegateWrapper {
-  let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+class AppDelegate: ExpoAppDelegate {
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
   // Step 2
@@ -203,20 +203,17 @@ class AppDelegate: EXAppDelegateWrapper {
   // Step 3
   var updatesController: (any InternalAppControllerInterface)?
 
-  // Step 4
-  override func bundleURL() -> URL? {
-    if let updatesUrl = updatesController?.launchAssetUrl() {
-      return updatesUrl
-    }
-    return bundledUrl
-  }
-
   // Step 5
   private func initializeReactNativeAndUpdates(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    // Step 5.1
     self.launchOptions = launchOptions
-    self.moduleName = "main"
-    self.initialProps = [:]
-    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
+    let delegate = CustomReactNativeFactoryDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeFactoryDelegate = delegate
+    reactNativeFactory = factory
+    // Step 5.2
     AppController.initializeWithoutStarting()
   }
 
@@ -243,6 +240,22 @@ class AppDelegate: EXAppDelegateWrapper {
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return super.application(app, open: url, options: options) ||
       RCTLinkingManager.application(app, open: url, options: options)
+  }
+}
+
+// Step 4
+class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
+  let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+    if let updatesUrl = AppDelegate.shared().updatesController?.launchAssetUrl() {
+      return updatesUrl
+    }
+    return bundledUrl
   }
 }
 ```
@@ -306,8 +319,8 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
       fatalError("rootViewFactory has not been initialized")
     }
     let rootView = rootViewFactory.view(
-      withModuleName: appDelegate.moduleName,
-      initialProperties: appDelegate.initialProps,
+      withModuleName: "main",
+      initialProperties: [:],
       launchOptions: appDelegate.launchOptions
     )
     // Step 3.2
@@ -372,10 +385,12 @@ class AppDelegate: EXAppDelegateWrapper {
 
   // Step 5
   private func initializeReactNativeAndUpdates(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    // Step 5.1
     self.launchOptions = launchOptions
     self.moduleName = "App"
     self.initialProps = [:]
     self.rootViewFactory = createRCTRootViewFactory()
+    // Step 5.2
     AppController.initializeWithoutStarting()
   }
 

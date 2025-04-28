@@ -21,8 +21,26 @@ public final class ExpoGoNotificationsSchedulerModule: SchedulerModule {
     contentInput: [String: Any],
     triggerInput: [String: Any]?
   ) throws -> UNNotificationRequest? {
+    var mutableContentInput = contentInput
+
+    if var data = mutableContentInput["data"] as? [String: Any] {
+      data["experienceId"] = scopeKey
+      data["scopeKey"] = scopeKey
+      mutableContentInput["data"] = data
+    } else {
+      mutableContentInput["data"] = [
+        "experienceId": scopeKey,
+        "scopeKey": scopeKey
+      ]
+    }
+
+    if let categoryIdentifier = mutableContentInput["categoryIdentifier"] as? String {
+      let scopedCategoryIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: categoryIdentifier, forExperience: scopeKey)
+      mutableContentInput["categoryIdentifier"] = scopedCategoryIdentifier
+    }
+
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    return try super.buildNotificationRequest(identifier: scopedIdentifier, contentInput: contentInput, triggerInput: triggerInput)
+    return try super.buildNotificationRequest(identifier: scopedIdentifier, contentInput: mutableContentInput, triggerInput: triggerInput)
   }
 
   override public func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [[String: Any]] {

@@ -136,14 +136,16 @@ export const registerTask = () => {
           It will be handled by the background task.`
         );
         return {
-          shouldShowAlert: false,
+          shouldShowBanner: false,
+          shouldShowList: false,
           shouldPlaySound: false,
           shouldSetBadge: false,
         };
       }
 
       return {
-        shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
         shouldPlaySound: true,
         shouldSetBadge: false,
       };

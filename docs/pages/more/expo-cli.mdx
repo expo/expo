@@ -4,6 +4,8 @@ maxHeadingDepth: 4
 description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
@@ -347,16 +349,23 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 Linting helps enforce best practices and ensure your code is consistent. The `npx expo lint` command will set up ESLint with Expo-specific settings and run the `npx eslint` command with options that are optimized for the Expo framework. By running `npx expo lint --fix`, linting issues can be fixed automatically.
 
-Running `npx expo lint` targets all files in the **/src**, **/app**, and **/components** directories by default. You can also pass custom files or directories to the lint command as arguments. For example, `npx expo lint ./utils constants.ts`.
+Running `npx expo lint` targets all files in the **src**, **app**, and **components** directories by default. You can also pass custom files or directories to the lint command as arguments. For example:
+
+<Terminal cmd={['$ npx expo lint ./utils constants.ts']} />
 
 All files matching `.js, .jsx, .ts, .tsx, .mjs, .cjs` extensions will be linted by default. You can customize the extensions by passing the `--ext` flag. For example, to lint only `.ts` and `.tsx` files, you can use the `--ext` option: `npx expo lint --ext .ts,.tsx` or `npx expo lint --ext .js --tsx .tsx`.
 
-If you need additional customization, you can pass extra arguments using the `--` operator. For example, to pass the `--no-error-on-unmatched-pattern` flag to ESLint, you can run: `npx expo lint -- --no-error-on-unmatched-pattern`. If you need even more customization, you can use `npx eslint` directly.
+If you need additional customization, you can pass extra arguments using the `--` operator. For example, to pass the `--no-error-on-unmatched-pattern` flag to ESLint, you can run:
+
+<Terminal cmd={['$ npx expo lint -- --no-error-on-unmatched-pattern']} />
+
+If you need more customization, you can use `npx eslint` directly.
 
 <BoxLink
-  title="Using ESLint in Expo"
-  description="Learn more about ensuring best practices with ESLint."
+  title="Using ESLint"
+  description="Learn more about ensuring best practices with ESLint in an Expo project."
   href="/guides/using-eslint"
+  Icon={BookOpen02Icon}
 />
 
 ## Config
