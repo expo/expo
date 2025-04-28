@@ -5,7 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
-import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
+import { INTERNAL_SLOT_NAME } from '../constants';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;

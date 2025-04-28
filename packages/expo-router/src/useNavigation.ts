@@ -6,6 +6,7 @@ import {
   useStateForPath,
 } from '@react-navigation/native';
 
+import { INTERNAL_SLOT_NAME } from './constants';
 import { resolveHref } from './link/href';
 import { Href } from './types';
 
@@ -120,7 +121,7 @@ export function useNavigation<
 
     // Expo Router navigators use the context key as the name which has a leading `/`
     // The exception to this is the INTERNAL_SLOT_NAME, and the root navigator which uses ''
-    if (parent && parent !== '__root') {
+    if (parent && parent !== INTERNAL_SLOT_NAME) {
       parent = `/${parent}`;
     }
   }

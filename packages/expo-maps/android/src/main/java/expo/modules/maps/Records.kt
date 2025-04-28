@@ -68,6 +68,20 @@ data class MarkerRecord(
   val showCallout: Boolean = true
 ) : Record
 
+data class PolylineRecord(
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val geodesic: Boolean = false,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val width: Float = 10f,
+): Record
+
 data class CameraPositionRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),

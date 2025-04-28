@@ -3,20 +3,20 @@ import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { ResultState } from '../fork/getStateFromPath';
-import { applyRedirects } from '../getRoutesRedirects';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { store } from './router-store';
 import {
   emitDomDismiss,
   emitDomDismissAll,
   emitDomGoBack,
   emitDomLinkEvent,
   emitDomSetParams,
-} from '../link/useDomComponentNavigation';
+} from '../domComponents/emitDomEvent';
+import { ResultState } from '../fork/getStateFromPath';
+import { applyRedirects } from '../getRoutesRedirects';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
-import { store } from './router-store';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady() {

@@ -4,58 +4,68 @@ import CryptoKit
 import MobileCoreServices
 import ExpoModulesCore
 
-public class CachingPlayerItem: AVPlayerItem {
-  let urlAsset: AVURLAsset
+internal class VideoAsset: AVURLAsset, @unchecked Sendable {
+  internal let videoSource: VideoSource
   private var resourceLoaderDelegate: ResourceLoaderDelegate?
-  private let url: URL
   private let initialScheme: String?
   private let saveFilePath: String?
   private var customFileExtension: String?
   private let useCaching: Bool
 
-  var cachingError: Exception?
+  var cachingError: Error?
 
   internal var urlRequestHeaders: [String: String]?
 
-  public convenience init(url: URL) {
-    self.init(url: url, useCaching: false, avUrlAssetOptions: nil)
-  }
-
-  init(url: URL, useCaching: Bool, avUrlAssetOptions: [String: Any]? = nil) {
-    self.useCaching = useCaching
+  init(url: URL, videoSource: VideoSource) {
+    self.videoSource = videoSource
     let cachedMimeType = MediaInfo(forResourceUrl: url)?.mimeType
     let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
     let fileExtension = url.pathExtension.isEmpty ? cachedExtension : url.pathExtension
     self.saveFilePath = Self.pathForUrl(url: url, fileExtension: fileExtension)
-
-    self.url = url
+    self.urlRequestHeaders = videoSource.headers
     self.initialScheme = URLComponents(url: url, resolvingAgainstBaseURL: false)?.scheme
 
-    // Creates an AVUrlAsset that will delegate it's requests to ResourceLoaderDelegate
+    // Creates an URL that will delegate it's requests to ResourceLoaderDelegate
     let urlWithCustomScheme = url.withScheme(VideoCacheManager.expoVideoCacheScheme)
 
-    // Creates a regular AVURLAsset
-    guard let saveFilePath, let urlWithCustomScheme, useCaching else {
-      if urlWithCustomScheme == nil && useCaching {
-        log.warn("CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
-      }
+    let assetOptions: [String: Any]? = if let headers = videoSource.headers {
+      ["AVURLAssetHTTPHeaderFieldsKey": headers]
+    } else {
+      nil
+    }
 
-      self.urlAsset = AVURLAsset(url: url, options: avUrlAssetOptions)
-      super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    let canCache = Self.canCache(videoSource: videoSource)
+
+    if saveFilePath == nil && videoSource.useCaching {
+      log.warn("Failed to create a cache file path for the provided source with uri: \(videoSource.uri?.absoluteString ?? "null")")
+    }
+
+    if !canCache && videoSource.useCaching {
+      log.warn("Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
+    }
+
+    if urlWithCustomScheme == nil && videoSource.useCaching {
+      log.warn("CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
+    }
+
+    guard let saveFilePath, let urlWithCustomScheme, videoSource.useCaching else {
+      // Initialize with no caching
+      useCaching = false
+      super.init(url: url, options: assetOptions)
       return
     }
 
-    if let headers = avUrlAssetOptions?["AVURLAssetHTTPHeaderFieldsKey"] as? [String: String] {
-      self.urlRequestHeaders = headers
+    // Enable caching
+    useCaching = true
+    resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, urlRequestHeaders: urlRequestHeaders)
+    super.init(url: urlWithCustomScheme, options: assetOptions)
+
+    resourceLoaderDelegate?.onError = { [weak self] error in
+      self?.cachingError = error
     }
-
-    urlAsset = AVURLAsset(url: urlWithCustomScheme, options: avUrlAssetOptions)
-    super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
-
+    self.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
     self.createCacheDirectoryIfNeeded()
     VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
-    resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, owner: self)
-    urlAsset.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
   }
 
   deinit {
@@ -88,6 +98,13 @@ public class CachingPlayerItem: AVPlayerItem {
     cachesDirectory.appendPathComponent(hashFilename)
 
     return cachesDirectory.path
+  }
+
+  static func canCache(videoSource: VideoSource) -> Bool {
+    guard videoSource.uri?.scheme?.starts(with: "http") == true else {
+      return false
+    }
+    return videoSource.drm == nil
   }
 
   private func createCacheDirectoryIfNeeded() {

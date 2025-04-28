@@ -3,19 +3,19 @@ import { createElement } from 'react';
 
 import { cleanPath } from './fork/getStateFromPath-forks';
 import { RedirectConfig } from './getRoutesCore';
-import { StoreRedirects } from './global-state/router-store';
+import type { StoreRedirects } from './global-state/router-store';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
 export function applyRedirects(
   url: string | null | undefined,
   redirects: StoreRedirects[] | undefined
-) {
-  if (typeof url !== 'string') {
+): string | undefined | null {
+  if (typeof url !== 'string' || !redirects) {
     return url;
   }
 
   const nextUrl = cleanPath(url);
-  const redirect = redirects?.find(([regex]) => regex.test(nextUrl));
+  const redirect = redirects.find(([regex]) => regex.test(nextUrl));
 
   if (!redirect) {
     return url;

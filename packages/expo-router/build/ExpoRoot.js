@@ -39,12 +39,12 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const constants_1 = require("./constants");
+const useDomComponentNavigation_1 = require("./domComponents/useDomComponentNavigation");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
-const getLinkingConfig_1 = require("./getLinkingConfig");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
-const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -120,7 +120,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         ? `${serverContext.location.pathname}${serverContext.location.search}`
         : undefined;
     const store = (0, router_store_1.useStore)(context, linking, serverUrl);
-    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
+    (0, useDomComponentNavigation_1.useDomComponentNavigation)();
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -146,7 +146,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
 }
 function Content() {
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={getLinkingConfig_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
+        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
     });
     return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }
