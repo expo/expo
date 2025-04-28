@@ -92,7 +92,7 @@ struct Circle: Record, Identifiable {
   @Field var lineColor: Color?
   @Field var lineWidth: Double?
   @Field var color: Color = .green
-  
+
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(
       latitude: center.latitude,

@@ -32,7 +32,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
             .stroke(polyline.color, lineWidth: polyline.width)
         }
-        
+
         ForEach(props.circles) { circle in
           let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
             if let lineColor = circle.lineColor, let lineWidth = circle.lineWidth {
