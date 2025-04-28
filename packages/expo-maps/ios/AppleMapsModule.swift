@@ -19,9 +19,7 @@ public class AppleMapsModule: Module {
       }
 
       AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
-        Task {
-          try await view.openLookAround(coordinate: coordinates)
-        }
+        try await view.openLookAround(coordinate: coordinates)
       }
     }
   }
