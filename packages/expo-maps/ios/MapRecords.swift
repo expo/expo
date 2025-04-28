@@ -86,7 +86,7 @@ struct ExpoAppleMapPolyline: Record, Identifiable {
 
 struct Circle: Record, Identifiable {
   @Field var id: String = UUID().uuidString
-  
+
   @Field var center: Coordinate
   @Field var radius: Double
   @Field var lineColor: Color?
@@ -99,7 +99,7 @@ struct Circle: Record, Identifiable {
       longitude: center.longitude
     )
   }
-  
+
   var mkPlacemark: MKPlacemark {
     MKPlacemark(coordinate: clLocationCoordinate2D)
   }

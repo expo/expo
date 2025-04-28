@@ -115,7 +115,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               "coordinates": [
                 "latitude": hit.center.latitude,
                 "longitude": hit.center.longitude
-              ],
+              ]
             ])
           }
           // Then check if we hit a polyline and send an event
@@ -138,7 +138,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           // Send an event of map click regardless
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude,
+            "longitude": coordinate.longitude
           ])
         }
       }
@@ -168,11 +168,11 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude,
+            "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading,
+          "bearing": context.camera.heading
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
@@ -199,8 +199,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude,
-        ],
+          "longitude": marker.coordinates.longitude
+        ]
       ])
       return
     }
