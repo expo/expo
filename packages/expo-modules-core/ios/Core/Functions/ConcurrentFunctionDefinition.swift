@@ -5,7 +5,7 @@
  */
 internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
   /**
-   Specifies if the main actor should be used.. Necessary when attached to a view
+   Specifies if the main actor should be used. Necessary when attached to a view
    */
   var requiresMainActor: Bool { get set }
 }
