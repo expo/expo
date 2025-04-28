@@ -12,7 +12,7 @@ import {
 import React from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
-import { store } from './global-state/router-store';
+import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
@@ -242,6 +242,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   }: any) {
     const stateForPath = useStateForPath();
     const isFocused = useIsFocused();
+    const store = useExpoRouterStore();
 
     if (isFocused) {
       const state = navigation.getState();

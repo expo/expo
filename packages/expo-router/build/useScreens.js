@@ -12,7 +12,7 @@ exports.getSingularId = getSingularId;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
-const router_store_1 = require("./global-state/router-store");
+const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
@@ -152,11 +152,12 @@ function getQualifiedRouteComponent(value) {
     ...props }) {
         const stateForPath = (0, native_1.useStateForPath)();
         const isFocused = (0, native_1.useIsFocused)();
+        const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
             const state = navigation.getState();
             const isLeaf = !('state' in state.routes[state.index]);
             if (isLeaf && stateForPath)
-                router_store_1.store.setFocusedState(stateForPath);
+                store.setFocusedState(stateForPath);
         }
         return (<Route_1.Route node={value} route={route}>
         <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>

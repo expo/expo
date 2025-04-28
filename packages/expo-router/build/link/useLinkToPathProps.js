@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = useLinkToPathProps;
 exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
 const react_native_1 = require("react-native");
-const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
+const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
 const routing_1 = require("../global-state/routing");
 const matchers_1 = require("../matchers");
@@ -30,7 +30,7 @@ function eventShouldPreventDefault(e) {
 function useLinkToPathProps({ href, ...options }) {
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
-            if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+            if ((0, emitDomEvent_1.emitDomLinkEvent)(href, options)) {
                 return;
             }
             (0, routing_1.linkTo)(href, options);

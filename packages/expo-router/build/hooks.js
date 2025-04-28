@@ -18,6 +18,7 @@ exports.useSearchParams = useSearchParams;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
+const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
@@ -37,7 +38,9 @@ const imperative_api_1 = require("./imperative-api");
  * ```
  */
 function useRootNavigationState() {
-    return (0, native_1.useNavigation)().getParent('__root').getState();
+    return (0, native_1.useNavigation)()
+        .getParent(constants_1.INTERNAL_SLOT_NAME)
+        .getState();
 }
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
