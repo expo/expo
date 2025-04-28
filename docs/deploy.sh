@@ -360,6 +360,7 @@ redirects[router/create-pages]=router/basics/core-concepts
 # After merging registerRootComponent info in `expo` API reference
 redirects[versions/v53.0.0/sdk/register-root-component]=versions/latest/sdk/expo/#registerrootcomponentcomponent
 redirects[versions/v53.0.0/sdk/url]=versions/v53.0.0/sdk/expo/#url-api
+redirects[versions/v53.0.0/sdk/encoding]=versions/v53.0.0/sdk/expo/#encoding-api
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

@@ -45,13 +45,29 @@ const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 
 console.log(buffer.length); // 512
 ```
 
+### Encoding API
+
+`TextEncoder` and `TextDecoder` are built-in APIs that provide a way to encode and decode text in various character encodings. They are available on all platforms. Refer to the [browser and server runtime support](https://caniuse.com/textencoder) for web and Node.js.
+
+```ts TextEncoder and TextDecoder
+// [104, 101, 108, 108, 111]
+const hello = new TextEncoder().encode('hello');
+
+// "hello"
+const text = new TextDecoder().decode(hello);
+```
+
+The `TextEncoder` API is included in the Hermes engine. See the [source code in TextEncoder.cpp inside the Hermes GitHub repository](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
+
+The `TextDecoder` API is not [spec-compliant](https://encoding.spec.whatwg.org/#textdecoder) on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
+
 ### `URL` API
 
 `URL` provides the standard API on all platforms.
 
 On native platforms, built-in `URL` and `URLSearchParams` implementations replace the shims in `react-native`. Refer to the [browser and server runtime support](https://caniuse.com/url) for web and Node.js.
 
-```ts Example
+```ts URL and URLSearchParams
 const url = new URL('https://expo.dev');
 
 const params = new URLSearchParams();

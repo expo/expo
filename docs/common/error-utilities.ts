@@ -503,6 +503,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v53.0.0/sdk/register-root-component/':
     '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
   '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
+  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
