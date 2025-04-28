@@ -4,10 +4,10 @@ import ReactAppDependencyProvider
 
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
-  
+
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-  
+
   public override func applicationDidFinishLaunching(_ notification: Notification) {
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)

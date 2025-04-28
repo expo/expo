@@ -30,7 +30,7 @@ class AppDelegate: ExpoAppDelegate {
   // AppDelegate keeps a nullable reference to the updates controller
   var updatesController: (any InternalAppControllerInterface)?
   var window: UIWindow?
-  
+
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 

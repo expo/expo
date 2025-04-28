@@ -5,10 +5,10 @@ import ReactAppDependencyProvider
 @main
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
-  
+
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-  
+
   public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
