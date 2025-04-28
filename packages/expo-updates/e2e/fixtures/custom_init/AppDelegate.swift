@@ -29,6 +29,10 @@ class AppDelegate: ExpoAppDelegate {
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   // AppDelegate keeps a nullable reference to the updates controller
   var updatesController: (any InternalAppControllerInterface)?
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   static func shared() -> AppDelegate {
     guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -50,8 +54,9 @@ class AppDelegate: ExpoAppDelegate {
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    reactNativeFactoryDelegate = delegate
+    reactNativeDelegate = delegate
     reactNativeFactory = factory
+    bindReactNativeFactory(factory)
 
     // AppController instance must always be created first.
     // expo-updates creates a different type of controller

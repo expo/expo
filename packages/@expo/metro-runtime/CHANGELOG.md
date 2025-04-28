@@ -11,6 +11,11 @@
 ### 💡 Others
 
 - Remove `/symbolicate` import. ([#36409](https://github.com/expo/expo/pull/36409) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.3 — 2025-04-28
+
+### 💡 Others
+
 - Remove `web-streams-polyfill` in favor of `expo` support. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 5.0.2 — 2025-04-14

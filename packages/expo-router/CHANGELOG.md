@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
-- Add <Screen.Protected /> ([#36243](https://github.com/expo/expo/pull/36243) by [@marklawlor](https://github.com/marklawlor))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Remove dev-only stack trace view from default error boundary. ([#36409](https://github.com/expo/expo/pull/36409) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.2 — 2025-04-28
+
+### 🎉 New features
+
+- Add <Screen.Protected /> ([#36243](https://github.com/expo/expo/pull/36243) by [@marklawlor](https://github.com/marklawlor))
 
 ## 5.0.2-preview.6 — 2025-04-25
 
