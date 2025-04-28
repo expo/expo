@@ -498,7 +498,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (14.1.3):
     - ExpoModulesCore
-  - ExpoMaps (0.9.5):
+  - ExpoMaps (0.9.6):
     - ExpoModulesCore
   - ExpoMediaLibrary (17.1.4):
     - ExpoModulesCore
@@ -3597,8 +3597,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: a97859cac8efb2f5411b2052e61841b349813a4a
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 5c5f002a2d1dfc8018d31882b3743c70163d0855
   EXApplication: a14f32ab1164008d668d28659d8110920341b2f3
   EXAV: c280145fe9a7947804dc745025753efc7cc6fb7f
@@ -3645,7 +3645,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 9a7f5ed4609d994229eba37034b564c3f1a7957b
   ExpoLocation: 4566d8070b8053a419bcc62198601f4039009734
   ExpoMailComposer: 13a17b3485ad55c63381545f67be5df5e964a62c
-  ExpoMaps: 800585fb81dc94783e2257470221fbf723a29c5e
+  ExpoMaps: a6ac6a28d1977edee6bed7555072e055b6ba7bef
   ExpoMediaLibrary: 4ac1e37f623b402dbcc5cf5ddf37988d27e70ea2
   ExpoMeshGradient: b7c15c200e82d74b7e7d5f8d6bbd23aaf0890540
   ExpoModulesCore: 49b990c031109982cc1611dd12ce353957bb19ec
@@ -3676,7 +3676,7 @@ SPEC CHECKSUMS:
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: abbac80c6f89e71a8c55c7e92ec015c8a9496753
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: c32f2e405098bc1ebe30630a051ddce6f21d3c2e
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

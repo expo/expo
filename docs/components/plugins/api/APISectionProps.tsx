@@ -123,8 +123,11 @@ export const renderProp = (
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   const platforms = getAllTagData('platform', extractedComment);
+
   const isLiteralType =
     type?.type && ['literal', 'templateLiteral', 'union', 'tuple'].includes(type.type);
+  const definedLiteralGeneric =
+    isLiteralType && type?.types ? defineLiteralType(type.types) : undefined;
 
   return (
     <div
@@ -141,7 +144,7 @@ export const renderProp = (
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        {type?.types && isLiteralType && <>Literal type: {defineLiteralType(type.types)}</>}
+        {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
         {!isLiteralType && (
           <>
             Type:{' '}

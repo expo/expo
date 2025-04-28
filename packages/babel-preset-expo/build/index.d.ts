@@ -72,7 +72,7 @@ type BabelPresetExpoPlatformOptions = {
      *
      * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
      *
-     * @default `false`
+     * @default `false` on client and `true` on server.
      */
     unstable_transformImportMeta?: boolean;
 };

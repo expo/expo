@@ -39,11 +39,12 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const constants_1 = require("./constants");
+const useDomComponentNavigation_1 = require("./domComponents/useDomComponentNavigation");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
-const getLinkingConfig_1 = require("./getLinkingConfig");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
-const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
+const storeContext_1 = require("./global-state/storeContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -54,6 +55,9 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
+const documentTitle = {
+    enabled: false,
+};
 /**
  * @hidden
  */
@@ -115,11 +119,8 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     const serverUrl = serverContext.location
         ? `${serverContext.location.pathname}${serverContext.location.search}`
         : undefined;
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
-        ...linking,
-        serverUrl,
-    });
-    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
+    const store = (0, router_store_1.useStore)(context, linking, serverUrl);
+    (0, useDomComponentNavigation_1.useDomComponentNavigation)();
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -133,19 +134,19 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             return null;
         }
     }
-    return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
-            enabled: false,
-        }}>
-      <serverLocationContext_1.ServerContext.Provider value={serverContext}>
-        <WrapperComponent>
-          <Content component={store.rootComponent}/>
-        </WrapperComponent>
-      </serverLocationContext_1.ServerContext.Provider>
-    </NavigationContainer_1.NavigationContainer>);
+    return (<storeContext_1.StoreContext.Provider value={store}>
+      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+        <serverLocationContext_1.ServerContext.Provider value={serverContext}>
+          <WrapperComponent>
+            <Content />
+          </WrapperComponent>
+        </serverLocationContext_1.ServerContext.Provider>
+      </NavigationContainer_1.NavigationContainer>
+    </storeContext_1.StoreContext.Provider>);
 }
-function Content({ component }) {
+function Content() {
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={getLinkingConfig_1.INTERNAL_SLOT_NAME} component={component}/>,
+        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
     });
     return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }

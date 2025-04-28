@@ -1,15 +1,18 @@
 'use client';
 
-import type {
-  EventMapBase,
-  NavigationState,
-  ParamListBase,
-  RouteProp,
-  ScreenListeners,
+import {
+  useIsFocused,
+  useStateForPath,
+  type EventMapBase,
+  type NavigationState,
+  type ParamListBase,
+  type RouteProp,
+  type ScreenListeners,
 } from '@react-navigation/native';
 import React from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
@@ -52,7 +55,7 @@ export type SingularOptions =
 
 function getSortedChildren(
   children: RouteNode[],
-  order?: ScreenProps[],
+  order: ScreenProps[] = [],
   initialRouteName?: string
 ): { route: RouteNode; props: Partial<ScreenProps> }[] {
   if (!order?.length) {
@@ -142,15 +145,23 @@ function getSortedChildren(
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export function useSortedScreens(order: ScreenProps[]): React.ReactNode[] {
+export function useSortedScreens(
+  order: ScreenProps[],
+  protectedScreens: Set<string>
+): React.ReactNode[] {
   const node = useRouteNode();
 
   const sorted = node?.children?.length
     ? getSortedChildren(node.children, order, node.initialRouteName)
     : [];
   return React.useMemo(
-    () => sorted.map((value) => routeToScreen(value.route, value.props)),
-    [sorted]
+    () =>
+      sorted
+        .filter((item) => !protectedScreens.has(item.route.route))
+        .map((value) => {
+          return routeToScreen(value.route, value.props);
+        }),
+    [sorted, protectedScreens]
   );
 }
 
@@ -237,6 +248,16 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     // Pass all other props to the component
     ...props
   }: any) {
+    const stateForPath = useStateForPath();
+    const isFocused = useIsFocused();
+    const store = useExpoRouterStore();
+
+    if (isFocused) {
+      const state = navigation.getState();
+      const isLeaf = !('state' in state.routes[state.index]);
+      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+    }
+
     return (
       <Route node={value} route={route}>
         <React.Suspense fallback={<SuspenseFallback route={value} />}>

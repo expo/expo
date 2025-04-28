@@ -20,7 +20,7 @@ it('can push a hash url', () => {
   act(() => router.push('/test#b'));
   act(() => router.push('/test#c'));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
@@ -120,7 +120,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: () => <Text testID="index" />,
   });
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     routes: [
       {
         name: '__root',
@@ -140,7 +140,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
 
   act(() => router.navigate('/?#hash1'));
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
+  expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
