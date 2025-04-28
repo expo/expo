@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `react-native-config` linked result order. ([#36442](https://github.com/expo/expo/pull/36442) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.1.7 — 2025-04-25
