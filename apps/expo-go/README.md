@@ -40,7 +40,7 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 1. Build React Native
 
-You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
+You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. You will need to run `yarn install` first. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
 
 2. Run `yarn start` in `apps/expo-go` directory to start Metro 
 
@@ -51,7 +51,8 @@ Metro needs to run prior running the build. Verify it runs on port 80. This is b
 For Android, run `./gradlew app:assembleDebug` in the `apps/expo-go/android` directory.
 
 For iOS:
-- set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist`
+- set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist`. You may need to copy `EXBuildConstants.plist.example` to `EXBuildConstants.plist` if it doesn't exist.
+- install CocaPods dependencies by with `pod install` (or `npx pod-install`).
 - open and run `ios/Exponent.xcworkspace` in Xcode.
 
 4. Run Metro for Native Component List
@@ -74,6 +75,7 @@ error: ReferenceError: SHA-1 for file /Users/vojta/_dev/expo/react-native-lab/re
 run `rm -rf ./react-native-lab/react-native/node_modules`
 
 - If you're seeing C++ related errors, run `find . -name ".cxx" -type d -prune -exec rm -rf '{}' +` which clears `.cxx` build artifacts. Alternatively, use the "nuke" approach below.
+- If you see `Command PhaseScriptExecution failed with a nonzero exit code`, then check the Report navigator in XCode. If you see something like `Error: EACCES: permission denied, open 'YOUR_DIRECTORY/apps/expo-go/.expo/settings.json.123456` when building in XCode, then you started the expo dev server with `sudo`, probably to run on port `80`. Delete the `.expo` directory, run `yarn start` without `sudo` and it should work. You can run `sudo yarn start` once the `.expo` directory exists and you have the correct permissions.
 - If you get `A valid Firebase Project ID is required to communicate with Firebase server APIs.`, make sure you Metro is running in the `apps/expo-go` directory and run `et android-generate-dynamic-macros`.
 - You might need clean the project before building it. Run `./gradlew clean` in the `apps/expo-go/android` directory.
 - the "nuke" option is `git submodule foreach --recursive git clean -xfd` and / or `git clean -xfd` which removes all untracked files so you need to run the setup script `./scripts/download-dependencies.sh` again and building then takes a bit longer - but this approach appears to be effective.
