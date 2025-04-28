@@ -9,6 +9,7 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
   /**
    Specifies on which queue the function should run.
    */
+  @discardableResult
   func runOnQueue(_ queue: DispatchQueue?) -> Self
 }
 
