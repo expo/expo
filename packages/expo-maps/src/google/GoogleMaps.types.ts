@@ -49,6 +49,11 @@ export type GoogleMapsMarker = {
  */
 export type GoogleMapsPolyline = {
   /**
+   * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+   */
+  id?: string;
+
+  /**
    * The coordinates of the polyline.
    */
   coordinates: Coordinates[];

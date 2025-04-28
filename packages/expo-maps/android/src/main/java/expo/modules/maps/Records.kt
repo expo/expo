@@ -70,6 +70,9 @@ data class MarkerRecord(
 
 data class PolylineRecord(
   @Field
+  val id: String = UUID.randomUUID().toString(),
+  
+  @Field
   val coordinates: List<Coordinates> = emptyList(),
 
   @Field

@@ -125,6 +125,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
             onClick = {
               onPolylineClick(
                 PolylineRecord(
+                  id = polyline.id,
                   coordinates.map { Coordinates(it.latitude, it.longitude) },
                   polyline.geodesic,
                   polyline.color,

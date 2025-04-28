@@ -128,6 +128,10 @@ export type AppleMapsAnnotation = {
 } & AppleMapsMarker;
 export type AppleMapsPolyline = {
     /**
+     * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+     */
+    id?: string;
+    /**
      * The coordinates of the polyline.
      */
     coordinates: Coordinates[];
