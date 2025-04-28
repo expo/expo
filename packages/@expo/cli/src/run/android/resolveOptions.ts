@@ -1,11 +1,10 @@
-import { getConfig } from '@expo/config';
+import { getConfig, RemoteBuildCacheProvider } from '@expo/config';
 
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradlePropsAsync } from './resolveGradlePropsAsync';
 import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
 import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
 import { resolveRemoteBuildCacheProvider } from '../../utils/remote-build-cache-providers';
-import { RemoteBuildCacheProvider } from '../../utils/remote-build-cache-providers/types';
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
