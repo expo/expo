@@ -1,0 +1,1 @@
+{"version":3,"file":"fetchThenEval.web.d.ts","sourceRoot":"","sources":["../../src/async-require/fetchThenEval.web.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAQH,wBAAgB,kBAAkB,CAChC,GAAG,EAAE,MAAM,EACX,EACE,UAAU,EACV,KAAK,EACL,WAAW,GACZ,GAAE;IAAE,UAAU,CAAC,EAAE,MAAM,CAAC;IAAC,KAAK,CAAC,EAAE,MAAM,CAAC;IAAC,WAAW,CAAC,EAAE,MAAM,CAAA;CAAO,GACpE,OAAO,CAAC,IAAI,CAAC,CA+Df"}

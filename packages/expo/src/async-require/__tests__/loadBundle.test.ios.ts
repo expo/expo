@@ -1,5 +1,5 @@
-import HMRClient from '../hmr';
 import { fetchThenEvalAsync } from '../fetchThenEval';
+import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
 
 jest.mock('../../getDevServer', () => ({

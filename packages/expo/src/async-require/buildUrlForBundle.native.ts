@@ -18,8 +18,8 @@ export function buildUrlForBundle(bundlePath: string): string {
       'Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined.'
     );
   } else {
-    const getDevServer = require('../getDevServer')
-      .default as typeof import('../getDevServer').default;
+    const getDevServer = require('./getDevServer')
+      .default as typeof import('./getDevServer').default;
 
     const { url: serverUrl } = getDevServer();
 

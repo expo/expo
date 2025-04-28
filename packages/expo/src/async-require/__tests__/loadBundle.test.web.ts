@@ -1,8 +1,8 @@
-import HMRClient from '../hmr';
+import { DeviceEventEmitter } from 'react-native-web';
 
 import { fetchThenEvalAsync } from '../fetchThenEval';
+import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
-import { DeviceEventEmitter } from 'react-native-web';
 
 jest.mock('react-native-web', () => {
   const og = jest.requireActual('react-native-web');

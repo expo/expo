@@ -5,7 +5,7 @@ declare namespace globalThis {
 }
 
 if (__DEV__) {
-  function createWebSocketConnection(path: string = '/message'): WebSocket {
+  const socket: WebSocket = (() => {
     const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
     const devServer = getDevServer();
     if (!devServer.bundleLoadedFromServer) {
@@ -15,10 +15,10 @@ if (__DEV__) {
     const devServerUrl = new URL(devServer.url);
     const serverScheme = devServerUrl.protocol === 'https:' ? 'wss' : 'ws';
     const WebSocket = require('react-native/Libraries/WebSocket/WebSocket').default;
-    return new WebSocket(`${serverScheme}://${devServerUrl.host}${path}`);
-  }
+    return new WebSocket(`${serverScheme}://${devServerUrl.host}/message`);
+  })();
 
-  createWebSocketConnection().onmessage = (message) => {
+  socket.onmessage = (message) => {
     const data = JSON.parse(String(message.data));
     switch (data.method) {
       case 'sendDevCommand':
