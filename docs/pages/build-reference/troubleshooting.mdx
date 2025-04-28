@@ -56,7 +56,7 @@ A good path forward is to **determine if the build failed due to a native or Jav
   ]}
 />
 
-This particular error means that the app is importing **src/Routes** and it is not found. The cause could be that the filename case is different in Git than the developer's filesystem (for example, **routes.js** in Git instead of **Routes.js**), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case **src/Routes** was intended to import **src/Routes/index.js**, but that path was accidentally excluded in the developer's **.gitignore**.
+This particular error means that the app is importing **./src/Routes** and it is not found. The cause could be that the filename case is different in Git than the developer's filesystem (for example, **routes.js** in Git instead of **Routes.js**), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case **./src/Routes** was intended to import **./src/Routes/index.js**, but that path was accidentally excluded in the developer's **.gitignore**.
 
 It's important to note that with iOS builds the build details page only displays an abridged version of the logs because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has been completed and either click to view or download them.
 
