@@ -30,7 +30,7 @@ extension ExpoSwiftUI {
         function.runOnQueue(.main)
         function.takesOwner = true
       }
-      
+
       if var function = element as? AnyConcurrentFunctionDefinition {
         function.requiresMainActor = true
         function.takesOwner = true
