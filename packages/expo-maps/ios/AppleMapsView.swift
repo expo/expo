@@ -1,17 +1,19 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
 import MapKit
+import SwiftUI
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
+  @Field var polylines: [ExpoAppleMapPolyline] = []
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
+  let onPolylineClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix importing polyfills. ([#36406](https://github.com/expo/expo/pull/36406) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.20.7 — 2025-04-25

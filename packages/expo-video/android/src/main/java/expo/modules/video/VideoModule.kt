@@ -8,6 +8,7 @@ import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
@@ -267,18 +268,14 @@ class VideoModule : Module() {
         }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
-        val videoSource = source?.let {
-          if (it.`is`(VideoSource::class)) {
-            it.get(VideoSource::class)
-          } else {
-            VideoSource(it.get(Uri::class))
-          }
-        }
+        replaceImpl(ref, source)
+      }
 
-        appContext.mainQueue.launch {
-          ref.uncommittedSource = videoSource
-          ref.prepare()
-        }
+      // ExoPlayer automatically offloads loading of the asset onto a different thread so we can keep the same
+      // implementation until `replace` is deprecated and removed.
+      // TODO: @behenate see if we can further reduce load on the main thread
+      AsyncFunction("replaceAsync") { ref: VideoPlayer, source: Either<Uri, VideoSource>?, promise: Promise ->
+        replaceImpl(ref, source, promise)
       }
 
       Function("seekBy") { ref: VideoPlayer, seekTime: Double ->
@@ -321,6 +318,25 @@ class VideoModule : Module() {
 
     OnActivityEntersBackground {
       VideoManager.onAppBackgrounded()
+    }
+  }
+  private fun replaceImpl(
+    ref: VideoPlayer,
+    source: Either<Uri, VideoSource>?,
+    promise: Promise? = null
+  ) {
+    val videoSource = source?.let {
+      if (it.`is`(VideoSource::class)) {
+        it.get(VideoSource::class)
+      } else {
+        VideoSource(it.get(Uri::class))
+      }
+    }
+
+    appContext.mainQueue.launch {
+      ref.uncommittedSource = videoSource
+      ref.prepare()
+      promise?.resolve()
     }
   }
 }

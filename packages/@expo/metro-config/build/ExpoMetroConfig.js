@@ -216,15 +216,21 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
-                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter');
+                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter/index.ts');
                 if (stdRuntime) {
                     preModules.push(stdRuntime);
+                }
+                else {
+                    debug('@expo/metro-runtime not found, this may cause issues');
                 }
                 // We need to shift this to be the first module so web Fast Refresh works as expected.
                 // This will only be applied if the module is installed and imported somewhere in the bundle already.
                 const metroRuntime = resolve_from_1.default.silent(projectRoot, '@expo/metro-runtime');
                 if (metroRuntime) {
                     preModules.push(metroRuntime);
+                }
+                else {
+                    debug('@expo/metro-runtime not found, this may cause issues');
                 }
                 return preModules;
             },
