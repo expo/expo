@@ -8744,7 +8744,12 @@ After calling this function, the listener will no longer receive any events from
       >
         Literal Type: 
       </span>
-      multiple types
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        union
+      </code>
     </p>
     <div
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"

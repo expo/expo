@@ -524,7 +524,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
 const getMonospaceHeader = (
   element: ComponentType<any>,
   baseNestingLevel: number,
-  className: string | undefined = undefined
+  className?: string
 ) => {
   return createPermalinkedComponent(element, {
     baseNestingLevel,
@@ -536,7 +536,7 @@ const getMonospaceHeader = (
 export function getCodeHeadingWithBaseNestingLevel(
   baseNestingLevel: number,
   Element: ComponentType<any>,
-  className: string | undefined = undefined
+  className?: string
 ) {
   return getMonospaceHeader(Element, baseNestingLevel, className);
 }
@@ -575,12 +575,17 @@ export function defineLiteralType(types: TypeDefinitionData[]) {
           return td.head;
         } else if ('value' in td) {
           return td.value && typeof td.value;
+        } else if ('name' in td) {
+          return td.name;
         }
       })
     )
   );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
+  if (uniqueTypes.length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
+  }
+  if (uniqueTypes.filter(Boolean).every(type => typeof type === 'string')) {
+    return <CODE>union</CODE>;
   }
   return null;
 }
