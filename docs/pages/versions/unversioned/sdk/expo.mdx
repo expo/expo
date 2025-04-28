@@ -43,6 +43,29 @@ const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 
 console.log(buffer.length); // 512
 ```
 
+### Streams API
+
+Global support for standard web streams is available on native platforms to match the behavior of web and server platforms. Refer to the [browser and server runtime support](https://caniuse.com/streams) for specific web and Node.js support. EAS Hosting server runtime also includes support for the standard web streams API.
+
+Globally access `ReadableStream`, `WritableStream`, and `TransformStream` classes.
+
+```js
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue('Hello');
+    controller.enqueue('World');
+    controller.close();
+  },
+});
+const reader = stream.getReader();
+reader.read().then(({ done, value }) => {
+  console.log(value); // Hello
+});
+reader.read().then(({ done, value }) => {
+  console.log(value); // World
+});
+```
+
 <APISection packageName="expo" />
 
 ## Common questions

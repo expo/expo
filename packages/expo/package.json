@@ -88,7 +88,6 @@
     "expo-modules-autolinking": "2.1.7",
     "expo-modules-core": "2.3.9",
     "react-native-edge-to-edge": "1.6.0",
-    "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
@@ -99,6 +98,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.1",
+    "web-streams-polyfill": "^3.3.2",
     "ws": "^8.18.0"
   },
   "peerDependencies": {
