@@ -20,7 +20,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
 
   func loadMacOSWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
 #if os(macOS)
-    if let rootView = reactNativeFactory?.rootViewFactory.view(
+    if let rootView = factory?.rootViewFactory.view(
       withModuleName: defaultModuleName,
       initialProperties: defaultInitialProps,
       launchOptions: launchOptions
@@ -58,7 +58,7 @@ open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationD
   ) -> UIView {
     guard let delegate = self.factory?.delegate,
     let rootViewFactory = self.factory?.rootViewFactory else {
-      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppDelegate")
+      fatalError("recreateRootView: Missing factory in ExpoAppDelegate")
     }
 
     if delegate.newArchEnabled() {
