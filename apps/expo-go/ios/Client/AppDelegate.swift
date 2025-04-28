@@ -8,14 +8,19 @@ import ReactAppDependencyProvider
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     let delegate = ReactNativeDelegate()
     let factory = ExpoGoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    reactNativeFactoryDelegate = delegate
+    reactNativeDelegate = delegate
     reactNativeFactory = factory
+    bindReactNativeFactory(factory)
 
     FirebaseApp.configure()
 
