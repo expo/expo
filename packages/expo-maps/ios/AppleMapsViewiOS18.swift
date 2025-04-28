@@ -1,5 +1,5 @@
-import MapKit
 import SwiftUI
+import MapKit
 
 extension MKMapPoint {
   // Perpendicular distance (in metres) from `self` to the
@@ -33,8 +33,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition =
-        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -176,11 +175,9 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(
-        properties.mapType.toMapStyle(
-          showsTraffic: properties.isTrafficEnabled
-        )
-      )
+      .mapStyle(properties.mapType.toMapStyle(
+        showsTraffic: properties.isTrafficEnabled
+      ))
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
