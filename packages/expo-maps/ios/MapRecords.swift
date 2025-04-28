@@ -84,6 +84,31 @@ struct ExpoAppleMapPolyline: Record, Identifiable {
   }
 }
 
+struct Circle: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+  
+  @Field var center: Coordinate
+  @Field var radius: Double
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+  @Field var color: Color = .green
+  
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: center.latitude,
+      longitude: center.longitude
+    )
+  }
+  
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
 struct MapUISettings: Record {
   @Field var compassEnabled: Bool = true
   @Field var myLocationButtonEnabled: Bool = true

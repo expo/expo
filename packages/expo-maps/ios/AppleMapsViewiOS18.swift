@@ -1,5 +1,5 @@
-import SwiftUI
 import MapKit
+import SwiftUI
 
 extension MKMapPoint {
   // Perpendicular distance (in metres) from `self` to the
@@ -33,7 +33,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition =
+        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -60,6 +61,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
+        ForEach(props.circles) { circle in
+          let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
+            .tag(MapSelection<MKMapItem>(circle.mapItem))
+          if let lineColor = circle.lineColor, let lineWidth = circle.lineWidth {
+            mapCircle
+              .stroke(lineColor, lineWidth: lineWidth)
+              .foregroundStyle(circle.color)
+          } else {
+            mapCircle
+              .foregroundStyle(circle.color)
+          }
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
@@ -84,8 +98,28 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
-          // First check if we hit a polyline and send an event
-          if let hit = polyline(at: coordinate) {
+          // First check if we hit a circle and send an event
+          if let hit = props.circles.first(where: { circle in
+            isTapInsideCircle(
+              tapCoordinate: coordinate,
+              circleCenter: circle.clLocationCoordinate2D,
+              radius: circle.radius
+            )
+          }) {
+            props.onCircleClick([
+              "id": hit.id,
+              "color": hit.color,
+              "lineColor": hit.lineColor,
+              "lineWidth": hit.lineWidth,
+              "radius": hit.radius,
+              "coordinates": [
+                "latitude": hit.center.latitude,
+                "longitude": hit.center.longitude
+              ],
+            ])
+          }
+          // Then check if we hit a polyline and send an event
+          else if let hit = polyline(at: coordinate) {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
@@ -104,7 +138,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           // Send an event of map click regardless
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "longitude": coordinate.longitude,
           ])
         }
       }
@@ -134,17 +168,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude
+            "longitude": cameraPosition.longitude,
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading
+          "bearing": context.camera.heading,
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
+      .mapStyle(
+        properties.mapType.toMapStyle(
+          showsTraffic: properties.isTrafficEnabled
+        )
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
@@ -163,8 +199,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "systemImage": marker.systemImage,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
-          "longitude": marker.coordinates.longitude
-        ]
+          "longitude": marker.coordinates.longitude,
+        ],
       ])
       return
     }
@@ -186,5 +222,21 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       return false
     }
+  }
+
+  func isTapInsideCircle(
+    tapCoordinate: CLLocationCoordinate2D, circleCenter: CLLocationCoordinate2D, radius: Double
+  ) -> Bool {
+    // Convert coordinates to CLLocation for distance calculation
+    let tapLocation = CLLocation(
+      latitude: tapCoordinate.latitude, longitude: tapCoordinate.longitude)
+    let circleCenterLocation = CLLocation(
+      latitude: circleCenter.latitude, longitude: circleCenter.longitude)
+
+    // Calculate distance between tap and circle center (in meters)
+    let distance = tapLocation.distance(from: circleCenterLocation)
+
+    // Return true if distance is less than or equal to the radius
+    return distance <= radius
   }
 }
