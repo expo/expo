@@ -45,6 +45,28 @@ const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 
 console.log(buffer.length); // 512
 ```
 
+### `URL` API
+
+`URL` provides the standard API on all platforms.
+
+On native platforms, built-in `URL` and `URLSearchParams` implementations replace the shims in `react-native`. Refer to the [browser and server runtime support](https://caniuse.com/url) for web and Node.js.
+
+```ts Example
+const url = new URL('https://expo.dev');
+
+const params = new URLSearchParams();
+```
+
+Expo's built-in `URL` support attempts to be fully [spec compliant](https://developer.mozilla.org/en-US/docs/Web/API/URL). The only missing exception is that native platforms do not currently support [non-ASCII characters](https://unicode.org/reports/tr46/) in the hostname.
+
+```ts Non-ASCII characters
+console.log(new URL('http://🥓').toString());
+
+// This outputs the following:
+// - Web, Node.js: http://xn--pr9h/
+// - Android, iOS: http://🥓/
+```
+
 <APISection packageName="expo" />
 
 ## Common questions

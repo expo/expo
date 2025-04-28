@@ -501,7 +501,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After merging registerRootComponent info in `expo` API reference
   '/versions/v53.0.0/sdk/register-root-component/':
-    '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
+    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
+  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
