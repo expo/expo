@@ -1,7 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import { commandRunner, getArgs } from "../util/commandUtils.js";
 
-script_dir="$(dirname "$0")"
-
-"$script_dir/npx" eslint "$@"
+await commandRunner('yarn', ['eslint', ...getArgs()]);

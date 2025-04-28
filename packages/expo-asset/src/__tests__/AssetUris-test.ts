@@ -22,13 +22,13 @@ describe('getFilename', () => {
   it(`does not support Metro dev server URL extraction in production`, () => {
     const originalDev = __DEV__;
     try {
-      // @ts-expect-error
+      // eslint-disable-next-line no-global-assign
       __DEV__ = false;
       const url =
         '/assets?unstable_path=.%2Fsrc%2Fassets%2Fimages%2FPILLAR.png&platform=web&hash=d00faeafda55dca55498cd494a65a83b';
       expect(AssetUris.getFilename(url)).toBe('assets');
     } finally {
-      // @ts-expect-error
+      // eslint-disable-next-line no-global-assign
       __DEV__ = originalDev;
     }
   });

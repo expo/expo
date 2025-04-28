@@ -5,7 +5,6 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../../log';
-import { hasDirectDevClientDependency } from '../../start/detectDevClient';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';

@@ -1,2 +1,2 @@
 /** @type {import('jest').Config} */
-module.exports = require('./jest-preset-cli');
+export * from './jest-preset-cli';

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-const { program } = require('commander');
-const process = require('process');
+import { program } from 'commander';
 
+// Common scripts
 program.command('configure', `Generate common configuration files`);
 program.command('readme', `Generate README`);
 program.command(

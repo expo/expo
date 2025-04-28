@@ -1,12 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { commandRunner, getArgs } from "../util/commandUtils.js";
 
-script_dir="$(dirname "$0")"
+export const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-args=("$@")
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
+process.env.EXPO_NONINTERACTIVE = 1;
 
-"$script_dir/expo-module-tsc" --noEmit "${args[@]}"
+await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...getArgs()]);

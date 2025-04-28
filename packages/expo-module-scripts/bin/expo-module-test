@@ -1,35 +1,31 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+import { commandRunner, getArgs } from "../util/commandUtils.js";
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-script_dir="$(dirname "$0")"
+export const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-args=("$@")
+let args = getArgs();
 
-# If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
-extra_module_build_types=("plugin" "cli" "utils" "scripts")
-for i in "${extra_module_build_types[@]}"
-do
-  if [ "$1" == "$i" ]; then
-    args=()
-    args+=("--rootDir")
-    args+=("$i")
+if (args[0] === 'plugin') {
+  const pluginDir = path.join(process.cwd(), 'plugin');
+  const configPath = path.join(pluginDir, 'jest.config.js');
+  if (fs.existsSync(configPath)) {
+    args = ['--rootDir', pluginDir, '--config', configPath, ...args.splice(1)]
+  } else {
+    args = ['--rootDir', pluginDir, ...args.splice(1)]
+  }
+}
 
-    if [[ -f "$i/jest.config.js" ]]; then
-      args+=("--config")
-      args+=("$i/jest.config.js")
-    else
-      args+=("--config")
-      args+=("$(node --print "require.resolve('expo-module-scripts/jest-preset-$i.js')")")
-    fi
+if (
+  process.stdout.isTTY &&
+  !process.env.CI &&
+  !process.env.EXPO_NONINTERACTIVE
+) {
+  args.push('--watch')
+}
 
-    # Push the rest of the arguments minus the `plugin` arg
-    args+=("${@:2}")
-  fi
-done
-
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
-
-"$script_dir/expo-module-jest" "${args[@]}"
+await commandRunner(path.join(process.cwd(), 'expo-module-jest'), args);
