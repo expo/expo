@@ -1,5 +1,6 @@
 import './winter';
 import './async-require';
+import 'expo/virtual/rsc';
 
 // Only during development.
 if (

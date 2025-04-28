@@ -22,6 +22,8 @@
 
 - Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
 
+- Move virtual RSC client boundary entry point to `expo`. ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.24.5 — 2025-04-25
 
 _This version does not introduce any user-facing changes._

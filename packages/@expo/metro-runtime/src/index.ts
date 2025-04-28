@@ -12,5 +12,4 @@ if (__DEV__) {
   globalThis.__expo_dev_resetErrors = require('./error-overlay/LogBox').default.clearAllLogs;
 }
 
-import '@expo/metro-runtime/rsc/virtual';
 import '@expo/metro-runtime/rsc/runtime';

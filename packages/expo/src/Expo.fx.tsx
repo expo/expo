@@ -2,6 +2,7 @@
 import './winter';
 import './async-require';
 import 'expo-asset';
+import 'expo/virtual/rsc';
 
 import Constants from 'expo-constants';
 import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
