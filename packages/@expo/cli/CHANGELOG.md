@@ -7,10 +7,17 @@
 ### 🎉 New features
 
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
+- Inject web stream support when bundling for native platforms. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.24.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.24.4 — 2025-04-23
 

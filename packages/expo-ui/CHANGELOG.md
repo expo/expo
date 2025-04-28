@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.1.1-alpha.5 — 2025-04-25
+
+### 💡 Others
+
 - Shared code between current views and the Next views (now called primitives). ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
 
 ## 0.1.1-alpha.4 — 2025-04-23

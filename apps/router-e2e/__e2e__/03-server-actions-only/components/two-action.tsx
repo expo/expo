@@ -9,7 +9,7 @@ const fileNameHack = path.join(
   'two-action.tsx'
 );
 
-const GENERATED_RETURN = 'xxxxxx';
+const GENERATED_RETURN = 'sapkqh';
 
 export async function two() {
   const contents = await fs.promises.readFile(fileNameHack, 'utf8');

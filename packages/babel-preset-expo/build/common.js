@@ -19,6 +19,7 @@ exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 exports.getAsyncRoutes = getAsyncRoutes;
 exports.createAddNamedImportOnce = createAddNamedImportOnce;
+exports.toPosixPath = toPosixPath;
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const node_path_1 = __importDefault(require("node:path"));
@@ -163,4 +164,11 @@ function createAddNamedImportOnce(t) {
         // this is a helper for that.
         return didCreate ? identifier : t.cloneNode(identifier);
     };
+}
+const REGEXP_REPLACE_SLASHES = /\\/g;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath) {
+    return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

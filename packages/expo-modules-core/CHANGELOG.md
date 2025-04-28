@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 2.3.9 — 2025-04-25
+
 ### 💡 Others
 
 - Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))

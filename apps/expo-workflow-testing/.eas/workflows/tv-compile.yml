@@ -20,6 +20,7 @@ jobs:
       - uses: eas/checkout
       - name: Check changed paths
         id: changed_paths
+        working_directory: ../..
         outputs: [result, error]
         env:
           GIT_AUTHOR_NAME: "Douglas Lowder"
@@ -28,7 +29,7 @@ jobs:
           node ./packages/expo-updates/bin/check-for-changed-paths/index.js
           ${{ github.event_name }}
           main
-          .eas/workflows/tv-compile.yml
+          apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
           'packages/expo-modules-core/ios/Core/Views/SwiftUI/**'
           'packages/expo-ui/**'
           packages/expo-updates/e2e/setup/create-eas-project-tv.ts
@@ -55,6 +56,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up TV compile test project
         id: setup
+        working_directory: ../..
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
@@ -63,7 +65,7 @@ jobs:
           ls -la ../updates-e2e
       - name: Compile TV project
         id: build
-        working_directory: ../updates-e2e
+        working_directory: ../../../updates-e2e
         run: |
           yarn generate-test-update-bundles
           npx pod-install

@@ -60,11 +60,11 @@ if (process.env.NODE_ENV !== 'production') {
 function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-    const { screens, children: nonScreenChildren } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
+    const { screens, children: nonScreenChildren, protectedScreens, } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
         isCustomNavigator: true,
         contextKey,
     });
-    const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? []);
+    const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens);
     router ||= StackClient_1.StackRouter;
     const navigation = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
@@ -100,13 +100,13 @@ function useNavigatorContext() {
 function SlotNavigator(props) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
-    const { screens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
+    const { screens, protectedScreens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
         contextKey,
     });
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(StackClient_1.StackRouter, {
         ...props,
         id: contextKey,
-        children: (0, useScreens_1.useSortedScreens)(screens ?? []),
+        children: (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens),
     });
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }

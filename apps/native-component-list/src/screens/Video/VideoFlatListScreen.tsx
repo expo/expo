@@ -3,9 +3,16 @@ import { VideoView, VideoPlayer, createVideoPlayer, VideoSource } from 'expo-vid
 import { useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { localVideoSource } from './videoSources';
+import {
+  bigBuckBunnySource,
+  elephantsDreamSource,
+  hlsSource,
+  localVideoSource,
+} from './videoSources';
 
-const videoSources = Array(100).fill(localVideoSource);
+const videoSources = Array(20)
+  .fill([localVideoSource, bigBuckBunnySource, elephantsDreamSource, hlsSource])
+  .flat();
 
 export type ViewSize = {
   width: number;
@@ -32,7 +39,10 @@ function RenderItem({ item, index, playerPool, viewSize }: RenderItemProps) {
   const [heart, setHeart] = useState(false);
 
   useEffect(() => {
-    player.replace(item);
+    (async () => {
+      await player.replaceAsync(item);
+      player.currentTime = 10;
+    })();
   }, [playerPool]);
 
   return (
@@ -41,7 +51,7 @@ function RenderItem({ item, index, playerPool, viewSize }: RenderItemProps) {
         player={player}
         style={styles.videoView}
         nativeControls={false}
-        contentFit="fill"
+        contentFit="contain"
         allowsVideoFrameAnalysis={false}
       />
       <View style={styles.overlayContainer}>
@@ -71,6 +81,7 @@ export default function VideoFlatListScreen() {
       player.bufferOptions = {
         preferredForwardBufferDuration: 5,
       };
+      player.currentTime = 10;
       player.loop = true;
     });
 
@@ -136,6 +147,7 @@ export const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     alignSelf: 'stretch',
+    backgroundColor: 'black',
   },
   controlsContainer: {
     marginBottom: 50,

@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Always enable `import.meta` polyfill for server bundles. ([#36380](https://github.com/expo/expo/pull/36380) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 13.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
 
 ## 13.1.6 — 2025-04-23
 

@@ -5,9 +5,16 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { styles, ViewSize } from './VideoFlatListScreen';
-import { localVideoSource } from './videoSources';
+import {
+  bigBuckBunnySource,
+  elephantsDreamSource,
+  hlsSource,
+  localVideoSource,
+} from './videoSources';
 
-const videoSources = Array(100).fill(localVideoSource);
+const videoSources = Array(20)
+  .fill([localVideoSource, bigBuckBunnySource, elephantsDreamSource, hlsSource])
+  .flat();
 
 type RenderItemProps = {
   item: VideoSource;
@@ -30,7 +37,10 @@ function RenderItem({ item, index, viewSize, visibleIndex }: RenderItemProps) {
 
   // Instead, we use the replace function
   useEffect(() => {
-    player.replace(item);
+    (async () => {
+      await player.replaceAsync(item);
+      player.currentTime = 10;
+    })();
   }, [index]);
 
   useEffect(() => {
@@ -47,7 +57,7 @@ function RenderItem({ item, index, viewSize, visibleIndex }: RenderItemProps) {
         player={player}
         style={styles.videoView}
         nativeControls={false}
-        contentFit="fill"
+        contentFit="contain"
         allowsVideoFrameAnalysis={false}
       />
       <View style={styles.overlayContainer}>

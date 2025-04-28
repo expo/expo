@@ -45,21 +45,30 @@ it(`should throw an error when trying to transform import.meta by default for na
     );
   });
 });
+it(`should not transform import.meta by default for web platforms`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
+  };
 
-it(`should not transform import.meta by default for web and server platforms`, () => {
-  ['web', 'server'].forEach((platform) => {
-    const options = {
-      ...DEF_OPTIONS,
-      caller: getCaller({
-        name: 'metro',
-        engine: 'hermes',
-        platform: 'web',
-        isDev: true,
-        isServer: platform === 'server',
-      }),
-    };
+  const sourceCode = `var url = import.meta.url;`;
+  expect(babel.transform(sourceCode, options).code).toEqual(`var url = import.meta.url;`);
+});
 
-    const sourceCode = `var url = import.meta.url;`;
-    expect(babel.transform(sourceCode, options)!.code).toEqual(sourceCode);
-  });
+it(`should transform import.meta by default for server bundles`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'web',
+      isDev: true,
+      isServer: true,
+    }),
+  };
+
+  const sourceCode = `var url = import.meta.url;`;
+  expect(babel.transform(sourceCode, options)!.code).toEqual(
+    `var url = globalThis.__ExpoImportMetaRegistry.url;`
+  );
 });
