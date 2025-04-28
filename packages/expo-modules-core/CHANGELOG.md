@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix concurrent functions on views.
+
 ### 💡 Others
 
 ## 2.3.9 — 2025-04-25
