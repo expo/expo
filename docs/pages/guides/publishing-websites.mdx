@@ -97,7 +97,7 @@ Configure redirects for single-page applications.
 
 > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
+`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **public/\_redirects** file and redirecting all requests to **/index.html**.
 
 ```sh public/_redirects
 /*    /index.html   200
