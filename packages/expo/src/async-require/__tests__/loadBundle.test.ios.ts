@@ -1,5 +1,4 @@
-import HMRClient from '../../HMRClient';
-import LoadingView from '../../LoadingView';
+import HMRClient from '../hmr';
 import { fetchThenEvalAsync } from '../fetchThenEval';
 import { loadBundleAsync } from '../loadBundle';
 
@@ -17,14 +16,9 @@ jest.mock('../fetchThenEval', () => ({
   fetchThenEvalAsync: jest.fn(async (): Promise<void> => {}),
 }));
 
-jest.mock('../../HMRClient', () => ({
+jest.mock('../hmr', () => ({
   __esModule: true,
   default: { registerBundle: jest.fn() },
-}));
-
-jest.mock('../../LoadingView', () => ({
-  __esModule: true,
-  default: { showMessage: jest.fn(), hide: jest.fn() },
 }));
 
 const originalEnv = process.env.NODE_ENV;
@@ -56,8 +50,6 @@ it('asserts in production when attempting to load a bundle and the user-defined 
       'Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion='
     )
   ).rejects.toThrow();
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
   expect(HMRClient.registerBundle).not.toBeCalled();
   expect(fetchThenEvalAsync).not.toBeCalled();
 });
@@ -70,8 +62,6 @@ it('loads a bundle in production with user-defined location.origin', async () =>
   };
 
   await loadBundleAsync('/_expo/js/index.bundle');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
   const url = 'https://example.com/_expo/js/index.bundle';
   expect(HMRClient.registerBundle).not.toBeCalled();
   expect(fetchThenEvalAsync).toBeCalledWith(url);

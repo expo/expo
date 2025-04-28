@@ -63,18 +63,6 @@ export function isServerEnvironment(environment?: any): boolean {
   return environment === 'node' || environment === 'react-server';
 }
 
-export function shouldEnableAsyncImports(projectRoot: string): boolean {
-  if (env.EXPO_NO_METRO_LAZY) {
-    return false;
-  }
-
-  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
-  // to support async imports. If it's not installed, we can't support async imports.
-  // If it is installed, the user MUST import it somewhere in their project.
-  // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime/package.json') != null;
-}
-
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',

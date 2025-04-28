@@ -1,4 +1,4 @@
-import HMRClient from './HMRClient';
+import HMRClient from './hmr';
 
 if (
   typeof window !== 'undefined' &&

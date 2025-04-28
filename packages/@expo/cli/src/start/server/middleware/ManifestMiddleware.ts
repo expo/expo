@@ -11,7 +11,6 @@ import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import {
-  shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
@@ -239,7 +238,7 @@ export abstract class ManifestMiddleware<
       minify: this.options.minify,
       platform,
       mainModuleName,
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: env.EXPO_NO_METRO_LAZY,
       engine,
       bytecode: engine === 'hermes',
       baseUrl,
@@ -323,7 +322,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       minify: this.options.minify,
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: env.EXPO_NO_METRO_LAZY,
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
