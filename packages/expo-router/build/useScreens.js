@@ -18,7 +18,7 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
-function getSortedChildren(children, order, initialRouteName) {
+function getSortedChildren(children, order = [], initialRouteName) {
     if (!order?.length) {
         return children
             .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
@@ -79,12 +79,16 @@ function getSortedChildren(children, order, initialRouteName) {
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order) {
+function useSortedScreens(order, protectedScreens) {
     const node = (0, Route_1.useRouteNode)();
     const sorted = node?.children?.length
         ? getSortedChildren(node.children, order, node.initialRouteName)
         : [];
-    return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
+    return react_1.default.useMemo(() => sorted
+        .filter((item) => !protectedScreens.has(item.route.route))
+        .map((value) => {
+        return routeToScreen(value.route, value.props);
+    }), [sorted, protectedScreens]);
 }
 function fromImport(value, { ErrorBoundary, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
