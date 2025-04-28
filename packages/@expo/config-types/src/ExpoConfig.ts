@@ -295,7 +295,7 @@ export interface ExpoConfig {
       /**
        * Service provider for remote builds.
        */
-      provider?: 'eas';
+      provider: 'eas' | { plugin: string | object; options: any };
     };
   };
   /**
