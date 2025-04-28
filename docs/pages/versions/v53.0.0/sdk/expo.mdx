@@ -9,6 +9,8 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 ## Installation
 
@@ -47,7 +49,32 @@ console.log(buffer.length); // 512
 
 ## Common questions
 
-### What if I want to name my main app file something other than App.js or app/\_layout.tsx?
+Some common questions about using the `expo` package in your project.
+
+### registerRootComponent
+
+<Collapsible summary={<><CODE>rootRegisterComponent</CODE> setup for existing React Native projects</>}>
+
+If you are managing your React Native project's native directories (**android** and **ios**) manually, you need to follow the instructions below to set up the `registerRootComponent` function. This is necessary for the Expo modules to work correctly.
+
+**Android**
+
+Update the **android/app/src/main/your-package/MainActivity.java** file to use the name `main` in the `getMainComponentName` function.
+
+```diff
+  @Override
+  protected String getMainComponentName() {
++    return "main";
+  }
+```
+
+**iOS**
+
+Update the iOS **ios/your-project/AppDelegate.(m|mm|swift)** file to use the **moduleName** `main` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
+
+</Collapsible>
+
+<Collapsible summary="What if I want to name my main app file something other than App.js or app/_layout.tsx?">
 
 **For projects that do not use [Expo Router](/router/introduction/)**, you can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`. The `export default` will not make this component the root for the app if you are using a custom entry file.
 
@@ -73,3 +100,5 @@ registerRootComponent(App);
 ```
 
 **For projects that use [Expo Router](/router/introduction/)**, you can create a custom entry point by following these steps from [Expo Router's installation guide](/router/installation/#custom-entry-point-to-initialize-and-load). To use the top-level **src** directory in your Expo Router project, see [src directory reference](/router/reference/src-directory/) for more information.
+
+</Collapsible>

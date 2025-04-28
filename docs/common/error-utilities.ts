@@ -499,6 +499,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/create-pages/': '/router/basics/core-concepts/',
   '/router/layouts/': '/router/basics/layout/',
 
+  // After merging registerRootComponent info in `expo` API reference
+  '/versions/v53.0.0/sdk/register-root-component/':
+    '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
+
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
 };
