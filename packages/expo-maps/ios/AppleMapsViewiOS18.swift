@@ -59,6 +59,13 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
+        
+        ForEach(props.polygons) { polygon in
+          MapPolygon(coordinates: polygon.clLocationCoordinates2D)
+            .stroke(polygon.color, lineWidth: polygon.width)
+            .foregroundStyle(.blue)
+            .tag(MapSelection<MKMapItem>(polygon.mapItem))
+        }
 
         ForEach(props.annotations) { annotation in
           Annotation(

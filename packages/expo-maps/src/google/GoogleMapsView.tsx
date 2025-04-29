@@ -36,9 +36,11 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onPOIClick,
       onMarkerClick,
       onPolylineClick,
+      onPolygonClick,
       onCameraMove,
       markers,
       polylines,
+      polygons,
       ...props
     },
     ref
@@ -59,6 +61,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativePolygonClick = useNativeEvent(onPolygonClick);
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
@@ -71,6 +74,12 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       icon: marker.icon?.__expo_shared_object_id__,
     }));
 
+    const parsedPolygons = polygons?.map((polygon) => ({
+      ...polygon,
+      color: processColor(polygon.color) ?? undefined,
+      lineColor: processColor(polygon.color) ?? undefined,
+    }));
+
     if (!NativeView) {
       return null;
     }
@@ -80,6 +89,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         ref={nativeRef}
         markers={parsedMarkers}
         polylines={parsedPolylines}
+        polygons={parsedPolygons}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
         onMapLongClick={onNativeMapLongClick}
@@ -87,6 +97,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
+        onPolygonClick={onNativePolygonClick}
       />
     );
   }

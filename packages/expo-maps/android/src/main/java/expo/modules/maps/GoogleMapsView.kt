@@ -28,6 +28,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
@@ -37,13 +38,13 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
-import androidx.core.graphics.toColorInt
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
   val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
+  val polygons: MutableState<List<PolygonRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
@@ -60,6 +61,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
   private val onPolylineClick by EventDispatcher<PolylineRecord>()
+  private val onPolygonClick by EventDispatcher<PolygonRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
 
@@ -74,6 +76,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       val markerState = markerStateFromProps()
       val locationSource = locationSourceFromProps()
       val polylineState by polylineStateFromProps()
+      val polygonState by polygonStateFromProps()
 
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -119,6 +122,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
           Polyline(
             points = coordinates,
             color = Color(polyline.color),
+            
             geodesic = polyline.geodesic,
             width = polyline.width,
             clickable = true,
@@ -129,6 +133,27 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
                   polyline.geodesic,
                   polyline.color,
                   polyline.width
+                )
+              )
+            }
+          )
+        }
+
+        polygonState.forEach { (polygon, coordinates) ->
+          Polygon(
+            points = coordinates,
+            fillColor = Color(polygon.color),
+            strokeColor = Color(polygon.lineColor),
+            strokeWidth = polygon.lineWidth,
+            clickable = true,
+            onClick = {
+              onPolygonClick(
+                PolygonRecord(
+                  id = polygon.id,
+                  coordinates.map { Coordinates(it.latitude, it.longitude) },
+                  color = polygon.color,
+                  lineColor = polygon.lineColor,
+                  lineWidth = polygon.lineWidth
                 )
               )
             }
@@ -241,6 +266,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       derivedStateOf {
         props.polylines.value.map { polyline ->
           polyline to polyline.coordinates.map { it.toLatLng() }
+        }
+      }
+    }
+
+  @Composable
+  private fun polygonStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.polygons.value.map { polygon ->
+          polygon to polygon.coordinates.map { it.toLatLng() }
         }
       }
     }

@@ -15,7 +15,7 @@ function useNativeEvent(userHandler) {
 /**
  * @platform android
  */
-export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCameraMove, markers, polylines, ...props }, ref) => {
+export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onPolygonClick, onCameraMove, markers, polylines, polygons, ...props }, ref) => {
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
@@ -31,6 +31,7 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativePolygonClick = useNativeEvent(onPolygonClick);
     const parsedPolylines = polylines?.map((polyline) => ({
         ...polyline,
         color: processColor(polyline.color) ?? undefined,
@@ -40,9 +41,14 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
         // @ts-expect-error
         icon: marker.icon?.__expo_shared_object_id__,
     }));
+    const parsedPolygons = polygons?.map((polygon) => ({
+        ...polygon,
+        color: processColor(polygon.color) ?? undefined,
+        lineColor: processColor(polygon.color) ?? undefined,
+    }));
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick}/>);
+    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} polygons={parsedPolygons} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onPolygonClick={onNativePolygonClick}/>);
 });
 //# sourceMappingURL=GoogleMapsView.js.map

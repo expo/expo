@@ -67,6 +67,31 @@ export type GoogleMapsPolyline = {
 /**
  * @platform android
  */
+export type GoogleMapsPolygon = {
+  /**
+   * The coordinates of the circle.
+   */
+  coordinates: Coordinates[];
+
+  /**
+   * The color of the polygon.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The width of the polygon.
+   */
+  lineWidth?: number;
+
+  /**
+   * The color of the polygon.
+   */
+  lineColor?: ProcessedColorValue | string;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleMapsUserLocation = {
   /**
    * User location coordinates.
@@ -245,6 +270,11 @@ export type GoogleMapsViewProps = {
   polylines?: GoogleMapsPolyline[];
 
   /**
+   * The array of polygons to display on the map.
+   */
+  polygons?: GoogleMapsPolygon[];
+
+  /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
   uiSettings?: GoogleMapsUISettings;
@@ -294,6 +324,11 @@ export type GoogleMapsViewProps = {
    * Lambda invoked when the polyline is clicked.
    */
   onPolylineClick?: (event: GoogleMapsPolyline) => void;
+
+  /**
+   * Lambda invoked when the polygon is clicked.
+   */
+  onPolygonClick?: (event: GoogleMapsPolygon) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.

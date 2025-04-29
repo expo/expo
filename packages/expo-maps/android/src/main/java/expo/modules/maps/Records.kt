@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
+import java.util.UUID
 
 data class SetCameraPositionConfig(
   @Field
@@ -77,6 +78,25 @@ data class PolylineRecord(
   @Field
   val width: Float = 10f,
 ): Record
+
+
+data class PolygonRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val lineColor: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val lineWidth: Float = 10f,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt()
+)
+
 
 data class CameraPositionRecord(
   @Field
