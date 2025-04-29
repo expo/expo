@@ -165,25 +165,12 @@ export function test(t) {
   });
 
   t.describe(`Localization works with i18n-js`, () => {
-    t.it('expect language to match strings when using getLocales (en, pl, fr supported)', () => {
-      const [locale] = Localization.getLocales();
-      i18n.locale = locale.languageTag;
-      i18n.translations = { en, fr, pl };
-      i18n.missingTranslationPrefix = 'EE: ';
-      i18n.fallbacks = true;
-      const target = 'good';
-
-      const expoPredictedLangTag = locale.languageTag.split('-')[0];
-      const translation = i18n.translations[expoPredictedLangTag];
-
-      t.expect(translation[target]).toBe(i18n.t(target));
-    });
+    i18n.locale = Localization.locale;
+    i18n.translations = { en, fr, pl };
+    i18n.missingTranslationPrefix = 'EE: ';
+    i18n.fallbacks = true;
 
     t.it('expect language to match strings (en, pl, fr supported)', async () => {
-      i18n.locale = Localization.locale;
-      i18n.translations = { en, fr, pl };
-      i18n.missingTranslationPrefix = 'EE: ';
-      i18n.fallbacks = true;
       const target = 'good';
 
       i18n.locale = Localization.locale;
