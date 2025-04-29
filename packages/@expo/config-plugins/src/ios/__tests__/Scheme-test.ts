@@ -38,7 +38,8 @@ describe('scheme', () => {
       CFBundleURLTypes: [{ CFBundleURLSchemes: ['myapp', 'more', 'ios-only', 'com.demo.value'] }],
     });
   });
-it(`makes no changes to the infoPlist no scheme is provided`, () => {
+
+  it(`makes no changes to the infoPlist no scheme is provided`, () => {
     expect(setScheme({}, {})).toMatchObject({});
   });
 
