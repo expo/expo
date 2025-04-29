@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `ReferenceError: Property 'require' doesn't exist, js engine: hermes`.
+
 ### 💡 Others
 
 ## 5.1.8 — 2025-04-28
