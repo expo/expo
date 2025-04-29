@@ -34,11 +34,12 @@ private struct ReadHeightModifier: ViewModifier {
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
 
-  @State private var isOpened = true
+  @State private var isOpened: Bool
   @State var height: CGFloat = 0
 
   init(props: BottomSheetProps) {
     self.props = props
+    self._isOpened = State(initialValue: props.isOpened)
   }
 
   var body: some View {
@@ -62,9 +63,12 @@ struct BottomSheetView: ExpoSwiftUI.View {
             "isOpened": newIsOpened
           ])
         })
-        .onReceive(props.objectWillChange, perform: {
+        .onChange(of: props.isOpened) { newValue in
+          isOpened = newValue
+        }
+        .onAppear {
           isOpened = props.isOpened
-        })
+        }
     } else {
       Rectangle().hidden()
         .sheet(isPresented: $isOpened) {
@@ -78,9 +82,12 @@ struct BottomSheetView: ExpoSwiftUI.View {
             "isOpened": newIsOpened
           ])
         })
-        .onReceive(props.objectWillChange, perform: {
+        .onChange(of: props.isOpened) { newValue in
+          isOpened = newValue
+        }
+        .onAppear {
           isOpened = props.isOpened
-        })
+        }
     }
   }
 }

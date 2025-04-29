@@ -6,6 +6,13 @@ import ExpoModulesCore
 let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
+let OBSERVED_EVENTS: Set<Notification.Name> = [
+  // swiftlint:disable legacy_objc_type
+  UIApplication.significantTimeChangeNotification,
+  NSLocale.currentLocaleDidChangeNotification
+  // swiftlint:enable legacy_objc_type
+]
+
 public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocalization")
@@ -35,20 +42,24 @@ public class LocalizationModule: Module {
     Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
 
     OnStartObserving {
-      NotificationCenter.default.addObserver(
-        self,
-        selector: #selector(LocalizationModule.localeChanged),
-        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
-        object: nil
-      )
+      OBSERVED_EVENTS.forEach {
+        NotificationCenter.default.addObserver(
+          self,
+          selector: #selector(LocalizationModule.localeChanged),
+          name: $0,
+          object: nil
+        )
+      }
     }
 
     OnStopObserving {
-      NotificationCenter.default.removeObserver(
-        self,
-        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
-        object: nil
-      )
+      OBSERVED_EVENTS.forEach {
+        NotificationCenter.default.removeObserver(
+          self,
+          name: $0,
+          object: nil
+        )
+      }
     }
   }
 

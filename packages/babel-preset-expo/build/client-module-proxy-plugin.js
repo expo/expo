@@ -8,10 +8,12 @@ exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
+const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
     const isReactServer = api.caller(common_1.getIsReactServer);
+    const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
         name: 'expo-client-references',
         visitor: {
@@ -32,7 +34,12 @@ function reactClientReferencesPlugin(api) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
-                const outputKey = node_url_1.default.pathToFileURL(filePath).href;
+                const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+                // TODO: Replace with opaque paths in production.
+                const outputKey = './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
+                // const outputKey = isProd
+                //   ? './' + getRelativePath(projectRoot, filePath)
+                //   : url.pathToFileURL(filePath).href;
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports
@@ -157,7 +164,7 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the server action reference in the metadata.
-                    state.file.metadata.reactServerReference = outputKey;
+                    state.file.metadata.reactServerReference = node_url_1.default.pathToFileURL(filePath).href;
                 }
                 else if (isUseClient) {
                     if (!isReactServer) {
@@ -208,7 +215,7 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the client reference in the metadata.
-                    state.file.metadata.reactClientReference = outputKey;
+                    state.file.metadata.reactClientReference = node_url_1.default.pathToFileURL(filePath).href;
                 }
             },
         },

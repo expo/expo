@@ -1,7 +1,10 @@
+import { getConfig, RemoteBuildCacheProvider } from '@expo/config';
+
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradlePropsAsync } from './resolveGradlePropsAsync';
 import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
 import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
+import { resolveRemoteBuildCacheProvider } from '../../utils/remote-build-cache-providers';
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
@@ -25,6 +28,7 @@ export type ResolvedOptions = GradleProps &
     install: boolean;
     architectures?: string;
     appId?: string;
+    buildCacheProvider?: RemoteBuildCacheProvider;
   };
 
 export async function resolveOptionsAsync(
@@ -33,6 +37,12 @@ export async function resolveOptionsAsync(
 ): Promise<ResolvedOptions> {
   // Resolve the device before the gradle props because we need the device to be running to get the ABI.
   const device = await resolveDeviceAsync(options.device);
+
+  const projectConfig = getConfig(projectRoot);
+  const buildCacheProvider = resolveRemoteBuildCacheProvider(
+    projectConfig.exp.experiments?.remoteBuildCache?.provider,
+    projectRoot
+  );
 
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
@@ -44,5 +54,6 @@ export async function resolveOptionsAsync(
     device,
     buildCache: !!options.buildCache,
     install: !!options.install,
+    buildCacheProvider,
   };
 }

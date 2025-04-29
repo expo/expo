@@ -80,7 +80,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+    if (posixFilename.match(/(^|\/)expo\/virtual\/rsc\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -130,6 +130,12 @@ async function transform(config, projectRoot, filename, data, options) {
         if (filename.match(/(^|\/)\.env(\.(local|(development|production)(\.local)?))?$/)) {
             const envFileParsed = (0, dot_env_development_1.parseEnvFile)(data.toString('utf-8'), isClientEnvironment);
             return worker.transform(config, projectRoot, filename, Buffer.from(`export default ${JSON.stringify(envFileParsed)};`), options);
+        }
+        if (
+        // Noop the streams polyfill in the server environment.
+        !isClientEnvironment &&
+            filename.match(/\/expo\/virtual\/streams\.js$/)) {
+            return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
         }
         if (
         // Parsing the virtual env is client-only, on the server we use `process.env` directly.

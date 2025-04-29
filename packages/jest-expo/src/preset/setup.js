@@ -306,3 +306,8 @@ jest.doMock('expo/src/winter/FormData', () => ({
 }));
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');
+
+// Normally injected by Metro.
+if (process.env.EXPO_OS !== 'web' && typeof window !== 'undefined') {
+  require('expo/virtual/streams');
+}
