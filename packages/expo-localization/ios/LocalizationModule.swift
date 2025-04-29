@@ -129,7 +129,7 @@ public class LocalizationModule: Module {
       return "iso8601"
     }
   }
-  
+
   static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
     if #available(iOS 16, tvOS 16, *) {
       let measurementSystems = [
@@ -141,14 +141,14 @@ public class LocalizationModule: Module {
     }
     return locale.usesMetricSystem ? "metric" : "us"
   }
-  
+
   static func getLocales() -> [[String: Any?]] {
     let userSettingsLocale = Locale.current
-    
+
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
-        
+
         if #available(iOS 16, tvOS 16, *) {
           return [
             "languageTag": languageTag,
