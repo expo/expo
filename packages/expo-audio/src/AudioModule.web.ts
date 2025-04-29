@@ -178,8 +178,15 @@ export class AudioPlayerWeb
   }
 
   play(): void {
-    this.media.play();
-    this.isPlaying = true;
+    this.media
+      .play()
+      .then(() => {
+        this.isPlaying = true;
+      })
+      .catch((error) => {
+        this.isPlaying = false;
+        throw error;
+      });
   }
 
   pause(): void {
