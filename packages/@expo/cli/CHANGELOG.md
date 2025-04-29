@@ -10,11 +10,13 @@
 
 ### 💡 Others
 
+- Detect missing `adb`, add fix suggestion and docs hint. ([#27419](https://github.com/expo/expo/pull/27419) by [@Simek](https://github.com/Simek))
+
 ## 0.24.7 — 2025-04-28
 
 ### 🎉 New features
 
-- Add support for custom remote build cache providers ([#36314](https://github.com/expo/expo/pull/36314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for custom remote build cache providers. ([#36314](https://github.com/expo/expo/pull/36314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.24.6 — 2025-04-28
 
