@@ -15,7 +15,7 @@ exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
-exports.getType = getType;
+exports.getMetroSourceType = getMetroSourceType;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 exports.getAsyncRoutes = getAsyncRoutes;
@@ -115,9 +115,9 @@ function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
 }
-function getType(caller) {
+function getMetroSourceType(caller) {
     assertExpoBabelCaller(caller);
-    return caller?.type;
+    return caller?.metroSourceType;
 }
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);

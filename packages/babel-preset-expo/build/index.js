@@ -29,7 +29,7 @@ function babelPresetExpo(api, options = {}) {
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
-    const type = api.caller(common_1.getType);
+    const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
     const isServerEnv = isServer || isReactServer;
@@ -47,7 +47,7 @@ function babelPresetExpo(api, options = {}) {
     const platformOptions = getOptions(options, platform);
     // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
     // adds extra dependencies (requires/imports) we need to disable it
-    if (type === 'script' && platformOptions.enableBabelRuntime !== false) {
+    if (metroSourceType === 'script') {
         platformOptions.enableBabelRuntime = false;
     }
     if (platformOptions.useTransformReactJSXExperimental != null) {

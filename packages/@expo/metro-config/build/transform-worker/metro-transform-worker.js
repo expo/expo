@@ -529,9 +529,7 @@ function getBabelTransformArgs(file, { options, config, projectRoot }, plugins =
             enableBabelRCLookup: config.enableBabelRCLookup,
             // NOTE(@kitten): This shouldn't be relevant via this code path. However, in case it does,
             // this prevents us from adding imports/requires to @babel/runtime when we're transforming a script
-            enableBabelRuntime: options.type === 'script' && config.enableBabelRuntime !== false
-                ? false
-                : config.enableBabelRuntime,
+            enableBabelRuntime: options.type === 'script' ? false : config.enableBabelRuntime,
             hermesParser: config.hermesParser,
             projectRoot,
             publicPath: config.publicPath,
