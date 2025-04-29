@@ -33,9 +33,7 @@ function getScheme(config) {
   return [];
 }
 function setScheme(config, infoPlist) {
-  const scheme = [...getScheme(config),
-  // @ts-ignore: TODO: ios.scheme is an unreleased -- harder to add to turtle v1.
-  ...getScheme(config.ios ?? {})];
+  const scheme = [...getScheme(config), ...getScheme(config.ios ?? {})];
   // Add the bundle identifier to the list of schemes for easier Google auth and parity with Turtle v1.
   if (config.ios?.bundleIdentifier) {
     scheme.push(config.ios.bundleIdentifier);
