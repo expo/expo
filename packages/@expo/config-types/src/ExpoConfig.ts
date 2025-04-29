@@ -358,6 +358,10 @@ export interface IOS {
    */
   backgroundColor?: string;
   /**
+   * URL scheme(s) to link into your iOS app. Schemes added to this field will be merged with the schemes in the `scheme` key at the top level of the config.
+   */
+  scheme?: string | string[];
+  /**
    * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
    *
    * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
@@ -596,6 +600,10 @@ export interface Android {
    * Configuration to force the app to always use the light or dark user-interface appearance, such as "dark mode", or make it automatically adapt to the system preferences. If not provided, defaults to `light`. Requires `expo-system-ui` be installed in your project to work on Android.
    */
   userInterfaceStyle?: 'light' | 'dark' | 'automatic';
+  /**
+   * URL scheme(s) to link into your Android app. Schemes added to this field will be merged with the schemes in the `scheme` key at the top level of the config.
+   */
+  scheme?: string | string[];
   /**
    * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
    */
