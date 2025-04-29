@@ -296,7 +296,6 @@ export interface ExpoConfig {
                 options?: {
                     [k: string]: any;
                 };
-                [k: string]: any;
             };
         };
     };
