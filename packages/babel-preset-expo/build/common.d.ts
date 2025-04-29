@@ -14,6 +14,7 @@ export declare function getIsNodeModule(caller?: any): boolean;
 export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
 export declare function getIsServer(caller?: any): boolean;
+export declare function getType(caller?: any): "script" | "module" | "asset" | undefined;
 export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;
 export declare function getInlineEnvVarsEnabled(caller?: any): boolean;
 export declare function getAsyncRoutes(caller?: any): boolean;
