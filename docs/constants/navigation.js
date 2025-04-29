@@ -174,12 +174,12 @@ export const general = [
       }
     ),
     makeGroup(
-      'Custom native code',
+      'Write native code',
       [makePage('workflow/customizing.mdx'), makePage('guides/adopting-prebuild.mdx')],
       { expanded: false }
     ),
     makeGroup(
-      'Local app',
+      'Compile locally',
       [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
       {
         expanded: false,
