@@ -221,7 +221,7 @@ const renderType = (
     );
     const propObjectDefinitions = propTypes.filter(type => !propMethodDefinitions.includes(type));
 
-    if (propTypes.length) {
+    if (propTypes.length > 0) {
       return (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
@@ -265,7 +265,7 @@ const renderType = (
           )}
         </div>
       );
-    } else if (literalTypes.length) {
+    } else if (literalTypes.length > 0) {
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
