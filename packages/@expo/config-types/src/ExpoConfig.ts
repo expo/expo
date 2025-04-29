@@ -238,7 +238,7 @@ export interface ExpoConfig {
   plugins?: (string | [] | [string] | [string, any])[];
   splash?: Splash;
   /**
-   * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -295,7 +295,15 @@ export interface ExpoConfig {
       /**
        * Service provider for remote builds.
        */
-      provider: 'eas' | { plugin: string | object; options: any };
+      provider?:
+        | 'eas'
+        | {
+            plugin: string;
+            options?: {
+              [k: string]: any;
+            };
+            [k: string]: any;
+          };
     };
   };
   /**
@@ -537,7 +545,7 @@ export interface IOS {
     [k: string]: any;
   };
   /**
-   * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for iOS apps. Not supported in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -793,7 +801,7 @@ export interface Android {
    */
   softwareKeyboardLayoutMode?: 'resize' | 'pan';
   /**
-   * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
