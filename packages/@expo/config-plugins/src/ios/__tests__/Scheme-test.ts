@@ -16,6 +16,7 @@ describe('scheme', () => {
     expect(getScheme({ scheme: 'myapp' })).toStrictEqual(['myapp']);
     expect(
       getScheme({
+        // @ts-ignore
         scheme: ['myapp', 'other', null],
       })
     ).toStrictEqual(['myapp', 'other']);
@@ -37,8 +38,7 @@ describe('scheme', () => {
       CFBundleURLTypes: [{ CFBundleURLSchemes: ['myapp', 'more', 'ios-only', 'com.demo.value'] }],
     });
   });
-
-  it(`makes no changes to the infoPlist no scheme is provided`, () => {
+it(`makes no changes to the infoPlist no scheme is provided`, () => {
     expect(setScheme({}, {})).toMatchObject({});
   });
 
