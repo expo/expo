@@ -104,6 +104,11 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getType(caller?: any) {
+  assertExpoBabelCaller(caller);
+  return caller?.type;
+}
+
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
