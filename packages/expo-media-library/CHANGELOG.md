@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `medialibraryassetschangeevent` listener not capturing assets changes.
 - Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
 
 ## 17.1.3 — 2025-04-21
