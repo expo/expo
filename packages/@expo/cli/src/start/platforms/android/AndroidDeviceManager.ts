@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { activateWindowAsync } from './activateWindow';
 import * as AndroidDebugBridge from './adb';
+import { assertSystemRequirementsAsync } from './assertSystemRequirements';
 import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
@@ -16,6 +17,8 @@ import { BaseResolveDeviceProps } from '../PlatformManager';
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 
 export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Device> {
+  static assertSystemRequirementsAsync = assertSystemRequirementsAsync;
+
   static async resolveFromNameAsync(name: string): Promise<AndroidDeviceManager> {
     const devices = await getDevicesAsync();
     const device = devices.find((device) => device.name === name);
