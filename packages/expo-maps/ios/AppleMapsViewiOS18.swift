@@ -47,7 +47,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       latitude: coordinate.latitude,
       longitude: coordinate.longitude
     ))
-    
+
     if scene == nil {
       throw SceneUnavailableAtLocationException()
     }
