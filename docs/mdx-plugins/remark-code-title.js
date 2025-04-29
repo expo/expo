@@ -5,7 +5,7 @@ import { visit } from 'unist-util-visit';
  */
 export default function remarkLinkRewrite() {
   return (tree, file) => {
-    if (!file.cwd || !file.history || !file.history.length) {
+    if (!file.cwd || !file.history || file.history.length === 0) {
       return;
     }
 

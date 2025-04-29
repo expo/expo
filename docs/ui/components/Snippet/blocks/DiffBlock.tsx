@@ -69,7 +69,7 @@ export const DiffBlock = ({
   }: RenderLine) => {
     // older SDK template-bare-minimum files (e.g, 46) generate a diff with no hunks and no paths
     // one example of this was a change to gradle-wrapper.jar
-    if (!hunks.length) {
+    if (hunks.length === 0) {
       return null;
     }
     return (

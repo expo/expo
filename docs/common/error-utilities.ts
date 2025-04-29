@@ -78,11 +78,11 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = new Set(versions.VERSIONS.filter(v => v.match(/^v/)));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {
-  return supportedVersions.includes(getVersionFromPath(path));
+  return supportedVersions.has(getVersionFromPath(path));
 }
 
 function pathIncludesHtmlExtension(path: string) {
