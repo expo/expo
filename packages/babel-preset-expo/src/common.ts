@@ -104,9 +104,9 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
-export function getType(caller?: any) {
+export function getMetroSourceType(caller?: any) {
   assertExpoBabelCaller(caller);
-  return caller?.type;
+  return caller?.metroSourceType;
 }
 
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {

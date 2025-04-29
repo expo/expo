@@ -12,7 +12,7 @@ import {
   getIsReactServer,
   getIsServer,
   getReactCompiler,
-  getType,
+  getMetroSourceType,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
@@ -142,7 +142,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
-  const type = api.caller(getType);
+  const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
@@ -167,7 +167,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
   // adds extra dependencies (requires/imports) we need to disable it
-  if (type === 'script' && platformOptions.enableBabelRuntime !== false) {
+  if (metroSourceType === 'script') {
     platformOptions.enableBabelRuntime = false;
   }
 
