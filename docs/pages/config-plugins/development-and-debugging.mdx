@@ -491,14 +491,14 @@ Generally, you should only interact with the Gradle file via Expo [Autolinking][
 Some modules may need to add delegate methods to the project AppDelegate. This can be done safely by using [AppDelegate subscribers](/modules/appdelegate-subscribers/) or dangerously via the `withAppDelegate` mod (_strongly discouraged_).
 Using AppDelegate subscribers allows native Expo modules to react to important events in a safe and reliable way.
 
-Below are some examples of the AppDelegate subscribers in action. Additionally, you will find many examples in community repositories on GitHub. A good, minimal example is [here](https://github.com/bamlab/react-native-app-security/blob/c1a861cbd348f404ec18ffae90d1c9bdc66bc00d/ios/RNASAppLifecyleDelegate.swift).
+Below are some examples of the AppDelegate subscribers in action. Additionally, you will find many examples in community repositories on GitHub ([one such example](https://github.com/bamlab/react-native-app-security/blob/c1a861cbd348f404ec18ffae90d1c9bdc66bc00d/ios/RNASAppLifecyleDelegate.swift)).
 
-- `expo-linking` -- [**LinkingAppDelegateSubscriber.swift**](https://github.com/expo/expo/blob/b4ca25a4319d7148258ebd5121d1df40a3b1333e/packages/expo-linking/ios/LinkingAppDelegateSubscriber.swift#L14) (openURL)
-- `expo-notifications` -- [**NotificationsAppDelegateSubscriber.swift**](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError, didReceiveRemoteNotification)
+- `expo-linking`: [**LinkingAppDelegateSubscriber.swift**](https://github.com/expo/expo/blob/b4ca25a4319d7148258ebd5121d1df40a3b1333e/packages/expo-linking/ios/LinkingAppDelegateSubscriber.swift#L14) (openURL)
+- `expo-notifications`: [**NotificationsAppDelegateSubscriber.swift**](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError, didReceiveRemoteNotification)
 
 ### iOS CocoaPods Podfile
 
-The `ios/Podfile` can be customized dangerously with regex, or statically via JSON. See how the `podfile_properties` variable below is used to customize the Podfile.
+The **Podfile** can be customized with a regular expression (this is considered dangerous because these types of changes do not compose well and multiple changes are likely to collide), but it's more reliable to instead set configuration values in JSON file called **Podfile.properties.json**. See how `podfile_properties` is used to customize the **Podfile** below:
 
 ```ruby Podfile
 require 'json'
