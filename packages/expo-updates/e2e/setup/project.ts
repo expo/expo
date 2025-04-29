@@ -504,7 +504,7 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -635,7 +635,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
