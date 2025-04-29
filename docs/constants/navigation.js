@@ -90,6 +90,7 @@ export const home = [
       [
         makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
+        makePage('develop/user-interface/system-bars.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),
         makePage('develop/user-interface/color-themes.mdx'),

@@ -507,4 +507,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
+
+  // After adding System bars
+  '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
 };
