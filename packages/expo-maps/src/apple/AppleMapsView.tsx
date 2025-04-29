@@ -32,10 +32,10 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     const nativeRef = React.useRef<AppleMapsViewType>(null);
     React.useImperativeHandle(ref, () => ({
       setCameraPosition(config?: CameraPosition) {
-        nativeRef.current?.setCameraPosition(config);
+        return nativeRef.current?.setCameraPosition(config);
       },
       async openLookAroundAsync(coordinates: Coordinates) {
-        nativeRef.current?.openLookAroundAsync(coordinates);
+        return nativeRef.current?.openLookAroundAsync(coordinates);
       },
     }));
 
