@@ -52,7 +52,7 @@ For Android, run `./gradlew app:assembleDebug` in the `apps/expo-go/android` dir
 
 For iOS:
 - set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist`. You may need to copy `EXBuildConstants.plist.example` to `EXBuildConstants.plist` if it doesn't exist.
-- install CocaPods dependencies by with `pod install` (or `npx pod-install`).
+- install CocoaPods dependencies by with `pod install` (or `et pods`).
 - open and run `ios/Exponent.xcworkspace` in Xcode.
 
 4. Run Metro for Native Component List
