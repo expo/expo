@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 9.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.6 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.5 — 2025-04-21
+
+### 💡 Others
+
+- Added some helper for codeMod to support Gradle and Swift. ([#36203](https://github.com/expo/expo/pull/36203) by [@kudo](https://github.com/kudo))
+
+## 9.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 9.1.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

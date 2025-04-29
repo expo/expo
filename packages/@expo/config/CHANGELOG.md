@@ -6,9 +6,27 @@
 
 ### 🎉 New features
 
+Add remote build cache provider types ([#36448](https://github.com/expo/expo/pull/36448) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.0.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.4 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.1 — 2025-04-09
 

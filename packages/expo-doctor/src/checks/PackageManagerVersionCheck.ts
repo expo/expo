@@ -61,7 +61,7 @@ export class PackageManagerVersionCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
-      // advice currently tightly coupled with issues in code copied from doctor
+      advice: issues.length ? [`Update your package manager to a supported version.`] : [],
     };
   }
 }

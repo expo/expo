@@ -12,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **info** We recommend using SDK 52 or newer for the best experience with the New Architecture.
+> **info** We recommend using the latest Expo version for the best experience with the New Architecture.
 
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
@@ -25,17 +25,23 @@ In this guide, we'll talk about how to use the New Architecture in Expo projects
   Icon={BookOpen02Icon}
 />
 
-## Why invest in migrating to the New Architecture?
+<Collapsible summary="Why migrate to the New Architecture?">
 
-The New Architecture is the future of React Native &mdash; yet, for many apps, there may not be many immediate benefits to migrating today. You may want to think of migrating to the New Architecture as an investment in the future of your app, rather than as a way to immediately improve your app.
+**The New Architecture is the future of React Native** &mdash; yet, for many apps, there may not be many immediate benefits to migrating today. You may want to think of migrating to the New Architecture as an investment in the future of your app, rather than as a way to immediately improve your app.
 
-The changes that come with the New Architecture address the technical debt of the original implementation and unlock possibilities for solving long-standing issues in React Native, such as interoperability with synchronous native APIs (for example, `UITableView`), and pave the way for [concurrent React support](https://react.dev/blog/2022/03/29/react-v18#what-is-concurrent-react).
+That said, **new React and React Native features are coming to the New Architecture only**. For example, the New Architecture includes [full support for Suspense](https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here#full-support-for-suspense) and [new styling capabilities](https://reactnative.dev/blog/2025/01/21/version-0.77#new-css-features-for-better-layouts-sizing-and-blending) are not implemented in the legacy architecture. Libraries such as [@shopify/flash-list](https://github.com/Shopify/flash-list) and [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) will be shipping new major versions that take full advantage of new features to deliver better performance than was possible before, and will drop support for the legacy architecture.
+
+**The legacy architecture will not be around forever** &mdash; it's possible that the legacy architecture will be removed from React Native in a late 2025 release. When it is removed, you will not be able to upgrade React Native or the Expo SDK without migrating to the New Architecture.
+
+</Collapsible>
 
 ## Expo tools and the New Architecture
 
-As of SDK 51, nearly all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture (including [bridgeless](https://github.com/reactwg/react-native-new-architecture/discussions/154)). [Learn more about known issues](#known-issues-in-expo-sdk-libraries).
+As of SDK 53, all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture (including [bridgeless](https://github.com/reactwg/react-native-new-architecture/discussions/154)). [Learn more about known issues](#known-issues-in-expo-sdk-libraries).
 
 Additionally, all modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
+
+**As of April 2025, approximately 75% of SDK 52+ projects built with [EAS Build](/build/introduction/) use the New Architecture**.
 
 ## Third-party libraries and the New Architecture
 
@@ -77,14 +83,17 @@ You can configure the React Native Directory check in your **package.json** file
 
 ## Enable the New Architecture in an existing project
 
-**As of SDK 53**, the New Architecture is enabled by default in all new projects. In older projects, you can enable it by setting the `newArchEnabled` property to `true` in app config.
-
-<Step label="1">
-
-Set `newArchEnabled` on target platforms:
-
 <Tabs>
-  <Tab label="SDK 52 and above">
+  <Tab label="SDK 53 and above">
+    **The New Architecture is enabled by default in SDK 53 and above**. If you have explicitly disabled it, remove that configuration to enable it.
+
+  </Tab>
+
+  <Tab label="SDK 52">
+    We recommend upgrading to SDK 53 to ensure that your app can take advantage of all of the latest New Architecture related fixes and improvements with libraries and React Native itself. If you want to try it on SDK 52 first, follow the instructions below.
+
+    <Step label="1">
+
     To enable it on both Android and iOS, use the `newArchEnabled` at the root of the `expo` object in your app config. You can selectively enable it for a single platform by setting, for example, `"android": { "newArchEnabled": true }`.
 
     ```json app.json
@@ -94,69 +103,45 @@ Set `newArchEnabled` on target platforms:
       }
     }
     ```
+    </Step>
+
+    <Step label="2">
+      Create a new build:
+
+      <Tabs tabs={['Android', 'iOS']}>
+        <Tab>
+          <Terminal
+            cmd={[
+              '# Run a clean prebuild and start a local build, if you like',
+              '$ npx expo prebuild --clean && npx expo run:android',
+              '# Run a build with EAS if you prefer',
+              '$ eas build -p android',
+            ]}
+          />
+        </Tab>
+        <Tab>
+          <Terminal
+            cmd={[
+              '# Run a clean prebuild and start a local build, if you like',
+              '$ npx expo prebuild --clean && npx expo run:ios',
+              '# Run a build with EAS if you prefer',
+              '$ eas build -p ios',
+            ]}
+          />
+        </Tab>
+      </Tabs>
+
+      If the build succeeds, you will now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
+
+      Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading [Troubleshooting](#troubleshooting) sections below for more information.
+    </Step>
 
   </Tab>
 
   <Tab label="SDK 51 and below">
-    To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
-
-    ```json app.json
-    {
-      "expo": {
-        "plugins": [
-          [
-            "expo-build-properties",
-            {
-              "android": {
-                "newArchEnabled": true
-              },
-              "ios": {
-                "newArchEnabled": true
-              }
-            }
-          ]
-        ]
-      }
-    }
-    ```
-
+    We recommend upgrading to at least SDK 52, preferably SDK 53. It's possible to enable the New Architecture in SDK 51, but you are likely to encounter a variety of issues that have been resolved in more recent releases. To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
   </Tab>
 </Tabs>
-
-</Step>
-
-<Step label="2">
-
-Create a new build:
-
-<Tabs tabs={['Android', 'iOS']}>
-  <Tab>
-    <Terminal
-      cmd={[
-        '# Run a clean prebuild and start a local build, if you like',
-        '$ npx expo prebuild --clean && npx expo run:android',
-        '# Run a build with EAS if you prefer',
-        '$ eas build -p android',
-      ]}
-    />
-  </Tab>
-  <Tab>
-    <Terminal
-      cmd={[
-        '# Run a clean prebuild and start a local build, if you like',
-        '$ npx expo prebuild --clean && npx expo run:ios',
-        '# Run a build with EAS if you prefer',
-        '$ eas build -p ios',
-      ]}
-    />
-  </Tab>
-</Tabs>
-
-</Step>
-
-If the build succeeds, you will now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
-
-Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading [Troubleshooting](#troubleshooting) sections below for more information.
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
@@ -169,9 +154,9 @@ If you are using Expo SDK 53 or higher, it will be enabled by default. The follo
 
 ## Disable the New Architecture in an existing project
 
-Starting SDK 52, Expo Go only supports the New Architecture since all Expo libraries and third-party libraries included in Expo Go support the New Architecture. Note that [the Go app is not intended to be used as a development environment for real-world apps](https://expo.fyi/expo-go-usage).
+> **info**: Expo Go only supports the New Architecture.
 
-If you want to opt out of using the New Architecture, whether you are using Expo Go or a development build, set the `newArchEnabled` property to `false` in app config and create a [development build](/develop/development-builds/introduction/).
+If you want to opt out of using the New Architecture, set the `newArchEnabled` property to `false` in app config and create a [development build](/develop/development-builds/introduction/).
 
 ```json app.json
 {
@@ -197,18 +182,15 @@ Meta and Expo are working towards making the New Architecture the default for al
 You may be able to try the New Architecture in your app even if some of the libraries you use aren't supported, but it will require temporarily removing those libraries. Create a new branch in your repository and remove any of the libraries that aren't compatible until your app is running. This will give you a good idea of what libraries still need work before you can fully migrate to the New Architecture. We recommend creating issues or pull requests on those libraries' repositories to help them become compatible with the New Architecture. Alternatively, you could switch to other libraries that are compatible with the New Architecture. Refer to [React Native Directory](https://reactnative.directory/) to find compatible libraries.
 
 </Collapsible>
-
-<Collapsible summary="Known issues in Expo SDK and recommended libraries">
-
-- **react-native-maps**: Does not yet support the New Architecture. [Follow along with progress](https://github.com/react-native-maps/react-native-maps/discussions/5355). If your app can force a minimum version of iOS 17, or does not need to support maps on iOS, then consider [`expo-maps`](versions/latest/sdk/maps/).
-
-You may encounter other issues in older SDK releases. We recommend upgrading to the latest SDK version.
-
-</Collapsible>
-
 <Collapsible summary="Known issues in React Native">
 
 Refer to the [issues labeled with "Type: New Architecture" on the React Native GitHub repository](https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+New+Architecture%22).
+
+</Collapsible>
+
+<Collapsible summary="Known issues in Expo libraries">
+
+There are no known issues specific to the New Architecture in Expo libraries.
 
 </Collapsible>
 
@@ -218,6 +200,10 @@ Since React Native 0.74, there are various Interop Layers enabled by default. Th
 
 Refer to [React Native Directory](https://reactnative.directory/) a more complete list of libraries and their compatibility with the New Architecture. The following libraries were found to be popular among Expo apps and are known to be incompatible:
 
+The following are known issues with libraries that are popular among Expo apps.
+
+- **react-native-maps**: Initial support for the New Architecture is available in version 1.21.0, which is still stabilizing. We encourage your to test it in your app, report issues that you find, and [follow along with the discussion on GitHub](https://github.com/react-native-maps/react-native-maps/discussions/5355). We are also investigating another approach that may provider a smoother migration path, by leaning on the [interop layer](https://github.com/reactwg/react-native-new-architecture/discussions/175) rather than rewriting the module. It's worth mentioning that if your app can force a minimum version of iOS 18, or does not need to support maps on iOS, then you can consider using [`expo-maps`](/versions/latest/sdk/maps/) instead.
+- **@stripe/react-native** does not yet support the New Architecture. [Follow along with progress](https://github.com/stripe/stripe-react-native/issues/1275).
 - **@react-native-community/masked-view**: Use `@react-native-masked-view/masked-view` instead.
 - **@react-native-community/clipboard**: Use `@react-native-clipboard/clipboard` instead.
 - **rn-fetch-blob**: Use `react-native-blob-util` instead.

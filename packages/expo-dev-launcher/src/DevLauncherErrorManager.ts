@@ -1,3 +1,5 @@
+import type { ErrorHandlerCallback } from 'react-native';
+
 // Similar interface to the one used in expo modules.
 type CodedError = Error & { code?: string };
 
@@ -42,7 +44,7 @@ function customizeError(error: Error | CodedError) {
   }
 }
 
-function errorHandler(originalHandler, error, isFatal) {
+function errorHandler(originalHandler: ErrorHandlerCallback, error: any, isFatal?: boolean) {
   if (error instanceof Error) {
     // Suppresses `"main" has not been registered` error only if it was caused by a different error.
     // Otherwise, we want to show it, cause the user may forget to call `AppRegistry.registerComponent`.
@@ -59,7 +61,7 @@ function errorHandler(originalHandler, error, isFatal) {
 /**
  * @hidden
  */
-export function createErrorHandler(originalHandler) {
+export function createErrorHandler(originalHandler: ErrorHandlerCallback): ErrorHandlerCallback {
   return (error, isFatal) => {
     if (isErrorHandlingEnabled) {
       errorHandler(originalHandler, error, isFatal);

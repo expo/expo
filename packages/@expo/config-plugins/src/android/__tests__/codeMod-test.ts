@@ -1,4 +1,9 @@
-import { appendContentsInsideDeclarationBlock, findNewInstanceCodeBlock } from '../codeMod';
+import {
+  appendContentsInsideDeclarationBlock,
+  appendContentsInsideGradlePluginBlock,
+  findGradlePluginCodeBlock,
+  findNewInstanceCodeBlock,
+} from '../codeMod';
 
 describe(findNewInstanceCodeBlock, () => {
   it('should support classic new instance - java', () => {
@@ -124,5 +129,63 @@ public class App {
         '  System.out.println("Hello from generated code.");\n  '
       )
     ).toEqual(expectContents);
+  });
+});
+
+describe(findGradlePluginCodeBlock, () => {
+  it('should find plugins block', () => {
+    const contents = `
+plugins {
+  id("com.android.application")
+}
+`;
+
+    expect(findGradlePluginCodeBlock(contents, 'plugins')).toEqual({
+      start: 9,
+      end: 43,
+      code: `\
+{
+  id("com.android.application")
+}`,
+    });
+  });
+});
+
+describe(appendContentsInsideGradlePluginBlock, () => {
+  it('should append contents to the end of Gradle plugin block', () => {
+    const contents = `plugins { id("com.android.application") }`;
+    expect(
+      appendContentsInsideGradlePluginBlock(contents, 'plugins', '  id("dev.expo.example.plugins")')
+    ).toMatchInlineSnapshot(
+      `"plugins { id("com.android.application")   id("dev.expo.example.plugins")}"`
+    );
+  });
+
+  it('should append contents to the end of Gradle multiline pluginManagement block', () => {
+    const contents = `
+pluginManagement {
+  includeBuild("packages/gradle-plugin/")
+}
+`;
+    expect(
+      appendContentsInsideGradlePluginBlock(
+        contents,
+        'pluginManagement',
+        '  includeBuild("packages/gradle-plugin-expo/")'
+      )
+    ).toMatchInlineSnapshot(`
+      "
+      pluginManagement {
+        includeBuild("packages/gradle-plugin/")
+        includeBuild("packages/gradle-plugin-expo/")}
+      "
+    `);
+  });
+
+  it('should throw if plugin block is not found', () => {
+    const contents = 'dummy';
+    expect(() =>
+      appendContentsInsideGradlePluginBlock(contents, 'plugins', '  id("test")')
+    ).toThrow();
   });
 });

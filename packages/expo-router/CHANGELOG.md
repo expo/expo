@@ -10,6 +10,39 @@
 
 ### 💡 Others
 
+## 5.0.3 — 2025-04-28
+
+### 💡 Others
+
+- Remove dev-only stack trace view from default error boundary. ([#36409](https://github.com/expo/expo/pull/36409) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.2 — 2025-04-28
+
+### 🎉 New features
+
+- Add <Screen.Protected /> ([#36243](https://github.com/expo/expo/pull/36243) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.2-preview.6 — 2025-04-25
+
+### 💡 Others
+
+- bump e2e tests to React 19 and fix lint ([#36344](https://github.com/expo/expo/pull/36344) by [@EvanBacon](https://github.com/EvanBacon))
+- Refactor route state to utilize useStateForPath() ([#36199](https://github.com/expo/expo/pull/36199) by [@marklawlor](https://github.com/marklawlor))
+- Cleanup router store after #36199 ([#36383](https://github.com/expo/expo/pull/36383) by [@marklawlor](https://github.com/marklawlor))
+- Fix require cycle in router store ([#36386](https://github.com/expo/expo/pull/36386) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.2-preview.5 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2-preview.3 — 2025-04-11
+
+### 💡 Others
+
 - bump @radix-ui/react-slot ([#36089](https://github.com/expo/expo/pull/36089) by [@leonhh](https://github.com/leonhh))
 
 ## 5.0.2-preview.2 — 2025-04-11

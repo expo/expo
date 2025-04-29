@@ -84,5 +84,5 @@ export type NetworkStateEvent = NetworkState;
  * @hidden
  */
 export type NetworkEvents = {
-  onNetworkStateChanged(event: NetworkStateEvent);
+  onNetworkStateChanged(event: NetworkStateEvent): void;
 };

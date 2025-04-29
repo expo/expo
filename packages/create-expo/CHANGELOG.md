@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.4.0 — 2025-04-28
+
+### 🎉 New features
+
+- Add support for `.vscode`, `.eas`, `.github`, `.cursor` directories by using an underscore instead of a dot. ([#36240](https://github.com/expo/expo/pull/36240) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.3.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 3.3.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

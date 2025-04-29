@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 17.1.4 — 2025-04-25
+
+### 🐛 Bug fixes
+
+- Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
+
+## 17.1.3 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 17.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._
@@ -20,6 +34,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Adding `pairedVideoAsset` for Live Photo support. ([#33274](https://github.com/expo/expo/pull/33274) by [@entiendoNull](https://github.com/entiendoNull))
 - Add `album` parameter to `createAssetAsync`. ([#35686](https://github.com/expo/expo/pull/35686) by [@behenate](https://github.com/behenate))
+- Add `initialAssetLocalUri` to `createAlbumAsync`. ([#35692](https://github.com/expo/expo/pull/35692) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

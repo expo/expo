@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '18.1.2'
+version = '18.1.7'
 
 android {
   namespace "expo.modules.filesystem"
   defaultConfig {
     versionCode 30
-    versionName "18.1.2"
+    versionName "18.1.7"
   }
 }
 

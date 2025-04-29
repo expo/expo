@@ -3,14 +3,14 @@
 import SwiftUI
 import ExpoModulesCore
 
-class ColorPickerProps: ExpoSwiftUI.ViewProps {
+final class ColorPickerProps: ExpoSwiftUI.ViewProps {
   @Field var selection: Color = .clear
   @Field var label: String?
   @Field var supportsOpacity: Bool = true
   var onValueChanged = EventDispatcher()
 }
 
-struct ColorPickerView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct ColorPickerView: ExpoSwiftUI.View {
   @ObservedObject var props: ColorPickerProps
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear

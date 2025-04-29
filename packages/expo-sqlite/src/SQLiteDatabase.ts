@@ -215,10 +215,10 @@ export class SQLiteDatabase {
 
   /**
    * Create a new session for the database.
-   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
+   * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
    * @param dbName The name of the database to create a session for. The default value is `main`.
    */
   public createSessionSync(dbName: string = 'main'): SQLiteSession {
@@ -608,9 +608,9 @@ export function backupDatabaseAsync({
 /**
  * Backup a database to another database.
  *
- * @see https://www.sqlite.org/c3ref/backup_finish.html
- *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ *
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
  *
  * @param options - The backup options
  * @param options.sourceDatabase - The source database to backup from

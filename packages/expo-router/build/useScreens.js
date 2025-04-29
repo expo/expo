@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,14 +9,16 @@ exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 exports.screenOptionsFactory = screenOptionsFactory;
 exports.routeToScreen = routeToScreen;
 exports.getSingularId = getSingularId;
+const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
+const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
-function getSortedChildren(children, order, initialRouteName) {
+function getSortedChildren(children, order = [], initialRouteName) {
     if (!order?.length) {
         return children
             .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
@@ -77,12 +79,16 @@ function getSortedChildren(children, order, initialRouteName) {
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order) {
+function useSortedScreens(order, protectedScreens) {
     const node = (0, Route_1.useRouteNode)();
     const sorted = node?.children?.length
         ? getSortedChildren(node.children, order, node.initialRouteName)
         : [];
-    return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
+    return react_1.default.useMemo(() => sorted
+        .filter((item) => !protectedScreens.has(item.route.route))
+        .map((value) => {
+        return routeToScreen(value.route, value.props);
+    }), [sorted, protectedScreens]);
 }
 function fromImport(value, { ErrorBoundary, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
@@ -148,6 +154,15 @@ function getQualifiedRouteComponent(value) {
     route, navigation, 
     // Pass all other props to the component
     ...props }) {
+        const stateForPath = (0, native_1.useStateForPath)();
+        const isFocused = (0, native_1.useIsFocused)();
+        const store = (0, storeContext_1.useExpoRouterStore)();
+        if (isFocused) {
+            const state = navigation.getState();
+            const isLeaf = !('state' in state.routes[state.index]);
+            if (isLeaf && stateForPath)
+                store.setFocusedState(stateForPath);
+        }
         return (<Route_1.Route node={value} route={route}>
         <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
           <ScreenComponent {...props} 

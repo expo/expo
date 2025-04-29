@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 0.9.7 — 2025-04-28
+
+### 🎉 New features
+
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.6 — 2025-04-26
+
+### 💡 Others
+
+- [iOS] Lower minimum supported version to iOS 17. ([#36400](https://github.com/expo/expo/pull/36400) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.9.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.4 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Exported missing config plugin. ([#36177](https://github.com/expo/expo/pull/36177) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.9.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 0.9.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

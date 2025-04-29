@@ -8,9 +8,53 @@
 
 ### 🐛 Bug fixes
 
-- Fix `withSerializerPlugins` maintaining original Metro config reference - receiving serializer customization changes. ([#36099](https://github.com/expo/expo/pull/36099) by [@byCedric](https://github.com/byCedric))
+### 💡 Others
+
+## 0.20.9 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.8 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix importing polyfills. ([#36406](https://github.com/expo/expo/pull/36406) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
+
+- Move virtual rsc entry to expo ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+- Shim web streams API when bundling for native client environments. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.6 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.5 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Collapse more unused stacks. ([#36272](https://github.com/expo/expo/pull/36272) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.3 — 2025-04-11
+
+### 🐛 Bug fixes
+
+- Fix `withSerializerPlugins` maintaining original Metro config reference - receiving serializer customization changes. ([#36099](https://github.com/expo/expo/pull/36099) by [@byCedric](https://github.com/byCedric))
 
 ## 0.20.2 — 2025-04-09
 

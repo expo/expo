@@ -1,6 +1,7 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
 import 'expo-asset';
+import 'expo/virtual/rsc';
 
 import Constants from 'expo-constants';
 import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
@@ -19,7 +20,7 @@ if (isRunningInExpoGo()) {
 // This could be problematic because you will be developing your app with the New Architecture enabled and
 // but your builds will have the New Architecture disabled.
 if (__DEV__ && isRunningInExpoGo() && process.env.NODE_ENV === 'development') {
-  ['android', 'ios'].forEach((platform) => {
+  (['android', 'ios'] as const).forEach((platform) => {
     if (
       Platform.OS === platform &&
       Constants.expoConfig?.[platform]?.newArchEnabled !== true &&

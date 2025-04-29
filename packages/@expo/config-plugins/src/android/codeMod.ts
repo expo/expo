@@ -84,3 +84,44 @@ export function addImports(source: string, imports: string[], isJava: boolean): 
   }
   return lines.join('\n');
 }
+
+/**
+ * Find code block of Gradle plugin block, will return only {} part
+ *
+ * @param contents source contents
+ * @param plugin plugin declaration name, e.g. `plugins` or `pluginManagement`
+ * @returns found CodeBlock, or null if not found.
+ */
+export function findGradlePluginCodeBlock(contents: string, plugin: string): CodeBlock | null {
+  const pluginStart = contents.search(new RegExp(`${plugin}\\s*\\{`, 'm'));
+  if (pluginStart < 0) {
+    return null;
+  }
+  const codeBlockStart = contents.indexOf('{', pluginStart);
+  const codeBlockEnd = findMatchingBracketPosition(contents, '{', codeBlockStart);
+  const codeBlock = contents.substring(codeBlockStart, codeBlockEnd + 1);
+  return {
+    start: codeBlockStart,
+    end: codeBlockEnd,
+    code: codeBlock,
+  };
+}
+
+/**
+ * Append contents to the end of Gradle plugin block
+ * @param srcContents source contents
+ * @param plugin plugin declaration name, e.g. `plugins` or `pluginManagement`
+ * @param insertion code to append
+ * @returns updated contents
+ */
+export function appendContentsInsideGradlePluginBlock(
+  srcContents: string,
+  plugin: string,
+  insertion: string
+): string {
+  const codeBlock = findGradlePluginCodeBlock(srcContents, plugin);
+  if (!codeBlock) {
+    throw new Error(`Unable to find Gradle plugin block - plugin[${plugin}]`);
+  }
+  return insertContentsAtOffset(srcContents, insertion, codeBlock.end);
+}

@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "14.2.0",
+  "version": "15.0.3",
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {
@@ -23,16 +23,15 @@
     "native.js",
     "node.js",
     "web.js",
-    "shared"
+    "shared",
+    "flat",
+    "!**/__tests__/**"
   ],
   "jest": {
     "testMatch": [
       "**/__tests__/*-test.js"
     ]
   },
-  "eslintIgnore": [
-    "/__tests__/fixtures/*"
-  ],
   "author": "Expo",
   "license": "MIT",
   "bugs": {
@@ -44,13 +43,15 @@
     "@typescript-eslint/parser": "^8.29.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.17.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0"
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=8.10 <9",
+    "eslint": ">=8.10",
     "prettier": ">=3"
   },
   "peerDependenciesMeta": {
@@ -60,7 +61,8 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
-    "eslint": "^8.57.1",
+    "eslint": "^9.24.0",
+    "eslint8": "npm:eslint@^8.57.1",
     "jest": "^29.7.0",
     "prettier": "^3.5.3"
   }

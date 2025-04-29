@@ -11,6 +11,14 @@ import path from 'path';
  */
 export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
+/**
+ * Repository root directory
+ */
+export const repoRoot = nullthrows(
+  process.env.EXPO_REPO_ROOT || process.env.EAS_BUILD_WORKINGDIR,
+  'EXPO_REPO_ROOT is not defined'
+);
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
@@ -78,7 +86,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
   return expoDependencyChunks.flat();
 }
 
-const expoResolutions = {};
+const expoResolutions: { [key: string]: string } = {};
 
 /**
  * Executes `npm pack` on one of the Expo packages used in updates E2E
@@ -316,6 +324,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
@@ -375,7 +384,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.79.0-0rc2',
+        'react-native': 'npm:react-native-tvos@0.79.1-0',
         '@react-native-tvos/config-tv': '^0.1.1',
       },
       expo: {

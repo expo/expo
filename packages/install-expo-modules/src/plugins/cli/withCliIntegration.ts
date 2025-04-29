@@ -176,9 +176,18 @@ export function updateVirtualMetroEntryAndroid(contents: string): string {
 }
 
 export function updateVirtualMetroEntryIos(contents: string): string {
-  return contents.replace(
-    /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
-    `$1.expo/.virtual-metro-entry$3`
+  return (
+    contents
+      // Update the `AppDelegate.mm`
+      .replace(
+        /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
+        `$1.expo/.virtual-metro-entry$3`
+      )
+      // Update the `AppDelegate.swift`
+      .replace(
+        /^(\s*RCTBundleURLProvider\.sharedSettings\(\)\.jsBundleURL\(forBundleRoot:\s*")(index)("\)\s*)$/m,
+        `$1.expo/.virtual-metro-entry$3`
+      )
   );
 }
 

@@ -387,7 +387,13 @@ export type NotificationContent = {
     /**
      * Data associated with the notification, not displayed
      */
-    data: Record<string, any>;
+    data: {
+        [key: string]: unknown;
+    };
+    /**
+     * The identifier of the notification’s category.
+     */
+    categoryIdentifier: string | null;
     sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (NotificationContentIos | NotificationContentAndroid);
 /**
@@ -414,10 +420,6 @@ export type NotificationContentIos = {
      * The number the system adds to the notification summary when the notification represents multiple items.
      */
     summaryArgumentCount?: number;
-    /**
-     * The identifier of the notification’s category.
-     */
-    categoryIdentifier: string | null;
     /**
      * The identifier that groups related notifications.
      */
@@ -507,7 +509,7 @@ export type NotificationContentInput = {
     /**
      * Data associated with the notification, not displayed.
      */
-    data?: Record<string, any>;
+    data?: Record<string, unknown>;
     /**
      * Application badge number associated with the notification.
      */
@@ -584,7 +586,7 @@ export interface Notification {
 }
 /**
  * An object which represents user's interaction with the notification.
- * > **Note:** If the user taps on a notification `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
+ * > **Note:** If the user taps on a notification, `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
  */
 export interface NotificationResponse {
     notification: Notification;
@@ -592,13 +594,21 @@ export interface NotificationResponse {
     userText?: string;
 }
 /**
- * An object which represents behavior that should be applied to the incoming notification.
+ * An object which represents behavior that should be applied to the incoming notification. On Android, this influences whether the notification is shown, a sound is played, and priority. On iOS, this maps directly to [`UNNotificationPresentationOptions`](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions).
  * > On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is.
  * > This setting will also override any channel-specific sounds you may have configured.
  */
 export interface NotificationBehavior {
-    shouldShowAlert: boolean;
+    /**
+     * @deprecated instead, specify `shouldShowBanner` and / or `shouldShowList`
+     * */
+    shouldShowAlert?: boolean;
+    shouldShowBanner: boolean;
+    shouldShowList: boolean;
     shouldPlaySound: boolean;
+    /**
+     * @platform ios
+     */
     shouldSetBadge: boolean;
     priority?: AndroidNotificationPriority;
 }
@@ -708,4 +718,26 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * */
 export type Subscription = EventSubscription;
 export { PermissionExpiration, PermissionResponse, EventSubscription, PermissionStatus, } from 'expo-modules-core';
+/**
+ * Payload for the background notification handler task.
+ * [Read more](#run-javascript-in-response-to-incoming-notifications).
+ * */
+export type NotificationTaskPayload = NotificationResponse | {
+    /**
+     * Object describing the remote notification. `null` for headless background notifications.
+     */
+    notification: Record<string, unknown> | null;
+    /**
+     * `dataString` carries the data payload of the notification as JSON string.
+     */
+    data: {
+        dataString?: string;
+        [key: string]: unknown;
+    };
+    /**
+     * Detailed, raw object describing the remote notification. [See more](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).
+     * @platform ios
+     */
+    aps?: Record<string, unknown>;
+};
 //# sourceMappingURL=Notifications.types.d.ts.map

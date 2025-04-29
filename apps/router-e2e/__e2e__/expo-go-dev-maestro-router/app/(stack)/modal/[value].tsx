@@ -1,7 +1,7 @@
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 
-export default function () {
+export default function Value() {
   return (
     <>
       <Text testID="e2e-screen">Modal value {JSON.stringify(useLocalSearchParams())}</Text>

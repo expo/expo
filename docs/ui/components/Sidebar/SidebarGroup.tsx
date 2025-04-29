@@ -63,7 +63,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm text-secondary">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-xs text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -121,7 +121,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="ml-2 text-sm text-secondary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="ml-2 text-xs text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}

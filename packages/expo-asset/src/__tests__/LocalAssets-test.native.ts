@@ -6,7 +6,7 @@ jest.mock('expo-modules-core', () => {
   const ExpoModulesCore = jest.requireActual('expo-modules-core');
   return {
     ...ExpoModulesCore,
-    requireOptionalNativeModule: (moduleName) => {
+    requireOptionalNativeModule: (moduleName: string) => {
       if (moduleName !== 'ExpoUpdates') {
         return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
       }

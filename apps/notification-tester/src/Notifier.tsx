@@ -159,6 +159,7 @@ const extractNotificationResponse = (response: NotificationResponse) => {
     {
       actionIdentifier: response.actionIdentifier,
       title: response.notification.request.content.title,
+      userText: response.userText,
     },
     null,
     2
