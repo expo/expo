@@ -47,4 +47,15 @@ Object.keys(_Errors).forEach(function (key) {
     }
   });
 });
+var _remoteBuildCache = require("./remoteBuildCache");
+Object.keys(_remoteBuildCache).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _remoteBuildCache[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _remoteBuildCache[key];
+    }
+  });
+});
 //# sourceMappingURL=index.js.map

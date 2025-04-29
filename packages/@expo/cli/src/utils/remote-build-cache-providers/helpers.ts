@@ -1,6 +1,6 @@
+import { RunOptions } from '@expo/config';
 import fs from 'fs';
 
-import { RunOptions } from './types';
 import { hasDirectDevClientDependency } from '../../start/detectDevClient';
 
 export function isDevClientBuild({

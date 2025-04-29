@@ -1,9 +1,13 @@
-import { ExpoConfig, Platform } from '@expo/config';
+import {
+  ExpoConfig,
+  RemoteBuildCachePlugin,
+  RemoteBuildCacheProvider,
+  RunOptions,
+} from '@expo/config';
 import resolveFrom from 'resolve-from';
 
 import { EASRemoteBuildCacheProvider } from './eas';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
-import { RemoteBuildCachePlugin, RemoteBuildCacheProvider, RunOptions } from './types';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
@@ -41,7 +45,7 @@ export async function resolveRemoteBuildCache({
   runOptions,
 }: {
   projectRoot: string;
-  platform: Omit<Platform, 'web'>;
+  platform: 'android' | 'ios';
   provider: RemoteBuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
@@ -69,7 +73,7 @@ export async function uploadRemoteBuildCache({
   runOptions,
 }: {
   projectRoot: string;
-  platform: Omit<Platform, 'web'>;
+  platform: 'android' | 'ios';
   provider: RemoteBuildCacheProvider;
   buildPath: string;
   runOptions: RunOptions;
@@ -104,7 +108,7 @@ async function calculateFingerprintHashAsync({
   runOptions,
 }: {
   projectRoot: string;
-  platform: Omit<Platform, 'web'>;
+  platform: 'android' | 'ios';
   provider: RemoteBuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {

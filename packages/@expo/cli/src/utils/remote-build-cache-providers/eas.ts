@@ -1,3 +1,4 @@
+import { CalculateFingerprintHashProps, RemoteBuildCachePlugin, RunOptions } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
@@ -5,7 +6,6 @@ import fs from 'fs';
 import path from 'path';
 
 import { isDevClientBuild } from './helpers';
-import { CalculateFingerprintHashProps, RemoteBuildCachePlugin, RunOptions } from './types';
 import { Log } from '../../log';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 
