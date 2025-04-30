@@ -62,7 +62,17 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
     {
       name: 'fonts',
       description:
-        'An array of font definitions to link to the native project. The paths should be relative to the project root. On Android, when you provide only the font file path, the file name becomes the font family name. Use the object syntax to set custom family name. On iOS, the font family name is always taken directly from the font file and may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
+        'An array of font definitions to link to the native project. The paths should be relative to the project root. On Android, use the object syntax to set custom family name – when you provide only the font file path, the file name becomes the font family name. On iOS, the font family name is always taken directly from the font file and may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
+      default: '[]',
+    },
+    {
+      name: 'android',
+      description: 'An array of font definitions to link to the native project on Android. The file name becomes the font family name.',
+      default: '[]',
+    },
+    {
+      name: 'ios',
+      description: 'An array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
       default: '[]',
     },
   ]}
