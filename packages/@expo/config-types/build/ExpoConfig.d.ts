@@ -842,6 +842,15 @@ export interface AndroidIntentFiltersData {
      */
     pathPrefix?: string;
     /**
+     * Suffix for paths that should be matched by the filter, e.g. `.pdf` will match `/docs/file.pdf`
+     */
+    pathSuffix?: string;
+    /**
+     * Advanced pattern for paths, available in API 31+ (Android 12 and later),
+     * supports regular expressions. Example: `/records/[0-9]+`
+     */
+    pathAdvancedPattern?: string;
+    /**
      * MIME type for URLs that should be matched by the filter
      */
     mimeType?: string;
