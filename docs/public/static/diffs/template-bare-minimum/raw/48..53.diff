@@ -1654,12 +1654,13 @@ index 8cb5aef137..0000000000
 -@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
-index 0000000000..9ab9d25e4a
+index 0000000000..cebfb1eee6
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
-@@ -0,0 +1,42 @@
-+import React
+@@ -0,0 +1,46 @@
 +import Expo
++import React
++import ReactAppDependencyProvider
 +
 +@UIApplicationMain
 +public class AppDelegate: ExpoAppDelegate {
@@ -1670,15 +1671,14 @@ index 0000000000..9ab9d25e4a
 +    self.moduleName = "main"
 +    self.initialProps = [:]
 +
-+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-+  }
++    let delegate = ReactNativeDelegate()
++    let factory = ExpoReactNativeFactory(delegate: delegate)
++    delegate.dependencyProvider = RCTAppDependencyProvider()
 +
-+  public override func bundleURL() -> URL? {
-+#if DEBUG
-+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-+#else
-+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-+#endif
++    reactNativeFactoryDelegate = delegate
++    reactNativeFactory = factory
++
++    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
 +  }
 +
 +  // Linking API
@@ -1699,6 +1699,10 @@ index 0000000000..9ab9d25e4a
 +    let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
 +    return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
 +  }
++}
++
++class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
++  // Extension point for config-plugins
 +}
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/HelloWorld-Bridging-Header.h b/templates/expo-template-bare-minimum/ios/HelloWorld/HelloWorld-Bridging-Header.h
 new file mode 100644
@@ -2180,7 +2184,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..b0701d3f51 100644
+index d1fcd513cc..2e4010d3d2 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -2189,11 +2193,11 @@ index d1fcd513cc..b0701d3f51 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "48.0.21",
 +  "license": "0BSD",
-+  "version": "53.0.7",
++  "version": "53.0.14",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,11 +11,13 @@
+@@ -10,11 +11,10 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -2202,13 +2206,10 @@ index d1fcd513cc..b0701d3f51 100644
 -    "expo-status-bar": "~1.4.4",
 -    "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "expo": "~53.0.0-preview.4",
-+    "expo-status-bar": "~2.1.0",
++    "expo": "~53.0.0-preview.11",
++    "expo-status-bar": "~2.2.1",
 +    "react": "19.0.0",
-+    "react-native": "0.79.0"
-+  },
-+  "overrides": {
-+    "react": "19.0.0"
++    "react-native": "0.79.1"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
