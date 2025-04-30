@@ -181,7 +181,11 @@ export const general = [
     ),
     makeGroup(
       'Compile locally',
-      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      [
+        makePage('guides/local-app-development.mdx'),
+        makePage('guides/local-app-production.mdx'),
+        makePage('guides/cache-builds-remotely.mdx'),
+      ],
       {
         expanded: false,
       }
