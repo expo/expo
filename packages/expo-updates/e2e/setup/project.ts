@@ -522,7 +522,7 @@ function transformAppJsonForE2E(
   };
 }
 
-export function transformAppJsonForE2EWithCustomInit(
+export function transformAppJsonForE2EWithOldArch(
   appJson: any,
   projectName: string,
   runtimeVersion: string,
@@ -533,7 +533,7 @@ export function transformAppJsonForE2EWithCustomInit(
     ...transformedForE2E,
     expo: {
       ...transformedForE2E.expo,
-      newArchEnabled: true,
+      newArchEnabled: false,
     },
   };
 }

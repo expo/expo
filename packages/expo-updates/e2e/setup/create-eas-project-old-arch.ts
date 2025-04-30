@@ -1,9 +1,13 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
-import nullthrows from 'nullthrows';
 import path from 'path';
 
-import { initAsync, repoRoot, setupE2EAppAsync } from './project';
+import {
+  initAsync,
+  repoRoot,
+  setupE2EAppAsync,
+  transformAppJsonForE2EWithOldArch,
+} from './project';
 
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
@@ -14,8 +18,7 @@ const runtimeVersion = '1.0.0';
  * that is configured to build a test app and run both suites
  * of updates E2E tests in the Detox environment.
  *
- * This test project will use the custom init flow for updates, using
- * the expo-template-custom-init native files.
+ * This test project will use the old architecture (Paper).
  *
  * See `packages/expo-updates/e2e/README.md` for instructions on how
  * to run these tests locally.
@@ -33,7 +36,7 @@ const runtimeVersion = '1.0.0';
     repoRoot,
     runtimeVersion,
     localCliBin,
-    useCustomInit: true,
+    transformAppJson: transformAppJsonForE2EWithOldArch,
   });
 
   await setupE2EAppAsync(projectRoot, { localCliBin, repoRoot });
