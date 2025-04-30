@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update new arch check in Expo Go to account for new default behavior of `newArchEnabled` (now `true` when not specified in SDK 53).
+
 ### 💡 Others
 
 ## 53.0.4 — 2025-04-30
