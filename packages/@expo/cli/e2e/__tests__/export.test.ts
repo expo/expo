@@ -28,6 +28,12 @@ afterAll(() => {
   delete process.env._EXPO_E2E_USE_PATH_ALIASES;
 });
 
+const MD5_REGEX = /(?<md5>[0-9a-fA-F]{32})/;
+// Starts and ends with the same regex as `MD5_REGEX`, can contain no extra characters.
+const EXACT_MD5_REGEX = new RegExp(`^${MD5_REGEX.source}$`);
+
+const ASSETS_MD5_PATH = new RegExp(`assets/${MD5_REGEX.source}$`);
+
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/export').expoExport`);
   expect(modules).toStrictEqual([
@@ -98,35 +104,39 @@ describe('server', () => {
           assets: [
             {
               ext: 'png',
-              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'png',
-              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'ttf',
-              path: expect.pathMatching('assets/3858f62230ac3c915f300c664312c63f'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
           ],
-          bundle: expect.pathMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc$/),
+          bundle: expect.pathMatching(
+            new RegExp(`_expo/static/js/android/AppEntry-${MD5_REGEX.source}\\.hbc$`)
+          ),
         },
         ios: {
           assets: [
             {
               ext: 'png',
-              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'png',
-              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'ttf',
-              path: expect.pathMatching('assets/2f334f6c7ca5b2a504bdf8acdee104f3'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
           ],
-          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc$/),
+          bundle: expect.pathMatching(
+            new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.hbc$`)
+          ),
         },
       },
       version: 0,
@@ -136,10 +146,10 @@ describe('server', () => {
     expect(assetmap).toEqual({
       '2f334f6c7ca5b2a504bdf8acdee104f3': {
         __packager_asset: true,
-        fileHashes: ['2f334f6c7ca5b2a504bdf8acdee104f3'],
+        fileHashes: [expect.stringMatching(EXACT_MD5_REGEX)],
         fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf$/)],
-        hash: '2f334f6c7ca5b2a504bdf8acdee104f3',
+        hash: expect.stringMatching(EXACT_MD5_REGEX),
         httpServerLocation: '/assets/assets',
         name: 'font',
         scales: [1],
@@ -148,10 +158,10 @@ describe('server', () => {
 
       '3858f62230ac3c915f300c664312c63f': {
         __packager_asset: true,
-        fileHashes: ['3858f62230ac3c915f300c664312c63f'],
+        fileHashes: [expect.stringMatching(EXACT_MD5_REGEX)],
         fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ttf$/)],
-        hash: '3858f62230ac3c915f300c664312c63f',
+        hash: expect.stringMatching(EXACT_MD5_REGEX),
         httpServerLocation: '/assets/assets',
         name: 'font',
         scales: [1],
@@ -159,13 +169,16 @@ describe('server', () => {
       },
       d48d481475a80809fcf9253a765193d1: {
         __packager_asset: true,
-        fileHashes: ['fb960eb5e4eb49ec8786c7f6c4a57ce2', '9ce7db807e4147e00df372d053c154c2'],
+        fileHashes: [
+          expect.stringMatching(EXACT_MD5_REGEX),
+          expect.stringMatching(EXACT_MD5_REGEX),
+        ],
         fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [
           expect.pathMatching(/\/.*\/basic-export\/assets\/icon\.png$/),
           expect.pathMatching(/\/.*\/basic-export\/assets\/icon@2x\.png$/),
         ],
-        hash: 'd48d481475a80809fcf9253a765193d1',
+        hash: expect.stringMatching(EXACT_MD5_REGEX),
         height: 1,
         httpServerLocation: '/assets/assets',
         name: 'icon',
@@ -177,21 +190,29 @@ describe('server', () => {
 
     // If this changes then everything else probably changed as well.
     expect(findProjectFiles(outputDir)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc$/),
-      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map$/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js$/),
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map$/),
-      'assetmap.json',
-      'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
-      'assets/3858f62230ac3c915f300c664312c63f',
-      'assets/9ce7db807e4147e00df372d053c154c2',
-      'assets/assets/font.3858f62230ac3c915f300c664312c63f.ttf',
-      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15.png',
-      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/android/AppEntry-${MD5_REGEX.source}\\.hbc$`)
+      ),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/android/AppEntry-${MD5_REGEX.source}\\.hbc\\.map$`)
+      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.hbc$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.hbc\\.map$`)
+      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/web/AppEntry-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/web/AppEntry-${MD5_REGEX.source}\\.js\\.map$`)
+      ),
 
-      'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+      'assetmap.json',
+      expect.pathMatching(ASSETS_MD5_PATH),
+      expect.pathMatching(ASSETS_MD5_PATH),
+      expect.pathMatching(ASSETS_MD5_PATH),
+      expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}@2x\\.png$`)),
+      expect.pathMatching(ASSETS_MD5_PATH),
       'favicon.ico',
       'index.html',
       'metadata.json',
@@ -222,18 +243,20 @@ describe('server', () => {
           assets: [
             {
               ext: 'png',
-              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'png',
-              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
             {
               ext: 'ttf',
-              path: expect.pathMatching('assets/2f334f6c7ca5b2a504bdf8acdee104f3'),
+              path: expect.pathMatching(ASSETS_MD5_PATH),
             },
           ],
-          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.js$/),
+          bundle: expect.pathMatching(
+            new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)
+          ),
         },
       },
       version: 0,
@@ -243,10 +266,10 @@ describe('server', () => {
     expect(assetmap).toEqual({
       '2f334f6c7ca5b2a504bdf8acdee104f3': {
         __packager_asset: true,
-        fileHashes: ['2f334f6c7ca5b2a504bdf8acdee104f3'],
+        fileHashes: [expect.stringMatching(EXACT_MD5_REGEX)],
         fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf$/)],
-        hash: '2f334f6c7ca5b2a504bdf8acdee104f3',
+        hash: expect.stringMatching(EXACT_MD5_REGEX),
         httpServerLocation: '/assets/assets',
         name: 'font',
         scales: [1],
@@ -254,13 +277,16 @@ describe('server', () => {
       },
       d48d481475a80809fcf9253a765193d1: {
         __packager_asset: true,
-        fileHashes: ['fb960eb5e4eb49ec8786c7f6c4a57ce2', '9ce7db807e4147e00df372d053c154c2'],
+        fileHashes: [
+          expect.stringMatching(EXACT_MD5_REGEX),
+          expect.stringMatching(EXACT_MD5_REGEX),
+        ],
         fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [
           expect.pathMatching(/\/.*\/basic-export\/assets\/icon\.png$/),
           expect.pathMatching(/\/.*\/basic-export\/assets\/icon@2x\.png$/),
         ],
-        hash: 'd48d481475a80809fcf9253a765193d1',
+        hash: expect.stringMatching(EXACT_MD5_REGEX),
         height: 1,
         httpServerLocation: '/assets/assets',
         name: 'icon',
@@ -272,12 +298,14 @@ describe('server', () => {
 
     // If this changes then everything else probably changed as well.
     expect(findProjectFiles(outputDir)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js\\.map$`)
+      ),
       'assetmap.json',
-      'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
-      'assets/9ce7db807e4147e00df372d053c154c2',
-      'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+      expect.stringMatching(ASSETS_MD5_PATH),
+      expect.stringMatching(ASSETS_MD5_PATH),
+      expect.stringMatching(ASSETS_MD5_PATH),
       'favicon.ico',
       'metadata.json',
     ]);
@@ -314,12 +342,14 @@ describe('server', () => {
 
     // Ensure the app entry has the expected export name
     expect(findProjectFiles(path.join(projectRoot, 'dist'))).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
+      expect.pathMatching(new RegExp(`_expo/static/js/web/AppEntry-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/web/AppEntry-${MD5_REGEX.source}\\.js\\.map$`)
+      ),
       'assetmap.json',
-      'assets/assets/font.3858f62230ac3c915f300c664312c63f.ttf',
-      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15.png',
-      'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
+      expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}@2x\\.png$`)),
       'favicon.ico',
       'index.html',
       'metadata.json',

@@ -117,16 +117,16 @@ describe('Export DOM Components', () => {
           assets: [
             {
               ext: 'css',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
             },
             {
               ext: 'html',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
             },
 
             {
               ext: 'js',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
             },
 
             {
@@ -264,8 +264,8 @@ describe('Export DOM Components', () => {
       (file) => !(file.startsWith('www.bundle/') && file.endsWith('.map'))
     );
     expect(outputFilesWithoutMap).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/),
       'assetmap.json',
       'assets/369745d4a4a6fa62fa0ed495f89aa964',
       'assets/3858f62230ac3c915f300c664312c63f',
@@ -277,9 +277,9 @@ describe('Export DOM Components', () => {
 
       'metadata.json',
 
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
     ]);
   });
 });
