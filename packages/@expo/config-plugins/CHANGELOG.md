@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.0.0 — 2025-04-30
+
+### 🛠 Breaking changes
+
 - Remove `android.package` from the list of schemes. ([#36472](https://github.com/expo/expo/pull/36472) by [@brentvatne](https://github.com/brentvatne))
 
 ### 🎉 New features
 
 - Expose support for `ios.scheme` and `android.scheme` in the config schema. ([#36472](https://github.com/expo/expo/pull/36472) by [@brentvatne](https://github.com/brentvatne))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 9.1.7 — 2025-04-25
 

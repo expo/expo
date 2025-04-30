@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix initial opened state of Bottom Sheet. ([#36176](https://github.com/expo/expo/pull/36176) by [@entiendoNull](https://github.com/entiendoNull))
-
 ### 💡 Others
+
+## 0.1.1-alpha.6 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix initial opened state of Bottom Sheet. ([#36176](https://github.com/expo/expo/pull/36176) by [@entiendoNull](https://github.com/entiendoNull))
 
 ## 0.1.1-alpha.5 — 2025-04-25
 

@@ -53,7 +53,7 @@ PODS:
   - EXNotifications/Tests (0.31.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.1):
+  - Expo (53.0.2):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -492,7 +492,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalAuthentication (16.0.3):
     - ExpoModulesCore
-  - ExpoLocalization (16.1.3):
+  - ExpoLocalization (16.1.4):
     - ExpoModulesCore
   - ExpoLocation (18.1.3):
     - ExpoModulesCore
@@ -500,10 +500,10 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.9.7):
     - ExpoModulesCore
-  - ExpoMediaLibrary (17.1.4):
+  - ExpoMediaLibrary (17.1.5):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (17.1.4):
+  - ExpoMediaLibrary/Tests (17.1.5):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
@@ -608,7 +608,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSplashScreen (0.30.6):
     - ExpoModulesCore
-  - ExpoSQLite (15.2.7):
+  - ExpoSQLite (15.2.8):
     - ExpoModulesCore
   - ExpoStoreReview (8.1.4):
     - ExpoModulesCore
@@ -618,7 +618,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.2.3):
     - ExpoModulesCore
-  - ExpoUI (0.1.1-alpha.5):
+  - ExpoUI (0.1.1-alpha.6):
     - ExpoModulesCore
   - ExpoVideo (2.1.7):
     - ExpoModulesCore
@@ -631,7 +631,7 @@ PODS:
   - EXTaskManager (13.1.4):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.28.9):
+  - EXUpdates (0.28.10):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -661,7 +661,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.28.9):
+  - EXUpdates/Tests (0.28.10):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3607,7 +3607,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: a91a13dbeca44ce4ebef1ae7b21a304296b30db7
   EXNotifications: bbc6a5b7372ad35e894ff1dfbbe980bc824c6fca
-  Expo: 19b6df84677dbbbdf988a1ba993ef45e4bd692f6
+  Expo: 2801dea3e2826a2ed23408d9dfbe187a810cd8bd
   expo-dev-client: 6cb2225650a0d24c53d80ce0fd82e4e81f502745
   expo-dev-launcher: 6125e2b202bcd0849b7ad6ce7614d34b8941b774
   expo-dev-menu: 65a17018b038abc11a0510a033b4543749d19b82
@@ -3642,11 +3642,11 @@ SPEC CHECKSUMS:
   ExpoLinking: b59d5a45435a126138ba403daa5833c4e203f89a
   ExpoLivePhoto: 339a22e4d7dcf7718d7def9e92c7964d1e631ddb
   ExpoLocalAuthentication: dea455abfc50f01127d2a1aaf29acab14159df6f
-  ExpoLocalization: 9a7f5ed4609d994229eba37034b564c3f1a7957b
+  ExpoLocalization: 452e35d9efbbfdebc1ceb00c3169f38ff397a1a7
   ExpoLocation: 4566d8070b8053a419bcc62198601f4039009734
   ExpoMailComposer: 13a17b3485ad55c63381545f67be5df5e964a62c
   ExpoMaps: 89a51608668080205a4faff1d01ef60c4a4ab1f8
-  ExpoMediaLibrary: 4ac1e37f623b402dbcc5cf5ddf37988d27e70ea2
+  ExpoMediaLibrary: 18bb7bb948c06f606ad2708faa286258157cd9f9
   ExpoMeshGradient: b7c15c200e82d74b7e7d5f8d6bbd23aaf0890540
   ExpoModulesCore: 9c9faec0b864155adc5fd8467e2ec30307ab9fe8
   ExpoModulesTestCore: c87ba2da38070e3483a3049453a4dc898b972eb2
@@ -3660,18 +3660,18 @@ SPEC CHECKSUMS:
   ExpoSMS: 3868c7f0023139b3ef48e6b0d35432986d817b6f
   ExpoSpeech: 4387910b9024504d48901eba24f5bcb9cd648744
   ExpoSplashScreen: a6985ad9cf00407328f50af4b99a5482bd3997f2
-  ExpoSQLite: d8803df6088fe72a05f1f6cf9b0a5f07690d430b
+  ExpoSQLite: 9682058bce70e7df8dcf743c6cd953c1cb3caa86
   ExpoStoreReview: 338400fb8983dcd554b1dda4337945df3b1af795
   ExpoSymbols: a90c2b0888323151969d49224f1d75be1bf3142b
   ExpoSystemUI: 3852603ac96924c3cbe1f600e8e450965c94f8a9
   ExpoTrackingTransparency: 0b52fb33ad35080b2312443e97234398825773d4
-  ExpoUI: 2c062f0dcded218b6538f71ca27c1861f337f47c
+  ExpoUI: 8f22e09dc64052e646a8a14f1f2ef08147507d92
   ExpoVideo: a365b1632bbd72540a714cb2a8fc1679bc9cd864
   ExpoVideoThumbnails: 11fe6ce05c1ce7d04869d783473abd1b90ead732
   ExpoWebBrowser: 39c7bf896f79ec2e125e29b769a50f39836addd0
   EXStructuredHeaders: 32bec6771c2db18c4cd47cecae530d1d06cdf972
   EXTaskManager: e741da8687966cb3e88adbc69ee748c470ee005a
-  EXUpdates: 2fee3bb7f2598acfef1e9da8db0bb6a33a604567
+  EXUpdates: 01ed9d5569e576739b198c32b41d86d05ba77ec8
   EXUpdatesInterface: 64f35449b8ef89ce08cdd8952a4d119b5de6821d
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: abbac80c6f89e71a8c55c7e92ec015c8a9496753
