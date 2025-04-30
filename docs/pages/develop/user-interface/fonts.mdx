@@ -73,11 +73,11 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 The example below showcases all valid ways a font can be specified: as an array of objects that specify `fontFamily` and other properties, or an array of paths to font files.
 
-For Android, you can specify the `fontFamily`, `weight` and optionally `style` (defaults to `"normal"`), which will embed the fonts as native [xml resources](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml). If you provide only the font file paths in an array, the file name becomes the font family name on Android. iOS always extracts font family name from the font file itself.
+For Android, you can specify the `fontFamily`, `weight`, and optionally `style` (defaults to `"normal"`), which will embed the fonts as native [XML resources](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml). If you provide only the font file paths in an array, the file name becomes the font family name on Android. iOS always extracts the font family name from the font file itself.
 
 If you plan to refer to fonts using just the `fontFamily`, provide an array of font paths (see `FiraSans-MediumItalic.ttf` below) and follow our [recommendation for file naming](#how-to-determine-which-font-family-name-to-use).
 
-If you want to refer to fonts using a combination of `fontFamily`, `weight` and `style`, provide an array of objects (see `Inter` below).
+If you want to refer to fonts using a combination of `fontFamily`, `weight`, and `style`, provide an array of objects (see `Inter` below).
 
 ```json app.json
 {
@@ -146,9 +146,9 @@ You can use the font with `<Text>` by specifying the `fontFamily` style prop. Th
 
 #### How to determine which font family name to use
 
-- If you provide fonts as an array of file paths: As described above, on Android, the file name (without the extension) becomes the font family name. On iOS, the font family name is read from the font file itself. We recommend naming the font file same as its [PostScript name](#what-is-postscript-name-of-a-font) so the font family name is consistent on both platforms.
+- If you provide fonts as an array of file paths (as described above), on Android, the file name (without the extension) becomes the font family name. On iOS, the font family name is read from the font file itself. We recommend naming the font file same as its [PostScript name](#what-is-postscript-name-of-a-font) so the font family name is consistent on both platforms.
 
-- If you use the object syntax: provide the "Family Name". This can be found in the Font Book app on macOS, [fontdrop.info](https://fontdrop.info/) or other programs.
+- If you use the object syntax, provide the "Family Name". This can be found in the Font Book app on macOS, [fontdrop.info](https://fontdrop.info/) or other programs.
 
 <Collapsible summary="What is PostScript name of a font file?">
 
