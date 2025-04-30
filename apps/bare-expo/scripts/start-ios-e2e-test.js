@@ -1,11 +1,12 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env node
+// @ts-check
 
-import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild';
-import spawnAsync from '@expo/spawn-async';
-import fs from 'fs/promises';
-import path from 'path';
+const XcodeBuild = require('@expo/cli/build/src/run/ios/XcodeBuild');
+const spawnAsync = require('@expo/spawn-async');
+const fs = require('fs/promises');
+const path = require('path');
 
-import { createMaestroFlowAsync, ensureDirAsync, getStartMode, retryAsync } from './lib/e2e-common';
+const { createMaestroFlowAsync, ensureDirAsync, getStartMode, retryAsync } = require('./lib/e2e-common.js');
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
 const TARGET_DEVICE_IOS_VERSION = 18;
@@ -39,7 +40,12 @@ const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro d
   }
 })();
 
-async function buildAsync(projectRoot: string, deviceId: string): Promise<string> {
+/**
+  * @param {string} projectRoot
+  * @param {string} deviceId
+  * @returns {Promise<string>}
+  */
+async function buildAsync(projectRoot, deviceId) {
   console.log('\n💿 Building App');
   const buildOutput = await XcodeBuild.buildAsync({
     projectRoot,
@@ -64,11 +70,17 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   return binaryPath;
 }
 
+/**
+  * @param {string} projectRoot
+  * @param {string} deviceId
+  * @param {string} appBinaryPath
+  * @returns {Promise<void>}
+  */
 async function testAsync(
-  projectRoot: string,
-  deviceId: string,
-  appBinaryPath: string
-): Promise<void> {
+  projectRoot,
+  deviceId,
+  appBinaryPath
+) {
   try {
     console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
     await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
@@ -100,8 +112,11 @@ async function testAsync(
 
 /**
  * Query simulator UDID
+  * @param {number} iosVersion
+  * @param {string} device
+  * @returns {Promise<string | null>}
  */
-async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<string | null> {
+async function queryDeviceIdAsync(iosVersion, device) {
   const { stdout } = await spawnAsync('xcrun', [
     'simctl',
     'list',
@@ -113,7 +128,7 @@ async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<s
   const { devices: deviceWithRuntimes } = JSON.parse(stdout);
 
   // Try to find the target device first
-  for (const [runtime, devices] of Object.entries<{ name: string; udid: string }[]>(
+  for (const [runtime, devices] of Object.entries(
     deviceWithRuntimes
   )) {
     if (runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${iosVersion}-`)) {
@@ -126,7 +141,7 @@ async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<s
   }
 
   // Fallback to the first available device
-  const firstEntry = Object.entries<{ name: string; udid: string }[]>(deviceWithRuntimes).find(
+  const firstEntry = Object.entries(deviceWithRuntimes).find(
     ([runtime, devices]) => devices.length > 0
   );
   return firstEntry?.[1][0]?.udid ?? null;
