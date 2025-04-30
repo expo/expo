@@ -35,14 +35,16 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
       [
         "expo-font",
         {
-          "fonts": ["path/to/file.ttf"],
+          /* @info The path to the font file is relative to the project's root. */
+          "fonts": ["./path/to/file.ttf"],
+          /* @end */
           "android": {
             "fonts": [
               {
                 "fontFamily": "Source Serif 4",
                 "fontDefinitions": [
                   {
-                    "path": "path/to/SourceSerif4-ExtraBold.ttf",
+                    "path": "./path/to/SourceSerif4-ExtraBold.ttf",
                     "weight": 800
                   }
                 ]
@@ -67,12 +69,14 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
     },
     {
       name: 'android',
-      description: 'An array of font definitions to link to the native project on Android. The file name becomes the font family name.',
+      description:
+        'An array of font definitions to link to the native project on Android. The file name becomes the font family name.',
       default: '[]',
     },
     {
       name: 'ios',
-      description: 'An array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
+      description:
+        'An array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
       default: '[]',
     },
   ]}
