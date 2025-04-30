@@ -263,7 +263,8 @@ describe('Export DOM Components', () => {
     const outputFilesWithoutMap = outputFiles.filter(
       (file) => !(file.startsWith('www.bundle/') && file.endsWith('.map'))
     );
-    expect(outputFilesWithoutMap).toEqual([
+
+    const expectedItemsUnsorted = [
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
       'assetmap.json',
@@ -280,7 +281,9 @@ describe('Export DOM Components', () => {
       expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
       expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
       expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
-    ]);
+    ];
+    expect(outputFilesWithoutMap).toEqual(expect.arrayContaining(expectedItemsUnsorted));
+    expect(outputFilesWithoutMap).toHaveLength(expectedItemsUnsorted.length);
   });
 });
 
