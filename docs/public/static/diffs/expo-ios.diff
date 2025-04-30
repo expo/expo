@@ -1,18 +1,57 @@
-diff --git a/ios/myapp/AppDelegate.h b/ios/myapp/AppDelegate.h
-index 5d28082..a7ebb51 100644
---- a/ios/myapp/AppDelegate.h
-+++ b/ios/myapp/AppDelegate.h
-@@ -1,6 +1,7 @@
- #import <RCTAppDelegate.h>
-+#import <Expo/Expo.h>
- #import <UIKit/UIKit.h>
+diff --git a/ios/myapp/AppDelegate.swift b/ios/myapp/AppDelegate.swift
+index d06a6a8..15a0034 100644
+--- a/ios/myapp/AppDelegate.swift
++++ b/ios/myapp/AppDelegate.swift
+@@ -1,25 +1,27 @@
+ import UIKit
++import Expo
+ import React
+ import React_RCTAppDelegate
+ import ReactAppDependencyProvider
 
--@interface AppDelegate : RCTAppDelegate
-+@interface AppDelegate : EXAppDelegateWrapper
+ @main
+-class AppDelegate: UIResponder, UIApplicationDelegate {
++class AppDelegate: ExpoAppDelegate {
+   var window: UIWindow?
 
- @end
+   var reactNativeDelegate: ReactNativeDelegate?
+   var reactNativeFactory: RCTReactNativeFactory?
+
+-  func application(
++  override func application(
+     _ application: UIApplication,
+     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+   ) -> Bool {
+     let delegate = ReactNativeDelegate()
+-    let factory = RCTReactNativeFactory(delegate: delegate)
++    let factory = ExpoReactNativeFactory(delegate: delegate)
+     delegate.dependencyProvider = RCTAppDependencyProvider()
+
+     reactNativeDelegate = delegate
+     reactNativeFactory = factory
++    bindReactNativeFactory(factory)
+
+     window = UIWindow(frame: UIScreen.main.bounds)
+
+@@ -29,18 +31,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
+       launchOptions: launchOptions
+     )
+
+-    return true
++    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
+ }
+
+-class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
++class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+   override func sourceURL(for bridge: RCTBridge) -> URL? {
+-    self.bundleURL()
++    // needed to return the correct URL for expo-dev-client.
++    bridge.bundleURL ?? bundleURL()
+   }
+
 diff --git a/ios/Podfile b/ios/Podfile
-index 6bb6b6f..8c3834c 100644
+index f7583bb..626c42d 100644
 --- a/ios/Podfile
 +++ b/ios/Podfile
 @@ -1,3 +1,4 @@
@@ -20,18 +59,29 @@ index 6bb6b6f..8c3834c 100644
  # Resolve react_native_pods.rb with node to allow for hoisting
  require Pod::Executable.execute_command('node', ['-p',
    'require.resolve(
-@@ -15,6 +16,14 @@ if linkage != nil
+@@ -15,7 +16,24 @@ if linkage != nil
  end
 
  target 'myapp' do
+-  config = use_native_modules!
 +  use_expo_modules!
-+  post_integrate do |installer|
-+    begin
-+      expo_patch_react_imports!(installer)
-+    rescue => e
-+      Pod::UI.warn e
-+    end
++
++  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
++    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
++  else
++    config_command = [
++      'node',
++      '--no-warnings',
++      '--eval',
++      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
++      'react-native-config',
++      '--json',
++      '--platform',
++      'ios'
++    ]
 +  end
-   config = use_native_modules!
++
++  config = use_native_modules!(config_command)
 
    use_react_native!(
+     :path => config[:reactNativePath],
