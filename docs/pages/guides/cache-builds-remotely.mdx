@@ -6,8 +6,8 @@ description: Accelerate local development by caching and reusing builds from a r
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Remote build cache is an experimental feature that allow users to search for a build with a matching fingerprint on a remote server when running `npx expo run:[ios|android]`.
-If a cached build exists, it downloads and launches it rather than compiling locally. Otherwise, it proceeds with a local build as usual and then uploads the resulting binary to the remote cache for future runs.
+Remote build caching is an experimental feature that speeds up `npx expo run:[ios|android]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
+When you run `npx expo run:[ios|android]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs,
 
 ## Using EAS as a remote build provider
 
