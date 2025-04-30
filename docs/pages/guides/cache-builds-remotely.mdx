@@ -6,16 +6,16 @@ description: Accelerate local development by caching and reusing builds from a r
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Remote build caching is an experimental feature that speeds up `npx expo run:[ios|android]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
-When you run `npx expo run:[ios|android]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs,
+Remote build caching is an experimental feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
+When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
 
 ## Using EAS as a remote build provider
 
-To use the EAS remote build provider plugin start by installing the `eas-build-cache-provider` package as a developer dependency:
+To use the EAS remote build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
 
 <Terminal cmd={['$ npx expo install eas-build-cache-provider']} />
 
-Then update your **app.json** to
+Then, update your **app.json** to include the `remoteBuildCache` property and its provider under `experiments`:
 
 ```json app.json
 {
@@ -77,7 +77,7 @@ A reference implementation using Github Releases to cache builds can be found at
 
 ## Creating a custom remote build provider
 
-Start by creating a **provider** directory for writing the provider plugin in TypeScript and add an **provider.plugin.js** file in the project root, which will be the plugin's entry point.
+Start by creating a **provider** directory for writing the provider plugin in TypeScript and add a **provider.plugin.js** file in the project root, which will be the plugin's entry point.
 
 ### Create a provider/tsconfig.json file
 
