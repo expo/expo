@@ -12,7 +12,7 @@ import {
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import { act, renderRouter } from '../testing-library';
-import { inMemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 /*
  * Creates an Expo Router context around the hook, where every router renders the hook
@@ -25,7 +25,7 @@ function renderHook<T>(
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
-      const context = {};
+      const context: MemoryContext = {};
       for (const key of routes) {
         context[key] = () => <>{children}</>;
       }

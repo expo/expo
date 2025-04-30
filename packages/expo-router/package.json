@@ -61,7 +61,7 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-module build",
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.build.json; else expo-module build \"$1\"; fi' --",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
