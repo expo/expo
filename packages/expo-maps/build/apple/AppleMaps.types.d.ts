@@ -7,6 +7,10 @@ import { CameraPosition, Coordinates } from '../shared.types';
  */
 export type AppleMapsMarker = {
     /**
+     * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+     */
+    id?: string;
+    /**
      * The SF Symbol to display for the marker.
      */
     systemImage?: string;
@@ -123,6 +127,10 @@ export type AppleMapsAnnotation = {
     icon?: SharedRefType<'image'>;
 } & AppleMapsMarker;
 export type AppleMapsPolyline = {
+    /**
+     * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+     */
+    id?: string;
     /**
      * The coordinates of the polyline.
      */

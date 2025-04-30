@@ -7,6 +7,10 @@ import { CameraPosition, Coordinates } from '../shared.types';
  */
 export type GoogleMapsMarker = {
     /**
+     * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+     */
+    id?: string;
+    /**
      * The coordinates of the marker.
      */
     coordinates?: Coordinates;
@@ -35,6 +39,10 @@ export type GoogleMapsMarker = {
  * @platform android
  */
 export type GoogleMapsPolyline = {
+    /**
+     * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+     */
+    id?: string;
     /**
      * The coordinates of the polyline.
      */
