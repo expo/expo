@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 5.1.8 — 2025-04-28
