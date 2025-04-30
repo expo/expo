@@ -1,15 +1,16 @@
-#!/usr/bin/env -S yarn --silent ts-node --transpile-only
+#!/usr/bin/env node
+// @ts-check
 
-import spawnAsync from '@expo/spawn-async';
-import assert from 'node:assert';
-import path from 'path';
+const spawnAsync = require('@expo/spawn-async');
+const assert = require('node:assert');
+const path = require('path');
 
-import {
+const {
   createMaestroFlowAsync,
   fileExistsAsync,
   getStartMode,
   retryAsync,
-} from './lib/e2e-common';
+} = require('./lib/e2e-common.js');
 
 const APP_ID = 'dev.expo.payments';
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
@@ -46,7 +47,8 @@ const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro d
   }
 })();
 
-async function buildAsync(projectRoot: string) {
+/** @param {string} projectRoot */
+async function buildAsync(projectRoot) {
   console.log('\n💿 Building App');
   await spawnAsync('./gradlew', ['assembleRelease'], {
     stdio: 'inherit',
@@ -54,12 +56,19 @@ async function buildAsync(projectRoot: string) {
   });
 }
 
+/**
+  * @param {string} projectRoot
+  * @param {string} deviceId
+  * @param {string} appBinaryPath
+  * @param {string} adbPath
+  * @returns {Promise<void>}
+  */
 async function testAsync(
-  projectRoot: string,
-  deviceId: string,
-  appBinaryPath: string,
-  adbPath: string
-): Promise<void> {
+  projectRoot,
+  deviceId,
+  appBinaryPath,
+  adbPath
+) {
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
 
@@ -78,8 +87,10 @@ async function testAsync(
   });
 }
 
-async function findAdbAsync(): Promise<string | null> {
-  let adbPath: string | null = null;
+/** @returns {Promise<string | null>} */
+async function findAdbAsync() {
+  /** @type {string | null} */
+  let adbPath = null;
   try {
     const { stdout } = await spawnAsync('which', ['adb']);
     adbPath = stdout.trim();
@@ -93,7 +104,11 @@ async function findAdbAsync(): Promise<string | null> {
   return adbPath;
 }
 
-async function queryDeviceIdAsync(adbPath: string): Promise<string | null> {
+/**
+  * @param {string} adbPath
+  * @returns {Promise<string | null>}
+  */
+async function queryDeviceIdAsync(adbPath) {
   const { stdout } = await spawnAsync(adbPath, ['devices']);
   const lines = stdout.split('\n');
   for (const line of lines) {

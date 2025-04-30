@@ -1,6 +1,7 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
 import 'expo-asset';
+import 'expo/virtual/rsc';
 
 import Constants from 'expo-constants';
 import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';

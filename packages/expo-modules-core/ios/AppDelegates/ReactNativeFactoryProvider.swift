@@ -4,7 +4,7 @@ public protocol ReactNativeFactoryProvider: AnyObject {
    expo-modules-core doesn't include the concrete `RCTReactNativeFactory` type and let the callsite to include the type
    */
   associatedtype ReactNativeFactoryType
-  var reactNativeFactory: ReactNativeFactoryType? { get }
+  var factory: ReactNativeFactoryType? { get }
 
   func recreateRootView(
     withBundleURL: URL?,

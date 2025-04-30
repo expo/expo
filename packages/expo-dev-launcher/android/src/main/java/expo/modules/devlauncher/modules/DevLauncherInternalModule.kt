@@ -193,8 +193,8 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
     val packageManager = context.packageManager
     val packageName = context.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-//    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return "" + applicationInfo.icon
+    val appIconResId = applicationInfo.icon
+    return "android.resource://$packageName/$appIconResId"
   }
 
   private fun sanitizeUrlString(url: String): Uri {

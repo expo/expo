@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.2.8 — 2025-04-30
+
+### 📚 3rd party library updates
+
+- Updated libsql libs to `libsql-0.9.5`. ([#36444](https://github.com/expo/expo/pull/36444) by [@kudo](https://github.com/kudo))
+
 ## 15.2.7 — 2025-04-25
 
 _This version does not introduce any user-facing changes._

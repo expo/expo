@@ -21,7 +21,7 @@ function generateSectionMarkdown(section) {
   content += section.items.map(generateItemMarkdown).join('');
 
   section.groups.forEach(group => {
-    if (group.items.length) {
+    if (group.items.length > 0) {
       content += `\n### ${group.title}\n`;
       content += group.items.map(generateItemMarkdown).join('');
     }
@@ -41,9 +41,9 @@ function generateFullMarkdown({ title, description, sections }) {
   const filteredSections = sections.filter(section => {
     if (
       section.title === 'React Native' &&
-      !section.items.length &&
-      !section.groups.length &&
-      !section.sections.length
+      section.items.length === 0 &&
+      section.groups.length === 0 &&
+      section.sections.length === 0
     ) {
       return false;
     }

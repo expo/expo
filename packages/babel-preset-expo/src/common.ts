@@ -104,6 +104,11 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getMetroSourceType(caller?: any) {
+  assertExpoBabelCaller(caller);
+  return caller?.metroSourceType;
+}
+
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
@@ -169,4 +174,13 @@ export function createAddNamedImportOnce(t: typeof import('@babel/types')) {
     // this is a helper for that.
     return didCreate ? identifier : t.cloneNode(identifier);
   };
+}
+
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export function toPosixPath(filePath: string): string {
+  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

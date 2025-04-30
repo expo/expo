@@ -78,11 +78,11 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = new Set(versions.VERSIONS.filter(v => v.match(/^v/)));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {
-  return supportedVersions.includes(getVersionFromPath(path));
+  return supportedVersions.has(getVersionFromPath(path));
 }
 
 function pathIncludesHtmlExtension(path: string) {
@@ -499,6 +499,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/create-pages/': '/router/basics/core-concepts/',
   '/router/layouts/': '/router/basics/layout/',
 
+  // After merging registerRootComponent info in `expo` API reference
+  '/versions/v53.0.0/sdk/register-root-component/':
+    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
+  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
+  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
+
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
+
+  // After adding System bars
+  '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
 };
