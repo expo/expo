@@ -17,7 +17,7 @@ export type FontObject = {
 export type Font = string | FontObject;
 
 export type FontProps = {
-  fonts?: Font[];
+  fonts?: string[];
   android?: {
     fonts?: Font[];
   };
@@ -31,14 +31,7 @@ const withFonts: ConfigPlugin<FontProps> = (config, props) => {
     return config;
   }
 
-  const iosFonts = [
-    ...(props.fonts
-      ?.map((it) => {
-        return typeof it === 'string' ? it : it.fontDefinitions.map((font) => font.path);
-      })
-      .flat() ?? []),
-    ...(props.ios?.fonts ?? []),
-  ];
+  const iosFonts = [...(props.fonts ?? []), ...(props.ios?.fonts ?? [])];
 
   if (iosFonts.length > 0) {
     config = withFontsIos(config, iosFonts);

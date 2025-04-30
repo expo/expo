@@ -9,7 +9,7 @@ export type FontObject = {
 };
 export type Font = string | FontObject;
 export type FontProps = {
-    fonts?: Font[];
+    fonts?: string[];
     android?: {
         fonts?: Font[];
     };

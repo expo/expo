@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { FontObject } from '../withFonts';
+import type { FontObject } from '../withFonts';
 import { groupByFamily, getXmlSpecs, generateFontManagerCalls } from '../withFontsAndroid';
 
 const input = [
