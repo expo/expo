@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 6.1.8 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
 
 ## 6.1.7 — 2025-04-28
 
