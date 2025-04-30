@@ -160,13 +160,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v49.0.0': {
-    Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
-    SharedObject: null,
-  },
-  'v50.0.0': {
-    SharedObject: null,
-  },
   '51.0.0': {
     SharedObject: null,
   },
