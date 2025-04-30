@@ -30,8 +30,6 @@ Then update your **app.json** to
 }
 ```
 
-## Creating a custom remote build provider
-
 You can roll your own cache provider by exporting a plugin that implements the following methods:
 
 ```ts
@@ -74,6 +72,10 @@ type CalculateFingerprintHashProps = {
   runOptions: RunOptions;
 };
 ```
+
+A reference implementation using Github Releases to cache builds can be found at in the [Remote Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider)
+
+## Creating a custom remote build provider
 
 Start by creating a **provider** directory for writing the provider plugin in TypeScript and add an **provider.plugin.js** file in the project root, which will be the plugin's entry point.
 
