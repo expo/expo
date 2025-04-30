@@ -1,14 +1,15 @@
-name: Updates E2E (enabled)
+name: Updates E2E (startup)
 
 on:
   push:
     branches:
       - main
+      - sdk-*
   pull_request:
     branches:
       - main
   schedule:
-    - cron: '0 20 * * SUN' # 22:00 UTC every Sunday
+    - cron: '0 22 * * SUN' # 20:00 UTC every Sunday
 
 jobs:
   check_paths:
@@ -29,25 +30,12 @@ jobs:
           node ./packages/expo-updates/bin/check-for-changed-paths/index.js
           ${{ github.event_name }}
           main
-          apps/expo-workflow-testing/.eas/workflows/updates-e2e-enabled.yml
-          'packages/@expo/cli/**'
-          'packages/@expo/config-plugins/**'
-          'packages/@expo/env/**'
-          'packages/@expo/metro-config/**'
-          'packages/@expo/prebuild-config/**'
-          'packages/expo/**'
+          apps/expo-workflow-testing/.eas/workflows/updates-e2e-startup.yml
           'packages/expo-asset/**'
-          'packages/expo-font/**'
-          'packages/expo-json-utils/**'
           'packages/expo-manifests/**'
-          'packages/expo-modules-autolinking/**'
-          'packages/expo-modules-core/**'
-          'packages/expo-splash-screen/**'
-          'packages/expo-structured-headers/**'
           'packages/expo-updates-interface/**'
           'packages/expo-updates/**'
-          'templates/expo-template-bare-minimum/**'
-          packages/expo-updates/e2e/setup/create-eas-project.ts
+          packages/expo-updates/e2e/setup/create-startup-eas-project.ts
           packages/expo-updates/e2e/setup/project.ts
       - name: Print result
         run: |
@@ -69,14 +57,14 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E enabled project
+      - name: Set up Updates E2E startup project
         id: setup
         working_directory: ../..        
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
@@ -84,20 +72,18 @@ jobs:
         run: |
           yarn generate-test-update-bundles
           npx pod-install
-      - name: Build E2E project (debug and release)
+      - name: Build E2E project (release)
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          npx detox build -c ios.debug
           npx detox build -c ios.release
-      - name: Test E2E project (debug and release)
+      - name: Test E2E project (release)
         id: test
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
-          npx detox test -c ios.debug          
           npx detox test -c ios.release
   android:
     runs_on: linux-large-nested-virtualization
@@ -114,14 +100,14 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E enabled project
+      - name: Set up Updates E2E startup project
         id: setup
         working_directory: ../..        
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
         run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
@@ -133,15 +119,14 @@ jobs:
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
-      - name: Build E2E project (debug and release)
+      - name: Build E2E project (enabledrelease)
         id: build
         working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          npx detox build -c android.debug
           npx detox build -c android.release
-      - name: Test E2E project (debug and release)
+      - name: Test E2E project (release)
         id: test
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
@@ -150,5 +135,4 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           yarn check-android-emulator
-          npx detox test -c android.debug
           npx detox test -c android.release
