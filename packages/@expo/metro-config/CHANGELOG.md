@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Pass `metroSourceType` from Babel transformer options via Babel caller ([#36463](https://github.com/expo/expo/pull/36463) by [@kitten](https://github.com/kitten))
+
 ## 0.20.9 — 2025-04-28
 
 _This version does not introduce any user-facing changes._
