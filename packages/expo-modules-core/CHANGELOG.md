@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `extraMavenRepos` not applied on Gradle subprojects.
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
