@@ -769,7 +769,7 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
       const blob = src.blob();
 
-      const response = await fetch('https://httpbingo.org/anything', {
+      const response = await fetch('https://httpbin.org/anything', {
         method: 'POST',
         body: blob,
       });
@@ -786,14 +786,12 @@ export async function test({ describe, expect, it, ...t }) {
       const blob = src.blob();
 
       formData.append('data', blob);
-
-      const response = await fetch('https://httpbingo.org/anything', {
+      const response = await fetch('https://httpbin.org/anything', {
         method: 'POST',
         body: formData,
       });
       const body = await response.json();
-      console.log(body);
-      expect(body.files.data[0]).toEqual('abcde');
+      expect(body.files.data).toEqual('abcde');
     });
   });
 
