@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Added support for font weight styles (through XML font definitions) to config plugin. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.3.0 — 2025-04-30
+
+### 🎉 New features
+
+- [Android] Added support for font weight styles (through XML font definitions) to config plugin. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
 
 ## 13.2.2 — 2025-04-25
 

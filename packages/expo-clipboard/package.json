@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "7.1.3",
+  "version": "7.1.4",
   "description": "Provides an interface for getting and setting Clipboard content on Android, iOS and Web.",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",

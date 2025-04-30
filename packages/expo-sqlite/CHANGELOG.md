@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.2.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
 ## 15.2.8 — 2025-04-30
 
 ### 📚 3rd party library updates

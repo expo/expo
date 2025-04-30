@@ -1,6 +1,6 @@
 {
   "name": "create-expo-nightly",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "description": "A tool to create an Expo app for react-native nightlies testing",
   "keywords": [
@@ -37,7 +37,7 @@
     "directory": "packages/create-expo-nightly"
   },
   "dependencies": {
-    "@expo/json-file": "^9.1.3",
+    "@expo/json-file": "^9.1.4",
     "zx": "^8.2.0"
   },
   "devDependencies": {

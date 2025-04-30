@@ -1,6 +1,6 @@
 {
   "name": "expo-apple-authentication",
-  "version": "7.2.3",
+  "version": "7.2.4",
   "description": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
