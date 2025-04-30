@@ -450,23 +450,23 @@ Expo CLI will skip the `./my-module.js` dependency and assume that the developer
 
 Many React libraries shipped the Webpack `/* webpackIgnore: true */` comment to achieve similar behavior. To bridge the gap, we've also added support for Webpack's comment but recommend using the Metro equivalent in your app.
 
-## ES Module Resolution
+## ES Module resolution
 
 > This sections applies from SDK 53 on all platforms.
 
-Metro resolves ES Module imports and CommonJS requires with separate resolution strategies.
+Metro resolves ES Module `import` and CommonJS `require` with separate resolution strategies.
 
-The classic Node.js module resolution is the strategy that Metro used to apply with some additions to support ES Modules. In this resolution strategy, which matches Node.js versions before v12, Metro resolves modules from `node_modules`, JS files, optionally while omitting extensions, such as `.js`, and uses `package.json` fields such as `main`, `module`, and `react-native`.
+Previously, Metro applied the classic Node.js module resolution strategy (which matches Node.js versions before v12), with some additions to support ES Modules. In this resolution strategy, Metro resolves modules from `node_modules`, JS files, optionally while omitting extensions, such as `.js`, and uses `package.json` fields such as `main`, `module`, and `react-native`.
 
-In the modern ES Modules resolution strategy, Metro instead resolves modules from `node_modules`, then matches different `package.json` fields, such as `exports`, [a nested map of sub-paths a package exposes](https://nodejs.org/api/packages.html#conditional-exports), and `main`.
+Now, with the modern ES Modules resolution strategy, Metro instead resolves modules from `node_modules`, then matches different `package.json` fields, such as `exports`, [a nested map of sub-paths a package exposes](https://nodejs.org/api/packages.html#conditional-exports), and `main`.
 
-Depending on how a package is imported, one of these two resolution strategies will be used. Typically, a file that _imports_ from a Node module, will use the ES Modules resolution strategy, and fall back on regular classic Node.js resolution, but a file that wasn't resolved with ES Modules resolution or has been required with CommonJS resolution, will use the classic resolution strategy.
+Depending on how a package is imported, one of these two resolution strategies will be used. Typically, a file that is imported with `import` from a Node module (rather than `require`), will use the ES Modules resolution strategy, and fall back on regular classic Node.js resolution. A file that wasn't resolved with ES Modules resolution or has been imported with CommonJS `require` will use the classic resolution strategy.
 
 ### `package.json:exports`
 
 When performing ES Modules resolution, Metro will look at the `package.json:exports` conditions map. This is a mapping of import subpaths and conditions to files in the Node module package.
 
-For example, a package that always exposes an `index.js` file, and matches Metro's classic CommonJS module resolution, may specify a map with the `default` condition.
+For example, a package that always exposes an **index.js** file, and matches Metro's classic CommonJS module resolution, may specify a map with the `default` condition.
 
 ```json
 {
@@ -476,8 +476,7 @@ For example, a package that always exposes an `index.js` file, and matches Metro
 }
 ```
 
-However, a package providing both a CommonJS and ES Modules entrypoint may provide a mapping with the `import` and `require`
-conditons.
+However, a package providing both a CommonJS and ES Modules entrypoint may provide a mapping with the `import` and `require` conditions.
 
 ```json
 {
@@ -490,11 +489,11 @@ conditons.
 
 By default, Metro will match different conditions depending on the platform and whether the resolution has started from a CommonJS `require` call, or an ES Modules `import` statement and will change the condition accordingly.
 
-For native platforms, the condition `react-native` is added, for Web exports, the `browser` condition is added, and for server exports (such as API routes or React Server functions), the `node`, `react-srever`, and `workerd` conditions are added. These conditions aren't matched in the order they're defined in. Instead, they're matched against the order of properties in the `package.json:exports` map.
+For native platforms, the condition `react-native` is added, for web exports, the `browser` condition is added, and for server exports (such as API routes or React Server functions), the `node`, `react-server`, and `workerd` conditions are added. These conditions aren't matched in the order they're defined in. Instead, they're matched against the order of properties in the `package.json:exports` map.
 
 TypeScript performs ES Module resolution separately from Metro and will also respect `package.json:exports` maps, when its `compilerOptions.moduleResolution` configuration option has either been set to `"bundler"` (which matches Metro's behaviour more closely) or to `"node16"` / `"nodenext"`. TypeScript will however also match the `types` condition. As such, types may not resolve properly when a package doesn't put the `types` condition first in its exports map.
 
-Since an exports map may contain subpaths, a package import may not have to match a file in the package's modules folder any longer, but may be a "redirected" import. Importing `'package/submodule'` may match a different file than `node_modules/package/submodule.js` if it's specified in `package.json:exports`.
+Since an exports map may contain subpaths, a package import may not have to match a file in the package's modules folder any longer, but may be a "redirected" import. Importing `'package/submodule'` may match a different file than **node_modules/package/submodule.js** if it's specified in `package.json:exports`.
 
 ```json
 {
