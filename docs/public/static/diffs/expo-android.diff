@@ -89,7 +89,6 @@ index 8762b63..1e69c41 100644
 +expoAutolinking.useExpoModules()
 +expoAutolinking.useExpoVersionCatalog()
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
- /**
 diff --git a/android/build.gradle b/android/build.gradle
 index 9766946..6ee6b73 100644
 --- a/android/build.gradle

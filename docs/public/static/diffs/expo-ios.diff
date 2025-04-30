@@ -1,8 +1,8 @@
 diff --git a/ios/myapp/AppDelegate.swift b/ios/myapp/AppDelegate.swift
-index d06a6a8..16f3098 100644
+index d06a6a8..15a0034 100644
 --- a/ios/myapp/AppDelegate.swift
 +++ b/ios/myapp/AppDelegate.swift
-@@ -1,48 +1,27 @@
+@@ -1,25 +1,27 @@
  import UIKit
 +import Expo
  import React
@@ -11,55 +11,44 @@ index d06a6a8..16f3098 100644
 
  @main
 -class AppDelegate: UIResponder, UIApplicationDelegate {
--  var window: UIWindow?
 +class AppDelegate: ExpoAppDelegate {
+   var window: UIWindow?
 
--  var reactNativeDelegate: ReactNativeDelegate?
--  var reactNativeFactory: RCTReactNativeFactory?
--
+   var reactNativeDelegate: ReactNativeDelegate?
+   var reactNativeFactory: RCTReactNativeFactory?
+
 -  func application(
 +  override func application(
      _ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
    ) -> Bool {
--    let delegate = ReactNativeDelegate()
+     let delegate = ReactNativeDelegate()
 -    let factory = RCTReactNativeFactory(delegate: delegate)
--    delegate.dependencyProvider = RCTAppDependencyProvider()
--
--    reactNativeDelegate = delegate
--    reactNativeFactory = factory
--
--    window = UIWindow(frame: UIScreen.main.bounds)
--
--    factory.startReactNative(
--      withModuleName: "myapp",
--      in: window,
--      launchOptions: launchOptions
--    )
--
++    let factory = ExpoReactNativeFactory(delegate: delegate)
+     delegate.dependencyProvider = RCTAppDependencyProvider()
+
+     reactNativeDelegate = delegate
+     reactNativeFactory = factory
++    bindReactNativeFactory(factory)
+
+     window = UIWindow(frame: UIScreen.main.bounds)
+
+@@ -29,18 +31,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
+       launchOptions: launchOptions
+     )
+
 -    return true
--  }
--}
--
--class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
--  override func sourceURL(for bridge: RCTBridge) -> URL? {
--    self.bundleURL()
-+    self.moduleName = "myapp"
-+    self.initialProps = [:]
 +    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
    }
-
-   override func bundleURL() -> URL? {
- #if DEBUG
--    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
- #else
--    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
- #endif
-   }
  }
-+
+
+-class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
++class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+   override func sourceURL(for bridge: RCTBridge) -> URL? {
+-    self.bundleURL()
++    // needed to return the correct URL for expo-dev-client.
++    bridge.bundleURL ?? bundleURL()
+   }
 
 diff --git a/ios/Podfile b/ios/Podfile
 index f7583bb..626c42d 100644

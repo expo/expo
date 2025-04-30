@@ -124,16 +124,15 @@ fi
 `"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
 ```
 
-And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.mm**:
+And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.swift**:
 
-```diff AppDelegate.mm
- - (NSURL *)getBundleURL
- {
+```diff AppDelegate.swift
+   override func bundleURL() -> URL? {
  #if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
++    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
  #else
-   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
  #endif
 ```
 
