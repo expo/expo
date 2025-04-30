@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `no-var` rule to disallow `var`. ([#36488](https://github.com/expo/expo/pull/36488) by [@kadikraman](https://github.com/kadikraman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
