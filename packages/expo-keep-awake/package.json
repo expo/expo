@@ -34,7 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "@testing-library/react-native": "^13.1.0",
-    "expo-module-scripts": "^4.1.5"
+    "expo-module-scripts": "^4.1.6"
   },
   "peerDependencies": {
     "expo": "*",

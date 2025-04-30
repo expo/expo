@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 53.0.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
 ## 53.0.2 — 2025-04-30
 
 ### 💡 Others

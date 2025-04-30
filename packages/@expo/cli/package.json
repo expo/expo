@@ -139,7 +139,7 @@
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expo-atlas": "^0.4.0",
-    "expo-module-scripts": "^4.1.5",
+    "expo-module-scripts": "^4.1.6",
     "find-process": "^1.4.7",
     "jest-runner-tsd": "^6.0.0",
     "klaw-sync": "^6.0.0",

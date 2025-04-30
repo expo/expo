@@ -35,14 +35,14 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-application": "~6.1.3",
-    "expo-constants": "~17.1.3",
+    "expo-constants": "~17.1.4",
     "expo-crypto": "~14.1.3",
     "expo-linking": "~7.1.3",
     "expo-web-browser": "~14.1.5",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.5"
+    "expo-module-scripts": "^4.1.6"
   },
   "peerDependencies": {
     "react": "*",
