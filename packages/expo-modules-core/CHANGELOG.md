@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `extraMavenRepos` not applied on Gradle subprojects.
+
 ### 💡 Others
 
 ## 2.3.11 — 2025-04-28
