@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Lookup absolute asset paths correctly when used as server components.
+- Lookup absolute asset paths correctly when used as server components. ([#36501](https://github.com/expo/expo/pull/36501) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
