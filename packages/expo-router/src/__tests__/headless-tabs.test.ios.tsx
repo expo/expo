@@ -296,8 +296,6 @@ it('works with nested layouts', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments(['(group)']);
 
-  console.log('--------');
-
   fireEvent.press(screen.getByTestId('goto-page'));
   expect(screen.getByTestId('page')).toBeVisible();
   expect(screen).toHaveSegments(['page']);
