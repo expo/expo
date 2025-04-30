@@ -366,10 +366,10 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
-      const filePath = path.join(
-        projectRoot,
-        file.startsWith('file://') ? fileURLToFilePath(file) : file
-      );
+      // NOTE(cedric): assets are being passed as absolute file paths
+      const filePath = path.isAbsolute(file)
+        ? file
+        : path.join(projectRoot, file.startsWith('file://') ? fileURLToFilePath(file) : file);
 
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
