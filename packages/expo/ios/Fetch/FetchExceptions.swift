@@ -2,13 +2,13 @@
 
 import ExpoModulesCore
 
-internal class FetchUnknownException: Exception {
+internal final class FetchUnknownException: Exception {
   override var reason: String {
     "Unknown error"
   }
 }
 
-internal class FetchRequestCanceledException: Exception {
+internal final class FetchRequestCanceledException: Exception {
   override var reason: String {
     "Fetch request has been canceled"
   }

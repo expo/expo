@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 2.1.7 — 2025-04-28
+
+### 🎉 New features
+
+- Introduce `replaceAsync` method, which doesn't load the asset on the main thread. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix main thread being locked while the VideoPlayer is replacing or being created with a source. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
+
+## 2.1.6 — 2025-04-25
+
+### 🎉 New features
+
+- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
+
+## 2.1.5 — 2025-04-23
+
+### 🎉 New features
+
+- [web] Add playsInline prop ([#36335](https://github.com/expo/expo/pull/36335) by [@jakex7](https://github.com/jakex7))
+
+## 2.1.4 — 2025-04-22
+
+### 🎉 New features
+
+- Add `contentType` field to `VideoSource`. ([#36234](https://github.com/expo/expo/pull/36234) by [@behenate](https://github.com/behenate))
+
 ## 2.1.3 — 2025-04-21
 
 _This version does not introduce any user-facing changes._

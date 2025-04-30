@@ -3,8 +3,8 @@ import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from 'ui/components/InlineHelp';
 import { Input, Textarea } from '~/ui/components/Form';
 import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
 
@@ -31,7 +31,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
       },
       body: JSON.stringify({
         feedback,
-        email: email.length ? email : undefined,
+        email: email.length > 0 ? email : undefined,
         url: pathname,
       }),
     })

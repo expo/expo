@@ -11,10 +11,10 @@ import expo.modules.notifications.R
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationBehavior
 
 /**
  * A foundation class for [NotificationBuilder] implementations. Takes care
@@ -23,10 +23,10 @@ import expo.modules.notifications.notifications.model.NotificationBehavior
 abstract class BaseNotificationBuilder protected constructor(protected val context: Context, protected val notification: Notification) :
   NotificationBuilder {
 
-  protected var notificationBehavior: NotificationBehavior? = null
+  protected var notificationBehavior: NotificationBehaviorRecord? = null
     private set
 
-  override fun setAllowedBehavior(behavior: NotificationBehavior?): NotificationBuilder {
+  override fun setAllowedBehavior(behavior: NotificationBehaviorRecord?): NotificationBuilder {
     notificationBehavior = behavior
     return this
   }

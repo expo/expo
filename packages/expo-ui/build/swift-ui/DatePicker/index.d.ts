@@ -28,10 +28,6 @@ export type DateTimePickerProps = {
      */
     displayedComponents?: DisplayedComponents;
     /**
-     * Optional style to apply to the component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * The tint color to use on the picker elements.
      */
     color?: string;
@@ -46,8 +42,15 @@ type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelect
  */
 export declare function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps;
 /**
+ * `<DateTimePicker>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function DateTimePickerPrimitive(props: DateTimePickerProps): import("react").JSX.Element;
+/**
  * Renders a `DateTimePicker` component.
  */
-export declare function DateTimePicker(props: DateTimePickerProps): import("react").JSX.Element;
+export declare function DateTimePicker(props: DateTimePickerProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

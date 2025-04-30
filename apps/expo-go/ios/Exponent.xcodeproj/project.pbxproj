@@ -57,8 +57,6 @@
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8D97E72DAE4389009DBB9F /* EXPackagerLogHelper.swift */; };
-		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
-		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
 		B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
@@ -1745,7 +1743,6 @@
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
-				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				8A8D97E82DAE4389009DBB9F /* EXPackagerLogHelper.swift in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,

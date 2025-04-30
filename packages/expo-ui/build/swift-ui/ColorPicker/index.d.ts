@@ -13,17 +13,20 @@ export type ColorPickerProps = {
      */
     onValueChanged?: (value: string) => void;
     /**
-     * Optional style to apply to the `ColorPicker` component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Whether the color picker should support opacity.
      */
     supportsOpacity?: boolean;
 };
 /**
+ * `<ColorPicker>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function ColorPickerPrimitive({ selection, onValueChanged, ...restProps }: ColorPickerProps): import("react").JSX.Element;
+/**
  * Renders a `ColorPicker` component using SwiftUI.
  * @platform ios
  */
-export declare function ColorPicker({ selection, onValueChanged, ...restProps }: ColorPickerProps): import("react").JSX.Element;
+export declare function ColorPicker(props: ColorPickerProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

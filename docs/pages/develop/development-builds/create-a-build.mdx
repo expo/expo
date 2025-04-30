@@ -6,7 +6,6 @@ searchRank: 97
 searchPosition: 2
 ---
 
-import { GraduationHat01Icon } from '@expo/styleguide-icons/outline/GraduationHat01Icon';
 import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -28,7 +27,7 @@ The instructions assume you already have an existing Expo project that runs on E
 
 The requirements for building the native app depend on which platform you are using, which platform you are building for, and whether you want to build on EAS or on your local machine.
 
-### Build on EAS
+<Collapsible summary="Build on EAS">
 
 This is the easiest way to build your native app, as it requires no native build tools on your side. The builds happen on the EAS servers, which makes it possible to trigger iOS builds from non-macOS platforms.
 
@@ -40,7 +39,9 @@ This is the easiest way to build your native app, as it requires no native build
 
 (\*) All builds that run on an iPhone device require a paid [Apple Developer](developer.apple.com) account for build signing.
 
-### Build locally using the EAS CLI
+</Collapsible>
+
+<Collapsible summary="Build locally using the EAS CLI">
 
 Any EAS CLI command can be built on your local machine with the `--local` flag. This requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. Read more about [local app development](/build-reference/local-builds/).
 
@@ -54,7 +55,9 @@ Any EAS CLI command can be built on your local machine with the `--local` flag. 
 
 (\*\*) No first-class support, but possible with [WSL](http://expo.fyi/wsl.md).
 
-### Build on locally without EAS
+</Collapsible>
+
+<Collapsible summary="Build locally without EAS">
 
 To build locally without EAS requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation).
 
@@ -63,6 +66,8 @@ To build locally without EAS requires your local [development environment](https
 | **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/>    |
 | **Windows** | <YesIcon/> | <NoIcon />    | <NoIcon />    |
 | **Linux**   | <YesIcon/> | <NoIcon />    | <NoIcon />    |
+
+</Collapsible>
 
 ## Get started
 
@@ -288,7 +293,7 @@ This is the same command you would have used with Expo Go. It detects whether yo
   title={`"EAS Tutorial Series"`}
   description="A course on YouTube: learn how to speed up your development with Expo Application Services."
   href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2"
-  Icon={GraduationHat01Icon}
+  Icon={VideoRecorderIcon}
 />
 
 <BoxLink

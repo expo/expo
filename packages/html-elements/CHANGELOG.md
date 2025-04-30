@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Upgrade to React 19 and remove compiled build code. ([#36273](https://github.com/expo/expo/pull/36273) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.12.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.3 — 2025-04-22
+
+### 🛠 Breaking changes
+
+- Upgrade to React 19 and remove compiled build code. ([#36273](https://github.com/expo/expo/pull/36273) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

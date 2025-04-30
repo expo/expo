@@ -1,4 +1,4 @@
-const eslint = require('eslint');
+const eslint = require('eslint8');
 const path = require('path');
 
 const checkPrettierRulesAsync = require('./tools/checkPrettierRulesAsync');

@@ -7,6 +7,7 @@ import {
 
 import { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
+import { mapNotification } from './utils/mapNotificationResponse';
 
 /**
  * @hidden
@@ -76,7 +77,8 @@ let handleTimeoutSubscription: EventSubscription | null = null;
  *
  * Notifications.setNotificationHandler({
  *   handleNotification: async () => ({
- *     shouldShowAlert: true,
+ *     shouldShowBanner: true,
+ *     shouldShowList: true,
  *     shouldPlaySound: false,
  *     shouldSetBadge: false,
  *   }),
@@ -107,7 +109,14 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
         }
 
         try {
-          const behavior = await handler.handleNotification(notification);
+          const mappedNotification = mapNotification(notification);
+          const behavior = await handler.handleNotification(mappedNotification);
+
+          if (behavior.shouldShowAlert) {
+            console.warn(
+              '[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.'
+            );
+          }
           await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
           handler.handleSuccess?.(id);
         } catch (error: any) {
@@ -120,7 +129,7 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
     handleTimeoutSubscription = notificationEmitter.addListener<HandleNotificationTimeoutEvent>(
       handleNotificationTimeoutEventName,
       ({ id, notification }) =>
-        handler.handleError?.(id, new NotificationTimeoutError(id, notification))
+        handler.handleError?.(id, new NotificationTimeoutError(id, mapNotification(notification)))
     );
   }
 }

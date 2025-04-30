@@ -57,7 +57,7 @@ const renderInheritedProps = (
   const inheritedData = data?.type?.types ?? data?.extendedTypes ?? [];
   const inheritedProps =
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
-  if (inheritedProps.length) {
+  if (inheritedProps.length > 0) {
     return (
       <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
@@ -123,8 +123,11 @@ export const renderProp = (
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   const platforms = getAllTagData('platform', extractedComment);
+
   const isLiteralType =
     type?.type && ['literal', 'templateLiteral', 'union', 'tuple'].includes(type.type);
+  const definedLiteralGeneric =
+    isLiteralType && type?.types ? defineLiteralType(type.types) : undefined;
 
   return (
     <div
@@ -136,12 +139,12 @@ export const renderProp = (
         comment={extractedComment}
         baseNestingLevel={baseNestingLevel}
         deprecated={Boolean(getTagData('deprecated', extractedComment))}
-        platforms={platforms.length ? platforms : parentPlatforms}
+        platforms={platforms.length > 0 ? platforms : parentPlatforms}
       />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        {type?.types && isLiteralType && <>Literal type: {defineLiteralType(type.types)}</>}
+        {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
         {!isLiteralType && (
           <>
             Type:{' '}

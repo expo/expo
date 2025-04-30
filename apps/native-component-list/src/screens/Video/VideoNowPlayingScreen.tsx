@@ -15,6 +15,7 @@ export default function VideoNowPlayingScreen() {
     player.loop = true;
     player.showNowPlayingNotification = showNowPlaying;
     player.staysActiveInBackground = true;
+    player.currentTime = 10;
     player.play();
   });
 
@@ -28,10 +29,10 @@ export default function VideoNowPlayingScreen() {
 
   const toggleSource = useCallback(() => {
     if (currentSource === bigBuckBunnySource) {
-      player.replace(elephantsDreamSource);
+      player.replaceAsync(elephantsDreamSource);
       setCurrentSource(elephantsDreamSource);
     } else {
-      player.replace(bigBuckBunnySource);
+      player.replaceAsync(bigBuckBunnySource);
       setCurrentSource(bigBuckBunnySource);
     }
   }, [player, currentSource]);

@@ -57,7 +57,6 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      'expo-audio',
       '@expo/ui'
     ],
     includeTests: true,

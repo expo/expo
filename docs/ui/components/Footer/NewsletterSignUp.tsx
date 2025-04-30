@@ -72,7 +72,7 @@ export const NewsletterSignUp = () => {
             size="xs"
             theme={userSignedUp ? 'quaternary' : 'secondary'}
             className="absolute right-2.5 top-2 min-w-[68px]"
-            disabled={userSignedUp || !email.length}
+            disabled={userSignedUp || email.length === 0}
             onClick={signUp}>
             {userSignedUp ? 'Done!' : 'Sign Up'}
           </Button>

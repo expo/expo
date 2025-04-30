@@ -90,6 +90,7 @@ export const home = [
       [
         makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
+        makePage('develop/user-interface/system-bars.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),
         makePage('develop/user-interface/color-themes.mdx'),
@@ -174,12 +175,12 @@ export const general = [
       }
     ),
     makeGroup(
-      'Custom native code',
+      'Write native code',
       [makePage('workflow/customizing.mdx'), makePage('guides/adopting-prebuild.mdx')],
       { expanded: false }
     ),
     makeGroup(
-      'Local app',
+      'Compile locally',
       [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
       {
         expanded: false,
@@ -745,6 +746,7 @@ function makePage(file) {
     // TODO(cedric): refactor href into url
     href: url,
     isNew: data.isNew ?? undefined,
+    isAlpha: data.isAlpha ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
   };

@@ -57,7 +57,6 @@ describe.each(['ios', 'android', 'web'])('%s', (platform) => {
     function transformTest(sourceCode: string, customOptions: { filename?: string } = {}) {
       const options = {
         ...DEF_OPTIONS,
-        // plugins: [serverActionPlugin],
         caller: getCaller({
           ...ENABLED_CALLER,
           platform,
@@ -68,7 +67,6 @@ describe.each(['ios', 'android', 'web'])('%s', (platform) => {
 
       const results = babel.transform(sourceCode, options);
       if (!results) throw new Error('Failed to transform code');
-      //   console.log('results', results.code);
       const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
       // Parse again to ensure the output is valid code

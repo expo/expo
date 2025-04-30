@@ -1,32 +1,44 @@
 import Expo
 import EXUpdates
 import React
-import UIKit
+import ReactAppDependencyProvider
 
-@UIApplicationMain
-class AppDelegate: ExpoAppDelegate {
-  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-  // AppDelegate keeps a nullable reference to the updates controller
-  var updatesController: (any InternalAppControllerInterface)?
-
+class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
   let packagerUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&dev=true")
   let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 
-  static func shared() -> AppDelegate {
-    guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
-      fatalError("Could not get app delegate")
-    }
-    return delegate
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
   }
 
   override func bundleURL() -> URL? {
     if AppDelegate.isRunningWithPackager() {
       return packagerUrl
     }
-    if let updatesUrl = updatesController?.launchAssetUrl() {
+    if let updatesUrl = AppDelegate.shared().updatesController?.launchAssetUrl() {
       return updatesUrl
     }
     return bundledUrl
+  }
+}
+
+@UIApplicationMain
+class AppDelegate: ExpoAppDelegate {
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  // AppDelegate keeps a nullable reference to the updates controller
+  var updatesController: (any InternalAppControllerInterface)?
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  static func shared() -> AppDelegate {
+    guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+      fatalError("Could not get app delegate")
+    }
+    return delegate
   }
 
   // If this is a debug build, and native debugging not enabled,
@@ -38,9 +50,14 @@ class AppDelegate: ExpoAppDelegate {
   // Required initialization of react-native and expo-updates
   private func initializeReactNativeAndUpdates(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
     self.launchOptions = launchOptions
-    self.moduleName = "main"
-    self.initialProps = [:]
-    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
+    let delegate = CustomReactNativeFactoryDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    bindReactNativeFactory(factory)
+
     // AppController instance must always be created first.
     // expo-updates creates a different type of controller
     // depending on whether updates is enabled, and whether
@@ -123,8 +140,8 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
       fatalError("rootViewFactory has not been initialized")
     }
     let rootView = rootViewFactory.view(
-      withModuleName: appDelegate.moduleName,
-      initialProperties: appDelegate.initialProps,
+      withModuleName: "main",
+      initialProperties: [:],
       launchOptions: appDelegate.launchOptions
     )
     let controller = self

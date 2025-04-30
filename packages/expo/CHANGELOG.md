@@ -12,6 +12,34 @@
 
 - Switch `expo/tsconfig.base` preset to `moduleResolution: "bundler"` ([#36299](https://github.com/expo/expo/pull/36299) by [@kitten](https://github.com/kitten))
 
+## 53.0.1 — 2025-04-28
+
+### 💡 Others
+
+- Move virtual RSC client boundary entry point to `expo` from `@expo/metro-runtime`. ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0 — 2025-04-28
+
+### 🎉 New features
+
+- Add web stream support globally. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0-preview.12 — 2025-04-25
+
+### 💡 Others
+
+- [iOS] Remove `moduleName` and `initialProps` from the `AppDelegate`. ([#36338](https://github.com/expo/expo/pull/36338) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 53.0.0-preview.11 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0-preview.10 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
 ## 53.0.0-preview.9 — 2025-04-21
 
 _This version does not introduce any user-facing changes._
