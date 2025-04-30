@@ -786,6 +786,7 @@ export async function test({ describe, expect, it, ...t }) {
       const blob = src.blob();
 
       formData.append('data', blob);
+
       const response = await fetch('https://httpbin.org/anything', {
         method: 'POST',
         body: formData,
