@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix incorrect route info for nested tabs when navigating via touch ([#36558](https://github.com/expo/expo/pull/36558) by [@marklawlor](https://github.com/marklawlor))
+- Prevent incorrect warning when using custom navigators ([#36508](https://github.com/expo/expo/pull/36508) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
