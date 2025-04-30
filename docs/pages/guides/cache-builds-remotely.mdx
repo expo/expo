@@ -5,6 +5,7 @@ description: Accelerate local development by caching and reusing builds from a r
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Remote build caching is an experimental feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
 When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
@@ -73,13 +74,14 @@ type CalculateFingerprintHashProps = {
 };
 ```
 
-A reference implementation using Github Releases to cache builds can be found at in the [Remote Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider)
+A reference implementation using GitHub Releases to cache builds can be found at in the [Remote Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider)
 
 ## Creating a custom remote build provider
 
 Start by creating a **provider** directory for writing the provider plugin in TypeScript and add a **provider.plugin.js** file in the project root, which will be the plugin's entry point.
 
-### Create a provider/tsconfig.json file
+<Step label="1">
+### Create a `provider/tsconfig.json` file
 
 ```json provider/tsconfig.json
 {
@@ -93,7 +95,10 @@ Start by creating a **provider** directory for writing the provider plugin in Ty
 }
 ```
 
-### Create a provider/src/index.ts file for your plugin
+</Step>
+
+<Step label="2">
+### Create a `provider/src/index.ts` file for your plugin
 
 ```ts provider/src/index.ts
 import { RemoteBuildCachePlugin } from '@expo/config';
@@ -112,14 +117,27 @@ const plugin: RemoteBuildCachePlugin {
 export default plugin;
 ```
 
-### Create an provider.plugin.js file in the root directory
+</Step>
+
+<Step label="3">
+### Create an `provider.plugin.js` file in the root directory
 
 ```js provider.plugin.js
 // This file configures the entry file for your plugin.
 module.exports = require('./provider/build');
 ```
 
-At the root of your project, run `npm run build provider` to start the TypeScript compiler in watch mode. Next, configure your example project to use your plugin by adding the following line to the **example/app.json** file:
+</Step>
+
+<Step label="4">
+### Build your provider plugin
+
+At the root of your project, run `npm run build provider` to start the TypeScript compiler in watch mode.
+
+</Step>
+
+<Step label="5">
+### Configure your example project to use your plugin by adding the following line to the `example/app.json` file:
 
 ```json example/app.json
 {
@@ -134,11 +152,19 @@ At the root of your project, run `npm run build provider` to start the TypeScrip
 }
 ```
 
+</Step>
+
+<Step label="6">
+### Test your provider
 When you run the `npx expo run` command inside your **example** directory, you should see your plugin's console statements in the logs.
 
 <Terminal cmd={['$ cd example', '$ npx expo run:ios']} />
 
-### Pass custom options
+That's it! You now have a remote build cache provider to speed up your builds.
+
+</Step>
+
+### Passing custom options
 
 To inject custom options to your plugin you can use the `options` field and it will be forwarded as the second parameter of your custom functions. To do so modify the `remoteBuildCache` field in **example/app.json** as shown below:
 
@@ -157,5 +183,3 @@ To inject custom options to your plugin you can use the `options` field and it w
   }
 }
 ```
-
-That's it! You now have a remote build cache provider to speed up your builds.
