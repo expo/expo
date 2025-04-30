@@ -48,6 +48,7 @@ module.exports = {
     'valid-typeof': 'error',
     'import/first': 'warn', //keep
     'import/default': 'off',
+    'no-var': 'error',
   },
   settings: {
     'import/extensions': jsExtensions,
