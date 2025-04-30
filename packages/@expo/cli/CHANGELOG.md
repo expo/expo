@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Lookup absolute asset paths correctly when used as server components.
+
 ### 💡 Others
 
 ## 0.24.6 — 2025-04-28
