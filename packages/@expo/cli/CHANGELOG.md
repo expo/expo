@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Prevent deleting project directory. ([#36514](https://github.com/expo/expo/pull/36514) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
