@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Ensure that the manifest has a valid intent filter before appending schemes. This fixes an issue where the scheme was not being added to the manifest when no `scheme` was provided in the config.
+- Ensure that the manifest has a valid intent filter before appending schemes. This fixes an issue where the scheme was not being added to the manifest when no `scheme` was provided in the config. ([#36541](https://github.com/expo/expo/pull/36541) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 
