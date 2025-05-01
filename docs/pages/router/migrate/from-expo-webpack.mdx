@@ -103,11 +103,11 @@ Due to limitations on native, hosting with fake HTTPS is not currently supported
 
 The [`expo-constants`](/versions/latest/sdk/constants/) library can be used to access the **app.json** in-app. Behind the scenes, this is accomplished by setting `process.env.APP_MANIFEST` with the stringified contents of the **app.json** file.
 
-In Expo Router, this is done using Babel with the `expo-router/babel` in SDK 49 and lower and `babel-preset-expo` in SDK 50 and higher. If you modify the **app.json**, restart the Babel cache with `npx expo start --clear` to see the updates.
+In Expo Router, this is done using Babel with the `babel-preset-expo`. If you modify the **app.json**, restart the Babel cache with `npx expo start --clear` to see the updates.
 
 ## Base path and subpath hosting
 
-> Experimental functionality. It will be available from SDK 50.
+> **important** Experimental functionality.
 
 In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `PUBLIC_URL` environment variable or the `homepage` field in the project's **package.json**:
 

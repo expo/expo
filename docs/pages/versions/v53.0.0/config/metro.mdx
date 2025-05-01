@@ -389,8 +389,6 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 ## Bundle splitting
 
-> This feature is web-only in SDK 50 and above.
-
 Expo CLI automatically splits web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (available by default in Expo Router).
 
 Shared dependencies of async bundles are merged into a single chunk to reduce the number of requests. For example, if you have two async bundles that import `lodash`, then the library is merged into a single initial chunk.
@@ -669,7 +667,7 @@ In your **ios/&lt;Project&gt;.xcodeproj/project.pbxproj** file, replace the foll
 
 #### "Start Packager" script
 
-Remove the **"Start Packager"** script in SDK 50 and higher. The dev server must be started with `npx expo` before/after running the app.
+Remove the **"Start Packager"** script. The dev server must be started with `npx expo` before/after running the app.
 
 ```diff Start Packager
 -    FD10A7F022414F080027D42C /* Start Packager */ = {
