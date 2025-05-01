@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump react-native-safe-area-context
+
 ## 53.0.5 — 2025-05-01
 
 ### 🐛 Bug fixes
