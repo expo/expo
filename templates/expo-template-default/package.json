@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "53.0.21",
+  "version": "53.0.22",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
