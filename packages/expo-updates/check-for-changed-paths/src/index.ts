@@ -31,9 +31,10 @@ const picomatch = require('picomatch');
     );
   }
 
-  // Don't bother running the paths check unless this is a pull request workflow
+  // Until paths support is added to EAS workflows, we should do the paths check
+  // for push and pull request workflows
   const github_event_name = args.shift() as unknown as string;
-  if (!isPullRequestWorkflow(github_event_name)) {
+  if (!shouldDoPathsCheck(github_event_name)) {
     console.log(`didChange: true`);
     await setOutput('result', 'true');
     return;
@@ -73,9 +74,9 @@ class Filter extends PathsFilter {
   }
 }
 
-function isPullRequestWorkflow(github_event_name: string) {
+function shouldDoPathsCheck(github_event_name: string) {
   console.log(`git_event_name: ${github_event_name}`);
-  return github_event_name === 'pull_request';
+  return github_event_name === 'pull_request' || github_event_name === 'push';
 }
 
 async function didAnyFilesChange(result: FilterResults) {
