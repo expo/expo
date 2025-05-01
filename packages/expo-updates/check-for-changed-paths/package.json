@@ -9,7 +9,7 @@
     "expo-updates": "bin/cli.js"
   },
   "scripts": {
-    "build": "ncc build ./src/index.ts --minify --transpile-only --no-cache --no-source-map-register"
+    "build:check-paths": "ncc build ./src/index.ts --minify --transpile-only --no-cache --no-source-map-register"
   },
   "keywords": [
     "expo",
