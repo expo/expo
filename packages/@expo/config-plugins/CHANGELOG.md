@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure that the manifest has a valid intent filter before appending schemes. This fixes an issue where the scheme was not being added to the manifest when no `scheme` was provided in the config.
+
 ### 💡 Others
 
 ## 10.0.1 — 2025-04-30

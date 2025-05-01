@@ -169,6 +169,15 @@ export function appendScheme(scheme: string, androidManifest: AndroidManifest): 
     return androidManifest;
   }
 
+  if (!ensureManifestHasValidIntentFilter(androidManifest)) {
+    addWarningAndroid(
+      'scheme',
+      `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``,
+      'https://expo.fyi/setup-android-uri-scheme'
+    );
+    return androidManifest;
+  }
+
   for (const application of androidManifest.manifest.application) {
     for (const activity of application.activity || []) {
       if (activity?.$?.['android:launchMode'] === 'singleTask') {
