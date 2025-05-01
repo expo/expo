@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix env vars when no .env files are defined.
+
 ### 💡 Others
 
 ## 0.20.11 — 2025-04-30
