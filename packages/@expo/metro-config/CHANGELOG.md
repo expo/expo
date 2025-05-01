@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix env vars when no .env files are defined.
+- Fix env vars when no .env files are defined. ([#36513](https://github.com/expo/expo/pull/36513) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
