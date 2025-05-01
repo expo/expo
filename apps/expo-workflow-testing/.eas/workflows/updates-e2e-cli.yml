@@ -1,10 +1,11 @@
 name: Updates E2E (CLI)
 
 on:
-  push:
-    branches:
-      - main
-      - sdk-*
+# For now, disable this workflow on push
+# Reenable once full paths support is ready for both push and pull_request
+#  push:
+#    branches:
+#      - main
   pull_request:
     branches:
       - main
