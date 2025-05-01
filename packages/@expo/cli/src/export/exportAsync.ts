@@ -16,6 +16,10 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   if (outputPath === projectRoot) {
     throw new CommandError('--output-dir cannot be the same as the project directory.');
+  } else if (path.relative(projectRoot, outputPath).startsWith('..')) {
+    throw new CommandError(
+      '--output-dir must be a subdirectory of the project directory. Generating outside of the project directory is not supported.'
+    );
   }
 
   // Delete the output directory if it exists
