@@ -256,7 +256,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
   // Random API replaced with Crypto
-  '/versions/v50.0.0/sdk/random/': '/versions/v50.0.0/sdk/crypto/',
   '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
 
   // Redirect bare guides to unified workflow guides
@@ -297,7 +296,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/guides/overview/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
-  '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
   '/router/reference/search-parameters/': '/router/reference/url-parameters/',
@@ -379,14 +377,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
   '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
-  '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
-  '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  '/versions/v50.0.0/sdk': '/versions/v50.0.0',
-  '/versions/v49.0.0/sdk': '/versions/v49.0.0',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',

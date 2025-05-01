@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fix env vars when no .env files are defined. ([#36513](https://github.com/expo/expo/pull/36513) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.20.11 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
 
 ## 0.20.10 — 2025-04-30
 

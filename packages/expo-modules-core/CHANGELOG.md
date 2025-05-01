@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.3.12 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+
 ## 2.3.11 — 2025-04-28
 
 _This version does not introduce any user-facing changes._

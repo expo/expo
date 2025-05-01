@@ -41,12 +41,12 @@ Copy the file into your project's **assets/fonts** directory.
 
 Two ways to use the local font file in your project:
 
-- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs).
+- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-app-config).
 - Loading the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
 
 ### With `expo-font` config plugin
 
-The `expo-font` config plugin allows embedding one or more font files in your project's native code. This is the recommended method for adding fonts to your app due to its benefits:
+The `expo-font` config plugin allows embedding one or more font files in your project's native code. It supports `ttf` and `otf` for both Android and iOS, and `woff` and `woff2` are supported on iOS only. This is the recommended method for adding fonts to your app due to its benefits:
 
 - Fonts are available immediately when the app starts on a device.
 - No additional code required to load fonts in a project asynchronously when the app starts.
@@ -55,7 +55,6 @@ The `expo-font` config plugin allows embedding one or more font files in your pr
 However, this method also has some limitations:
 
 - Doesn't work with Expo Go since this method requires [creating a development build](/develop/development-builds/create-a-build/).
-- Only available for SDK 50 and above.
 
 To embed a font in a project, follow the steps below:
 
@@ -69,7 +68,15 @@ After adding a custom font file in your project, install the `expo-font` library
 
 <Step label="2">
 
-Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using [`fonts`](/versions/latest/sdk/font/#configurable-properties) property which takes an array of one or more font files. The path to each font file is relative to the project's root. For example, in the following configuration, **Inter-Black.otf** font file's path is defined.
+Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using [`fonts`, `android` or `ios`](/versions/latest/sdk/font/#configurable-properties) properties which take an array of one or more font definitions. The path to each font file is relative to the project's root.
+
+The example below showcases all valid ways a font can be specified: as an array of objects that specify `fontFamily` and other properties, or an array of paths to font files.
+
+For Android, you can specify the `fontFamily`, `weight`, and optionally `style` (defaults to `"normal"`), which will embed the fonts as native [XML resources](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml). If you provide only the font file paths in an array, the file name becomes the font family name on Android. iOS always extracts the font family name from the font file itself.
+
+If you plan to refer to fonts using just the `fontFamily`, provide an array of font paths (see `FiraSans-MediumItalic.ttf` below) and follow our [recommendation for file naming](#how-to-determine-which-font-family-name-to-use).
+
+If you want to refer to fonts using a combination of `fontFamily`, `weight`, and `style`, provide an array of objects (see `Inter` below).
 
 ```json app.json
 {
@@ -78,9 +85,34 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
       [
         "expo-font",
         {
-          /* @info The path to the font file is relative to the project's root. */
-          "fonts": ["./assets/fonts/Inter-Black.otf"]
-          /* @end */
+          "fonts": [
+            /* @info Refer to this font using fontFamily: 'FiraSans-MediumItalic' */
+            "./assets/fonts/FiraSans-MediumItalic.ttf"
+            /* @end */
+          ],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Inter",
+                "fontDefinitions": [
+                  {
+                    /* @info Refer to this font using fontFamily: 'Inter', fontWeight: '700', fontStyle: 'italic' */
+                    "path": "./assets/fonts/Inter-BoldItalic.ttf",
+                    /* @end */
+                    "weight": 700,
+                    "style": "italic"
+                  },
+                  {
+                    "path": "./assets/fonts/Inter-Bold.ttf",
+                    "weight": 700
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": ["./assets/fonts/Inter-Bold.ttf", "./assets/fonts/Inter-BoldItalic.ttf"]
+          }
         }
       ]
     ]
@@ -94,12 +126,12 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
 
-You can use the font with `<Text>` by specifying the `fontFamily` style prop. See the [next section](#how-to-determine-which-font-family-name-to-use) on how to determine the font family name.
-
-In the example below, the `<Text>` uses the `Inter-Black` as the font family name:
+You can use the font with `<Text>` by specifying the `fontFamily` style prop. The examples below correspond to the fonts defined in the configuration above.
 
 ```tsx
-<Text style={{ fontFamily: 'Inter-Black' }}>Inter Black.</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '700', fontStyle: 'italic' }}>Inter Bold Italic</Text>
+<Text style={{ fontFamily: 'FiraSans-MediumItalic' }}>Fira Sans Medium Italic</Text>
 ```
 
 </Step>
@@ -113,15 +145,17 @@ In the example below, the `<Text>` uses the `Inter-Black` as the font family nam
 
 #### How to determine which font family name to use
 
-On Android, the font family name is the same as of the font file (without the extension). On iOS, the font family name is read from the font file itself.
+- If you provide fonts as an array of file paths (as described above), on Android, the file name (without the extension) becomes the font family name. On iOS, the font family name is read from the font file itself. We recommend naming the font file same as its [PostScript name](#what-is-postscript-name-of-a-font) so the font family name is consistent on both platforms.
 
-We recommend naming the font file same as its [PostScript name](#what-is-postscript-name-of-a-font) so the font family name is consistent on both platforms.
+- If you use the object syntax, provide the "Family Name". This can be found in the Font Book app on macOS, [fontdrop.info](https://fontdrop.info/) or other programs.
 
 <Collapsible summary="What is PostScript name of a font file?">
 
 The **PostScript name** of a font file is a unique identifier assigned to the font that follows Adobe's PostScript standard. It is used by operating systems and apps to refer to the font. It is not a font's **display name**.
 
 For example, Inter Black font file's PostScript name is `Inter-Black`.
+
+_Screenshot from Font Book app on macOS._
 
 <ContentSpotlight src="/static/images/postscript-name.png" />
 

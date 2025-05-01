@@ -260,9 +260,9 @@ describe('Export DOM Components', () => {
     // If this changes then everything else probably changed as well.
     const outputFiles = findProjectFiles(outputDir);
     // Remove maps because there are path info inside maps and they are not deterministic across machines.
-    const outputFilesWithoutMap = outputFiles.filter(
-      (file) => !(file.startsWith('www.bundle/') && file.endsWith('.map'))
-    );
+    const outputFilesWithoutMap = outputFiles
+      .filter((file) => !(file.startsWith('www.bundle/') && file.endsWith('.map')))
+      .sort();
     expect(outputFilesWithoutMap).toEqual([
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/),
@@ -277,8 +277,8 @@ describe('Export DOM Components', () => {
 
       'metadata.json',
 
-      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
       expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
       expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
     ]);
   });

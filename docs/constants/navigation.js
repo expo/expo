@@ -181,7 +181,11 @@ export const general = [
     ),
     makeGroup(
       'Compile locally',
-      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      [
+        makePage('guides/local-app-development.mdx'),
+        makePage('guides/local-app-production.mdx'),
+        makePage('guides/cache-builds-remotely.mdx'),
+      ],
       {
         expanded: false,
       }
@@ -253,6 +257,7 @@ export const general = [
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/protected.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),

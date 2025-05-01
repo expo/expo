@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.28.10",
+  "version": "0.28.11",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -10,7 +10,6 @@
   },
   "scripts": {
     "build": "expo-module build",
-    "build:check-paths": "ncc build ./e2e/setup/check-for-changed-paths.ts -o ./bin/check-for-changed-paths --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -40,12 +39,12 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~11.0.6",
-    "@expo/config-plugins": "~10.0.0",
+    "@expo/config": "~11.0.7",
+    "@expo/config-plugins": "~10.0.1",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",
-    "expo-eas-client": "~0.14.2",
+    "expo-eas-client": "~0.14.3",
     "expo-manifests": "~0.16.4",
     "expo-structured-headers": "~4.1.0",
     "expo-updates-interface": "~1.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "expo-env-info",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "preferGlobal": true,
   "type": "module",
   "bin": "./build/index.js",

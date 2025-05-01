@@ -1,6 +1,6 @@
 {
   "name": "expo-brightness",
-  "version": "13.1.3",
+  "version": "13.1.4",
   "description": "Provides an API to get and set screen brightness.",
   "main": "build/Brightness.js",
   "types": "build/Brightness.d.ts",

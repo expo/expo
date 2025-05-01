@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "11.1.3",
+  "version": "11.1.4",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -48,7 +48,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.7.3",
+    "@expo/image-utils": "^0.7.4",
     "expo-constants": "~17.1.4"
   },
   "devDependencies": {

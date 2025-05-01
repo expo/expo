@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "16.1.4",
+  "version": "16.1.5",
   "description": "Provides an interface for native user localization information.",
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
