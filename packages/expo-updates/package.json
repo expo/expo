@@ -10,7 +10,6 @@
   },
   "scripts": {
     "build": "expo-module build",
-    "build:check-paths": "ncc build ./e2e/setup/check-for-changed-paths.ts -o ./bin/check-for-changed-paths --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
