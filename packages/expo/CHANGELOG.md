@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bump react-native-safe-area-context
+- Bump react-native-safe-area-context ([#36545](https://github.com/expo/expo/pull/36545) by [@brentvatne](https://github.com/brentvatne))
 
 ## 53.0.5 — 2025-05-01
 
