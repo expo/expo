@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade minimum Node.js version to 20.
+
 ## 2.1.9 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
