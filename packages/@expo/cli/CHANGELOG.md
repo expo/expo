@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve error format when `npx expo export` (native) fails.
+
 ### 💡 Others
 
 ## 0.24.9 — 2025-04-30
