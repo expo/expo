@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix useNavigation() retrieving the incorrect parent for nested navigator ([#36509](https://github.com/expo/expo/pull/36509) by [@marklawlor](https://github.com/marklawlor))
-
 ### 💡 Others
+
+## 5.0.4 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Fix useNavigation() retrieving the incorrect parent for nested navigator ([#36509](https://github.com/expo/expo/pull/36509) by [@marklawlor](https://github.com/marklawlor))
 
 ## 5.0.3 — 2025-04-28
 

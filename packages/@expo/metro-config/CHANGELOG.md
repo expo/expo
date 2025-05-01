@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix env vars when no .env files are defined. ([#36513](https://github.com/expo/expo/pull/36513) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 0.20.12 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Fix env vars when no .env files are defined. ([#36513](https://github.com/expo/expo/pull/36513) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.20.11 — 2025-04-30
 
