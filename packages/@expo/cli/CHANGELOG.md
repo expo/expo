@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Prevent deleting project directory.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
