@@ -1,5 +1,5 @@
 ---
-title: Protected screens
+title: Protected routes
 description: Learn how to make screens inaccessible to client-side navigation
 ---
 
@@ -14,30 +14,39 @@ Protected screens allow you to prevent users from accessing certain routes using
     'app/_layout.tsx',
     'app/index.tsx',
     'app/about.tsx',
-    'app/login.tsx',
-    'app/protected/_layout.tsx',
-    'app/protected/index.tsx',
-    'app/protected/page.tsx',
+    ['app/login.tsx', 'Should only be available while not authenticated'],
+    ['app/private/_layout.tsx', 'Should only be available while authenticated'],
+    'app/private/index.tsx',
+    'app/private/page.tsx',
   ]}
 />
 
 ```tsx app/_layout.tsx
 export { Stack } from 'expo-router';
 
+const isLoggedIn = false;
+
 export function AppLayout() {
   return (
     <Stack>
-      <Stack.Protected protected={false}>
-        <Stack.Screen name="protected" />
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="login" />
       </Stack.Protected>
+
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="private" />
+      </Stack.Protected>
+      {/* Expo Router includes all routes by default. Adding Stack.Protected creates exceptions for these screens */}
     </Stack>
   );
 }
 ```
 
-In this example, the `/protected` route is inaccessible because the **protected** is false. When a user attempts to access `/protected`, they are redirected to the anchor route, **index**
+In this example, the `/private` route is inaccessible because the `guard` is false. When a user attempts to access `/private`, they are redirected to the anchor route, which is the **index** screen.
 
-Additionally, if the user is on `/protected/page` and the protected condition changes to **false**, they will be redirected automatically.
+Additionally, if the user is on `/private/page` and the `guard` condition changes to **false**, they will be redirected automatically.
+
+When a screen's **guard** is changed from **true** to **false**, all it's history entries will be removed from the navigation history.
 
 ## Multiple Protected Screens
 
@@ -54,7 +63,7 @@ const isAdmin = true;
 export function AppLayout() {
   return (
     <Stack>
-      <Stack.Protected protected={true}>
+      <Stack.Protected guard={true}>
         <Stack.Screen name="profile" />
       </Stack.Protected>
       <Stack.Screen name="profile" /> // ❌ Not allowed: duplicate screen
@@ -76,8 +85,8 @@ const isAdmin = true;
 export function AppLayout() {
   return (
     <Stack>
-      <Stack.Protected protected={isLoggedIn}>
-        <Stack.Protected protected={isAdmin}>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Protected guard={isAdmin}>
           <Stack.Screen name="protected" />
         </Stack.Protected>
 
@@ -90,7 +99,7 @@ export function AppLayout() {
 
 In this case:
 
-- `/protected` is only protected if the user is logged in and is an admin.
+- `/private` is only protected if the user is logged in and is an admin.
 - `/about` is protected to any logged-in user.
 
 ## Falling back to a specific screen
@@ -103,21 +112,23 @@ You can configure the navigator to fall back to a specific screen if access is d
     'app/index.tsx',
     'app/about.tsx',
     'app/login.tsx',
-    'app/protected/_layout.tsx',
-    'app/protected/index.tsx',
-    'app/protected/page.tsx',
+    'app/private/_layout.tsx',
+    'app/private/index.tsx',
+    'app/private/page.tsx',
   ]}
 />
 
 ```tsx app/_layout.tsx
 export { Stack } from 'expo-router';
 
+const isLoggedIn = false;
+
 export function AppLayout() {
   return (
     <Stack>
-      <Stack.Protected protected={isLogged}>
+      <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="protected" />
+        <Stack.Screen name="private" />
       </Stack.Protected>
 
       <Stack.Screen name="login" />
