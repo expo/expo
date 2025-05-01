@@ -7,8 +7,8 @@ import * as Log from '../log';
 import { waitUntilAtlasExportIsReadyAsync } from '../start/server/metro/debugging/attachAtlas';
 import { FileNotifier } from '../utils/FileNotifier';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
-import { ensureProcessExitsAfterDelay } from '../utils/exit';
 import { CommandError } from '../utils/errors';
+import { ensureProcessExitsAfterDelay } from '../utils/exit';
 
 export async function exportAsync(projectRoot: string, options: Options) {
   // Ensure the output directory is created

@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -39,7 +40,6 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 export async function exportAppAsync(
   projectRoot: string,
