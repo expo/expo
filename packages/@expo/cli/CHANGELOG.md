@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Improve error format when `npx expo export` (native) fails.
+- Improve error format when `npx expo export` (native) fails. ([#36533](https://github.com/expo/expo/pull/36533) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
