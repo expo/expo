@@ -111,5 +111,5 @@
   "@shopify/react-native-skia": "v2.0.0-next.2",
   "@shopify/flash-list": "1.7.6",
   "@sentry/react-native": "~6.10.0",
-  "react-native-bootsplash": "~6.3.7"
+  "react-native-bootsplash": "^6.3.7"
 }
