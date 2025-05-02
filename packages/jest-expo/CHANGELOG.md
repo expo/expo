@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add ExpoFontUtils mock
+
 ### 💡 Others
 
 ## 53.0.3 — 2025-05-01
