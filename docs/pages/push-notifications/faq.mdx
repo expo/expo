@@ -4,6 +4,7 @@ sidebar_title: Troubleshooting and FAQ
 description: A collection of common questions about Expo push notification service.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 A collection of common issues and FAQs when setting up push notifications with the `expo-notifications` library and Expo push notification service.
@@ -113,9 +114,7 @@ This error occurs if you haven't set up a push notification key for your iOS pro
 
 To generate a new push notification key, trigger a new build by running:
 
-```bash
-eas build --profile [profile] --platform ios
-```
+<Terminal cmd={['eas build --profile [profile] --platform ios']} />
 
 For a visual guide, see the [Expo Notifications with EAS video](https://youtu.be/BCCjGtKtBjE?t=2123).
 
