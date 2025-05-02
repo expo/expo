@@ -12,7 +12,7 @@
     "@react-navigation/native": "^7.1.6",
     "expo": "~53.0.5",
     "expo-linking": "~7.1.4",
-    "expo-router": "^5.0.4",
+    "expo-router": "^5.0.5",
     "expo-splash-screen": "~0.30.8",
     "react": "19.0.0",
     "react-native": "0.79.2",

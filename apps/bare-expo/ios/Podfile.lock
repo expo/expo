@@ -80,7 +80,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-client (5.1.7):
+  - expo-dev-client (5.1.8):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -3608,7 +3608,7 @@ SPEC CHECKSUMS:
   EXManifests: 2916c0982e95ada805b23f21bc89b3ad69ee47b2
   EXNotifications: eb08abae61f4eba2dcd9460d6b9e5bd38371db98
   Expo: 5058e64e340f0bc2280d97e02e7acf0c57b1743d
-  expo-dev-client: c6bc619ff9d8f13e087ab80792a4d90ad6088085
+  expo-dev-client: b32e7e9c0a420a5256e38b12e8eebbf14a7031ed
   expo-dev-launcher: d506f26639ee2676977c4a8c47668a77d2d09d23
   expo-dev-menu: 2aa06bd228fe6a52e2276b71c59b90a8ec88c8a3
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
