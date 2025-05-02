@@ -6,7 +6,6 @@ import {
 } from '@expo/config';
 import resolveFrom from 'resolve-from';
 
-import { EASRemoteBuildCacheProvider } from './eas';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
@@ -22,7 +21,20 @@ export const resolveRemoteBuildCacheProvider = (
   }
 
   if (provider === 'eas') {
-    return { plugin: EASRemoteBuildCacheProvider, options: {} };
+    try {
+      return {
+        plugin: require.resolve('eas-build-cache-provider', {
+          paths: [projectRoot],
+        }) as unknown as RemoteBuildCachePlugin,
+        options: {},
+      };
+    } catch (error: any) {
+      if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+        console.warn(
+          'The `eas-build-cache-provider` package is not installed. Please install it to use the EAS remote build cache.'
+        );
+      }
+    }
   }
 
   if (typeof provider === 'object' && typeof provider.plugin === 'string') {
@@ -128,8 +140,11 @@ async function calculateFingerprintHashAsync({
 function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
   try {
     return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));
-  } catch {
-    return null;
+  } catch (error: any) {
+    if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+      return null;
+    }
+    throw error;
   }
 }
 
