@@ -65,25 +65,14 @@ exports.store = {
     get state() {
         return storeRef.current.state;
     },
-    get focusedState() {
-        return storeRef.current.focusedState;
-    },
     get navigationRef() {
         return storeRef.current.navigationRef;
     },
     get routeNode() {
         return storeRef.current.routeNode;
     },
-    getRouteInfo(state = storeRef.current.focusedState) {
-        if (!state) {
-            return routeInfo_1.defaultRouteInfo;
-        }
-        let routeInfo = routeInfoCache.get(state);
-        if (!routeInfo) {
-            routeInfo = (0, routeInfo_1.getRouteInfoFromState)(state);
-            routeInfoCache.set(state, routeInfo);
-        }
-        return routeInfo;
+    getRouteInfo() {
+        return storeRef.current.routeInfo || routeInfo_1.defaultRouteInfo;
     },
     get redirects() {
         return storeRef.current.redirects || [];
@@ -95,7 +84,8 @@ exports.store = {
         return storeRef.current.linking;
     },
     setFocusedState(state) {
-        storeRef.current.focusedState = state;
+        const routeInfo = getCachedRouteInfo(state);
+        storeRef.current.routeInfo = routeInfo;
     },
     onReady() {
         if (!hasAttemptedToHideSplash) {
@@ -106,8 +96,21 @@ exports.store = {
             });
         }
         storeRef.current.navigationRef.addListener('state', (e) => {
-            if (e.data.state) {
-                storeRef.current.state = e.data.state;
+            if (!e.data.state) {
+                return;
+            }
+            let isStale = false;
+            let state = e.data.state;
+            while (!isStale && state) {
+                isStale = state.stale;
+                state =
+                    state.routes?.['index' in state && typeof state.index === 'number'
+                        ? state.index
+                        : state.routes.length - 1]?.state;
+            }
+            storeRef.current.state = e.data.state;
+            if (!isStale) {
+                storeRef.current.routeInfo = getCachedRouteInfo(e.data.state);
             }
             for (const callback of routeInfoSubscribers) {
                 callback();
@@ -177,7 +180,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         state: initialState,
     };
     if (initialState) {
-        storeRef.current.focusedState = initialState;
+        storeRef.current.routeInfo = getCachedRouteInfo(initialState);
     }
     (0, react_1.useEffect)(() => {
         return () => {
@@ -199,5 +202,23 @@ const routeInfoSubscribe = (callback) => {
 };
 function useRouteInfo() {
     return (0, react_1.useSyncExternalStore)(routeInfoSubscribe, exports.store.getRouteInfo, exports.store.getRouteInfo);
+}
+function getCachedRouteInfo(state) {
+    let routeInfo = routeInfoCache.get(state);
+    if (!routeInfo) {
+        routeInfo = (0, routeInfo_1.getRouteInfoFromState)(state);
+        const previousRouteInfo = storeRef.current.routeInfo;
+        if (previousRouteInfo) {
+            const areEqual = routeInfo.segments.length === previousRouteInfo.segments.length &&
+                routeInfo.segments.every((segment, index) => previousRouteInfo.segments[index] === segment) &&
+                routeInfo.pathnameWithParams === previousRouteInfo.pathnameWithParams;
+            if (areEqual) {
+                // If they are equal, keep the previous route info for object reference equality
+                routeInfo = previousRouteInfo;
+            }
+        }
+        routeInfoCache.set(state, routeInfo);
+    }
+    return routeInfo;
 }
 //# sourceMappingURL=router-store.js.map

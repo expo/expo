@@ -25,7 +25,7 @@ function getRouteInfoFromState(state) {
     const segments = [];
     const params = Object.create(null);
     while (state) {
-        route = state.routes[0];
+        route = state.routes['index' in state && state.index ? state.index : 0];
         Object.assign(params, route.params);
         let routeName = route.name;
         if (routeName.startsWith('/')) {
@@ -41,7 +41,10 @@ function getRouteInfoFromState(state) {
     let routeParams = route.params;
     while (routeParams && 'screen' in routeParams) {
         if (typeof routeParams.screen === 'string') {
-            segments.push(...routeParams.screen.split('/'));
+            const screen = routeParams.screen.startsWith('/')
+                ? routeParams.screen.slice(1)
+                : routeParams.screen;
+            segments.push(...screen.split('/'));
         }
         if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
             routeParams = routeParams.params;
@@ -51,7 +54,10 @@ function getRouteInfoFromState(state) {
         }
     }
     if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-        segments.push(route.params.screen);
+        const screen = route.params.screen.startsWith('/')
+            ? route.params.screen.slice(1)
+            : route.params.screen;
+        segments.push(...screen.split('/'));
     }
     if (segments[segments.length - 1] === 'index') {
         segments.pop();

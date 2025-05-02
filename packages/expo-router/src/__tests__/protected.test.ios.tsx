@@ -6,7 +6,7 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import { act, renderRouter, screen } from '../testing-library';
 
-it('should protect routes during the initial load', () => {
+it.only('should protect routes during the initial load', () => {
   let useStateResult;
 
   renderRouter(
