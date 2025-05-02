@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update to `lan-network@^0.1.5` for VPN network local IP changes ([#36572](https://github.com/expo/expo/pull/36572) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.24.10 — 2025-05-01
