@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Bail out early when `getLoadedFonts` returns an empty array. ([#36586](https://github.com/expo/expo/pull/36586) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 13.3.0 — 2025-04-30
