@@ -92,7 +92,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
  * @hidden
  */
 export function useNavigatorContext() {
-  const context = React.useContext(NavigatorContext);
+  const context = React.use(NavigatorContext);
   if (!context) {
     throw new Error('useNavigatorContext must be used within a <Navigator />');
   }
@@ -131,7 +131,7 @@ function SlotNavigator(props: NavigatorProps<any>) {
  */
 export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const contextKey = useContextKey();
-  const context = React.useContext(NavigatorContext);
+  const context = React.use(NavigatorContext);
 
   if (context?.contextKey !== contextKey) {
     // The _layout has changed since the last navigator
