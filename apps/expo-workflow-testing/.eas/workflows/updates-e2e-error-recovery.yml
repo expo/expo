@@ -1,15 +1,16 @@
 name: Updates E2E (error recovery)
 
 on:
-  push:
-    branches:
-      - main
-      - sdk-*
+# For now, disable this workflow on push
+# Reenable once full paths support is ready for both push and pull_request
+#  push:
+#    branches:
+#      - main
   pull_request:
     branches:
       - main
   schedule:
-    - cron: '0 22 * * SUN' # 18:00 UTC every Sunday
+    - cron: '0 20 * * SUN' # 18:00 UTC every Sunday
 
 jobs:
   check_paths:
