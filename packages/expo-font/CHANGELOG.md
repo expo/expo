@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Bail out early when `getLoadedFonts` returns an empty array.
+
 ### 💡 Others
 
 ## 13.3.0 — 2025-04-30
