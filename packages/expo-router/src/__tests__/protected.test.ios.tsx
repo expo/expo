@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
@@ -6,8 +6,8 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import { act, renderRouter, screen } from '../testing-library';
 
-it.only('should protect routes during the initial load', () => {
-  let useStateResult;
+it('should protect routes during the initial load', () => {
+  let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
   renderRouter(
     {
@@ -96,7 +96,7 @@ it.only('should protect routes during the initial load', () => {
 });
 
 it('should default to anchor during initial load', () => {
-  let useStateResult;
+  let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
   renderRouter(
     {
