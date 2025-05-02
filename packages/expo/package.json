@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "53.0.5",
+  "version": "53.0.6",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -83,7 +83,7 @@
     "expo-asset": "~11.1.4",
     "expo-constants": "~17.1.5",
     "expo-file-system": "~18.1.8",
-    "expo-font": "~13.3.0",
+    "expo-font": "~13.3.1",
     "expo-keep-awake": "~14.1.4",
     "expo-modules-autolinking": "2.1.9",
     "expo-modules-core": "2.3.12",
