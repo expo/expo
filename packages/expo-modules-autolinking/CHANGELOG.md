@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Upgrade minimum Node.js version to 20.
+- Upgrade minimum Node.js version to 20. ([#36535](https://github.com/expo/expo/pull/36535) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.9 — 2025-04-30
 
