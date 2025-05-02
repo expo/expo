@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add ExpoFontUtils mock
+- Add ExpoFontUtils mock ([#36585](https://github.com/expo/expo/pull/36585) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 
