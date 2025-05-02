@@ -1,31 +1,404 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
----
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Organizer</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #ff7e5f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-Let's set up a local development environment for running your project on Android and iOS.
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-## Where would you like to develop?
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
 
-<PlatformAndDeviceForm />
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e4e8;
+        }
 
-## How would you like to develop?
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
 
-<DevelopmentModeForm />
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
 
----
+        .btn-accent {
+            background: var(--accent-color);
+        }
 
-<DevelopmentEnvironmentInstructions />
+        .btn-accent:hover {
+            background: #ff6a45;
+        }
 
-## Next step
+        .btn-danger {
+            background: var(--danger-color);
+        }
 
-You have a project and a development environment. Now it's time to start developing.
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(74, 111, 165, 0.1);
+        }
+
+        .search-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .tag-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tag-filter span {
+            font-weight: 500;
+        }
+
+        .tag-btn {
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tag-btn:hover, .tag-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-options select {
+            padding: 6px 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        .prompts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .prompt-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prompt-header {
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .prompt-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .prompt-date {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .prompt-body {
+            padding: 15px;
+        }
+
+        .prompt-description {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .prompt-text {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .prompt-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .prompt-tag {
+            background: #e1f0ff;
+            color: var(--primary-color);
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tag-input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .search-filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .prompts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Prompt Organizer</h1>
+            <button id="add-prompt-btn" class="btn btn-accent">+ Add New Prompt</button>
+        </header>
+
+        <div class="search-filter-container">
+            <input type="text" id="search-input" class="search-box" placeholder="Search prompts...">
+            
+            <div class="tag-filter">
+                <span>Filter by tags:</span>
+                <!-- Tags will be dynamically inserted here -->
+            </div>
+
+            <div class="sort-options">
+                <span>Sort by:</span>
+                <select id="sort-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="modified">Recently Modified</option>
+                    <option value="title">Title (A-Z)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="prompts-container" class="prompts-container">
+            <!-- Prompt cards will be dynamically inserted here -->
