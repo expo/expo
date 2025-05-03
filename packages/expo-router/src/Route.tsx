@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, type ComponentType, type PropsWithChildren } from 'react';
+import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 /** Return the RouteNode at the current contextual boundary. */
 export function useRouteNode(): RouteNode | null {
-  return useContext(CurrentRouteContext);
+  return use(CurrentRouteContext);
 }
 
 export function useContextKey(): string {

@@ -35,12 +35,7 @@ export function StatusBar(props: StatusBarProps) {
       );
     }
 
-    return (
-      <SystemBars
-        style={{ statusBar: props.style, navigationBar: undefined }}
-        hidden={{ statusBar: props.hidden, navigationBar: undefined }}
-      />
-    );
+    return <SystemBars style={{ statusBar: props.style }} hidden={{ statusBar: props.hidden }} />;
   }
 
   return <OriginalStatusBar {...props} />;
@@ -48,9 +43,7 @@ export function StatusBar(props: StatusBarProps) {
 
 export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
   if (isEdgeToEdge()) {
-    console.warn(
-      'setStatusBarStyle is not supported with edge-to-edge enabled. Use the StatusBar component instead.'
-    );
+    SystemBars?.setStyle({ statusBar: style });
     return;
   }
 
@@ -59,9 +52,7 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
 
 export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
   if (isEdgeToEdge()) {
-    console.warn(
-      'setStatusBarHidden is not supported with edge-to-edge enabled. Use the StatusBar component instead.'
-    );
+    SystemBars?.setHidden({ statusBar: hidden });
     return;
   }
 
@@ -70,9 +61,7 @@ export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimati
 
 export function setStatusBarBackgroundColor(backgroundColor: string, animated?: boolean) {
   if (isEdgeToEdge()) {
-    console.warn(
-      'setStatusBarBackgroundColor is not supported with edge-to-edge enabled. Use the StatusBar component instead.'
-    );
+    console.warn('`setStatusBarBackgroundColor` is not supported with edge-to-edge enabled.');
     return;
   }
 
@@ -82,7 +71,7 @@ export function setStatusBarBackgroundColor(backgroundColor: string, animated?: 
 export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
   if (isEdgeToEdge()) {
     console.warn(
-      'setStatusBarNetworkActivityIndicatorVisible is not supported with edge-to-edge enabled. Use the StatusBar component instead.'
+      '`setStatusBarNetworkActivityIndicatorVisible` is not supported with edge-to-edge enabled.'
     );
     return;
   }
@@ -93,7 +82,7 @@ export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
 export function setStatusBarTranslucent(translucent: boolean) {
   if (isEdgeToEdge()) {
     console.warn(
-      'setStatusBarTranslucent is not supported with edge-to-edge enabled. Use the StatusBar component instead.'
+      '`setStatusBarTranslucent` is not supported with edge-to-edge enabled. In this case the status bar is always translucent.'
     );
     return;
   }

@@ -1,4 +1,5 @@
 import { ConfigPlugin, withSettingsGradle } from '@expo/config-plugins';
+import { appendContentsInsideGradlePluginBlock } from '@expo/config-plugins/build/android/codeMod';
 import semver from 'semver';
 
 export const withAndroidModulesSettingGradle: ConfigPlugin = (config) => {
@@ -13,6 +14,67 @@ export const withAndroidModulesSettingGradle: ConfigPlugin = (config) => {
 };
 
 export function updateAndroidSettingsGradle({
+  contents,
+  isGroovy,
+  sdkVersion,
+}: {
+  contents: string;
+  isGroovy: boolean;
+  sdkVersion: string | undefined;
+}) {
+  if (sdkVersion && semver.lt(sdkVersion, '53.0.0')) {
+    return updateAndroidSettingsGradleSdk52({ contents, isGroovy, sdkVersion });
+  }
+
+  let newContents = contents;
+  if (!newContents.match(/expo-modules-autolinking\/package.json/)) {
+    const addCodeBlock = [
+      '', // new line
+      isGroovy ? '  def expoPluginsPath = new File(' : '  val expoPluginsPath = File(',
+      '    providers.exec {',
+      '      workingDir(rootDir)',
+      '      commandLine("node", "--print", "require.resolve(\'expo-modules-autolinking/package.json\', { paths: [require.resolve(\'expo/package.json\')] })")',
+      '    }.standardOutput.asText.get().trim(),',
+      '    "../android/expo-gradle-plugin"',
+      '  ).absolutePath',
+      '  includeBuild(expoPluginsPath)',
+      '', // new line
+    ];
+    newContents = appendContentsInsideGradlePluginBlock(
+      newContents,
+      'pluginManagement',
+      addCodeBlock.join('\n')
+    );
+  }
+
+  if (!newContents.match(/id\("expo-autolinking-settings"\)/)) {
+    newContents = appendContentsInsideGradlePluginBlock(
+      newContents,
+      'plugins',
+      '\nid("expo-autolinking-settings")\n'
+    );
+  }
+
+  const autolinkingRegExp = /(ex\.autolinkLibrariesFromCommand\(\))/;
+  newContents = newContents.replace(
+    autolinkingRegExp,
+    `ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)`
+  );
+
+  if (!newContents.match(/expoAutolinking\.useExpoModules\(\)/)) {
+    newContents += `expoAutolinking.useExpoModules()\n`;
+  }
+  if (!newContents.match(/expoAutolinking\.useExpoVersionCatalog\(\)/)) {
+    newContents += `expoAutolinking.useExpoVersionCatalog()\n`;
+  }
+  if (!newContents.match(/includeBuild\(expoAutolinking\.reactNativeGradlePlugin\)/)) {
+    newContents += `includeBuild(expoAutolinking.reactNativeGradlePlugin)\n`;
+  }
+
+  return newContents;
+}
+
+function updateAndroidSettingsGradleSdk52({
   contents,
   isGroovy,
   sdkVersion,

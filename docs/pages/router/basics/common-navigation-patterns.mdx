@@ -28,7 +28,7 @@ Consider the following navigation tree:
   ]}
 />
 
-In the **app/(tabs)\_layout.tsx** file, return a `Tabs` component:
+In the **app/(tabs)/\_layout.tsx** file, return a `Tabs` component:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
@@ -39,9 +39,9 @@ export default function TabLayout() {
     /* @info Each navigator adds it's own header, so you will likely want to hide the header in the outer navigator. */
     <Tabs screenOptions={{ headerShown: false }}>
     /* @end */
-      <Tab.Screen name="index" options={{ title: 'Home' }} />
-      <Tab.Screen name="feed" options={{ title: 'Feed' }} />
-      <Tab.Screen name="settings" options={{ title: 'Settings' }} />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="feed" options={{ title: 'Feed' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }

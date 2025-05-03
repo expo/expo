@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 10.0.2 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Ensure that the manifest has a valid intent filter before appending schemes. This fixes an issue where the scheme was not being added to the manifest when no `scheme` was provided in the config. ([#36541](https://github.com/expo/expo/pull/36541) by [@brentvatne](https://github.com/brentvatne))
+
+## 10.0.1 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2025-04-30
+
+### 🛠 Breaking changes
+
+- Remove `android.package` from the list of schemes. ([#36472](https://github.com/expo/expo/pull/36472) by [@brentvatne](https://github.com/brentvatne))
+
+### 🎉 New features
+
+- Expose support for `ios.scheme` and `android.scheme` in the config schema. ([#36472](https://github.com/expo/expo/pull/36472) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.6 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.5 — 2025-04-21
+
+### 💡 Others
+
+- Added some helper for codeMod to support Gradle and Swift. ([#36203](https://github.com/expo/expo/pull/36203) by [@kudo](https://github.com/kudo))
+
+## 9.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 9.1.3 — 2025-04-11
 
 _This version does not introduce any user-facing changes._

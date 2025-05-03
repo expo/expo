@@ -13,7 +13,7 @@ import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
-import expo.modules.kotlin.functions.AsyncFunction
+import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.Queues
@@ -47,7 +47,7 @@ class ViewDefinitionBuilder<T : View>(
   private var callbacksDefinition: CallbacksDefinition? = null
 
   @PublishedApi
-  internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
+  internal var asyncFunctions = mutableMapOf<String, AsyncFunctionComponent>()
 
   private var functionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
@@ -193,7 +193,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun AsyncFunction(
     name: String,
     crossinline body: () -> Any?
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctions[name] = it
     }
@@ -202,7 +202,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R> AsyncFunction(
     name: String,
     crossinline body: () -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctions[name] = it
     }
@@ -211,7 +211,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0> AsyncFunction(
     name: String,
     crossinline body: (p0: P0) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     // We can't split that function, because that introduces a ambiguity when creating DSL component without parameters.
     return if (P0::class == Promise::class) {
       AsyncFunctionWithPromiseComponent(name, emptyArray()) { _, promise -> body(promise as P0) }
@@ -228,7 +228,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1>()) { (p0, p1) ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1)
@@ -241,7 +241,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>()) { (p0), promise ->
       enforceType<P0>(p0)
       body(p0, promise)
@@ -253,7 +253,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2) ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2)
@@ -266,7 +266,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>()) { (p0, p1), promise ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1, promise)
@@ -278,7 +278,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3) ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3)
@@ -291,7 +291,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2), promise ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2, promise)
@@ -303,7 +303,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4) ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4)
@@ -316,7 +316,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3), promise ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3, promise)
@@ -328,7 +328,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5) ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5)
@@ -341,7 +341,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4), promise ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4, promise)
@@ -353,7 +353,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6)
@@ -366,7 +366,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5), promise ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5, promise)
@@ -378,7 +378,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
       body(p0, p1, p2, p3, p4, p5, p6, p7)
@@ -391,7 +391,7 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
     return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6), promise ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6, promise)

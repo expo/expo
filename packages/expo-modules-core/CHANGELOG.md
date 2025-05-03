@@ -10,6 +10,57 @@
 
 ### 💡 Others
 
+## 2.3.12 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.11 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.10 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.3.9 — 2025-04-25
+
+### 💡 Others
+
+- Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
+- Refined `Children` return type for SwiftUI integration. ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
+
+## 2.3.8 — 2025-04-23
+
+### 💡 Others
+
+- Droped support for Kotlin < `2.0.0`. ([#36323](https://github.com/expo/expo/pull/36323) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.7 — 2025-04-22
+
+### 🐛 Bug fixes
+
+- Fixed adding SwiftUI views to navigation header ([#36305](https://github.com/expo/expo/pull/36305) by [@jakex7](https://github.com/jakex7))
+
+## 2.3.6 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
+
+## 2.3.5 — 2025-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `UnwrappedChildren` not get the unwrapped content view for SwiftUI integration. ([#36112](https://github.com/expo/expo/pull/36112) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed the limitation to use `collapsable={false}` when hosting a UIView in SwiftUI views. ([#36153](https://github.com/expo/expo/pull/36153) by [@kudo](https://github.com/kudo))
+
 ## 2.3.4 — 2025-04-11
 
 ### 🐛 Bug fixes

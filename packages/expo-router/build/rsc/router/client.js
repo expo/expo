@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -8,7 +9,15 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 'use client';
-"use strict";
+/**
+ * Copyright © 2024 650 Industries.
+ * Copyright © 2024 2023 Daishi Kato
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = void 0;
 exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
@@ -203,7 +212,7 @@ function getHistory() {
     };
 }
 function useRouter_UNSTABLE() {
-    const router = (0, react_1.useContext)(RouterContext);
+    const router = (0, react_1.use)(RouterContext);
     if (!router) {
         throw new Error('Missing Router');
     }
@@ -347,7 +356,7 @@ children, ...props }, ref) {
         }
         return (0, href_1.resolveHref)(href);
     }, [href]);
-    const router = (0, react_1.useContext)(RouterContext);
+    const router = (0, react_1.use)(RouterContext);
     const changeRoute = router
         ? router.changeRoute
         : () => {

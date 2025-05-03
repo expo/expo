@@ -101,6 +101,24 @@ function getDefaultCustomizeFrame() {
             else if (frame.file === '<native>') {
                 collapse = true;
             }
+            else if (
+            // Some internal component stacks often don't have a file name.
+            frame.file === '<anonymous>' &&
+                frame.methodName &&
+                [
+                    // React
+                    'Suspense',
+                    // React Native
+                    'RCTView',
+                    'RCTScrollView',
+                    'RCTScrollContentView',
+                    // React Native Screens
+                    'RNSScreen',
+                    'RNSScreenContentWrapper',
+                    'RNSScreenNavigationContainer',
+                ].includes(frame.methodName)) {
+                collapse = true;
+            }
         }
         return { ...(frame || {}), collapse };
     };

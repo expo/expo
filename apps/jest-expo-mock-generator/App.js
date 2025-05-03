@@ -1,6 +1,6 @@
 import mux from '@expo/mux';
 import { setStringAsync } from 'expo-clipboard';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
 
 // A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
@@ -61,44 +61,53 @@ const replacer = (_key, value) => {
   return value;
 };
 
-export default class App extends React.Component {
-  state = {};
+export default function App() {
+  const [moduleSpecs, setModuleSpecs] = useState('');
 
-  async componentDidMount() {
-    const moduleSpecs = await _getExpoModuleSpecsAsync();
-    const code = `module.exports = ${JSON.stringify(moduleSpecs, replacer)};`;
-    await setStringAsync(code);
-    this.setState({ moduleSpecs: code });
-    const message = `
+  useEffect(() => {
+    const fetchModuleSpecs = async () => {
+      try {
+        const moduleSpecs = await _getExpoModuleSpecsAsync();
+        const code = `module.exports = ${JSON.stringify(moduleSpecs, replacer)};`;
+        await setStringAsync(code);
+        setModuleSpecs(code);
+      } catch (error) {
+        console.error('Error fetching module specs:', error);
+      }
+    };
+
+    fetchModuleSpecs();
+  }, []);
+
+  useEffect(() => {
+    if (moduleSpecs.length) {
+      const message = `
 
 ------------------------------COPY THE TEXT BELOW------------------------------
 
-${code}
+${moduleSpecs}
 
 ------------------------------END OF TEXT TO COPY------------------------------
 
 THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 
 `;
-    console.log(message);
-  }
+      console.log(message);
+    }
+  }, [moduleSpecs]);
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={{ fontWeight: '700' }}>
-          Your new jest mocks should now be:{'\n'}- In your clipboard{'\n'}- In your development
-          console.{'\n\n'}
-          Copy either one of the <Text style={{ backgroundColor: '#eee' }}>
-            module.exports
-          </Text>{' '}
-          line into <Text style={{ backgroundColor: '#eee' }}>jest-expo/src/expoModules.js</Text>{' '}
-          and format it nicely with prettier.
-        </Text>
-        <Button onPress={() => setStringAsync(this.state.moduleSpecs)} title="Copy to clipboard" />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontWeight: '700' }}>
+        Your new jest mocks should now be:{'\n'}- In your clipboard{'\n'}- In your development
+        console.{'\n\n'}
+        Copy either one of the <Text style={{ backgroundColor: '#eee' }}>module.exports</Text> line
+        line into <Text style={{ backgroundColor: '#eee' }}>jest-expo/src/expoModules.js</Text> and
+        format it nicely with prettier.
+      </Text>
+      <Button onPress={() => setStringAsync(moduleSpecs)} title="Copy to clipboard" />
+    </View>
+  );
 }
 
 const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;

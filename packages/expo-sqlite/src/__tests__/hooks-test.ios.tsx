@@ -9,7 +9,7 @@ jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe(useSQLiteContext, () => {
   it('should return a SQLite database instance', async () => {
-    const wrapper = ({ children }) => (
+    const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
     const { result } = renderHook(() => useSQLiteContext(), { wrapper });
@@ -23,7 +23,7 @@ describe(useSQLiteContext, () => {
   });
 
   it('should return the same SQLite instance on subsequent calls', async () => {
-    const wrapper = ({ children }) => (
+    const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
     const { result, rerender } = renderHook(() => useSQLiteContext(), { wrapper });
@@ -39,7 +39,7 @@ describe(useSQLiteContext, () => {
 
   it('should run onInit before rendering children', async () => {
     const mockonInit = jest.fn();
-    const wrapper = ({ children }) => (
+    const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:" onInit={mockonInit}>
         {children}
       </SQLiteProvider>
@@ -63,7 +63,7 @@ describe(useSQLiteContext, () => {
         </View>
       );
     }
-    const wrapper = ({ children }) => (
+    const wrapper = ({ children }: React.PropsWithChildren) => (
       <React.Suspense fallback={<LoadingFallback />}>
         <SQLiteProvider databaseName=":memory:" useSuspense>
           {children}
@@ -104,7 +104,7 @@ describe(useSQLiteContext, () => {
         </View>
       );
     }
-    const wrapper = ({ children }) => (
+    const wrapper = ({ children }: React.PropsWithChildren) => (
       <ErrorBoundary fallback={<ErrorFallback />}>
         <React.Suspense fallback={null}>
           <SQLiteProvider databaseName="/nonexistent/nonexistent.db" useSuspense>

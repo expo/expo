@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 4.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.5 — 2025-04-25
+
+### 🎉 New features
+
+- Add TS config base for Node apps. ([#36322](https://github.com/expo/expo/pull/36322) by [@Simek]
+
+## 4.1.4 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.3 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 4.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

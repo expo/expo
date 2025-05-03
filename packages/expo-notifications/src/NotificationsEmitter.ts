@@ -102,11 +102,16 @@ export function addNotificationResponseReceivedListener(
 }
 
 /**
+ * @deprecated call `remove()` on the subscription object instead.
+ *
  * Removes a notification subscription returned by an `addNotificationListener` call.
  * @param subscription A subscription returned by `addNotificationListener` method.
  * @header listen
  */
 export function removeNotificationSubscription(subscription: EventSubscription) {
+  console.warn(
+    '`removeNotificationSubscription` is deprecated. Call `subscription.remove()` instead.'
+  );
   if (typeof subscription?.remove === 'function') {
     subscription.remove();
   } else {

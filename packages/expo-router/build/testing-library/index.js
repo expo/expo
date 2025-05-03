@@ -27,14 +27,10 @@ const mock_config_1 = require("./mock-config");
 Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
-const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
-afterAll(() => {
-    router_store_1.store.cleanup();
-});
 function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
     const mockContext = (0, mock_config_1.getMockContext)(context);
@@ -46,22 +42,21 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
      * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
      * (that the app will briefly be in the right state, but then update to an invalid state)
      */
-    router_store_1.store.subscribeToRootState(() => jest.runOnlyPendingTimers());
     return Object.assign(result, {
         getPathname() {
-            return router_store_1.store.routeInfoSnapshot().pathname;
+            return router_store_1.store.getRouteInfo().pathname;
         },
         getSegments() {
-            return router_store_1.store.routeInfoSnapshot().segments;
+            return router_store_1.store.getRouteInfo().segments;
         },
         getSearchParams() {
-            return router_store_1.store.routeInfoSnapshot().params;
+            return router_store_1.store.getRouteInfo().params;
         },
         getPathnameWithParams() {
-            return (0, getPathFromState_1.getPathFromState)(router_store_1.store.rootState, router_store_1.store.linking.config);
+            return router_store_1.store.getRouteInfo().pathnameWithParams;
         },
         getRouterState() {
-            return router_store_1.store.rootStateSnapshot();
+            return router_store_1.store.state;
         },
     });
 }

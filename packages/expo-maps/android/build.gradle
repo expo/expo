@@ -14,13 +14,13 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '0.9.1'
+version = '0.9.8'
 
 android {
   namespace "expo.modules.maps"
   defaultConfig {
     versionCode 1
-    versionName "0.9.1"
+    versionName "0.9.8"
   }
   buildFeatures {
     compose true

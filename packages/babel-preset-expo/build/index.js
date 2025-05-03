@@ -29,6 +29,7 @@ function babelPresetExpo(api, options = {}) {
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
+    const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
     const isServerEnv = isServer || isReactServer;
@@ -44,6 +45,11 @@ function babelPresetExpo(api, options = {}) {
     // Use the simpler babel preset for web and server environments (both web and native SSR).
     const isModernEngine = platform === 'web' || isServerEnv;
     const platformOptions = getOptions(options, platform);
+    // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
+    // adds extra dependencies (requires/imports) we need to disable it
+    if (metroSourceType === 'script') {
+        platformOptions.enableBabelRuntime = false;
+    }
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
@@ -181,7 +187,8 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
-    extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(platformOptions.unstable_transformImportMeta === true));
+    const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+    extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
     return {
         presets: [
             (() => {

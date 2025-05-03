@@ -10,6 +10,14 @@ import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked0
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<VideoBoxLink
+  videoId="yNaOaR2kIa0"
+  title="Building an Auth Flow with Expo Router"
+  description="Learn how to implement an auth flow in your Expo Router project."
+  className="mb-6"
+/>
 
 With Expo Router, all routes are always defined and accessible. You can use runtime logic to redirect users away from specific screens depending on whether they are authenticated. There are two different techniques for authenticating users within routes. This guide provides an example that demonstrates the functionality of standard native apps.
 
@@ -45,7 +53,7 @@ To follow the above example, set up a [React Context provider](https://react.dev
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
 ```tsx ctx.tsx
-import { useContext, createContext, type PropsWithChildren } from 'react';
+import { use, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 
 const AuthContext = createContext<{
@@ -62,11 +70,9 @@ const AuthContext = createContext<{
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = useContext(AuthContext);
-  if (process.env.NODE_ENV !== 'production') {
-    if (!value) {
-      throw new Error('useSession must be wrapped in a <SessionProvider />');
-    }
+  const value = use(AuthContext);
+  if (!value) {
+    throw new Error('useSession must be wrapped in a <SessionProvider />');
   }
 
   return value;
@@ -76,7 +82,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
-    <AuthContext.Provider
+    <AuthContext
       value={{
         signIn: () => {
           // Perform sign-in logic here
@@ -89,7 +95,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         isLoading,
       }}>
       {children}
-    </AuthContext.Provider>
+    </AuthContext>
   );
 }
 ```

@@ -51,11 +51,11 @@ describe('default template ignore paths', () => {
         continue;
       }
       const { filePath } = source;
-      const nodeModulesIndex = filePath.indexOf('node_modules/');
+      const nodeModulesIndex = filePath.indexOf('node_modules' + path.sep);
       if (nodeModulesIndex < 0) {
         continue;
       }
-      const moduleName = filePath.split('/')[1];
+      const moduleName = filePath.split(path.sep)[1];
 
       // Heuristic to check if it's a native module
       // We ignore expo modules first and then check react-native- prefix.

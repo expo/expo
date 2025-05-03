@@ -8,7 +8,7 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.functions.AsyncFunction
+import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
@@ -131,7 +131,7 @@ class ModuleHolder<T : Module>(val module: T) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    if (method is AsyncFunction) {
+    if (method is AsyncFunctionComponent) {
       method.callUserImplementation(args, promise, module.appContext)
       return@exceptionDecorator
     }

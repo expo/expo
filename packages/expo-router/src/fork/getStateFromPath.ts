@@ -5,8 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
-import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
-import { RouterStore } from '../global-state/router-store';
+import { INTERNAL_SLOT_NAME } from '../constants';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
@@ -68,15 +67,17 @@ type ConfigResources = {
  * @param options Extra options to fine-tune how to parse the path.
  */
 export function getStateFromPath<ParamList extends object>(
-  // START FORK
-  this: RouterStore | undefined | void,
-  // END FORK
   path: string,
-  options?: Options<ParamList>
+  options?: Options<ParamList>,
+  // START FORK
+  segments: string[] = []
+  // END FORK
 ): ResultState | undefined {
   const { initialRoutes, configs, configWithRegexes } = getConfigResources(
     options,
-    this?.routeInfo?.segments
+    // START FORK
+    segments
+    // END FORK
   );
 
   const screens = options?.screens;
@@ -475,6 +476,7 @@ const createNormalizedConfigs = (
 
   parentScreens.push(screen);
 
+  // @ts-expect-error: TODO(@kitten): This is entirely untyped. The index access just flags this, but we're not typing the config properly here
   const config = routeConfig[screen];
 
   if (typeof config === 'string') {

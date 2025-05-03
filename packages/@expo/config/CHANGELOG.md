@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 11.0.8 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.7 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.6 — 2025-04-30
+
+### 🎉 New features
+
+Add remote build cache provider types ([#36448](https://github.com/expo/expo/pull/36448) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 11.0.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.4 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.2 — 2025-04-11
 
 _This version does not introduce any user-facing changes._
