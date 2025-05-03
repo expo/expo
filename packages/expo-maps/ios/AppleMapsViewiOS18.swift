@@ -228,7 +228,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   for i in 0..<n {
       let vi = polygonCoordinates[i]
       let vj = polygonCoordinates[j]
-      
+
       // Check if the point's latitude is between the y-coordinates (latitude) of the edge
       // and if the point's longitude is to the left of the intersection with the edge
       if ((vi.latitude > tapCoordinate.latitude) != (vj.latitude > tapCoordinate.latitude)) &&
