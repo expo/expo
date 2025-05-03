@@ -105,29 +105,29 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               "lineWidth": hit.lineWidth,
               "coordinates": coords
             ])
-           }
-           // Then check if we hit a polyline and send an event
-           else if let hit = polyline(at: coordinate) {
-             let coords = hit.coordinates.map {
-               [
-                 "latitude": $0.latitude,
-                 "longitude": $0.longitude
-               ]
-             }
-             props.onPolylineClick([
-               "id": hit.id,
-               "color": hit.color,
-               "width": hit.width,
-               "contourStyle": hit.contourStyle,
-               "coordinates": coords
-             ])
-           }
+          }
+          // Then check if we hit a polyline and send an event
+          else if let hit = polyline(at: coordinate) {
+            let coords = hit.coordinates.map {
+              [
+                "latitude": $0.latitude,
+                "longitude": $0.longitude
+              ]
+            }
+            props.onPolylineClick([
+             "id": hit.id,
+             "color": hit.color,
+             "width": hit.width,
+             "contourStyle": hit.contourStyle,
+             "coordinates": coords
+            ])
+          }
 
-           // Send an event of map click regardless
-           props.onMapClick([
-             "latitude": coordinate.latitude,
-             "longitude": coordinate.longitude
-           ])
+          // Send an event of map click regardless
+          props.onMapClick([
+            "latitude": coordinate.latitude,
+            "longitude": coordinate.longitude
+          ])
          }
        }
       .mapControls {
