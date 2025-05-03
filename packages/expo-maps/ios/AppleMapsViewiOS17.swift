@@ -1,5 +1,5 @@
-import MapKit
 import SwiftUI
+import MapKit
 
 @available(iOS 17.0, *)
 struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
@@ -15,8 +15,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition =
-        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -71,7 +70,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         if let coordinate = reader.convert(position, from: .local) {
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude,
+            "longitude": coordinate.longitude
           ])
         }
       }
@@ -100,18 +99,16 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude,
+            "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading,
+          "bearing": context.camera.heading
         ])
       }
-      .mapStyle(
-        properties.mapType.toMapStyle(
-          showsTraffic: properties.isTrafficEnabled
-        )
-      )
+      .mapStyle(properties.mapType.toMapStyle(
+        showsTraffic: properties.isTrafficEnabled
+      ))
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
