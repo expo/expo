@@ -13,6 +13,19 @@
 
 ### 💡 Others
 
+## 0.9.8 — 2025-04-30
+
+### 🎉 New features
+
+- Added `id` property to markers and polylines. ([#36422](https://github.com/expo/expo/pull/36422) by [@fobos531](https://github.com/fobos531))
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.7 — 2025-04-28
+
+### 🎉 New features
+
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
 ## 0.9.6 — 2025-04-26
 
 ### 💡 Others

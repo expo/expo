@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 22 * * SUN' # 22:00 UTC every Sunday
+    - cron: '0 20 * * SUN' # 22:00 UTC every Sunday
 
 jobs:
   check_paths:

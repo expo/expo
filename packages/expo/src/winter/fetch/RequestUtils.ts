@@ -1,5 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
-
 import { type NativeHeadersType } from './NativeRequest';
 import { convertFormDataAsync } from './convertFormData';
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';

@@ -53,7 +53,7 @@ export const getUserFacingVersionString = (
   latestVersion?: string,
   betaVersion?: string
 ): string => {
-  const versionString = `SDK ${version?.substring(1, 3)}`;
+  const versionString = `SDK ${version?.slice(1, 3)}`;
 
   if (version === 'latest') {
     return latestVersion ? `${getUserFacingVersionString(latestVersion)} (Latest)` : 'Latest';
@@ -87,14 +87,14 @@ export function listMissingHashLinkTargets(apiName?: string) {
       if (link.hostname !== 'localhost' || !link.href.startsWith(link.baseURI.split('#')[0])) {
         return '';
       }
-      return link.hash.substring(1);
+      return link.hash.slice(1);
     })
     .filter(hash => hash !== '');
 
-  const availableIDs = Array.from(document.querySelectorAll('*[id]')).map(link => link.id);
-  const missingEntries = wantedHashes.filter(hash => !availableIDs.includes(hash));
+  const availableIDs = new Set(Array.from(document.querySelectorAll('*[id]')).map(link => link.id));
+  const missingEntries = wantedHashes.filter(hash => !availableIDs.has(hash));
 
-  if (missingEntries.length) {
+  if (missingEntries.length > 0) {
     /* eslint-disable no-console */
     console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
     console.table(missingEntries);
@@ -116,7 +116,7 @@ export function versionToText(version: string): string {
 }
 
 export function formatSdkVersion(version: string): string {
-  return version.includes('v') ? `SDK ${version.substring(1, 3)}` : `SDK ${version}`;
+  return version.includes('v') ? `SDK ${version.slice(1, 3)}` : `SDK ${version}`;
 }
 
 export function capitalize(str: string) {

@@ -499,6 +499,8 @@ Four different types of callouts can be used with markdown syntax for `> ...` bl
 > **warning** Callout that is used for warnings and deprecation messages.
 
 > **error** Callout that is used for errors and breaking changes or deprecated changes in the archive.
+
+> **important** Callout that is used for presenting important information about state of package, service or tool.
 ```
 
 ### Add last update date manually

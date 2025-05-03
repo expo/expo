@@ -10,10 +10,19 @@
 
 ### 💡 Others
 
+## 17.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
 ## 17.1.4 — 2025-04-25
 
 ### 🐛 Bug fixes
 
+- Fixed `medialibraryassetschangeevent` listener not capturing assets changes. ([#36459](https://github.com/expo/expo/pull/36459) by [@aleqsio](https://github.com/aleqsio))
 - Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
 
 ## 17.1.3 — 2025-04-21

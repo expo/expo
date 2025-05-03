@@ -129,6 +129,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
             onClick = {
               onPolylineClick(
                 PolylineRecord(
+                  id = polyline.id,
                   coordinates.map { Coordinates(it.latitude, it.longitude) },
                   polyline.geodesic,
                   polyline.color,
@@ -158,6 +159,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
                 // We can't send icon to js, because it's not serializable
                 // So we need to remove it from the marker record
                 MarkerRecord(
+                  id = marker.id,
                   title = marker.title,
                   snippet = marker.snippet,
                   coordinates = marker.coordinates

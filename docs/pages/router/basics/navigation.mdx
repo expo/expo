@@ -207,6 +207,57 @@ export default function Page() {
 }
 ```
 
+## Prefetching
+
+The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered. This allows for faster navigation by preparing the screen in advance.
+
+```tsx
+import { Redirect } from 'expo-router';
+
+export default function Page() {
+  return <Link href="/about" prefetch />;
+}
+```
+
+When `prefetch` is set, Expo Router will attempt to render the target screen off-screen. The exact behavior depends on the type of navigator used:
+
+- **Expo Router Navigators**: Render the target screen off-screen to enable preloading.
+- **Custom Navigators**: May implement prefetching differently or not support it at all.
+
+When a screen is preloaded in a stack navigator, it will have a few limitations:
+
+- It cannot use the imperative `router` API.
+- It cannot update options with `useNavigation().setOptions()`
+- It cannot listen to events from the navigator (for example focus, tabPress, and so on).
+
+The navigation object will be updated once you navigate to the screen. So if you have an event listener in a useEffect hook, and have a dependency on navigation, it will add any listeners when the screen is navigated to:
+
+```tsx
+const navigation = useNavigation();
+
+useEffect(() => {
+  const unsubscribe = navigation.addListener('tabPress', () => {
+    // do something
+  });
+
+  return () => {
+    unsubscribe();
+  };
+}, [navigation]);
+```
+
+Similarly, for dispatching actions or updating options, you can check if the screen is focused before doing so:
+
+```tsx
+const navigation = useNavigation();
+
+if (navigation.isFocused()) {
+  navigation.setOptions({ title: 'Updated title' });
+}
+```
+
+For more information, refer to the [React Navigation preload docs](https://reactnavigation.org/docs/navigation-object/#preload)
+
 ## Deep links
 
 Deep linking is when a URL opens a specific page in your app. Expo Router supports deep linking by default, so you can link to any page in your app with a URL from outside of your app, as you would inside your app with `Link`. This is especially useful for sharing links to specific pages in your app.

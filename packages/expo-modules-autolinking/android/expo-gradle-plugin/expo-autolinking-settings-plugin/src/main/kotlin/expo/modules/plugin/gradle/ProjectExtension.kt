@@ -37,7 +37,7 @@ internal fun Project.linkMavenRepository(mavenRepo: MavenRepo) {
   val (url, credentials, authentication) = mavenRepo
 
   repositories.maven { maven ->
-    maven.url = URI.create(url)
+    maven.setUrl(url)
     maven.applyCredentials(credentials)
     maven.applyAuthentication(authentication)
   }

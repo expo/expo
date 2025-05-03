@@ -15,6 +15,7 @@ import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
+  metroSourceType?: 'script' | 'module' | 'asset';
   supportsReactCompiler?: boolean;
   isReactServer?: boolean;
   isHMREnabled?: boolean;
@@ -113,6 +114,10 @@ function getBabelCaller({
     isNodeModule,
 
     isHMREnabled: options.hot,
+
+    // Pass on the input type. Scripts shall be transformed to avoid dependencies (imports/requires),
+    // for example by polyfills or Babel runtime
+    metroSourceType: options.type,
 
     // Set the standard Babel flag to disable ESM transformations.
     supportsStaticESM:
