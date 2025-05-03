@@ -97,7 +97,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
          if let coordinate = reader.convert(position, from: .local) {
             // check if we hit a polygon and send an event
             if let hit = props.polygons.first(where: { polygon in
-                 isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.coordinates)
+              isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
              }) {
                  let coords = hit.coordinates.map {
                      [
@@ -107,9 +107,9 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                  }
                  props.onPolygonClick([
                      "id": hit.id,
-                     "fillColor": hit.fillColor,
-                     "strokeColor": hit.strokeColor,
-                     "strokeWidth": hit.strokeWidth,
+                     "color": hit.color,
+                     "lineColor": hit.lineColor,
+                     "lineWidth": hit.lineWidth,
                      "coordinates": coords
                  ])
              }
@@ -220,22 +220,25 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
   // Point-in-polygon algorithm (Ray-casting)
   // See: https://rosettacode.org/wiki/Ray-casting_algorithm
-  func isPointInPolygon(point: CLLocationCoordinate2D, polygon: [CLLocationCoordinate2D]) -> Bool {
+  func isTapInsidePolygon(tapCoordinate: CLLocationCoordinate2D, polygonCoordinates: [CLLocationCoordinate2D]) -> Bool {
     var inside = false
-    let n = polygon.count
+    let n = polygonCoordinates.count
     var j = n - 1
 
-    for i in 0..<n {
-      let vi = polygon[i]
-      let vj = polygon[j]
-
-      if ((vi.latitude > point.latitude) != (vj.latitude > point.latitude)) &&
-          (point.longitude < (vj.longitude - vi.longitude) * (point.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
+  for i in 0..<n {
+      let vi = polygonCoordinates[i]
+      let vj = polygonCoordinates[j]
+      
+      // Check if the point's latitude is between the y-coordinates (latitude) of the edge
+      // and if the point's longitude is to the left of the intersection with the edge
+      if ((vi.latitude > tapCoordinate.latitude) != (vj.latitude > tapCoordinate.latitude)) &&
+          (tapCoordinate.longitude < (vj.longitude - vi.longitude) * (tapCoordinate.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
           inside.toggle()
       }
       j = i
-    }
+  }
 
-    return inside
+  return inside
+
   }
 }

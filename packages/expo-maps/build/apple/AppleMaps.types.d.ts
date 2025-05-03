@@ -153,6 +153,10 @@ export type AppleMapsPolyline = {
  */
 export type AppleMapsPolygon = {
     /**
+     * The unique identifier for the polygon. This can be used to e.g. identify the clicked polygon in the `onPolygonClick` event.
+     */
+    id?: string;
+    /**
      * The coordinates of the circle.
      */
     coordinates: Coordinates[];

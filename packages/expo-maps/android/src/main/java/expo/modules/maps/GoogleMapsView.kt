@@ -36,6 +36,7 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toKClass
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
@@ -141,26 +142,10 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
           )
         }
 
-        polygonState.forEach { (polygon, coordinates) ->
-          Polygon(
-            points = coordinates,
-            fillColor = Color(polygon.color),
-            strokeColor = Color(polygon.lineColor),
-            strokeWidth = polygon.lineWidth,
-            clickable = true,
-            onClick = {
-              onPolygonClick(
-                PolygonRecord(
-                  id = polygon.id,
-                  coordinates.map { Coordinates(it.latitude, it.longitude) },
-                  color = polygon.color,
-                  lineColor = polygon.lineColor,
-                  lineWidth = polygon.lineWidth
-                )
-              )
-            }
-          )
-        }
+        MapPolygons(
+          polygonState = polygonState,
+          onPolygonClick = onPolygonClick
+        )
 
         for ((marker, state) in markerState.value) {
           val icon = getIconDescriptor(marker)
@@ -282,6 +267,33 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         }
       }
     }
+
+  @Composable
+  private fun MapPolygons(
+    polygonState: List<Pair<PolygonRecord, List<LatLng>>>,
+    onPolygonClick: ViewEventCallback<PolygonRecord>
+  ) {
+    polygonState.forEach { (polygon, coordinates) ->
+      Polygon(
+        points = coordinates,
+        fillColor = Color(polygon.color),
+        strokeColor = Color(polygon.lineColor),
+        strokeWidth = polygon.lineWidth,
+        clickable = true,
+        onClick = {
+          onPolygonClick(
+            PolygonRecord(
+              id = polygon.id,
+              coordinates.map { Coordinates(it.latitude, it.longitude) },
+              color = polygon.color,
+              lineColor = polygon.lineColor,
+              lineWidth = polygon.lineWidth
+            )
+          )
+        }
+      )
+    }
+  }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
     // Stop updating the camera position based on user location.
