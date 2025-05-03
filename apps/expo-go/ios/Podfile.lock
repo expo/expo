@@ -473,7 +473,6 @@ PODS:
   - hermes-engine/inspector (0.79.2)
   - hermes-engine/inspector_chrome (0.79.2)
   - hermes-engine/Public (0.79.2)
-  - JKBigInteger (0.0.6)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -2983,7 +2982,6 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
   - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - nanopb
@@ -3268,8 +3266,6 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-03-03-RNv0.79.0-bc17d964d03743424823d7dd1a9f37633459c5c5
-  JKBigInteger:
-    :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
     :path: "../../../node_modules/lottie-react-native"
   RCT-Folly:
@@ -3532,7 +3528,6 @@ SPEC CHECKSUMS:
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: eb1dc2409bfbd008988ea7e3473594bc1eb33fbe
-  JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3645,6 +3640,6 @@ SPEC CHECKSUMS:
   Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: b43e8fd68aecb83928c36a03bb11448210e1072a
+PODFILE CHECKSUM: 9f104a55d90568cbeff5ed1bb052a935a9042f4f
 
 COCOAPODS: 1.16.2
