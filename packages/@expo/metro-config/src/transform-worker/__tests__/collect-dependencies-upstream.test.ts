@@ -9,12 +9,16 @@
  * This helps establish a baseline of support.
  */
 import { codeFrameColumns } from '@babel/code-frame';
-import { transformFromAstSync, transformSync } from '@babel/core';
+import { transformFromAstSync } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import dedent from 'dedent';
+import {
+  importLocationsPlugin,
+  locToKey,
+} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
 import type {
@@ -1683,29 +1687,25 @@ describe('optional dependencies', () => {
     // which conflated added `require('@babel/runtime/..')` with 1 line ESM code
     // resulting in ESM code of babel being resolved, while it should have used CJS code.
     // See: https://discord.com/channels/514829729862516747/514832110595604510/1368148663179804733
-    it(`does not conflate @babel/runtime/helper with "export { default } from './x'"`, () => {
-      // To fully test the `isESMImport` - after adding `@babel/runtime/helpers/..`
-      // we need to use the `importLocationsPlugin` from Metro.
-      const { importLocationsPlugin, locToKey } = jest.requireActual(
-        'metro/src/ModuleGraph/worker/importLocationsPlugin'
-      );
-
-      // Create the code, transform it, and collect the original import locations
+    it('distinguishes ESM imports in single-line files from generated CJS babel runtime helpers', () => {
       const code = `export { default } from './x'`;
-      const ast = astFromCode(code);
-      const result = transformFromAstSync(ast, code, {
+
+      // Transform code and collect original ESM import locations
+      const { ast, metadata } = transformFromAstSync(astFromCode(code), code, {
         ast: true,
-        presets: ['@babel/preset-env'],
-        plugins: ['@babel/plugin-transform-runtime', importLocationsPlugin],
+        plugins: [
+          importLocationsPlugin, // Required to collect original ESM import locations
+          '@babel/plugin-transform-runtime', // Required to have `@babel/runtime/helpers/..` applied
+          '@babel/plugin-transform-modules-commonjs', // Required to apply `@babel/runtime/helpers/interopRequireDefault`
+        ],
       });
       // @ts-expect-error - `metadata.metro` is not typed in the babel result
-      const importDeclarationLocs = result.metadata.metro.unstable_importDeclarationLocs;
+      const importLocations = metadata.metro.unstable_importDeclarationLocs;
 
       // Collect the dependencies, using the `isESMImport` location-based lookup
-      const { dependencies } = collectDependencies(result.ast, {
+      const { dependencies } = collectDependencies(ast, {
         ...opts,
-        unstable_isESMImportAtSource: (loc: t.SourceLocation) =>
-          importDeclarationLocs.has(locToKey(loc)),
+        unstable_isESMImportAtSource: (loc) => importLocations.has(locToKey(loc)),
       });
       expect(dependencies).toEqual([
         {
