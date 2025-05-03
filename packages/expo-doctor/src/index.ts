@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+import { constants, promises as fs } from 'node:fs';
+import path from 'node:path';
 import chalk from 'chalk';
 import Debug from 'debug';
-import { constants, promises as fs } from 'fs';
 import { boolish } from 'getenv';
-import path from 'path';
 
 import { actionAsync } from './doctor';
 
@@ -20,6 +20,7 @@ async function run() {
   const args = process.argv.slice(2);
 
   let showVerboseTestResults = false;
+  let runQuiet = false;
 
   if (args.some((arg) => ['-v', '--version'].includes(arg))) {
     logVersionAndExit();
@@ -27,6 +28,10 @@ async function run() {
 
   if (args.some((arg) => ['-h', '--help'].includes(arg))) {
     logHelpAndExit();
+  }
+
+  if (args.some((arg) => ['-q', '--quiet'].includes(arg))) {
+    runQuiet = true;
   }
 
   if (args.some((arg) => ['--verbose'].includes(arg))) {
@@ -46,7 +51,7 @@ async function run() {
     }
   });
 
-  await actionAsync(projectRoot, showVerboseTestResults);
+  await actionAsync(projectRoot, showVerboseTestResults, runQuiet);
 }
 
 function logVersionAndExit() {
