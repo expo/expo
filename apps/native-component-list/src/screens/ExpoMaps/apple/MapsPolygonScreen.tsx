@@ -21,7 +21,7 @@ export default function MapsCameraControlsScreen() {
           {
             color: '#ff0000',
             lineColor: '#0000ff',
-            lineWidth: 40,
+            lineWidth: 10,
             coordinates: [
               {
                 latitude: 46.3338841,

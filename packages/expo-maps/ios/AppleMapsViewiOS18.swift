@@ -36,7 +36,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
-  
+
   func renderPolygon(_ polygon: Polygon) -> some MapContent {
     let mapPolygon = MapPolygon(coordinates: polygon.clLocationCoordinates2D)
     return mapPolygon
@@ -66,7 +66,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
-        
+
         ForEach(props.polygons) { polygon in
           renderPolygon(polygon)
         }
@@ -94,31 +94,49 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
-        if let coordinate = reader.convert(position, from: .local) {
-          // First check if we hit a polyline and send an event
-          if let hit = polyline(at: coordinate) {
-            let coords = hit.coordinates.map {
-              [
-                "latitude": $0.latitude,
-                "longitude": $0.longitude
-              ]
-            }
-            props.onPolylineClick([
-              "id": hit.id,
-              "color": hit.color,
-              "width": hit.width,
-              "contourStyle": hit.contourStyle,
-              "coordinates": coords
-            ])
-          }
+         if let coordinate = reader.convert(position, from: .local) {
+            // check if we hit a polygon and send an event
+            if let hit = props.polygons.first(where: { polygon in
+                 isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.coordinates)
+             }) {
+                 let coords = hit.coordinates.map {
+                     [
+                         "latitude": $0.latitude,
+                         "longitude": $0.longitude
+                     ]
+                 }
+                 props.onPolygonClick([
+                     "id": hit.id,
+                     "fillColor": hit.fillColor,
+                     "strokeColor": hit.strokeColor,
+                     "strokeWidth": hit.strokeWidth,
+                     "coordinates": coords
+                 ])
+             }
+             // Then check if we hit a polyline and send an event
+             else if let hit = polyline(at: coordinate) {
+                 let coords = hit.coordinates.map {
+                     [
+                         "latitude": $0.latitude,
+                         "longitude": $0.longitude
+                     ]
+                 }
+                 props.onPolylineClick([
+                     "id": hit.id,
+                     "color": hit.color,
+                     "width": hit.width,
+                     "contourStyle": hit.contourStyle,
+                     "coordinates": coords
+                 ])
+             }
 
-          // Send an event of map click regardless
-          props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
-          ])
-        }
-      }
+             // Send an event of map click regardless
+             props.onMapClick([
+                 "latitude": coordinate.latitude,
+                 "longitude": coordinate.longitude
+             ])
+         }
+       }
       .mapControls {
         if uiSettings.compassEnabled {
           MapCompass()
@@ -198,5 +216,26 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       return false
     }
+  }
+
+  // Point-in-polygon algorithm (Ray-casting)
+  // See: https://rosettacode.org/wiki/Ray-casting_algorithm
+  func isPointInPolygon(point: CLLocationCoordinate2D, polygon: [CLLocationCoordinate2D]) -> Bool {
+    var inside = false
+    let n = polygon.count
+    var j = n - 1
+
+    for i in 0..<n {
+      let vi = polygon[i]
+      let vj = polygon[j]
+
+      if ((vi.latitude > point.latitude) != (vj.latitude > point.latitude)) &&
+          (point.longitude < (vj.longitude - vi.longitude) * (point.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
+          inside.toggle()
+      }
+      j = i
+    }
+
+    return inside
   }
 }
