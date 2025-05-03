@@ -19,7 +19,6 @@ prepare_react_native_project!
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
   # transitive dependency of React-Core and we use it to get the `RCTInspectorPackagerConnection` state

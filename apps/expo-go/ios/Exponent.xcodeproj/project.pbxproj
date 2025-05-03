@@ -46,7 +46,6 @@
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */; };
 		40CB1D772CD2A0C200CB3717 /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */; };
-		40F867AB2CA04F0B009A7E2C /* JKBigInteger.podspec.json in Resources */ = {isa = PBXBuildFile; fileRef = 40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */; };
 		83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */; };
@@ -258,7 +257,6 @@
 		40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenModule.m; sourceTree = "<group>"; };
 		40CB1D6D2CD2A0C200CB3717 /* EXSplashScreenService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenService.h; sourceTree = "<group>"; };
 		40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenService.m; sourceTree = "<group>"; };
-		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
 		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		71773906C5EB4CA89B3A271F /* Pods-Expo Go (main)-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Tests/Pods-Expo Go (main)-Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -453,7 +451,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2D1A6CC92D9B38910007E94A /* Notifications */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Notifications; sourceTree = "<group>"; };
+		2D1A6CC92D9B38910007E94A /* Notifications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -578,22 +586,6 @@
 			path = AppInstance;
 			sourceTree = "<group>";
 		};
-		40F867A52CA04F0B009A7E2C /* common */ = {
-			isa = PBXGroup;
-			children = (
-				40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */,
-			);
-			path = common;
-			sourceTree = "<group>";
-		};
-		40F867A62CA04F0B009A7E2C /* vendored */ = {
-			isa = PBXGroup;
-			children = (
-				40F867A52CA04F0B009A7E2C /* common */,
-			);
-			path = vendored;
-			sourceTree = "<group>";
-		};
 		78B070920855541A4D469D4D /* ExponentIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -616,7 +608,6 @@
 				AE58247EE2419C33B3A8CBAE /* Pods */,
 				78CEE2C11ACD07D70095B124 /* Products */,
 				B505BA0F20CAF77A0046ACFB /* Tests */,
-				40F867A62CA04F0B009A7E2C /* vendored */,
 				994130004C859A4758AD583C /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
@@ -1303,7 +1294,6 @@
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */,
-				40F867AB2CA04F0B009A7E2C /* JKBigInteger.podspec.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1404,13 +1394,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1440,13 +1426,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1480,13 +1462,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1561,13 +1539,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1844,7 +1818,10 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1907,7 +1884,10 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
