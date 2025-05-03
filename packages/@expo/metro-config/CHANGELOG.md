@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Avoid mixing up ESM imports with non-ESM imports when collecting dependencies of single line files.
+- Avoid mixing up ESM imports with non-ESM imports when collecting dependencies of single line files. ([#36594](https://github.com/expo/expo/pull/36594) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
