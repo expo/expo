@@ -7,6 +7,10 @@ import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '../constants/versions.js
 const projectRoot = path.resolve(import.meta.dirname, '..');
 
 export async function getSchemaAsync(sdkVersion, isUnversioned = false) {
+  if (!sdkVersion) {
+    return;
+  }
+
   const response = await fetch(
     `http://exp.host/--/api/v2/sdks/${sdkVersion.replace('v', '')}/native-modules`
   );

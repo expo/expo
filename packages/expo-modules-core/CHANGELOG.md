@@ -8,9 +8,23 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 2.3.12 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.11 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.10 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.3.9 — 2025-04-25
 

@@ -6,11 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.1.10 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.9 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Force disable `enableBabelRuntime` for when (new) Babel caller `type` input is `'script'` ([#36463](https://github.com/expo/expo/pull/36463) by [@kitten](https://github.com/kitten))
+
+## 13.1.8 — 2025-04-28
+
+### 🎉 New features
+
 - Always enable `import.meta` polyfill for server bundles. ([#36380](https://github.com/expo/expo/pull/36380) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 13.1.7 — 2025-04-25
 

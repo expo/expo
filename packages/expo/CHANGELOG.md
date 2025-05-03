@@ -8,7 +8,35 @@
 
 ### 🐛 Bug fixes
 
+- Update new arch check in Expo Go to account for new default behavior of `newArchEnabled` (now `true` when not specified in SDK 53). ([#36506](https://github.com/expo/expo/pull/36506) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
+
+## 53.0.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.2 — 2025-04-30
+
+### 💡 Others
+
+- Switch `expo/tsconfig.base` preset to `moduleResolution: "bundler"` ([#36299](https://github.com/expo/expo/pull/36299) by [@kitten](https://github.com/kitten))
+
+## 53.0.1 — 2025-04-28
+
+### 💡 Others
+
+- Move virtual RSC client boundary entry point to `expo` from `@expo/metro-runtime`. ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0 — 2025-04-28
+
+### 🎉 New features
+
+- Add web stream support globally. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 53.0.0-preview.12 — 2025-04-25
 

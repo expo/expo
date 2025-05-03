@@ -6,7 +6,7 @@ import { ErrorEvent } from '@sentry/react';
  */
 
 // These exact error messages may be different depending on the browser!
-const ERRORS_TO_DISCARD = [
+const ERRORS_TO_DISCARD = new Set([
   // Filter out errors from extensions
   'chrome-extension://',
   'moz-extension://',
@@ -15,7 +15,7 @@ const ERRORS_TO_DISCARD = [
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
   // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
   'SecurityError: The operation is insecure.',
-];
+]);
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
 const TIMESTAMP_KEY = 'sentry:errorReportingInit';
@@ -36,7 +36,7 @@ export function preprocessSentryError(event: ErrorEvent) {
   }
 
   // Discard any errors that we know we do not care about
-  if (ERRORS_TO_DISCARD.includes(message)) {
+  if (ERRORS_TO_DISCARD.has(message)) {
     return null;
   }
 

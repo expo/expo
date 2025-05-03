@@ -1,4 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
 import type { NativeResponse } from './NativeRequest';
 declare const ConcreteNativeResponse: typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;

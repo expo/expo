@@ -7,6 +7,5 @@
 import './location/install';
 import './effects';
 import './async-require';
-import '@expo/metro-runtime/rsc/virtual';
 import '@expo/metro-runtime/rsc/runtime';
 //# sourceMappingURL=index.d.ts.map
