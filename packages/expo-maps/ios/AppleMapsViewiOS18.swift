@@ -218,20 +218,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     let n = polygonCoordinates.count
     var j = n - 1
 
-  for i in 0..<n {
+    for i in 0..<n {
       let vi = polygonCoordinates[i]
       let vj = polygonCoordinates[j]
 
       // Check if the point's latitude is between the y-coordinates (latitude) of the edge
       // and if the point's longitude is to the left of the intersection with the edge
       if ((vi.latitude > tapCoordinate.latitude) != (vj.latitude > tapCoordinate.latitude)) &&
-          (tapCoordinate.longitude < (vj.longitude - vi.longitude) * (tapCoordinate.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
-          inside.toggle()
+        (tapCoordinate.longitude < (vj.longitude - vi.longitude) * (tapCoordinate.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
+        inside.toggle()
       }
       j = i
-  }
-
-  return inside
-
+    }
+    
+    return inside
   }
 }
