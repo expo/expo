@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid mixing up ESM imports with non-ESM imports when collecting dependencies of single line files.
+
 ### 💡 Others
 
 ## 0.20.12 — 2025-05-01
