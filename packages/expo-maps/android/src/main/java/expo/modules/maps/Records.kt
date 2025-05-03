@@ -101,7 +101,7 @@ data class PolygonRecord(
 
   @Field
   val color: Int = 0xFF0000FF.toInt()
-)
+): Record
 
 
 data class CameraPositionRecord(

@@ -44,7 +44,7 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const parsedPolygons = polygons?.map((polygon) => ({
         ...polygon,
         color: processColor(polygon.color) ?? undefined,
-        lineColor: processColor(polygon.color) ?? undefined,
+        lineColor: processColor(polygon.lineColor) ?? undefined,
     }));
     if (!NativeView) {
         return null;

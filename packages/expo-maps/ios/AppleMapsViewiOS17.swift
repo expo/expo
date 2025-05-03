@@ -11,6 +11,13 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
+  
+  func renderPolygon(_ polygon: Polygon) -> some MapContent {
+    let mapPolygon = MapPolygon(coordinates: polygon.clLocationCoordinates2D)
+    return mapPolygon
+      .stroke(polygon.lineColor ?? .clear, lineWidth: polygon.lineWidth ?? 0)
+      .foregroundStyle(polygon.color)
+  }
 
   var body: some View {
     let properties = props.properties
@@ -31,6 +38,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         ForEach(props.polylines) { polyline in
           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
             .stroke(polyline.color, lineWidth: polyline.width)
+        }
+        
+        ForEach(props.polygons) { polygon in
+          renderPolygon(polygon)
         }
 
         ForEach(props.annotations) { annotation in

@@ -170,6 +170,31 @@ export type AppleMapsPolyline = {
 /**
  * @platform ios
  */
+export type AppleMapsPolygon = {
+  /**
+   * The coordinates of the circle.
+   */
+  coordinates: Coordinates[];
+
+  /**
+   * The color of the polygon.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The width of the polygon.
+   */
+  lineWidth?: number;
+
+  /**
+   * The color of the polygon.
+   */
+  lineColor?: ProcessedColorValue | string;
+};
+
+/**
+ * @platform ios
+ */
 export type AppleMapsViewProps = {
   ref?: Ref<AppleMapsViewType>;
   style?: StyleProp<ViewStyle>;
@@ -188,6 +213,11 @@ export type AppleMapsViewProps = {
    * The array of polylines to display on the map.
    */
   polylines?: AppleMapsPolyline[];
+
+  /**
+   * The array of polygons to display on the map.
+   */
+  polygons?: AppleMapsPolygon[];
 
   /**
    * The array of annotations to display on the map.
@@ -221,6 +251,12 @@ export type AppleMapsViewProps = {
    * @platform ios 18.0+
    */
   onPolylineClick?: (event: AppleMapsPolyline) => void;
+
+  /**
+   * Lambda invoked when the polygon is clicked
+   * @platform ios 18.0+
+   */
+  onPolygonClick?: (event: AppleMapsPolygon) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.

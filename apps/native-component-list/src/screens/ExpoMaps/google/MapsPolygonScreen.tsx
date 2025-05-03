@@ -9,7 +9,7 @@ export default function MapsCameraControlsScreen() {
         cameraPosition={{
           coordinates: {
             latitude: 46.334295,
-            longitude: 16.5656,
+            longitude: 16.572,
           },
           zoom: 15,
         }}
@@ -20,31 +20,40 @@ export default function MapsCameraControlsScreen() {
         polygons={[
           {
             color: '#ff0000',
-            lineWidth: 60,
+            lineColor: '#0000ff',
+            lineWidth: 30,
             coordinates: [
               {
-                latitude: 46.3346775,
-                longitude: 16.5689839,
+                latitude: 46.3338841,
+                longitude: 16.5705478,
               },
               {
-                latitude: 46.3322329,
-                longitude: 16.5677608,
+                latitude: 46.332121,
+                longitude: 16.5704298,
               },
               {
-                latitude: 46.3314032,
-                longitude: 16.5735759,
+                latitude: 46.3312468,
+                longitude: 16.5723395,
               },
               {
-                latitude: 46.3340404,
-                longitude: 16.5749921,
+                latitude: 46.3319062,
+                longitude: 16.5742815,
               },
               {
-                latitude: 46.334635,
-                longitude: 16.5689818,
+                latitude: 46.3336989,
+                longitude: 16.5744746,
               },
               {
-                latitude: 46.3346775,
-                longitude: 16.5689839,
+                latitude: 46.3344248,
+                longitude: 16.5725756,
+              },
+              {
+                latitude: 46.3338915,
+                longitude: 16.5705264,
+              },
+              {
+                latitude: 46.3338841,
+                longitude: 16.5705478,
               },
             ],
           },

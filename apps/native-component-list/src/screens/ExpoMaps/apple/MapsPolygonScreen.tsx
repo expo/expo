@@ -1,8 +1,6 @@
 import { AppleMaps } from 'expo-maps';
 import { Alert, View } from 'react-native';
 
-import { polylineCoordinates } from '../data';
-
 export default function MapsCameraControlsScreen() {
   return (
     <View style={{ flex: 1 }}>
@@ -11,19 +9,53 @@ export default function MapsCameraControlsScreen() {
         cameraPosition={{
           coordinates: {
             latitude: 46.334295,
-            longitude: 16.5656,
+            longitude: 16.572,
           },
           zoom: 15,
         }}
-        onPolylineClick={(event) => {
+        onPolygonClick={(event) => {
           console.log(event);
-          Alert.alert('Polyline clicked', JSON.stringify(event));
+          Alert.alert('Polygon clicked', JSON.stringify(event));
         }}
-        polylines={[
+        polygons={[
           {
             color: '#ff0000',
-            width: 20,
-            coordinates: polylineCoordinates,
+            lineColor: '#0000ff',
+            lineWidth: 40,
+            coordinates: [
+              {
+                latitude: 46.3338841,
+                longitude: 16.5705478,
+              },
+              {
+                latitude: 46.332121,
+                longitude: 16.5704298,
+              },
+              {
+                latitude: 46.3312468,
+                longitude: 16.5723395,
+              },
+              {
+                latitude: 46.3319062,
+                longitude: 16.5742815,
+              },
+              {
+                latitude: 46.3336989,
+                longitude: 16.5744746,
+              },
+              {
+                latitude: 46.3344248,
+                longitude: 16.5725756,
+              },
+              {
+                latitude: 46.3338915,
+                longitude: 16.5705264,
+              },
+              {
+                latitude: 46.3338841,
+                longitude: 16.5705478,
+              },
+            ],
           },
         ]}
       />

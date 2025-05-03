@@ -89,7 +89,8 @@ struct Polygon: Record, Identifiable {
 
   @Field var coordinates: [Coordinate]
   @Field var color: Color = .blue
-  @Field var width: Double = 4
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
 
   var clLocationCoordinates2D: [CLLocationCoordinate2D] {
     return coordinates.map {
