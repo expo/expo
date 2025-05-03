@@ -30,12 +30,12 @@ extension MKMapPoint {
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewState()
-    
+
   func renderCircle(_ circle: Circle) -> some MapContent {
     let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
     return mapCircle
-        .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
-        .foregroundStyle(circle.color)
+      .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
+      .foregroundStyle(circle.color)
   }
 
   func setCameraPosition(config: CameraPosition?) {
