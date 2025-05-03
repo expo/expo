@@ -115,21 +115,21 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               ]
             }
             props.onPolylineClick([
-             "id": hit.id,
-             "color": hit.color,
-             "width": hit.width,
-             "contourStyle": hit.contourStyle,
-             "coordinates": coords
+              "id": hit.id,
+              "color": hit.color,
+              "width": hit.width,
+              "contourStyle": hit.contourStyle,
+              "coordinates": coords
             ])
           }
-
+          
           // Send an event of map click regardless
           props.onMapClick([
             "latitude": coordinate.latitude,
             "longitude": coordinate.longitude
           ])
-         }
-       }
+        }
+      }
       .mapControls {
         if uiSettings.compassEnabled {
           MapCompass()
