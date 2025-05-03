@@ -12,13 +12,6 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
     }
   }
 
-  func renderPolygon(_ polygon: Polygon) -> some MapContent {
-    let mapPolygon = MapPolygon(coordinates: polygon.clLocationCoordinates2D)
-    return mapPolygon
-      .stroke(polygon.lineColor ?? .clear, lineWidth: polygon.lineWidth ?? 0)
-      .foregroundStyle(polygon.color)
-  }
-
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
