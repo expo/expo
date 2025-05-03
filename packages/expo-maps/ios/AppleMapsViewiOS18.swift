@@ -30,6 +30,13 @@ extension MKMapPoint {
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewState()
+    
+  func renderCircle(_ circle: Circle) -> some MapContent {
+    let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
+    return mapCircle
+        .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
+        .foregroundStyle(circle.color)
+  }
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
@@ -61,16 +68,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.circles) { circle in
-          let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
-            .tag(MapSelection<MKMapItem>(circle.mapItem))
-          if let lineColor = circle.lineColor, let lineWidth = circle.lineWidth {
-            mapCircle
-              .stroke(lineColor, lineWidth: lineWidth)
-              .foregroundStyle(circle.color)
-          } else {
-            mapCircle
-              .foregroundStyle(circle.color)
-          }
+          renderCircle(circle)
         }
 
         ForEach(props.annotations) { annotation in

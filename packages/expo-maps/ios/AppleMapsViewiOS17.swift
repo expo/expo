@@ -1,14 +1,22 @@
-import SwiftUI
 import MapKit
+import SwiftUI
 
 @available(iOS 17.0, *)
 struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsCameraState()
+    
+  func renderCircle(_ circle: Circle) -> some MapContent {
+    let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
+    return mapCircle
+        .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
+        .foregroundStyle(circle.color)
+  }
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition =
+        config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -34,15 +42,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.circles) { circle in
-          let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
-            if let lineColor = circle.lineColor, let lineWidth = circle.lineWidth {
-              mapCircle
-                .stroke(lineColor, lineWidth: lineWidth)
-                .foregroundStyle(circle.color)
-            } else {
-              mapCircle
-                .foregroundStyle(circle.color)
-            }
+          renderCircle(circle)
         }
 
         ForEach(props.annotations) { annotation in
@@ -71,7 +71,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         if let coordinate = reader.convert(position, from: .local) {
           props.onMapClick([
             "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "longitude": coordinate.longitude,
           ])
         }
       }
@@ -100,16 +100,18 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude
+            "longitude": cameraPosition.longitude,
           ],
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
-          "bearing": context.camera.heading
+          "bearing": context.camera.heading,
         ])
       }
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
+      .mapStyle(
+        properties.mapType.toMapStyle(
+          showsTraffic: properties.isTrafficEnabled
+        )
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }

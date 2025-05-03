@@ -38,6 +38,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.Circle
+import expo.modules.kotlin.viewevent.ViewEventCallback
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
@@ -138,28 +139,10 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
           )
         }
 
-        circleState.forEach { (circle, center) ->
-          Circle(
-            center = center,
-            radius = circle.radius,
-            fillColor = Color(circle.color),
-            strokeColor = circle.lineColor?.let { Color(it) } ?: Color.Transparent,
-            strokeWidth = circle.lineWidth ?: 0f,
-            clickable = true,
-            onClick = {
-              onCircleClick(
-                CircleRecord(
-                  id = circle.id,
-                  center = Coordinates(center.latitude, center.longitude),
-                  radius = circle.radius,
-                  color = circle.color,
-                  lineColor = circle.lineColor,
-                  lineWidth = circle.lineWidth
-                )
-              )
-            }
-          )
-        }
+        MapCircles(
+          circleState = circleState,
+          onCircleClick = onCircleClick
+        )
 
         for ((marker, state) in markerState.value) {
           val icon = getIconDescriptor(marker)
@@ -311,5 +294,34 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
       bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
     }
+  }
+}
+
+@Composable
+private fun MapCircles(
+  circleState: List<Pair<CircleRecord, LatLng>>,
+  onCircleClick: ViewEventCallback<CircleRecord>
+) {
+  circleState.forEach { (circle, center) ->
+    Circle(
+      center = center,
+      radius = circle.radius,
+      fillColor = Color(circle.color),
+      strokeColor = circle.lineColor?.let { Color(it) } ?: Color.Transparent,
+      strokeWidth = circle.lineWidth ?: 0f,
+      clickable = true,
+      onClick = {
+        onCircleClick(
+          CircleRecord(
+            id = circle.id,
+            center = Coordinates(center.latitude, center.longitude),
+            radius = circle.radius,
+            color = circle.color,
+            lineColor = circle.lineColor,
+            lineWidth = circle.lineWidth
+          )
+        )
+      }
+    )
   }
 }
