@@ -92,19 +92,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           if let hit = props.polygons.first(where: { polygon in
             isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
           }) {
-             let coords = hit.coordinates.map {
-               [
-                 "latitude": $0.latitude,
-                 "longitude": $0.longitude
-               ]
-             }
-             props.onPolygonClick([
-               "id": hit.id,
-               "color": hit.color,
-               "lineColor": hit.lineColor,
-               "lineWidth": hit.lineWidth,
-               "coordinates": coords
-             ])
+              let coords = hit.coordinates.map {
+                [
+                  "latitude": $0.latitude,
+                  "longitude": $0.longitude
+                ]
+              }
+              props.onPolygonClick([
+                "id": hit.id,
+                "color": hit.color,
+                "lineColor": hit.lineColor,
+                "lineWidth": hit.lineWidth,
+                "coordinates": coords
+              ])
            }
            // Then check if we hit a polyline and send an event
            else if let hit = polyline(at: coordinate) {
