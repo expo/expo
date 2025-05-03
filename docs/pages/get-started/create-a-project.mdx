@@ -1,24 +1,30 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+expo init sutra-mobile
+cd sutra-mobile
+npm install firebase axios react-navigation react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-navigation/native-stack react-native-tinder-swipe axios socket.io-client
 
-import { Terminal } from '~/ui/components/Snippet';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './screens/LoginScreen';
+import VerifyScreen from './screens/VerifyScreen';
+import SignupScreen from './screens/SignupScreen';
+import SwipeScreen from './screens/SwipeScreen';
+import ChatScreen from './screens/ChatScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
-System requirements:
+const Stack = createNativeStackNavigator();
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
-
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
-
-To create a new project, run the following command:
-
-<Terminal cmd={['$ npx create-expo-app@latest']} />
-
-> You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
-
-## Next step
-
-You have a project. Now it's time to set up your development environment so that you can start developing.
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Verify" component={VerifyScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="Swipe" component={SwipeScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
