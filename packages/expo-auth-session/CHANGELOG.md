@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow `preferEphemeralSession` in promptAsync method. ([#35489](https://github.com/expo/expo/pull/35489) by [@TJTorola](https://github.com/TJTorola))
+
 ### 💡 Others
 
 ## 6.1.5 — 2025-04-30
