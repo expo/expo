@@ -1,0 +1,106 @@
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from "react-native";
+
+export default function MatchFitApp() {
+  const [level, setLevel] = useState("");
+  const [position, setPosition] = useState("");
+  const [activeTab, setActiveTab] = useState("trening");
+
+  const handleGeneratePlan = () => {
+    Alert.alert("Treningsplan", `Treningsplan generert for ${position} på ${level}-nivå!`);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>MatchFit</Text>
+      <Text style={styles.subtitle}>Din digitale treningspartner for fotball og helse</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Start treningsplan</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nivå (f.eks. amatør, semi-proff)"
+          value={level}
+          onChangeText={setLevel}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Posisjon (f.eks. spiss, midtbane)"
+          value={position}
+          onChangeText={setPosition}
+        />
+        <Button title="Generer plan" onPress={handleGeneratePlan} />
+      </View>
+
+      <View style={styles.tabList}>
+        {['trening', 'kosthold', 'skade'].map(tab => (
+          <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[styles.tab, activeTab === tab && styles.activeTab]}>
+            <Text style={styles.tabText}>{tab.charAt(0).toUpperCase() + tab.slice(1)}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.tabContent}>
+        {activeTab === "trening" && <Text>Daglige øvelser: Sprint, ballkontroll, styrke</Text>}
+        {activeTab === "kosthold" && <Text>Frokost: Havregrøt, Lunsj: Kyllingsalat, Middag: Laks med ris</Text>}
+        {activeTab === "skade" && <Text>Tøying, foam rolling, balanseøvelser 10 min daglig</Text>}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: '#fff'
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  subtitle: {
+    textAlign: 'center',
+    color: 'gray',
+    marginBottom: 20
+  },
+  card: {
+    padding: 20,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 10,
+    marginBottom: 20
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5
+  },
+  tabList: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10
+  },
+  tab: {
+    padding: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent'
+  },
+  activeTab: {
+    borderBottomColor: 'blue'
+  },
+  tabText: {
+    fontSize: 16
+  },
+  tabContent: {
+    padding: 10,
+    backgroundColor: '#eef',
+    borderRadius: 10
