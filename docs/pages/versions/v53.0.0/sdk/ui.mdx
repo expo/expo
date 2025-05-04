@@ -39,7 +39,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 ```tsx
 import { BottomSheet } from '@expo/ui/swift-ui';
 
-<BottomSheet isOpen={isOpen} onIsOpenedChange={e => setIsOpened(e)}>
+<BottomSheet isOpened={isOpened} onIsOpenedChange={e => setIsOpened(e)}>
   <Text>Hello, world!</Text>
 </BottomSheet>
 ```
@@ -63,6 +63,7 @@ import { Button } from '@expo/ui/swift-ui';
 
 <Button
   style={{ flex: 1 }}
+  variant="default"
   onPress={() => {
     setEditingProfile(true);
   }}>
@@ -87,7 +88,7 @@ import { Button } from '@expo/ui/swift-ui';
     ```tsx
     import { CircularProgress } from '@expo/ui/swift-ui';
 
-    <CircularProgress progress={0.5} style={{ width: 300 }} />
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" />
     ```
     *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/progressview)*
 
@@ -140,13 +141,13 @@ import { ColorPicker } from '@expo/ui/swift-ui';
     <ContextMenu style={{ width: 150, height: 50 }}>
       <ContextMenu.Items>
         <Button
-          systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+          systemImage="person.crop.circle.badge.xmark"
           onPress={() => console.log('Pressed1')}>
           Hello
         </Button>
         <Button
           variant="bordered"
-          systemImage={{ ios: 'heart' }}
+          systemImage="heart"
           onPress={() => console.log('Pressed2')}>
           Love it
         </Button>
@@ -217,7 +218,7 @@ import { DateTimePicker } from '@expo/ui/swift-ui';
       }}
       displayedComponents='hourAndMinute'
       initialDate={selectedDate.toISOString()}
-      iosVariant='wheel'
+      variant='wheel'
     />
     ```
     *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
@@ -250,7 +251,7 @@ import { Gauge } from "@expo/ui/swift-ui";
     PlatformColor('systemYellow'),
     PlatformColor('systemGreen'),
   ]}
-  type="circular"
+  type="circularCapacity"
 />
 ```
   *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/gauge)*
@@ -271,7 +272,7 @@ import { Gauge } from "@expo/ui/swift-ui";
 ```tsx
 import { LinearProgress } from '@expo/ui/swift-ui';
 
-<LinearProgress progress={0.5} style={{ width: 300 }} />
+<LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
 ```
   *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/progressview)*
 </Tab>
@@ -299,11 +300,11 @@ import { LinearProgress } from '@expo/ui/swift-ui';
       onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
       onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
       style={{ flex: 1 }}
-      listStyle={listStyleOptions[selectedIndex ?? 0]}
+      listStyle='automatic'
       deleteEnabled={deleteEnabled}
       selectEnabled={selectEnabled}>
       {data.map((item, index) => (
-        <Label key={index} title={item.text} systemImage={item.systemImage} color={color} />
+        <LabelPrimitive key={index} title={item.text} systemImage={item.systemImage} color={color} />
       ))}
     </List>
     ```
@@ -417,7 +418,9 @@ import { Switch } from '@expo/ui/swift-ui';
   onValueChange={checked => {
     setChecked(checked);
   }}
+  color="#ff0000"
   label="Play music"
+  variant="switch"
 />
 ```
   *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/toggle)*
@@ -490,6 +493,7 @@ import { Button } from '@expo/ui/jetpack-compose';
 
 <Button
   style={{ flex: 1 }}
+  variant="default"
   onPress={() => {
     setEditingProfile(true);
   }}>
@@ -514,7 +518,7 @@ import { Button } from '@expo/ui/jetpack-compose';
     ```tsx
     import { CircularProgress } from '@expo/ui/jetpack-compose';
 
-    <CircularProgress progress={0.5} style={{ width: 300 }} />
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" elementColors={{ trackColor: '#cccccc' }} />
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
 
@@ -540,13 +544,13 @@ import { Button } from '@expo/ui/jetpack-compose';
     <ContextMenu style={{ width: 150, height: 50 }}>
       <ContextMenu.Items>
         <Button
-          systemImage={{ ios: 'person.crop.circle.badge.xmark' }}
+          elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
           onPress={() => console.log('Pressed1')}>
           Hello
         </Button>
         <Button
           variant="bordered"
-          systemImage={{ ios: 'heart' }}
+          color="#ff0000"
           onPress={() => console.log('Pressed2')}>
           Love it
         </Button>
@@ -617,7 +621,7 @@ import { DateTimePicker } from '@expo/ui/jetpack-compose';
       }}
       displayedComponents='hourAndMinute'
       initialDate={selectedDate.toISOString()}
-      androidVariant='picker'
+      variant='picker'
     />
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers)*
@@ -639,7 +643,7 @@ import { DateTimePicker } from '@expo/ui/jetpack-compose';
     ```tsx
     import { LinearProgress } from '@expo/ui/jetpack-compose';
 
-    <LinearProgress progress={0.5} style={{ width: 300 }} />
+    <LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
 
@@ -674,7 +678,7 @@ import { DateTimePicker } from '@expo/ui/jetpack-compose';
   </Tab>
 </Tabs>
 
-### Picker (segemented)
+### Picker (segmented)
 
 <Tabs>
 <Tab label="Android">
@@ -746,11 +750,13 @@ import { Picker } from '@expo/ui/jetpack-compose';
     import { Switch } from '@expo/ui/jetpack-compose';
 
     <Switch
-      checked={checked}
+      value={checked}
       onValueChange={checked => {
         setChecked(checked);
       }}
+      color="#ff0000"
       label="Play music"
+      variant="switch"
     />
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch)*
@@ -774,11 +780,12 @@ import { Picker } from '@expo/ui/jetpack-compose';
     import { Switch } from '@expo/ui/jetpack-compose';
 
     <Switch
-      checked={checked}
+      value={checked}
       onValueChange={checked => {
         setChecked(checked);
       }}
       label="Play music"
+      color="#ff0000"
       variant="checkbox"
     />
     ```
