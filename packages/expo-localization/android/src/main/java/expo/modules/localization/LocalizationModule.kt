@@ -6,14 +6,11 @@ import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.text.TextUtils
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
 import android.util.Log
-import android.view.View
 import androidx.core.os.LocaleListCompat
-import androidx.core.os.bundleOf
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols

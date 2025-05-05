@@ -8,7 +8,6 @@ val USES_IMPERIAL = listOf("US", "LR", "MM")
 // https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
 val USES_FAHRENHEIT = listOf("AG", "BZ", "VG", "FM", "MH", "MS", "KN", "BS", "CY", "TC", "US", "LR", "PW", "KY")
 
-
 fun getCountryCode(locale: Locale): String? {
   return runCatching {
     val country = locale.country
