@@ -1,9 +1,4 @@
-import {
-  ExpoConfig,
-  RemoteBuildCachePlugin,
-  RemoteBuildCacheProvider,
-  RunOptions,
-} from '@expo/config';
+import { ExpoConfig, BuildCacheProviderPlugin, BuildCacheProvider, RunOptions } from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -13,14 +8,12 @@ import * as Log from '../../log';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
 
-const debug = require('debug')('expo:run:remote-build') as typeof console.log;
+const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
 
-export const resolveRemoteBuildCacheProvider = async (
-  provider:
-    | Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider']
-    | undefined,
+export const resolveBuildCacheProvider = async (
+  provider: Required<Required<ExpoConfig>['experiments']>['buildCacheProvider'] | undefined,
   projectRoot: string
-): Promise<RemoteBuildCacheProvider | undefined> => {
+): Promise<BuildCacheProvider | undefined> => {
   if (!provider) {
     return;
   }
@@ -64,10 +57,10 @@ export const resolveRemoteBuildCacheProvider = async (
     return { plugin, options: provider.options };
   }
 
-  throw new Error('Invalid remote build cache provider');
+  throw new Error('Invalid build cache provider');
 };
 
-export async function resolveRemoteBuildCache({
+export async function resolveBuildCache({
   projectRoot,
   platform,
   provider,
@@ -75,7 +68,7 @@ export async function resolveRemoteBuildCache({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync({
@@ -88,13 +81,20 @@ export async function resolveRemoteBuildCache({
     return null;
   }
 
-  return await provider.plugin.resolveRemoteBuildCache(
+  if (provider.plugin.resolveRemoteBuildCache) {
+    Log.warn('The resolveRemoteBuildCache function is deprecated. Use resolveBuildCache instead.');
+    return await provider.plugin.resolveRemoteBuildCache(
+      { fingerprintHash, platform, runOptions, projectRoot },
+      provider.options
+    );
+  }
+  return await provider.plugin.resolveBuildCache(
     { fingerprintHash, platform, runOptions, projectRoot },
     provider.options
   );
 }
 
-export async function uploadRemoteBuildCache({
+export async function uploadBuildCache({
   projectRoot,
   platform,
   provider,
@@ -103,7 +103,7 @@ export async function uploadRemoteBuildCache({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   buildPath: string;
   runOptions: RunOptions;
 }): Promise<void> {
@@ -118,16 +118,30 @@ export async function uploadRemoteBuildCache({
     return;
   }
 
-  await provider.plugin.uploadRemoteBuildCache(
-    {
-      projectRoot,
-      platform,
-      fingerprintHash,
-      buildPath,
-      runOptions,
-    },
-    provider.options
-  );
+  if (provider.plugin.uploadRemoteBuildCache) {
+    Log.warn('The uploadRemoteBuildCache function is deprecated. Use uploadBuildCache instead.');
+    await provider.plugin.uploadRemoteBuildCache(
+      {
+        projectRoot,
+        platform,
+        fingerprintHash,
+        buildPath,
+        runOptions,
+      },
+      provider.options
+    );
+  } else {
+    await provider.plugin.uploadBuildCache(
+      {
+        projectRoot,
+        platform,
+        fingerprintHash,
+        buildPath,
+        runOptions,
+      },
+      provider.options
+    );
+  }
 }
 
 async function calculateFingerprintHashAsync({
@@ -138,7 +152,7 @@ async function calculateFingerprintHashAsync({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
   if (provider.plugin.calculateFingerprintHash) {
@@ -199,7 +213,7 @@ function resolvePluginFilePathForModule(projectRoot: string, pluginReference: st
 export function resolvePluginFunction(
   projectRoot: string,
   pluginReference: string
-): RemoteBuildCachePlugin {
+): BuildCacheProviderPlugin {
   const pluginFile = resolvePluginFilePathForModule(projectRoot, pluginReference);
 
   try {
@@ -210,12 +224,14 @@ export function resolvePluginFunction(
 
     if (
       typeof plugin !== 'object' ||
-      typeof plugin.resolveRemoteBuildCache !== 'function' ||
-      typeof plugin.uploadRemoteBuildCache !== 'function'
+      (typeof plugin.resolveRemoteBuildCache !== 'function' &&
+        typeof plugin.resolveBuildCache !== 'function') ||
+      (typeof plugin.uploadRemoteBuildCache !== 'function' &&
+        typeof plugin.uploadBuildCache !== 'function')
     ) {
       throw new Error(`
         The provider plugin "${pluginReference}" must export an object containing
-        the resolveRemoteBuildCache and uploadRemoteBuildCache functions.
+        the resolveBuildCache and uploadBuildCache functions.
       `);
     }
     return plugin;

@@ -34,35 +34,54 @@ type IosRunOptions = {
 
 export type RunOptions = AndroidRunOptions | IosRunOptions;
 
-export type ResolveRemoteBuildCacheProps = {
+export type ResolveBuildCacheProps = {
   projectRoot: string;
   platform: 'android' | 'ios';
   runOptions: RunOptions;
   fingerprintHash: string;
 };
-export type UploadRemoteBuildCacheProps = {
+
+/**
+ * @deprecated Use `ResolveBuildCacheProps` instead.
+ */
+export type ResolveRemoteBuildCacheProps = ResolveBuildCacheProps;
+
+export type UploadBuildCacheProps = {
   projectRoot: string;
   buildPath: string;
   runOptions: RunOptions;
   fingerprintHash: string;
   platform: 'android' | 'ios';
 };
+/**
+ * @deprecated Use `ResolveBuildCacheProps` instead.
+ */
+export type UploadRemoteBuildCacheProps = UploadBuildCacheProps;
+
 export type CalculateFingerprintHashProps = {
   projectRoot: string;
   platform: 'android' | 'ios';
   runOptions: RunOptions;
 };
 
-export type RemoteBuildCacheProvider<T = any> = {
-  plugin: RemoteBuildCachePlugin<T>;
+export type BuildCacheProvider<T = any> = {
+  plugin: BuildCacheProviderPlugin<T>;
   options: T;
 };
 
-export type RemoteBuildCachePlugin<T = any> = {
-  resolveRemoteBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
-  uploadRemoteBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
+export type BuildCacheProviderPlugin<T = any> = {
+  resolveBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
+  uploadBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
   calculateFingerprintHash?: (
     props: CalculateFingerprintHashProps,
     options: T
   ) => Promise<string | null>;
+  /**
+   * @deprecated Use `resolveBuildCache` instead.
+   */
+  resolveRemoteBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
+  /**
+   * @deprecated Use `uploadBuildCache` instead.
+   */
+  uploadRemoteBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
 };
