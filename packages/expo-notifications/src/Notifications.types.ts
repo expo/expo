@@ -440,10 +440,6 @@ export type NotificationContent = {
   categoryIdentifier: string | null;
   // @docsMissing
   sound: 'default' | 'defaultCritical' | 'custom' | null;
-  /**
-   * Whether the notification is a headless remote notification. This corresponds to data-only messages on Android and a background notification (content-available = 1) on iOS.
-   */
-  isHeadlessRemoteNotification?: boolean;
 } & (NotificationContentIos | NotificationContentAndroid);
 
 /**
