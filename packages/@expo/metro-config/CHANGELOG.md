@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue with HMR env vars in development not being readable in development.
+
 ### 💡 Others
 
 ## 0.20.13 — 2025-05-03
