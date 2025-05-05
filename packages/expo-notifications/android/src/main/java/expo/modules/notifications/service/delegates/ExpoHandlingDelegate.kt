@@ -124,6 +124,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     } else if (notification.shouldPresent()) {
       // only data-only notifications reach this point and we present them if they fall into the documented exception:
       // https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications
+      // this exception can not be triggered by expo push service, only when using FCM directly. We keep this for compat with older docs.
       NotificationsService.present(context, notification)
     }
   }
