@@ -1,8 +1,11 @@
 ---
 title: Using Firebase
-maxHeadingDepth: 4
+maxHeadingDepth: 3
 description: A guide on getting started and using Firebase JS SDK and React Native Firebase library.
 ---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -43,15 +46,13 @@ You can consider using the Firebase JS SDK when you:
 - Want a quick start with Firebase services.
 - Want to create a universal app for Android, iOS, and the web.
 
-#### Caveats
+### Caveats
 
 Firebase JS SDK does not support all services for mobile apps. Some of these services are Analytics, Dynamic Links and Crashlytics. See the [React Native Firebase](#using-react-native-firebase) section if you want to use these services.
 
 ### Install and initialize Firebase JS SDK
 
-The following sub-sections use `firebase@9.x.x`. Expo SDK does not enforce or recommend any specific version of Firebase to use in your app.
-
-If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
+The following sub-sections assume you are using `firebase@11.x.x` or above version of the Firebase JS SDK.
 
 <Step label="1">
 #### Install the SDK
@@ -62,6 +63,46 @@ After you have created your [Expo project](/get-started/create-a-project/), you 
 </Step>
 
 <Step label="2">
+#### Configure Metro
+
+Expo CLI uses [Metro](https://metrobundler.dev/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
+
+Start by generating the template file **metro.config.js** in your project's root directory using the following command:
+
+<Terminal cmd={['$ npx expo customize metro.config.js']} />
+
+Firebase JS SDK library loads both ES modules (ESM) and Common JS modules (CJS) when bundled in your project. To work around this, ensure Metro is configured to support ESM or CJS modules but not both. The following configuration ensures that Metro uses ESM format for the Firebase JS SDK:
+
+```js metro.config.js
+const { getDefaultConfig } = require('@expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+config.resolver.resolveRequest = (context, moduleImport, platform) => {
+  // Always import the ESM version of all `@firebase/*` packages
+  if (moduleImport.startsWith('@firebase/')) {
+    return context.resolveRequest(
+      {
+        ...context,
+        isESMImport: true,
+      },
+      moduleImport,
+      platform
+    );
+  }
+
+  return context.resolveRequest(context, moduleImport, platform);
+};
+
+module.exports = defaultConfig;
+```
+
+Alternatively, you can disable [`package.json:exports`](/versions/latest/config/metro/#packagejsonexports) support in the metro config but that might cause issues with other libraries and is not recommended.
+
+</Step>
+
+<Step label="3">
 #### Initialize the SDK in your project
 
 To initialize the Firebase instance in your Expo project, you must create a config object and pass it to the `initializeApp()` method imported from the `firebase/app` module.
@@ -97,36 +138,9 @@ const app = initializeApp(firebaseConfig);
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
 ```
 
-You do not have to install other plugins or configurations to use Firebase JS SDK.
-
-Firebase version 9 and above provide a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
+You do not have to install other plugins or configurations to use Firebase JS SDK. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
 > **info** **Troubleshooting tip:** If you encounter issues related to authentication persistence with Firebase JS SDK, see the guide for [setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
-
-</Step>
-
-<Step label="3">
-#### Configure Metro
-
-> **info** If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
-
-Expo CLI uses [Metro](https://metrobundler.dev/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
-
-Start by generating the template file **metro.config.js** in your project's root directory using the following command:
-
-<Terminal cmd={['$ npx expo customize metro.config.js']} />
-
-Then, update the file with the following configuration:
-
-```js metro.config.js
-const { getDefaultConfig } = require('@expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-config.resolver.sourceExts.push('cjs');
-config.resolver.unstable_enablePackageExports = false;
-
-module.exports = defaultConfig;
-```
 
 </Step>
 
@@ -136,42 +150,49 @@ module.exports = defaultConfig;
   title="Authentication"
   description="For more information on how to use Authentication in your project, see Firebase documentation."
   href="https://firebase.google.com/docs/auth/web/start"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Firestore"
   description="For more information on how to use Firestore database in your project, see Firebase documentation."
   href="https://firebase.google.com/docs/firestore/quickstart"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Realtime Database"
   description="For more information on how to use Realtime Database in your project, see Firebase documentation."
   href="https://firebase.google.com/docs/database"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Storage"
   description="For more information on how to use Storage, see Firebase documentation."
   href="https://firebase.google.com/docs/storage/web/start"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Firebase Storage example"
   description="Learn how to use Firebase Storage in an Expo project with our example."
   href="https://github.com/expo/examples/tree/master/with-firebase-storage-upload"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Managing API keys for Firebase projects"
   description="For more information about managing API Key and unique identifiers in a Firebase project."
   href="https://firebase.google.com/docs/projects/api-keys"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Migrate from Expo Firebase packages to React Native Firebase"
   description="For more information on migrating from expo-firebase-analytics or expo-firebase-recaptcha packages to React Native Firebase."
   href="https://expo.fyi/firebase-migration-guide"
+  Icon={GithubIcon}
 />
 
 ## Using React Native Firebase
@@ -195,7 +216,7 @@ If your project has been previously using `expo-firebase-analytics` and `expo-fi
 
 </Collapsible>
 
-#### Caveats
+### Caveats
 
 React Native Firebase requires [custom native code and cannot be used with Expo Go](/workflow/customizing/).
 
@@ -249,4 +270,5 @@ After configuring React Native Firebase library, you can use any module it provi
   title="React Native Firebase documentation"
   description="For more information to install and use a certain module from React Native Firebase, we recommend you to check their documentation."
   href="https://rnfirebase.io/"
+  Icon={BookOpen02Icon}
 />
