@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove EAS build cache provider implementation ([#36584](https://github.com/expo/expo/pull/36584) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.24.11 — 2025-05-03
 
 _This version does not introduce any user-facing changes._
