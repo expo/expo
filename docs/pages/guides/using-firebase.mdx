@@ -71,7 +71,7 @@ Start by generating the template file **metro.config.js** in your project's root
 
 <Terminal cmd={['$ npx expo customize metro.config.js']} />
 
-Firebase JS SDK library loads both ES modules (ESM) and Common JS modules (CJS) when bundled in your project. To work around this, ensure Metro is configured to support ESM or CJS modules but not both. The following configuration ensures that Metro uses ESM format for the Firebase JS SDK:
+Firebase JS SDK loads both ES modules (ESM) and CommonJS modules (CJS) when bundled in your project. To work around this, ensure Metro is configured to support ESM from the Firebase JS SDK using the following configuration:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('@expo/metro-config');
