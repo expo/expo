@@ -76,8 +76,8 @@
   "peerDependencies": {
     "@react-navigation/drawer": "^7.1.1",
     "expo": "*",
-    "expo-constants": "*",
-    "expo-linking": "*",
+    "expo-constants": "~17.0.8",
+    "expo-linking": "~7.0.5",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"
