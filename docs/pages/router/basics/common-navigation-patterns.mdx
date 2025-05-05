@@ -179,6 +179,8 @@ import { Button } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Login() {
+  const router = useRouter();
+
   return (
     <View>
       {/* login form */}
@@ -197,8 +199,8 @@ export default function Login() {
 This will cause **app/(logged-in)/\_layout.tsx** to re-render again. This time, the authentication check will pass, and the app will proceed to the default route.
 
 <BoxLink
-  title="Expo Router Authentication Guide"
-  description="Follow an in-depth example of implementing authentication using protected routes."
+  title="Expo Router authentication"
+  description="Follow an in-depth guide for implementing authentication using protected routes."
   href="/router/advanced/authentication/"
   Icon={DocsLogo}
 />
