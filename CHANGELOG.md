@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Update file tree on notation.mdx ([#36626](https://github.com/expo/expo/pull/36626) by [@abraj](https://github.com/abraj))
+
 ## 53.0.0 — 2025-04-30
 
 ### 📚 3rd party library updates
