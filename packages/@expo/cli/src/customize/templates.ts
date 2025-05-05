@@ -84,8 +84,23 @@ export const TEMPLATES: {
   {
     id: '.eslintrc.js',
     dependencies: [],
-    destination: () => '.eslintrc.js',
+    destination: () => '.eslintrc.js (deprecated)',
     file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
+    configureAsync: async (projectRoot) => {
+      const { ESLintProjectPrerequisite } =
+        require('../lint/ESlintPrerequisite') as typeof import('../lint/ESlintPrerequisite.js');
+      const prerequisite = new ESLintProjectPrerequisite(projectRoot);
+      if (!(await prerequisite.assertAsync())) {
+        await prerequisite.bootstrapAsync();
+      }
+      return false;
+    },
+  },
+  {
+    id: 'eslint.config.js',
+    dependencies: [],
+    destination: () => 'eslint.config.js',
+    file: (projectRoot) => importFromVendor(projectRoot, 'eslint.config.js'),
     configureAsync: async (projectRoot) => {
       const { ESLintProjectPrerequisite } =
         require('../lint/ESlintPrerequisite') as typeof import('../lint/ESlintPrerequisite.js');

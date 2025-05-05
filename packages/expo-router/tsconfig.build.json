@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false
+  },
+  "exclude": [
+    "**/__tests__/",
+    "**/__rsc_tests__/"
+  ]
+}

@@ -5,9 +5,11 @@ import MediaPlayer
 import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
+  let videoSourceLoader = VideoSourceLoader()
   lazy var contentKeyManager = ContentKeyManager()
   var observer: VideoPlayerObserver?
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
+  private var dangerousPropertiesStore = DangerousPropertiesStore()
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -29,6 +31,26 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         ref.defaultRate = playbackRate
       }
       ref.rate = playbackRate
+    }
+  }
+
+  var currentTime: Double {
+    get {
+      let currentTime = ref.currentTime().seconds
+      return currentTime.isNaN ? 0 : currentTime
+    }
+    set {
+      // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
+      let clampedTime = max(0, newValue)
+      let timeToSeek = CMTimeMakeWithSeconds(clampedTime, preferredTimescale: .max)
+
+      // AVPlayer can't apply the currentTime while the resource is loading. We will re-apply it after loading
+      if dangerousPropertiesStore.ownerIsReplacing {
+        dangerousPropertiesStore.currentTime = clampedTime
+        return
+      }
+
+      ref.seek(to: timeToSeek)
     }
   }
 
@@ -127,7 +149,23 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  override init(_ ref: AVPlayer) {
+  convenience init(_ ref: AVPlayer, initialSource: VideoSource?, useSynchronousReplace: Bool = false) throws {
+    self.init(ref)
+
+    // While the replace task below is being created, the properties from the JS constructor will start getting applied
+    // Therefore we have to set the state as `loading` before the task is created to ensure that we don't lose any dangerous properties
+    dangerousPropertiesStore.ownerIsReplacing = initialSource != nil
+
+    if useSynchronousReplace {
+      try replaceCurrentItem(with: initialSource)
+    } else {
+      Task {
+        try await replaceCurrentItem(with: initialSource)
+      }
+    }
+  }
+
+  private override init(_ ref: AVPlayer) {
     super.init(ref)
     observer = VideoPlayerObserver(owner: self)
     observer?.registerDelegate(delegate: self)
@@ -143,27 +181,26 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
 
-    try? self.replaceCurrentItem(with: nil)
+    videoSourceLoader.cancelCurrentTask()
+
+    // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
+    // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
+    // If we don't do this AVPlayer doesn't get deallocated
+    DispatchQueue.main.async { [ref] in
+      ref.replaceCurrentItem(with: nil)
+    }
   }
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
+    dangerousPropertiesStore.ownerIsReplacing = true
+    videoSourceLoader.cancelCurrentTask()
     guard
       let videoSource = videoSource,
-      let url = videoSource.uri
+      let playerItem = VideoPlayerItem(videoSource: videoSource)
     else {
-      DispatchQueue.main.async { [ref] in
-        ref.replaceCurrentItem(with: nil)
-      }
+      clearCurrentItem()
       return
     }
-
-    let playerItem = if let headers = videoSource.headers {
-      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: ["AVURLAssetHTTPHeaderFieldsKey": headers])
-    } else {
-      VideoPlayerItem(url: url, videoSource: videoSource, avUrlAssetOptions: nil)
-    }
-
-    ref.automaticallyWaitsToMinimizeStalling = false
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
@@ -177,8 +214,60 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
-      self?.ref.replaceCurrentItem(with: playerItem)
+      guard let self else {
+        return
+      }
+      self.ref.replaceCurrentItem(with: playerItem)
+      self.dangerousPropertiesStore.ownerIsReplacing = false
+      self.dangerousPropertiesStore.applyProperties(to: self)
     }
+  }
+
+  /**
+   * Replaces the current item, while loading the AVAsset on a different thread. The synchronous version can lock the main thread for extended periods of time.
+   */
+  func replaceCurrentItem(with videoSource: VideoSource?) async throws {
+    guard let videoSource, videoSource.uri != nil else {
+      clearCurrentItem()
+      return
+    }
+
+    dangerousPropertiesStore.ownerIsReplacing = true
+    guard let playerItem = try await videoSourceLoader.load(videoSource: videoSource) else {
+      // Resolve the promise without applying the source. The loading task has been cancelled.
+      // The caller that cancelled this task should handle dangerousPropertiesStore
+      return
+    }
+
+    if let drm = videoSource.drm {
+      try drm.type.assertIsSupported()
+      self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
+    }
+
+    playerItem.audioTimePitchAlgorithm = self.preservesPitch ? .spectral : .varispeed
+    playerItem.preferredForwardBufferDuration = self.bufferOptions.preferredForwardBufferDuration
+
+    // The current item has to be replaced from the main thread. When replacing from other queues
+    // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
+    // which causes crashes.
+    DispatchQueue.main.async { [weak self] in
+      guard let self else {
+        return
+      }
+      self.ref.replaceCurrentItem(with: playerItem)
+      dangerousPropertiesStore.ownerIsReplacing = false
+      dangerousPropertiesStore.applyProperties(to: self)
+    }
+  }
+
+  private func clearCurrentItem() {
+    DispatchQueue.main.async { [ref, videoSourceLoader, dangerousPropertiesStore] in
+      ref.replaceCurrentItem(with: nil)
+      videoSourceLoader.cancelCurrentTask()
+      dangerousPropertiesStore.reset()
+      dangerousPropertiesStore.ownerIsReplacing = false
+    }
+    return
   }
 
   /**

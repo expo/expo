@@ -78,11 +78,11 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = new Set(versions.VERSIONS.filter(v => v.match(/^v/)));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {
-  return supportedVersions.includes(getVersionFromPath(path));
+  return supportedVersions.has(getVersionFromPath(path));
 }
 
 function pathIncludesHtmlExtension(path: string) {
@@ -256,7 +256,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
   // Random API replaced with Crypto
-  '/versions/v50.0.0/sdk/random/': '/versions/v50.0.0/sdk/crypto/',
   '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
 
   // Redirect bare guides to unified workflow guides
@@ -297,7 +296,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/guides/overview/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
-  '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
   '/router/reference/search-parameters/': '/router/reference/url-parameters/',
@@ -379,14 +377,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
   '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
-  '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
-  '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  '/versions/v50.0.0/sdk': '/versions/v50.0.0',
-  '/versions/v49.0.0/sdk': '/versions/v49.0.0',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
@@ -501,7 +494,16 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After updating config plugin section
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
+  
+  // After merging registerRootComponent info in `expo` API reference
+  '/versions/v53.0.0/sdk/register-root-component/':
+    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
+  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
+  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
+
+  // After adding System bars
+  '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
 };

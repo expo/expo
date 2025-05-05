@@ -57,8 +57,13 @@ export const prepareCanaries = new Task<TaskArgs>(
         ? nextSdkVersion
         : resolveReleaseTypeAndVersion(parcel, options);
 
+      // Strip any pre-release tag from the baseVersion
+      // For example, convert "5.0.0-rc.0" or "5.0.0-preview.0" to "5.0.0"
+      // This is to ensure we don't stack the canary suffix on top of another
+      const cleanBaseVersion = semver.coerce(baseVersion)?.version ?? baseVersion;
+
       state.releaseVersion = findNextAvailableCanaryVersion(
-        `${baseVersion}-${canarySuffix}`,
+        `${cleanBaseVersion}-${canarySuffix}`,
         pkgView?.versions ?? []
       );
     }
@@ -138,6 +143,8 @@ export const cleanWorkingTree = new Task<TaskArgs>(
             'packages/**/package.json',
             'packages/expo-module-template/$package.json',
             'packages/expo/bundledNativeModules.json',
+            'packages/**/expo-module.config.json',
+            'packages/**/build.gradle',
             'templates/*/package.json',
           ],
         });
@@ -146,7 +153,7 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**'],
         });
       },
       'Cleaned up the working tree'

@@ -16,7 +16,7 @@ import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
-import java.net.URI
+import java.io.File
 
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
@@ -84,16 +84,16 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
       .publications
       .createReleasePublication(publicationInfo)
 
-    createExpoPublishToMavenLocalTask(publicationInfo)
+    createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
     val npmLocalRepositoryRelativePath = "local-maven-repo"
-    val npmLocalRepository = URI("file://${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
+    val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
     publishingExtension().repositories.mavenLocal { mavenRepo ->
       mavenRepo.name = "NPMPackage"
       mavenRepo.url = npmLocalRepository
     }
 
-    createExpoPublishTask(publicationInfo, npmLocalRepositoryRelativePath)
+    createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
   }
 }
 

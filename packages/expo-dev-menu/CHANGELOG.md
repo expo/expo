@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+## 6.1.10 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.8 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
+
+## 6.1.7 — 2025-04-28
+
+### 💡 Others
+
+- [Android] Enable edge-to-edge. ([#36370](https://github.com/expo/expo/pull/36370) by [@behenate](https://github.com/behenate))
+
+## 6.1.6 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.5 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.4 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 6.1.0 — 2025-04-04
 
 ### 🛠 Breaking changes

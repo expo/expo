@@ -9,3 +9,8 @@ public class AppleMapsViewState: ObservableObject {
   @Published var mapCameraPosition: MapCameraPosition = .automatic
   @Published var selection: MapSelection<MKMapItem>?
 }
+
+@available(iOS 17.0, *)
+public class AppleMapsCameraState: ObservableObject {
+  @Published var mapCameraPosition: MapCameraPosition = .automatic
+}

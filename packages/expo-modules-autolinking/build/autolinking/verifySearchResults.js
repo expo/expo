@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifySearchResults = void 0;
+exports.verifySearchResults = verifySearchResults;
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 /**
@@ -28,5 +28,4 @@ function verifySearchResults(searchResults, options) {
     }
     return counter;
 }
-exports.verifySearchResults = verifySearchResults;
 //# sourceMappingURL=verifySearchResults.js.map

@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 18.1.9 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.8 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.7 — 2025-04-28
+
+### 💡 Others
+
+- Remove `web-streams-polyfill` in favor of `expo` support. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 18.1.6 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
 ## 18.1.0 — 2025-04-04
 
 ### 🛠 Breaking changes
@@ -22,6 +60,7 @@
 
 ### 🐛 Bug fixes
 
+- [next] Fix inconsistent behavior when using special chars in filenames. ([#35801](https://github.com/expo/expo/pull/35801) by [@aleqsio](https://github.com/aleqsio))
 - Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others

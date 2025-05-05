@@ -35,7 +35,7 @@ export default function remarkLinkRewrite(options) {
    */
   return (tree, file) => {
     // we can't rewrite files without knowing where the file exists
-    if (!file.cwd || !file.history || !file.history.length) {
+    if (!file.cwd || !file.history || file.history.length === 0) {
       return;
     }
     // index references should be ignored, it's handled by Next

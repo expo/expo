@@ -328,6 +328,9 @@ module.exports = {
           { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
           { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
         ],
+        ExpoFontUtils: [
+          { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
+        ],
         ExpoGo: [],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -555,7 +558,6 @@ module.exports = {
           { name: 'requestPermissionsAsync', argumentsCount: 1, key: 1 },
         ],
         ExpoNotificationPresenter: [
-          { name: 'presentNotificationAsync', argumentsCount: 2, key: 0 },
           { name: 'dismissNotificationAsync', argumentsCount: 1, key: 1 },
           { name: 'getPresentedNotificationsAsync', argumentsCount: 0, key: 2 },
           { name: 'dismissAllNotificationsAsync', argumentsCount: 0, key: 3 },
@@ -1478,6 +1480,13 @@ module.exports = {
     stopLoading: { type: 'function', functionType: 'async' },
   },
   RNDateTimePickerManager: {},
+  RNEdgeToEdge: {
+    onColorSchemeChange: { type: 'function', functionType: 'sync' },
+    setStatusBarStyle: { type: 'function', functionType: 'sync' },
+    setNavigationBarStyle: { type: 'function', functionType: 'sync' },
+    setStatusBarHidden: { type: 'function', functionType: 'sync' },
+    setNavigationBarHidden: { type: 'function', functionType: 'sync' },
+  },
   RNGestureHandlerButton: {},
   RNGestureHandlerModule: {
     addListener: { type: 'function', functionType: 'async' },

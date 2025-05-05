@@ -152,7 +152,7 @@ export function useLinking(
     [ref]
   );
 
-  const server = React.useContext(ServerContext);
+  const server = React.use(ServerContext);
 
   const getInitialState = React.useCallback(() => {
     let value: ResultState | undefined;

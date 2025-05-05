@@ -1,5 +1,18 @@
-import { store } from './global-state/router-store';
-import { NavigationOptions } from './global-state/routing';
+import {
+  canDismiss,
+  canGoBack,
+  dismiss,
+  dismissAll,
+  dismissTo,
+  goBack,
+  navigate,
+  NavigationOptions,
+  prefetch,
+  push,
+  reload,
+  replace,
+  setParams,
+} from './global-state/routing';
 import { Href, Route, RouteInputParams } from './types';
 
 /**
@@ -73,21 +86,26 @@ export type Router = {
    * @hidden
    */
   reload: () => void;
+  /**
+   * Prefetch a screen in the background before navigating to it
+   */
+  prefetch: (name: Href) => void;
 };
 
 /**
  * @hidden
  */
 export const router: Router = {
-  navigate: (href, options) => store.navigate(href, options),
-  push: (href, options) => store.push(href, options),
-  dismiss: (count) => store.dismiss(count),
-  dismissAll: () => store.dismissAll(),
-  dismissTo: (href, options) => store.dismissTo(href, options),
-  canDismiss: () => store.canDismiss(),
-  replace: (href, options) => store.replace(href, options),
-  back: () => store.goBack(),
-  canGoBack: () => store.canGoBack(),
-  setParams: (params) => store.setParams(params),
-  reload: () => store.reload(),
+  navigate,
+  push,
+  dismiss,
+  dismissAll,
+  dismissTo,
+  canDismiss,
+  replace,
+  back: () => goBack(),
+  canGoBack,
+  reload,
+  prefetch,
+  setParams: setParams as Router['setParams'],
 };

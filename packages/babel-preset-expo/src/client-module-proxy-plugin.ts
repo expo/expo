@@ -2,12 +2,14 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template, types } from '@babel/core';
+import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getIsReactServer } from './common';
+import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
 
 export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
   const isReactServer = api.caller(getIsReactServer);
+  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-client-references',
@@ -26,7 +28,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
 
         if (isUseClient && isUseServer) {
           throw path.buildCodeFrameError(
-            "It's not possible to have both `use client` and `use server` directives in the same file."
+            'It\'s not possible to have both "use client" and "use server" directives in the same file.'
           );
         }
 
@@ -41,9 +43,15 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
 
-        const outputKey = url.pathToFileURL(filePath).href;
+        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
 
-        function iterateExports(callback: (exportName: string) => void, type: string) {
+        // TODO: Replace with opaque paths in production.
+        const outputKey = './' + toPosixPath(getRelativePath(projectRoot, filePath));
+        // const outputKey = isProd
+        //   ? './' + getRelativePath(projectRoot, filePath)
+        //   : url.pathToFileURL(filePath).href;
+
+        function iterateExports(callback: (exportName: string, path: any) => void, type: string) {
           const exportNames = new Set<string>();
           // Collect all of the exports
           path.traverse({
@@ -54,20 +62,20 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
                     if (declaration.id.type === 'Identifier') {
                       const exportName = declaration.id.name;
                       exportNames.add(exportName);
-                      callback(exportName);
+                      callback(exportName, exportPath);
                     }
                   });
                 } else if (exportPath.node.declaration.type === 'FunctionDeclaration') {
                   const exportName = exportPath.node.declaration.id?.name;
                   if (exportName) {
                     exportNames.add(exportName);
-                    callback(exportName);
+                    callback(exportName, exportPath);
                   }
                 } else if (exportPath.node.declaration.type === 'ClassDeclaration') {
                   const exportName = exportPath.node.declaration.id?.name;
                   if (exportName) {
                     exportNames.add(exportName);
-                    callback(exportName);
+                    callback(exportName, exportPath);
                   }
                 } else if (
                   ![
@@ -88,7 +96,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
                   if (types.isIdentifier(specifier.exported)) {
                     const exportName = specifier.exported.name;
                     exportNames.add(exportName);
-                    callback(exportName);
+                    callback(exportName, exportPath);
                   } else {
                     // TODO: What is this type?
                     console.warn(
@@ -99,9 +107,15 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
                 });
               }
             },
-            ExportDefaultDeclaration() {
+            ExportDefaultDeclaration(path) {
               exportNames.add('default');
-              callback('default');
+              callback('default', path);
+            },
+            ExportAllDeclaration(exportPath) {
+              if (exportPath.node.source) {
+                // exportNames.add('*');
+                callback('*', exportPath);
+              }
             },
           });
 
@@ -115,6 +129,37 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
             return;
           }
 
+          // Assert that assignment to `module.exports` or `exports` is not allowed.
+          path.traverse({
+            AssignmentExpression(path) {
+              if (
+                types.isMemberExpression(path.node.left) &&
+                'name' in path.node.left.object &&
+                (path.node.left.object.name === 'module' ||
+                  path.node.left.object.name === 'exports')
+              ) {
+                throw path.buildCodeFrameError(
+                  'Assignment to `module.exports` or `exports` is not allowed in a "use server" file. Only async functions can be exported.'
+                );
+              }
+            },
+            // Also check Object.assign
+            CallExpression(path) {
+              if (
+                types.isMemberExpression(path.node.callee) &&
+                'name' in path.node.callee.property &&
+                'name' in path.node.callee.object &&
+                path.node.callee.property.name === 'assign' &&
+                (path.node.callee.object.name === 'Object' ||
+                  path.node.callee.object.name === 'exports')
+              ) {
+                throw path.buildCodeFrameError(
+                  'Assignment to `module.exports` or `exports` is not allowed in a "use server" file. Only async functions can be exported.'
+                );
+              }
+            },
+          });
+
           // Handle "use server" in the client.
 
           const proxyModule = [
@@ -126,9 +171,13 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
             return `createServerReference(${JSON.stringify(`${outputKey}#${exportName}`)}, callServerRSC)`;
           };
 
-          const pushProxy = (exportName: string) => {
+          const pushProxy = (exportName: string, path: any) => {
             if (exportName === 'default') {
               proxyModule.push(`export default ${getProxy(exportName)};`);
+            } else if (exportName === '*') {
+              throw path.buildCodeFrameError(
+                'Re-exporting all modules is not supported in a "use server" file. Only async functions can be exported.'
+              );
             } else {
               proxyModule.push(`export const ${exportName} = ${getProxy(exportName)};`);
             }
@@ -150,7 +199,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the server action reference in the metadata.
-          state.file.metadata.reactServerReference = outputKey;
+          state.file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
         } else if (isUseClient) {
           if (!isReactServer) {
             // Do nothing for "use client" on the client.
@@ -176,17 +225,29 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
             `module.exports = proxy;`,
           ];
 
-          const getProxy = (exportName: string) => {
-            return `(/*@__PURE__*/ proxy[${JSON.stringify(exportName)}])`;
-          };
-
           const pushProxy = (exportName: string) => {
             if (exportName === 'default') {
-              proxyModule.push(`export default ${getProxy(exportName)};`);
+              proxyModule.push(`export default require("react-server-dom-webpack/server").registerClientReference(function () {
+                throw new Error(${JSON.stringify(
+                  `Attempted to call the default export of ${filePath} from the server but it's on the client. ` +
+                    `It's not possible to invoke a client function from the server, it can ` +
+                    `only be rendered as a Component or passed to props of a Client Component.`
+                )});
+                }, ${JSON.stringify(outputKey)}, ${JSON.stringify(exportName)});`);
+            } else if (exportName === '*') {
+              // Do nothing because we have the top-level hack to inject module.exports.
             } else {
-              proxyModule.push(`export const ${exportName} = ${getProxy(exportName)};`);
+              proxyModule.push(`export const ${exportName} = require("react-server-dom-webpack/server").registerClientReference(function () {
+                throw new Error(${JSON.stringify(
+                  `Attempted to call ${exportName}() of ${filePath} from the server but ${exportName} is on the client. ` +
+                    `It's not possible to invoke a client function from the server, it can ` +
+                    `only be rendered as a Component or passed to props of a Client Component.`
+                )});
+                }, ${JSON.stringify(outputKey)}, ${JSON.stringify(exportName)});`);
             }
           };
+          // TODO: How to handle `export * from './module'`?
+          // TODO: How to handle module.exports, do we just assert that it isn't supported with server components?
 
           // Collect all of the exports
           const proxyExports = iterateExports(pushProxy, 'client');
@@ -202,7 +263,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the client reference in the metadata.
-          state.file.metadata.reactClientReference = outputKey;
+          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
         }
       },
     },

@@ -41,11 +41,11 @@ function processGroup(group) {
     .map(processPage)
     .filter(Boolean);
 
-  return items.length ? { title: group.name, items } : null;
+  return items.length > 0 ? { title: group.name, items } : null;
 }
 
 export function processSection(node) {
-  if (node.type !== 'section') {
+  if (!node || node.type !== 'section') {
     return null;
   }
 
@@ -235,7 +235,7 @@ export function generateSectionMarkdown(section) {
   content += section.items.map(generateItemMarkdown).join('');
 
   section.groups.forEach(group => {
-    if (group.items.length) {
+    if (group.items.length > 0) {
       content += `# ${group.title}\n\n`;
       content += group.items.map(generateItemMarkdown).join('');
     }

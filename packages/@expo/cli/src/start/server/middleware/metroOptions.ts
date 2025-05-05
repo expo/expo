@@ -46,11 +46,13 @@ export type ExpoMetroOptions = {
   runModule?: boolean;
 };
 
+// See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
   usedExports?: boolean;
+  exporting?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -239,6 +241,7 @@ export function getMetroDirectBundleOptions(
       usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
+      exporting: isExporting || undefined,
     },
   };
 

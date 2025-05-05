@@ -23,7 +23,7 @@ If your app uses a custom `getPathFromState` or `getStateFromPath` component, it
 
 We recommend making the following modifications to your codebase before beginning the migration:
 
-- Split React Navigation screen components into individual files. For example, if you have `<Stack.Screen component={HomeScreen} />`, then ensure the `HomeScreen` class is in its own file.
+- Split React Navigation screen components into individual files. For example, if you have `<Stack.Screen component={HomeScreen} />`, then ensure the `HomeScreen` component is in its own file.
 - Convert the project to [TypeScript](/guides/typescript/#migrating-existing-javascript-project). This will make it easier to spot errors that may occur during the migration.
 - Convert relative imports to [typed aliases](/guides/typescript/#path-aliases-optional). For example, `../../components/button.tsx` to `@/components/button` before starting the migration. This makes it easier to move screens around the filesystem without having to update the relative paths.
 - Migrate away from `resetRoot`. This is used to "restart" the app while running. This is generally considered bad practice, and you should restructure your app's navigation so this never needs to happen.
@@ -168,7 +168,7 @@ export default function RootLayout() {
 
 The tab navigator will be moved to a subdirectory.
 
-```js app/(home)/_layout.js
+```jsx app/(home)/_layout.js
 import { Tabs } from 'expo-router';
 
 export default function HomeLayout() {

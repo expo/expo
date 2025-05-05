@@ -206,7 +206,7 @@ export abstract class DevToolsPluginClient {
     } else if (event.data instanceof ArrayBuffer) {
       data = event.data;
     } else if (ArrayBuffer.isView(event.data)) {
-      data = event.data.buffer;
+      data = event.data.buffer as ArrayBuffer;
     } else if (event.data instanceof Blob) {
       data = await blobToArrayBufferAsync(event.data);
     } else {

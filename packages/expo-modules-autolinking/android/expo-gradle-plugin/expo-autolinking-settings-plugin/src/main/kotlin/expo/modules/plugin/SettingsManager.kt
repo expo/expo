@@ -38,7 +38,7 @@ class SettingsManager(
 
   private val groovyShell by lazy {
     val binding = Binding()
-    binding.setVariable("settings", settings)
+    binding.setVariable("providers", settings.providers)
     GroovyShell(javaClass.classLoader, binding)
   }
 
@@ -112,11 +112,18 @@ class SettingsManager(
     }
 
     settings.gradle.beforeRootProject { rootProject: Project ->
-      config.allPlugins.forEach(rootProject::linkBuildDependence)
-      config.extraDependencies.forEach { mavenConfig ->
+      val extraDependency = config.extraDependencies
+      extraDependency.forEach { mavenConfig ->
         rootProject.logger.quiet("Adding extra maven repository: ${mavenConfig.url}")
-        rootProject.linkMavenRepository(mavenConfig)
+
       }
+      rootProject.allprojects { project ->
+        extraDependency.forEach { mavenConfig ->
+          project.linkMavenRepository(mavenConfig)
+        }
+      }
+
+      config.allPlugins.forEach(rootProject::linkBuildDependence)
 
       // Adds maven repositories for all projects that are using the publication.
       // It most likely means that we will add "https://maven.pkg.github.com/expo/expo" to the repositories.

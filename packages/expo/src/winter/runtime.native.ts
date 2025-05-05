@@ -29,6 +29,10 @@ install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+// https://streams.spec.whatwg.org/#rs
+// ReadableStream is injected by Metro as a global
+
+install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
 
 installFormDataPatch(FormData);
 

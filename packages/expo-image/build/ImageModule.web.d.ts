@@ -3,7 +3,7 @@ import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 declare class ImageModule extends NativeModule implements ImageNativeModule {
     static name: string;
     Image: typeof ImageRef;
-    prefetch(urls: string | string[], _: any, __: any): Promise<boolean>;
+    prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean>;
     clearMemoryCache(): Promise<boolean>;
     clearDiskCache(): Promise<boolean>;
     loadAsync(source: ImageSource): Promise<ImageRef>;

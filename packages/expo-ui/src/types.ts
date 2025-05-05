@@ -1,12 +1,3 @@
-export type * from '../Button';
-export type * from '../ContextMenu';
-export type * from '../Picker';
-export type * from '../Section';
-export type * from '../Slider';
-export type * from '../Switch';
-export type * from '../Label';
-export type * from '../List';
-
 /**
  * @hidden
  */

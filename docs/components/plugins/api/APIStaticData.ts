@@ -10,6 +10,8 @@ export const nonLinkableTypes = [
   'EmitterSubscription',
   'EventName',
   'EventSubscription',
+  'FileSystemDirectory',
+  'FileSystemFile',
   'ForwardRefExoticComponent',
   'GeneratedHref',
   'GestureResponderEvent',
@@ -27,6 +29,7 @@ export const nonLinkableTypes = [
   'ParamListBase',
   'ParsedQs',
   'PartialState',
+  'PathUtilities',
   'PermissionHookBehavior',
   'PropsWithChildren',
   'PropsWithoutRef',
@@ -90,6 +93,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   AudioSampleCallback: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  ColorValue: 'https://reactnative.dev/docs/colors',
   Component: 'https://react.dev/reference/react/Component',
   CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
@@ -156,13 +160,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v49.0.0': {
-    Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
-    SharedObject: null,
-  },
-  'v50.0.0': {
-    SharedObject: null,
-  },
   '51.0.0': {
     SharedObject: null,
   },

@@ -229,7 +229,7 @@ open class ExpoNotificationBuilder(
    * @return Whether the notification should play a sound.
    */
   private fun shouldPlaySound(): Boolean {
-    val behaviorAllowsSound = notificationBehavior?.shouldPlaySound() ?: true
+    val behaviorAllowsSound = notificationBehavior?.shouldPlaySound ?: true
     val contentAllowsSound =
       notificationContent.shouldPlayDefaultSound || notificationContent.soundName != null
 
@@ -247,7 +247,7 @@ open class ExpoNotificationBuilder(
    * @return Whether the notification should vibrate.
    */
   private fun shouldVibrate(): Boolean {
-    val behaviorAllowsVibration = notificationBehavior?.shouldPlaySound() ?: true
+    val behaviorAllowsVibration = notificationBehavior?.shouldPlaySound ?: true
 
     val contentAllowsVibration =
       notificationContent.shouldUseDefaultVibrationPattern || notificationContent.vibrationPattern != null
@@ -288,9 +288,9 @@ open class ExpoNotificationBuilder(
         val requestPriorityValue =
           requestPriority?.nativeValue ?: NotificationPriority.DEFAULT.nativeValue
 
-        // TODO (barthap): This is going to be a dead code upon removing presentNotificationAsync()
+        // TODO (barthap, vonovak): This is going to be a dead code upon removing presentNotificationAsync()
         // shouldShowAlert() will always be false here.
-        return if (notificationBehavior.shouldShowAlert()) {
+        return if (notificationBehavior.shouldPresentAlert) {
           // Display as a heads-up notification, as per the behavior
           // while also allowing making the priority higher.
           max(

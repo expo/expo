@@ -4,9 +4,9 @@ declare const _default: {
     openBrowserAsync(url: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserResult>;
     dismissAuthSession(): void;
     maybeCompleteAuthSession({ skipRedirectCheck }: {
-        skipRedirectCheck?: boolean | undefined;
+        skipRedirectCheck?: boolean;
     }): {
-        type: 'success' | 'failed';
+        type: "success" | "failed";
         message: string;
     };
     openAuthSessionAsync(url: string, redirectUrl?: string, openOptions?: WebBrowserOpenOptions): Promise<WebBrowserAuthSessionResult>;

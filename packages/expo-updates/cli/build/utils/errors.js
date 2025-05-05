@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logCmdError = exports.CommandError = void 0;
+exports.CommandError = void 0;
+exports.logCmdError = logCmdError;
 const assert_1 = require("assert");
 const chalk_1 = __importDefault(require("chalk"));
 const log_1 = require("./log");
@@ -38,4 +39,3 @@ function logCmdError(error) {
     const errorDetails = error.stack ? '\n' + chalk_1.default.gray(error.stack) : '';
     (0, log_1.exit)(chalk_1.default.red(error.toString()) + errorDetails);
 }
-exports.logCmdError = logCmdError;

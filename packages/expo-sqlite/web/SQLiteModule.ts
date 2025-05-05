@@ -447,5 +447,5 @@ export class SQLiteModule extends NativeModule {
   readonly NativeSession: typeof NativeSession = NativeSession;
 }
 
-const SQLiteModuleInstance = registerWebModule(SQLiteModule);
+const SQLiteModuleInstance = registerWebModule(SQLiteModule, 'SQLiteModule');
 export default SQLiteModuleInstance;

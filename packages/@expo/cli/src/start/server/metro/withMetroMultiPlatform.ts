@@ -96,7 +96,13 @@ function withWebPolyfills(
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId, virtualEnvVarId];
+    return [
+      ...polyfills,
+      virtualModuleId,
+      virtualEnvVarId,
+      // Removed on server platforms during the transform.
+      require.resolve('expo/virtual/streams.js'),
+    ];
   };
 
   return {
@@ -684,6 +690,7 @@ export function withExtendedResolver(
     // If at this point, we haven't resolved a module yet, if it's a module specifier for a known dependency
     // of either `expo` or `expo-router`, attempt to resolve it from these origin modules instead
     createFallbackModuleResolver({
+      projectRoot: config.projectRoot,
       originModuleNames: ['expo', 'expo-router'],
       getStrictResolver,
     }),
@@ -711,13 +718,6 @@ export function withExtendedResolver(
         context.nodeModulesPaths = [
           path.join(require.resolve('@expo/cli/package.json'), '../static/canary-full'),
         ];
-      }
-
-      // HACK:
-      if (moduleName.match(/^@react-navigation\//)) {
-        // Force to use the ESM versions of react-navigation to prevent Metro behavior where it changes the
-        // resolution based on if a module is `import`ing or `require`ing it.
-        context.unstable_conditionNames = ['import', 'require'];
       }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
@@ -845,7 +845,9 @@ export async function withMetroMultiPlatformAsync(
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(
-      path.join(require.resolve('@expo/metro-config/package.json'), '../..')
+      path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
+      // For virtual modules
+      path.join(require.resolve('expo/package.json'), '..')
     );
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly

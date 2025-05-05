@@ -26,12 +26,12 @@ if [ "${CURRENT_ENV}" = "test" ]; then
         echo " ✅ Project is built for iOS"
     else
         echo " ⚠️  Building the project..."
-        "$DIR/start-ios-e2e-test.ts" --build
+        "$DIR/start-ios-e2e-test.js" --build
     fi
 
     echo " ☛  Starting E2E tests"
     # Run our default E2E tests
-    "${DIR}/start-ios-e2e-test.ts" --test
+    "${DIR}/start-ios-e2e-test.js" --test
 else
     echo " ☛  Running the iOS project..."
     npx expo run:ios --port "${port}"

@@ -2,6 +2,7 @@ import { getConfigFilePaths } from '@expo/config';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getSchemaAsync } from '../api/getSchemaAsync';
+import { learnMore } from '../utils/TerminalLink';
 import { validateWithSchemaAsync } from '../utils/schema';
 
 export class ExpoConfigSchemaCheck implements DoctorCheck {
@@ -51,6 +52,13 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
+      advice: issues.length
+        ? [
+            `Resolve schema errors in your app config. ${learnMore(
+              'https://docs.expo.dev/workflow/configuration/'
+            )}`,
+          ]
+        : [],
     };
   }
 }

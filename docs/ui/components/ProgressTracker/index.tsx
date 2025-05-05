@@ -1,9 +1,9 @@
-import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { mergeClasses } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import React from 'react';
 
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
-import { P, A, DEMI } from '~/ui/components/Text';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { P } from '~/ui/components/Text';
 
 import { SuccessCheckmark } from './SuccessCheckmark';
 import { Chapter } from './TutorialData';
@@ -91,19 +91,22 @@ export function ProgressTracker({
 
   return (
     <>
-      <div className="mx-auto mt-6 max-h-96 w-full rounded-md border border-solid border-default bg-subtle p-3">
-        <div className="flex items-center justify-center pt-2">
-          <SuccessCheckmark />
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <p className="mt-6 flex items-center text-center font-semibold text-default heading-lg">
-            <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
+      <div className="mx-auto flex w-full flex-col gap-4 rounded-lg border-2 border-palette-gray4 px-4 py-5">
+        <SuccessCheckmark
+          size="sm"
+          className={mergeClasses(
+            'mx-auto flex items-center justify-center grayscale transition duration-300',
+            currentChapter.completed && 'border-palette-green5 grayscale-0'
+          )}
+        />
+        <div className="flex flex-col items-center justify-center gap-2">
+          <p className="flex items-center text-center font-semibold text-default heading-lg">
+            <BookOpen02Icon className="mr-2 size-6 text-icon-secondary max-md-gutters:hidden" />{' '}
+            {currentChapter.title}
           </p>
-          <div className="mt-2 flex max-w-lg items-center justify-center leading-7">
-            <p className="pb-2 text-center text-default">{summary}</p>
-          </div>
+          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
         </div>
-        <div className="mt-4 flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <Checkbox
             id={`chapter-${currentChapterIndex}`}
             checked={currentChapter.completed}
@@ -118,20 +121,7 @@ export function ProgressTracker({
       </div>
       <>
         <P className="my-4">{nextChapterDescription}</P>
-        <A
-          href={nextChapterLink}
-          className="mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 hocus:shadow-xs"
-          isStyled>
-          <div className="flex flex-row items-center gap-4">
-            <div className="flex h-9 min-w-[36px] items-center justify-center self-center rounded-md bg-element">
-              <BookOpen02Icon className="icon-lg text-icon-default" />
-            </div>
-            <div>
-              <DEMI>Next: {nextChapterTitle}</DEMI>
-            </div>
-          </div>
-          <ArrowRightIcon className="ml-3 min-w-[20px] content-end self-center text-icon-secondary" />
-        </A>
+        <BoxLink href={nextChapterLink} title={`Next: ${nextChapterTitle}`} Icon={BookOpen02Icon} />
       </>
     </>
   );

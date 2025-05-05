@@ -1,5 +1,5 @@
 import UIKit
-import ExpoModulesCore
+@preconcurrency import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXAppLifecycleListener,
@@ -27,6 +27,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     return mm
   }()
   private var isSessionPaused = false
+  private let deviceDiscovery = DeviceDiscovery()
 
   // MARK: Property Observers
 
@@ -109,6 +110,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
   }
 
+  var selectedLens: String? {
+    didSet {
+      sessionQueue.async {
+        self.updateDevice()
+      }
+    }
+  }
+
   var animateShutter = true
   var mirror = false
 
@@ -136,6 +145,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   let onPictureSaved = EventDispatcher()
   let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
+  let onAvailableLensesChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
     UIApplication.shared.connectedScenes.compactMap {
@@ -167,12 +177,32 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func updateDevice() {
-    guard let device = ExpoCameraUtils.device(with: .video, preferring: presetCamera) else {
-      return
+    let lenses = presetCamera == .back ? deviceDiscovery.backCameraLenses : deviceDiscovery.frontCameraLenses
+    let selectedDevice = lenses.first {
+      $0.localizedName == selectedLens
     }
 
+    if let selectedDevice {
+      addDevice(selectedDevice)
+    } else {
+      if presetCamera == .back {
+        if let device = deviceDiscovery.defaultBackCamera {
+          addDevice(device)
+        }
+      } else {
+        if let device = deviceDiscovery.defaultFrontCamera {
+          addDevice(device)
+        }
+      }
+    }
+  }
+
+  private func addDevice(_ device: AVCaptureDevice) {
     session.beginConfiguration()
-    defer { session.commitConfiguration() }
+    defer {
+      session.commitConfiguration()
+      emitAvailableLenses()
+    }
     if let captureDeviceInput {
       session.removeInput(captureDeviceInput)
     }
@@ -338,6 +368,24 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
     sessionQueue.async {
       self.barcodeScanner?.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    }
+  }
+
+  func emitAvailableLenses() {
+    onAvailableLensesChanged([
+      "lenses": getAvailableLenses()
+    ])
+  }
+
+  func getAvailableLenses() -> [String] {
+    let availableLenses = presetCamera == AVCaptureDevice.Position.back
+    ? deviceDiscovery.backCameraLenses
+    : deviceDiscovery.frontCameraLenses
+
+    // Lens ordering can be varied which causes problems if you keep the result in react state.
+    // We sort them to provide a stable ordering
+    return availableLenses.map { $0.localizedName }.sorted {
+      $0 < $1
     }
   }
 

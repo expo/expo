@@ -17,7 +17,7 @@ open class ExpoModuleExtension(val project: Project) {
     project.gradle.extensions.getByType(ExpoGradleHelperExtension::class.java)
   }
 
-  private val autolinking: AutolinkingIntegration by lazy {
+  internal val autolinking: AutolinkingIntegration by lazy {
     AutolinkingIntegrationImpl()
   }
 

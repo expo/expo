@@ -305,6 +305,12 @@ export default class VideoPlayerWeb
     this.playing = true;
   }
 
+  // The HTML5 player already offloads loading of the asset onto a different thread so we can keep the same
+  // implementation until `replace` is deprecated and removed.
+  async replaceAsync(source: VideoSource): Promise<void> {
+    return this.replace(source);
+  }
+
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime += seconds;

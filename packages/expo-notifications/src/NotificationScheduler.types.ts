@@ -2,20 +2,6 @@ import { ProxyNativeModule } from 'expo-modules-core';
 
 import { NotificationRequest, NotificationContentInput } from './Notifications.types';
 
-type CalendarTriggerInputValue = {
-  timezone?: string;
-  year?: number;
-  month?: number;
-  weekday?: number;
-  weekOfMonth?: number;
-  weekOfYear?: number;
-  weekdayOrdinal?: number;
-  day?: number;
-  hour?: number;
-  minute?: number;
-  second?: number;
-};
-
 export interface NotificationSchedulerModule extends ProxyNativeModule {
   getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;
   scheduleNotificationAsync?: (
@@ -38,7 +24,17 @@ export interface NativeCalendarTriggerInput {
   type: 'calendar';
   channelId?: string;
   repeats?: boolean;
-  value: CalendarTriggerInputValue;
+  timezone?: string;
+  year?: number;
+  month?: number;
+  weekday?: number;
+  weekOfMonth?: number;
+  weekOfYear?: number;
+  weekdayOrdinal?: number;
+  day?: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
 }
 
 export interface NativeTimeIntervalTriggerInput {

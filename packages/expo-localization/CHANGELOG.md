@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 16.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.4 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix issue where `useLocales` and `useCalendars` hooks would not re-render when the timezone changed. ([#36382](https://github.com/expo/expo/pull/36382) by [@ouwargui](https://github.com/ouwargui))
+
+## 16.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
 ## 16.1.0 — 2025-04-04
 
 ### 🎉 New features

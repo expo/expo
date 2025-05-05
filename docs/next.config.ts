@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
 import { join } from 'node:path';
+import { exit } from 'node:process';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGFM from 'remark-gfm';
@@ -20,8 +21,14 @@ import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const newestVersion =
-  'betaVersion' in packageJson ? (packageJson?.betaVersion as string) : packageJson.version;
+const betaVersion = 'betaVersion' in packageJson ? (packageJson.betaVersion as string) : undefined;
+const latestVersion = 'version' in packageJson ? packageJson.version : undefined;
+const newestVersion = betaVersion ?? latestVersion;
+
+if (!newestVersion) {
+  error('Cannot determine newest SDK version, aborting!');
+  exit(1);
+}
 
 const removeConsoleConfig =
   process.env.NODE_ENV !== 'development'

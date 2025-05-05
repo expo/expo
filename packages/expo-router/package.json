@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "5.0.1-preview.0",
+  "version": "5.0.5",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -61,7 +61,7 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-module build",
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.build.json; else expo-module build \"$1\"; fi' --",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -75,7 +75,7 @@
     "expo"
   ],
   "peerDependencies": {
-    "@react-navigation/drawer": "^7.2.1",
+    "@react-navigation/drawer": "^7.3.9",
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
@@ -95,21 +95,22 @@
     }
   },
   "devDependencies": {
-    "@react-navigation/drawer": "^7.2.q",
+    "@react-navigation/drawer": "^7.3.9",
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^15.0.7",
     "@testing-library/react-native": "^13.1.0",
+    "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
-    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
+    "react-server-dom-webpack": "~19.0.0",
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/metro-runtime": "5.0.0",
-    "@expo/server": "^0.6.0",
-    "@radix-ui/react-slot": "1.0.1",
-    "@react-navigation/bottom-tabs": "^7.3.0",
-    "@react-navigation/native": "^7.0.17",
-    "@react-navigation/native-stack": "^7.3.0",
+    "@expo/metro-runtime": "5.0.4",
+    "@expo/server": "^0.6.2",
+    "@radix-ui/react-slot": "1.2.0",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/native-stack": "^7.3.10",
     "client-only": "^0.0.1",
     "invariant": "^2.2.4",
     "react-fast-compare": "^3.2.2",

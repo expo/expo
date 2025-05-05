@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
+import java.util.UUID
 
 data class SetCameraPositionConfig(
   @Field
@@ -46,6 +47,9 @@ data class Coordinates(
 
 data class MarkerRecord(
   @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
   val coordinates: Coordinates = Coordinates(),
 
   @Field
@@ -63,6 +67,23 @@ data class MarkerRecord(
   @Field
   val showCallout: Boolean = true
 ) : Record
+
+data class PolylineRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+  
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val geodesic: Boolean = false,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val width: Float = 10f,
+): Record
 
 data class CameraPositionRecord(
   @Field
@@ -200,4 +221,18 @@ data class CameraMoveEvent(
 
   @Field
   val bearing: Float
+) : Record
+
+data class CameraPositionStreetViewRecord(
+  @Field
+  val coordinates: Coordinates = Coordinates(),
+
+  @Field
+  val zoom: Float = 0f,
+
+  @Field
+  val tilt: Float = 0f,
+
+  @Field
+  val bearing: Float = 0f
 ) : Record

@@ -33,7 +33,7 @@ export declare class SQLiteSession {
     createChangesetAsync(): Promise<Changeset>;
     /**
      * Create an inverted changeset asynchronously.
-     * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasync).
+     * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasyncchangeset).
      */
     createInvertedChangesetAsync(): Promise<Changeset>;
     /**
@@ -50,62 +50,61 @@ export declare class SQLiteSession {
     invertChangesetAsync(changeset: Changeset): Promise<Changeset>;
     /**
      * Attach a table to the session synchronously.
-     * @see [`sqlite3session_attach`](https://www.sqlite.org/session/sqlite3session_attach.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param table The table to attach.
+     * @see [`sqlite3session_attach`](https://www.sqlite.org/session/sqlite3session_attach.html)
      */
     attachSync(table: string | null): void;
     /**
      * Enable or disable the session synchronously.
-     * @see [`sqlite3session_enable`](https://www.sqlite.org/session/sqlite3session_enable.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param enabled Whether to enable or disable the session.
+     * @see [`sqlite3session_enable`](https://www.sqlite.org/session/sqlite3session_enable.html)
      */
     enableSync(enabled: boolean): void;
     /**
      * Close the session synchronously.
-     * @see [`sqlite3session_delete`](https://www.sqlite.org/session/sqlite3session_delete.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
+     * @see [`sqlite3session_delete`](https://www.sqlite.org/session/sqlite3session_delete.html)
      */
     closeSync(): void;
     /**
      * Create a changeset synchronously.
-     * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
+     * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
      */
     createChangesetSync(): Changeset;
     /**
      * Create an inverted changeset synchronously.
-     * This is a shorthand for [`createChangesetSync()`](#createchangesetsync) + [`invertChangesetSync()`](#invertchangesetsync).
+     * This is a shorthand for [`createChangesetSync()`](#createchangesetsync) + [`invertChangesetSync()`](#invertchangesetsyncchangeset).
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-     *
      */
     createInvertedChangesetSync(): Changeset;
     /**
      * Apply a changeset synchronously.
-     * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param changeset The changeset to apply.
+     * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
      */
     applyChangesetSync(changeset: Changeset): void;
     /**
      * Invert a changeset synchronously.
-     * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param changeset The changeset to invert.
+     * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
      */
     invertChangesetSync(changeset: Changeset): Changeset;
 }

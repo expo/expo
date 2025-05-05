@@ -1,4 +1,11 @@
 "use strict";
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -15,28 +22,33 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transform = void 0;
-/**
- * Copyright 2023-present 650 Industries (Expo). All rights reserved.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+exports.transform = transform;
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const node_path_1 = require("node:path");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
+const dot_env_development_1 = require("./dot-env-development");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
@@ -68,7 +80,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+    if (posixFilename.match(/(^|\/)expo\/virtual\/rsc\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -113,6 +125,52 @@ async function transform(config, projectRoot, filename, data, options) {
             // Clear the contents of +api files when bundling for the client.
             // This ensures that the client doesn't accidentally use the server-only +api files.
             return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+        }
+        // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
+        if (filename.match(/(^|\/)\.env(\.(local|(development|production)(\.local)?))?$/)) {
+            const envFileParsed = (0, dot_env_development_1.parseEnvFile)(data.toString('utf-8'), isClientEnvironment);
+            return worker.transform(config, projectRoot, filename, Buffer.from(`export default ${JSON.stringify(envFileParsed)};`), options);
+        }
+        if (
+        // Noop the streams polyfill in the server environment.
+        !isClientEnvironment &&
+            filename.match(/\/expo\/virtual\/streams\.js$/)) {
+            return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+        }
+        if (
+        // Parsing the virtual env is client-only, on the server we use `process.env` directly.
+        isClientEnvironment &&
+            // Finally match the virtual env file.
+            filename.match(/\/expo\/virtual\/env\.js$/)) {
+            if (
+            // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
+            options.dev) {
+                const relativePath = (0, node_path_1.relative)((0, node_path_1.dirname)(filename), projectRoot);
+                const posixPath = (0, filePath_1.toPosixPath)(relativePath);
+                // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
+                // We then merge them in the expected order.
+                // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
+                // defined in the script or bash, essentially all places where HMR is not possible.
+                // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
+                // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
+                const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
+    
+    export const env = !dotEnvModules.keys().length ? process.env : { ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+      return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
+    }, {}), ...process.env };`;
+                return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+            }
+            else {
+                // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.
+                // Create a proxy module where a helpful error is thrown whenever a key from `process.env` is accessed.
+                const contents = `
+        export const env = new Proxy({}, {
+          get(target, key) {
+            throw new Error(\`Attempting to access internal environment variable "\${key}" is not supported in production bundles. Environment variables should be inlined in production by Babel.\`);
+          },
+       });`;
+                return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+            }
         }
         return worker.transform(config, projectRoot, filename, data, options);
     }
@@ -231,7 +289,6 @@ async function transform(config, projectRoot, filename, data, options) {
         output,
     };
 }
-exports.transform = transform;
 /**
  * A custom Metro transformer that adds support for processing Expo-specific bundler features.
  * - Global CSS files on web.

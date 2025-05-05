@@ -232,5 +232,7 @@ rules:
     mentions: ['bycedric', 'EvanBacon']
   - patterns: ['packages/uri-scheme/**']
     mentions: ['bycedric', 'EvanBacon']
+  - patterns: ['packages/eslint-config-expo/**', 'packages/eslint-config-universe/**', 'packages/eslint-plugin-expo/**']
+    mentions: ['kadikraman', 'Simek']
   - patterns: ['tools/**']
     mentions: ['kudo']

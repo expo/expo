@@ -17,9 +17,9 @@
 + (nonnull instancetype)sharedInstance;
 
 /**
- * Returns the AppDelegate whose rootViewfactory the dev menu uses to create it's root view.
+ * Returns the ReactNativeFactory that the dev menu uses to create it's root view.
  */
-- (nullable RCTAppDelegate *)mainAppDelegate;
+- (nullable RCTReactNativeFactory *)mainAppFactory;
 
 /**
  * Returns bool value whether the dev menu is visible.

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 0.7.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.0 — 2025-04-04
 
 ### 💡 Others

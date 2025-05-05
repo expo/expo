@@ -1,10 +1,20 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 /**
+ Type-erased protocol for asynchronous functions using Swift concurrency
+ */
+internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
+  /**
+   Specifies if the main actor should be used. Necessary when attached to a view
+   */
+  var requiresMainActor: Bool { get set }
+}
+
+/**
  Represents a concurrent function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  As opposed to `AsyncFunctionDefinition`, it can leverage the new Swift's concurrency model and take the async/await closure.
  */
-public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyFunctionDefinition {
+public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition {
   typealias ClosureType = (Args) async throws -> ReturnType
 
   let body: ClosureType
@@ -31,6 +41,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
   }
 
   var takesOwner: Bool = false
+  var requiresMainActor: Bool = false
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     var arguments: [Any]
@@ -62,7 +73,14 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
       do {
         // Convert arguments to the types desired by the function.
-        let finalArguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+        var finalArguments: [Any]
+        if requiresMainActor {
+          finalArguments = try await MainActor.run {
+            try cast(arguments: arguments, forFunction: self, appContext: appContext)
+          }
+        } else {
+          finalArguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+        }
 
         // TODO: Right now we force cast the tuple in all types of functions, but we should throw another exception here.
         // swiftlint:disable force_cast

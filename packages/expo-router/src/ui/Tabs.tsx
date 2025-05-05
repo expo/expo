@@ -14,7 +14,7 @@ import {
   ReactElement,
   ReactNode,
   isValidElement,
-  useContext,
+  use,
   useMemo,
   PropsWithChildren,
 } from 'react';
@@ -152,10 +152,10 @@ export function useTabsWithChildren(options: UseTabsWithChildrenOptions) {
 export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsContextValue {
   const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
-  const parentTriggerMap = useContext(TabTriggerMapContext);
+  const parentTriggerMap = use(TabTriggerMapContext);
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
-  const linking = useContext(LinkingContext).options;
+  const linking = use(LinkingContext).options;
   const routeInfo = useRouteInfo();
 
   if (!routeNode || !linking) {

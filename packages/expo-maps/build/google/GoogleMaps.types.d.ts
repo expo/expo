@@ -1,11 +1,15 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform android
  */
 export type GoogleMapsMarker = {
+    /**
+     * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+     */
+    id?: string;
     /**
      * The coordinates of the marker.
      */
@@ -30,6 +34,31 @@ export type GoogleMapsMarker = {
      * The custom icon to display for the marker.
      */
     icon?: SharedRefType<'image'>;
+};
+/**
+ * @platform android
+ */
+export type GoogleMapsPolyline = {
+    /**
+     * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+     */
+    id?: string;
+    /**
+     * The coordinates of the polyline.
+     */
+    coordinates: Coordinates[];
+    /**
+     * The color of the polyline.
+     */
+    color?: ProcessedColorValue | string;
+    /**
+     * The width of the polyline.
+     */
+    width?: number;
+    /**
+     * Whether the polyline is geodesic.
+     */
+    geodesic?: boolean;
 };
 /**
  * @platform android
@@ -180,6 +209,10 @@ export type GoogleMapsViewProps = {
      */
     markers?: GoogleMapsMarker[];
     /**
+     * The array of polylines to display on the map.
+     */
+    polylines?: GoogleMapsPolyline[];
+    /**
      * The `MapUiSettings` to be used for UI-specific settings on the map.
      */
     uiSettings?: GoogleMapsUISettings;
@@ -224,6 +257,10 @@ export type GoogleMapsViewProps = {
      */
     onMarkerClick?: (event: GoogleMapsMarker) => void;
     /**
+     * Lambda invoked when the polyline is clicked.
+     */
+    onPolylineClick?: (event: GoogleMapsPolyline) => void;
+    /**
      * Lambda invoked when the map was moved by the user.
      */
     onCameraMove?: (event: {
@@ -255,9 +292,18 @@ export type GoogleMapsViewType = {
 /**
  * @platform android
  */
+export type StreetViewCameraPosition = {
+    coordinates: Coordinates;
+    zoom?: number;
+    tilt?: number;
+    bearing?: number;
+};
+/**
+ * @platform android
+ */
 export type GoogleStreetViewProps = {
     style?: StyleProp<ViewStyle>;
-    position?: Coordinates;
+    position: StreetViewCameraPosition;
     isPanningGesturesEnabled?: boolean;
     isStreetNamesEnabled?: boolean;
     isUserNavigationEnabled?: boolean;

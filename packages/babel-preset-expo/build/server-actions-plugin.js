@@ -24,21 +24,32 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reactServerActionsPlugin = void 0;
+exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const core_1 = require("@babel/core");
-// @ts-expect-error: missing types
-const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
-const node_url_1 = __importStar(require("node:url"));
+const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
@@ -179,13 +190,13 @@ function reactServerActionsPlugin(api) {
             assertExpoMetadata(file.metadata);
             file.metadata.extractedActions = [];
             file.metadata.isModuleMarkedWithUseServerDirective = false;
-            const addNamedImportOnce = createAddNamedImportOnce(t);
+            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(t);
             addReactImport = () => {
                 return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
             getActionModuleId = once(() => {
                 // Create relative file path hash.
-                return (0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href;
+                return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, file.opts.filename));
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');
@@ -508,7 +519,6 @@ function reactServerActionsPlugin(api) {
         },
     };
 }
-exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const getFreeVariables = (path) => {
     const freeVariablesSet = new Set();
     const programScope = path.scope.getProgramParent();
@@ -625,26 +635,7 @@ function assertExpoMetadata(metadata) {
         throw new Error('Expected Babel state.file.metadata to be an object');
     }
 }
-const getOrCreateInMap = (map, key, create) => {
-    if (!map.has(key)) {
-        const result = create();
-        map.set(key, result);
-        return [result, true];
-    }
-    return [map.get(key), false];
-};
 function hasUseServerDirective(path) {
     const { body } = path.node;
     return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
 }
-const createAddNamedImportOnce = (t) => {
-    const addedImportsCache = new Map();
-    return function addNamedImportOnce(path, name, source) {
-        const [sourceCache] = getOrCreateInMap(addedImportsCache, source, () => new Map());
-        const [identifier, didCreate] = getOrCreateInMap(sourceCache, name, () => (0, helper_module_imports_1.addNamed)(path, name, source));
-        // for cached imports, we need to clone the resulting identifier, because otherwise
-        // '@babel/plugin-transform-modules-commonjs' won't replace the references to the import for some reason.
-        // this is a helper for that.
-        return didCreate ? identifier : t.cloneNode(identifier);
-    };
-};

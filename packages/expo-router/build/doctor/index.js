@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.doctor = void 0;
+exports.doctor = doctor;
 const debug_1 = __importDefault(require("debug"));
 const subset_1 = __importDefault(require("semver/ranges/subset"));
 const debug = (0, debug_1.default)('expo:router:doctor');
@@ -62,5 +62,4 @@ function doctor(pkg, appReactNavigationPath,
     }
     return incorrectDependencies;
 }
-exports.doctor = doctor;
 //# sourceMappingURL=index.js.map

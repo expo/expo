@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+## 4.2.4 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.1 — 2025-04-23
+
+- Make `NavigationBar` methods no-op when edge-to-edge is enabled. ([#36330](https://github.com/expo/expo/pull/36330) by [@zoontek](https://github.com/zoontek))
+
+## 4.2.0 — 2025-04-21
+
+### 🎉 New features
+
+- Use wrappers for methods from `react-native-edge-to-edge.SystemBars` when edge-to-edge is enabled. ([#36163](https://github.com/expo/expo/pull/36163) by [@behenate](https://github.com/behenate))
+
+## 4.1.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
 ## 4.1.0 — 2025-04-04
 
 - Warn about potential edge-to-edge interferences. ([#34478](https://github.com/expo/expo/pull/34478) by [@zoontek](https://github.com/zoontek))
