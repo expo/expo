@@ -88,7 +88,7 @@ config.resolver.resolveRequest = (context, moduleImport, platform) => {
   return context.resolveRequest(context, moduleImport, platform);
 };
 
-module.exports = defaultConfig;
+module.exports = config;
 ```
 
 Alternatively, you can disable [`package.json:exports`](/versions/latest/config/metro/#packagejsonexports) support in the metro config but that might cause issues with other libraries and is not recommended.
