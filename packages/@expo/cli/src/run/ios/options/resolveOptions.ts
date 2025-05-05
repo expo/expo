@@ -42,7 +42,7 @@ export async function resolveOptionsAsync(
   const isSimulator = isSimulatorDevice(device);
 
   const projectConfig = getConfig(projectRoot);
-  const buildCacheProvider = resolveRemoteBuildCacheProvider(
+  const buildCacheProvider = await resolveRemoteBuildCacheProvider(
     projectConfig.exp.experiments?.remoteBuildCache?.provider,
     projectRoot
   );

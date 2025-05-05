@@ -4,36 +4,57 @@ import {
   RemoteBuildCacheProvider,
   RunOptions,
 } from '@expo/config';
+import fs from 'fs';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
+import * as Log from '../../log';
+import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
+import { CommandError } from '../errors';
 
 const debug = require('debug')('expo:run:remote-build') as typeof console.log;
 
-export const resolveRemoteBuildCacheProvider = (
+export const resolveRemoteBuildCacheProvider = async (
   provider:
     | Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider']
     | undefined,
   projectRoot: string
-): RemoteBuildCacheProvider | undefined => {
+): Promise<RemoteBuildCacheProvider | undefined> => {
   if (!provider) {
     return;
   }
 
   if (provider === 'eas') {
     try {
+      await ensureDependenciesAsync(projectRoot, {
+        isProjectMutable: true,
+        installMessage:
+          'eas-build-cache-provider package is required to use the EAS build cache.\n',
+        warningMessage: 'Unable to to use the EAS remote build cache.',
+        requiredPackages: [
+          {
+            pkg: 'eas-build-cache-provider',
+            file: 'eas-build-cache-provider/package.json',
+            dev: true,
+          },
+        ],
+      });
+
+      // We need to manually load dependencies installed on the fly
+      const plugin = await manuallyLoadDependency(projectRoot, 'eas-build-cache-provider');
+
       return {
-        plugin: require.resolve('eas-build-cache-provider', {
-          paths: [projectRoot],
-        }) as unknown as RemoteBuildCachePlugin,
+        plugin: plugin.default ?? plugin,
         options: {},
       };
     } catch (error: any) {
-      if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-        console.warn(
-          'The `eas-build-cache-provider` package is not installed. Please install it to use the EAS remote build cache.'
-        );
+      if (error instanceof CommandError) {
+        Log.warn(error.message);
+      } else {
+        throw error;
       }
+      return undefined;
     }
   }
 
@@ -166,10 +187,7 @@ function resolvePluginFilePathForModule(projectRoot: string, pluginReference: st
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
     // Try to resole the `main` entry as config plugin
-    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
-    if (packageMainEntry) {
-      return packageMainEntry;
-    }
+    return resolveFrom(projectRoot, pluginReference);
   }
 
   throw new Error(
@@ -207,4 +225,21 @@ export function resolvePluginFunction(
     }
     throw error;
   }
+}
+
+async function manuallyLoadDependency(projectRoot: string, packageName: string) {
+  const possiblePaths = [
+    path.join(projectRoot, 'node_modules'),
+    ...(require.resolve.paths(packageName) ?? []),
+  ];
+  const nodeModulesFolder = possiblePaths?.find((p) => {
+    const packagePath = path.join(p, packageName);
+    return fs.existsSync(packagePath);
+  });
+  if (!nodeModulesFolder) {
+    throw new Error(`Package ${packageName} not found in ${possiblePaths}`);
+  }
+
+  const { main } = await import(path.join(nodeModulesFolder, packageName, 'package.json'));
+  return import(path.join(nodeModulesFolder, packageName, main));
 }
