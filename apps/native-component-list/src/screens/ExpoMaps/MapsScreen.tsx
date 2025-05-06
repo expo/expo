@@ -112,6 +112,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Look around',
+      route: 'expo-maps/look-around',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsLookAroundScreen'));
+      },
+    },
+    {
       name: 'Maps properties',
       route: 'expo-maps/properties',
       options: {},

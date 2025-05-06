@@ -216,5 +216,11 @@ export type AppleMapsViewType = {
      * @param config New camera postion.
      */
     setCameraPosition: (config?: CameraPosition) => void;
+    /**
+     * Opens the look around view at specified coordinates.
+     *
+     * @param coordinates The coordinates of the location to open the look around view at.
+     */
+    openLookAroundAsync: (coordinates: Coordinates) => Promise<void>;
 };
 //# sourceMappingURL=AppleMaps.types.d.ts.map
