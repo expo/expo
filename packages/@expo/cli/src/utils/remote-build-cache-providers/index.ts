@@ -25,10 +25,6 @@ export const resolveRemoteBuildCacheProvider = (
     return { plugin: EASRemoteBuildCacheProvider, options: {} };
   }
 
-  if (typeof provider === 'object' && typeof provider.plugin === 'function') {
-    return provider as RemoteBuildCacheProvider;
-  }
-
   if (typeof provider === 'object' && typeof provider.plugin === 'string') {
     const plugin = resolvePluginFunction(projectRoot, provider.plugin);
 

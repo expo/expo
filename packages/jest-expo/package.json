@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "53.0.1",
+  "version": "53.0.2",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "license": "MIT",
   "main": "src/index.js",
@@ -37,8 +37,8 @@
     "preset": "jest-expo/universal"
   },
   "dependencies": {
-    "@expo/config": "~11.0.5",
-    "@expo/json-file": "^9.1.3",
+    "@expo/config": "~11.0.7",
+    "@expo/json-file": "^9.1.4",
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",

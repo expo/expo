@@ -389,8 +389,6 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 ## Bundle splitting
 
-> This feature is web-only in SDK 50 and above.
-
 Expo CLI automatically splits web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (available by default in Expo Router).
 
 Shared dependencies of async bundles are merged into a single chunk to reduce the number of requests. For example, if you have two async bundles that import `lodash`, then the library is merged into a single initial chunk.
@@ -454,6 +452,73 @@ const myModule = await import(/* @metro-ignore */ './my-module.js');
 Expo CLI will skip the `./my-module.js` dependency and assume that the developer has manually added it to the output bundle. Internally, this is used for exporting custom server code that dynamically switches between files based on the request. Avoid using this syntax for native bundles since `import()` is generally not available in React Native with Hermes enabled.
 
 Many React libraries shipped the Webpack `/* webpackIgnore: true */` comment to achieve similar behavior. To bridge the gap, we've also added support for Webpack's comment but recommend using the Metro equivalent in your app.
+
+## ES Module resolution
+
+> This sections applies from SDK 53 on all platforms.
+
+Metro resolves ES Module `import` and CommonJS `require` with separate resolution strategies.
+
+Previously, Metro applied the classic Node.js module resolution strategy (which matches Node.js versions before v12), with some additions to support ES Modules. In this resolution strategy, Metro resolves modules from `node_modules`, JS files, optionally while omitting extensions, such as `.js`, and uses `package.json` fields such as `main`, `module`, and `react-native`.
+
+Now, with the modern ES Modules resolution strategy, Metro instead resolves modules from `node_modules`, then matches different `package.json` fields, such as `exports`, [a nested map of sub-paths a package exposes](https://nodejs.org/api/packages.html#conditional-exports), and `main`.
+
+Depending on how a package is imported, one of these two resolution strategies will be used. Typically, a file that is imported with `import` from a Node module (rather than `require`), will use the ES Modules resolution strategy, and fall back on regular classic Node.js resolution. A file that wasn't resolved with ES Modules resolution or has been imported with CommonJS `require` will use the classic resolution strategy.
+
+### `package.json:exports`
+
+When performing ES Modules resolution, Metro will look at the `package.json:exports` conditions map. This is a mapping of import subpaths and conditions to files in the Node module package.
+
+For example, a package that always exposes an **index.js** file, and matches Metro's classic CommonJS module resolution, may specify a map with the `default` condition.
+
+```json
+{
+  "exports": {
+    "default": "./index.js"
+  }
+}
+```
+
+However, a package providing both a CommonJS and ES Modules entrypoint may provide a mapping with the `import` and `require` conditions.
+
+```json
+{
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./index.cjs"
+  }
+}
+```
+
+By default, Metro will match different conditions depending on the platform and whether the resolution has started from a CommonJS `require` call, or an ES Modules `import` statement and will change the condition accordingly.
+
+For native platforms, the condition `react-native` is added, for web exports, the `browser` condition is added, and for server exports (such as API routes or React Server functions), the `node`, `react-server`, and `workerd` conditions are added. These conditions aren't matched in the order they're defined in. Instead, they're matched against the order of properties in the `package.json:exports` map.
+
+TypeScript performs ES Module resolution separately from Metro and will also respect `package.json:exports` maps, when its `compilerOptions.moduleResolution` configuration option has either been set to `"bundler"` (which matches Metro's behaviour more closely) or to `"node16"` / `"nodenext"`. TypeScript will however also match the `types` condition. As such, types may not resolve properly when a package doesn't put the `types` condition first in its exports map.
+
+Since an exports map may contain subpaths, a package import may not have to match a file in the package's modules folder any longer, but may be a "redirected" import. Importing `'package/submodule'` may match a different file than **node_modules/package/submodule.js** if it's specified in `package.json:exports`.
+
+```json
+{
+  "exports": {
+    ".": "./index.js",
+    "./submodule": "./submodule/submodule.js"
+  }
+}
+```
+
+If you're encountering packages that are incompatible or unprepared for the new ES Modules resolution strategy, you may be able to resolve problems by patching its `package.json` file and add or correct its `package.json:exports` conditions map. However, it's also possible to prevent Metro from using `package.json:exports` maps in its resolution by disabling the `unstable_enablePackageExports` option.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+config.resolver.unstable_enablePackageExports = false;
+
+module.exports = config;
+```
 
 ## Asset imports
 
@@ -602,7 +667,7 @@ In your **ios/&lt;Project&gt;.xcodeproj/project.pbxproj** file, replace the foll
 
 #### "Start Packager" script
 
-Remove the **"Start Packager"** script in SDK 50 and higher. The dev server must be started with `npx expo` before/after running the app.
+Remove the **"Start Packager"** script. The dev server must be started with `npx expo` before/after running the app.
 
 ```diff Start Packager
 -    FD10A7F022414F080027D42C /* Start Packager */ = {

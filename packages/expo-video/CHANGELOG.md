@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.1.8 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.7 — 2025-04-28
 
 ### 🎉 New features
@@ -63,6 +67,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [Android] Fix ConcurrentModificationException app crashes ([#35356](https://github.com/expo/expo/pull/35356) by [@voslartomas](https://github.com/voslartomas))
 - [Web] Fix `playbackRate` not being applied in the setup function.([#34182](https://github.com/expo/expo/pull/34182) by [@behenate](https://github.com/behenate))
 - Fix safe area insets not updating for native controls on iOS. ([#32864](https://github.com/expo/expo/pull/32864) by [@behenate](https://github.com/behenate))
 - [iOS] Fix the Now Playing notification disappearing after the video is paused. ([#35273](https://github.com/expo/expo/pull/35273) by [@behenate](https://github.com/behenate))

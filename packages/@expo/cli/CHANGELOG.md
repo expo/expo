@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Prevent deleting project directory. ([#36514](https://github.com/expo/expo/pull/36514) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Improve error format when `npx expo export` (native) fails. ([#36533](https://github.com/expo/expo/pull/36533) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.24.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.8 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fix fallback resolution strategy for non-monorepo Node module installations (e.g. isolated dependencies with pnpm without workspaces) ([#36181](https://github.com/expo/expo/pull/36181) by [@kitten](https://github.com/kitten))
 
 ## 0.24.7 — 2025-04-28
 

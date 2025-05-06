@@ -25,7 +25,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   private var currentFocusRequest: AudioFocusRequest? = null
   private var currentMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
   private val anyPlayerRequiresFocus: Boolean
-    get() = players.any {
+    get() = players.toList().any {
       playerRequiresFocus(it)
     }
 
@@ -184,9 +184,8 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   // Utils
 
   private fun playerRequiresFocus(weakPlayer: WeakReference<VideoPlayer>): Boolean {
-    return weakPlayer.get()?.let {
-      (!it.muted && it.playing && it.volume > 0) || it.audioMixingMode == AudioMixingMode.DO_NOT_MIX
-    } ?: false
+    val player = weakPlayer?.get() ?: return false // Return false if player is null
+    return (!player.muted && player.playing && player.volume > 0) || player.audioMixingMode == AudioMixingMode.DO_NOT_MIX
   }
 
   private fun pausePlayerIfUnmuted(weakPlayer: WeakReference<VideoPlayer>) {
@@ -226,7 +225,9 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   }
 
   private fun findAudioMixingMode(): AudioMixingMode {
-    val mixingModes = players.mapNotNull { player ->
+    val playersSnapshot = players.toList()
+
+    val mixingModes = playersSnapshot.mapNotNull { player ->
       player.get()?.takeIf { it.playing }?.audioMixingMode
     }
     if (mixingModes.isEmpty()) {

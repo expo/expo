@@ -1,6 +1,6 @@
 {
   "name": "expo-system-ui",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Interact with system UI elements",
   "main": "build/SystemUI.js",
   "types": "build/SystemUI.d.ts",
@@ -39,7 +39,7 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.5"
+    "expo-module-scripts": "^4.1.6"
   },
   "peerDependencies": {
     "expo": "*",

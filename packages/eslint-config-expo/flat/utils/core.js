@@ -84,6 +84,7 @@ module.exports = [
       'valid-typeof': 'error',
       'import/first': 'warn',
       'import/default': 'off',
+      'no-var': 'error',
     },
   },
   {

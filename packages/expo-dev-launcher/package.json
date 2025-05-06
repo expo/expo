@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "5.1.8",
+  "version": "5.1.10",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -31,8 +31,8 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "ajv": "8.11.0",
-    "expo-dev-menu": "6.1.7",
-    "expo-manifests": "~0.16.3",
+    "expo-dev-menu": "6.1.9",
+    "expo-manifests": "~0.16.4",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
@@ -43,10 +43,10 @@
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^13.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~13.1.8",
+    "babel-preset-expo": "~13.1.10",
     "date-fns": "^2.28.0",
-    "expo-dev-client-components": "2.1.3",
-    "expo-module-scripts": "^4.1.5",
+    "expo-dev-client-components": "2.1.4",
+    "expo-module-scripts": "^4.1.6",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "19.0.0",

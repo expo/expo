@@ -5,10 +5,21 @@ import { withFontsIos } from './withFontsIos';
 
 const pkg = require('expo-font/package.json');
 
+export type FontObject = {
+  fontFamily: string;
+  fontDefinitions: {
+    path: string;
+    weight: number;
+    style?: 'normal' | 'italic' | undefined;
+  }[];
+};
+
+export type Font = string | FontObject;
+
 export type FontProps = {
   fonts?: string[];
   android?: {
-    fonts?: string[];
+    fonts?: Font[];
   };
   ios?: {
     fonts?: string[];

@@ -10,8 +10,8 @@ export { AnchorContext } from './AnchorContext';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
-const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
+const CRAWLABLE_HEADINGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5']);
+const CRAWLABLE_TEXT = new Set(['span', 'p', 'li', 'blockquote', 'code', 'pre']);
 
 type PermalinkedComponentProps = PropsWithChildren<
   { level?: number; id?: string } & AdditionalProps & TextComponentProps
@@ -79,8 +79,8 @@ export function createTextComponent(Element: TextElement, textClassName?: string
           className
         )}
         data-testid={testID}
-        data-heading={(crawlable && CRAWLABLE_HEADINGS.includes(TextElementTag)) || undefined}
-        data-text={(crawlable && CRAWLABLE_TEXT.includes(TextElementTag)) || undefined}
+        data-heading={(crawlable && CRAWLABLE_HEADINGS.has(TextElementTag)) || undefined}
+        data-text={(crawlable && CRAWLABLE_TEXT.has(TextElementTag)) || undefined}
         {...rest}
       />
     );
