@@ -1,6 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import {
   PropsWithChildren,
   RefObject,
@@ -41,6 +42,9 @@ export const TableOfContents = forwardRef<
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [collapsedH3s, setCollapsedH3s] = useState<Set<string>>(
+    () => new Set(headings.filter(h => h.level === BASE_HEADING_LEVEL + 1).map(h => h.slug))
+  );
 
   const slugScrollingTo = useRef<string | null>(null);
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
@@ -141,10 +145,93 @@ export const TableOfContents = forwardRef<
     }
   }
 
+  const toggleH3 = (slug: string, event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setCollapsedH3s(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(slug)) {
+        newSet.delete(slug);
+      } else {
+        newSet.add(slug);
+      }
+      return newSet;
+    });
+  };
+
   const displayedHeadings = headings.filter(
     head =>
       head.level <= BASE_HEADING_LEVEL + maxNestingDepth && head.title.toLowerCase() !== 'see also'
   );
+
+  const renderTOC = () => {
+    let currentH3: string | null = null;
+
+    return displayedHeadings.map((heading, index) => {
+      const isActive = heading.slug === activeSlug;
+      const isH3 = heading.level === BASE_HEADING_LEVEL + 1;
+
+      if (isH3) {
+        currentH3 = heading.slug;
+      } else if (heading.level <= BASE_HEADING_LEVEL) {
+        currentH3 = null;
+      }
+
+      const parentH3 = currentH3 || '';
+      const shouldHide =
+        Boolean(currentH3) && heading.level > BASE_HEADING_LEVEL + 1 && collapsedH3s.has(parentH3);
+
+      if (shouldHide) {
+        return null;
+      }
+
+      const hasChildren =
+        isH3 &&
+        (() => {
+          for (let i = index + 1; i < displayedHeadings.length; i++) {
+            const nextHeading = displayedHeadings[i];
+            if (nextHeading.level <= heading.level) {
+              break;
+            }
+            if (nextHeading.level > heading.level) {
+              return true;
+            }
+          }
+          return false;
+        })();
+
+      return (
+        <div
+          key={heading.slug}
+          className={mergeClasses(
+            'flex items-center',
+            currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0'
+          )}>
+          {hasChildren && (
+            <div
+              onClick={e => toggleH3(heading.slug, e)}
+              className="flex h-full items-center justify-center self-start pt-[3px]">
+              <ChevronDownIcon
+                className={mergeClasses(
+                  'icon-xs -mr-2 text-icon-secondary transition-transform',
+                  collapsedH3s.has(heading.slug) ? '-rotate-90' : 'rotate-0'
+                )}
+              />
+            </div>
+          )}
+          <TableOfContentsLink
+            heading={heading}
+            onClick={event => {
+              handleLinkClick(event, heading);
+            }}
+            isActive={isActive}
+            ref={isActive ? activeItemRef : undefined}
+            shortenCode
+          />
+        </div>
+      );
+    });
+  };
 
   return (
     <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
@@ -166,21 +253,7 @@ export const TableOfContents = forwardRef<
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-      {displayedHeadings.map(heading => {
-        const isActive = heading.slug === activeSlug;
-        return (
-          <TableOfContentsLink
-            key={heading.slug}
-            heading={heading}
-            onClick={event => {
-              handleLinkClick(event, heading);
-            }}
-            isActive={isActive}
-            ref={isActive ? activeItemRef : undefined}
-            shortenCode
-          />
-        );
-      })}
+      {renderTOC()}
     </nav>
   );
 });
