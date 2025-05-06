@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.0.9 — 2025-05-06
+
+### 💡 Others
+
 - Rename remote build cache provider to build cache provider and deprecate `remoteBuildCache` field ([#36643](https://github.com/expo/expo/pull/36643) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 11.0.8 — 2025-05-03
