@@ -73,18 +73,39 @@ export const TableOfContents = forwardRef<
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
   function handleContentScroll(contentScrollPosition: number) {
-    for (const { ref, slug } of headings) {
+    for (const { ref, slug, level } of headings) {
       if (!ref?.current) {
         continue;
       }
 
       setShowScrollTop(contentScrollPosition > 120);
 
-      if (
+      const isInView =
         ref.current.offsetTop >=
           contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
-        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2
-      ) {
+        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2;
+
+      if (isInView) {
+        if (isVersioned && level > BASE_HEADING_LEVEL + 1) {
+          const currentIndex = headings.findIndex(h => h.slug === slug);
+          for (let i = currentIndex; i >= 0; i--) {
+            const h = headings[i];
+            if (h.level === BASE_HEADING_LEVEL + 1) {
+              if (collapsedH3s.has(h.slug)) {
+                if (h.slug !== activeSlug) {
+                  if (h.slug === slugScrollingTo.current) {
+                    slugScrollingTo.current = null;
+                  }
+                  setActiveSlug(h.slug);
+                  updateSelfScroll();
+                }
+                return;
+              }
+              break;
+            }
+          }
+        }
+
         if (slug !== activeSlug) {
           if (slug === slugScrollingTo.current) {
             slugScrollingTo.current = null;
@@ -217,7 +238,7 @@ export const TableOfContents = forwardRef<
           {hasChildren && isVersioned && (
             <div
               onClick={e => toggleH3(heading.slug, e)}
-              className="flex h-full items-center justify-center self-start pt-[4px]">
+              className="flex h-full cursor-pointer items-center justify-center self-start pt-[4px] hover:opacity-70">
               <ChevronDownIcon
                 className={mergeClasses(
                   'icon-xs -mr-2 text-icon-secondary transition-transform',
