@@ -1,20 +1,19 @@
-import mux from '@expo/mux';
+import { requireNativeModule } from 'expo';
 import { setStringAsync } from 'expo-clipboard';
+import { addListener } from 'expo-keep-awake';
 import React, { useEffect, useState } from 'react';
-import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
-// A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
-global.performance = {
-  now: () => 0,
-};
+type ModuleRegistrySchema = [
+  {
+    name: string;
+    functions: [{ name: string; argumentsCount: number }];
+    properties: [{ name: string }];
+    constants: [[{ name: string; type: string; value: any }]]; // TODO: Fix
+  },
+];
 
-const { ExpoNativeModuleIntrospection } = NativeModules;
-
-if (!ExpoNativeModuleIntrospection) {
-  console.warn(
-    'Looks like there is no `ExpoNativeModuleIntrospection` module. Please make sure you are running this app on iOS.'
-  );
-}
+const CoreModule = requireNativeModule('ExpoGo');
 
 const keysOrder = ['type', 'functionType', 'name', 'argumentsCount', 'key'];
 
@@ -49,7 +48,7 @@ const replacer = (_key, value) => {
   if (value instanceof Array) {
     // sorts by numeric keys eg. { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
     if (value?.[0]?.key && isNumeric(value?.[0]?.key)) {
-      return value.sort((a, b) => Number(a?.key) > Number(b?.key));
+      return value.sort((a, b) => Number(a?.key) - Number(b?.key));
     }
     // sorts by string keys  eg. { name: 'getNetworkStateAsync', argumentsCount: 0, key: 'getNetworkStateAsync' },
     if (value?.[0]?.key) {
@@ -110,88 +109,52 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
   );
 }
 
-const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization'];
+// const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+const blacklist = ['ExpoCrypto', 'ExpoClipboard'];
+
 async function _getExpoModuleSpecsAsync() {
-  const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
-  const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
-  const specPromises = {};
-  for (const moduleName of expoModuleNames) {
-    specPromises[moduleName] = _getModuleSpecAsync(moduleName, NativeModules[moduleName]);
-  }
-  return await mux(specPromises);
-}
-
-async function _getModuleSpecAsync(moduleName, module) {
-  if (!module) {
-    return {};
-  }
-
-  const moduleDescription =
-    await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(moduleName);
-  const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
-  if (moduleName === 'NativeUnimoduleProxy') {
-    spec.exportedMethods.mock = _sortObjectAndBlacklistKeys(module.exportedMethods, blacklist);
-    spec.viewManagersMetadata.mock = module.viewManagersMetadata;
-    spec.modulesConstants.type = 'mock';
-
-    spec.modulesConstants.mockDefinition = Object.keys(module.modulesConstants)
-      .sort()
-      .filter((name) => !blacklist.includes(name))
-      .reduce(
-        (spec, moduleName) => ({
-          ...spec,
-          [moduleName]: module.modulesConstants[moduleName]
-            ? _mockify(module.modulesConstants[moduleName])
-            : undefined,
-        }),
-        {}
-      );
-  }
-  return spec;
-}
-
-const _mockify = (obj, context) =>
-  Object.keys(obj)
-    .sort()
-    .reduce((spec, key) => {
-      const value = obj[key];
-      const type = Array.isArray(value) ? 'array' : typeof value;
-      const mock = type !== 'function' ? _mockifyValue(value, { context, key }) : undefined;
-      return { ...spec, [key]: { type, mock } };
-    }, {});
-
-const _addFunctionTypes = (spec, methods) =>
-  Object.keys(methods)
-    .sort()
-    .reduce(
-      (spec, methodName) => ({
-        ...spec,
-        [methodName]: {
-          ...spec[methodName],
-          functionType: methods[methodName].type,
+  const schemaString = await CoreModule.getModulesSchema();
+  const schema = JSON.parse(schemaString) as ModuleRegistrySchema;
+  const methodsMock = Object.fromEntries(
+    schema
+      .filter((module) => !blacklist.includes(module.name))
+      .map((module) => [module.name, module.functions.map((fn) => ({ ...fn, key: fn.name }))])
+  );
+  const constantsMock = Object.fromEntries(
+    schema
+      .filter((module) => !blacklist.includes(module.name))
+      .map((module) => [
+        module.name,
+        {
+          ...Object.fromEntries(module.properties.map((p) => [p.name, { type: 'property' }])),
+          ...Object.fromEntries(module.functions.map((fn) => [fn.name, { type: 'function' }])),
+          ...Object.fromEntries(
+            (module.constants[0] ?? []).map((ct) =>
+              ct.type !== 'string'
+                ? [ct.name, { type: ct.type, mock: ct.value }]
+                : [ct.name, { type: ct.type }]
+            )
+          ),
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
         },
-      }),
-      spec
-    );
+      ])
+  );
 
-const _sortObjectAndBlacklistKeys = (obj, blacklist) =>
-  Object.keys(obj)
-    .sort()
-    .filter((k) => !blacklist.includes(k))
-    .reduce(
-      (acc, el) => ({
-        ...acc,
-        [el]: obj[el],
-      }),
-      {}
-    );
-
-function _mockifyValue(value) {
-  // Include only values that generally don't contain sensitive data
-  return value === null || typeof value === 'boolean' || typeof value === 'number'
-    ? value
-    : undefined;
+  return {
+    NativeUnimoduleProxy: {
+      callMethod: { type: 'function', functionType: 'promise' },
+      exportedMethods: {
+        type: 'object',
+        mock: methodsMock,
+      },
+      getConstants: { type: 'function' },
+      modulesConstants: {
+        type: 'mock',
+        mockDefinition: constantsMock,
+      },
+    },
+  };
 }
 
 const styles = StyleSheet.create({
