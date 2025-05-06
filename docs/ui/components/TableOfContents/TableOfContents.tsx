@@ -12,7 +12,7 @@ import {
   useImperativeHandle,
   useEffect,
 } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 import { isVersionedPath } from '~/common/routes';
 
@@ -43,7 +43,7 @@ export const TableOfContents = forwardRef<
   HeadingManagerProps & TableOfContentsProps
 >(({ headingManager: { headings }, contentRef, selfRef, maxNestingDepth = 4 }, ref) => {
   const router = useRouter();
-  const isVersioned = isVersionedPath(router.pathname);
+  const isVersioned = isVersionedPath(router?.pathname ?? '');
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
