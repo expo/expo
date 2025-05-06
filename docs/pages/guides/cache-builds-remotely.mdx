@@ -1,31 +1,29 @@
 ---
-title: Use remote build cache providers
+title: Use build cache providers
 sidebar_title: Cache builds remotely
-description: Accelerate local development by caching and reusing builds from a remote provider.
+description: Accelerate local development by caching and reusing builds from a provider.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Remote build caching is an experimental feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
+Build caching is an experimental feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
 When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
 
-## Using EAS as a remote build provider
+## Using EAS as a build provider
 
-To use the EAS remote build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
+To use the EAS Build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
 
 <Terminal cmd={['$ npx expo install eas-build-cache-provider']} />
 
-Then, update your **app.json** to include the `remoteBuildCache` property and its provider under `experiments`:
+Then, update your **app.json** to include the `buildCacheProvider` property and its provider under `experiments`:
 
 ```json app.json
 {
   "expo": {
     ...
     "experiments": {
-      "remoteBuildCache": {
-        "provider": "eas-build-cache-provider"
-      }
+      "buildCacheProvider": "eas"
     }
   }
 }
@@ -34,16 +32,16 @@ Then, update your **app.json** to include the `remoteBuildCache` property and it
 You can roll your own cache provider by exporting a plugin that implements the following methods:
 
 ```ts
-type RemoteBuildCachePlugin<T = any> = {
+type BuildCacheProviderPlugin<T = any> = {
   /**
    * Try to fetch an existing build. Return its URL or null if missing.
    */
-  resolveRemoteBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
+  resolveBuildCache(props: ResolveBuildCacheProps, options: T): Promise<string | null>;
 
   /**
    * Upload a new build binary. Return its URL or null on failure.
    */
-  uploadRemoteBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
+  uploadBuildCache(props: UploadBuildCacheProps, options: T): Promise<string | null>;
 
   /**
    * (Optional) Customize the fingerprint hash algorithm.
@@ -54,13 +52,13 @@ type RemoteBuildCachePlugin<T = any> = {
   ) => Promise<string | null>;
 };
 
-type ResolveRemoteBuildCacheProps = {
+type ResolveBuildCacheProps = {
   projectRoot: string;
   platform: 'android' | 'ios';
   runOptions: RunOptions;
   fingerprintHash: string;
 };
-type UploadRemoteBuildCacheProps = {
+type UploadBuildCacheProps = {
   projectRoot: string;
   buildPath: string;
   runOptions: RunOptions;
@@ -74,9 +72,9 @@ type CalculateFingerprintHashProps = {
 };
 ```
 
-A reference implementation using GitHub Releases to cache builds can be found at in the [Remote Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider)
+A reference implementation using GitHub Releases to cache builds can be found in the [Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider).
 
-## Creating a custom remote build provider
+## Creating a custom build provider
 
 Start by creating a **provider** directory for writing the provider plugin in TypeScript and add a **provider.plugin.js** file in the project root, which will be the plugin's entry point.
 
@@ -101,14 +99,14 @@ Start by creating a **provider** directory for writing the provider plugin in Ty
 ### Create a `provider/src/index.ts` file for your plugin
 
 ```ts provider/src/index.ts
-import { RemoteBuildCachePlugin } from '@expo/config';
+import { BuildCacheProviderPlugin } from '@expo/config';
 
-const plugin: RemoteBuildCachePlugin {
-  resolveRemoteBuildCache: () => {
+const plugin: BuildCacheProviderPlugin {
+  resolveBuildCache: () => {
     console.log('Searching for remote builds...')
     return null;
   },
-  uploadRemoteBuildCache: () => {
+  uploadBuildCache: () => {
     console.log('Uploading build to remote...')
     return null;
   },,
@@ -144,8 +142,8 @@ At the root of your project, run `npm run build provider` to start the TypeScrip
   "expo": {
     ...
     "experiments": {
-      "remoteBuildCache": {
-        "provider": "./provider.plugin.js"
+      "buildCacheProvider": {
+        "plugin": "./provider.plugin.js"
       }
     }
   }
@@ -166,15 +164,15 @@ That's it! You now have a remote build cache provider to speed up your builds.
 
 ### Passing custom options
 
-To inject custom options to your plugin you can use the `options` field and it will be forwarded as the second parameter of your custom functions. To do so modify the `remoteBuildCache` field in **example/app.json** as shown below:
+To inject custom options to your plugin you can use the `options` field and it will be forwarded as the second parameter of your custom functions. To do so modify the `buildCacheProvider` field in **example/app.json** as shown below:
 
 ```json example/app.json
 {
   "expo": {
     ...
     "experiments": {
-      "remoteBuildCache": {
-        "provider": "./provider.plugin.js",
+      "buildCacheProvider": {
+        "plugin": "./provider.plugin.js",
         "options": {
           "myCustomKey": "XXX-XXX-XXX"
         }
