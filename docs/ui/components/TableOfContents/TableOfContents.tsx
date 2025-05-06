@@ -1,8 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
-import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
-import { useRouter } from 'next/compat/router';
 import {
   PropsWithChildren,
   RefObject,
@@ -12,15 +10,15 @@ import {
   useRef,
   useImperativeHandle,
   useEffect,
-  useMemo,
 } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
 import { ScrollContainer } from '~/components/ScrollContainer';
-import { TableOfContentsLink } from '~/ui/components/TableOfContents';
 import { CALLOUT } from '~/ui/components/Text';
+
+import { TableOfContentsLink } from './TableOfContentsLink';
 
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
@@ -36,11 +34,6 @@ export type TableOfContentsHandles = {
   handleContentScroll?: (contentScrollPosition: number) => void;
 };
 
-interface GroupedHeading {
-  parent: Heading;
-  children: Heading[];
-}
-
 export const TableOfContents = forwardRef<
   TableOfContentsHandles,
   HeadingManagerProps & TableOfContentsProps
@@ -48,11 +41,6 @@ export const TableOfContents = forwardRef<
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [expandedGroupSlugs, setExpandedGroupSlugs] = useState<Set<string>>(new Set());
-  const hasInitialized = useRef(false);
-
-  const router = useRouter();
-  const isVersionsPath = router?.asPath?.startsWith('/versions/');
 
   const slugScrollingTo = useRef<string | null>(null);
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
@@ -62,31 +50,24 @@ export const TableOfContents = forwardRef<
       handleContentScroll(contentRef.current.getScrollTop());
     }
     setReducedMotion(prefersReducedMotion());
-
-    if (!hasInitialized.current && isVersionsPath && groupedHeadings && activeSlug) {
-      const groupForActiveSlug = groupedHeadings.find(
-        group =>
-          group.parent.slug === activeSlug ||
-          group.children.some(child => child.slug === activeSlug)
-      );
-
-      if (groupForActiveSlug) {
-        setExpandedGroupSlugs(new Set([groupForActiveSlug.parent.slug]));
-      }
-
-      hasInitialized.current = true;
-    }
   }, []);
+
+  useEffect(
+    function didActiveSlugChanged() {
+      updateSelfScroll();
+    },
+    [activeSlug]
+  );
 
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
   function handleContentScroll(contentScrollPosition: number) {
-    setShowScrollTop(contentScrollPosition > 120);
-
     for (const { ref, slug } of headings) {
       if (!ref?.current) {
         continue;
       }
+
+      setShowScrollTop(contentScrollPosition > 120);
 
       if (
         ref.current.offsetTop >=
@@ -130,28 +111,10 @@ export const TableOfContents = forwardRef<
     }
   }
 
-  function expandGroupForSlug(slug: string) {
-    if (!isVersionsPath || !groupedHeadings) {
-      return;
-    }
-
-    const groupForThisSlug = groupedHeadings.find(
-      group => group.parent.slug === slug || group.children.some(child => child.slug === slug)
-    );
-
-    if (groupForThisSlug) {
-      const groupSlug = groupForThisSlug.parent.slug;
-      if (!expandedGroupSlugs.has(groupSlug)) {
-        setExpandedGroupSlugs(prev => new Set([...prev, groupSlug]));
-      }
-    }
-  }
-
   function handleLinkClick(event: MouseEvent, { slug, ref, type }: Heading) {
     event.preventDefault();
+
     slugScrollingTo.current = slug;
-    setActiveSlug(slug);
-    expandGroupForSlug(slug);
 
     const scrollOffset = type === 'inlineCode' ? 35 : 21;
 
@@ -163,11 +126,6 @@ export const TableOfContents = forwardRef<
     if (history?.replaceState) {
       history.replaceState(history.state, '', '#' + slug);
     }
-  }
-
-  function handleChildLinkClick(event: MouseEvent, heading: Heading) {
-    event.stopPropagation();
-    handleLinkClick(event, heading);
   }
 
   function handleTopClick(event: MouseEvent) {
@@ -183,67 +141,9 @@ export const TableOfContents = forwardRef<
     }
   }
 
-  function toggleGroup(slug: string) {
-    setExpandedGroupSlugs(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(slug)) {
-        newSet.delete(slug);
-      } else {
-        newSet.add(slug);
-      }
-      return newSet;
-    });
-  }
-
   const displayedHeadings = headings.filter(
     head =>
       head.level <= BASE_HEADING_LEVEL + maxNestingDepth && head.title.toLowerCase() !== 'see also'
-  );
-
-  const groupedHeadings = useMemo(() => {
-    if (!isVersionsPath) {
-      return null;
-    }
-
-    const groups: GroupedHeading[] = [];
-    const level1And2Headings = displayedHeadings.filter(h => h.level <= BASE_HEADING_LEVEL + 1);
-
-    const parentHeadings = level1And2Headings.filter(h => h.level === BASE_HEADING_LEVEL + 1);
-
-    for (const parent of parentHeadings) {
-      const parentIndex = displayedHeadings.findIndex(h => h.slug === parent.slug);
-      if (parentIndex === -1) {
-        continue;
-      }
-
-      const childHeadings: Heading[] = [];
-      let i = parentIndex + 1;
-
-      while (
-        i < displayedHeadings.length &&
-        displayedHeadings[i].level > parent.level &&
-        (i === parentIndex + 1 || displayedHeadings[i - 1].level !== BASE_HEADING_LEVEL + 1)
-      ) {
-        childHeadings.push(displayedHeadings[i]);
-        i++;
-      }
-
-      if (childHeadings.length > 0) {
-        groups.push({
-          parent,
-          children: childHeadings,
-        });
-      }
-    }
-
-    return groups;
-  }, [displayedHeadings, isVersionsPath]);
-
-  useEffect(
-    function didActiveSlugChanged() {
-      updateSelfScroll();
-    },
-    [activeSlug]
   );
 
   return (
@@ -266,143 +166,21 @@ export const TableOfContents = forwardRef<
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-
-      {isVersionsPath && groupedHeadings ? (
-        <>
-          {displayedHeadings
-            .slice(
-              0,
-              displayedHeadings.findIndex(h => groupedHeadings.some(g => g.parent.slug === h.slug))
-            )
-            .map(heading => {
-              const isActive = heading.slug === activeSlug;
-              return (
-                <TableOfContentsLink
-                  key={heading.slug}
-                  heading={heading}
-                  onClick={event => {
-                    handleLinkClick(event, heading);
-                  }}
-                  isActive={isActive}
-                  ref={isActive ? activeItemRef : undefined}
-                  shortenCode
-                />
-              );
-            })}
-          {groupedHeadings.map(group => {
-            const isParentActive = group.parent.slug === activeSlug;
-            const isGroupExpanded = expandedGroupSlugs.has(group.parent.slug);
-
-            return (
-              <div key={group.parent.slug}>
-                <div
-                  className="group flex cursor-pointer items-center"
-                  onClick={event => {
-                    event.stopPropagation();
-                    toggleGroup(group.parent.slug);
-                  }}>
-                  <div className="flex h-full items-center justify-center self-start pt-[4px]">
-                    <ChevronDownIcon
-                      className={mergeClasses(
-                        'icon-xs text-icon-secondary transition-transform duration-150',
-                        !isGroupExpanded && '-rotate-90'
-                      )}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <TableOfContentsLink
-                      key={group.parent.slug}
-                      heading={group.parent}
-                      onClick={event => {
-                        event.stopPropagation();
-                        handleLinkClick(event, group.parent);
-                      }}
-                      isActive={isParentActive}
-                      ref={isParentActive ? activeItemRef : undefined}
-                      shortenCode
-                    />
-                  </div>
-                </div>
-
-                {isGroupExpanded &&
-                  group.children.map(child => {
-                    const isChildActive = child.slug === activeSlug;
-                    return (
-                      <div className="ml-3" key={child.slug}>
-                        <TableOfContentsLink
-                          key={child.slug}
-                          heading={child}
-                          onClick={event => {
-                            handleChildLinkClick(event, child);
-                          }}
-                          isActive={isChildActive}
-                          ref={isChildActive ? activeItemRef : undefined}
-                          shortenCode
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
-            );
-          })}
-
-          {(() => {
-            if (groupedHeadings.length === 0) {
-              return null;
-            }
-
-            const lastGroup = groupedHeadings.at(-1)!;
-            const lastGroupIndex = displayedHeadings.findIndex(
-              h => h.slug === lastGroup.parent.slug
-            );
-
-            if (lastGroupIndex === -1) {
-              return null;
-            }
-
-            let lastChildIndex = lastGroupIndex;
-
-            if (lastGroup.children.length > 0) {
-              const lastChild = lastGroup.children.at(-1)!;
-              lastChildIndex = displayedHeadings.findIndex(h => h.slug === lastChild.slug);
-            }
-
-            return displayedHeadings.slice(lastChildIndex + 1).map(heading => {
-              const isActive = heading.slug === activeSlug;
-              return (
-                <div key={heading.slug}>
-                  <TableOfContentsLink
-                    key={heading.slug}
-                    heading={heading}
-                    onClick={event => {
-                      handleLinkClick(event, heading);
-                    }}
-                    isActive={isActive}
-                    ref={isActive ? activeItemRef : undefined}
-                    shortenCode
-                  />
-                </div>
-              );
-            });
-          })()}
-        </>
-      ) : (
-        displayedHeadings.map(heading => {
-          const isActive = heading.slug === activeSlug;
-          return (
-            <TableOfContentsLink
-              key={heading.slug}
-              heading={heading}
-              onClick={event => {
-                handleLinkClick(event, heading);
-              }}
-              isActive={isActive}
-              ref={isActive ? activeItemRef : undefined}
-              shortenCode
-            />
-          );
-        })
-      )}
+      {displayedHeadings.map(heading => {
+        const isActive = heading.slug === activeSlug;
+        return (
+          <TableOfContentsLink
+            key={heading.slug}
+            heading={heading}
+            onClick={event => {
+              handleLinkClick(event, heading);
+            }}
+            isActive={isActive}
+            ref={isActive ? activeItemRef : undefined}
+            shortenCode
+          />
+        );
+      })}
     </nav>
   );
 });
