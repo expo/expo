@@ -12,6 +12,9 @@ import {
   useImperativeHandle,
   useEffect,
 } from 'react';
+import { useRouter } from 'next/router';
+
+import { isVersionedPath } from '~/common/routes';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { prefersReducedMotion } from '~/common/window';
@@ -39,11 +42,15 @@ export const TableOfContents = forwardRef<
   TableOfContentsHandles,
   HeadingManagerProps & TableOfContentsProps
 >(({ headingManager: { headings }, contentRef, selfRef, maxNestingDepth = 4 }, ref) => {
+  const router = useRouter();
+  const isVersioned = isVersionedPath(router.pathname);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [collapsedH3s, setCollapsedH3s] = useState<Set<string>>(
-    () => new Set(headings.filter(h => h.level === BASE_HEADING_LEVEL + 1).map(h => h.slug))
+  const [collapsedH3s, setCollapsedH3s] = useState<Set<string>>(() =>
+    isVersioned
+      ? new Set(headings.filter(h => h.level === BASE_HEADING_LEVEL + 1).map(h => h.slug))
+      : new Set()
   );
 
   const slugScrollingTo = useRef<string | null>(null);
@@ -171,7 +178,7 @@ export const TableOfContents = forwardRef<
       const isActive = heading.slug === activeSlug;
       const isH3 = heading.level === BASE_HEADING_LEVEL + 1;
 
-      if (isH3) {
+      if (isH3 && isVersioned) {
         currentH3 = heading.slug;
       } else if (heading.level <= BASE_HEADING_LEVEL) {
         currentH3 = null;
@@ -207,10 +214,10 @@ export const TableOfContents = forwardRef<
             'flex items-center',
             currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0'
           )}>
-          {hasChildren && (
+          {hasChildren && isVersioned && (
             <div
               onClick={e => toggleH3(heading.slug, e)}
-              className="flex h-full items-center justify-center self-start pt-[3px]">
+              className="flex h-full items-center justify-center self-start pt-[4px]">
               <ChevronDownIcon
                 className={mergeClasses(
                   'icon-xs -mr-2 text-icon-secondary transition-transform',
