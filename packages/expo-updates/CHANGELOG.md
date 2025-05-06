@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed errors when `configuration-cache` is enabled.
+
 ### 💡 Others
 
 ## 0.28.12 — 2025-05-01
