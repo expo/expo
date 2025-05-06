@@ -1,6 +1,5 @@
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
-import { Platform } from 'react-native';
 
 const en = {
   good: 'good',
