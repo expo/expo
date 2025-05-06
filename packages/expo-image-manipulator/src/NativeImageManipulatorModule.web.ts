@@ -7,9 +7,6 @@ import ImageManipulatorImageRef from './web/ImageManipulatorImageRef.web';
 import { loadImageAsync } from './web/utils.web';
 
 class ImageManipulator extends NativeModule {
-  // @ts-ignore: Overrides the built-in `Function.name` property
-  static name = 'ExpoImageManipulator';
-  
   Context = ImageManipulatorContext;
   Image = ImageManipulatorImageRef;
 
