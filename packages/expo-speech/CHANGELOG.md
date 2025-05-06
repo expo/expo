@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix calling getVoices before TTS initialization ([#36664](https://github.com/expo/expo/pull/36664) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 13.1.6 — 2025-04-30
