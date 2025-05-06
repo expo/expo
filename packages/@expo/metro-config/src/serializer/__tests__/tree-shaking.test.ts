@@ -1383,6 +1383,24 @@ it(`recursively expands export all statements (shallow)`, async () => {
   `);
 });
 
+it(`recursively expands export all statements with require cycles`, async () => {
+  await expect(() =>
+    serializeShakingAsync({
+      'index.js': `
+        import { z1, DDD } from './x0';
+        console.log(z1, DDD);
+        `,
+      'x0.js': `
+        export * from './x1';
+        `,
+      'x1.js': `
+        export const z1 = 0;
+        export * from './x0';
+        `,
+    })
+  ).rejects.toThrow('Circular dependency detected while tree-shaking: /app/x0.js');
+});
+
 it(`recursively expands export all statements`, async () => {
   const [, [artifact]] = await serializeShakingAsync(
     {
