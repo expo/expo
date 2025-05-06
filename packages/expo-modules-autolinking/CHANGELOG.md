@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed project properties were not being resolved correctly.
+- [Android] Fixed project properties were not being resolved correctly. ([#36666](https://github.com/expo/expo/pull/36666) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
