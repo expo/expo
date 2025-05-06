@@ -1,7 +1,8 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
-import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
+import { useRouter } from 'next/compat/router';
 import {
   PropsWithChildren,
   RefObject,
@@ -12,11 +13,9 @@ import {
   useImperativeHandle,
   useEffect,
 } from 'react';
-import { useRouter } from 'next/compat/router';
-
-import { isVersionedPath } from '~/common/routes';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
+import { isVersionedPath } from '~/common/routes';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
 import { ScrollContainer } from '~/components/ScrollContainer';
@@ -205,7 +204,7 @@ export const TableOfContents = forwardRef<
         currentH3 = null;
       }
 
-      const parentH3 = currentH3 || '';
+      const parentH3 = currentH3 ?? '';
       const shouldHide =
         Boolean(currentH3) && heading.level > BASE_HEADING_LEVEL + 1 && collapsedH3s.has(parentH3);
 
@@ -237,7 +236,9 @@ export const TableOfContents = forwardRef<
           )}>
           {hasChildren && isVersioned && (
             <div
-              onClick={e => toggleH3(heading.slug, e)}
+              onClick={event => {
+                toggleH3(heading.slug, event);
+              }}
               className="flex h-full cursor-pointer items-center justify-center self-start pt-[4px] hover:opacity-70">
               <ChevronDownIcon
                 className={mergeClasses(
