@@ -50,6 +50,15 @@ describe('plugin resolver', () => {
           `Failed to resolve plugin for module "./testPlugin__wrong_path.js" relative to`
         );
       });
+
+      it.each([['test-lib-with-exports/app.plugin.js'], ['test-lib-with-exports']])(
+        'a plugin file which is not made available via package.json exports for %s',
+        (moduleName) => {
+          expect(() => resolvePluginForModule(projectRoot, moduleName)).toThrow(
+            /Failed to resolve plugin for module "test-lib-with-exports\/app\.plugin\.js" relative to ".*\/fixtures".*\n└─ Cause: Error: Package subpath '\.\/app\.plugin\.js' is not defined by "exports" in .*test-lib-with-exports\/package\.json/
+          );
+        }
+      );
     });
 
     describe('resolves plugin path for', () => {
@@ -67,12 +76,18 @@ describe('plugin resolver', () => {
         });
       });
 
-      it('./node_modules/test-plugin/lib/commonjs/index.js direct file path', () => {
+      it('direct file path', () => {
         expect(
           resolvePluginForModule(projectRoot, './node_modules/test-plugin/lib/commonjs/index.js')
         ).toStrictEqual({
           filePath: `${projectRoot}/node_modules/test-plugin/lib/commonjs/index.js`,
           isPluginFile: false,
+        });
+        expect(
+          resolvePluginForModule(projectRoot, './node_modules/test-lib-with-exports/app.plugin.js')
+        ).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib-with-exports/app.plugin.js`,
+          isPluginFile: true,
         });
       });
 

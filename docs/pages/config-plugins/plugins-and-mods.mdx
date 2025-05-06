@@ -346,7 +346,7 @@ module.exports = config => config;
 ### app.plugin.js
 
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
-If an **app.plugin.js** file is present in the root of a Node module's directory, it'll be used instead of the package's `main` file.
+If an **app.plugin.js** file is present in the root of a Node module's directory, it'll be used instead of the package's `main` file. If your package.json uses [exports](https://nodejs.org/api/packages.html#package-entry-points), remember to include the **app.plugin.js** file.
 
 <FileTree
   files={[
