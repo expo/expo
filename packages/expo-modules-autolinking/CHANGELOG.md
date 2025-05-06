@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed project properties were not being resolved correctly.
+
 ### 💡 Others
 
 ## 2.1.9 — 2025-04-30
