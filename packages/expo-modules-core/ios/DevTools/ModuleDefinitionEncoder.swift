@@ -42,7 +42,7 @@ public class ModuleRegistryEncoder: Encodable {
 
 class FunctionDefinitionEncoder: Encodable {
   private let definition: any AnyFunctionDefinition
-  
+
   init(_ definition: any AnyFunctionDefinition) {
     self.definition = definition
   }
@@ -62,7 +62,7 @@ class FunctionDefinitionEncoder: Encodable {
 class ConstantEncoder: Encodable {
   private let key: String
   private let value: Any?
-  
+
   init(_ key: String, value: Any?) {
     self.key = key
     self.value = value
@@ -102,16 +102,16 @@ class ConstantEncoder: Encodable {
 
 class LegacyConstantsDefinitionEncoder: Encodable {
   private let definition: ConstantsDefinition
-  
+
   init(_ definition: ConstantsDefinition) {
     self.definition = definition
   }
-  
+
   enum CodingKeys: String, CodingKey {
     case name
     case value
   }
-  
+
   func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
     let constants = definition.body()
@@ -123,15 +123,15 @@ class LegacyConstantsDefinitionEncoder: Encodable {
 
 class PropertyDefinitionEncoder: Encodable {
   private let definition: any AnyPropertyDefinition
-  
+
   init(_ definition: any AnyPropertyDefinition) {
     self.definition = definition
   }
-  
+
   enum CodingKeys: String, CodingKey {
     case name
   }
-  
+
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(definition.name, forKey: .name)

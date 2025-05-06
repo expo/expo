@@ -25,7 +25,7 @@ final class ExpoGoModule: Module {
         "projectConfig": manifest.expoGoConfigRootObject()
       ]
     }
-    
+
     Function("getModulesSchema") {
       let jsonEncoder = JSONEncoder()
       guard let registry = appContext?.moduleRegistry else {
