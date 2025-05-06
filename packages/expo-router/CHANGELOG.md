@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix <Tabs /> behaviour with replace and backHistory=order ([#36481](https://github.com/expo/expo/pull/36481) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 5.0.5 — 2025-05-02
