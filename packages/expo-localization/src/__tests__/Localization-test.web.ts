@@ -1,124 +1,92 @@
-import { Platform } from 'expo-modules-core';
+import i18n from 'i18n-js';
 
 import * as Localization from '../Localization';
 
-function validateString(result: unknown, allowEmpty = false): asserts result is string {
+const en = {
+  good: 'good',
+  morning: 'morning',
+};
+
+const fr = {
+  good: 'bien',
+  morning: 'matin',
+};
+
+const pl = {
+  good: 'dobry',
+  morning: 'rano',
+};
+
+function validateString(result: unknown): asserts result is string {
   expect(typeof result).toBe('string');
-  if (!allowEmpty) {
-    expect((result as string).length).toBeGreaterThan(0);
-  }
+  expect((result as string).length).toBeGreaterThan(0);
 }
 
-function validateStringArray(result: unknown): asserts result is string[] {
-  expect(result).toBeDefined();
-  expect(Array.isArray(result)).toBe(true);
+function validateNull(result: unknown): asserts result is null {
+  expect(result).toBeNull();
 }
 
-if (Platform.isDOMAvailable) {
-  describe(`Localization methods`, () => {
-    it(`expect async to return locale`, async () => {
-      const {
-        currency,
-        decimalSeparator,
-        digitGroupingSeparator,
-        isoCurrencyCodes,
-        isMetric,
-        isRTL,
-        locale,
-        locales,
-        timezone,
-        region,
-      } = await Localization.getLocalizationAsync();
+describe(`Localization methods`, () => {
+  it(`expect getLocales to return locale`, async () => {
+    const {
+      languageTag,
+      languageCode,
+      textDirection,
+      digitGroupingSeparator,
+      decimalSeparator,
+      temperatureUnit,
+      regionCode,
+      languageRegionCode,
+      // following values are null on web
+      languageScriptCode,
+      measurementSystem,
+      currencyCode,
+      currencySymbol,
+      languageCurrencyCode,
+      languageCurrencySymbol,
+    } = Localization.getLocales()[0];
+    validateString(languageTag);
+    validateString(languageCode);
+    validateString(textDirection);
+    validateString(decimalSeparator);
+    validateString(digitGroupingSeparator);
+    validateString(temperatureUnit);
+    validateString(regionCode);
+    validateString(languageRegionCode);
 
-      validateString(locale);
-      validateString(timezone);
-      validateString(region);
-      validateStringArray(isoCurrencyCodes);
-      validateStringArray(locales);
-      expect(locales[0]).toBe(Localization.locale);
-      expect(typeof isRTL).toBe('boolean');
-      expect(typeof isMetric).toBe('boolean');
-      validateString(decimalSeparator);
-      validateString(digitGroupingSeparator, true);
-      expect(currency).toBe(null);
-    });
+    validateNull(languageScriptCode);
+    validateNull(measurementSystem);
+    validateNull(currencyCode);
+    validateNull(currencySymbol);
+    validateNull(languageCurrencyCode);
+    validateNull(languageCurrencySymbol);
   });
-}
 
-if (Platform.isDOMAvailable) {
-  describe('region', () => {
-    it(`can resolve a region with a partial locale`, async () => {
-      jest.spyOn(navigator, 'language', 'get').mockReturnValue('en');
+  it(`expect getCalendars to return calendar`, async () => {
+    const { calendar, timeZone, uses24hourClock, firstWeekday } = Localization.getCalendars()[0];
 
-      const Localization = require('../ExpoLocalization').default;
-      expect(Localization.locale).toBe('en');
-      expect(Localization.region).toBe(null);
-    });
-    xit(`can resolve a region from a full locale`, async () => {
-      jest.spyOn(navigator, 'language', 'get').mockReturnValue('en-us');
+    validateString(calendar);
+    validateString(timeZone);
+    // null in jest runner for web, but should be supported in most browsers
+    validateNull(uses24hourClock);
+    validateNull(firstWeekday);
+  });
+});
 
-      const Localization = require('../ExpoLocalization').default;
-      expect(Localization.locale).toBe('en-us');
-      expect(Localization.region).toBe('US');
-    });
-  });
-}
+describe(`Localization works with i18n-js`, () => {
+  i18n.locale = Localization.getLocales()[0].languageCode ?? 'en';
+  i18n.translations = { en, fr, pl };
+  i18n.missingTranslationPrefix = 'EE: ';
+  i18n.fallbacks = true;
 
-describe(`Localization defines constants`, () => {
-  it('Gets the region', async () => {
-    const result = Localization.region;
-    if (Platform.isDOMAvailable) {
-      validateString(result);
-    } else {
-      expect(result).toBe(null);
-    }
-  });
-  it('Gets the locale', async () => {
-    const result = Localization.locale;
-    if (Platform.isDOMAvailable) {
-      expect(typeof result).toBe('string');
-      expect(result.length > 0).toBe(true);
-    } else {
-      // Empty in node env
-      expect(result).toBe('');
-    }
-  });
-  it('Gets the preferred locales', async () => {
-    const result = Localization.locales;
-    validateStringArray(result);
-    if (Platform.isDOMAvailable) {
-      expect(result.length).toBeGreaterThan(0);
-      expect(result[0]).toBe(Localization.locale);
-    } else {
-      expect(result.length).toBe(0);
-    }
-  });
-  it('Gets ISO currency codes', async () => {
-    const result = Localization.isoCurrencyCodes;
-    validateStringArray(result);
-    result.forEach((res) => validateString(res));
-  });
-  it('Gets the timezone', async () => {
-    validateString(Localization.timezone);
-  });
-  it('Gets the layout direction (ltr only)', async () => {
-    const result = Localization.isRTL;
-    expect(typeof result).toBe('boolean');
-    expect(result).toBe(false);
-  });
-  it('Gets the measurement system (metric)', async () => {
-    const result = Localization.isMetric;
-    expect(typeof result).toBe('boolean');
-  });
-  it('Gets the decimal separator', async () => {
-    validateString(Localization.decimalSeparator);
-  });
-  it('Gets the digit grouping separator', async () => {
-    const result = Localization.digitGroupingSeparator;
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('string');
-  });
-  it.skip('Gets the currency', async () => {
-    validateString(Localization.currency);
+  it(`expect language to match strings (en, pl, fr supported)`, async () => {
+    const target = 'good';
+
+    i18n.locale = Localization.getLocales()[0].languageCode ?? 'en';
+
+    const expoPredictedLangTag = Localization.getLocales()[0].languageCode ?? 'en';
+    const translation = i18n.translations[expoPredictedLangTag];
+
+    expect((translation as any)[target]).toBe(i18n.t(target));
   });
 });
