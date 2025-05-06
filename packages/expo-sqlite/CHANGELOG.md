@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed parallel issue for `Statement.executeAsync`. ([#36674](https://github.com/expo/expo/pull/36674) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Avoided synchronous API calls for `kv-store`. ([#36669](https://github.com/expo/expo/pull/36669) by [@kudo](https://github.com/kudo))
