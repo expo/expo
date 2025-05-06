@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Avoided synchronous API calls for `kv-store`. ([#36669](https://github.com/expo/expo/pull/36669) by [@kudo](https://github.com/kudo))
+
 ## 15.2.9 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
