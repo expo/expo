@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [web] Add crossOrigin prop, change default value to no CORS.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
