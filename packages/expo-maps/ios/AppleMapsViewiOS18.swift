@@ -32,13 +32,6 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewiOS18State()
 
-  func renderCircle(_ circle: Circle) -> some MapContent {
-    let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
-    return mapCircle
-      .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
-      .foregroundStyle(circle.color)
-  }
-
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
