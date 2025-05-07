@@ -784,7 +784,7 @@ export declare function presentAccessPickerAsync(): Promise<string[]>;
 /**
  * Possible fields to retrieve for a contact.
  */
-export declare const enum Fields {
+export declare enum Fields {
     ID = "id",
     ContactType = "contactType",
     Name = "name",

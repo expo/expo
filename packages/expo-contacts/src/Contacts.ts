@@ -1080,7 +1080,7 @@ function removeIds(contact: Contact): Contact {
 /**
  * Possible fields to retrieve for a contact.
  */
-export const enum Fields {
+export enum Fields {
   ID = 'id',
   ContactType = 'contactType',
   Name = 'name',
