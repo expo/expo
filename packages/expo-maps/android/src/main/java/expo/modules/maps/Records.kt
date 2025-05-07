@@ -112,6 +112,26 @@ data class CameraPositionRecord(
   val zoom: Float = 10f
 ) : Record
 
+data class CircleRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val center: Coordinates = Coordinates(),
+
+  @Field
+  val radius: Double = 200.0,
+
+  @Field
+  val color: Int = 0x7F0000FF,
+
+  @Field
+  val lineColor: Int? = null,
+
+  @Field
+  val lineWidth: Float? = null,
+) : Record
+
 data class UserLocationRecord(
   @Field
   val coordinates: Coordinates? = null,

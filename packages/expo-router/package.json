@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "5.0.3",
+  "version": "5.0.6",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -61,7 +61,7 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-module build",
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.build.json; else expo-module build \"$1\"; fi' --",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

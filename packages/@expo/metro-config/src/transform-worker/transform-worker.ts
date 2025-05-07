@@ -174,9 +174,9 @@ export async function transform(
         // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
         const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
     
-    export const env = !dotEnvModules.keys().length ? process.env : { ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+    export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
       return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
-    }, {}), ...process.env };`;
+    }, {}) };`;
         return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
       } else {
         // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.

@@ -83,8 +83,6 @@ Then, when you are about to start your project, you can use the `--clear` flag t
 
 ## Static rendering
 
-> Bundle splitting with static rendering is only supported in SDK 50 and above.
-
 Static rendering is supported in production web apps by rendering all Suspense boundaries synchronously in Node.js, then linking all of async chunks together in the HTML based on all the selected routes for a given HTML file. This ensures you don't encounter a waterfall of loading states on server navigations. Subsequent navigations will recursively load any missing chunks.
 
 To ensure a consistent first render, all layout routes leading up to the leaf route for a URL will be included in the initial server response.

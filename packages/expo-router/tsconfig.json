@@ -5,6 +5,7 @@
     "rootDir": "./src",
     "module": "commonjs",
     "moduleResolution": "node10",
+    "noEmit": true,
     "resolveJsonModule": true,
     "types": [
       "jest",
@@ -22,7 +23,7 @@
     "**/__mocks__/*",
     "**/.expo/*",
     "./build/*",
-    "**/__tests__/*",
+    "**/typed-routes/__tests__/*",
     "**/__rsc_tests__/*",
     "./node",
     "./entry.js",

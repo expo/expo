@@ -126,6 +126,9 @@ export type AppleMapsAnnotation = {
      */
     icon?: SharedRefType<'image'>;
 } & AppleMapsMarker;
+/**
+ * @platform ios
+ */
 export type AppleMapsPolyline = {
     /**
      * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
@@ -147,6 +150,39 @@ export type AppleMapsPolyline = {
      * The style of the polyline.
      */
     contourStyle?: AppleMapsContourStyle;
+};
+/**
+ * @platform ios
+ */
+export type AppleMapsCircle = {
+    /**
+     * The unique identifier for the circle. This can be used to e.g. identify the clicked circle in the `onCircleClick` event.
+     */
+    id?: string;
+    /**
+     * The coordinates of the circle.
+     */
+    center: Coordinates;
+    /**
+     * The radius of the circle (in meters).
+     */
+    radius: number;
+    /**
+     * The color of the circle.
+     */
+    color?: ProcessedColorValue | string;
+    /**
+     * The width of the circle.
+     */
+    width?: number;
+    /**
+     * The color of the circle line.
+     */
+    lineColor?: ProcessedColorValue | string;
+    /**
+     * The width of the circle line.
+     */
+    lineWidth?: number;
 };
 /**
  * @platform ios
@@ -196,6 +232,10 @@ export type AppleMapsViewProps = {
      */
     polygons?: AppleMapsPolygon[];
     /**
+     * The array of circles to display on the map.
+     */
+    circles?: AppleMapsCircle[];
+    /**
      * The array of annotations to display on the map.
      */
     annotations?: AppleMapsAnnotation[];
@@ -230,6 +270,11 @@ export type AppleMapsViewProps = {
      */
     onPolygonClick?: (event: AppleMapsPolygon) => void;
     /**
+     * Lambda invoked when the circle is clicked
+     * @platform ios 18.0+
+     */
+    onCircleClick?: (event: AppleMapsCircle) => void;
+    /**
      * Lambda invoked when the map was moved by the user.
      */
     onCameraMove?: (event: {
@@ -250,5 +295,11 @@ export type AppleMapsViewType = {
      * @param config New camera postion.
      */
     setCameraPosition: (config?: CameraPosition) => void;
+    /**
+     * Opens the look around view at specified coordinates.
+     *
+     * @param coordinates The coordinates of the location to open the look around view at.
+     */
+    openLookAroundAsync: (coordinates: Coordinates) => Promise<void>;
 };
 //# sourceMappingURL=AppleMaps.types.d.ts.map

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `getSharedObjectId` for devices running android 7 and below. ([#36698](https://github.com/expo/expo/pull/36698) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 2.3.12 — 2025-04-30

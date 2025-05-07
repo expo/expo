@@ -17,7 +17,7 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 ### Setup
 
-> **info** From **SDK 53** onwards, the created ESLint config file uses the [Flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. However, legacy config is also supported.
+> **info** **From SDK 53 onwards**, the default ESLint config file uses the [Flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. It also supports legacy config. **For SDK 52 and below**, the default ESLint config file uses legacy config and does not support Flat config.
 
 To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **eslint.config.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
@@ -125,6 +125,7 @@ To integrate Prettier with ESlint, update your **.eslintrc.js**:
 ```js .eslintrc.js
 module.exports = {
   extends: ['expo', 'prettier'],
+  ignorePatterns: ['/dist/*'],
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',

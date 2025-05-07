@@ -77,6 +77,41 @@ export type GoogleMapsPolyline = {
 /**
  * @platform android
  */
+export type GoogleMapsCircle = {
+  /**
+   * The unique identifier for the circle. This can be used to e.g. identify the clicked circle in the `onCircleClick` event.
+   */
+  id?: string;
+
+  /**
+   * The coordinates of the circle.
+   */
+  center: Coordinates;
+
+  /**
+   * The radius of the circle.
+   */
+  radius: number;
+
+  /**
+   * The color of the circle.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The color of the circle line.
+   */
+  lineColor?: ProcessedColorValue | string;
+
+  /**
+   * The width of the circle line.
+   */
+  lineWidth?: number;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleMapsPolygon = {
   /**
    * The unique identifier for the polygon. This can be used to e.g. identify the clicked polygon in the `onPolygonClick` event.
@@ -290,6 +325,11 @@ export type GoogleMapsViewProps = {
   polygons?: GoogleMapsPolygon[];
 
   /**
+   * The array of circles to display on the map.
+   */
+  circles?: GoogleMapsCircle[];
+
+  /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
   uiSettings?: GoogleMapsUISettings;
@@ -344,6 +384,11 @@ export type GoogleMapsViewProps = {
    * Lambda invoked when the polygon is clicked.
    */
   onPolygonClick?: (event: GoogleMapsPolygon) => void;
+
+  /**
+   * Lambda invoked when the circle is clicked.
+   */
+  onCircleClick?: (event: GoogleMapsCircle) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.

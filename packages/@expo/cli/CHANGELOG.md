@@ -6,13 +6,32 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Update to `lan-network@^0.1.5` for VPN network local IP changes ([#36572](https://github.com/expo/expo/pull/36572) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+## 0.24.12 — 2025-05-06
+
+### 💡 Others
+
+- Remove EAS build cache provider implementation ([#36584](https://github.com/expo/expo/pull/36584) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Rename remote build cache provider to build cache provider ([#36643](https://github.com/expo/expo/pull/36643) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.24.11 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.10 — 2025-05-01
+
+### 🎉 New features
+
 - Prevent deleting project directory. ([#36514](https://github.com/expo/expo/pull/36514) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Improve error format when `npx expo export` (native) fails. ([#36533](https://github.com/expo/expo/pull/36533) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.24.9 — 2025-04-30
 

@@ -252,12 +252,12 @@ it.skip('can navigate across the drawer navigator', () => {
   renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,
-    '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group)/_layout': () => <Drawer />,
     '(group)/one': () => <Text testID="one" />,
     '(group)/two': () => <Text testID="two" />,
     '(group_two)/three': () => <Text testID="three" />,
-    '(group_two)/_layout': () => <Drawer useLegacyImplementation={false} />,
-    '(group_two)/nested/folder/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/_layout': () => <Drawer />,
+    '(group_two)/nested/folder/_layout': () => <Drawer />,
     '(group_two)/nested/folder/four': () => <Text testID="four" />,
   });
 

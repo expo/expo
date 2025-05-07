@@ -40,6 +40,8 @@ import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
+import com.google.maps.android.compose.Circle
+import expo.modules.kotlin.viewevent.ViewEventCallback
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
@@ -47,6 +49,7 @@ data class GoogleMapsViewProps(
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
   val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
   val polygons: MutableState<List<PolygonRecord>> = mutableStateOf(listOf()),
+  val circles: MutableState<List<CircleRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
@@ -64,6 +67,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
   private val onPolylineClick by EventDispatcher<PolylineRecord>()
   private val onPolygonClick by EventDispatcher<PolygonRecord>()
+  private val onCircleClick by EventDispatcher<CircleRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
 
@@ -79,6 +83,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       val locationSource = locationSourceFromProps()
       val polylineState by polylineStateFromProps()
       val polygonState by polygonStateFromProps()
+      val circleState by circleStateFromProps()
 
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -145,6 +150,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         MapPolygons(
           polygonState = polygonState,
           onPolygonClick = onPolygonClick
+        )
+
+        MapCircles(
+          circleState = circleState,
+          onCircleClick = onCircleClick
         )
 
         for ((marker, state) in markerState.value) {
@@ -249,6 +259,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
     }
 
   @Composable
+  private fun circleStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.circles.value.map { circle ->
+          circle to circle.center.toLatLng()
+        }
+      }
+    }
+
+  @Composable
   private fun polylineStateFromProps() =
     remember {
       derivedStateOf {
@@ -325,5 +345,34 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
       bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
     }
+  }
+}
+
+@Composable
+private fun MapCircles(
+  circleState: List<Pair<CircleRecord, LatLng>>,
+  onCircleClick: ViewEventCallback<CircleRecord>
+) {
+  circleState.forEach { (circle, center) ->
+    Circle(
+      center = center,
+      radius = circle.radius,
+      fillColor = Color(circle.color),
+      strokeColor = circle.lineColor?.let { Color(it) } ?: Color.Transparent,
+      strokeWidth = circle.lineWidth ?: 0f,
+      clickable = true,
+      onClick = {
+        onCircleClick(
+          CircleRecord(
+            id = circle.id,
+            center = Coordinates(center.latitude, center.longitude),
+            radius = circle.radius,
+            color = circle.color,
+            lineColor = circle.lineColor,
+            lineWidth = circle.lineWidth
+          )
+        )
+      }
+    )
   }
 }

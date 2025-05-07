@@ -59,7 +59,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   const params: UrlObject['params'] = Object.create(null);
 
   while (state) {
-    route = state.routes[0];
+    route = state.routes['index' in state && state.index ? state.index : 0];
 
     Object.assign(params, route.params);
 
@@ -79,7 +79,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
   while (routeParams && 'screen' in routeParams) {
     if (typeof routeParams.screen === 'string') {
-      segments.push(...routeParams.screen.split('/'));
+      const screen = routeParams.screen.startsWith('/')
+        ? routeParams.screen.slice(1)
+        : routeParams.screen;
+      segments.push(...screen.split('/'));
     }
 
     if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
@@ -90,7 +93,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   }
 
   if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-    segments.push(route.params.screen);
+    const screen = route.params.screen.startsWith('/')
+      ? route.params.screen.slice(1)
+      : route.params.screen;
+    segments.push(...screen.split('/'));
   }
 
   if (segments[segments.length - 1] === 'index') {

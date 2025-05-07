@@ -1,10 +1,10 @@
-import { getConfig, RemoteBuildCacheProvider } from '@expo/config';
+import { BuildCacheProvider, getConfig } from '@expo/config';
 
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradlePropsAsync } from './resolveGradlePropsAsync';
 import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
 import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
-import { resolveRemoteBuildCacheProvider } from '../../utils/remote-build-cache-providers';
+import { resolveBuildCacheProvider } from '../../utils/build-cache-providers';
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
@@ -28,7 +28,7 @@ export type ResolvedOptions = GradleProps &
     install: boolean;
     architectures?: string;
     appId?: string;
-    buildCacheProvider?: RemoteBuildCacheProvider;
+    buildCacheProvider?: BuildCacheProvider;
   };
 
 export async function resolveOptionsAsync(
@@ -39,8 +39,9 @@ export async function resolveOptionsAsync(
   const device = await resolveDeviceAsync(options.device);
 
   const projectConfig = getConfig(projectRoot);
-  const buildCacheProvider = resolveRemoteBuildCacheProvider(
-    projectConfig.exp.experiments?.remoteBuildCache?.provider,
+  const buildCacheProvider = await resolveBuildCacheProvider(
+    projectConfig.exp.experiments?.buildCacheProvider ??
+      projectConfig.exp.experiments?.remoteBuildCache?.provider,
     projectRoot
   );
 

@@ -12,11 +12,12 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.Locale
-import java.util.Properties
+import javax.inject.Inject
 
 abstract class ExpoUpdatesPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -50,6 +51,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
   }
 
   abstract class CreateUpdatesResourcesTask : DefaultTask() {
+    @get:Inject
+    abstract val execOperations: ExecOperations
+
     @get:Input
     abstract val projectRoot: Property<String>
 
@@ -69,10 +73,11 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     fun exec() {
       assetDir.get().asFile.deleteRecursively()
       assetDir.get().asFile.mkdirs()
-      project.exec {
+      val expoUpdatesDir = getExpoUpdatesPackageDir()
+      execOperations.exec {
         val args = mutableListOf<String>().apply {
           addAll(nodeExecutableAndArgs.get())
-          add("${getExpoUpdatesPackageDir()}/utils/build/createUpdatesResources.js")
+          add("${expoUpdatesDir}/utils/build/createUpdatesResources.js")
           add("android")
           add(projectRoot.get())
           add(assetDir.get().toString())
@@ -92,7 +97,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     private fun getExpoUpdatesPackageDir(): String {
       val stdoutBuffer = ByteArrayOutputStream()
-      project.exec {
+      execOperations.exec {
         val args = listOf(*nodeExecutableAndArgs.get().toTypedArray(), "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));")
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
           it.commandLine("cmd", "/c", *args.toTypedArray())

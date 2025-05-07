@@ -40,6 +40,31 @@ To create a production deployment, run the following [EAS CLI](/develop/tools/#e
 
 Once your deployment is complete, the EAS CLI will output a production URL to access your deployed app.
 
+## Deploy automatically
+
+You can automatically deploy your app to the web with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/deploy-web.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/deploy-web.yml
+name: Deploy web
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy_web:
+    name: Deploy web
+    type: deploy
+    params:
+      prod: true
+```
+
+The workflow above will create a web deployment on every commit to your project's `main` branch. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run deploy-web.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
+
 ## Learn more
 
 You can learn more about setting up [deployment aliases](/eas/hosting/deployments-and-aliases/), using a [custom domain](/eas/hosting/custom-domain/), or [deploying an API Route](/router/reference/api-routes/#deployment).

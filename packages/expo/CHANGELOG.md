@@ -8,9 +8,27 @@
 
 ### 🐛 Bug fixes
 
-- Update new arch check in Expo Go to account for new default behavior of `newArchEnabled` (now `true` when not specified in SDK 53). ([#36506](https://github.com/expo/expo/pull/36506) by [@brentvatne](https://github.com/brentvatne))
+### 💡 Others
+
+## 53.0.8 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.7 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.6 — 2025-05-02
 
 ### 💡 Others
+
+- Bump react-native-safe-area-context ([#36545](https://github.com/expo/expo/pull/36545) by [@brentvatne](https://github.com/brentvatne))
+
+## 53.0.5 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Update new arch check in Expo Go to account for new default behavior of `newArchEnabled` (now `true` when not specified in SDK 53). ([#36506](https://github.com/expo/expo/pull/36506) by [@brentvatne](https://github.com/brentvatne))
 
 ## 53.0.4 — 2025-04-30
 

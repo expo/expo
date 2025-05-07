@@ -285,7 +285,16 @@ export interface ExpoConfig {
          */
         reactServerFunctions?: boolean;
         /**
-         * Experimentally enable downloading cached builds from remote.
+         * Experimentally enable downloading cached builds from a provider.
+         */
+        buildCacheProvider?: 'eas' | {
+            plugin: string;
+            options?: {
+                [k: string]: any;
+            };
+        };
+        /**
+         * @deprecated This field will be removed in a future release, use the `buildCacheProvider` field instead.
          */
         remoteBuildCache?: {
             /**

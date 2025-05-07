@@ -9,20 +9,20 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~53.0.4",
+    "expo": "~53.0.8",
     "expo-apple-authentication": "~7.2.4",
     "expo-blur": "~14.1.4",
     "expo-camera": "~16.1.6",
-    "expo-dev-client": "~5.1.7",
-    "expo-image": "^2.1.6",
+    "expo-dev-client": "~5.1.8",
+    "expo-image": "^2.1.7",
     "expo-linear-gradient": "~14.1.4",
-    "expo-splash-screen": "~0.30.7",
+    "expo-splash-screen": "~0.30.8",
     "expo-status-bar": "~2.2.3",
-    "expo-updates": "~0.28.11",
+    "expo-updates": "~0.28.12",
     "expo-video": "~2.1.8",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.1",
+    "react-native": "0.79.2",
     "react-native-web": "~0.20.0"
   },
   "devDependencies": {
