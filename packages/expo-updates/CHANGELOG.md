@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Prevent `initialize` from being called when using custom init.
+
 ## 0.28.12 — 2025-05-01
 
 _This version does not introduce any user-facing changes._
