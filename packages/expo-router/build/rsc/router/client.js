@@ -212,7 +212,7 @@ function getHistory() {
     };
 }
 function useRouter_UNSTABLE() {
-    const router = (0, react_1.useContext)(RouterContext);
+    const router = (0, react_1.use)(RouterContext);
     if (!router) {
         throw new Error('Missing Router');
     }
@@ -356,7 +356,7 @@ children, ...props }, ref) {
         }
         return (0, href_1.resolveHref)(href);
     }, [href]);
-    const router = (0, react_1.useContext)(RouterContext);
+    const router = (0, react_1.use)(RouterContext);
     const changeRoute = router
         ? router.changeRoute
         : () => {

@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 
-import { CameraPosition } from '../shared.types';
+import { CameraPosition, Coordinates } from '../shared.types';
 import type { AppleMapsViewProps, AppleMapsViewType } from './AppleMaps.types';
 
 let NativeView: React.ComponentType<AppleMapsViewProps> | null;
@@ -42,7 +42,10 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     const nativeRef = React.useRef<AppleMapsViewType>(null);
     React.useImperativeHandle(ref, () => ({
       setCameraPosition(config?: CameraPosition) {
-        nativeRef.current?.setCameraPosition(config);
+        return nativeRef.current?.setCameraPosition(config);
+      },
+      async openLookAroundAsync(coordinates: Coordinates) {
+        return nativeRef.current?.openLookAroundAsync(coordinates);
       },
     }));
 

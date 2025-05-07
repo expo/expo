@@ -19,7 +19,10 @@ export const AppleMapsView = React.forwardRef(({ onMapClick, onMarkerClick, onCa
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
-            nativeRef.current?.setCameraPosition(config);
+            return nativeRef.current?.setCameraPosition(config);
+        },
+        async openLookAroundAsync(coordinates) {
+            return nativeRef.current?.openLookAroundAsync(coordinates);
         },
     }));
     const onNativeMapClick = useNativeEvent(onMapClick);

@@ -1,22 +1,34 @@
 import SwiftUI
 import MapKit
+import ExpoModulesCore
 
 @available(iOS 17.0, *)
 struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject private var state = AppleMapsCameraState()
-    
-  func renderCircle(_ circle: Circle) -> some MapContent {
-    let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
-    return mapCircle
-      .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
-      .foregroundStyle(circle.color)
-  }
+  @ObservedObject private var state = AppleMapsViewiOS17State()
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
+  }
+
+  func openLookAround(coordinate: Coordinate) async throws {
+    if state.lookAroundScene != nil {
+      throw LookAroundAlreadyPresentedException()
+    }
+
+    let scene = try await getLookAroundScene(from: CLLocationCoordinate2D(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude
+    ))
+
+    if scene == nil {
+      throw SceneUnavailableAtLocationException()
+    }
+
+    state.lookAroundScene = scene
+    state.lookAroundPresented = true
   }
 
   var body: some View {
@@ -109,6 +121,17 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
+      .lookAroundViewer(
+        isPresented: $state.lookAroundPresented,
+        initialScene: state.lookAroundScene,
+        allowsNavigation: true,
+        showsRoadLabels: true,
+        pointsOfInterest: .all,
+        onDismiss: {
+          state.lookAroundScene = nil
+          state.lookAroundPresented = false
+        }
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }

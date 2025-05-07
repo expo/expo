@@ -328,6 +328,9 @@ module.exports = {
           { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
           { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
         ],
+        ExpoFontUtils: [
+          { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
+        ],
         ExpoGo: [],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },

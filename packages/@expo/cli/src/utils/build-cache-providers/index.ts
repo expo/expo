@@ -1,28 +1,54 @@
-import {
-  ExpoConfig,
-  RemoteBuildCachePlugin,
-  RemoteBuildCacheProvider,
-  RunOptions,
-} from '@expo/config';
+import { ExpoConfig, BuildCacheProviderPlugin, BuildCacheProvider, RunOptions } from '@expo/config';
+import fs from 'fs';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { EASRemoteBuildCacheProvider } from './eas';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
+import * as Log from '../../log';
+import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
+import { CommandError } from '../errors';
 
-const debug = require('debug')('expo:run:remote-build') as typeof console.log;
+const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
 
-export const resolveRemoteBuildCacheProvider = (
-  provider:
-    | Required<Required<ExpoConfig>['experiments']>['remoteBuildCache']['provider']
-    | undefined,
+export const resolveBuildCacheProvider = async (
+  provider: Required<Required<ExpoConfig>['experiments']>['buildCacheProvider'] | undefined,
   projectRoot: string
-): RemoteBuildCacheProvider | undefined => {
+): Promise<BuildCacheProvider | undefined> => {
   if (!provider) {
     return;
   }
 
   if (provider === 'eas') {
-    return { plugin: EASRemoteBuildCacheProvider, options: {} };
+    try {
+      await ensureDependenciesAsync(projectRoot, {
+        isProjectMutable: true,
+        installMessage:
+          'eas-build-cache-provider package is required to use the EAS build cache.\n',
+        warningMessage: 'Unable to to use the EAS remote build cache.',
+        requiredPackages: [
+          {
+            pkg: 'eas-build-cache-provider',
+            file: 'eas-build-cache-provider/package.json',
+            dev: true,
+          },
+        ],
+      });
+
+      // We need to manually load dependencies installed on the fly
+      const plugin = await manuallyLoadDependency(projectRoot, 'eas-build-cache-provider');
+
+      return {
+        plugin: plugin.default ?? plugin,
+        options: {},
+      };
+    } catch (error: any) {
+      if (error instanceof CommandError) {
+        Log.warn(error.message);
+      } else {
+        throw error;
+      }
+      return undefined;
+    }
   }
 
   if (typeof provider === 'object' && typeof provider.plugin === 'string') {
@@ -31,10 +57,10 @@ export const resolveRemoteBuildCacheProvider = (
     return { plugin, options: provider.options };
   }
 
-  throw new Error('Invalid remote build cache provider');
+  throw new Error('Invalid build cache provider');
 };
 
-export async function resolveRemoteBuildCache({
+export async function resolveBuildCache({
   projectRoot,
   platform,
   provider,
@@ -42,7 +68,7 @@ export async function resolveRemoteBuildCache({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync({
@@ -55,13 +81,20 @@ export async function resolveRemoteBuildCache({
     return null;
   }
 
-  return await provider.plugin.resolveRemoteBuildCache(
+  if (provider.plugin.resolveRemoteBuildCache) {
+    Log.warn('The resolveRemoteBuildCache function is deprecated. Use resolveBuildCache instead.');
+    return await provider.plugin.resolveRemoteBuildCache(
+      { fingerprintHash, platform, runOptions, projectRoot },
+      provider.options
+    );
+  }
+  return await provider.plugin.resolveBuildCache(
     { fingerprintHash, platform, runOptions, projectRoot },
     provider.options
   );
 }
 
-export async function uploadRemoteBuildCache({
+export async function uploadBuildCache({
   projectRoot,
   platform,
   provider,
@@ -70,7 +103,7 @@ export async function uploadRemoteBuildCache({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   buildPath: string;
   runOptions: RunOptions;
 }): Promise<void> {
@@ -85,16 +118,30 @@ export async function uploadRemoteBuildCache({
     return;
   }
 
-  await provider.plugin.uploadRemoteBuildCache(
-    {
-      projectRoot,
-      platform,
-      fingerprintHash,
-      buildPath,
-      runOptions,
-    },
-    provider.options
-  );
+  if (provider.plugin.uploadRemoteBuildCache) {
+    Log.warn('The uploadRemoteBuildCache function is deprecated. Use uploadBuildCache instead.');
+    await provider.plugin.uploadRemoteBuildCache(
+      {
+        projectRoot,
+        platform,
+        fingerprintHash,
+        buildPath,
+        runOptions,
+      },
+      provider.options
+    );
+  } else {
+    await provider.plugin.uploadBuildCache(
+      {
+        projectRoot,
+        platform,
+        fingerprintHash,
+        buildPath,
+        runOptions,
+      },
+      provider.options
+    );
+  }
 }
 
 async function calculateFingerprintHashAsync({
@@ -105,7 +152,7 @@ async function calculateFingerprintHashAsync({
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
-  provider: RemoteBuildCacheProvider;
+  provider: BuildCacheProvider;
   runOptions: RunOptions;
 }): Promise<string | null> {
   if (provider.plugin.calculateFingerprintHash) {
@@ -128,8 +175,11 @@ async function calculateFingerprintHashAsync({
 function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
   try {
     return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));
-  } catch {
-    return null;
+  } catch (error: any) {
+    if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -151,10 +201,7 @@ function resolvePluginFilePathForModule(projectRoot: string, pluginReference: st
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
     // Try to resole the `main` entry as config plugin
-    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
-    if (packageMainEntry) {
-      return packageMainEntry;
-    }
+    return resolveFrom(projectRoot, pluginReference);
   }
 
   throw new Error(
@@ -166,7 +213,7 @@ function resolvePluginFilePathForModule(projectRoot: string, pluginReference: st
 export function resolvePluginFunction(
   projectRoot: string,
   pluginReference: string
-): RemoteBuildCachePlugin {
+): BuildCacheProviderPlugin {
   const pluginFile = resolvePluginFilePathForModule(projectRoot, pluginReference);
 
   try {
@@ -177,12 +224,14 @@ export function resolvePluginFunction(
 
     if (
       typeof plugin !== 'object' ||
-      typeof plugin.resolveRemoteBuildCache !== 'function' ||
-      typeof plugin.uploadRemoteBuildCache !== 'function'
+      (typeof plugin.resolveRemoteBuildCache !== 'function' &&
+        typeof plugin.resolveBuildCache !== 'function') ||
+      (typeof plugin.uploadRemoteBuildCache !== 'function' &&
+        typeof plugin.uploadBuildCache !== 'function')
     ) {
       throw new Error(`
         The provider plugin "${pluginReference}" must export an object containing
-        the resolveRemoteBuildCache and uploadRemoteBuildCache functions.
+        the resolveBuildCache and uploadBuildCache functions.
       `);
     }
     return plugin;
@@ -192,4 +241,21 @@ export function resolvePluginFunction(
     }
     throw error;
   }
+}
+
+async function manuallyLoadDependency(projectRoot: string, packageName: string) {
+  const possiblePaths = [
+    path.join(projectRoot, 'node_modules'),
+    ...(require.resolve.paths(packageName) ?? []),
+  ];
+  const nodeModulesFolder = possiblePaths?.find((p) => {
+    const packagePath = path.join(p, packageName);
+    return fs.existsSync(packagePath);
+  });
+  if (!nodeModulesFolder) {
+    throw new Error(`Package ${packageName} not found in ${possiblePaths}`);
+  }
+
+  const { main } = await import(path.join(nodeModulesFolder, packageName, 'package.json'));
+  return import(path.join(nodeModulesFolder, packageName, main));
 }

@@ -1,4 +1,4 @@
-import { RemoteBuildCacheProvider } from '@expo/config';
+import { BuildCacheProvider } from '@expo/config';
 
 import { OSType } from '../../start/platforms/ios/simctl';
 import { BundlerProps } from '../resolveBundlerProps';
@@ -45,7 +45,7 @@ export type BuildProps = {
   /** Should use derived data for builds. */
   buildCache: boolean;
   scheme: string;
-  buildCacheProvider?: RemoteBuildCacheProvider;
+  buildCacheProvider?: BuildCacheProvider;
 
   /** Options that were used to create the eager bundle in release builds. */
   eagerBundleOptions?: string;

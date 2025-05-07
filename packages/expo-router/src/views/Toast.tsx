@@ -25,7 +25,7 @@ function useFadeIn() {
 }
 
 export function ToastWrapper({ children }: React.PropsWithChildren) {
-  const inTabBar = React.useContext(BottomTabBarHeightContext);
+  const inTabBar = React.use(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
   return (

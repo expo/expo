@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import ExpoModulesCore
 
 extension MKMapPoint {
   // Perpendicular distance (in metres) from `self` to the
@@ -29,7 +30,7 @@ extension MKMapPoint {
 @available(iOS 18.0, *)
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject private var state = AppleMapsViewState()
+  @ObservedObject private var state = AppleMapsViewiOS18State()
 
   func renderCircle(_ circle: Circle) -> some MapContent {
     let mapCircle = MapCircle(center: circle.clLocationCoordinate2D, radius: circle.radius)
@@ -42,6 +43,24 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
+  }
+
+  func openLookAround(coordinate: Coordinate) async throws {
+    if state.lookAroundScene != nil {
+      throw LookAroundAlreadyPresentedException()
+    }
+
+    let scene = try await getLookAroundScene(from: CLLocationCoordinate2D(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude
+    ))
+
+    if scene == nil {
+      throw SceneUnavailableAtLocationException()
+    }
+
+    state.lookAroundScene = scene
+    state.lookAroundPresented = true
   }
 
   var body: some View {
@@ -176,6 +195,17 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
+      .lookAroundViewer(
+        isPresented: $state.lookAroundPresented,
+        initialScene: state.lookAroundScene,
+        allowsNavigation: true,
+        showsRoadLabels: true,
+        pointsOfInterest: .all,
+        onDismiss: {
+          state.lookAroundScene = nil
+          state.lookAroundPresented = false
+        }
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }

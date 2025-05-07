@@ -113,7 +113,7 @@
 
 - (void)_rebuildRootView
 {
-  RCTAppDelegate *mainAppDelegate = [[EXDevMenuManager sharedInstance] mainAppDelegate];
+  RCTReactNativeFactory *reactNativeFactory = [[EXDevMenuManager sharedInstance] mainAppFactory];
 
   if (_reactRootView) {
     [_reactRootView removeFromSuperview];
@@ -121,7 +121,7 @@
   }
   _hasCalledJSLoadedNotification = NO;
   
-  _reactRootView =  [mainAppDelegate.rootViewFactory viewWithModuleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
+  _reactRootView =  [reactNativeFactory.rootViewFactory viewWithModuleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
 
   // By default react root view has white background,
   // however devmenu's bottom sheet looks better with partially visible experience.

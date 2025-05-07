@@ -13,6 +13,13 @@
 
 ### 💡 Others
 
+## 0.9.9 — 2025-05-06
+
+### 🎉 New features
+
+- [iOS] Added Look Around support. ([#36415](https://github.com/expo/expo/pull/36415) by [@fobos531](https://github.com/fobos531))
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
 ## 0.9.8 — 2025-04-30
 
 ### 🎉 New features

@@ -91,7 +91,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
  * @hidden
  */
 function useNavigatorContext() {
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (!context) {
         throw new Error('useNavigatorContext must be used within a <Navigator />');
     }
@@ -123,7 +123,7 @@ function SlotNavigator(props) {
  */
 function Slot(props) {
     const contextKey = (0, Route_1.useContextKey)();
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (context?.contextKey !== contextKey) {
         // The _layout has changed since the last navigator
         return <SlotNavigator {...props}/>;

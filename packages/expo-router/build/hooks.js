@@ -112,7 +112,7 @@ function useGlobalSearchParams() {
     return (0, router_store_1.useRouteInfo)().params;
 }
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
+    const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [

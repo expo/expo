@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.1.10 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed project properties were not being resolved correctly. ([#36666](https://github.com/expo/expo/pull/36666) by [@lukmccall](https://github.com/lukmccall))
+
 ## 2.1.9 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
