@@ -131,3 +131,6 @@ docs/pages/versions/*/react-native/*.diff
 
 # TypeScript state
 tsconfig.tsbuildinfo
+
+.nx/workspace-data
+.nx/cache
