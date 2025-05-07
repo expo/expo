@@ -376,7 +376,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             // Skip CSS imports.
             return { path: importInstance.absolutePath, removed: false };
         }
-        if (bailOnDuplicateDefaultExport && importInstance.data.data.exportNames?.includes('default')) {
+        if (bailOnDuplicateDefaultExport &&
+            // @ts-expect-error: exportNames is added by babel
+            importInstance.data.data.exportNames?.includes('default')) {
             debug('Skip graph unlinking for duplicate default export:');
             debug('- Origin module:', graphModule.path);
             debug('- Module ID:', importModuleId);
