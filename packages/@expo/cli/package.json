@@ -71,7 +71,7 @@
     "debug": "^4.3.4",
     "env-editor": "^0.4.1",
     "freeport-async": "^2.0.0",
-    "getenv": "^1.0.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "minimatch": "^9.0.0",
     "lan-network": "^0.1.4",
