@@ -1,7 +1,7 @@
 import { GoogleMaps } from 'expo-maps';
 import { Alert, View } from 'react-native';
 
-export default function MapsCameraControlsScreen() {
+export default function MapsCircleScreen() {
   return (
     <View style={{ flex: 1 }}>
       <GoogleMaps.View
