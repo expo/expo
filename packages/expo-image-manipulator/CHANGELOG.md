@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `ReferenceError` during export for web.
+- Fix `ReferenceError` during export for web. ([#36703](https://github.com/expo/expo/pull/36703) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
