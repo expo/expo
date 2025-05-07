@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- `id` is the only requirement for `updateContactAsync` + usage guide was wrong (has been updated) ([#36603](https://github.com/expo/expo/pull/36603) by [@NorseGaud](https://github.com/NorseGaud))
+- Make `Contact.id` required for `updateContactAsync` ([#36603](https://github.com/expo/expo/pull/36603) by [@NorseGaud](https://github.com/NorseGaud))
 
 ### 💡 Others
 
