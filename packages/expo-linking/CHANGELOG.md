@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `createURL` double-encodes URI parameters.
+- Fixed `createURL` double-encodes URI parameters. ([#36704](https://github.com/expo/expo/pull/36704) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
