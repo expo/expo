@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ReferenceError` during export for web.
+
 ### 💡 Others
 
 ## 13.1.6 — 2025-05-06

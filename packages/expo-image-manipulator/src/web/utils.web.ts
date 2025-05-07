@@ -21,9 +21,12 @@ export async function blobToBase64String(blob: Blob): Promise<string> {
 
 export function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    if (typeof window == 'undefined') {
+      resolve(canvas);
+    }
     const imageSource = new Image();
     imageSource.crossOrigin = 'anonymous';
-    const canvas = document.createElement('canvas');
     imageSource.onload = () => {
       canvas.width = imageSource.naturalWidth;
       canvas.height = imageSource.naturalHeight;
