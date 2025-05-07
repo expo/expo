@@ -7,7 +7,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
@@ -40,8 +40,6 @@ import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
-import com.google.maps.android.compose.Circle
-import expo.modules.kotlin.viewevent.ViewEventCallback
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
