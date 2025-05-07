@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [Android] Prevent `initialize` from being called when using custom init.
+- [Android] Prevent `initialize` from being called when using custom init. ([#36718](https://github.com/expo/expo/pull/36718) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.28.12 — 2025-05-01
 
