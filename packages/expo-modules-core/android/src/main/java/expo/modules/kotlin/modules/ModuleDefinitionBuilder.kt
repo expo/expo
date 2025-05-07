@@ -35,8 +35,7 @@ class ModuleDefinitionBuilder(
 open class InternalModuleDefinitionBuilder(
   @PublishedApi internal val module: Module? = null
 ) : ObjectDefinitionBuilder(
-  module
-    ?.customConverterProvider()
+  module?.converters()
 ) {
   @PublishedApi
   internal var name: String? = null
