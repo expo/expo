@@ -1,6 +1,8 @@
 const universeNativeConfig = require('eslint-config-universe/flat/native');
 const universeNodeConfig = require('eslint-config-universe/flat/node');
 
+// TODO(kudo,20250507): Workaround to use ESLint 9 from the eslint-config-universe.
+// Remove this once we drop support for ESLint 8 in expo-module-scripts.
 const universeRoot = require.resolve('eslint-config-universe/package.json');
 const { defineConfig } = require(
   require.resolve('eslint/config', {
