@@ -39,5 +39,5 @@ extension View {
     return mapPolygon
       .stroke(polygon.lineColor ?? .clear, lineWidth: polygon.lineWidth ?? 0)
       .foregroundStyle(polygon.color)
-   }
+  }
 }
