@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 5.0.6 — 2025-05-06

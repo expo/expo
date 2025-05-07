@@ -1,3 +1,5 @@
+import { useEffect, useSyncExternalStore } from 'react';
+
 import {
   canDismiss,
   canGoBack,
@@ -11,6 +13,7 @@ import {
   push,
   reload,
   replace,
+  routingQueue,
   setParams,
 } from './global-state/routing';
 import { Href, Route, RouteInputParams } from './types';
@@ -109,3 +112,15 @@ export const router: Router = {
   prefetch,
   setParams: setParams as Router['setParams'],
 };
+
+export function ImperativeApiEmitter() {
+  const events = useSyncExternalStore(
+    routingQueue.subscribe,
+    routingQueue.snapshot,
+    routingQueue.snapshot
+  );
+  useEffect(() => {
+    routingQueue.run();
+  }, [events]);
+  return null;
+}

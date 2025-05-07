@@ -45,6 +45,7 @@ const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
+const imperative_api_1 = require("./imperative-api");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -138,6 +139,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
+            <imperative_api_1.ImperativeApiEmitter />
             <Content />
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
