@@ -150,7 +150,7 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 
 **TL;DR:**
 
-Note: Running docs yarn commands requires a specific version of Node. You can find this version under the `volta` section in ./docs/package.json.
+Note: Running docs yarn commands requires a specific version of Node. You can find this version under the `volta` section in [./docs/package.json](./docs/package.json).
 
 1. Navigate to the **docs** directory and run `yarn`.
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`). Note: Requires Node `22.13.1` or higher. 
