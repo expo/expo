@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Simplified how workers are started and stopped. Removed battery constaint on Android.
+
 ## 0.2.6 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
