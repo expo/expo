@@ -10,10 +10,9 @@ class ModuleDefinitionEncoder: Encodable {
     case functions
     case properties
     case constants
-    
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(definition.name, forKey: .name)
     try container.encode(definition.legacyConstants.map({ LegacyConstantsDefinitionEncoder($0) }), forKey: .constants)
@@ -24,7 +23,7 @@ class ModuleDefinitionEncoder: Encodable {
 
 public class ModuleRegistryEncoder: Encodable {
   private let registry: ModuleRegistry
-  
+
   public init(_ registry: ModuleRegistry) {
     self.registry = registry
   }

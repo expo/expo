@@ -32,7 +32,7 @@ final class ExpoGoModule: Module {
         return ""
       }
       if let jsonData = try? jsonEncoder.encode(ModuleRegistryEncoder(registry)),
-         let jsonString = String(data: jsonData, encoding: .utf8) {
+        let jsonString = String(data: jsonData, encoding: .utf8) {
         return jsonString
       }
       return ""
