@@ -36,9 +36,11 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onPOIClick,
       onMarkerClick,
       onPolylineClick,
+      onCircleClick,
       onCameraMove,
       markers,
       polylines,
+      circles,
       ...props
     },
     ref
@@ -59,10 +61,17 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
       color: processColor(polyline.color) ?? undefined,
+    }));
+
+    const parsedCircles = circles?.map((circle) => ({
+      ...circle,
+      color: processColor(circle.color) ?? undefined,
+      lineColor: processColor(circle.lineColor) ?? undefined,
     }));
 
     const parsedMarkers = markers?.map((marker) => ({
@@ -80,6 +89,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         ref={nativeRef}
         markers={parsedMarkers}
         polylines={parsedPolylines}
+        circles={parsedCircles}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
         onMapLongClick={onNativeMapLongClick}
@@ -87,6 +97,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
+        onCircleClick={onNativeCircleClick}
       />
     );
   }

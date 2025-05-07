@@ -26,7 +26,17 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
  */
 export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewProps>(
   (
-    { onMapClick, onMarkerClick, onCameraMove, onPolylineClick, annotations, polylines, ...props },
+    {
+      onMapClick,
+      onMarkerClick,
+      onCameraMove,
+      onPolylineClick,
+      onCircleClick,
+      annotations,
+      polylines,
+      circles,
+      ...props
+    },
     ref
   ) => {
     const nativeRef = React.useRef<AppleMapsViewType>(null);
@@ -43,10 +53,17 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
       color: processColor(polyline.color) ?? undefined,
+    }));
+
+    const parsedCircles = circles?.map((circle) => ({
+      ...circle,
+      color: processColor(circle.color) ?? undefined,
+      lineColor: processColor(circle.lineColor) ?? undefined,
     }));
 
     const parsedAnnotations = annotations?.map((annotation) => ({
@@ -64,11 +81,13 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
         {...props}
         ref={nativeRef}
         polylines={parsedPolylines}
+        circles={parsedCircles}
         annotations={parsedAnnotations}
         onMapClick={onNativeMapClick}
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
+        onCircleClick={onNativeCircleClick}
       />
     );
   }

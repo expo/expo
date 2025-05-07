@@ -79,6 +79,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
+        ForEach(props.circles) { circle in
+          renderCircle(circle)
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
@@ -103,8 +107,28 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
-          // First check if we hit a polyline and send an event
-          if let hit = polyline(at: coordinate) {
+          // First check if we hit a circle and send an event
+          if let hit = props.circles.first(where: { circle in
+            isTapInsideCircle(
+              tapCoordinate: coordinate,
+              circleCenter: circle.clLocationCoordinate2D,
+              radius: circle.radius
+            )
+          }) {
+            props.onCircleClick([
+              "id": hit.id,
+              "color": hit.color,
+              "lineColor": hit.lineColor,
+              "lineWidth": hit.lineWidth,
+              "radius": hit.radius,
+              "coordinates": [
+                "latitude": hit.center.latitude,
+                "longitude": hit.center.longitude
+              ]
+            ])
+          }
+          // Then check if we hit a polyline and send an event
+          else if let hit = polyline(at: coordinate) {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
@@ -217,5 +241,21 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       return false
     }
+  }
+
+  func isTapInsideCircle(
+    tapCoordinate: CLLocationCoordinate2D, circleCenter: CLLocationCoordinate2D, radius: Double
+  ) -> Bool {
+    // Convert coordinates to CLLocation for distance calculation
+    let tapLocation = CLLocation(
+      latitude: tapCoordinate.latitude, longitude: tapCoordinate.longitude)
+    let circleCenterLocation = CLLocation(
+      latitude: circleCenter.latitude, longitude: circleCenter.longitude)
+
+    // Calculate distance between tap and circle center (in meters)
+    let distance = tapLocation.distance(from: circleCenterLocation)
+
+    // Return true if distance is less than or equal to the radius
+    return distance <= radius
   }
 }
