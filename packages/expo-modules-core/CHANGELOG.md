@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix `getSharedObjectId` for devices running android 7 and below. ([#36698](https://github.com/expo/expo/pull/36698) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed missing upload progress from `XMLHttpRequest` when network inspector is enabled. ([#36715](https://github.com/expo/expo/pull/36715) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
