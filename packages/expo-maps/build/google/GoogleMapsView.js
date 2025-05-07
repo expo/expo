@@ -15,7 +15,7 @@ function useNativeEvent(userHandler) {
 /**
  * @platform android
  */
-export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCameraMove, markers, polylines, ...props }, ref) => {
+export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCircleClick, onCameraMove, markers, polylines, circles, ...props }, ref) => {
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
@@ -31,9 +31,15 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
     const parsedPolylines = polylines?.map((polyline) => ({
         ...polyline,
         color: processColor(polyline.color) ?? undefined,
+    }));
+    const parsedCircles = circles?.map((circle) => ({
+        ...circle,
+        color: processColor(circle.color) ?? undefined,
+        lineColor: processColor(circle.lineColor) ?? undefined,
     }));
     const parsedMarkers = markers?.map((marker) => ({
         ...marker,
@@ -43,6 +49,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick}/>);
+    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} circles={parsedCircles} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onCircleClick={onNativeCircleClick}/>);
 });
 //# sourceMappingURL=GoogleMapsView.js.map

@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ReferenceError` during export for web. ([#36703](https://github.com/expo/expo/pull/36703) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
+
+## 13.1.6 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 13.1.5 — 2025-04-30
 

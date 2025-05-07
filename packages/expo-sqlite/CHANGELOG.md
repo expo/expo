@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Fixed parallel issue for `Statement.executeAsync`. ([#36674](https://github.com/expo/expo/pull/36674) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Avoided synchronous API calls for `kv-store`. ([#36669](https://github.com/expo/expo/pull/36669) by [@kudo](https://github.com/kudo))
+- Improved synchronous APIs on web. ([#36670](https://github.com/expo/expo/pull/36670) by [@kudo](https://github.com/kudo))
 
 ## 15.2.9 — 2025-04-30
 

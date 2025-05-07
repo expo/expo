@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed errors when `configuration-cache` is enabled. ([#36678](https://github.com/expo/expo/pull/36678) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.28.12 — 2025-05-01

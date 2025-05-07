@@ -1,4 +1,4 @@
-import { type NavigationState, PartialRoute } from '@react-navigation/native';
+import { NavigationAction, type NavigationState, PartialRoute } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
@@ -27,6 +27,42 @@ function assertIsReady() {
   }
 }
 
+export const routingQueue = {
+  queue: [] as NavigationAction[],
+  subscribers: new Set<() => void>(),
+  subscribe(callback: () => void) {
+    routingQueue.subscribers.add(callback);
+    return () => {
+      routingQueue.subscribers.delete(callback);
+    };
+  },
+  snapshot() {
+    return routingQueue.queue;
+  },
+  add(action: NavigationAction) {
+    // Reset the identity of the queue.
+    if (routingQueue.queue.length === 0) {
+      routingQueue.queue = [];
+    }
+
+    routingQueue.queue.push(action);
+    for (const callback of routingQueue.subscribers) {
+      callback();
+    }
+  },
+  run() {
+    const queue = routingQueue.queue;
+    if (queue.length === 0 || !store.navigationRef) {
+      return;
+    }
+
+    routingQueue.queue = [];
+    for (const action of queue) {
+      store.navigationRef.dispatch(action);
+    }
+  },
+};
+
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 
 export function navigate(url: Href, options?: NavigationOptions) {
@@ -51,7 +87,7 @@ export function dismiss(count: number = 1) {
     return;
   }
 
-  store.navigationRef?.dispatch({ type: 'POP', payload: { count } });
+  routingQueue.add({ type: 'POP', payload: { count } });
 }
 
 export function dismissTo(href: Href, options?: NavigationOptions) {
@@ -66,7 +102,7 @@ export function dismissAll() {
   if (emitDomDismissAll()) {
     return;
   }
-  store.navigationRef?.dispatch({ type: 'POP_TO_TOP' });
+  routingQueue.add({ type: 'POP_TO_TOP' });
 }
 
 export function goBack() {
@@ -74,7 +110,7 @@ export function goBack() {
     return;
   }
   assertIsReady();
-  store.navigationRef?.current?.goBack();
+  routingQueue.add({ type: 'GO_BACK' });
 }
 
 export function canGoBack(): boolean {
@@ -199,7 +235,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
     return;
   }
 
-  return navigationRef.dispatch(
+  routingQueue.add(
     getNavigateAction(
       state,
       rootState,

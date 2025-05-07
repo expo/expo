@@ -48,7 +48,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "await-lock": "^2.2.2"
+  },
   "devDependencies": {
     "@testing-library/react-native": "^13.1.0",
     "@types/better-sqlite3": "^7.6.6",

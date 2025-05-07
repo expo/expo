@@ -52,6 +52,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             .stroke(polyline.color, lineWidth: polyline.width)
         }
 
+        ForEach(props.circles) { circle in
+          renderCircle(circle)
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
