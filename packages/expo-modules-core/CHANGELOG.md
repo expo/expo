@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `getSharedObjectId` for devices running android 7 and below.
+
 ### 💡 Others
 
 ## 2.3.12 — 2025-04-30

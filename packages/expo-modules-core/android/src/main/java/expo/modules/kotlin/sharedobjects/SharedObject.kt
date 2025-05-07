@@ -21,7 +21,7 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
 
   // Used by JNI
   @DoNotStrip
-  private fun getSharedObjectId(): Int {
+  fun getSharedObjectId(): Int {
     return sharedObjectId.value
   }
 
