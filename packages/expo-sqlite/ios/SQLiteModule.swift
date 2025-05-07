@@ -371,6 +371,13 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     exsqlite3_reset(statement.pointer)
     exsqlite3_clear_bindings(statement.pointer)
     for (key, param) in bindParams {
