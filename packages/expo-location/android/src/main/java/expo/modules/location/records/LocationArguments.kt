@@ -45,7 +45,7 @@ internal class LocationTaskOptions(
   @Field var deferredUpdatesTimeout: Float? = null,
   @Field var foregroundService: LocationTaskServiceOptions? = null
 ) : LocationOptions() {
-internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>(
+  internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>(
     "accuracy" to accuracy,
     "distanceInterval" to distanceInterval,
     "mayShowUserSettingsDialog" to mayShowUserSettingsDialog,
