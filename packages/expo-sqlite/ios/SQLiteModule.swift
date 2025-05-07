@@ -373,8 +373,10 @@ public final class SQLiteModule: Module {
 
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
-    statement.lock.lock()
-    defer { statement.lock.unlock() }
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
 
     exsqlite3_reset(statement.pointer)
     exsqlite3_clear_bindings(statement.pointer)
