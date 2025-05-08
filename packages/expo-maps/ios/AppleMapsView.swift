@@ -8,6 +8,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
   @Field var polylines: [ExpoAppleMapPolyline] = []
+  @Field var polygons: [Polygon] = []
   @Field var circles: [Circle] = []
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
@@ -15,6 +16,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
   let onPolylineClick = EventDispatcher()
+  let onPolygonClick = EventDispatcher()
   let onCircleClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }

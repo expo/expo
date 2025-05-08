@@ -28,23 +28,25 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toKClass
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
-import com.google.maps.android.compose.Circle
-import expo.modules.kotlin.viewevent.ViewEventCallback
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
   val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
+  val polygons: MutableState<List<PolygonRecord>> = mutableStateOf(listOf()),
   val circles: MutableState<List<CircleRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
@@ -62,6 +64,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
   private val onPolylineClick by EventDispatcher<PolylineRecord>()
+  private val onPolygonClick by EventDispatcher<PolygonRecord>()
   private val onCircleClick by EventDispatcher<CircleRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
@@ -77,6 +80,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       val markerState = markerStateFromProps()
       val locationSource = locationSourceFromProps()
       val polylineState by polylineStateFromProps()
+      val polygonState by polygonStateFromProps()
       val circleState by circleStateFromProps()
 
       GoogleMap(
@@ -139,6 +143,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
             }
           )
         }
+
+        MapPolygons(
+          polygonState = polygonState,
+          onPolygonClick = onPolygonClick
+        )
 
         MapCircles(
           circleState = circleState,
@@ -265,6 +274,43 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         }
       }
     }
+
+  @Composable
+  private fun polygonStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.polygons.value.map { polygon ->
+          polygon to polygon.coordinates.map { it.toLatLng() }
+        }
+      }
+    }
+
+  @Composable
+  private fun MapPolygons(
+    polygonState: List<Pair<PolygonRecord, List<LatLng>>>,
+    onPolygonClick: ViewEventCallback<PolygonRecord>
+  ) {
+    polygonState.forEach { (polygon, coordinates) ->
+      Polygon(
+        points = coordinates,
+        fillColor = Color(polygon.color),
+        strokeColor = Color(polygon.lineColor),
+        strokeWidth = polygon.lineWidth,
+        clickable = true,
+        onClick = {
+          onPolygonClick(
+            PolygonRecord(
+              id = polygon.id,
+              coordinates.map { Coordinates(it.latitude, it.longitude) },
+              color = polygon.color,
+              lineColor = polygon.lineColor,
+              lineWidth = polygon.lineWidth
+            )
+          )
+        }
+      )
+    }
+  }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
     // Stop updating the camera position based on user location.

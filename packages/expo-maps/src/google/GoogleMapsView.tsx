@@ -37,10 +37,12 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onMarkerClick,
       onPolylineClick,
       onCircleClick,
+      onPolygonClick,
       onCameraMove,
       markers,
       polylines,
       circles,
+      polygons,
       ...props
     },
     ref
@@ -61,6 +63,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativePolygonClick = useNativeEvent(onPolygonClick);
     const onNativeCircleClick = useNativeEvent(onCircleClick);
 
     const parsedPolylines = polylines?.map((polyline) => ({
@@ -80,6 +83,12 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       icon: marker.icon?.__expo_shared_object_id__,
     }));
 
+    const parsedPolygons = polygons?.map((polygon) => ({
+      ...polygon,
+      color: processColor(polygon.color) ?? undefined,
+      lineColor: processColor(polygon.lineColor) ?? undefined,
+    }));
+
     if (!NativeView) {
       return null;
     }
@@ -89,6 +98,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         ref={nativeRef}
         markers={parsedMarkers}
         polylines={parsedPolylines}
+        polygons={parsedPolygons}
         circles={parsedCircles}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
@@ -97,6 +107,7 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
+        onPolygonClick={onNativePolygonClick}
         onCircleClick={onNativeCircleClick}
       />
     );

@@ -33,4 +33,11 @@ extension View {
       .stroke(circle.lineColor ?? .clear, lineWidth: circle.lineWidth ?? 0)
       .foregroundStyle(circle.color)
   }
+
+  func renderPolygon(_ polygon: Polygon) -> some MapContent {
+    let mapPolygon = MapPolygon(coordinates: polygon.clLocationCoordinates2D)
+    return mapPolygon
+      .stroke(polygon.lineColor ?? .clear, lineWidth: polygon.lineWidth ?? 0)
+      .foregroundStyle(polygon.color)
+  }
 }
