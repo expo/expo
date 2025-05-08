@@ -9,10 +9,9 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed errors when `configuration-cache` is enabled. ([#36678](https://github.com/expo/expo/pull/36678) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Update the constraints of the deferred root view. ([#36744](https://github.com/expo/expo/pull/36744) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
-
-- [iOS] Update the constraints of the deferred root view.
 
 ## 0.28.12 — 2025-05-01
 
