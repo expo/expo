@@ -9,8 +9,9 @@ const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
 
-const publicExpoModules = require('./expoModules');
-const internalExpoModules = require('./internalExpoModules');
+const publicExpoModules = require('./moduleMocks/expoModules');
+const internalExpoModules = require('./moduleMocks/internalExpoModules');
+const thirdPartyModules = require('./moduleMocks/thirdPartyModules');
 
 // window isn't defined as of react-native 0.45+ it seems
 if (typeof window !== 'object') {
@@ -53,6 +54,7 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
 
 const expoModules = {
   ...publicExpoModules,
+  ...thirdPartyModules,
   ...internalExpoModules,
 };
 

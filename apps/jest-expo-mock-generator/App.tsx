@@ -101,8 +101,9 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
         Your new jest mocks should now be:{'\n'}- In your clipboard{'\n'}- In your development
         console.{'\n\n'}
         Copy either one of the <Text style={{ backgroundColor: '#eee' }}>module.exports</Text> line
-        line into <Text style={{ backgroundColor: '#eee' }}>jest-expo/src/expoModules.js</Text> and
-        format it nicely with prettier.
+        line into{' '}
+        <Text style={{ backgroundColor: '#eee' }}>jest-expo/src/moduleMocks/expoModules.js</Text>{' '}
+        and format it nicely with prettier.
       </Text>
       <Button onPress={() => setStringAsync(moduleSpecs)} title="Copy to clipboard" />
     </View>
