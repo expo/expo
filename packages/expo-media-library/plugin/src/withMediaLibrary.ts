@@ -15,10 +15,14 @@ const GRANULAR_PERMISSIONS_MAP: Record<GranularTypes, string> = {
   video: 'android.permission.READ_MEDIA_VIDEO',
   audio: 'android.permission.READ_MEDIA_AUDIO',
 };
+const defaultGranularPermissions: GranularTypes[] = [
+    'photo',
+    'video',
+    'audio',
+];
 
 export function modifyAndroidManifest(
-  manifest: AndroidConfig.Manifest.AndroidManifest,
-  granularPermissions?: GranularTypes[]
+    manifest: AndroidConfig.Manifest.AndroidManifest
 ): AndroidConfig.Manifest.AndroidManifest {
   // Starting with Android 10, the concept of scoped storage is introduced.
   // Currently, to make expo-media-library working with that change, you have to add
@@ -26,28 +30,12 @@ export function modifyAndroidManifest(
   const app = AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
   app.$['android:requestLegacyExternalStorage'] = 'true';
 
-  // If granular permissions are specified, remove the defaults and add only the specified ones
-  if (granularPermissions) {
-    AndroidConfig.Permissions.removePermissions(manifest, Object.values(GRANULAR_PERMISSIONS_MAP));
-    AndroidConfig.Permissions.ensurePermissions(
-      manifest,
-      granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type])
-    );
-  }
-
   return manifest;
 }
 
 const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
   return withAndroidManifest(config, async (config) => {
     config.modResults = modifyAndroidManifest(config.modResults);
-    return config;
-  });
-};
-
-const withGranularPermissions: ConfigPlugin<GranularTypes[]> = (config, granularPermissions) => {
-  return withAndroidManifest(config, (config) => {
-    config.modResults = modifyAndroidManifest(config.modResults, granularPermissions);
     return config;
   });
 };
@@ -67,7 +55,7 @@ const withMediaLibrary: ConfigPlugin<
     savePhotosPermission,
     isAccessMediaLocationEnabled,
     preventAutomaticLimitedAccessAlert,
-    granularPermissions,
+    granularPermissions = defaultGranularPermissions,
   } = {}
 ) => {
   IOSConfig.Permissions.createPermissionsPlugin({
@@ -83,13 +71,11 @@ const withMediaLibrary: ConfigPlugin<
     [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
       isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+      ...granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type]),
     ].filter(Boolean) as string[]
   );
-
-  if (granularPermissions) {
-    config = withGranularPermissions(config, granularPermissions);
-  }
 
   if (preventAutomaticLimitedAccessAlert) {
     config = withInfoPlist(config, (config) => {

@@ -8,17 +8,17 @@ const GRANULAR_PERMISSIONS_MAP = {
     video: 'android.permission.READ_MEDIA_VIDEO',
     audio: 'android.permission.READ_MEDIA_AUDIO',
 };
-function modifyAndroidManifest(manifest, granularPermissions) {
+const defaultGranularPermissions = [
+    'photo',
+    'video',
+    'audio',
+];
+function modifyAndroidManifest(manifest) {
     // Starting with Android 10, the concept of scoped storage is introduced.
     // Currently, to make expo-media-library working with that change, you have to add
     // android:requestLegacyExternalStorage="true" to AndroidManifest.xml:
     const app = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
     app.$['android:requestLegacyExternalStorage'] = 'true';
-    // If granular permissions are specified, remove the defaults and add only the specified ones
-    if (granularPermissions) {
-        config_plugins_1.AndroidConfig.Permissions.removePermissions(manifest, Object.values(GRANULAR_PERMISSIONS_MAP));
-        config_plugins_1.AndroidConfig.Permissions.ensurePermissions(manifest, granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type]));
-    }
     return manifest;
 }
 const withMediaLibraryExternalStorage = (config) => {
@@ -27,13 +27,7 @@ const withMediaLibraryExternalStorage = (config) => {
         return config;
     });
 };
-const withGranularPermissions = (config, granularPermissions) => {
-    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-        config.modResults = modifyAndroidManifest(config.modResults, granularPermissions);
-        return config;
-    });
-};
-const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled, preventAutomaticLimitedAccessAlert, granularPermissions, } = {}) => {
+const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled, preventAutomaticLimitedAccessAlert, granularPermissions = defaultGranularPermissions, } = {}) => {
     config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
         NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
         NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',
@@ -44,11 +38,10 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
     config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.READ_EXTERNAL_STORAGE',
         'android.permission.WRITE_EXTERNAL_STORAGE',
+        'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
         isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+        ...granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type]),
     ].filter(Boolean));
-    if (granularPermissions) {
-        config = withGranularPermissions(config, granularPermissions);
-    }
     if (preventAutomaticLimitedAccessAlert) {
         config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
             config.modResults.PHPhotoLibraryPreventAutomaticLimitedAccessAlert = true;

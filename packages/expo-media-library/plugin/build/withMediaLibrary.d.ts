@@ -1,6 +1,6 @@
 import { ConfigPlugin, AndroidConfig } from 'expo/config-plugins';
 type GranularTypes = 'photo' | 'video' | 'audio';
-export declare function modifyAndroidManifest(manifest: AndroidConfig.Manifest.AndroidManifest, granularPermissions?: GranularTypes[]): AndroidConfig.Manifest.AndroidManifest;
+export declare function modifyAndroidManifest(manifest: AndroidConfig.Manifest.AndroidManifest): AndroidConfig.Manifest.AndroidManifest;
 declare const _default: ConfigPlugin<void | {
     photosPermission?: string | false;
     savePhotosPermission?: string | false;
