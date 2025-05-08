@@ -12,11 +12,7 @@ public class BackgroundTaskModule: Module {
     }
 
     AsyncFunction("triggerTaskWorkerForTestingAsync") {
-      if await BackgroundTaskScheduler.isWorkerRunning() {
-        BackgroundTaskDebugHelper.triggerBackgroundTaskTest()
-        return true
-      }
-      return false
+      BackgroundTaskDebugHelper.triggerBackgroundTaskTest()
     }
 
     AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in
