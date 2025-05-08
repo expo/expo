@@ -1,5 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
-
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeResponse } from './NativeRequest';
 

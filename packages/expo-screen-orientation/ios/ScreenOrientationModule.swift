@@ -2,14 +2,12 @@ import ExpoModulesCore
 
 public class ScreenOrientationModule: Module, ScreenOrientationController {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
-
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
-  var shouldEmitEvents = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenOrientation")
 
-    Events("expoDidUpdateDimensions")
+    Events(ScreenOrientationModule.didUpdateDimensionsEvent)
 
     AsyncFunction("lockAsync") { (orientationLock: ModuleOrientationLock) in
       let orientationMask = orientationLock.toInterfaceOrientationMask()
@@ -83,19 +81,19 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
       screenOrientationRegistry.unregisterController(self)
     }
 
-    OnStartObserving {
-      shouldEmitEvents = true
+    OnAppEntersForeground {
+      screenOrientationRegistry.registerController(self)
     }
 
-    OnStopObserving {
-      shouldEmitEvents = false
+    OnAppEntersBackground {
+      screenOrientationRegistry.unregisterController(self)
     }
   }
 
   // MARK: - ScreenOrientationController
 
   public func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
-    guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection, shouldEmitEvents else {
+    guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
       return
     }
 
@@ -103,8 +101,8 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
       "orientationLock": ModuleOrientationLock.from(mask: screenOrientationRegistry.currentOrientationMask).rawValue,
       "orientationInfo": [
         "orientation": ModuleOrientation.from(orientation: orientation).rawValue,
-        "verticalSizeClass": currentTraitCollection.verticalSizeClass,
-        "horizontalSizeClass": currentTraitCollection.horizontalSizeClass
+        "verticalSizeClass": currentTraitCollection.verticalSizeClass.rawValue,
+        "horizontalSizeClass": currentTraitCollection.horizontalSizeClass.rawValue
       ] as [String: Any]
     ])
   }

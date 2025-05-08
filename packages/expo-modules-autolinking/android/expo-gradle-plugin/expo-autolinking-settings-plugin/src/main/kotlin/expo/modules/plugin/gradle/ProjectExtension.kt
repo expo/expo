@@ -23,8 +23,7 @@ internal fun Project.linkBuildDependence(plugin: GradlePlugin) {
 
 internal fun Project.linkLocalMavenRepository(path: String, publications: List<Publication>) {
   repositories.mavenLocal { maven ->
-    val repositoryFile = file(path).absolutePath
-    maven.url = URI.create("file://$repositoryFile")
+    maven.url = file(path).toURI()
 
     maven.content { content ->
       publications.forEach { publication ->
@@ -38,7 +37,7 @@ internal fun Project.linkMavenRepository(mavenRepo: MavenRepo) {
   val (url, credentials, authentication) = mavenRepo
 
   repositories.maven { maven ->
-    maven.url = URI.create(url)
+    maven.setUrl(url)
     maven.applyCredentials(credentials)
     maven.applyAuthentication(authentication)
   }

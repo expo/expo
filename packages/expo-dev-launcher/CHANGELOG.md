@@ -10,6 +10,49 @@
 
 ### 💡 Others
 
+## 5.1.11 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.10 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.9 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
+
+## 5.1.8 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.7 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.6 — 2025-04-25
+
+### 💡 Others
+
+- [iOS] Remove usage of deprecated `SFAuthenticationSession` for user login. ([#36395](https://github.com/expo/expo/pull/36395) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Enable edge-to-edge. ([#36363](https://github.com/expo/expo/pull/36363) by [@behenate](https://github.com/behenate))
+
+## 5.1.5 — 2025-04-23
+
+### 🐛 Bug fixes
+
+- Fix duplicated modals ([#36326](https://github.com/expo/expo/pull/36326) by [@jakex7](https://github.com/jakex7))
+
+## 5.1.4 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 5.1.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

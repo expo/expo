@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 2.2.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.1 — 2025-04-14
+
+### 🎉 New features
+
+- Support imperative functions from `SystemBars` when edge-to-edge is enabled. ([#36156](https://github.com/expo/expo/pull/36156) by [@behenate](https://github.com/behenate))
+
 ## 2.2.0 — 2025-04-11
 
 ### 🎉 New features

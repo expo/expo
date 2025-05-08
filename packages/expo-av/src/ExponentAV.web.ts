@@ -49,6 +49,9 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     };
 
   return new Promise((resolve, reject) => {
+    // TODO(@kitten): The types indicates that this is incorrect.
+    // Please check whether this is correct!
+    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
@@ -138,7 +141,7 @@ async function setStatusForMedia(
   return getStatusFromMedia(media);
 }
 
-let mediaRecorder: null | any /*MediaRecorder*/ = null;
+let mediaRecorder: null | MediaRecorder = null;
 let mediaRecorderUptimeOfLastStartResume: number = 0;
 let mediaRecorderDurationAlreadyRecorded: number = 0;
 let mediaRecorderIsRecording: boolean = false;
@@ -238,7 +241,8 @@ export default {
       uri: null,
     };
   },
-  async prepareAudioRecorder(options): Promise<{
+  // TODO(@kitten): Needs to be typed
+  async prepareAudioRecorder(options: any): Promise<{
     uri: string | null;
     // status is of type RecordingStatus, but without the canRecord field populated
     status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
@@ -252,7 +256,7 @@ export default {
 
     const stream = await getUserMedia({ audio: true });
 
-    mediaRecorder = new (window as any).MediaRecorder(
+    mediaRecorder = new window.MediaRecorder(
       stream,
       options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
     );
@@ -313,21 +317,22 @@ export default {
     return this.getAudioRecordingStatus();
   },
   async stopAudioRecording(): Promise<RecordingStatus> {
-    if (mediaRecorder === null) {
+    const _mediaRecorder = mediaRecorder;
+    if (_mediaRecorder === null) {
       throw new Error(
         'Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.'
       );
     }
 
-    if (mediaRecorder.state === 'inactive') {
+    if (_mediaRecorder.state === 'inactive') {
       return this.getAudioRecordingStatus();
     }
 
     const dataPromise = new Promise<Blob>((resolve) =>
-      mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
+      _mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
     );
 
-    mediaRecorder.stop();
+    _mediaRecorder.stop();
 
     const data = await dataPromise;
     const url = URL.createObjectURL(data);

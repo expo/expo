@@ -5,12 +5,6 @@ import ReactMarkdown from 'react-markdown';
 import { InlineHelp } from '.';
 
 describe(InlineHelp, () => {
-  it('renders inline help with icon emoji', () => {
-    render(<InlineHelp icon="🎨">Hello</InlineHelp>);
-    expect(screen.getByText('🎨')).toBeInTheDocument();
-    expect(screen.getByText('Hello')).toBeInTheDocument();
-  });
-
   it('renders inline help with icon component', () => {
     render(<InlineHelp icon={CheckCircleSolidIcon}>Hello</InlineHelp>);
     expect(screen.getByRole('img')).toBeInTheDocument();
@@ -43,6 +37,11 @@ describe(InlineHelp, () => {
   it('renders inline help with error style from error type', () => {
     render(<InlineHelp type="error">Hello</InlineHelp>);
     expect(screen.getByTestId('callout-container')).toHaveClass('bg-danger');
+  });
+
+  it('renders inline help with important style from important type', () => {
+    render(<InlineHelp type="important">Hello</InlineHelp>);
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-purple3');
   });
 
   it('renders inline help with info style from info type', () => {

@@ -4,6 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.LinearLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.ReactActivity
 import expo.modules.devlauncher.databinding.ErrorFragmentBinding
@@ -21,11 +26,27 @@ class DevLauncherErrorActivity :
   private val adapter = DevLauncherStackAdapter(this, null)
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // Enables edge-to-edge
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
     binding = ErrorFragmentBinding.inflate(layoutInflater)
     binding.homeButton.setOnClickListener { this.launchHome() }
     binding.reloadButton.setOnClickListener { this.reload() }
+
+    // Set footer padding to avoid the navigation bar
+    ViewCompat.setOnApplyWindowInsetsListener(binding.errorFooterContent) { view, windowInsets ->
+      val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+      view.updatePadding(bottom = insets.bottom)
+      WindowInsetsCompat.CONSUMED
+    }
+
+    // Set title padding to account for status bar
+    ViewCompat.setOnApplyWindowInsetsListener(binding.errorTitle) { view, windowInsets ->
+      val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+      view.updatePadding(top = insets.top)
+      WindowInsetsCompat.CONSUMED
+    }
 
     synchronized(DevLauncherErrorActivity) {
       val error = currentError

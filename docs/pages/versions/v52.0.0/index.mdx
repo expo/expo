@@ -6,6 +6,7 @@ hideTOC: true
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import RedirectNotification from '~/ui/components/RedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
@@ -79,19 +80,36 @@ You can often use pre-release versions of individual packages with stable releas
 
 Before each Expo SDK release, we publish beta versions of the `expo` package and all of the Expo SDK packages. Beta releases are considered much more stable than canary releases, and we encourage developers to try them out on their apps and share their feedback. Beta releases use the `beta` tag on npm and follow the instructions in the related [changelog](https://expo.dev/changelog) post.
 
-## Each Expo SDK version depends on a React Native version
+### Additional information
 
-Approximately every four months there is a new Expo SDK release that typically updates to the latest stable versions of React Native and React Native Web, and includes a variety of bug fixes, features, and improvements to the Expo SDK.
+<Collapsible summary="Expo SDK policy for tracking React Native releases">
 
-| Expo SDK version | React Native version | React Native Web version |
-| ---------------- | -------------------- | ------------------------ |
-| 52.0.0           | 0.76                 | 0.19.13                  |
-| 51.0.0           | 0.74                 | 0.19.10                  |
-| 50.0.0           | 0.73                 | 0.19.6                   |
+- Expo SDK versions are released three times each year, and each Expo SDK release targets a single React Native version. This is typically the latest stable version at the time of the release.
+- The release cadence of React Native has varied over its history and it is currently on pace for six releases in 2025. While on this cadence, you can expect that there will be an Expo SDK version for every second React Native release.
+- Pre-release versions of the upcoming Expo SDK will include support for the latest version of React Native quickly, usually the same day it is released. A member of the Expo SDK team works on the React Native releases team for each release, and is responsible for continuously updating the React Native version in the Expo repository, verifying compatibility, and reporting regressions back to the team at Meta.
 
-### Support for other React Native versions
+</Collapsible>
+
+<Collapsible summary=" Why not release a new Expo SDK version immediately for every React Native release?">
+
+At Expo, we have found that releasing three major version provides a good balance of stability and innovation for developers depending on our open source tools. Expo and Meta work closely together on releases, and we will keep improving our processes to get the latest Expo and React Native features to you as quickly as possible.
+
+</Collapsible>
+
+<Collapsible summary="What if I need a change from the latest React Native version and it's not yet in an Expo SDK release?"
+>
+We work closely with the team at Meta to ensure that any urgent fixes are included in the React Native version used by the latest Expo SDK. If your issue won't be cherrypicked into an existing release because it is more niche, or it involves a breaking change, then you have two options:
+
+1. Use [`patch-package`](https://github.com/ds300/patch-package) to pull in the fix.
+2. Use a [pre-release version of the Expo SDK](#using-pre-release-versions). An ([example](https://expo.dev/changelog/react-native-78)).
+
+</Collapsible>
+
+<Collapsible summary="Can I use an older version of React Native with the latest Expo SDK?">
 
 Packages in the Expo SDK are intended to support the target React Native version for that SDK. Typically, they will not support older versions of React Native, but they may. When a new version of React Native is released, the latest versions of the Expo SDK packages are typically updated to support it. However, this may take weeks or more, depending on the extent of the changes in the release.
+
+</Collapsible>
 
 ## Support for Android and iOS versions
 

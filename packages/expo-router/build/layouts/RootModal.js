@@ -10,7 +10,7 @@ exports.RootModalContext = (0, react_1.createContext)({
     removeModal: () => { },
 });
 function RootModalProvider({ children }) {
-    const parent = (0, react_1.useContext)(exports.RootModalContext);
+    const parent = (0, react_1.use)(exports.RootModalContext);
     const [state, setState] = (0, react_1.useState)(() => ({
         root: false,
         routes: [],

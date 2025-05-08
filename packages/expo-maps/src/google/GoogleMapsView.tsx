@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import type {
   GoogleMapsViewProps,
@@ -16,7 +16,8 @@ if (Platform.OS === 'android') {
 
 function useNativeEvent<T>(userHandler?: (data: T) => void) {
   return React.useCallback(
-    (event) => {
+    // TODO(@kitten): We unwrap a native payload here, but this isn't reflected in NativeView's prop types
+    (event: any) => {
       userHandler?.(event.nativeEvent);
     },
     [userHandler]
@@ -34,8 +35,12 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onMapLongClick,
       onPOIClick,
       onMarkerClick,
+      onPolylineClick,
+      onCircleClick,
       onCameraMove,
       markers,
+      polylines,
+      circles,
       ...props
     },
     ref
@@ -55,6 +60,19 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativePOIClick = useNativeEvent(onPOIClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
+    const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
+
+    const parsedPolylines = polylines?.map((polyline) => ({
+      ...polyline,
+      color: processColor(polyline.color) ?? undefined,
+    }));
+
+    const parsedCircles = circles?.map((circle) => ({
+      ...circle,
+      color: processColor(circle.color) ?? undefined,
+      lineColor: processColor(circle.lineColor) ?? undefined,
+    }));
 
     const parsedMarkers = markers?.map((marker) => ({
       ...marker,
@@ -70,12 +88,16 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         {...props}
         ref={nativeRef}
         markers={parsedMarkers}
+        polylines={parsedPolylines}
+        circles={parsedCircles}
         onMapLoaded={onNativeMapLoaded}
         onMapClick={onNativeMapClick}
         onMapLongClick={onNativeMapLongClick}
         onPOIClick={onNativePOIClick}
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
+        onPolylineClick={onNativePolylineClick}
+        onCircleClick={onNativeCircleClick}
       />
     );
   }

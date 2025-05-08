@@ -9,6 +9,11 @@ export type AssetDescriptor = {
 };
 export { AssetMetadata };
 /**
+ * Android resource URL prefix.
+ * @hidden
+ */
+export declare const ANDROID_EMBEDDED_URL_BASE_RESOURCE = "file:///android_res/";
+/**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */

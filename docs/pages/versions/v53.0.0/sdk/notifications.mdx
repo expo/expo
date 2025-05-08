@@ -29,7 +29,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
   Icon={NotificationBoxIcon}
 />
 
-> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Local notifications (in-app notifications) remain available in Expo Go.
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go on Android from SDK 53. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Local notifications (in-app notifications) remain available in Expo Go.
 
 ## Features
 
@@ -64,9 +64,10 @@ import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 

@@ -5,8 +5,8 @@ import ReactMarkdown from 'react-markdown';
 import { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { CALLOUT } from '~/ui/components/Text';
 

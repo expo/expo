@@ -3,8 +3,15 @@ import NativeVideoModule from './NativeVideoModule';
 import resolveAssetSource from './resolveAssetSource';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = NativeVideoModule.VideoPlayer.prototype.replace;
-NativeVideoModule.VideoPlayer.prototype.replace = function (source) {
+NativeVideoModule.VideoPlayer.prototype.replace = function (source, disableWarning = false) {
+    if (!disableWarning) {
+        console.warn('On iOS `VideoPlayer.replace` loads the asset data synchronously on the main thread, which can lead to UI freezes and will be deprecated in a future release. Switch to `replaceAsync` for better user experience.');
+    }
     return replace.call(this, parseSource(source));
+};
+const replaceAsync = NativeVideoModule.VideoPlayer.prototype.replaceAsync;
+NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source) {
+    return replaceAsync.call(this, parseSource(source));
 };
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
@@ -30,12 +37,14 @@ export function useVideoPlayer(source, setup) {
 }
 function parseSource(source) {
     if (typeof source === 'number') {
+        // TODO(@kitten): This seems to not handle the `null` case. Is this correct?
         return { uri: resolveAssetSource(source).uri };
     }
     else if (typeof source === 'string') {
         return { uri: source };
     }
     if (typeof source?.assetId === 'number' && !source.uri) {
+        // TODO(@kitten): This seems to not handle the `null` case. Is this correct?
         return { ...source, uri: resolveAssetSource(source.assetId).uri };
     }
     return source;

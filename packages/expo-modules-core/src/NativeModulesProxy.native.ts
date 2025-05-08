@@ -30,7 +30,8 @@ if (LegacyNativeProxy) {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
 
     // copy methods
-    NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
+    // TODO(@kitten): Annotate `NativeProxy` with abstract types to avoid implicit `any`
+    NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo: any) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
         // Use the new proxy to call methods on legacy modules, if possible.
         if (ExpoNativeProxy?.callMethod) {

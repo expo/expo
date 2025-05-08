@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 3.4.2 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.4.1 — 2025-04-30
+
+### 💡 Others
+
+- add template and example links to the default output ([#36235](https://github.com/expo/expo/pull/36235) by [@vonovak](https://github.com/vonovak))
+
+## 3.4.0 — 2025-04-28
+
+### 🎉 New features
+
+- Add support for `.vscode`, `.eas`, `.github`, `.cursor` directories by using an underscore instead of a dot. ([#36240](https://github.com/expo/expo/pull/36240) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.3.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
 ## 3.3.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

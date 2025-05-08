@@ -1,6 +1,6 @@
+"use strict";
 // Copyright © 2024 650 Industries.
 'use client';
-"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -11,6 +11,7 @@ const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
+const Route_1 = require("../Route");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 const Link_1 = require("../link/Link");
@@ -58,8 +59,10 @@ function Sitemap() {
     </react_native_1.View>);
 }
 function FileSystemView() {
-    const routes = (0, router_store_1.useExpoRouter)().getSortedRoutes();
-    return routes.map((route) => (<react_native_1.View key={route.contextKey} style={styles.itemContainer}>
+    // This shouldn't occur, as the user should be on the tutorial screen
+    if (!router_store_1.store.routeNode)
+        return null;
+    return router_store_1.store.routeNode.children.sort(Route_1.sortRoutes).map((route) => (<react_native_1.View key={route.contextKey} style={styles.itemContainer}>
       <FileItem route={route}/>
     </react_native_1.View>));
 }

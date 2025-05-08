@@ -23,7 +23,7 @@ const VALID_SETTINGS_KEYS = [
   'focusDistance',
   'whiteBalance',
   'zoom',
-];
+] as const;
 
 function useLoadedVideo(video: HTMLVideoElement | null, onLoaded: () => void) {
   React.useEffect(() => {
@@ -79,7 +79,7 @@ export function useWebCameraStream(
   const getStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {
     try {
       return await Utils.getPreferredStreamDevice(preferredType);
-    } catch (nativeEvent) {
+    } catch (nativeEvent: any) {
       if (__DEV__) {
         console.warn(`Error requesting UserMedia for type "${preferredType}":`, nativeEvent);
       }
@@ -134,13 +134,12 @@ export function useWebCameraStream(
   React.useEffect(() => {
     const changes: WebCameraSettings = {};
 
-    for (const key of Object.keys(settings)) {
-      if (!VALID_SETTINGS_KEYS.includes(key)) {
-        continue;
-      }
-      const nextValue = settings[key];
-      if (nextValue !== capabilities.current[key]) {
-        changes[key] = nextValue;
+    for (const key of VALID_SETTINGS_KEYS) {
+      if (key in settings) {
+        const nextValue = settings[key];
+        if (nextValue !== capabilities.current[key]) {
+          changes[key] = nextValue;
+        }
       }
     }
 

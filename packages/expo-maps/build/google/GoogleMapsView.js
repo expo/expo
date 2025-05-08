@@ -1,19 +1,21 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, processColor } from 'react-native';
 let NativeView = null;
 if (Platform.OS === 'android') {
     NativeView = requireNativeView('ExpoGoogleMaps');
 }
 function useNativeEvent(userHandler) {
-    return React.useCallback((event) => {
+    return React.useCallback(
+    // TODO(@kitten): We unwrap a native payload here, but this isn't reflected in NativeView's prop types
+    (event) => {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
 /**
  * @platform android
  */
-export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }, ref) => {
+export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCircleClick, onCameraMove, markers, polylines, circles, ...props }, ref) => {
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
@@ -28,6 +30,17 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativePOIClick = useNativeEvent(onPOIClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
+    const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
+    const parsedPolylines = polylines?.map((polyline) => ({
+        ...polyline,
+        color: processColor(polyline.color) ?? undefined,
+    }));
+    const parsedCircles = circles?.map((circle) => ({
+        ...circle,
+        color: processColor(circle.color) ?? undefined,
+        lineColor: processColor(circle.lineColor) ?? undefined,
+    }));
     const parsedMarkers = markers?.map((marker) => ({
         ...marker,
         // @ts-expect-error
@@ -36,6 +49,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
+    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} circles={parsedCircles} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onCircleClick={onNativeCircleClick}/>);
 });
 //# sourceMappingURL=GoogleMapsView.js.map

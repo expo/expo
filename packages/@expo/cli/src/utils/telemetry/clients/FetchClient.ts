@@ -2,13 +2,15 @@ import { Buffer } from 'node:buffer';
 import { URL } from 'node:url';
 import { Agent, RetryAgent, type RequestInfo, type RequestInit } from 'undici';
 
-import { fetch } from '../../../utils/fetch';
+import { fetch } from '../../fetch';
 import { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
 import { TELEMETRY_ENDPOINT, TELEMETRY_TARGET } from '../utils/constants';
 
+type Fetch = typeof fetch;
+
 type FetchClientOptions = {
   /** The fetch method for sending events, should handle retries and timeouts */
-  fetch?: typeof fetch;
+  fetch?: Fetch;
   /** The endpoint for recorded events */
   url?: string;
   /** The telemetry target for all events */
@@ -24,7 +26,7 @@ export class FetchClient implements TelemetryClient {
   /** This client should be used for long-running commands */
   readonly strategy: TelemetryClientStrategy = 'instant';
   /** The fetch instance used to transport telemetry to the backend */
-  private fetch: typeof fetch;
+  private fetch: Fetch;
   /** The endpoint to send events to */
   private url: string;
   /** Additional headers to send with every event */

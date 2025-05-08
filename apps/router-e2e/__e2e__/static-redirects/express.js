@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// TODO: Remove this file in favor of `npx expo serve` in the E2E tests.
+
 const path = require('path');
 const { createRequestHandler } = require('@expo/server/build/vendor/express');
 
@@ -7,7 +9,9 @@ const express = require('express');
 const compression = require('compression');
 const morgan = require('morgan');
 
+// eslint-disable-next-line no-undef
 const CLIENT_BUILD_DIR = path.join(__dirname, '../../dist-static-redirects/client');
+// eslint-disable-next-line no-undef
 const SERVER_BUILD_DIR = path.join(__dirname, '../../dist-static-redirects/server');
 
 const app = express();

@@ -6,19 +6,22 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
 import { Href } from '../types';
+import { tabRouterOverride } from './TabRouter';
 
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
 
+export type BottomTabNavigator = typeof BottomTabNavigator;
+
 type TabsProps = BottomTabNavigationOptions & { href?: Href | null };
 
-export const Tabs = withLayoutContext<
+const ExpoTabs = withLayoutContext<
   TabsProps,
   typeof BottomTabNavigator,
   TabNavigationState<ParamListBase>,
@@ -36,6 +39,7 @@ export const Tabs = withLayoutContext<
         options: {
           ...options,
           tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+          // @ts-expect-error: TODO(@kitten): This isn't properly typed
           tabBarButton: (props) => {
             if (href == null) {
               return null;
@@ -60,5 +64,14 @@ export const Tabs = withLayoutContext<
     return screen;
   });
 });
+
+const Tabs = Object.assign(
+  (props: ComponentProps<typeof ExpoTabs>) => {
+    return <ExpoTabs {...props} UNSTABLE_router={tabRouterOverride} />;
+  },
+  {
+    Screen: ExpoTabs.Screen,
+  }
+);
 
 export default Tabs;

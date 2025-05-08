@@ -32,16 +32,16 @@ export default function VideoEventsScreen() {
 
   const toggleSource = useCallback(() => {
     if (currentSource === bigBuckBunnySource) {
-      player.replace(hlsSource);
+      player.replaceAsync(hlsSource);
       setCurrentSource(hlsSource);
     } else {
-      player.replace(bigBuckBunnySource);
+      player.replaceAsync(bigBuckBunnySource);
       setCurrentSource(bigBuckBunnySource);
     }
   }, [player, currentSource]);
 
   const triggerError = useCallback(() => {
-    player.replace('https://example.com/invalid.mp4');
+    player.replaceAsync('https://example.com/invalid.mp4');
   }, [player]);
 
   const toggleMute = useCallback(() => {

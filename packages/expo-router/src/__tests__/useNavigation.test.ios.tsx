@@ -25,6 +25,23 @@ it('can resolve the base navigator', () => {
   expect(navigation?.getId()).toBe('/expo-router/build/views/Navigator');
 });
 
+it('can resolve the parent of a nested navigator', () => {
+  let navigation: Navigation;
+
+  renderRouter({
+    _layout: () => <Stack />,
+    '(app)/_layout': () => <Stack />,
+    '(app)/index': function Index() {
+      navigation = useNavigation();
+
+      return null;
+    },
+  });
+
+  expect(navigation).toBeDefined();
+  expect(navigation.getId()).toBe('/(app)');
+});
+
 it('can resolve the root navigator', () => {
   let navigation: Navigation;
 
@@ -78,7 +95,7 @@ it('can resolve the root navigator via "/" when nested', () => {
   expect(navigation?.getId()).toBe('');
 });
 
-it.only('can resolve a parent navigator via relative paths', () => {
+it('can resolve a parent navigator via relative paths', () => {
   let navigation: Navigation;
 
   renderRouter({

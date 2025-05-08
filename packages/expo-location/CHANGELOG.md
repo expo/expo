@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `shouldUseForegroundService` being always `true`. ([#35875](https://github.com/expo/expo/pull/35875) by [@filipef101](https://github.com/filipef101))
+
 ### 💡 Others
+
+## 18.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
 
 ## 18.1.1 — 2025-04-09
 

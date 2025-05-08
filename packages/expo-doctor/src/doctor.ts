@@ -30,9 +30,7 @@ function startSpinner(text: string): { stop(): void } {
     return logNewSection(text);
   }
   Log.log(text);
-  return {
-    stop() {},
-  };
+  return { stop() {} };
 }
 
 export async function printCheckResultSummaryOnComplete(
@@ -79,10 +77,13 @@ export async function printFailedCheckIssueAndAdvice(job: DoctorCheckRunnerJob) 
 
   if (result.issues.length) {
     for (const issue of result.issues) {
-      Log.log(chalk.yellow(issue.replace(/^/gm, '  ')));
+      Log.log(chalk.yellow(issue));
     }
-    if (result.advice) {
-      Log.log(chalk.green(`Advice: ${result.advice}`.replace(/^/gm, '  ')));
+    if (result.advice.length) {
+      Log.log(chalk.green(`Advice:`));
+      for (const advice of result.advice) {
+        Log.log(chalk.green(`${advice}`));
+      }
     }
     Log.log();
   }

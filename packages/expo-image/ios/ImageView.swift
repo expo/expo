@@ -244,7 +244,7 @@ public final class ImageView: ExpoView {
       return nil
     }()
 
-    if let path, let local = UIImage(named: path) {
+    if let path, !path.isEmpty, let local = UIImage(named: path) {
       renderSourceImage(local)
       return true
     }

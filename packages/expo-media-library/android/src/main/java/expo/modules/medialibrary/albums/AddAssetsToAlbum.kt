@@ -3,11 +3,7 @@ package expo.modules.medialibrary.albums
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.os.Build
-import android.provider.MediaStore
 import expo.modules.kotlin.Promise
-import expo.modules.medialibrary.AlbumException
-import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
-import expo.modules.medialibrary.MediaLibraryException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.PermissionsException
 import java.io.File
@@ -25,31 +21,7 @@ internal class AddAssetsToAlbum(
   // Media store table can be corrupted. Extra check won't harm anyone.
   private val album: File
     get() {
-      val path = arrayOf(MediaStore.MediaColumns.DATA)
-      val selection = "${MediaStore.MediaColumns.BUCKET_ID}=?"
-      val id = arrayOf(albumId)
-      context.contentResolver.query(
-        EXTERNAL_CONTENT_URI,
-        path,
-        selection,
-        id,
-        null
-      ).use { albumCursor ->
-        if (albumCursor == null) {
-          throw AlbumException("Could not get album. Query returns null.")
-        } else if (albumCursor.count == 0) {
-          throw AlbumException("No album with id: $albumId")
-        }
-        albumCursor.moveToNext()
-        val filePathColumnIndex = albumCursor.getColumnIndex(MediaStore.Images.Media.DATA)
-        val fileInAlbum = File(albumCursor.getString(filePathColumnIndex))
-
-        // Media store table can be corrupted. Extra check won't harm anyone.
-        if (!fileInAlbum.isFile && !fileInAlbum.isDirectory) {
-          throw MediaLibraryException()
-        }
-        return File(fileInAlbum.parent!!)
-      }
+      return getAlbumFile(context, albumId)
     }
 
   fun execute() {
