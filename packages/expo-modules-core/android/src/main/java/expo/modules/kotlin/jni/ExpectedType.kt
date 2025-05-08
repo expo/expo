@@ -1,6 +1,9 @@
 package expo.modules.kotlin.jni
 
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.exception.MissingTypeConverter
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * A basic class that represents metadata about the expected type.
@@ -96,5 +99,40 @@ class ExpectedType(
     fun forMap(valueType: ExpectedType) = ExpectedType(
       SingleType(CppType.MAP, arrayOf(valueType))
     )
+
+    fun fromKType(type: KType): ExpectedType {
+      val kClass = type.classifier as? KClass<*> ?: throw IllegalArgumentException("...")
+      if (Int::class == kClass) {
+        return ExpectedType(SingleType(CppType.INT))
+      }
+      if (Long::class == kClass) {
+        return ExpectedType(SingleType(CppType.LONG))
+      }
+      if (Double::class == kClass) {
+        return ExpectedType(SingleType(CppType.DOUBLE))
+      }
+      if (Float::class == kClass) {
+        return ExpectedType(SingleType(CppType.FLOAT))
+      }
+      if (Boolean::class == kClass) {
+        return ExpectedType(SingleType(CppType.BOOLEAN))
+      }
+      if (String::class == kClass) {
+        return ExpectedType(SingleType(CppType.STRING))
+      }
+      if (kClass.java.isAssignableFrom(List::class.java)) {
+        val argType = type.arguments.firstOrNull()?.type
+        if (argType != null) {
+          return forList(fromKType(argType))
+        }
+      }
+      if (kClass.java.isAssignableFrom(Map::class.java)) {
+        val argType = type.arguments.getOrNull(1)?.type
+        if (argType != null) {
+          return forMap(fromKType(argType))
+        }
+      }
+      throw MissingTypeConverter(type)
+    }
   }
 }

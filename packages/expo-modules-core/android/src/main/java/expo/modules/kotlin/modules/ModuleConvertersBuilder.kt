@@ -8,6 +8,7 @@ import expo.modules.kotlin.types.TypeConverterCollection
 import expo.modules.kotlin.types.TypeConverterProvider
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 class ModuleConvertersBuilder {
   @PublishedApi
@@ -18,13 +19,13 @@ class ModuleConvertersBuilder {
   }
 
   inline fun <reified T : Any> TypeConverter(classifier: KClass<T>): TypeConverterCollection<T> {
-    val converter = TypeConverterCollection<T>()
+    val converter = TypeConverterCollection<T>(typeOf<T>())
     typeConverters[classifier] = converter
     return converter
   }
 
   inline fun <reified T : Any, reified P0> TypeConverter(classifier: KClass<T>, crossinline body: (p0: P0) -> T): TypeConverterCollection<T> {
-    val converter = TypeConverterCollection<T>().from<P0>(body)
+    val converter = TypeConverterCollection<T>(typeOf<T>()).from<P0>(body)
     typeConverters[classifier] = converter
     return converter
   }
