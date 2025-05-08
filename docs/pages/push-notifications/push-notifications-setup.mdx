@@ -153,8 +153,6 @@ export default function App() {
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
     undefined
   );
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
 
   useEffect(() => {
     /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
@@ -163,17 +161,17 @@ export default function App() {
       .catch((error: any) => setExpoPushToken(`${error}`));
     /* @end */
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
 
     return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 
