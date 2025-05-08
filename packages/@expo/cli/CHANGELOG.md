@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Update to `lan-network@^0.1.6` for VPN network local IP changes and Windows fixes ([#36747](https://github.com/expo/expo/pull/36747) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 0.24.13 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Update to `lan-network@^0.1.6` for VPN network local IP changes and Windows fixes ([#36747](https://github.com/expo/expo/pull/36747) by [@kitten](https://github.com/kitten))
 
 ## 0.24.12 — 2025-05-06
 

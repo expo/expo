@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- respect `react-native` type export conditions ([#36728](https://github.com/expo/expo/pull/36728) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 53.0.9 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- respect `react-native` type export conditions ([#36728](https://github.com/expo/expo/pull/36728) by [@vonovak](https://github.com/vonovak))
 
 ## 53.0.8 — 2025-05-06
 

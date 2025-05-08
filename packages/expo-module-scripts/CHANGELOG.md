@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added base **eslint.config.js** for ESLint 9. ([#36695](https://github.com/expo/expo/pull/36695) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.1.7 — 2025-05-08
+
+### 🎉 New features
+
+- Added base **eslint.config.js** for ESLint 9. ([#36695](https://github.com/expo/expo/pull/36695) by [@kudo](https://github.com/kudo))
 
 ## 4.1.6 — 2025-04-30
 

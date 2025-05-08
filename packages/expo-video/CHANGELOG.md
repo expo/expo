@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [web] Add crossOrigin prop, change default value to no CORS. ([#36713](https://github.com/expo/expo/pull/36713) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.1.9 — 2025-05-08
+
+### 🛠 Breaking changes
+
+- [web] Add crossOrigin prop, change default value to no CORS. ([#36713](https://github.com/expo/expo/pull/36713) by [@aleqsio](https://github.com/aleqsio))
 
 ## 2.1.8 — 2025-04-30
 

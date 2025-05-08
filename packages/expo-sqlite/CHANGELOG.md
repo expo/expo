@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 15.2.10 — 2025-05-08
+
+### 🐛 Bug fixes
+
 - Fixed parallel issue for `Statement.executeAsync`. ([#36674](https://github.com/expo/expo/pull/36674) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
