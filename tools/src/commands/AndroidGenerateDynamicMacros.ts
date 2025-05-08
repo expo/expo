@@ -19,7 +19,6 @@ async function generateAction(options): Promise<void> {
     platform: 'android',
     expoKitPath: EXPO_DIR,
     templateFilesPath: TEMPLATE_FILES_DIR,
-    bareExpo: options.bare,
     configuration,
   });
 }
@@ -35,7 +34,6 @@ export default (program: Command) => {
       '--configuration [string]',
       'Build configuration. Defaults to `process.env.CONFIGURATION` or "debug".'
     )
-    .option('--bare', 'Generate macros only for the bare-expo project.')
     .description('Generates dynamic macros for Android client.')
     .asyncAction(generateAction);
 };

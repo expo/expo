@@ -12,9 +12,6 @@ else
     yarn
 fi
 
-"${CURR_DIR}/../../../bin/expotools" android-generate-dynamic-macros --configuration $1 --bare
-echo " ✅ Generate dynamic macros"
-
 if [ ! -d "android/app/src/androidTest/assets" ]; then
   mkdir -p android/app/src/androidTest/assets
 fi
