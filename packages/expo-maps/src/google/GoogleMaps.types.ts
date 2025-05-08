@@ -9,7 +9,7 @@ import { CameraPosition, Coordinates } from '../shared.types';
  */
 export type GoogleMapsMarker = {
   /**
-   * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+   * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
    */
   id?: string;
 
@@ -49,7 +49,7 @@ export type GoogleMapsMarker = {
  */
 export type GoogleMapsPolyline = {
   /**
-   * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+   * The unique identifier for the polyline. This can be used to identify the clicked polyline in the `onPolylineClick` event.
    */
   id?: string;
 
@@ -79,7 +79,7 @@ export type GoogleMapsPolyline = {
  */
 export type GoogleMapsCircle = {
   /**
-   * The unique identifier for the circle. This can be used to e.g. identify the clicked circle in the `onCircleClick` event.
+   * The unique identifier for the circle. This can be used to identify the clicked circle in the `onCircleClick` event.
    */
   id?: string;
 
