@@ -204,7 +204,7 @@ object BackgroundTaskScheduler {
     }
 
     // Make sure we're in the background before running a task
-    if (_inForeground) {
+    if (inForeground) {
       // Schedule task in an hour (or at least minimumInterval) - the app is foregrounded and
       // we don't want to run anything to avoid performance issues.
       Log.d(TAG, "runTasks: App is in the foreground")
