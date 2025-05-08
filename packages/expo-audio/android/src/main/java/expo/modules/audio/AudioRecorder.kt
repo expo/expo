@@ -174,7 +174,6 @@ class AudioRecorder(
         val path = Uri.fromFile(File(it)).toString()
         putString("url", path)
       }
-
     }
   } else {
     Bundle().apply {
