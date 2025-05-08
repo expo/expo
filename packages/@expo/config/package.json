@@ -38,7 +38,7 @@
     "@expo/config-types": "^53.0.4",
     "@expo/json-file": "^9.1.4",
     "deepmerge": "^4.3.1",
-    "getenv": "^1.0.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "require-from-string": "^2.0.2",
     "resolve-from": "^5.0.0",
