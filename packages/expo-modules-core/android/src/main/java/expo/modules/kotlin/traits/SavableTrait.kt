@@ -27,11 +27,11 @@ class SavableTrait<InputType> @PublishedApi internal constructor(
       appContext: AppContext,
       crossinline saveToFile: (file: File, input: InputType, options: OptionType) -> Unit
     ): ObjectDefinitionData {
-      val appContextWeekRef = appContext.weak()
+      val appContextWeakRef = appContext.weak()
 
       return ObjectDefinitionBuilder().apply {
         AsyncFunction("saveAsync") { input: InputType, options: OptionType ->
-          val context = appContextWeekRef.get() ?: throw Exceptions.AppContextLost()
+          val context = appContextWeakRef.get() ?: throw Exceptions.AppContextLost()
           val outputFile = File(context.cacheDirectory, UUID.randomUUID().toString())
           outputFile.createNewFile()
 
