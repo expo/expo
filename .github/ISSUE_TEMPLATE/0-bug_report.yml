@@ -8,13 +8,6 @@ body:
   - type: markdown
     attributes:
       value: If you are unsure if this is a bug in Expo tools, or have a question, or you think your issue might be caused by your application code, you can get help from the community on [Discord](https://chat.expo.dev).
-  - type: textarea
-    attributes:
-      label: Summary
-      description: |
-        Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information.
-    validations:
-      required: true
   - type: input
     attributes:
       label: Minimal reproducible example

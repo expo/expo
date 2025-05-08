@@ -10,14 +10,6 @@ body:
       value: If you are unsure if this is a bug in Expo CLI, or have a question, or you think your issue might be caused by your application code, you can get help from the community on [Discord](https://chat.expo.dev).
   - type: textarea
     attributes:
-      label: Summary
-      description: |
-        Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information.
-        If your summary is simply, for example: "My device cannot connect to Wi-Fi.", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
-    validations:
-      required: true
-  - type: textarea
-    attributes:
       label: Minimal reproducible example
       description: |
         To create a minimal reproducible example, run `npx create-expo-app@latest --template blank` (or use an equivalent for your package manager of choice) and then add in only the necessary code and configuration necessary to reproduce the issue. Next, put the project on GitHub and share the link here.
