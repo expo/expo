@@ -56,23 +56,5 @@ public class BackgroundTaskModule: Module {
       return BackgroundTaskScheduler.supportsBackgroundTasks() ?
         BackgroundTaskStatus.available : .restricted
     }
-
-    OnAppEntersBackground {
-      Task {
-        // Try start worker when app enters background
-        do {
-          try await BackgroundTaskScheduler.tryScheduleWorker()
-        } catch {
-          log.error("Could not schedule the worker: \(error.localizedDescription)")
-        }
-      }
-    }
-
-    OnAppEntersForeground {
-      Task {
-        // When entering foreground we'll stop the worker
-        await BackgroundTaskScheduler.stopWorker()
-      }
-    }
   }
 }
