@@ -22,6 +22,41 @@ enum MediaType: String, Enumerable {
   }
 }
 
+enum MediaSubtype: String, Enumerable {
+  case depthEffect
+  case hdr
+  case highFrameRate
+  case livePhoto
+  case panorama
+  case screenshot
+  case stream
+  case timelapse
+  case unknown
+
+  func toPHAssetMediaSubtype() -> PHAssetMediaSubtype {
+    switch self {
+    case .depthEffect:
+      return .photoDepthEffect
+    case .hdr:
+      return .photoHDR
+    case .highFrameRate:
+      return .videoHighFrameRate
+    case .livePhoto:
+      return .photoLive
+    case .panorama:
+      return .photoPanorama
+    case .screenshot:
+      return .photoScreenshot
+    case .stream:
+      return .videoStreamed
+    case .timelapse:
+      return .videoTimelapse
+    case .unknown:
+      return .none
+    }
+  }
+}
+
 struct AlbumOptions: Record {
   @Field var includeSmartAlbums: Bool = false
 }
@@ -36,6 +71,7 @@ struct AssetWithOptions: Record {
   @Field var album: String?
   @Field var sortBy: [String] = []
   @Field var mediaType: [MediaType]
+  @Field var mediaSubtypes: [String] = []
   @Field var createdAfter: Double?
   @Field var createdBefore: Double?
 }
