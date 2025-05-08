@@ -1,10 +1,10 @@
 name: "\U0001F41B CLI Bug Report"
-description: 'Report a reproducible bug in Expo CLI (npx expo)'
+description: 'Report a bug in Expo CLI (npx expo) and other CLI tools'
 labels: ['needs validation', 'CLI']
 body:
   - type: markdown
     attributes:
-      value: If you are convinced that you have found a bug in Expo CLI, then you are in the right place! Ensure to fill out this entire form.
+      value: If you are convinced that you have found a bug in Expo CLI or another CLI tool maintained by the Expo team in this repository, then you are in the right place! Ensure to fill out this entire form.
   - type: markdown
     attributes:
       value: If you are unsure if this is a bug in Expo CLI, or have a question, or you think your issue might be caused by your application code, you can get help from the community on [Discord](https://chat.expo.dev).

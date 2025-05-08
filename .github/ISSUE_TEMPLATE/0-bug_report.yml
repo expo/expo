@@ -1,5 +1,5 @@
 name: "\U0001F41B SDK Bug Report"
-description: 'Report a reproducible bug in the Expo SDK'
+description: 'Report a bug in the Expo SDK (Android, iOS, Web libraries and Expo Go)'
 labels: ['needs validation']
 body:
   - type: markdown
