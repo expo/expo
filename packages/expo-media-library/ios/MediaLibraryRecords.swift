@@ -31,7 +31,6 @@ enum MediaSubtype: String, Enumerable {
   case screenshot
   case stream
   case timelapse
-  case unknown
 
   func toPHAssetMediaSubtype() -> PHAssetMediaSubtype {
     switch self {
@@ -51,8 +50,8 @@ enum MediaSubtype: String, Enumerable {
       return .videoStreamed
     case .timelapse:
       return .videoTimelapse
-    case .unknown:
-      return .none
+    default:
+      return []
     }
   }
 }
@@ -71,7 +70,7 @@ struct AssetWithOptions: Record {
   @Field var album: String?
   @Field var sortBy: [String] = []
   @Field var mediaType: [MediaType]
-  @Field var mediaSubtypes: [String] = []
+  @Field var mediaSubtypes: [MediaSubtype] = []
   @Field var createdAfter: Double?
   @Field var createdBefore: Double?
 }
