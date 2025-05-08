@@ -96,7 +96,6 @@ class ViewPropEncoder: Encodable {
   }
 }
 
-
 class ConstantEncoder: Encodable {
   private let key: String
   private let value: Any?
