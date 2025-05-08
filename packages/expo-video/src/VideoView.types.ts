@@ -153,4 +153,12 @@ export interface VideoViewProps extends ViewProps {
    * @default true
    */
   useExoShutter?: boolean;
+  /**
+   * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
+   * If undefined, does not use CORS at all.
+   *
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
 }
