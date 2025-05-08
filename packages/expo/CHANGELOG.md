@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- noop non-fabric renderer when new architecture is enabled.
+
 ### 🐛 Bug fixes
 
 - respect `react-native` type export conditions ([#36728](https://github.com/expo/expo/pull/36728) by [@vonovak](https://github.com/vonovak))

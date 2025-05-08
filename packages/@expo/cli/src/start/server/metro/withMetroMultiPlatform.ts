@@ -150,6 +150,7 @@ export function withExtendedResolver(
     isReactCanaryEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
+    isFabricEnabled,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
@@ -157,6 +158,7 @@ export function withExtendedResolver(
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
     isReactServerComponentsEnabled?: boolean;
+    isFabricEnabled: Record<string, boolean>;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -386,14 +388,44 @@ export function withExtendedResolver(
   ];
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
-    // Mock out production react imports in development.
+    // Mock out legacy react renderer when bundling for new architecture.
+    function requestNoopOldReactRenderer(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
+      // Native-only pass.
+      if (
+        !platform ||
+        platform === 'web' ||
+        // Only when the current platform has fabric enabled.
+        !isFabricEnabled[platform] ||
+        // Ensure the request is coming from within the react-native package.
+        !context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/)
+      ) {
+        return null;
+      }
+
+      // Check if fabric enabled for the given platform.
+      if (moduleName.match(/[\\/]ReactNativeRenderer-(prod|dev)/)) {
+        debug(`Noop old-arch module for fabric bundle: ${moduleName}`);
+        return {
+          type: 'empty',
+        };
+      }
+
+      return null;
+    },
+
     function requestDevMockProdReact(
       context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
       // This resolution is dev-only to prevent bundling the production React packages in development.
-      if (!context.dev) return null;
+      if (!context.dev) {
+        return null;
+      }
 
       if (
         // Match react-native renderers.
@@ -805,6 +837,7 @@ export async function withMetroMultiPlatformAsync(
     isReactCanaryEnabled,
     isNamedRequiresEnabled,
     isReactServerComponentsEnabled,
+    isFabricEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -816,6 +849,7 @@ export async function withMetroMultiPlatformAsync(
     isReactCanaryEnabled: boolean;
     isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
+    isFabricEnabled: Record<string, boolean>;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -887,6 +921,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isReactCanaryEnabled,
     isReactServerComponentsEnabled,
+    isFabricEnabled,
     getMetroBundler,
   });
 }
