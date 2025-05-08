@@ -107,8 +107,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             }
           }
         }
-        
-        if (props.properties.isMyLocationEnabled) {
+
+        if props.properties.isMyLocationEnabled {
           UserAnnotation()
         }
       }
