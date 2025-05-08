@@ -41,12 +41,7 @@ object BackgroundTaskScheduler {
   private var intervalMinutes: Long = DEFAULT_INTERVAL_MINUTES
 
   // Tracks whether in foreground
-  private var _inForeground: Boolean = false
-  var inForeground: Boolean
-    get() = _inForeground
-    set(value) {
-      _inForeground = value
-    }
+  var inForeground: Boolean = false
 
   /**
    * Call when a task is registered
