@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Correctly handle recording URL's and local assets in production.
+
 ### 💡 Others
 
 ## 0.4.4 — 2025-04-30

@@ -1,6 +1,7 @@
 package expo.modules.audio
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
@@ -10,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.media3.common.C.CONTENT_TYPE_DASH
 import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
@@ -19,11 +21,14 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import expo.modules.interfaces.permissions.Permissions
@@ -37,7 +42,6 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
 import kotlin.math.min
-import androidx.core.net.toUri
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
@@ -401,7 +405,9 @@ class AudioModule : Module() {
       }
 
       Property("uri") { ref ->
-        ref.filePath
+        ref.filePath?.let {
+          Uri.fromFile(File(it)).toString()
+        } ?: ""
       }
 
       Property("isRecording") { ref ->
@@ -456,32 +462,41 @@ class AudioModule : Module() {
     }
   }
 
-  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uri ->
-    val factory = createDataSourceFactory(source)
-    val sourceUri = if (Util.isLocalFileUri(uri.toUri())) {
-      Uri.fromFile(File(source.uri))
-    } else {
-      source.uri.toUri()
+  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
+    val uri = uriString.toUri()
+    val mediaItem = when (uri.scheme) {
+      null -> MediaItem.fromUri(getRawResourceURI(uriString))
+      else -> MediaItem.fromUri(uri)
     }
-    val item = MediaItem.fromUri(sourceUri)
-    buildMediaSourceFactory(factory, item)
+
+    val factory = when (uri.scheme) {
+      "http", "https" -> httpDataSourceFactory(source.headers)
+      else -> DefaultDataSource.Factory(context)
+    }
+    return buildMediaSourceFactory(factory, mediaItem)
   }
 
-  private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
-    val uri = if (Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
-      Uri.fromFile(File(audioSource.uri))
-    } else {
-      Uri.parse(audioSource.uri)
-    }
-    val isLocal = Util.isLocalFileUri(uri)
-    return if (isLocal) {
-      DefaultDataSource.Factory(context)
-    } else {
-      OkHttpDataSource.Factory(httpClient).apply {
-        audioSource.headers?.let { headers ->
-          setDefaultRequestProperties(headers)
-        }
+  private fun httpDataSourceFactory(headers: Map<String, String>?): DataSource.Factory {
+    return OkHttpDataSource.Factory(httpClient).apply {
+      headers?.let { headers ->
+        setDefaultRequestProperties(headers)
       }
+    }
+  }
+
+  private fun getRawResourceURI(file: String): Uri {
+    val resId = context.resources.getIdentifier(file, "raw", context.packageName)
+
+    return when {
+      resId == 0 ->
+        Uri.fromFile(File(file))
+      else ->
+        Uri.Builder()
+          .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+          .authority(context.packageName)
+          .appendPath("raw")
+          .appendPath(file)
+          .build()
     }
   }
 

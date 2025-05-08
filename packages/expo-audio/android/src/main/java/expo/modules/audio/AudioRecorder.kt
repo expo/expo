@@ -12,6 +12,7 @@ import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -142,9 +143,10 @@ class AudioRecorder(
 
       val filename = "recording-${UUID.randomUUID()}${options.extension}"
       try {
-        val directory = File(context.cacheDir.toString() + File.separator + "Audio")
+        val directory = File(context.cacheDir, "Audio")
         ensureDirExists(directory)
-        filePath = "$directory${File.separator}$filename"
+        val file = File(directory, filename)
+        filePath = file.absolutePath
       } catch (e: IOException) {
         // This only occurs in the case that the scoped path is not in this experience's scope,
         // which is never true.
@@ -169,7 +171,11 @@ class AudioRecorder(
       getAudioRecorderLevels()?.let {
         putInt("metering", it)
       }
-      putString("url", filePath)
+      filePath?.let {
+        val path = Uri.fromFile(File(it)).toString()
+        putString("url", path)
+      }
+
     }
   } else {
     Bundle().apply {
