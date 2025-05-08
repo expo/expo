@@ -44,6 +44,7 @@ export const TableOfContents = forwardRef<
   const router = useRouter();
   const isVersioned = isVersionedPath(router?.pathname ?? '');
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [activeParentSlug, setActiveParentSlug] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [collapsedH3s, setCollapsedH3s] = useState<Set<string>>(() =>
@@ -84,31 +85,24 @@ export const TableOfContents = forwardRef<
           contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
         ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2;
 
-      if (isInView) {
-        if (isVersioned && level > BASE_HEADING_LEVEL + 1) {
+      if (isInView && isVersioned) {
+        if (level > BASE_HEADING_LEVEL + 1) {
           const currentIndex = headings.findIndex(h => h.slug === slug);
           for (let i = currentIndex; i >= 0; i--) {
             const h = headings[i];
             if (h.level === BASE_HEADING_LEVEL + 1) {
-              if (collapsedH3s.has(h.slug)) {
-                if (h.slug !== activeSlug) {
-                  if (h.slug === slugScrollingTo.current) {
-                    slugScrollingTo.current = null;
-                  }
-                  setActiveSlug(h.slug);
-                  updateSelfScroll();
-                }
-                return;
-              }
-              break;
+              setActiveParentSlug(h.slug);
+              setActiveSlug(slug);
+              updateSelfScroll();
+              return;
             }
           }
         }
-
         if (slug !== activeSlug) {
           if (slug === slugScrollingTo.current) {
             slugScrollingTo.current = null;
           }
+          setActiveParentSlug(null);
           setActiveSlug(slug);
           updateSelfScroll();
         }
@@ -195,7 +189,7 @@ export const TableOfContents = forwardRef<
     let currentH3: string | null = null;
 
     return displayedHeadings.map((heading, index) => {
-      const isActive = heading.slug === activeSlug;
+      const isActive = heading.slug === activeSlug || heading.slug === activeParentSlug;
       const isH3 = heading.level === BASE_HEADING_LEVEL + 1;
 
       if (isH3 && isVersioned) {
