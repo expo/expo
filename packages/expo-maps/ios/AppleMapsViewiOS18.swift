@@ -107,7 +107,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             }
           }
         }
-        UserAnnotation()
+        
+        if (props.properties.isMyLocationEnabled) {
+          UserAnnotation()
+        }
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {

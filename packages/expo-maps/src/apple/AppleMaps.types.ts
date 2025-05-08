@@ -99,6 +99,12 @@ export enum AppleMapsContourStyle {
  */
 export type AppleMapsProperties = {
   /**
+   * Whether the user location is shown on the map.
+   * @default false
+   */
+  isMyLocationEnabled?: boolean;
+
+  /**
    * Whether the traffic layer is enabled on the map.
    */
   isTrafficEnabled?: boolean;
