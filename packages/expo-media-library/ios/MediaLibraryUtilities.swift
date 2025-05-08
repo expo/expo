@@ -394,6 +394,21 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
       predicates.append(predicate)
     }
   }
+  
+  if !options.mediaSubtypes.isEmpty {
+    // include assets that match at least one of the requested subtypes
+
+    // bitwise OR of all requested flags
+    let mask = options.mediaSubtypes
+      .map { $0.toPHAssetMediaSubtype().rawValue }
+      .reduce(0, |)        
+
+    let subtypesPredicate = NSPredicate(
+      // get every asset whose stored bit-mask shares at least one bit with mask
+      format: "(mediaSubtypes & %d) != 0", mask
+    )
+    predicates.append(subtypesPredicate)
+  }
 
   if !options.sortBy.isEmpty {
     do {

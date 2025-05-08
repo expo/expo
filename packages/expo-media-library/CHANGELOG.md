@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
