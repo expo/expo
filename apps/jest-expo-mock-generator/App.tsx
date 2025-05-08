@@ -1,6 +1,5 @@
 import { requireNativeModule } from 'expo';
 import { setStringAsync } from 'expo-clipboard';
-import { addListener } from 'expo-keep-awake';
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
@@ -9,7 +8,8 @@ type ModuleRegistrySchema = [
     name: string;
     functions: [{ name: string; argumentsCount: number }];
     properties: [{ name: string }];
-    constants: [[{ name: string; type: string; value: any }]]; // TODO: Fix
+    constants: [[{ name: string; type: string; value: any }]];
+    views: [{ name: string; props: [{ name: string }] }];
   },
 ];
 
@@ -116,19 +116,19 @@ async function _getExpoModuleSpecsAsync() {
   const schema = JSON.parse(schemaString) as ModuleRegistrySchema;
   const methodsMock = Object.fromEntries(
     schema
-      .filter((module) => !blacklist.includes(module.name))
-      .map((module) => [module.name, module.functions.map((fn) => ({ ...fn, key: fn.name }))])
+      .filter((expoModule) => !blacklist.includes(expoModule.name))
+      .map((m) => [m.name, m.functions.map((fn) => ({ ...fn, key: fn.name }))])
   );
   const constantsMock = Object.fromEntries(
     schema
-      .filter((module) => !blacklist.includes(module.name))
-      .map((module) => [
-        module.name,
+      .filter((expoModule) => !blacklist.includes(expoModule.name))
+      .map((m) => [
+        m.name,
         {
-          ...Object.fromEntries(module.properties.map((p) => [p.name, { type: 'property' }])),
-          ...Object.fromEntries(module.functions.map((fn) => [fn.name, { type: 'function' }])),
+          ...Object.fromEntries(m.properties.map((p) => [p.name, { type: 'property' }])),
+          ...Object.fromEntries(m.functions.map((fn) => [fn.name, { type: 'function' }])),
           ...Object.fromEntries(
-            (module.constants[0] ?? []).map((ct) =>
+            (m.constants[0] ?? []).map((ct) =>
               ct.type !== 'string'
                 ? [ct.name, { type: ct.type, mock: ct.value }]
                 : [ct.name, { type: ct.type }]
@@ -138,6 +138,20 @@ async function _getExpoModuleSpecsAsync() {
           removeListeners: { type: 'function' },
         },
       ])
+  );
+
+  const viewsMock = Object.fromEntries(
+    schema
+      .filter((m) => !blacklist.includes(m.name))
+      // We break assumptions about multiple views from a single module due to original structure.
+      .map(
+        (m) =>
+          [
+            m.name,
+            { propNames: [...new Set(m.views.flatMap((v) => v.props).map((p) => p.name))] },
+          ] as const
+      )
+      .filter((m) => m[1].propNames.length > 0)
   );
 
   return {
@@ -151,6 +165,10 @@ async function _getExpoModuleSpecsAsync() {
       modulesConstants: {
         type: 'mock',
         mockDefinition: constantsMock,
+      },
+      viewManagersMetadata: {
+        type: 'object',
+        mock: viewsMock,
       },
     },
   };
