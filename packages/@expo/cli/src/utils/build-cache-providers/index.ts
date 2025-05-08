@@ -81,7 +81,7 @@ export async function resolveBuildCache({
     return null;
   }
 
-  if (provider.plugin.resolveRemoteBuildCache) {
+  if ('resolveRemoteBuildCache' in provider.plugin) {
     Log.warn('The resolveRemoteBuildCache function is deprecated. Use resolveBuildCache instead.');
     return await provider.plugin.resolveRemoteBuildCache(
       { fingerprintHash, platform, runOptions, projectRoot },
@@ -118,7 +118,7 @@ export async function uploadBuildCache({
     return;
   }
 
-  if (provider.plugin.uploadRemoteBuildCache) {
+  if ('uploadRemoteBuildCache' in provider.plugin) {
     Log.warn('The uploadRemoteBuildCache function is deprecated. Use uploadBuildCache instead.');
     await provider.plugin.uploadRemoteBuildCache(
       {
