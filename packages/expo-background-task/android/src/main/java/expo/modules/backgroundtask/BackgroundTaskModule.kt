@@ -6,7 +6,6 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.runBlocking
 
 class BackgroundTaskModule : Module() {
   companion object {
@@ -37,7 +36,7 @@ class BackgroundTaskModule : Module() {
     }
 
     AsyncFunction("registerTaskAsync") { taskName: String, options: Map<String, Any?> ->
-      Log.d(TAG, "registerTaskAsync: $taskName")
+      Log.d(TAG, "registerTaskAsync: $taskName with options $options")
       taskManager.registerTask(taskName, BackgroundTaskConsumer::class.java, options)
     }
 
@@ -46,21 +45,12 @@ class BackgroundTaskModule : Module() {
       taskManager.unregisterTask(taskName, BackgroundTaskConsumer::class.java)
     }
 
-    OnActivityEntersBackground {
-      appContext.reactContext?.let {
-        runBlocking {
-          val appScopeKey = it.packageName
-          BackgroundTaskScheduler.scheduleWorker(it, appScopeKey)
-        }
-      } ?: throw MissingContextException()
+    OnActivityEntersForeground {
+      BackgroundTaskScheduler.inForeground = true
     }
 
-    OnActivityEntersForeground {
-      appContext.reactContext?.let {
-        runBlocking {
-          BackgroundTaskScheduler.stopWorker(it)
-        }
-      } ?: throw MissingContextException()
+    OnActivityEntersBackground {
+      BackgroundTaskScheduler.inForeground = false
     }
   }
 }
