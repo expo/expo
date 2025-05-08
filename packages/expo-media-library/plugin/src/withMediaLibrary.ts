@@ -16,9 +16,9 @@ const GRANULAR_PERMISSIONS_MAP: Record<GranularTypes, string> = {
   audio: 'android.permission.READ_MEDIA_AUDIO',
 };
 const defaultGranularPermissions: GranularTypes[] = [
-    'photo',
-    'video',
-    'audio',
+  'photo',
+  'video',
+  'audio',
 ];
 
 export function modifyAndroidManifest(
