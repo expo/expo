@@ -215,7 +215,7 @@ export type AppleMapsCircle = {
  */
 export type AppleMapsPolygon = {
   /**
-   * The unique identifier for the polygon. This can be used to e.g. identify the clicked polygon in the `onPolygonClick` event.
+   * The unique identifier for the polygon. This can be used to identify the clicked polygon in the `onPolygonClick` event.
    */
   id?: string;
 

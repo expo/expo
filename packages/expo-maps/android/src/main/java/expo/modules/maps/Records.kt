@@ -85,7 +85,6 @@ data class PolylineRecord(
   val width: Float = 10f,
 ): Record
 
-
 data class PolygonRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -102,7 +101,6 @@ data class PolygonRecord(
   @Field
   val color: Int = 0xFF0000FF.toInt()
 ): Record
-
 
 data class CameraPositionRecord(
   @Field

@@ -127,7 +127,6 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
           Polyline(
             points = coordinates,
             color = Color(polyline.color),
-            
             geodesic = polyline.geodesic,
             width = polyline.width,
             clickable = true,

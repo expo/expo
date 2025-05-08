@@ -129,7 +129,6 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               "coordinates": coords
             ])
           }
-
           else if let hit = props.circles.first(where: { circle in
             isTapInsideCircle(
               tapCoordinate: coordinate,
@@ -148,7 +147,6 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                 ]
               ])
             }
-
           // Then check if we hit a polyline and send an event
           else if let hit = polyline(at: coordinate) {
             let coords = hit.coordinates.map {
