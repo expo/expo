@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 2.1.7 — 2025-05-06
