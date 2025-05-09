@@ -2,6 +2,7 @@
 
 import AVFoundation
 import ExpoModulesCore
+import Vision
 import VisionKit
 
 let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged", "onAvailableLensesChanged"]
@@ -9,6 +10,17 @@ let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcod
 struct ScannerContext {
   var controller: Any?
   var delegate: Any?
+}
+
+struct BarcodeResult {
+  let type: String
+  let data: String
+  let raw: String?
+  let isGS1DataCarrier: Bool?
+  let isColorInverted: Bool?
+  let supplementalPayloadString: String?
+  let supplementalPayloadData: String?
+  let supplementalCompositeType: Int?
 }
 
 public final class CameraViewModule: Module, ScannerResultHandler {
@@ -60,18 +72,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           return
         }
 
-        guard let detector = CIDetector(
-          ofType: CIDetectorTypeQRCode,
-          context: nil,
-          options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
-        ) else {
-          promise.reject(InitScannerFailed())
-          return
-        }
-
-        let ciImage = CIImage(cgImage: cgImage)
-        let features = detector.features(in: ciImage)
-        promise.resolve(BarcodeUtils.getResultFrom(features))
+        self.performBarcodeDetection(on: cgImage, promise: promise)
       }
     }
 
@@ -250,23 +251,23 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
-        #if targetEnvironment(simulator) // simulator
+#if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
-        #else // not simulator
+#else // not simulator
         Task {
           await view.takePicture(options: options, promise: promise)
         }
-        #endif
+#endif
       }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
-        #else
+#else
         Task {
           await view.record(options: options, promise: promise)
         }
-        #endif
+#endif
       }
 
       AsyncFunction("toggleRecording") { view in
@@ -278,11 +279,11 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("stopRecording") { view in
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
-        #else
+#else
         view.stopRecording()
-        #endif
+#endif
       }
     }
 
@@ -423,5 +424,69 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       session.addOutput(movieFileOutput)
     }
     return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
+  }
+
+  private func performBarcodeDetection(on cgImage: CGImage, promise: Promise) {
+    let imageWidth = CGFloat(cgImage.width)
+    let imageHeight = CGFloat(cgImage.height)
+    let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+
+    let request = VNDetectBarcodesRequest { request, error in
+      if let error {
+        promise.reject(error)
+        return
+      }
+
+      guard let results = request.results as? [VNBarcodeObservation], !results.isEmpty else {
+        promise.resolve([])
+        return
+      }
+
+      let barcodeResults = self.processBarcodeObservations(
+        results, imageWidth: imageWidth, imageHeight: imageHeight
+      )
+      promise.resolve(barcodeResults)
+    }
+
+    do {
+      try handler.perform([request])
+    } catch {
+      promise.reject(error)
+    }
+  }
+
+  private func processBarcodeObservations(
+    _ observations: [VNBarcodeObservation], imageWidth: CGFloat, imageHeight: CGFloat
+  ) -> [BarcodeResult] {
+    return observations.map { observation in
+      var rawString: String?
+      var isGS1: Bool?
+      var isColor: Bool?
+      var suppPayloadString: String?
+      var suppPayloadData: String?
+      var suppCompositeType: Int?
+      if #available(iOS 17.0, *) {
+        if let payloadData = observation.payloadData {
+          rawString = payloadData.base64EncodedString()
+        }
+        isGS1 = observation.isGS1DataCarrier
+        isColor = observation.isColorInverted
+        suppPayloadString = observation.supplementalPayloadString
+        if let supplementalPayloadData = observation.supplementalPayloadData {
+          suppPayloadData = supplementalPayloadData.base64EncodedString()
+        }
+        suppCompositeType = observation.supplementalCompositeType.rawValue
+      }
+      return BarcodeResult(
+        type: observation.symbology.rawValue,
+        data: observation.payloadStringValue ?? "",
+        raw: rawString,
+        isGS1DataCarrier: isGS1,
+        isColorInverted: isColor,
+        supplementalPayloadString: suppPayloadString,
+        supplementalPayloadData: suppPayloadData,
+        supplementalCompositeType: suppCompositeType
+      )
+    }
   }
 }
