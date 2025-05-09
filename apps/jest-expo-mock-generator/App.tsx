@@ -111,7 +111,7 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 }
 
 // const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization'];
+const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization', 'ExpoLinking'];
 async function _getExpoModuleSpecsAsync() {
   const schemaString = await CoreModule.getModulesSchema();
   const schema = JSON.parse(schemaString) as ModuleRegistrySchema;
@@ -130,7 +130,7 @@ async function _getExpoModuleSpecsAsync() {
           ...Object.fromEntries(m.functions.map((fn) => [fn.name, { type: 'function' }])),
           ...Object.fromEntries(
             (m.constants[0] ?? []).map((ct) =>
-              ct.type !== 'string'
+              ct.type !== 'string' && ct.value !== null
                 ? [ct.name, { type: ct.type, mock: ct.value }]
                 : [ct.name, { type: ct.type }]
             )

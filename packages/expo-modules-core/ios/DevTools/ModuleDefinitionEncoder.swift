@@ -118,18 +118,24 @@ class ConstantEncoder: Encodable {
     case let value as String:
       try container.encode(value, forKey: .value)
       try container.encode("string", forKey: .type)
+    case let value as Bool:
+      try container.encode(value, forKey: .value)
+      try container.encode("boolean", forKey: .type)
     case let value as Int:
       try container.encode(value, forKey: .value)
       try container.encode("number", forKey: .type)
     case let value as Double:
       try container.encode(value, forKey: .value)
       try container.encode("number", forKey: .type)
-    case let value as Bool:
-      try container.encode(value, forKey: .value)
-      try container.encode("boolean", forKey: .type)
     case nil:
       try container.encodeNil(forKey: .value)
       try container.encode("null", forKey: .type)
+    case let value as Dictionary<String, Any>:
+      try container.encodeNil(forKey: .value)
+      try container.encode("object", forKey: .type)
+    case let value as Array<Any>:
+      try container.encodeNil(forKey: .value)
+      try container.encode("array", forKey: .type)
     default:
       try container.encodeNil(forKey: .value)
       try container.encode("unknown", forKey: .type)

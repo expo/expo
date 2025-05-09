@@ -4,6 +4,8 @@
  */
 'use strict';
 
+import merge from 'lodash/merge';
+
 const findUp = require('find-up');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
@@ -52,11 +54,7 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
-const expoModules = {
-  ...publicExpoModules,
-  ...thirdPartyModules,
-  ...internalExpoModules,
-};
+const expoModules = merge(publicExpoModules, merge(thirdPartyModules, internalExpoModules));
 
 // Mock the experience URL in development mode for asset setup
 expoModules.NativeUnimoduleProxy.modulesConstants.mockDefinition.ExponentConstants.experienceUrl.mock =
