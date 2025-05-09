@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 0.14.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2025-04-11
+
+### 🎉 New features
+
+- Add `android.enableBundleCompression` option ([#36071](https://github.com/expo/expo/pull/36071) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.14.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

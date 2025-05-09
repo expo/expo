@@ -45,6 +45,9 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
+        // TODO(@kitten): The types indicates that this is incorrect.
+        // Please check whether this is correct!
+        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
@@ -84,6 +87,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     shouldCorrectPitch = false;
     src = null;
     media;
+    // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
     interval = 100;
     isPlaying = false;
     loaded = false;

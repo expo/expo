@@ -14,11 +14,19 @@ jest.mock('../resolveDevice', () => ({
   })),
 }));
 
+const fixture = {
+  ...rnFixture,
+  'package.json': JSON.stringify({}),
+  'node_modules/expo/package.json': JSON.stringify({
+    version: '53.0.0',
+  }),
+};
+
 describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`resolves default options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
     expect(await resolveOptionsAsync('/', {})).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
@@ -43,7 +51,7 @@ describe(resolveOptionsAsync, () => {
     });
   });
   it(`resolves complex options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
     expect(
       await resolveOptionsAsync('/', {

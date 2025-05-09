@@ -1,11 +1,11 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useRouteInfo = void 0;
 exports.useRootNavigationState = useRootNavigationState;
-exports.useRouteInfo = useRouteInfo;
 exports.useRootNavigation = useRootNavigation;
 exports.useNavigationContainerRef = useNavigationContainerRef;
 exports.useRouter = useRouter;
@@ -15,9 +15,13 @@ exports.usePathname = usePathname;
 exports.useGlobalSearchParams = useGlobalSearchParams;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useSearchParams = useSearchParams;
+const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
+const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
+Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
+const imperative_api_1 = require("./imperative-api");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -34,10 +38,9 @@ const router_store_1 = require("./global-state/router-store");
  * ```
  */
 function useRootNavigationState() {
-    return (0, router_store_1.useStoreRootState)();
-}
-function useRouteInfo() {
-    return (0, router_store_1.useStoreRouteInfo)();
+    return (0, native_1.useNavigation)()
+        .getParent(constants_1.INTERNAL_SLOT_NAME)
+        .getState();
 }
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
@@ -72,19 +75,7 @@ function useNavigationContainerRef() {
  * ```
  */
 function useRouter() {
-    return react_1.default.useMemo(() => ({
-        push: router_store_1.store.push,
-        dismiss: router_store_1.store.dismiss,
-        dismissAll: router_store_1.store.dismissAll,
-        dismissTo: router_store_1.store.dismissTo,
-        canDismiss: router_store_1.store.canDismiss,
-        back: router_store_1.store.goBack,
-        replace: router_store_1.store.replace,
-        setParams: router_store_1.store.setParams,
-        canGoBack: router_store_1.store.canGoBack,
-        navigate: router_store_1.store.navigate,
-        reload: router_store_1.store.reload,
-    }), []);
+    return imperative_api_1.router;
 }
 /**
  * @private
@@ -92,10 +83,10 @@ function useRouter() {
  * from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
 function useUnstableGlobalHref() {
-    return (0, router_store_1.useStoreRouteInfo)().unstable_globalHref;
+    return (0, router_store_1.useRouteInfo)().unstable_globalHref;
 }
 function useSegments() {
-    return (0, router_store_1.useStoreRouteInfo)().segments;
+    return (0, router_store_1.useRouteInfo)().segments;
 }
 /**
  * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
@@ -115,13 +106,13 @@ function useSegments() {
  * ```
  */
 function usePathname() {
-    return (0, router_store_1.useStoreRouteInfo)().pathname;
+    return (0, router_store_1.useRouteInfo)().pathname;
 }
 function useGlobalSearchParams() {
-    return (0, router_store_1.useStoreRouteInfo)().params;
+    return (0, router_store_1.useRouteInfo)().params;
 }
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
+    const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [

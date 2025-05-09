@@ -233,16 +233,17 @@ Default working directory to run the scripts in. Relative paths like "./assets" 
 
 Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
 
-| Tool        | Description                                                                |
-| ----------- | -------------------------------------------------------------------------- |
-| `node`      | Version of Node.js installed via `nvm`.                                    |
-| `yarn`      | Version of Yarn installed via `npm -g`.                                    |
-| `pnpm`      | Version of pnpm installed via `npm -g`.                                    |
-| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script. |
-| `ndk`       | Version of Android NDK installed through `sdkmanager`.                     |
-| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                |
-| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.               |
-| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.              |
+| Tool        | Description                                                                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                  |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                  |
+| `corepack`  | If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the beginning of build process. Defaults to false. |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                  |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                               |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                   |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                              |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                             |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                            |
 
 Example of workflow using `defaults.tools`:
 
@@ -252,7 +253,11 @@ defaults:
   tools:
     node: latest
     yarn: '2'
+    corepack: true
+    pnpm: '8'
+    bun: '1.0.0'
     fastlane: 2.224.0
+    cocoapods: 1.12.0
 
 on:
   push:
@@ -266,6 +271,23 @@ jobs:
       - name: Check Yarn version
         run: yarn --version # should print a concrete version, like 2.4.3
 ```
+
+## `concurrency`
+
+Configuration for concurrency control. Currently only allows setting `cancel_in_progress` for same-branch workflows.
+
+```yaml
+# @info #
+concurrency:
+  cancel_in_progress: true
+  group: ${{ workflow.filename }}-${{ github.ref }}
+# @end #
+```
+
+| Property             | Type      | Description                                                                                                                                             |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel_in_progress` | `boolean` | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
+| `group`              | `string`  | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
 
 ## Control flow
 
@@ -610,15 +632,34 @@ This job outputs the following properties:
 Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
 
 ```yaml
-maestro:
-  # @info #
-  type: maestro
-  # @end #
-  environment: production | preview | development # optional, defaults to preview
-  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
-  params:
-    build_id: string # required
-    flow_path: string | string[] # required
+jobs:
+  my_job:
+    # @info #
+    type: maestro
+    # @end #
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required
+      flow_path: string | string[] # required
+      shards: number # optional, defaults to 1
+      retries: number # optional, defaults to 1
+```
+
+#### `slack`
+
+Sends a message to a Slack channel using a webhook URL.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: slack
+    # @end #
+    params:
+      webhook_url: string # required
+      message: string # required if payload is not provided
+      payload: object # required if message is not provided
 ```
 
 ## Custom jobs
@@ -632,35 +673,19 @@ jobs:
       # ...
 ```
 
-### `jobs.<job_id>.runs_on`
+### `jobs.<job_id>.steps`
 
-Specifies the worker that will execute the job. Available only on custom jobs.
+A job contains a sequence of tasks called `steps`. Steps can run commands. `steps` may only be provided in custom jobs and `build` jobs.
 
 ```yaml
 jobs:
   my_job:
     # @info #
-    runs_on: linux-medium | linux-large |
-      linux-medium-nested-virtualization |
-      linux-large-nested-virtualization |
-      macos-medium | macos-large # optional, defaults to linux-medium
+    steps:
+      - name: My first step
+        run: echo "Hello World"
     # @end #
 ```
-
-{/* vale off */}
-
-| Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                                |
-| ---------------------------------- | ---- | ---------------- | --------- | ------------------------------------ |
-| linux-medium                       | 4    | 16               | 14        | Default worker.                      |
-| linux-large                        | 8    | 32               | 28        |                                      |
-| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators.    |
-| linux-large-nested-virtualization  | 4    | 16               | 28        | Allows running Android Emulators.    |
-| macos-medium                       | 5    | 12               | 85        | Runs iOS jobs, including simulators. |
-| macos-large                        | 10   | 20               | 85        | Runs iOS jobs, including simulators. |
-
-{/* vale on */}
-
-> **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 
 ### `jobs.<job_id>.outputs`
 
@@ -696,19 +721,50 @@ jobs:
       # @end #
 ```
 
-### `jobs.<job_id>.steps`
+### `jobs.<job_id>.image`
 
-A job contains a sequence of tasks called `steps`. Steps can run commands.
+Specifies the VM image to use for the job. See [Infrastructure](/build-reference/infrastructure/) for available images.
 
 ```yaml
 jobs:
   my_job:
     # @info #
-    steps:
-      - name: My first step
-        run: echo "Hello World"
+    image: auto | string # optional, defaults to 'auto'
     # @end #
 ```
+
+### `jobs.<job_id>.runs_on`
+
+Specifies the worker that will execute the job. Available only on custom jobs.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    runs_on: linux-medium | linux-large |
+      linux-medium-nested-virtualization |
+      linux-large-nested-virtualization |
+      macos-medium | macos-large # optional, defaults to linux-medium
+    # @end #
+```
+
+{/* vale off */}
+
+| Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                             |
+| ---------------------------------- | ---- | ---------------- | --------- | --------------------------------- |
+| linux-medium                       | 4    | 16               | 14        | Default worker.                   |
+| linux-large                        | 8    | 32               | 28        |                                   |
+| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators. |
+| linux-large-nested-virtualization  | 4    | 32               | 28        | Allows running Android Emulators. |
+
+| Worker       | Efficiency cores | Unified memory (GiB RAM) | SSD (GiB) | Notes                                |
+| ------------ | ---------------- | ------------------------ | --------- | ------------------------------------ |
+| macos-medium | 5                | 20                       | 125       | Runs iOS jobs, including simulators. |
+| macos-large  | 10               | 40                       | 125       | Runs iOS jobs, including simulators. |
+
+{/* vale on */}
+
+> **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
 
 ### `jobs.<job_id>.steps.<step>.id`
 
@@ -892,7 +948,7 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                      |
-| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink

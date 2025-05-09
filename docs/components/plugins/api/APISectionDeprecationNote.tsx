@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { BOLD } from '~/ui/components/Text';
 
 import { CommentData } from './APIDataTypes';
@@ -38,7 +38,7 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
           sticky && 'mb-0 rounded-b-none rounded-t-lg px-4 shadow-none max-md-gutters:px-4',
           className
         )}>
-        {content.length ? (
+        {content.length > 0 ? (
           <ReactMarkdown components={mdComponents}>{`**Deprecated** ${content}`}</ReactMarkdown>
         ) : (
           <BOLD>Deprecated</BOLD>

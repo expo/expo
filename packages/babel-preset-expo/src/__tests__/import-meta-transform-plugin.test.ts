@@ -32,12 +32,43 @@ it(`transforms import.meta.url to globalThis.__ExpoImportMetaRegistry.url when u
   );
 });
 
-it(`should not transform import.meta by default`, () => {
+it(`should throw an error when trying to transform import.meta by default for native platforms`, () => {
+  ['android', 'ios'].forEach((platform) => {
+    const options = {
+      ...DEF_OPTIONS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform, isDev: true }),
+    };
+
+    const sourceCode = `var url = import.meta.url;`;
+    expect(() => babel.transform(sourceCode, options)).toThrow(
+      /`import.meta` is not supported in Hermes. Enable the polyfill `unstable_transformImportMeta` in babel-preset-expo to use this syntax./
+    );
+  });
+});
+it(`should not transform import.meta by default for web platforms`, () => {
   const options = {
     ...DEF_OPTIONS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
   };
 
   const sourceCode = `var url = import.meta.url;`;
-  expect(babel.transform(sourceCode, options)!.code).toEqual(sourceCode);
+  expect(babel.transform(sourceCode, options).code).toEqual(`var url = import.meta.url;`);
+});
+
+it(`should transform import.meta by default for server bundles`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'web',
+      isDev: true,
+      isServer: true,
+    }),
+  };
+
+  const sourceCode = `var url = import.meta.url;`;
+  expect(babel.transform(sourceCode, options)!.code).toEqual(
+    `var url = globalThis.__ExpoImportMetaRegistry.url;`
+  );
 });

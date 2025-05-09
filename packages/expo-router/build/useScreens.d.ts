@@ -1,4 +1,4 @@
-import type { EventMapBase, NavigationState, ParamListBase, RouteConfig, RouteProp, ScreenListeners } from '@react-navigation/native';
+import { type EventMapBase, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';
@@ -28,13 +28,13 @@ export type SingularOptions = boolean | ((name: string, params: UnknownOutputPar
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[];
+export declare function useSortedScreens(order: ScreenProps[], protectedScreens: Set<string>): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | {
     ({ route, navigation, ...props }: any): React.JSX.Element;
     displayName: string;
 };
-export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any, any>['options'];
+export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): ScreenProps['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 export declare function getSingularId(name: string, options?: {
     params?: Record<string, any> | undefined;

@@ -78,7 +78,7 @@ function cmdMapper(line: string, index: number) {
           className="whitespace-pre !border-none !bg-transparent text-default"
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
-              line.substring(1).trim(),
+              line.slice(1).trim(),
               Prism.languages['bash'],
               'bash' as Language
             ),

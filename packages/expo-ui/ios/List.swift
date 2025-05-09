@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-class ListProps: ExpoSwiftUI.ViewProps {
+final class ListProps: ExpoSwiftUI.ViewProps {
   @Field var listStyle: String = "automatic"
   @Field var moveEnabled: Bool = false
   @Field var deleteEnabled: Bool = false
@@ -15,7 +15,7 @@ class ListProps: ExpoSwiftUI.ViewProps {
   var onSelectionChange = EventDispatcher()
 }
 
-struct ListView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection: Set<Int> = []
   @State var editModeEnabled: EditMode = .inactive
@@ -27,14 +27,7 @@ struct ListView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
   var body: some View {
     let list = List(selection: props.selectEnabled ? $selection : nil) {
-      UnwrappedChildren { child, isHostingView in
-        child
-          .if(!isHostingView) {
-            $0.offset(
-              x: UIDevice.current.userInterfaceIdiom == .pad
-              ? IPAD_OFFSET : IPHONE_OFFSET)
-          }
-      }
+      Children()
       .onDelete(perform: handleDelete)
       .onMove(perform: handleMove)
       .deleteDisabled(!props.deleteEnabled)
@@ -53,7 +46,7 @@ struct ListView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         print(selection)
         handleSelectionChange(selection: selection)
       }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.selectEnabled))
+      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
       .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)

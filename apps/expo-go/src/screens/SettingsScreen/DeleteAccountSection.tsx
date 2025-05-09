@@ -52,7 +52,7 @@ export function DeleteAccountSection() {
         dispatch(SessionActions.signOut());
         navigation.navigate('Home');
       }
-    } catch (e) {
+    } catch (e: any) {
       // TODO(wschurman): Put this into Sentry
       console.error({ e });
       setDeletionError(e.message);

@@ -105,16 +105,18 @@ export function triggersToScreens(
 
     let routeState = state;
 
+    const targetStateName = layoutRouteNode.route || '__root';
+
     // The state object is the current state from the rootNavigator
     // We need to work out the state for just this trigger
     while (state?.state) {
-      const previousState = state;
-      if (previousState.name === layoutRouteNode.route) break;
+      if (state.name === targetStateName) break;
       state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
     }
     routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
 
     const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
+
     if (!routeNode) {
       console.warn(
         `Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`
@@ -195,7 +197,9 @@ export function stateToAction(
   const rootPayload: any = {};
   let payload = rootPayload;
 
-  let foundStartingPoint = !startAtRoute || !state?.state;
+  startAtRoute = startAtRoute === '' ? '__root' : startAtRoute;
+
+  let foundStartingPoint = startAtRoute === undefined || !state?.state;
 
   while (state) {
     if (foundStartingPoint) {

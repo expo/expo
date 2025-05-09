@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 14.2.4 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Make `Contact.id` required for `updateContactAsync` ([#36603](https://github.com/expo/expo/pull/36603) by [@NorseGaud](https://github.com/NorseGaud))
+
+## 14.2.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.0 — 2025-04-11
+
+### 🎉 New features
+
+- [iOS] Disambiguated `limited` permission status from `granted`. ([#35772](https://github.com/expo/expo/pull/35772) by [@clarkg](https://github.com/clarkg))
+
 ## 14.1.1 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

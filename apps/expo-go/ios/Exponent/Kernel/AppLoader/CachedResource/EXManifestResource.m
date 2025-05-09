@@ -307,13 +307,13 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
 
 #if (TARGET_OS_SIMULATOR)
     fixInstructions = [NSString stringWithFormat:@"Either upgrade this %@ to SDK %@ or install a version of Expo Go that is compatible with your project.\n\n"
-                       @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
-                       @"[%@](Learn how to install Expo Go for SDK %d.)",
+                       @"[Learn how to upgrade to SDK %d.](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/)\n\n"
+                       @"[Learn how to install Expo Go for SDK %d.](%@)",
                        self.isSnackURL ? @"Snack" : @"project",
                        supportedSDKVersion,
                        [supportedSDKVersionInt intValue],
-                       expoDevLink,
-                       requiredVersionNum
+                       requiredVersionNum,
+                       expoDevLink
     ];
 #else
     NSString *instructions;
@@ -323,7 +323,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
       ];
     } else {
       instructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n"
-                      @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n",
+                      @"[Learn how to upgrade to SDK %d.](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/)\n\n",
                       supportedSDKVersion,
                       [supportedSDKVersionInt intValue]
       ];
@@ -336,7 +336,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
     NSString *supportedSDKVersion = [EXVersions sharedInstance].sdkVersion;
     formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDK (runtime): %@", supportedSDKVersion];
-    fixInstructions = @"A development build must be used to load other runtimes.\n[https://docs.expo.dev/develop/development-builds/introduction/](Learn more about development builds).";
+    fixInstructions = @"A development build must be used to load other runtimes.\n[Learn more about development builds](https://docs.expo.dev/develop/development-builds/introduction/).";
     showTryAgainButton = false;
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go.";
@@ -363,9 +363,9 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     if (snackSdkVersionValue > latestSupportedSdkVersionValue) {
       fixInstructions = @"You need to update your Expo Go app in order to run this snack.";
     } else {
-      fixInstructions = @"Snack needs to be upgraded to a current SDK version. To do it, open the project at [https://snack.expo.dev](Expo Snack website). It will be automatically upgraded to a supported SDK version";
+      fixInstructions = @"Snack needs to be upgraded to a current SDK version. To do it, open the project at [Expo Snack website](https://snack.expo.dev). It will be automatically upgraded to a supported SDK version";
     }
-    fixInstructions = [NSString stringWithFormat:@"%@\n\nLearn more about SDK versions and Expo Go in the [https://docs.expo.dev/get-started/expo-go/#sdk-versions](SDK Versions Guide).", fixInstructions];
+    fixInstructions = [NSString stringWithFormat:@"%@\n\nLearn more about SDK versions and Expo Go in the [SDK Versions Guide](https://docs.expo.dev/get-started/expo-go/#sdk-versions).", fixInstructions];
     showTryAgainButton = false;
   }
   userInfo[EXShowTryAgainButtonKey] = [NSNumber numberWithBool:showTryAgainButton];
@@ -411,8 +411,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   // Iterate in reverse to avoid issues with replacing text
   for (NSTextCheckingResult *match in reverseUrlMatches) {
     for (int i = [match numberOfRanges] - 1; i > 1; i--) { // Ignore match no.1, which is a full match
-      NSString *link = [attributedString.string substringWithRange:[match rangeAtIndex:1]];
-      NSString *replacement = [attributedString.string substringWithRange:[match rangeAtIndex:2]];
+      NSString *link = [attributedString.string substringWithRange:[match rangeAtIndex:2]];
+      NSString *replacement = [attributedString.string substringWithRange:[match rangeAtIndex:1]];            
 
       [attributedString replaceCharactersInRange:match.range withString:replacement];
       [attributedString addAttribute:NSLinkAttributeName value:link range:NSMakeRange(match.range.location, replacement.length)];

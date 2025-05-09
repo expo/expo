@@ -1,18 +1,18 @@
-'use client';
 "use strict";
+'use client';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tabs = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
+const TabRouter_1 = require("./TabRouter");
 // This is the only way to access the navigator.
 const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
-exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
+const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
     // Support the `href` shortcut prop.
     return screens.map((screen) => {
         if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
@@ -25,6 +25,7 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                 options: {
                     ...options,
                     tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+                    // @ts-expect-error: TODO(@kitten): This isn't properly typed
                     tabBarButton: (props) => {
                         if (href == null) {
                             return null;
@@ -40,5 +41,10 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
         return screen;
     });
 });
-exports.default = exports.Tabs;
+const Tabs = Object.assign((props) => {
+    return <ExpoTabs {...props} UNSTABLE_router={TabRouter_1.tabRouterOverride}/>;
+}, {
+    Screen: ExpoTabs.Screen,
+});
+exports.default = Tabs;
 //# sourceMappingURL=TabsClient.js.map

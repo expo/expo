@@ -10,6 +10,33 @@
 
 ### 💡 Others
 
+## 0.2.7 — 2025-05-08
+
+### 💡 Others
+
+- Exposed testing method for background tasks on both iOS and Android ([#36732](https://github.com/expo/expo/pull/36732) by [@chrfalch](https://github.com/chrfalch))
+- Simplified how workers are started and stopped. Removed battery constraint on Android. ([#36705](https://github.com/expo/expo/pull/36705) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.2.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.5 — 2025-04-25
+
+### 💡 Others
+
+- Removed throwing an exception if registerTaskAsync/unregisterTaskAsync is called on a task that is already registered/unregistered ([#36393](https://github.com/expo/expo/pull/36393) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.2.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.3 — 2025-04-11
+
+### 💡 Others
+
+- Added warning about Background Tasks not being supported in Expo Go ([#36063](https://github.com/expo/expo/pull/36063) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.2.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

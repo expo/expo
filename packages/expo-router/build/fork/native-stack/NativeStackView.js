@@ -10,7 +10,7 @@ function NativeStackView(props) {
     </RootModal_1.RootModalProvider>);
 }
 function NativeStackViewInner(props) {
-    const rootModals = (0, react_1.useContext)(RootModal_1.RootModalContext);
+    const rootModals = (0, react_1.use)(RootModal_1.RootModalContext);
     // Append the root modals to the state
     const state = (0, react_1.useMemo)(() => {
         if (rootModals.routes.length === 0) {

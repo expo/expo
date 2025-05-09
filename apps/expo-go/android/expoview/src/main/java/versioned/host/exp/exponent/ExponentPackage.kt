@@ -40,7 +40,6 @@ import versioned.host.exp.exponent.modules.api.KeyboardModule
 import versioned.host.exp.exponent.modules.api.PedometerModule
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule
 import versioned.host.exp.exponent.modules.api.URLHandlerModule
-import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
@@ -129,13 +128,12 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(PedometerModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
-        nativeModules.add(RNAWSCognitoModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(stripePackage.createNativeModules(reactContext))
+        nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().map { stripePackage.getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --

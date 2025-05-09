@@ -1,5 +1,3 @@
-import { ReadableStream, WritableStream } from 'web-streams-polyfill';
-
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -124,7 +122,7 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   readableStream() {
-    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
   }
 
   writableStream() {
@@ -173,7 +171,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
-      .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+      .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new File(uri)));
   }
 
   /**

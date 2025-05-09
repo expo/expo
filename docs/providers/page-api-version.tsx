@@ -1,7 +1,7 @@
 import { useRouter } from 'next/compat/router';
 import { createContext, PropsWithChildren, useCallback, useContext } from 'react';
 
-import { isVersionedPath } from '~/common/routes';
+import { pathStartsWith } from '~/common/utilities';
 import navigation from '~/public/static/constants/navigation.json';
 
 export const PageApiVersionContext = createContext({
@@ -50,7 +50,7 @@ export function usePageApiVersion() {
  * This only accepts pathname without hashes or query strings.
  */
 export function getVersionFromPath(path: string): PageApiVersionContextType['version'] | null {
-  return isVersionedPath(path)
+  return pathStartsWith('versions', path)
     ? (path.split('/', 3).pop()! as PageApiVersionContextType['version'])
     : null;
 }

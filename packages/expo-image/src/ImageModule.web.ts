@@ -4,12 +4,9 @@ import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {
-  // @ts-ignore: Overrides the built-in `Function.name` property
-  static name = 'ExpoImage';
-
   Image: typeof ImageRef = ImageRefWeb;
 
-  async prefetch(urls: string | string[], _, __): Promise<boolean> {
+  async prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
 
     return new Promise<boolean>((resolve) => {
@@ -76,4 +73,4 @@ async function loadImageElementAsync(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export default registerWebModule(ImageModule);
+export default registerWebModule(ImageModule, 'ExpoImage');

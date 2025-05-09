@@ -123,6 +123,17 @@ if (Platform.OS === 'ios') {
   });
 }
 
+if (Platform.OS === 'android') {
+  VideoScreens.push({
+    name: 'VideoView Surface Type',
+    route: 'video/video-view-surface-type',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSurfaceTypeScreen'));
+    },
+  });
+}
+
 export default function VideoScreen() {
   const apis: ListElement[] = VideoScreens.map((screen) => {
     return {

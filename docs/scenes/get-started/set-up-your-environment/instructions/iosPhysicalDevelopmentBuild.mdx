@@ -1,7 +1,7 @@
-import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
-
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
 
 ## Set up an iOS device with a development build
 
@@ -63,6 +63,15 @@ Run the following command to create a development build:
 </Step>
 
 <Step label="7">
+### Install the development build on your device
+
+After the build is complete, scan the QR code in your terminal and tap **Open with iTunes** when it appears inside the Camera app. Alternatively, open the link displayed in the terminal on your device.
+
+After confirming the installation, the app will appear in your device's app library.
+
+</Step>
+
+<Step label="8">
 ### Turn on developer mode
 
 1. Open **Settings** > **Privacy & Security**, scroll down to the **Developer Mode** list item and navigate into it.
@@ -70,14 +79,5 @@ Run the following command to create a development build:
 3. After the device restarts and you unlock it, the device shows an alert confirming that you want to enable Developer Mode. Tap **Turn On**, and enter your device passcode when prompted.
 
 > Alternatively, if you have Xcode installed on your Mac, you can use it to [enable iOS developer mode](/guides/ios-developer-mode/#connect-an-ios-device-with-a-mac).
-
-</Step>
-
-<Step label="8">
-### Install the development build on your device
-
-After the build is complete, scan the QR code in your terminal and tap **Open with iTunes** when it appears inside the Camera app. Alternatively, open the link displayed in the terminal on your device.
-
-After confirming the installation, the app will appear in your device's app library.
 
 </Step>

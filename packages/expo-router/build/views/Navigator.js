@@ -1,6 +1,6 @@
+"use strict";
 // Copyright © 2024 650 Industries.
 'use client';
-"use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -60,11 +60,11 @@ if (process.env.NODE_ENV !== 'production') {
 function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-    const { screens, children: nonScreenChildren } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
+    const { screens, children: nonScreenChildren, protectedScreens, } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
         isCustomNavigator: true,
         contextKey,
     });
-    const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? []);
+    const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens);
     router ||= StackClient_1.StackRouter;
     const navigation = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
@@ -91,7 +91,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
  * @hidden
  */
 function useNavigatorContext() {
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (!context) {
         throw new Error('useNavigatorContext must be used within a <Navigator />');
     }
@@ -100,13 +100,13 @@ function useNavigatorContext() {
 function SlotNavigator(props) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
-    const { screens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
+    const { screens, protectedScreens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
         contextKey,
     });
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(StackClient_1.StackRouter, {
         ...props,
         id: contextKey,
-        children: (0, useScreens_1.useSortedScreens)(screens ?? []),
+        children: (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens),
     });
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }
@@ -123,7 +123,7 @@ function SlotNavigator(props) {
  */
 function Slot(props) {
     const contextKey = (0, Route_1.useContextKey)();
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (context?.contextKey !== contextKey) {
         // The _layout has changed since the last navigator
         return <SlotNavigator {...props}/>;

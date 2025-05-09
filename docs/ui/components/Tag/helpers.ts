@@ -1,4 +1,4 @@
-import { capitalize } from '~/components/plugins/api/APISectionUtils';
+import { capitalize } from '~/common/utilities';
 import { PlatformName } from '~/types/common';
 
 export function getPlatformName(text: string): PlatformName {

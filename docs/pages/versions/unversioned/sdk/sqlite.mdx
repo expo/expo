@@ -75,6 +75,8 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 ## Web setup
 
+> **warning** Web support is still experimental and may be unstable. [Create an issue on GitHub](https://github.com/expo/expo/issues) if you encounter any issues.
+
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
 Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).

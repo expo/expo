@@ -40,13 +40,7 @@ function getScheme(config) {
 // The only way to reliably remove schemes from the project is to nuke the file and regenerate the code (`npx expo prebuild --clean`).
 // Regardless, having extra schemes isn't a fatal issue and therefore a tolerable compromise is to just add new schemes that aren't currently present.
 function setScheme(config, androidManifest) {
-  const schemes = [...getScheme(config),
-  // @ts-ignore: TODO: android.scheme is an unreleased -- harder to add to turtle v1.
-  ...getScheme(config.android ?? {})];
-  // Add the package name to the list of schemes for easier Google auth and parity with Turtle v1.
-  if (config.android?.package) {
-    schemes.push(config.android.package);
-  }
+  const schemes = [...getScheme(config), ...getScheme(config.android ?? {})];
   if (schemes.length === 0) {
     return androidManifest;
   }
@@ -167,6 +161,10 @@ function hasScheme(scheme, androidManifest) {
 }
 function appendScheme(scheme, androidManifest) {
   if (!Array.isArray(androidManifest.manifest.application)) {
+    return androidManifest;
+  }
+  if (!ensureManifestHasValidIntentFilter(androidManifest)) {
+    (0, _warnings().addWarningAndroid)('scheme', `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``, 'https://expo.fyi/setup-android-uri-scheme');
     return androidManifest;
   }
   for (const application of androidManifest.manifest.application) {

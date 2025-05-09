@@ -1,4 +1,4 @@
-declare const _default: {
+declare const GLErrors: {
     1280: string;
     1281: string;
     1282: string;
@@ -6,5 +6,5 @@ declare const _default: {
     1286: string;
     37442: string;
 };
-export default _default;
+export default GLErrors;
 //# sourceMappingURL=GLErrors.d.ts.map

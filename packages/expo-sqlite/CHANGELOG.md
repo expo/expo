@@ -10,6 +10,47 @@
 
 ### 💡 Others
 
+## 15.2.10 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Fixed parallel issue for `Statement.executeAsync`. ([#36674](https://github.com/expo/expo/pull/36674) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Avoided synchronous API calls for `kv-store`. ([#36669](https://github.com/expo/expo/pull/36669) by [@kudo](https://github.com/kudo))
+- Improved synchronous APIs on web. ([#36670](https://github.com/expo/expo/pull/36670) by [@kudo](https://github.com/kudo))
+
+## 15.2.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.8 — 2025-04-30
+
+### 📚 3rd party library updates
+
+- Updated libsql libs to `libsql-0.9.5`. ([#36444](https://github.com/expo/expo/pull/36444) by [@kudo](https://github.com/kudo))
+
+## 15.2.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.6 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.5 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.4 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
 ## 15.2.2 — 2025-04-09
 
 _This version does not introduce any user-facing changes._

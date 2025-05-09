@@ -1,4 +1,5 @@
 import type { PackagerAsset } from '@react-native/assets-registry/registry';
+import type { AssetMetadata } from './AssetSources';
 export type ResolvedAssetSource = {
     __packager_asset: boolean;
     width?: number;
@@ -9,7 +10,7 @@ export type ResolvedAssetSource = {
 export default class AssetSourceResolver {
     private readonly serverUrl;
     private readonly jsbundleUrl;
-    readonly asset: PackagerAsset;
+    readonly asset: PackagerAsset | AssetMetadata;
     constructor(serverUrl: string | undefined | null, jsbundleUrl: string | undefined | null, asset: PackagerAsset);
     isLoadedFromServer(): boolean;
     isLoadedFromFileSystem(): boolean;

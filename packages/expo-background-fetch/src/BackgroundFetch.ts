@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
@@ -18,6 +19,23 @@ const showDeprecationWarning = () => {
     );
   }
 };
+
+let warnedAboutExpoGo = false;
+
+function _validate(taskName: unknown) {
+  if (isRunningInExpoGo()) {
+    if (!warnedAboutExpoGo) {
+      const message =
+        '`Background Fetch` functionality is not available in Expo Go:\n' +
+        'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+      console.warn(message);
+      warnedAboutExpoGo = true;
+    }
+  }
+  if (!taskName || typeof taskName !== 'string') {
+    throw new TypeError('`taskName` must be a non-empty string.');
+  }
+}
 
 // @needsAudit
 /**
@@ -98,6 +116,7 @@ export async function registerTaskAsync(
       `Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`
     );
   }
+  _validate(taskName);
   await ExpoBackgroundFetch.registerTaskAsync(taskName, options);
 }
 
@@ -115,6 +134,7 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoBackgroundFetch.unregisterTaskAsync) {
     throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync');
   }
+  _validate(taskName);
   await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 

@@ -728,6 +728,15 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          },
+          {
+            "key": "expo.edgeToEdgeEnabled",
+            "type": "property",
+            "value": "false",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -798,11 +807,6 @@ exports[`built-in plugins introspects mods 1`] = `
                           {
                             "$": {
                               "android:scheme": "my-app-redirect",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
                             },
                           },
                         ],
@@ -1043,6 +1047,13 @@ exports[`built-in plugins introspects mods 1`] = `
                       "name": "android:editTextBackground",
                     },
                     "_": "@drawable/rn_edit_text_material",
+                  },
+                  {
+                    "$": {
+                      "name": "android:windowOptOutEdgeToEdgeEnforcement",
+                      "tools:targetApi": "35",
+                    },
+                    "_": "true",
                   },
                   {
                     "$": {
@@ -1665,6 +1676,15 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
+            "type": "comment",
+            "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          },
+          {
+            "key": "expo.edgeToEdgeEnabled",
+            "type": "property",
+            "value": "false",
+          },
+          {
             "key": "hermesEnabled",
             "type": "property",
             "value": "true",
@@ -1740,11 +1760,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                           {
                             "$": {
                               "android:scheme": "my-app-redirect",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
                             },
                           },
                         ],

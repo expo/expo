@@ -12,11 +12,13 @@ import {
   getIsReactServer,
   getIsServer,
   getReactCompiler,
+  getMetroSourceType,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
+import { expoImportMetaTransformPluginFactory } from './import-meta-transform-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
@@ -105,7 +107,7 @@ type BabelPresetExpoPlatformOptions = {
    *
    * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
    *
-   * @default `false`
+   * @default `false` on client and `true` on server.
    */
   unstable_transformImportMeta?: boolean;
 };
@@ -140,6 +142,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
+  const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
@@ -161,6 +164,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isModernEngine = platform === 'web' || isServerEnv;
 
   const platformOptions = getOptions(options, platform);
+
+  // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
+  // adds extra dependencies (requires/imports) we need to disable it
+  if (metroSourceType === 'script') {
+    platformOptions.enableBabelRuntime = false;
+  }
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
     throw new Error(
@@ -207,8 +216,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
-        // TODO: Update when we bump React to 19.
-        target: '18',
+        target: '19',
         environment: {
           enableResetCacheOnSourceFileChanges: !isProduction,
           ...(platformOptions['react-compiler']?.environment ?? {}),
@@ -328,9 +336,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (platformOptions.disableImportExportTransform) {
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
-  if (platformOptions.unstable_transformImportMeta === true) {
-    extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
-  }
+
+  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+
+  extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 
   return {
     presets: [

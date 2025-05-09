@@ -51,7 +51,7 @@ export class SQLiteSession {
 
   /**
    * Create an inverted changeset asynchronously.
-   * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasync).
+   * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasyncchangeset).
    */
   public createInvertedChangesetAsync(): Promise<Changeset> {
     return this.nativeSession.createInvertedChangesetAsync(this.nativeDatabase);
@@ -81,11 +81,11 @@ export class SQLiteSession {
 
   /**
    * Attach a table to the session synchronously.
-   * @see [`sqlite3session_attach`](https://www.sqlite.org/session/sqlite3session_attach.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param table The table to attach.
+   * @see [`sqlite3session_attach`](https://www.sqlite.org/session/sqlite3session_attach.html)
    */
   public attachSync(table: string | null): void {
     this.nativeSession.attachSync(this.nativeDatabase, table);
@@ -93,11 +93,11 @@ export class SQLiteSession {
 
   /**
    * Enable or disable the session synchronously.
-   * @see [`sqlite3session_enable`](https://www.sqlite.org/session/sqlite3session_enable.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param enabled Whether to enable or disable the session.
+   * @see [`sqlite3session_enable`](https://www.sqlite.org/session/sqlite3session_enable.html)
    */
   public enableSync(enabled: boolean): void {
     this.nativeSession.enableSync(this.nativeDatabase, enabled);
@@ -105,10 +105,10 @@ export class SQLiteSession {
 
   /**
    * Close the session synchronously.
-   * @see [`sqlite3session_delete`](https://www.sqlite.org/session/sqlite3session_delete.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
+   * @see [`sqlite3session_delete`](https://www.sqlite.org/session/sqlite3session_delete.html)
    */
   public closeSync(): void {
     this.nativeSession.closeSync(this.nativeDatabase);
@@ -116,10 +116,10 @@ export class SQLiteSession {
 
   /**
    * Create a changeset synchronously.
-   * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
+   * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
    */
   public createChangesetSync(): Changeset {
     return this.nativeSession.createChangesetSync(this.nativeDatabase);
@@ -127,10 +127,9 @@ export class SQLiteSession {
 
   /**
    * Create an inverted changeset synchronously.
-   * This is a shorthand for [`createChangesetSync()`](#createchangesetsync) + [`invertChangesetSync()`](#invertchangesetsync).
+   * This is a shorthand for [`createChangesetSync()`](#createchangesetsync) + [`invertChangesetSync()`](#invertchangesetsyncchangeset).
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-   *
    */
   public createInvertedChangesetSync(): Changeset {
     return this.nativeSession.createInvertedChangesetSync(this.nativeDatabase);
@@ -138,11 +137,11 @@ export class SQLiteSession {
 
   /**
    * Apply a changeset synchronously.
-   * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param changeset The changeset to apply.
+   * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
    */
   public applyChangesetSync(changeset: Changeset): void {
     this.nativeSession.applyChangesetSync(this.nativeDatabase, changeset);
@@ -150,11 +149,11 @@ export class SQLiteSession {
 
   /**
    * Invert a changeset synchronously.
-   * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
    *
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param changeset The changeset to invert.
+   * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
    */
   public invertChangesetSync(changeset: Changeset): Changeset {
     return this.nativeSession.invertChangesetSync(this.nativeDatabase, changeset);

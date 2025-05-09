@@ -220,7 +220,6 @@ redirects[versions/latest/sdk/google]=guides/authentication
 redirects[versions/latest/sdk/amplitude]=guides/using-analytics
 redirects[versions/latest/sdk/util]=versions/latest
 redirects[versions/latest/introduction/faq]=faq
-redirects[versions/v50.0.0/sdk/in-app-purchases]=guides/in-app-purchases/
 redirects[versions/latest/sdk/in-app-purchases]=guides/in-app-purchases/
 
 # Redirects based on Sentry reports
@@ -241,14 +240,12 @@ redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
 redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
-redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/v49.0.0/sdk/filesystem.md]=versions/v49.0.0/sdk/filesystem
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
-redirects[versions/v50.0.0/sdk]=versions/v50.0.0
 redirects[versions/v49.0.0/sdk]=versions/v49.0.0
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
@@ -356,6 +353,14 @@ redirects[router/advanced/root-layout]=router/basics/layout/#root-layout
 redirects[router/reference/not-found]=router/error-handling
 redirects[router/navigating-pages]=router/basics/navigation
 redirects[router/create-pages]=router/basics/core-concepts
+
+# After merging registerRootComponent info in `expo` API reference
+redirects[versions/v53.0.0/sdk/register-root-component]=versions/latest/sdk/expo/#registerrootcomponentcomponent
+redirects[versions/v53.0.0/sdk/url]=versions/v53.0.0/sdk/expo/#url-api
+redirects[versions/v53.0.0/sdk/encoding]=versions/v53.0.0/sdk/expo/#encoding-api
+
+# After adding System bars
+redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

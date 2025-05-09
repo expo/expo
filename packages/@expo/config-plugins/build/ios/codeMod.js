@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.addObjcImports = addObjcImports;
+exports.addSwiftImports = addSwiftImports;
 exports.findObjcFunctionCodeBlock = findObjcFunctionCodeBlock;
 exports.findObjcInterfaceCodeBlock = findObjcInterfaceCodeBlock;
 exports.findSwiftFunctionCodeBlock = findSwiftFunctionCodeBlock;
@@ -38,6 +39,25 @@ function addObjcImports(source, imports) {
   for (const importElement of imports) {
     if (!source.includes(importElement)) {
       const importStatement = `#import ${importElement}`;
+      lines.splice(lineIndexWithFirstImport + 1, 0, importStatement);
+    }
+  }
+  return lines.join('\n');
+}
+
+/**
+ * Add Swift import
+ * @param source source contents
+ * @param imports array of imports, e.g. ['Expo']
+ * @returns updated contents
+ */
+function addSwiftImports(source, imports) {
+  const lines = source.split('\n');
+  // Try to insert statements after first import where would probably not in #if block
+  const lineIndexWithFirstImport = lines.findIndex(line => line.match(/^import .*$/));
+  for (const importElement of imports) {
+    if (!source.includes(importElement)) {
+      const importStatement = `import ${importElement}`;
       lines.splice(lineIndexWithFirstImport + 1, 0, importStatement);
     }
   }
