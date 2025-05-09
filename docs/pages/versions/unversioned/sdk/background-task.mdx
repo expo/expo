@@ -236,9 +236,7 @@ To force a task to run, use the `adb shell am broadcast` command. Move your app 
 adb shell cmd jobscheduler run -f <package-name> <JOB_ID>
 ```
 
-Where JOB_ID would be the identifier of the job you want to run that you found in the previous step.
-
-> Remember to move your app to the background before running this command, as the task will not run if the app is in the foreground.
+Where `JOB_ID` would be the identifier of the job you want to run that you found in the previous step.
 
 ## Troubleshooting background tasks&ensp;<PlatformTags platforms={['ios']} />
 
