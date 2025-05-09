@@ -10,8 +10,8 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import RedirectNotification from '~/ui/components/RedirectNotification';
 import {
   AndroidIOSCompatibilityTable,
-  ReactNativeVersionTable,
-} from '~/ui/components/SDKCompatibilityTable';
+  ReactNativeCompatibilityTable,
+} from '~/ui/components/SDKTables';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
@@ -86,7 +86,7 @@ Before each Expo SDK release, we publish beta versions of the `expo` package and
 
 ## Each Expo SDK version depends on a React Native version
 
-<ReactNativeVersionTable startVersion="53.0.0" endVersion="51.0.0" />
+<ReactNativeCompatibilityTable />
 
 ### Additional information
 
