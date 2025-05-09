@@ -8,15 +8,22 @@
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
 import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
 import Constants from 'expo-constants';
-import { asyncServerImport } from 'expo-router/_async-server-import';
 import path from 'node:path';
 
 import { renderRsc } from './rsc-renderer';
+
+declare const $$require_external: typeof require;
 
 const debug = require('debug')('expo:server:rsc-renderer');
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
+
+function serverRequire<T = any>(...targetOutputModulePath: string[]): T {
+  // NOTE(@kitten): This `__dirname` will be located in the output file system, e.g. `dist/server/*`
+  const filePath = path.join(__dirname, ...targetOutputModulePath);
+  return $$require_external(filePath);
+}
 
 function getRscRenderContext(platform: string) {
   // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
@@ -42,7 +49,7 @@ function interopDefault(mod: any) {
 }
 
 async function getServerActionManifest(
-  distFolder: string,
+  _distFolder: string,
   platform: string
 ): Promise<
   Record<
@@ -57,7 +64,7 @@ async function getServerActionManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/action-manifest.js`;
-  return interopDefault(await asyncServerImport(filePath));
+  return interopDefault(serverRequire(filePath));
 }
 
 async function getSSRManifest(
@@ -76,7 +83,7 @@ async function getSSRManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-  return interopDefault(await asyncServerImport(filePath));
+  return interopDefault(serverRequire(filePath));
 }
 
 // The import map allows us to use external modules from different bundling contexts.
@@ -146,14 +153,8 @@ export async function renderRscWithImportsAsync(
       },
       async loadServerModuleRsc(file) {
         debug('loadServerModuleRsc', file);
-        const filePath = path.join('../../../', file);
-        const m = await asyncServerImport(filePath);
-
-        // TODO: This is a hack to workaround a cloudflare/metro issue where there's an extra `default` wrapper.
-        if (typeof caches !== 'undefined') {
-          return m.default;
-        }
-        return m;
+        // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
+        return serverRequire('../../../', file);
       },
 
       entries: entries!,
@@ -170,9 +171,8 @@ export async function renderRscAsync(
     distFolder,
     {
       router: () => {
-        // Assumes this file is saved to: `dist/server/_expo/functions/_flight/[...rsc].js`
-        const filePath = `../../rsc/${platform}/router.js`;
-        return asyncServerImport(filePath);
+        // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
+        return serverRequire(`../../rsc/${platform}/router.js`);
       },
     },
     args
