@@ -559,6 +559,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-apple-authentication`**
   - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
   - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+  - [Docs] Fixed syntax error in `multiple-app-variants.mdx` by adding missing parenthesis. ([#36789](https://github.com/expo/expo/pull/36789) by [@tommyhane](https://github.com/tommyhane))
 
 ### ⚠️ Notices
 
