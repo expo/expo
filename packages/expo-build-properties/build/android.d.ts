@@ -20,3 +20,8 @@ export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
 export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null, updateMode: 'append' | 'overwrite'): string;
 export declare const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidQueries: ConfigPlugin<PluginConfigType>;
+/**
+ * This plugin is used to set the `kotlinVersion` in the `build.gradle` file for the
+ * kotlin gradle plugin.
+ */
+export declare const withAndroidKotlinGradlePluginVersion: ConfigPlugin<PluginConfigType>;

@@ -5,6 +5,7 @@ import {
   WarningAggregator,
   withAndroidManifest,
   withDangerousMod,
+  withProjectBuildGradle,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
@@ -258,6 +259,34 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     };
 
     config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};
+
+/**
+ * This plugin is used to set the `kotlinVersion` in the `build.gradle` file for the
+ * kotlin gradle plugin.
+ */
+export const withAndroidKotlinGradlePluginVersion: ConfigPlugin<PluginConfigType> = (
+  config,
+  props
+) => {
+  if (props.android?.kotlinVersion == null) {
+    return config;
+  }
+  return withProjectBuildGradle(config, async (config) => {
+    if (config.modResults.language === 'groovy') {
+      config.modResults.contents = config.modResults.contents.replace(
+        "classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')",
+        'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")'
+      );
+    } else {
+      WarningAggregator.addWarningAndroid(
+        'withAndroidKotlinGradlePluginVersion',
+        `Cannot automatically configure project build.gradle if it's not groovy`
+      );
+    }
+
     return config;
   });
 };
