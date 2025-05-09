@@ -16,6 +16,4 @@ export const getThreeVersions = (currentVersion: string) => {
   return sdkData.sdkVersions.slice(currentIndex, endIndex);
 };
 
-export const getLatestCompatibility = () => {
-  return sdkData.sdkVersions[0];
-};
+export const latestSdkVersionValues = sdkData.sdkVersions[0];
