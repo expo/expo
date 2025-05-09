@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Also set the version of the kotlin gradle plugin when specifying kotlinVersion. ([#29401](https://github.com/expo/expo/pull/36763) by [@janicduplessis](https://github.com/janicduplessis))
+
 ## 0.13.2 — 2025-01-10
 
 _This version does not introduce any user-facing changes._
