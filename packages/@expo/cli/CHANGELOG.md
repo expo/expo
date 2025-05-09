@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- noop non-fabric renderer when new architecture is enabled. ([#36757](https://github.com/expo/expo/pull/36757) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Update to `lan-network@^0.1.6` for VPN network local IP changes and Windows fixes ([#36747](https://github.com/expo/expo/pull/36747) by [@kitten](https://github.com/kitten))
