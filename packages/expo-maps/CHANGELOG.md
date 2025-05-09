@@ -14,6 +14,13 @@
 
 ### 💡 Others
 
+## 0.10.0 — 2025-05-08
+
+### 🎉 New features
+
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+- Add circle rendering support on Android and iOS. ([#36439](https://github.com/expo/expo/pull/36439) by [@fobos531](https://github.com/fobos531))
+
 ## 0.9.9 — 2025-05-06
 
 ### 🎉 New features

@@ -34,10 +34,10 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "dependencies": {
-    "@expo/config": "~11.0.9",
+    "@expo/config": "~11.0.10",
     "@expo/config-plugins": "~10.0.2",
     "@expo/config-types": "^53.0.4",
     "@expo/image-utils": "^0.7.4",
