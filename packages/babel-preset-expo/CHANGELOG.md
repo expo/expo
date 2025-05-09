@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable `minifyTypeofWindow` for Web to prevent breaking Web Worker targets
+
 ### 💡 Others
 
 ## 13.1.11 — 2025-05-01
