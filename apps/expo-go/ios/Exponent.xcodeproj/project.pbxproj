@@ -4,6 +4,7 @@
 	classes = {
 	};
 	objectVersion = 77;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -451,6 +452,17 @@
 		2D1A6CC92D9B38910007E94A /* Notifications */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		2D1A6CC92D9B38910007E94A /* Notifications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = Notifications;
 			sourceTree = "<group>";
