@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `worklets` option to enable/disable Worklets Babel plugin
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
