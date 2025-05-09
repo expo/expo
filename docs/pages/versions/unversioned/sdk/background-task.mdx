@@ -183,7 +183,7 @@ The last registered background task determines the minimum interval for executio
 
 ## Testing background tasks
 
-Background tasks can be tested using the [`triggerTaskWorkerForTestingAsync`](#backgroundtasktriggertaskworkerfortestingasync) method. This method will invoke the `BGTaskScheduler` on iOS and run all registered tasks directly on Android. This is useful for testing the behavior of your background tasks without having to wait for the system to trigger them.
+Background tasks can be tested using the [`triggerTaskWorkerForTestingAsync`](#backgroundtasktriggertaskworkerfortestingasync) method. This method will run all registered tasks directly on Android and invoke the `BGTaskScheduler` on iOS. This is useful for testing the behavior of your background tasks without having to wait for the system to trigger them.
 
 This method is only available in development mode. It will not work in production builds.
 
