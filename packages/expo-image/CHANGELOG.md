@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix PhotoLibrary assets being scaled twice.
+
 ### 💡 Others
 
 ## 2.1.7 — 2025-05-06
