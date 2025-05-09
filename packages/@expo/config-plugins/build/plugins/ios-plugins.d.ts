@@ -3,7 +3,7 @@ import type { JSONObject } from '@expo/json-file';
 import type { XcodeProject } from 'xcode';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
-import type { AppDelegateProjectFile, PodfileProjectFile } from '../ios/Paths';
+import type { AppDelegateProjectFile, BridgingHeaderProjectFile, PodfileProjectFile } from '../ios/Paths';
 type MutateInfoPlistAction = (expo: ExpoConfig, infoPlist: InfoPlist) => Promise<InfoPlist> | InfoPlist;
 /**
  * Helper method for creating mods from existing config functions.
@@ -30,6 +30,13 @@ export declare function createEntitlementsPlugin(action: MutateEntitlementsPlist
  * @param action
  */
 export declare const withAppDelegate: ConfigPlugin<Mod<AppDelegateProjectFile>>;
+/**
+ * Provides the BridgingHeader file for modification.
+ *
+ * @param config
+ * @param action
+ */
+export declare const withBridgingHeader: ConfigPlugin<Mod<BridgingHeaderProjectFile>>;
 /**
  * Provides the Info.plist file for modification.
  * Keeps the config's expo.ios.infoPlist object in sync with the data.

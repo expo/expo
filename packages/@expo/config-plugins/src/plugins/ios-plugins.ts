@@ -5,7 +5,11 @@ import type { XcodeProject } from 'xcode';
 import { withMod } from './withMod';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
-import type { AppDelegateProjectFile, PodfileProjectFile } from '../ios/Paths';
+import type {
+  AppDelegateProjectFile,
+  BridgingHeaderProjectFile,
+  PodfileProjectFile,
+} from '../ios/Paths';
 import { get } from '../utils/obj';
 import { addWarningIOS } from '../utils/warnings';
 
@@ -102,6 +106,23 @@ export const withAppDelegate: ConfigPlugin<Mod<AppDelegateProjectFile>> = (confi
   return withMod(config, {
     platform: 'ios',
     mod: 'appDelegate',
+    action,
+  });
+};
+
+/**
+ * Provides the BridgingHeader file for modification.
+ *
+ * @param config
+ * @param action
+ */
+export const withBridgingHeader: ConfigPlugin<Mod<BridgingHeaderProjectFile>> = (
+  config,
+  action
+) => {
+  return withMod(config, {
+    platform: 'ios',
+    mod: 'bridgingHeader',
     action,
   });
 };
