@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`.
+- [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
