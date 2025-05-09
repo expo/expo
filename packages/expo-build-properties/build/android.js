@@ -220,17 +220,14 @@ const withAndroidKotlinGradlePluginVersion = (config, props) => {
     if (props.android?.kotlinVersion == null) {
         return config;
     }
-    return (0, config_plugins_1.withDangerousMod)(config, [
-        'android',
-        async (config) => {
-            const buildGradlePath = path_1.default.join(config.modRequest.platformProjectRoot, 'build.gradle');
-            const contents = await fs_1.default.promises.readFile(buildGradlePath, 'utf8');
-            const newContents = contents.replace("classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')", 'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")');
-            if (contents !== newContents) {
-                await fs_1.default.promises.writeFile(buildGradlePath, newContents);
-            }
-            return config;
-        },
-    ]);
+    return (0, config_plugins_1.withProjectBuildGradle)(config, async (config) => {
+        if (config.modResults.language === 'groovy') {
+            config.modResults.contents = config.modResults.contents.replace("classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')", 'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")');
+        }
+        else {
+            config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidKotlinGradlePluginVersion', `Cannot automatically configure project build.gradle if it's not groovy`);
+        }
+        return config;
+    });
 };
 exports.withAndroidKotlinGradlePluginVersion = withAndroidKotlinGradlePluginVersion;

@@ -5,6 +5,7 @@ import {
   WarningAggregator,
   withAndroidManifest,
   withDangerousMod,
+  withProjectBuildGradle,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
@@ -273,19 +274,19 @@ export const withAndroidKotlinGradlePluginVersion: ConfigPlugin<PluginConfigType
   if (props.android?.kotlinVersion == null) {
     return config;
   }
-  return withDangerousMod(config, [
-    'android',
-    async (config) => {
-      const buildGradlePath = path.join(config.modRequest.platformProjectRoot, 'build.gradle');
-      const contents = await fs.promises.readFile(buildGradlePath, 'utf8');
-      const newContents = contents.replace(
+  return withProjectBuildGradle(config, async (config) => {
+    if (config.modResults.language === 'groovy') {
+      config.modResults.contents = config.modResults.contents.replace(
         "classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')",
         'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")'
       );
-      if (contents !== newContents) {
-        await fs.promises.writeFile(buildGradlePath, newContents);
-      }
-      return config;
-    },
-  ]);
+    } else {
+      WarningAggregator.addWarningAndroid(
+        'withAndroidKotlinGradlePluginVersion',
+        `Cannot automatically configure project build.gradle if it's not groovy`
+      );
+    }
+
+    return config;
+  });
 };
