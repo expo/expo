@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -119,7 +119,6 @@
 		B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.mm */; };
 		B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74081FF6DADB001C764B /* EXDisabledRedBox.mm */; };
 		B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB740C1FF6DADB001C764B /* EXAppState.m */; };
-		B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74141FF6DADB001C764B /* EXNativeModuleIntrospection.m */; };
 		B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74171FF6DADB001C764B /* EXScopedModuleRegistry.m */; };
 		B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74191FF6DADB001C764B /* EXStatusBarManager.m */; };
 		B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74231FF6DADB001C764B /* EXTest.m */; };
@@ -399,8 +398,6 @@
 		B5FB740C1FF6DADB001C764B /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B5FB74111FF6DADB001C764B /* EXLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinkingManager.h; sourceTree = "<group>"; };
 		B5FB74121FF6DADB001C764B /* EXLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingManager.m; sourceTree = "<group>"; };
-		B5FB74131FF6DADB001C764B /* EXNativeModuleIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNativeModuleIntrospection.h; sourceTree = "<group>"; };
-		B5FB74141FF6DADB001C764B /* EXNativeModuleIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNativeModuleIntrospection.m; sourceTree = "<group>"; };
 		B5FB74151FF6DADB001C764B /* EXResourceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXResourceLoader.h; sourceTree = "<group>"; };
 		B5FB74161FF6DADB001C764B /* EXScopedModuleRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistry.h; sourceTree = "<group>"; };
 		B5FB74171FF6DADB001C764B /* EXScopedModuleRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedModuleRegistry.m; sourceTree = "<group>"; };
@@ -451,17 +448,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2D1A6CC92D9B38910007E94A /* Notifications */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
+		2D1A6CC92D9B38910007E94A /* Notifications */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Notifications; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1026,8 +1013,6 @@
 				B5FB740C1FF6DADB001C764B /* EXAppState.m */,
 				B5FB74111FF6DADB001C764B /* EXLinkingManager.h */,
 				B5FB74121FF6DADB001C764B /* EXLinkingManager.m */,
-				B5FB74131FF6DADB001C764B /* EXNativeModuleIntrospection.h */,
-				B5FB74141FF6DADB001C764B /* EXNativeModuleIntrospection.m */,
 				B5FB74151FF6DADB001C764B /* EXResourceLoader.h */,
 				B5FB74161FF6DADB001C764B /* EXScopedModuleRegistry.h */,
 				B5FB74171FF6DADB001C764B /* EXScopedModuleRegistry.m */,
@@ -1394,9 +1379,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1426,9 +1415,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1462,9 +1455,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1539,9 +1536,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1628,7 +1629,6 @@
 				F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */,
 				B56C65CC204769F9002B2424 /* EXDevMenuViewController.mm in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
-				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				F138E0D62A5F2090002E15BC /* ExpoGoModule.swift in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
@@ -1818,10 +1818,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1884,10 +1881,7 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
