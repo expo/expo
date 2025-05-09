@@ -250,9 +250,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   };
 
   // `typeof window` is left in place for native + client environments.
-  const minifyTypeofWindow =
-    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
-
+  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
+  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
+  const minifyTypeofWindow = platformOptions.minifyTypeofWindow ?? isServerEnv;
   if (minifyTypeofWindow !== false) {
     // This nets out slightly faster in development when considering the cost of bundling server dependencies.
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
