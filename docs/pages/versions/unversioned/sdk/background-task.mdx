@@ -10,6 +10,7 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
@@ -204,37 +205,32 @@ function App() {
 
 To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
 
-```bash
-adb shell dumpsys jobscheduler | grep -A 40 -m 1 <package-name>
-```
+<Terminal cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 <package-name>']} />
 
 The output from this command will show you the scheduled tasks for your app, including their status, constraints, and other information. Look for the `JOB` line to find the ID of the job and other details in the output:
 
-```bash
-  JOB #u0a453/275: 216a359 <package-name>/androidx.work.impl.background.systemjob.SystemJobService
-    u0a453 tag=*job*/<package-name>/androidx.work.impl.background.systemjob.SystemJobService#275
-    Source: uid=u0a453 user=0 pkg=<package-name>
-    ...
-    Required constraints: TIMING_DELAY CONNECTIVITY UID_NOT_RESTRICTED [0x90100000]
-    Preferred constraints:
-    Dynamic constraints:
-    Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA UID_NOT_RESTRICTED [0x1b500000]
-    Unsatisfied constraints: TIMING_DELAY [0x80000000]
-    ...
-    Enqueue time: -8m12s280ms
-    Run time: earliest=+6m47s715ms, latest=none, original latest=none
-    Restricted due to: none.
-    Ready: false (job=false user=true !restricted=true !pending=true !active=true !backingup=true comp=true)
-
+```text
+JOB #u0a453/275: 216a359 <package-name>/androidx.work.impl.background.systemjob.SystemJobService
+  u0a453 tag=*job*/<package-name>/androidx.work.impl.background.systemjob.SystemJobService#275
+  Source: uid=u0a453 user=0 pkg=<package-name>
+  ...
+  Required constraints: TIMING_DELAY CONNECTIVITY UID_NOT_RESTRICTED [0x90100000]
+  Preferred constraints:
+  Dynamic constraints:
+  Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA UID_NOT_RESTRICTED [0x1b500000]
+  Unsatisfied constraints: TIMING_DELAY [0x80000000]
+  ...
+  Enqueue time: -8m12s280ms
+  Run time: earliest=+6m47s715ms, latest=none, original latest=none
+  Restricted due to: none.
+  Ready: false (job=false user=true !restricted=true !pending=true !active=true !backingup=true comp=true)
 ```
 
 The first line contains the Job ID (275). The `Run time: earliest` value indicates the earliest time the task may start, while `enqueue time` shows how long ago the task was scheduled.
 
 To force a task to run, use the `adb shell am broadcast` command. Move your app to the background before running this command, as the task will not run if the app is in the foreground.
 
-```bash
-adb shell cmd jobscheduler run -f <package-name> <JOB_ID>
-```
+<Terminal cmd={['$ adb shell cmd jobscheduler run -f <package-name> <JOB_ID>']} />
 
 Where `JOB_ID` would be the identifier of the job you want to run that you found in the previous step.
 
