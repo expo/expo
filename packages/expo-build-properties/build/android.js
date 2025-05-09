@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidKotlinGradlePluginVersion = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -212,3 +212,25 @@ const withAndroidQueries = (config, props) => {
     });
 };
 exports.withAndroidQueries = withAndroidQueries;
+/**
+ * This plugin is used to set the `kotlinVersion` in the `build.gradle` file for the
+ * kotlin gradle plugin.
+ */
+const withAndroidKotlinGradlePluginVersion = (config, props) => {
+    if (props.android?.kotlinVersion == null) {
+        return config;
+    }
+    return (0, config_plugins_1.withDangerousMod)(config, [
+        'android',
+        async (config) => {
+            const buildGradlePath = path_1.default.join(config.modRequest.platformProjectRoot, 'build.gradle');
+            const contents = await fs_1.default.promises.readFile(buildGradlePath, 'utf8');
+            const newContents = contents.replace("classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')", 'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")');
+            if (contents !== newContents) {
+                await fs_1.default.promises.writeFile(buildGradlePath, newContents);
+            }
+            return config;
+        },
+    ]);
+};
+exports.withAndroidKotlinGradlePluginVersion = withAndroidKotlinGradlePluginVersion;

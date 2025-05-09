@@ -261,3 +261,31 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     return config;
   });
 };
+
+/**
+ * This plugin is used to set the `kotlinVersion` in the `build.gradle` file for the
+ * kotlin gradle plugin.
+ */
+export const withAndroidKotlinGradlePluginVersion: ConfigPlugin<PluginConfigType> = (
+  config,
+  props
+) => {
+  if (props.android?.kotlinVersion == null) {
+    return config;
+  }
+  return withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const buildGradlePath = path.join(config.modRequest.platformProjectRoot, 'build.gradle');
+      const contents = await fs.promises.readFile(buildGradlePath, 'utf8');
+      const newContents = contents.replace(
+        "classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')",
+        'classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")'
+      );
+      if (contents !== newContents) {
+        await fs.promises.writeFile(buildGradlePath, newContents);
+      }
+      return config;
+    },
+  ]);
+};
