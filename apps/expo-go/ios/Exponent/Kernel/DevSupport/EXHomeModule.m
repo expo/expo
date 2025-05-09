@@ -212,6 +212,7 @@ RCT_REMAP_METHOD(getDevMenuSettingsAsync,
   resolve(@{
     @"motionGestureEnabled": @(manager.interceptMotionGesture),
     @"touchGestureEnabled": @(manager.interceptTouchGesture),
+    @"ignoreRuntimeVersion": @(manager.interceptTouchGesture),
   });
 }
 

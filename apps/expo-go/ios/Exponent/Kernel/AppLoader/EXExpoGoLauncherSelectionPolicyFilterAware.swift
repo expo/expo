@@ -25,7 +25,7 @@ public final class EXExpoGoLauncherSelectionPolicyFilterAware: NSObject, Launche
         continue
       }
 
-      if !sdkVersions.contains(updateSDKVersion) || !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
+      if false && (!sdkVersions.contains(updateSDKVersion) || !SelectionPolicies.doesUpdate(update, matchFilters: filters)) {
         continue
       }
 

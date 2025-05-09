@@ -9,6 +9,8 @@ import { DeleteAccountSection } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
+import { ExperimentalSection } from './ExperimentalSection';
+
 import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function SettingsScreen() {
@@ -24,6 +26,7 @@ export function SettingsScreen() {
         <Spacer.Vertical size="medium" />
         {Platform.OS === 'ios' && <DevMenuGestureSection />}
         {Tracking.isAvailable() && <TrackingSection />}
+        <ExperimentalSection />
         <ConstantsSection />
         {data?.meUserActor && data.meUserActor.__typename === 'User' ? (
           <>

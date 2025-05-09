@@ -215,6 +215,9 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
 {
   NSString *errorCode;
   NSDictionary *metadata;
+  
+  return nil;
+  
   if (maybeManifest && maybeManifest.expoGoSDKVersion) {
     if (![maybeManifest.expoGoSDKVersion isEqualToString:@"UNVERSIONED"]) {
       NSInteger manifestSdkVersion = [maybeManifest.expoGoSDKVersion integerValue];
