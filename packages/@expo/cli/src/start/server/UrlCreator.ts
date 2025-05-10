@@ -13,12 +13,14 @@ export interface CreateURLOptions {
   hostType?: 'localhost' | 'lan' | 'tunnel';
   /** Requested hostname. */
   hostname?: string | null;
+  params?: Record<string, string>;
 }
 
 interface UrlComponents {
   port: string;
   hostname: string;
   protocol: string;
+  params?: Record<string, string>;
 }
 export class UrlCreator {
   constructor(
@@ -63,6 +65,7 @@ export class UrlCreator {
 
     const manifestUrl = this.constructUrl({
       ...options,
+      params: process.env.EXPO_DISABLE_ONBOARDING ? { disableOnboarding: '1' } : undefined,
       scheme: this.defaults?.hostType === 'tunnel' ? 'https' : 'http',
     });
     const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
@@ -157,14 +160,18 @@ function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
   return options.hostname || getIpAddress();
 }
 
-function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
+function joinUrlComponents({ protocol, hostname, port, params }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  const url = `${validProtocol}${hostname}`;
+  let url = `${validProtocol}${hostname}`;
 
   if (port) {
-    return url + `:${port}`;
+    url = url + `:${port}`;
+  }
+
+  if (params) {
+    url = url + `?${new URLSearchParams(params).toString()}`;
   }
 
   return url;
