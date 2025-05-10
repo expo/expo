@@ -43,7 +43,9 @@ describe('exports with react native canary', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(
+            /_expo\/static\/js\/ios\/entry-(?<md5>[0-9a-fA-F]{32})\.js/
+          ),
         },
       },
       version: 0,
