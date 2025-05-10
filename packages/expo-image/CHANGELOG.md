@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix React Server Components support.
 - [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
