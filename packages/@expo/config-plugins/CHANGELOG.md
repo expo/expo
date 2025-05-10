@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- improved error message for `ERR_PACKAGE_PATH_NOT_EXPORTED` resolution errors ([#36676](https://github.com/expo/expo/pull/36676) by [@vonovak](https://github.com/vonovak))
+
 ## 10.0.2 — 2025-05-01
 
 ### 🐛 Bug fixes
