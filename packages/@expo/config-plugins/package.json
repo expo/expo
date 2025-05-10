@@ -3,6 +3,28 @@
   "version": "10.0.2",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./build/android": {
+      "types": "./build/android/index.d.ts",
+      "default": "./build/android/index.js"
+    },
+    "./build/ios": {
+      "types": "./build/ios/index.d.ts",
+      "default": "./build/ios/index.js"
+    },
+    "./build": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./build/*.js": "./build/*.js",
+    "./build/*": "./build/*.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
     "clean": "expo-module clean",

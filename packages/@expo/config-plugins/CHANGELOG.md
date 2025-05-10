@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add missing `package.json:types` and `package.json:exports` fields ([#36774](https://github.com/expo/expo/pull/36774) by [@kitten](https://github.com/kitten))
+
 ## 10.0.2 — 2025-05-01
 
 ### 🐛 Bug fixes
