@@ -1,59 +1,44 @@
 ---
-title: 'Config plugins: Introduction'
-description: An introduction to config plugins for the Expo project.
+title: Introduction to config plugins
+description: An introduction Expo config plugins.
 sidebar_title: Introduction
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-An automatic setup for adding a native module to your project is possible. Sometimes, a module requires a more complex setup. A config plugin can be used to automatically configure your native project for a module and reduce the complexity by avoiding interaction with the native project.
+import { BoxLink } from '~/ui/components/BoxLink';
+
+When using a [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) project, you might want to implement native project (**android** and **ios** directories) changes without directly interacting with the native project files. In such scenarios, you can use a config plugin to automatically configure your native project.
 
 ## What is a config plugin
 
-Config plugin is a system for extending the [app config](/workflow/configuration) and customizing the prebuild process for your app. They can be used to add native modules that aren't included, by default, or to add any native code that needs to be configured further.
+Config plugins let you add custom configuration points that are not already built into the [app config](/workflow/configuration). These custom configuration can modify the native projects created during the [prebuild](/workflow/continuous-native-generation/#usage) process in CNG projects.
 
-Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things such as generate app icons, set the app name, and configure the **AndroidManifest.xml**, **Info.plist**, and so on.
+## Why use a config plugin
 
-You can think of plugins like a bundler for native projects, and running `npx expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate **android** and **ios** directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
+Config plugins can add native configuration to your project that isn't included by default. They can be used to generate app icons, set the app name, configure **AndroidManigest.xml** and **Info.plist**, and so on.
 
-## Use a config plugin
+Generally, in CNG projects, it is best to avoid modifying these native projects manually because you cannot regenerate them safely without potentially overwriting manual modifications. Config plugins allows you to modify these native projects in a _predictable way_ by keeping track of the changes you made to the native projects and only applying them when you run `npx expo prebuild` (either manually or automatically during a CI/CD process). For example, when you change the name of your app in app config and run `npx expo prebuild`, the name will change in your native projects automatically without the need to manually update **AndroidManifest.xml** and **Info.plist** files.
 
-Expo config plugins mostly come from Node.js modules. You can install them just like other packages in your project.
+## Get started
 
-For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
+<BoxLink
+  title="Create a config plugin"
+  description="Comprehensive guide on how to create and use config plugins in your Expo project."
+  href="/config-plugins/plugins/"
+  Icon={BookOpen02Icon}
+/>
 
-<Terminal cmd={['$ npx expo install expo-camera']} />
+<BoxLink
+  title="Mods"
+  description="Learn about mods, which are a way to modify the prebuild process."
+  href="/config-plugins/mods/"
+  Icon={BookOpen02Icon}
+/>
 
-In your [app's config](/versions/latest/config/app/), you can add `expo-camera` to the list of plugins:
-
-```json app.json
-{
-  "expo": {
-    "plugins": ["expo-camera"]
-  }
-}
-```
-
-Some config plugins offer flexibility by allowing you to pass options to customize their configuration. To do this, you can pass an array with the Expo library name as the first argument, and an object containing the options as the second argument. For example, the `expo-camera` plugin allows you to customize the camera permission message:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
-        }
-      ]
-    ]
-  }
-}
-```
-
-> **info** **Tip**: For every Expo library that has a config plugin, you'll find more information about that in the library's API reference. For example, the [`expo-camera` library has a config plugin section](/versions/latest/sdk/camera/#configuration-in-appjsonappconfigjs).
-
-On running the `npx expo prebuild`, the [`mods`](/config-plugins/plugins-and-mods/#how-mods-work) are compiled, and the native files change.
-
-The changes don't take effect until you rebuild the native project, for example, with Xcode. **If you're using config plugins in a managed app,
-they will be applied during the prebuild phase on `eas build`**.
+<BoxLink
+  title="Best practices for development and debugging"
+  description="Learn about best practices for development and debugging config plugins."
+  href="/config-plugins/development-and-debugging/"
+  Icon={BookOpen02Icon}
+/>
