@@ -152,7 +152,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithPermissions(assetsId, action)
+        runActionWithPermissions(assetsId, action, true)
       }
     }
 
@@ -333,7 +333,7 @@ class MediaLibraryModule : Module() {
     }
 
     OnActivityResult { _, payload ->
-      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE }?.let {
+      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE || payload.requestCode == DELETE_REQUEST_CODE }?.let {
         it.runWithPermissions(payload.resultCode == Activity.RESULT_OK)
         awaitingAction = null
       }
@@ -471,7 +471,7 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun runActionWithPermissions(assetsId: List<String>, action: Action) {
+  private fun runActionWithPermissions(assetsId: List<String>, action: Action, useDeletePermission: Boolean = false) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
         .filter { uri ->
@@ -483,14 +483,17 @@ class MediaLibraryModule : Module() {
         }
 
       if (pathsWithoutPermissions.isNotEmpty()) {
-        val deleteRequest =
+        val request = if (useDeletePermission) {
+          MediaStore.createDeleteRequest(context.contentResolver, pathsWithoutPermissions)
+        } else {
           MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
+        }
 
         try {
           awaitingAction = action
           appContext.throwingActivity.startIntentSenderForResult(
-            deleteRequest.intentSender,
-            WRITE_REQUEST_CODE,
+            request.intentSender,
+            if (useDeletePermission) DELETE_REQUEST_CODE else WRITE_REQUEST_CODE,
             null,
             0,
             0,
@@ -550,6 +553,7 @@ class MediaLibraryModule : Module() {
 
   companion object {
     private const val WRITE_REQUEST_CODE = 7463
+    private const val DELETE_REQUEST_CODE = 7464
     internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }
