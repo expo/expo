@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.24.13 — 2025-05-08
