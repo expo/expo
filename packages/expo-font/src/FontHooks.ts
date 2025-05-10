@@ -49,7 +49,7 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
 
 // @needsAudit
 /**
- * Load a map of fonts with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
+ * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
@@ -64,7 +64,9 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
  *
  * @example
  * ```tsx
- * const [loaded, error] = useFonts({ ... });
+ * const [loaded, error] = useFonts({
+ *   'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+ * });
  * ```
  */
 export const useFonts: (map: string | Record<string, FontSource>) => [boolean, Error | null] =
