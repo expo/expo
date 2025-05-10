@@ -45,7 +45,7 @@ public class ExpoReactDelegate: NSObject {
   @objc
   public func createRootViewController() -> UIViewController {
     return self.handlers.lazy
-      .compactMap { $0.createRootViewController(reactDelegate: self) }
+      .compactMap { $0.createRootViewController() }
       .first(where: { _ in true }) ?? UIViewController()
   }
 }
