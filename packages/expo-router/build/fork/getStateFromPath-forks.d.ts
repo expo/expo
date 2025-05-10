@@ -12,6 +12,7 @@ export type ExpoRouteConfig = {
     hasChildren: boolean;
     expandedRouteNames: string[];
     parts: string[];
+    staticPartCount: number;
 };
 /**
  * In Expo Router, the params are available at all levels of the routing config
@@ -51,6 +52,7 @@ export declare function matchForEmptyPath(configs: RouteConfig[]): {
     hasChildren: boolean;
     expandedRouteNames: string[];
     parts: string[];
+    staticPartCount: number;
     screen: string;
     regex?: RegExp;
     pattern: string;
