@@ -48,10 +48,7 @@ export type SitemapType = {
   children: SitemapType[];
 };
 
-const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (
-  route,
-  parents
-): SitemapType => ({
+const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route, parents) => ({
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
