@@ -1,49 +1,20 @@
----
-title: Android Studio Emulator
-description: Learn how to set up the Android Emulator to test your app on a virtual Android device.
----
+flutter create video_subtitle_tts
+cd video_subtitle_tts
+video_subtitle_tts/
+├── assets/
+│   ├── sample_video.mp4
+│   └── sample_subtitles.srt
+flutter:
+  assets:
+    - assets/sample_video.mp4
+    - assets/sample_subtitles.srt
 
-import AndroidEmulatorInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidEmulatorInstructions.mdx';
-import AndroidStudioEnvironmentInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidStudioEnvironmentInstructions.mdx';
-import AndroidStudioInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidStudioInstructions.mdx';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player: ^2.5.0
+  flutter_tts: ^3.6.3
+  subtitle_wrapper_package: ^2.0.0
+flutter pub get
 
-If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio. If you run into any problems setting it up, follow the steps in this guide.
 
-<AndroidStudioEnvironmentInstructions />
-
-<AndroidStudioInstructions />
-
-<AndroidEmulatorInstructions />
-
-## Troubleshooting
-
-### Multiple `adb` versions
-
-Having multiple `adb` versions on your system can result in the following error:
-
-<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
-
-This is because the `adb` version on your system is different from the `adb` version on the Android SDK platform-tools.
-
-<Step label="1">
-Open the terminal and check the `adb` version on the system:
-
-<Terminal cmd={['$ adb version']} />
-</Step>
-
-<Step label="2">
-And from the Android SDK platform-tool directory:
-
-<Terminal cmd={[
-  '$ cd ~/Library/Android/sdk/platform-tools',
-  '$ ./adb version'
-]} cmdCopy="cd ~/Library/Android/sdk/platform-tools && ./adb version" />
-</Step>
-
-<Step label="3">
-Copy `adb` from Android SDK directory to `usr/bin` directory:
-
-<Terminal cmd={['$ sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin']} />
-</Step>
