@@ -10,6 +10,7 @@
 
 - Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
 - Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
+- Fix RSC middleware not requiring output modules from a stable base path resulting in missing modules ([#36819](https://github.com/expo/expo/pull/36819) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
