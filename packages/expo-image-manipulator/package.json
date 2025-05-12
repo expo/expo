@@ -1,6 +1,6 @@
 {
   "name": "expo-image-manipulator",
-  "version": "13.1.5",
+  "version": "13.1.7",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -34,7 +34,7 @@
     "expo-image-loader": "~5.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*"

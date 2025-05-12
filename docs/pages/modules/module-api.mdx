@@ -332,36 +332,6 @@ View(TextView::class) {
 > **Info** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="Prop">
-
-Defines a setter for the view prop of given name.
-
-#### Arguments
-
-- **name**: `String` — Name of view prop that you want to define a setter.
-- **setter**: `(view: ViewType, value: ValueType) -> ()` — Closure that is invoked when the view rerenders.
-
-This property can only be used within a [`ViewManager`](#viewmanager) closure.
-
-<CodeBlocksTable>
-
-```swift
-Prop("background") { (view: UIView, color: UIColor) in
-  view.backgroundColor = color
-}
-```
-
-```kotlin
-Prop("background") { view: View, @ColorInt color: Int ->
-  view.setBackgroundColor(color)
-}
-```
-
-</CodeBlocksTable>
-
-> **Note:** Props of function type (callbacks) are not supported yet.
-
-</PaddedAPIBox>
 <PaddedAPIBox header="OnCreate">
 
 Defines module's lifecycle listener that is called right after module initialization. If you need to set up something when the module gets initialized, use this instead of module's class initializer.
@@ -450,6 +420,115 @@ AsyncFunction('someFunc') {
 
 OnActivityResult { activity, payload ->
   /* @hide ... */ /* @end */
+}
+```
+
+</PaddedAPIBox>
+
+## View Definition components
+
+The view definition consists of the DSL components that describe the view's functionality and behavior. Those components can only be used within a [`View`](#view) closure.
+
+<PaddedAPIBox header="Name">
+
+Sets the name of the view that JavaScript code will use to refer to the view. Takes a string as an argument. This can be inferred from the view's class name, but it's recommended to set it explicitly for clarity.
+
+```swift Swift / Kotlin
+Name("MyViewName")
+```
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="Prop">
+
+Defines a setter for the view prop of given name.
+
+#### Arguments
+
+- **name**: `String` — Name of view prop that you want to define a setter.
+- **setter**: `(view: ViewType, value: ValueType) -> ()` — Closure that is invoked when the view rerenders.
+
+This property can only be used within a [`View`](#view) closure.
+
+<CodeBlocksTable>
+
+```swift
+Prop("background") { (view: UIView, color: UIColor) in
+  view.backgroundColor = color
+}
+```
+
+```kotlin
+Prop("background") { view: View, @ColorInt color: Int ->
+  view.setBackgroundColor(color)
+}
+```
+
+</CodeBlocksTable>
+
+> **Note:** Props of function type (callbacks) are not supported yet.
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="OnViewDidUpdateProps">
+
+Defines the view lifecycle method that is called when the view finished updating all props.
+
+```swift
+View(MyView.self) {
+  OnViewDidUpdateProps { view: MyView in
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+```kotlin
+View(MyView::class) {
+  OnViewDidUpdateProps { view: MyView ->
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="(View) AsyncFunction">
+
+Similarly to the [`AsyncFunction`](#asyncfunction) inside the module definition, you can define functions attached to the view ref to allow direct modification of the native view.
+
+View async functions will always be dispatched on the main queue and can receive the view instance as the first argument.
+
+<CodeBlocksTable>
+
+```swift
+View(MyView.self) {
+  AsyncFunction("myAsyncFunction") { (view: MyView, message: String) in
+    view.displayMessage(message)
+  }
+}
+```
+
+```kotlin
+View(MyView::class) {
+  AsyncFunction("myAsyncFunction") { view: MyView, message: String ->
+    view.displayMessage(message);
+  }
+}
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+const MyNativeView = requireNativeViewManager('MyView');
+
+function MyComponent() {
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    ref.current?.myAsyncFunction();
+  }, [ref]);
+
+  return <MyNativeView ref={ref} />;
 }
 ```
 

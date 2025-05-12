@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 18.1.10 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Fix the `UploadTask.uploadAsync` method's return type did not indicate that the method could resolve to `null`. ([#36476](https://github.com/expo/expo/pull/36476) by [@DoctorJohn](https://github.com/DoctorJohn))
+
 ## 18.1.9 — 2025-05-03
 
 _This version does not introduce any user-facing changes._

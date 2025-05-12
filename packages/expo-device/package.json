@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/ua-parser-js": "^0.7.39",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*"

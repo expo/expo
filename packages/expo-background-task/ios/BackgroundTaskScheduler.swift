@@ -21,6 +21,12 @@ public class BackgroundTaskScheduler {
       intervalSeconds = Double(minutes) * 60
     }
     numberOfRegisteredTasksOfThisType += 1
+
+    if numberOfRegisteredTasksOfThisType == 1 {
+      Task {
+        try await tryScheduleWorker()
+      }
+    }
   }
 
   /**
@@ -28,6 +34,11 @@ public class BackgroundTaskScheduler {
    */
   public static func didUnregisterTask() {
     numberOfRegisteredTasksOfThisType -= 1
+    if numberOfRegisteredTasksOfThisType == 0 {
+      Task {
+        await stopWorker()
+      }
+    }
   }
 
   /**

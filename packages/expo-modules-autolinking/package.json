@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
-    "expo-module-scripts": "~4.1.6",
+    "expo-module-scripts": "~4.1.7",
     "minimatch": "^9.0.0"
   },
   "dependencies": {

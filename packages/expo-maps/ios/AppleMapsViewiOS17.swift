@@ -52,6 +52,14 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             .stroke(polyline.color, lineWidth: polyline.width)
         }
 
+        ForEach(props.polygons) { polygon in
+          renderPolygon(polygon)
+        }
+
+        ForEach(props.circles) { circle in
+          renderCircle(circle)
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
@@ -72,7 +80,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             }
           }
         }
-        UserAnnotation()
+
+        if props.properties.isMyLocationEnabled {
+          UserAnnotation()
+        }
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {

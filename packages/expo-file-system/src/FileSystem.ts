@@ -433,7 +433,7 @@ export class UploadTask extends FileSystemCancellableNetworkTask<UploadProgressD
   }
 
   // @docsMissing
-  public async uploadAsync(): Promise<FileSystemUploadResult | undefined> {
+  public async uploadAsync(): Promise<FileSystemUploadResult | undefined | null> {
     if (!ExponentFileSystem.uploadTaskStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'uploadTaskStartAsync');
     }

@@ -343,10 +343,7 @@ class ContactsModule : Module() {
 
     if (data.containsKey("image")) {
       val image = data["image"]
-      if (image is String) {
-        contact.photoUri = image
-        contact.hasPhoto = true
-      } else if (image is Map<*, *> && image.containsKey("uri")) {
+      if (image is Map<*, *> && image.containsKey("uri")) {
         contact.photoUri = image["uri"] as String?
         contact.hasPhoto = true
       }

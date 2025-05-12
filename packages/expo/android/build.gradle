@@ -32,7 +32,7 @@ buildscript {
 def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
 
 group = 'host.exp.exponent'
-version = '53.0.7'
+version = '53.0.9'
 
 expoModule {
   // We can't prebuild the module because it depends on the generated files.
@@ -43,7 +43,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "53.0.7"
+    versionName "53.0.9"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
