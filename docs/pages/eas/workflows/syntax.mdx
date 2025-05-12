@@ -155,11 +155,12 @@ Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/d
 - Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
 - Scheduled workflows may be delayed during periods of high load. High load times include the start of every hour. In rare circumstances, jobs may be skipped or run multiple times. Make sure that your workflows are idempotent and do not have harmful side effects.
 - A workflow can have multiple `cron` schedules.
+- Scheduled workflows run in the GMT time zone.
 
 ```yaml
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at midnight every day
+    - cron: '0 0 * * *' # Runs at midnight GMT every day
 ```
 
 ## `jobs`
