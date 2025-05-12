@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent module registry (from `metro-require` fork) to be reinstantiated outside of development ([#36828](https://github.com/expo/expo/pull/36828) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.24.13 — 2025-05-08
