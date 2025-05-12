@@ -37,39 +37,35 @@ function getRscRenderContext(platform: string) {
   return context;
 }
 
-async function getServerActionManifest(
+function getServerActionManifest(
   _distFolder: string,
   platform: string
-): Promise<
-  Record<
-    // Input ID
+): Record<
+  // Input ID
+  string,
+  [
+    // Metro ID
     string,
-    [
-      // Metro ID
-      string,
-      // Chunk location.
-      string,
-    ]
-  >
+    // Chunk location.
+    string,
+  ]
 > {
   const filePath = `../../rsc/${platform}/action-manifest.js`;
   return serverRequire(filePath);
 }
 
-async function getSSRManifest(
+function getSSRManifest(
   _distFolder: string,
   platform: string
-): Promise<
-  Record<
-    // Input ID
+): Record<
+  // Input ID
+  string,
+  [
+    // Metro ID
     string,
-    [
-      // Metro ID
-      string,
-      // Chunk location.
-      string,
-    ]
-  >
+    // Chunk location.
+    string,
+  ]
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
   return serverRequire(filePath);
@@ -99,8 +95,8 @@ export async function renderRscWithImportsAsync(
     rewrites: Constants.expoConfig?.extra?.router?.rewrites,
   });
 
-  const ssrManifest = await getSSRManifest(distFolder, platform);
-  const actionManifest = await getServerActionManifest(distFolder, platform);
+  const ssrManifest = getSSRManifest(distFolder, platform);
+  const actionManifest = getServerActionManifest(distFolder, platform);
   return renderRsc(
     {
       body: body ?? undefined,

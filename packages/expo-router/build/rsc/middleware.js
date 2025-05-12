@@ -25,11 +25,11 @@ function getRscRenderContext(platform) {
     rscRenderContext.set(platform, context);
     return context;
 }
-async function getServerActionManifest(_distFolder, platform) {
+function getServerActionManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/action-manifest.js`;
     return serverRequire(filePath);
 }
-async function getSSRManifest(_distFolder, platform) {
+function getSSRManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
     return serverRequire(filePath);
 }
@@ -45,8 +45,8 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         redirects: expo_constants_1.default.expoConfig?.extra?.router?.redirects,
         rewrites: expo_constants_1.default.expoConfig?.extra?.router?.rewrites,
     });
-    const ssrManifest = await getSSRManifest(distFolder, platform);
-    const actionManifest = await getServerActionManifest(distFolder, platform);
+    const ssrManifest = getSSRManifest(distFolder, platform);
+    const actionManifest = getServerActionManifest(distFolder, platform);
     return (0, rsc_renderer_1.renderRsc)({
         body: body ?? undefined,
         context,
