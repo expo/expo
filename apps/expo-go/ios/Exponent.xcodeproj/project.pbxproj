@@ -4,6 +4,7 @@
 	classes = {
 	};
 	objectVersion = 70;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -449,6 +450,11 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2D1A6CC92D9B38910007E94A /* Notifications */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Notifications; sourceTree = "<group>"; };
+		2D1A6CC92D9B38910007E94A /* Notifications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1242,7 +1248,6 @@
 				};
 			};
 			buildConfigurationList = 78CEE2BB1ACD07D70095B124 /* Build configuration list for PBXProject "Exponent" */;
-			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1251,6 +1256,7 @@
 				Base,
 			);
 			mainGroup = 78CEE2B71ACD07D70095B124;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 78CEE2C11ACD07D70095B124 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
