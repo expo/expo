@@ -3,12 +3,20 @@ title: Mods
 description: Learn about mods and how to use them when creating a config plugin.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
 import { FileTree } from '~/ui/components/FileTree';
 
-Config plugins use "mods" to modify native project files during the prebuild process. Mods are powerful tools that allow you to make changes to platform-specific files such as **AndroidManifest.xml**, **Info.plist**, and other native configuration files without having to manually edit them.
+This guide explains what are mod plugins, how they mods and mod plugins work, and how to use them effectively when creating config plugins for your Expo project.
 
-This guide explains what mods are, how they work, and how to use them effectively when creating config plugins for your Expo project.
+<BoxLink
+  title="What are mods?"
+  description="For information about config plugins terminology, and mods, check out the introduction."
+  href="/config-plugins/introduction/"
+  Icon={BookOpen02Icon}
+/>
 
 ## What are mods
 
@@ -345,9 +353,7 @@ We support this to make testing, and plugin authoring easier, but we don't expec
 
 ## Why app.plugin.js for plugins
 
-Config resolution searches for a file named **app.plugin.js** first when a Node module name is provided as a plugin. This is because Node environments are often different compared Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
-
-Because of this reason, the root of a Node module is searched instead of right next to the **index.js**. Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**, if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
+Config resolution searches for a file named **app.plugin.js** first when a Node module name is provided as a plugin. This is because Node environments are often different compared Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`). This is why **app.plugin.js** files must be stored at the root of your project.
 
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
