@@ -41,5 +41,8 @@
     "react-native-web": {
       "optional": true
     }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }
