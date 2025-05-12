@@ -25,23 +25,13 @@ function getRscRenderContext(platform) {
     rscRenderContext.set(platform, context);
     return context;
 }
-function interopDefault(mod) {
-    if ('default' in mod && typeof mod.default === 'object' && mod.default) {
-        const def = mod.default;
-        if ('default' in def && typeof def.default === 'object' && def.default) {
-            return def.default;
-        }
-        return mod.default;
-    }
-    return mod;
-}
 async function getServerActionManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/action-manifest.js`;
-    return interopDefault(serverRequire(filePath));
+    return serverRequire(filePath);
 }
 async function getSSRManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-    return interopDefault(serverRequire(filePath));
+    return serverRequire(filePath);
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
     globalThis.__expo_platform_header = platform;

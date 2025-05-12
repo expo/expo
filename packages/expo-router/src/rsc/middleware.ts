@@ -37,17 +37,6 @@ function getRscRenderContext(platform: string) {
   return context;
 }
 
-function interopDefault(mod: any) {
-  if ('default' in mod && typeof mod.default === 'object' && mod.default) {
-    const def = mod.default;
-    if ('default' in def && typeof def.default === 'object' && def.default) {
-      return def.default;
-    }
-    return mod.default;
-  }
-  return mod;
-}
-
 async function getServerActionManifest(
   _distFolder: string,
   platform: string
@@ -64,7 +53,7 @@ async function getServerActionManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/action-manifest.js`;
-  return interopDefault(serverRequire(filePath));
+  return serverRequire(filePath);
 }
 
 async function getSSRManifest(
@@ -83,7 +72,7 @@ async function getSSRManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-  return interopDefault(serverRequire(filePath));
+  return serverRequire(filePath);
 }
 
 // The import map allows us to use external modules from different bundling contexts.
