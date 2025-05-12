@@ -427,7 +427,7 @@ OnActivityResult { activity, payload ->
 
 ## View Definition components
 
-The view definition consists of the DSL components that describe the view's functionality and behavior. Those component can only be used within a [`View`](#view) closure.
+The view definition consists of the DSL components that describe the view's functionality and behavior. Those components can only be used within a [`View`](#view) closure.
 
 <PaddedAPIBox header="Name">
 
@@ -477,7 +477,7 @@ Defines the view lifecycle method that is called when the view finished updating
 ```swift
 View(MyView.self) {
   OnViewDidUpdateProps { view: MyView in
-    // ...
+    /* @hide ... */ /* @end */
   }
 }
 ```
@@ -485,7 +485,7 @@ View(MyView.self) {
 ```kotlin
 View(MyView::class) {
   OnViewDidUpdateProps { view: MyView ->
-    // ...
+    /* @hide ... */ /* @end */
   }
 }
 ```
