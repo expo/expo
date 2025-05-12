@@ -437,7 +437,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
    * Defines event names that this module can send to JavaScript.
    */
   fun Events(vararg events: String) {
-    eventsDefinition = EventsDefinition(events)
+    eventsDefinition = EventsDefinition(events.asList().toTypedArray())
   }
 
   /**
