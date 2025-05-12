@@ -569,6 +569,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/styleguide-icons@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@expo/styleguide-icons@npm:2.2.2"
+  dependencies:
+    tailwind-merge: "npm:^2.5.4"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 10c0/df24b2c7652f4237eb6db9301cb58dbbe81bb955e94f69469a0e6e2668b9312828283f8dbbc3ae9382ac00a7ea6142222af553f80ba6443ddfca08d240b70948
+  languageName: node
+  linkType: hard
+
 "@expo/styleguide-search-ui@npm:^2.3.4":
   version: 2.3.4
   resolution: "@expo/styleguide-search-ui@npm:2.3.4"
@@ -5719,7 +5730,7 @@ __metadata:
     "@expo/spawn-async": "npm:^1.7.2"
     "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-base": "npm:^2.0.3"
-    "@expo/styleguide-icons": "npm:^2.2.0"
+    "@expo/styleguide-icons": "npm:^2.2.2"
     "@expo/styleguide-search-ui": "npm:^2.3.4"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
