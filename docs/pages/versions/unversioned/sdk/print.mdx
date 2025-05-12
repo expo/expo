@@ -122,7 +122,6 @@ import { Asset } from 'expo-asset';
 import { useImageManipulator } from 'expo-image-manipulator';
 import { printAsync } from 'expo-print';
 import { useEffect } from 'react';
-import { View } from 'react-native';
 
 const IMAGE = Asset.fromModule(require('@/assets/images/icon.png'));
 
@@ -153,7 +152,7 @@ export function ImageManipulatorExample() {
     generateAndPrint();
   }, [context]);
 
-  return <View />;
+  return <>{/* Render UI */}</>;
 }
 ```
 
