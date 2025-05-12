@@ -357,7 +357,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         }
         return depId;
     }
-    function disconnectGraphNode(graphModule, importModuleId, { isSideEffectyImport } = {}) {
+    function disconnectGraphNode(graphModule, importModuleId, { isSideEffectyImport, bailOnDuplicateDefaultExport, } = {}) {
         // Unlink the module in the graph
         // The hash key for the dependency instance in the module.
         const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
@@ -371,6 +371,15 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         //
         if (graphEntryForTargetImport.path.match(/\.(s?css|sass)$/)) {
             debug('Skip graph unlinking for CSS:');
+            debug('- Origin module:', graphModule.path);
+            debug('- Module ID:', importModuleId);
+            // Skip CSS imports.
+            return { path: importInstance.absolutePath, removed: false };
+        }
+        if (bailOnDuplicateDefaultExport &&
+            // @ts-expect-error: exportNames is added by babel
+            importInstance.data.data.exportNames?.includes('default')) {
+            debug('Skip graph unlinking for duplicate default export:');
             debug('- Origin module:', graphModule.path);
             debug('- Module ID:', importModuleId);
             // Skip CSS imports.
@@ -558,7 +567,11 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     // If export from import then check if we can remove the import.
                     if (importModuleId) {
                         if (path.node.specifiers.length === 0) {
-                            const removeRequest = disconnectGraphNode(value, importModuleId);
+                            const removeRequest = disconnectGraphNode(value, importModuleId, {
+                                // Due to a quirk in how we've added tree shaking, export-all is expanded and could overlap with existing exports in the same module.
+                                // If we find that the existing export has a default export then we should skip removing the node entirely.
+                                bailOnDuplicateDefaultExport: true,
+                            });
                             if (removeRequest.removed) {
                                 dirtyImports.push(removeRequest.path);
                                 // TODO: Update source maps
