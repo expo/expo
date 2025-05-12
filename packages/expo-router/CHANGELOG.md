@@ -11,6 +11,7 @@
 - Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
 - Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
 - Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
+- Fix useLocalSearchParams returning "undefined" for deleted params ([#36811](https://github.com/expo/expo/pull/36811) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
