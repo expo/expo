@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "start": "expo start --port 80",
+    "start": "expo start --port 8080",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
