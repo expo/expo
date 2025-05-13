@@ -42,11 +42,11 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6",
+    "expo-module-scripts": "^4.1.7",
     "memfs": "^3.2.0"
   },
   "dependencies": {
-    "@expo/config": "~11.0.9",
+    "@expo/config": "~11.0.10",
     "@expo/config-plugins": "~10.0.2",
     "@expo/env": "~1.0.5",
     "@expo/spawn-async": "^1.7.2",

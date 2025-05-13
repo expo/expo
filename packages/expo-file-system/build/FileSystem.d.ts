@@ -185,7 +185,7 @@ export declare class UploadTask extends FileSystemCancellableNetworkTask<UploadP
     constructor(url: string, fileUri: string, options?: FileSystemUploadOptions, callback?: FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined);
     protected getEventName(): string;
     protected getCallback(): FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined;
-    uploadAsync(): Promise<FileSystemUploadResult | undefined>;
+    uploadAsync(): Promise<FileSystemUploadResult | undefined | null>;
 }
 export declare class DownloadResumable extends FileSystemCancellableNetworkTask<DownloadProgressData> {
     private url;

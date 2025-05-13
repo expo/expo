@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.4.5 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Correctly handle recording URL's and local assets in production. ([#36737](https://github.com/expo/expo/pull/36737) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.4.4 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

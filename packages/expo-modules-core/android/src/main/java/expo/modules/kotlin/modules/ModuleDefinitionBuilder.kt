@@ -162,7 +162,7 @@ open class InternalModuleDefinitionBuilder(
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, toAnyType<Unit>())
+    val clazzBuilder = ClassComponentBuilder(requireNotNull(module).appContext, name, Unit::class, toAnyType<Unit>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -172,7 +172,7 @@ open class InternalModuleDefinitionBuilder(
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, toAnyType<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(requireNotNull(module).appContext, name, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -181,7 +181,7 @@ open class InternalModuleDefinitionBuilder(
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(requireNotNull(module).appContext, sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

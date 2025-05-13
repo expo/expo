@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix tree shaking overlapping exports ([#36717](https://github.com/expo/expo/pull/36717) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.20.14 — 2025-05-06

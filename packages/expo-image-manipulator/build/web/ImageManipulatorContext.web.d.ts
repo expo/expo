@@ -1,10 +1,12 @@
 import { SharedObject } from 'expo';
-import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 import { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
+import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 export default class ImageManipulatorContext extends SharedObject {
     private loader;
-    private currentTask;
+    private _currentTask;
+    get currentTask(): Promise<HTMLCanvasElement>;
+    set currentTask(task: Promise<HTMLCanvasElement>);
     constructor(loader?: ContextLoader);
     resize(size: {
         width: number;

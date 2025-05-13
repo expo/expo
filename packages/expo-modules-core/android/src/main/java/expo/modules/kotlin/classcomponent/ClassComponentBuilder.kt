@@ -2,6 +2,7 @@
 
 package expo.modules.kotlin.classcomponent
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
@@ -10,6 +11,7 @@ import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.traits.Trait
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toAnyType
@@ -19,11 +21,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
+  private val appContext: AppContext,
   val name: String,
   private val ownerClass: KClass<SharedObjectType>,
   val ownerType: AnyType
 ) : ObjectDefinitionBuilder() {
   var constructor: SyncFunctionComponent? = null
+  val traits = mutableListOf<Trait<in SharedObjectType>>()
 
   fun buildClass(): ClassDefinitionData {
     val hasOwnerType = ownerClass != Unit::class
@@ -43,7 +47,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
         }
     }
 
-    val objectData = buildObject()
+    val objectData = buildObject() + traits.map { t -> t.export(appContext) }.reduceOrNull { t1, t2 -> t1 + t2 }
+
     objectData.functions.forEach {
       it.ownerType = ownerType.kType
       it.canTakeOwner = true
@@ -68,6 +73,10 @@ class ClassComponentBuilder<SharedObjectType : Any>(
       objectData,
       isSharedRef
     )
+  }
+
+  fun UseTrait(trait: Trait<in SharedObjectType>) {
+    traits.add(trait)
   }
 
   inline fun Constructor(

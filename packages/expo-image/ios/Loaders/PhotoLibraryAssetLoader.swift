@@ -107,12 +107,9 @@ private func requestAsset(
     }
   }
 
-  let screenScale = context?[ImageView.screenScaleKey] as? Double ?? UIScreen.main.scale
-  let targetSize = CGSize(width: Double(asset.pixelWidth) / screenScale, height: Double(asset.pixelHeight) / screenScale)
-
   return PHImageManager.default().requestImage(
     for: asset,
-    targetSize: targetSize,
+    targetSize: PHImageManagerMaximumSize,
     contentMode: .aspectFit,
     options: options,
     resultHandler: { image, info in

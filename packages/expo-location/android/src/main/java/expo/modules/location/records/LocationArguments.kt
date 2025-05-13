@@ -45,16 +45,19 @@ internal class LocationTaskOptions(
   @Field var deferredUpdatesTimeout: Float? = null,
   @Field var foregroundService: LocationTaskServiceOptions? = null
 ) : LocationOptions() {
-  internal fun toMutableMap() = mutableMapOf(
+  internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>(
     "accuracy" to accuracy,
     "distanceInterval" to distanceInterval,
     "mayShowUserSettingsDialog" to mayShowUserSettingsDialog,
     "timeInterval" to timeInterval,
     "deferredUpdatesDistance" to deferredUpdatesDistance,
     "deferredUpdatesInterval" to deferredUpdatesInterval,
-    "deferredUpdatesTimeout" to deferredUpdatesTimeout,
-    "foregroundService" to (foregroundService?.toMutableMap() ?: mutableMapOf())
-  )
+    "deferredUpdatesTimeout" to deferredUpdatesTimeout
+  ).apply {
+    foregroundService?.let {
+      this["foregroundService"] = it.toMutableMap()
+    }
+  }
 }
 
 internal class LocationTaskServiceOptions(
