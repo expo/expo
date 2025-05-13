@@ -61,7 +61,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 ### Plugin development best practices
 
-- **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package. If anything goes wrong with the plugin, developers should be able to manually add the project modifications which were automated by the plugin. This also allows you to support projects that are not using [CNG](/workflow/continuous-native-generation/).
+- **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package. If anything goes wrong with the plugin, developers should be able to manually add the project modifications that were automated by the plugin. This also allows you to support projects that are not using [CNG](/workflow/continuous-native-generation/).
   - Document the available properties for the plugin, specifying if any of the properties are required.
   - If possible, plugins should be idempotent, meaning the changes they make are the same whether they are run on a fresh native project template or run again on a project template where its changes already exist. This allows developers to run `npx expo prebuild` without the `--clean` flag to sync changes to the config, rather than recreating the native project entirely. This may be more difficult with dangerous mods.
 - **Naming conventions**: Use `withFeatureName` for the plugin function name if it applies to all platforms. If the plugin is platform specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
@@ -119,7 +119,7 @@ If possible, attempt to make your plugin work without props, this will help reso
 We highly recommend installing the [Expo Tools VS Code extension][vscode-expo]
 as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
-### Set up up a playground environment
+### Set up a playground environment
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
@@ -370,7 +370,7 @@ As you can see from the example, we rely heavily on application code (expo-modul
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors. By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
-Running `npx expo prebuild --clean` with remove the generated native directories before compiling.
+Running `npx expo prebuild --clean` will remove the generated native directories before compiling.
 
 You can also run `npx expo config --type prebuild` to print the results of the plugins with the mods unevaluated (no code is generated).
 
@@ -602,7 +602,7 @@ For more info, see [the PR that adds support](https://github.com/expo/expo-cli/p
 
 ## expo install
 
-When a node module is installed with the `npx expo install` command, if it includes a config plugin, it will be added to the project's app config automatically. This makes setup a easier and helps prevent users from forgetting to add a plugin. However, this does come with a couple of caveats:
+When a node module is installed with the `npx expo install` command, if it includes a config plugin, it will be added to the project's app config automatically. This makes setup easier and helps prevent users from forgetting to add a plugin. However, this does come with a couple of caveats:
 
 1. `npx expo install` only adds config plugins using the root **app.config.js** file automatically to the app manifest. This rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props, then `expo-camera` would throw an error.
