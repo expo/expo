@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Remove `testDebug` variant from npm package.
+- [Android] Remove `testDebug` variant from npm package. ([#36845](https://github.com/expo/expo/pull/36845) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
