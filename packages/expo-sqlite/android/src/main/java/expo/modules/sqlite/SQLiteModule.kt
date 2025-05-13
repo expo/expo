@@ -579,9 +579,7 @@ class SQLiteModule : Module() {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
+    database.ref.sqlite3_finalize_all_statement()
   }
 
   // endregion
