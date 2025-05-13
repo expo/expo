@@ -316,6 +316,20 @@ describe(useLocalSearchParams, () => {
     expectType<{ a?: string }>(params);
     expectType<string | undefined>(params.a);
   });
+
+  it('does not return undefined search params', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1&test=2',
+    });
+
+    expect(result.current).toEqual({
+      test: ['1', '2'],
+    });
+
+    act(() => router.setParams({ test: undefined }));
+
+    expect(result.current).toEqual({});
+  });
 });
 
 describe(usePathname, () => {
