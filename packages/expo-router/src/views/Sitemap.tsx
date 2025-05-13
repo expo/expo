@@ -65,9 +65,10 @@ export function Sitemap() {
 function FileSystemView() {
   // This shouldn't occur, as the user should be on the tutorial screen
   if (!store.routeNode) return null;
+  const children = store.routeNode.children.filter(({ internal }) => !internal).sort(sortRoutes);
 
-  return store.routeNode.children.sort(sortRoutes).map((route) => (
-    <View key={route.contextKey} style={styles.itemContainer}>
+  return children.map((route) => (
+    <View testID="sitemap-item-container" key={route.contextKey} style={styles.itemContainer}>
       <FileItem route={route} />
     </View>
   ));
@@ -143,6 +144,7 @@ function FileItem({
           <Pressable>
             {({ pressed, hovered }) => (
               <View
+                testID="sitemap-item"
                 style={[
                   styles.itemPressable,
                   {
