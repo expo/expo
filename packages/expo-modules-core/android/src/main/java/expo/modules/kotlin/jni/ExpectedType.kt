@@ -1,7 +1,7 @@
 package expo.modules.kotlin.jni
 
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.exception.InvalidExpectedType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -116,24 +116,14 @@ class ExpectedType(
     )
 
     fun fromKType(type: KType): ExpectedType {
-      val kClass = type.classifier as? KClass<*> ?: throw IllegalArgumentException("...")
-      if (Int::class == kClass) {
-        return ExpectedType(SingleType(CppType.INT))
-      }
-      if (Long::class == kClass) {
-        return ExpectedType(SingleType(CppType.LONG))
-      }
-      if (Double::class == kClass) {
-        return ExpectedType(SingleType(CppType.DOUBLE))
-      }
-      if (Float::class == kClass) {
-        return ExpectedType(SingleType(CppType.FLOAT))
-      }
-      if (Boolean::class == kClass) {
-        return ExpectedType(SingleType(CppType.BOOLEAN))
-      }
-      if (String::class == kClass) {
-        return ExpectedType(SingleType(CppType.STRING))
+      val kClass = type.classifier as? KClass<*> ?: throw IllegalArgumentException("Cannot obtain KClass from '$type'")
+      when (kClass) {
+        Int::class -> return ExpectedType(SingleType(CppType.INT))
+        Long::class -> return ExpectedType(SingleType(CppType.LONG))
+        Double::class -> return ExpectedType(SingleType(CppType.DOUBLE))
+        Float::class -> return ExpectedType(SingleType(CppType.FLOAT))
+        Boolean::class -> return ExpectedType(SingleType(CppType.BOOLEAN))
+        String::class -> return ExpectedType(SingleType(CppType.STRING))
       }
       if (kClass.java.isAssignableFrom(List::class.java)) {
         val argType = type.arguments.firstOrNull()?.type
@@ -147,7 +137,7 @@ class ExpectedType(
           return forMap(fromKType(argType))
         }
       }
-      throw MissingTypeConverter(type)
+      throw InvalidExpectedType(type)
     }
   }
 }
