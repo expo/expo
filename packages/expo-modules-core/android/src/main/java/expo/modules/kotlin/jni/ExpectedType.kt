@@ -1,6 +1,9 @@
 package expo.modules.kotlin.jni
 
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.exception.InvalidExpectedType
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * A basic class that represents metadata about the expected type.
@@ -67,6 +70,21 @@ class ExpectedType(
     )
   }
 
+  override operator fun equals(other: Any?): Boolean {
+    if (other !is ExpectedType) return false
+
+    if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) return false
+    for (i in this.innerPossibleTypes.indices) {
+      if (this.innerPossibleTypes[i].expectedCppType != other.innerPossibleTypes[i].expectedCppType) {
+        return false
+      }
+      if (this.innerPossibleTypes[i].getFirstParameterType() != other.innerPossibleTypes[i].getFirstParameterType()) {
+        return false
+      }
+    }
+    return true
+  }
+
   companion object {
     fun forPrimitiveArray(parameterType: CppType) = ExpectedType(
       SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(ExpectedType(parameterType)))
@@ -96,5 +114,30 @@ class ExpectedType(
     fun forMap(valueType: ExpectedType) = ExpectedType(
       SingleType(CppType.MAP, arrayOf(valueType))
     )
+
+    fun fromKType(type: KType): ExpectedType {
+      val kClass = type.classifier as? KClass<*> ?: throw IllegalArgumentException("Cannot obtain KClass from '$type'")
+      when (kClass) {
+        Int::class -> return ExpectedType(SingleType(CppType.INT))
+        Long::class -> return ExpectedType(SingleType(CppType.LONG))
+        Double::class -> return ExpectedType(SingleType(CppType.DOUBLE))
+        Float::class -> return ExpectedType(SingleType(CppType.FLOAT))
+        Boolean::class -> return ExpectedType(SingleType(CppType.BOOLEAN))
+        String::class -> return ExpectedType(SingleType(CppType.STRING))
+      }
+      if (kClass.java.isAssignableFrom(List::class.java)) {
+        val argType = type.arguments.firstOrNull()?.type
+        if (argType != null) {
+          return forList(fromKType(argType))
+        }
+      }
+      if (kClass.java.isAssignableFrom(Map::class.java)) {
+        val argType = type.arguments.getOrNull(1)?.type
+        if (argType != null) {
+          return forMap(fromKType(argType))
+        }
+      }
+      throw InvalidExpectedType(type)
+    }
   }
 }
