@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Prevent `maybeFinalizeAllStatements` throwing exceptions. ([#36843](https://github.com/expo/expo/pull/36843) by [@kudo](https://github.com/kudo))
+
 ## 15.2.10 — 2025-05-08
 
 ### 🐛 Bug fixes
