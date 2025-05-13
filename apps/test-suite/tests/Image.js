@@ -1,6 +1,6 @@
 'use strict';
 
-import { Image, useImage } from 'expo-image';
+import { Image } from 'expo-image';
 import React from 'react';
 import { Platform } from 'react-native';
 
