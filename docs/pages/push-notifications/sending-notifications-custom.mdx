@@ -126,13 +126,13 @@ Communicating with APNs is a little more complicated than with FCM. Some librari
 
 The steps below will only work if your iOS app has the APNs entitlement. There are two ways to ensure that this entitlement is added to your app:
 
-- If the app includes the `expo-notifications` package, then the entitlement is added automatically in the Expo configuration.
-- If you are not using the `expo-notifications` package, then you should [add the `apns-environment` entitlement manually to the Expo configuration](/build-reference/ios-capabilities/#entitlements).
+- If the app includes the `expo-notifications` library, then the entitlement is added automatically in the Expo configuration.
+- If you are not using the `expo-notifications` library, then you should [add the `aps-environment` entitlement manually to the Expo configuration](/build-reference/ios-capabilities/#entitlements).
 
 For apps using [CNG](/workflow/continuous-native-generation/), the prebuild step will automatically add the entitlement to the generated native iOS files.
 If you are not using CNG, then you should [add the push notification entitlement in Xcode](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
 
-> **Note**: If you are upgrading an Expo app from a version prior to SDK 51, you should refer to [this FYI document](https://expo.fyi/apns-entitlement-sdk-51).
+> **Note**: If you are upgrading an Expo app from a version before SDK 51, you should refer to [this FYI document](https://expo.fyi/apns-entitlement-sdk-51).
 
 ### Authorization
 
