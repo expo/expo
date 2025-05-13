@@ -40,7 +40,7 @@ function findBundlePath(
     return path.join(testUpdateBundlesPath, bundleUrl);
   } else {
     throw new Error(
-      `There is no bundle for notifyString = ${notifyString}. Please add this to the strings used to generate test bundles in 'project.js' (setupBasicAppAsync() or setupAssetsAppAsync())'`
+      `There is no bundle for notifyString = ${notifyString}. Add this to the strings used to generate test bundles in 'project.js' (setupBasicAppAsync() or setupAssetsAppAsync())'`
     );
   }
 }

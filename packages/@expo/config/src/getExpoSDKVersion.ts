@@ -23,7 +23,7 @@ function getExpoSDKVersionFromPackage(projectRoot: string): string {
   const packageJsonPath = resolveFrom.silent(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
     throw new ConfigError(
-      `Cannot determine which native SDK version your project uses because the module \`expo\` is not installed. Please install it with \`yarn add expo\` and try again.`,
+      `Cannot determine which native SDK version your project uses because the module \`expo\` is not installed. Install it with \`npm install expo\` and try again.`,
       'MODULE_NOT_FOUND'
     );
   }

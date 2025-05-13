@@ -168,7 +168,7 @@ async function resize({ input, quality = 100 }, { background, position, fit, wid
         initialImage = initialImage.contain(width, height, jimpPosition);
     }
     else {
-        throw new Error(`Unsupported fit: ${fit}. Please choose either 'cover', or 'contain' when using Jimp`);
+        throw new Error(`Unsupported fit: ${fit}. Supported values are 'cover' or 'contain' when using Jimp`);
     }
     if (background) {
         initialImage = initialImage.composite(new jimp_compact_1.default(width, height, background), 0, 0, {

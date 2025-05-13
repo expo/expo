@@ -55,10 +55,10 @@ async function platformSanityCheckAsync({ exp, projectRoot, platform, }) {
     }
     // Check package and bundle identifier are defined.
     if (platform === 'android' && !exp.android?.package) {
-        throw new Error(`android.package is not defined in your app config. Please define it before running this command.`);
+        throw new Error(`android.package is not defined in your app config. Define it before running this command.`);
     }
     if (platform === 'ios' && !exp.ios?.bundleIdentifier) {
-        throw new Error(`ios.bundleIdentifier is not defined in your app config. Please define it before running this command.`);
+        throw new Error(`ios.bundleIdentifier is not defined in your app config. Define it before running this command.`);
     }
     // Check if git is installed.
     try {
