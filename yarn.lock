@@ -7730,10 +7730,10 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.4.0.tgz#1f83f948c3cf88e9fcc9829199a0bbcd031e0068"
-  integrity sha512-UFLN0o53yjooLjPj98+NGzWPAFvr917D+7nPEELW1qXuEj3X4eqrQUdrbckdpIFQz5ke0FK3TvmB5WR+to0JzQ==
+expo-atlas@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.4.1.tgz#0cbb4e6247a4b55ce86822f9e91de2550ae6872c"
+  integrity sha512-OMXrS6Us79jJga1LTwA/6BSUi/U70P77h9jfAG2ZpY0xRjroro+0D1/B84ECy0wNmCWDdYz3GSilaG3Da82vHA==
   dependencies:
     "@expo/server" "^0.5.0"
     arg "^5.0.2"
@@ -7742,7 +7742,7 @@ expo-atlas@^0.4.0:
     connect "^3.7.0"
     express "^4.19.2"
     freeport-async "^2.0.0"
-    getenv "^1.0.0"
+    getenv "^2.0.0"
     morgan "^1.10.0"
     open "^8.4.2"
     serve-static "^1.15.0"
@@ -8459,11 +8459,6 @@ get-value@^2.0.3, get-value@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
-
-getenv@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/getenv/-/getenv-1.0.0.tgz#874f2e7544fbca53c7a4738f37de8605c3fcfc31"
-  integrity sha512-7yetJWqbS9sbn0vIfliPsFgoXMKn/YMF+Wuiog97x+urnSRRRZ7xB+uVkwGKzRgq9CDFfMQnE9ruL5DHv9c6Xg==
 
 getenv@^2.0.0:
   version "2.0.0"
