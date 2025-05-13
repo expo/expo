@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 4.0.21 — 2025-05-05
