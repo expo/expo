@@ -132,17 +132,13 @@ the Expo config needs to be modified in one of two ways:
 ```json app.json
 {
   "expo": {
-    /* @hide ... */ /* @end */
-    "plugins": [
-      /* @hide ... */ /* @end */
-      "expo-notifications"
-    ]
+    /* @hide ... */ /* @end */ "plugins": [/* @hide ... */ /* @end */ "expo-notifications"]
   }
 }
 ```
 
 - If you do not plan to use the `expo-notifications` library, then you should [add the `aps-environment` entitlement manually to the Expo configuration](/build-reference/ios-capabilities/#entitlements),
-as in the example below:
+  as in the example below:
 
 ```json app.json
 {
