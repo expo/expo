@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Remove `testDebug` variant from npm package.
+
 ### 💡 Others
 
 ## 5.1.11 — 2025-05-01
