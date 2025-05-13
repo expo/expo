@@ -694,17 +694,13 @@ public final class SQLiteModule: Module {
     if stmt == nil {
       return
     }
-    var result = SQLITE_OK
     while let currentStmt = stmt {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
       let ret = exsqlite3_finalize(currentStmt)
       if ret != SQLITE_OK {
-        result = ret
+        ExpoModulesCore.log.warn("sqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
-    }
-    if result != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 
