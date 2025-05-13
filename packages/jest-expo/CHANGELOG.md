@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `requireOptionalNativeModule` throwing error if mock is missing.
+
 ### 💡 Others
 
 - Rework mock generation for expo modules. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
