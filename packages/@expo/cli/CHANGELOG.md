@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix virtual externalized module checking for `window` for web worker code ([#36852](https://github.com/expo/expo/pull/36852) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
 
 ## 0.24.13 — 2025-05-08
 
