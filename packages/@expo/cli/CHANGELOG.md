@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- noop non-fabric renderer when new architecture is enabled. ([#36757](https://github.com/expo/expo/pull/36757) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
