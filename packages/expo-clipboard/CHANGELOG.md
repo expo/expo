@@ -8,9 +8,10 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Refactor deprecated code ([#36714](https://github.com/expo/expo/pull/36714) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
+
+- [iOS] Refactor deprecated code ([#36714](https://github.com/expo/expo/pull/36714) by [@hirbod](https://github.com/hirbod))
 
 ## 7.1.4 — 2025-04-30
 
