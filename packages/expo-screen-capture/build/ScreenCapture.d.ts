@@ -10,8 +10,8 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
- * > Please note that on iOS, this will only prevent screen recordings, and is only available on
- * iOS 11 and newer. On older iOS versions, this method does nothing.
+ * > On iOS, this will only prevent screen recordings, and is only available on iOS 11 and newer. On older
+ * iOS versions, this method does nothing.
  *
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
  * and `allowScreenCaptureAsync` methods (and `usePreventScreenCapture` hook) from conflicting with each other.

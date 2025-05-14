@@ -37,7 +37,7 @@ function setSplashInfoPlist(config, infoPlist, splash) {
     const existing = config.ios?.userInterfaceStyle ?? config.userInterfaceStyle;
     // Add a warning to prevent the dark mode splash screen from not being shown -- this was learned the hard way.
     if (existing && existing !== 'automatic') {
-      _configPlugins().WarningAggregator.addWarningIOS('userInterfaceStyle', 'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Please remove it or disable dark mode splash screens.');
+      _configPlugins().WarningAggregator.addWarningIOS('userInterfaceStyle', 'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Remove it or disable dark mode splash screens.');
     }
     // assigning it to auto anyways, but this is fragile because the order of operations matter now
     infoPlist.UIUserInterfaceStyle = 'Automatic';

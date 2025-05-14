@@ -386,7 +386,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
+              `The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`
             );
           }
         } else {
@@ -409,7 +409,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The API route file "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
+              `The API route file "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`
             );
           }
         } else {
@@ -434,7 +434,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // In production, use the first route found
           if (process.env.NODE_ENV !== 'production') {
             throw new Error(
-              `The route files "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`
+              `The route files "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`
             );
           }
         } else {
@@ -562,7 +562,7 @@ function getFileMeta(
   if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
     const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
     throw new Error(
-      `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`
+      `Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`
     );
   }
   let specificity = 0;
@@ -592,7 +592,7 @@ function getFileMeta(
 
     if (isApi && specificity !== 0) {
       throw new Error(
-        `Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`
+        `API routes cannot have platform extensions. Remove '.${platformExtension}' from '${originalKey}'`
       );
     }
 
