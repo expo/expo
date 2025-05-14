@@ -91,16 +91,16 @@ export async function showLoginPromptAsync({
   }
 }
 
-/** Ensure the user is logged in, if not, prompt to login. */
-export async function ensureLoggedInAsync(): Promise<Actor> {
-  let user = await getUserAsync().catch(() => null);
+export async function tryGetUserAsync(): Promise<Actor | null> {
+  const user = await getUserAsync().catch(() => null);
 
   if (!user) {
-    Log.warn(chalk.yellow`An Expo user account is required to proceed.`);
-    await showLoginPromptAsync({ printNewLine: true });
-    user = await getUserAsync();
+    Log.warn(
+      chalk.yellow`Proceeding anonymously. You may want to log in with "npx expo login"\n{dim ${learnMore(
+        'https://expo.fyi/cli-login'
+      )}}\n`
+    );
   }
 
-  assert(user, 'User should be logged in');
-  return user;
+  return user ?? null;
 }
