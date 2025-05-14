@@ -50,6 +50,7 @@ export const Notifier = () => {
         importance: AndroidImportance.HIGH,
         sound: 'pop_sound.wav',
         enableVibrate: true,
+        showBadge: true,
         vibrationPattern: [0, 3000, 250, 250],
       })
         .then((value) => {
