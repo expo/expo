@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 10.0.2 — 2025-05-01
 
 ### 🐛 Bug fixes
