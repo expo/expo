@@ -122,12 +122,6 @@ function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) 
     <Link
       accessibilityLabel={node.contextKey}
       href={node.href}
-      onPress={() => {
-        if (Platform.OS !== 'web' && router.canGoBack()) {
-          // Ensure the modal pops
-          router.back();
-        }
-      }}
       asChild
       // Ensure we replace the history so you can't go back to this page.
       replace>

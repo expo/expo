@@ -11,7 +11,6 @@ const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
-const imperative_api_1 = require("../imperative-api");
 const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
 const statusbar_1 = require("../utils/statusbar");
@@ -75,12 +74,7 @@ function LayoutSitemapItem({ node, level, info }) {
     </>);
 }
 function StandardSitemapItem({ node, info, level }) {
-    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
-            if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
-                // Ensure the modal pops
-                imperative_api_1.router.back();
-            }
-        }} asChild 
+    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild 
     // Ensure we replace the history so you can't go back to this page.
     replace>
       <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
