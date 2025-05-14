@@ -62,7 +62,8 @@ function FileSystemView() {
     // This shouldn't occur, as the user should be on the tutorial screen
     if (!router_store_1.store.routeNode)
         return null;
-    return router_store_1.store.routeNode.children.sort(Route_1.sortRoutes).map((route) => (<react_native_1.View key={route.contextKey} style={styles.itemContainer}>
+    const children = router_store_1.store.routeNode.children.filter(({ internal }) => !internal).sort(Route_1.sortRoutes);
+    return children.map((route) => (<react_native_1.View testID="sitemap-item-container" key={route.contextKey} style={styles.itemContainer}>
       <FileItem route={route}/>
     </react_native_1.View>));
 }
@@ -105,7 +106,7 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
         // Ensure we replace the history so you can't go back to this page.
         replace>
           <Pressable_1.Pressable>
-            {({ pressed, hovered }) => (<react_native_1.View style={[
+            {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
                     styles.itemPressable,
                     {
                         paddingLeft: INDENT + level * INDENT,
