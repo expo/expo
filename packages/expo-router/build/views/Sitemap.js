@@ -55,26 +55,26 @@ function Sitemap() {
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-            <FileItem node={child}/>
+            <SitemapItem node={child}/>
           </react_native_1.View>))}
       </react_native_1.ScrollView>
     </react_native_1.View>);
 }
-function FileItem({ node, level = 0 }) {
+function SitemapItem({ node, level = 0 }) {
     const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);
     const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
     if (isLayout) {
-        return <LayoutFileItem node={node} level={level} info={info}/>;
+        return <LayoutSitemapItem node={node} level={level} info={info}/>;
     }
-    return <StandardFileItem node={node} level={level} info={info}/>;
+    return <StandardSitemapItem node={node} level={level} info={info}/>;
 }
-function LayoutFileItem({ node, level, info }) {
+function LayoutSitemapItem({ node, level, info }) {
     return (<>
-      <FileItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} filename={node.filename} level={level} info={info}/>
-      {node.children.map((child) => (<FileItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
+      <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} filename={node.filename} level={level} info={info}/>
+      {node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
     </>);
 }
-function StandardFileItem({ node, info, level }) {
+function StandardSitemapItem({ node, info, level }) {
     return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
             if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
                 // Ensure the modal pops
@@ -83,10 +83,10 @@ function StandardFileItem({ node, info, level }) {
         }} asChild 
     // Ensure we replace the history so you can't go back to this page.
     replace>
-      <FileItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
+      <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
     </Link_1.Link>);
 }
-function FileItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
+function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
     return (<Pressable_1.Pressable {...pressableProps}>
       {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
                 styles.itemPressable,

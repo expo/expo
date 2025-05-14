@@ -70,7 +70,7 @@ export function Sitemap() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {children.map((child) => (
           <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-            <FileItem node={child} />
+            <SitemapItem node={child} />
           </View>
         ))}
       </ScrollView>
@@ -78,13 +78,13 @@ export function Sitemap() {
   );
 }
 
-interface FileItemProps {
+interface SitemapItemProps {
   node: SitemapType;
   level?: number;
   info?: string;
 }
 
-function FileItem({ node, level = 0 }: FileItemProps) {
+function SitemapItem({ node, level = 0 }: SitemapItemProps) {
   const isLayout = React.useMemo(
     () => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/),
     [node]
@@ -92,14 +92,14 @@ function FileItem({ node, level = 0 }: FileItemProps) {
   const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
 
   if (isLayout) {
-    return <LayoutFileItem node={node} level={level} info={info} />;
+    return <LayoutSitemapItem node={node} level={level} info={info} />;
   }
-  return <StandardFileItem node={node} level={level} info={info} />;
+  return <StandardSitemapItem node={node} level={level} info={info} />;
 }
-function LayoutFileItem({ node, level, info }: Required<FileItemProps>) {
+function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
   return (
     <>
-      <FileItemPressable
+      <SitemapItemPressable
         style={{ opacity: 0.4 }}
         leftIcon={<PkgIcon />}
         filename={node.filename}
@@ -107,13 +107,17 @@ function LayoutFileItem({ node, level, info }: Required<FileItemProps>) {
         info={info}
       />
       {node.children.map((child) => (
-        <FileItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)} />
+        <SitemapItem
+          key={child.contextKey}
+          node={child}
+          level={level + (node.isGenerated ? 0 : 1)}
+        />
       ))}
     </>
   );
 }
 
-function StandardFileItem({ node, info, level }: Required<FileItemProps>) {
+function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
     <Link
       accessibilityLabel={node.contextKey}
@@ -127,7 +131,7 @@ function StandardFileItem({ node, info, level }: Required<FileItemProps>) {
       asChild
       // Ensure we replace the history so you can't go back to this page.
       replace>
-      <FileItemPressable
+      <SitemapItemPressable
         leftIcon={<FileIcon />}
         rightIcon={<ForwardIcon />}
         filename={node.filename}
@@ -138,7 +142,7 @@ function StandardFileItem({ node, info, level }: Required<FileItemProps>) {
   );
 }
 
-function FileItemPressable({
+function SitemapItemPressable({
   style,
   leftIcon,
   rightIcon,
