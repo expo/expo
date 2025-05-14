@@ -332,7 +332,10 @@ public final class ImageView: ExpoView {
 
   // MARK: - Processing
 
-  private func createTransformPipeline() -> SDImagePipelineTransformer {
+  private func createTransformPipeline() -> SDImagePipelineTransformer? {
+    if blurRadius <= 0 {
+      return nil
+    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]
