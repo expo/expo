@@ -17,6 +17,7 @@
 - Fix useRootNavigationState() error when used in root layout ([#37023](https://github.com/expo/expo/pull/37023) by [@marklawlor](https://github.com/marklawlor))
 - Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))
 - Fix inconsistent global param decoding ([#36973](https://github.com/expo/expo/pull/36973) by [@marklawlor](https://github.com/marklawlor))
+- Prevent error when using `<Screen options />` with prefetching ([#36866](https://github.com/expo/expo/pull/36866) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
