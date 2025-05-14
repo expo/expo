@@ -9,27 +9,26 @@ import {
 
 const pkg = require('expo-media-library/package.json');
 
-type GranularTypes = 'photo' | 'video' | 'audio';
-const GRANULAR_PERMISSIONS_MAP: Record<GranularTypes, string> = {
+type GranularPermission = 'photo' | 'video' | 'audio';
+const GRANULAR_PERMISSIONS_MAP: Record<GranularPermission, string> = {
   photo: 'android.permission.READ_MEDIA_IMAGES',
   video: 'android.permission.READ_MEDIA_VIDEO',
   audio: 'android.permission.READ_MEDIA_AUDIO',
 };
-const defaultGranularPermissions: GranularTypes[] = [
+const defaultGranularPermissions: GranularPermission[] = [
   'photo',
   'video',
   'audio',
 ];
 
 export function modifyAndroidManifest(
-    manifest: AndroidConfig.Manifest.AndroidManifest
+  manifest: AndroidConfig.Manifest.AndroidManifest
 ): AndroidConfig.Manifest.AndroidManifest {
   // Starting with Android 10, the concept of scoped storage is introduced.
   // Currently, to make expo-media-library working with that change, you have to add
   // android:requestLegacyExternalStorage="true" to AndroidManifest.xml:
   const app = AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
   app.$['android:requestLegacyExternalStorage'] = 'true';
-
   return manifest;
 }
 
@@ -46,7 +45,7 @@ const withMediaLibrary: ConfigPlugin<
     savePhotosPermission?: string | false;
     isAccessMediaLocationEnabled?: boolean;
     preventAutomaticLimitedAccessAlert?: boolean;
-    granularPermissions?: GranularTypes[];
+    granularPermissions?: GranularPermission[];
   } | void
 > = (
   config,
