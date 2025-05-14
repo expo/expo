@@ -25,11 +25,9 @@ export default function VideoDRMScreen() {
   const { availableSubtitleTracks } = useEvent(player, 'availableSubtitleTracksChange', {
     availableSubtitleTracks: player.availableSubtitleTracks,
   });
-
   const pickerSubtitleItems = [null, ...availableSubtitleTracks];
 
   useEffect(() => {
-    console.log('subtitle track changed', subtitleTrack);
     const index = pickerSubtitleItems.findIndex((track) => track?.label === subtitleTrack?.label);
     setSubtitleTrackIndex(index);
   }, [subtitleTrack]);

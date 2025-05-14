@@ -71,7 +71,6 @@ internal struct VideoSourceLoadedEventPayload: Record {
   @Field var availableVideoTracks: [VideoTrack]? = nil
   @Field var availableSubtitleTracks: [SubtitleTrack]? = nil
   @Field var availableAudioTracks: [AudioTrack]? = nil
-  @Field var availableAudioTracks: [AudioTrack]? = nil
 }
 
 // swiftlint:enable redundant_optional_initialization
