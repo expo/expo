@@ -93,6 +93,12 @@ internal class MissingTypeConverter(
   message = "Cannot find type converter for '$forType'. Make sure the class implements `expo.modules.kotlin.records.Record` (i.e. `class MyObj : Record`)."
 )
 
+internal class InvalidExpectedType(
+  forType: KType
+) : CodedException(
+  message = "Cannot obtain ExpectedType form '$forType'."
+)
+
 @DoNotStrip
 internal class InvalidArgsNumberException(received: Int, expected: Int, required: Int = expected) :
   CodedException(

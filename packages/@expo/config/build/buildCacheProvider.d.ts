@@ -61,16 +61,18 @@ export type BuildCacheProvider<T = any> = {
     options: T;
 };
 export type BuildCacheProviderPlugin<T = any> = {
-    resolveBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
-    uploadBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
     calculateFingerprintHash?: (props: CalculateFingerprintHashProps, options: T) => Promise<string | null>;
+} & ({
+    resolveBuildCache(props: ResolveBuildCacheProps, options: T): Promise<string | null>;
+    uploadBuildCache(props: UploadBuildCacheProps, options: T): Promise<string | null>;
+} | {
     /**
      * @deprecated Use `resolveBuildCache` instead.
      */
-    resolveRemoteBuildCache(props: ResolveRemoteBuildCacheProps, options: T): Promise<string | null>;
+    resolveRemoteBuildCache: (props: ResolveRemoteBuildCacheProps, options: T) => Promise<string | null>;
     /**
      * @deprecated Use `uploadBuildCache` instead.
      */
-    uploadRemoteBuildCache(props: UploadRemoteBuildCacheProps, options: T): Promise<string | null>;
-};
+    uploadRemoteBuildCache: (props: UploadRemoteBuildCacheProps, options: T) => Promise<string | null>;
+});
 export {};

@@ -58,6 +58,17 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(image.mediaType).toBe('image/gif');
         }
       });
+
+      t.it('loads an local asset image', async () => {
+        const image = await Image.loadAsync(require('../assets/icons/app.png'));
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(false);
+      });
     });
   }
 

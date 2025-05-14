@@ -32,7 +32,7 @@ export function validateAssets(assets: string[]) {
 
     if (isFont) {
       console.warn(
-        `Fonts are not supported with the \`expo-asset\` plugin. Please use \`expo-font\` for this functionality. Ignoring ${asset}`
+        `Fonts are not supported with the \`expo-asset\` plugin. Use \`expo-font\` instead. Ignoring ${asset}`
       );
       return;
     }

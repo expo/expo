@@ -109,6 +109,31 @@ struct Circle: Record, Identifiable {
   }
 }
 
+struct Polygon: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var color: Color = .blue
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    )
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
 struct MapUISettings: Record {
   @Field var compassEnabled: Bool = true
   @Field var myLocationButtonEnabled: Bool = true
@@ -117,6 +142,7 @@ struct MapUISettings: Record {
 }
 
 struct MapProperties: Record {
+  @Field var isMyLocationEnabled: Bool = false
   @Field var mapType: MapType = .standard
   @Field var isTrafficEnabled: Bool = false
   @Field var selectionEnabled: Bool = true

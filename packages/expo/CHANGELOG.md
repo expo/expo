@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- noop non-fabric renderer when new architecture is enabled. ([#36757](https://github.com/expo/expo/pull/36757) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Disable default timeout for `expo/fetch` requests on iOS. ([#36838](https://github.com/expo/expo/pull/36838) by [@kudo](https://github.com/kudo))
+
+## 53.0.9 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- respect `react-native` type export conditions ([#36728](https://github.com/expo/expo/pull/36728) by [@vonovak](https://github.com/vonovak))
 
 ## 53.0.8 — 2025-05-06
 

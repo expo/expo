@@ -1,0 +1,50 @@
+name: "\U0001F41B CLI Bug Report"
+description: 'Report a bug in Expo CLI (npx expo) and other CLI tools'
+labels: ['needs validation', 'CLI']
+body:
+  - type: markdown
+    attributes:
+      value: If you are convinced that you have found a bug in Expo CLI or another CLI tool maintained by the Expo team in this repository, then you are in the right place! Ensure to fill out this entire form.
+  - type: markdown
+    attributes:
+      value: If you are unsure if this is a bug in Expo CLI, or have a question, or you think your issue might be caused by your application code, you can get help from the community on [Discord](https://chat.expo.dev).
+  - type: textarea
+    attributes:
+      label: Minimal reproducible example
+      description: |
+        To create a minimal reproducible example, run `npx create-expo-app@latest --template blank` (or use an equivalent for your package manager of choice) and then add in only the necessary code and configuration necessary to reproduce the issue. Next, put the project on GitHub and share the link here.
+
+        - If the issue depends on a third party library that Expo does not maintain, you should make your best effort to reproduce it without that library in order to ensure that the issue belongs on this repository, rather than the other library's repository.
+        - A maintainer may close your issue if they feel it is not minimal enough. The purpose of this is to make it as safe and fast as possible for maintainers to reproduce and fix the issue.
+        - Issues without a minimal reproducible example will be closed without discussion.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Explain how to reproduce the issue using the provided minimal reproducible example. If no minimal reproducible example is provided, or if you do not follow the instructions above for how to create the example, then the issue will be closed.
+        In your steps, be sure to mention which platforms(s) the issue occurs on (Android, iOS, web, etc.), which environment(s) the issue occurs in (Expo Go, development build, standalone app, etc.), and which package manager your are using.
+        When you get to the step where the issue occurs, explain what you expected to happen and what actually happened.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        **Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.**
+        [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a).
+
+  - type: textarea
+    attributes:
+      label: Environment
+      description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expo Doctor Diagnostics
+      description: Run the `npx expo-doctor@latest` command on your minimal reproduction and paste its output in the field below. If Doctor reports any errors, fix them before submitting the issue.
+      render: text
+    validations:
+      required: true

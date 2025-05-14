@@ -39,7 +39,7 @@
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
-    "getenv": "^1.0.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.4",
@@ -52,7 +52,7 @@
     "@types/debug": "^4.1.5",
     "@types/find-up": "^4.0.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "publishConfig": {
     "access": "public"

@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
+- noop non-fabric renderer when new architecture is enabled. ([#36757](https://github.com/expo/expo/pull/36757) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
-- Update to `lan-network@^0.1.5` for VPN network local IP changes ([#36572](https://github.com/expo/expo/pull/36572) by [@kitten](https://github.com/kitten))
+- remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix virtual externalized module checking for `window` for web worker code ([#36852](https://github.com/expo/expo/pull/36852) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.24.13 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Update to `lan-network@^0.1.6` for VPN network local IP changes and Windows fixes ([#36747](https://github.com/expo/expo/pull/36747) by [@kitten](https://github.com/kitten))
 
 ## 0.24.12 — 2025-05-06
 

@@ -45,6 +45,7 @@ const React = __importStar(require("react"));
 const createMemoryHistory_1 = require("./createMemoryHistory");
 const getPathFromState_1 = require("./getPathFromState");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
+const storeContext_1 = require("../global-state/storeContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -88,6 +89,7 @@ exports.series = series;
 const linkingHandlers = [];
 function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.getStateFromPath, getPathFromState = native_1.getPathFromState, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
     const independent = (0, native_1.useNavigationIndependentTree)();
+    const store = (0, storeContext_1.useExpoRouterStore)();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
@@ -132,8 +134,12 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         getActionFromStateRef.current = getActionFromState;
     });
     const validateRoutesNotExistInRootState = React.useCallback((state) => {
-        const navigation = ref.current;
-        const rootState = navigation?.getRootState();
+        // START FORK
+        // Instead of using the rootState (which might be stale) we should use the focused state
+        // const navigation = ref.current;
+        // const rootState = navigation?.getRootState();
+        const rootState = store.state;
+        // END FORK
         // Make sure that the routes in the state exist in the root navigator
         // Otherwise there's an error in the linking configuration
         return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
@@ -289,12 +295,20 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         if (ref.current) {
             // We need to record the current metadata on the first render if they aren't set
             // This will allow the initial state to be in the history entry
-            const state = ref.current.getRootState();
+            // START FORK
+            // Instead of using the rootState (which might be stale) we should use the focused state
+            // const state = ref.current.getRootState();
+            const rootState = ref.current.getRootState();
+            const state = store.state;
+            // END FORK
             if (state) {
                 const route = (0, native_1.findFocusedRoute)(state);
                 const path = getPathForRoute(route, state);
                 if (previousStateRef.current === undefined) {
-                    previousStateRef.current = state;
+                    // START FORK
+                    // previousStateRef.current = state;
+                    previousStateRef.current = rootState;
+                    // END FORK
                 }
                 history.replace({ path, state });
             }
@@ -305,7 +319,12 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
                 return;
             }
             const previousState = previousStateRef.current;
-            const state = navigation.getRootState();
+            // START FORK
+            // Instead of using the rootState (which might be stale) we should use the focused state
+            // const state = navigation.getRootState();
+            const rootState = navigation.getRootState();
+            const state = store.state;
+            // END FORK
             // root state may not available, for example when root navigators switch inside the container
             if (!state) {
                 return;
@@ -313,7 +332,10 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
             const pendingPath = pendingPopStatePathRef.current;
             const route = (0, native_1.findFocusedRoute)(state);
             const path = getPathForRoute(route, state);
-            previousStateRef.current = state;
+            // START FORK
+            // previousStateRef.current = state;
+            previousStateRef.current = rootState;
+            // END FORK
             pendingPopStatePathRef.current = undefined;
             // To detect the kind of state change, we need to:
             // - Find the common focused navigation state in previous and current state

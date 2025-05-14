@@ -9,7 +9,7 @@ import { CameraPosition, Coordinates } from '../shared.types';
  */
 export type AppleMapsMarker = {
   /**
-   * The unique identifier for the marker. This can be used to e.g. identify the clicked marker in the `onMarkerClick` event.
+   * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
    */
   id?: string;
 
@@ -99,6 +99,12 @@ export enum AppleMapsContourStyle {
  */
 export type AppleMapsProperties = {
   /**
+   * Whether the user location is shown on the map.
+   * @default false
+   */
+  isMyLocationEnabled?: boolean;
+
+  /**
    * Whether the traffic layer is enabled on the map.
    */
   isTrafficEnabled?: boolean;
@@ -149,7 +155,7 @@ export type AppleMapsAnnotation = {
  */
 export type AppleMapsPolyline = {
   /**
-   * The unique identifier for the polyline. This can be used to e.g. identify the clicked polyline in the `onPolylineClick` event.
+   * The unique identifier for the polyline. This can be used to identify the clicked polyline in the `onPolylineClick` event.
    */
   id?: string;
   /**
@@ -175,7 +181,7 @@ export type AppleMapsPolyline = {
  */
 export type AppleMapsCircle = {
   /**
-   * The unique identifier for the circle. This can be used to e.g. identify the clicked circle in the `onCircleClick` event.
+   * The unique identifier for the circle. This can be used to identify the clicked circle in the `onCircleClick` event.
    */
   id?: string;
 
@@ -213,6 +219,36 @@ export type AppleMapsCircle = {
 /**
  * @platform ios
  */
+export type AppleMapsPolygon = {
+  /**
+   * The unique identifier for the polygon. This can be used to identify the clicked polygon in the `onPolygonClick` event.
+   */
+  id?: string;
+
+  /**
+   * The coordinates of the circle.
+   */
+  coordinates: Coordinates[];
+
+  /**
+   * The color of the polygon.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The width of the polygon.
+   */
+  lineWidth?: number;
+
+  /**
+   * The color of the polygon.
+   */
+  lineColor?: ProcessedColorValue | string;
+};
+
+/**
+ * @platform ios
+ */
 export type AppleMapsViewProps = {
   ref?: Ref<AppleMapsViewType>;
   style?: StyleProp<ViewStyle>;
@@ -231,6 +267,11 @@ export type AppleMapsViewProps = {
    * The array of polylines to display on the map.
    */
   polylines?: AppleMapsPolyline[];
+
+  /**
+   * The array of polygons to display on the map.
+   */
+  polygons?: AppleMapsPolygon[];
 
   /**
    * The array of circles to display on the map.
@@ -269,6 +310,12 @@ export type AppleMapsViewProps = {
    * @platform ios 18.0+
    */
   onPolylineClick?: (event: AppleMapsPolyline) => void;
+
+  /**
+   * Lambda invoked when the polygon is clicked
+   * @platform ios 18.0+
+   */
+  onPolygonClick?: (event: AppleMapsPolygon) => void;
 
   /**
    * Lambda invoked when the circle is clicked

@@ -169,7 +169,7 @@ export async function resize(
     initialImage = initialImage.contain(width, height, jimpPosition);
   } else {
     throw new Error(
-      `Unsupported fit: ${fit}. Please choose either 'cover', or 'contain' when using Jimp`
+      `Unsupported fit: ${fit}. Supported values are 'cover' or 'contain' when using Jimp`
     );
   }
   if (background) {

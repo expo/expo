@@ -371,6 +371,13 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     exsqlite3_reset(statement.pointer)
     exsqlite3_clear_bindings(statement.pointer)
     for (key, param) in bindParams {
@@ -687,17 +694,13 @@ public final class SQLiteModule: Module {
     if stmt == nil {
       return
     }
-    var result = SQLITE_OK
     while let currentStmt = stmt {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
       let ret = exsqlite3_finalize(currentStmt)
       if ret != SQLITE_OK {
-        result = ret
+        ExpoModulesCore.log.warn("sqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
-    }
-    if result != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 

@@ -25,7 +25,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '2.3.12'
+version = '2.3.13'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -75,7 +75,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.3.12"
+    versionName "2.3.13"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 

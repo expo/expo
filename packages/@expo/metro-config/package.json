@@ -38,7 +38,7 @@
     "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
-    "@expo/config": "~11.0.9",
+    "@expo/config": "~11.0.10",
     "@expo/env": "~1.0.5",
     "@expo/json-file": "~9.1.4",
     "@expo/spawn-async": "^1.7.2",
@@ -46,7 +46,7 @@
     "dotenv": "~16.4.5",
     "dotenv-expand": "~11.0.6",
     "debug": "^4.3.2",
-    "getenv": "^1.0.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.27.0",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^4.1.6",
+    "expo-module-scripts": "^4.1.7",
     "sass": "^1.60.0"
   },
   "publishConfig": {
