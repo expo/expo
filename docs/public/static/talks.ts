@@ -212,6 +212,11 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
+    event: 'Expo Live Stream',
+    videoId: 'XCTaMu0qnFY',
+  },
+  {
     title: 'Best practices for using Unistyles 3.0 to style cross platform applications',
     event: 'Expo Live Stream',
     videoId: 'K3wZg-Pxt3k',
@@ -326,6 +331,11 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Learn how to build with the new expo-maps library',
+    event: 'Expo Tutorials',
+    videoId: 'jDCuaIQ9vd0',
+  },
   {
     title: 'Building an Auth Flow with Expo Router',
     event: 'Expo Tutorials',
