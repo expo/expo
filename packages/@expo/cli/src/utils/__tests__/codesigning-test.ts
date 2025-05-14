@@ -74,6 +74,18 @@ describe(getCodeSigningInfoAsync, () => {
     ).rejects.toThrowError('Invalid value for alg in expo-expect-signature header');
   });
 
+  it('returns null when user is not logged in', async () => {
+    jest.mocked(getUserAsync).mockImplementation(async () => undefined);
+
+    await expect(
+      getCodeSigningInfoAsync(
+        { extra: { eas: { projectId: 'testprojectid' } } } as any,
+        'keyid="expo-root", alg="rsa-v1_5-sha256"',
+        undefined
+      )
+    ).resolves.toBeNull();
+  });
+
   describe('expo-root keyid requested', () => {
     describe('online', () => {
       beforeEach(() => {
