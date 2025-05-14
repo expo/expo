@@ -12,6 +12,7 @@
 
 - remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix virtual externalized module checking for `window` for web worker code ([#36852](https://github.com/expo/expo/pull/36852) by [@kitten](https://github.com/kitten))
+- Allow anonymous sessions even when `projectId` is set
 
 ### 💡 Others
 
