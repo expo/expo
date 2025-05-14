@@ -16,7 +16,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable, PressableProps } from './Pressable';
-import { router } from '../imperative-api';
 import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
