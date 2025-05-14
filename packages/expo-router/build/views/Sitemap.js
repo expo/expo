@@ -49,22 +49,16 @@ function getNavOptions() {
     };
 }
 function Sitemap() {
+    const sitemap = (0, useSitemap_1.useSitemap)();
+    const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
     return (<react_native_1.View style={styles.container}>
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
-        <FileSystemView />
+        {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+            <FileItem node={child}/>
+          </react_native_1.View>))}
       </react_native_1.ScrollView>
     </react_native_1.View>);
-}
-function FileSystemView() {
-    const sitemap = (0, useSitemap_1.useSitemap)();
-    // This shouldn't occur, as the user should be on the tutorial screen
-    if (!sitemap)
-        return null;
-    const children = sitemap.children.filter(({ isInternal }) => !isInternal);
-    return children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-      <FileItem node={child}/>
-    </react_native_1.View>));
 }
 function FileItem({ node, level = 0 }) {
     const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);

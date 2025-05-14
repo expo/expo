@@ -59,26 +59,23 @@ export function getNavOptions(): NativeStackNavigationOptions {
 }
 
 export function Sitemap() {
+  const sitemap = useSitemap();
+  const children = React.useMemo(
+    () => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [],
+    [sitemap]
+  );
   return (
     <View style={styles.container}>
       {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
       <ScrollView contentContainerStyle={styles.scroll}>
-        <FileSystemView />
+        {children.map((child) => (
+          <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+            <FileItem node={child} />
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
-}
-
-function FileSystemView() {
-  const sitemap = useSitemap();
-  // This shouldn't occur, as the user should be on the tutorial screen
-  if (!sitemap) return null;
-  const children = sitemap.children.filter(({ isInternal }) => !isInternal);
-  return children.map((child) => (
-    <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-      <FileItem node={child} />
-    </View>
-  ));
 }
 
 interface FileItemProps {
