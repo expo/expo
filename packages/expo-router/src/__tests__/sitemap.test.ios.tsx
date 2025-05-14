@@ -1,8 +1,8 @@
 import { Text } from 'react-native';
 
-import { router } from '../../imperative-api';
-import { act, fireEvent, renderRouter, screen, within } from '../../testing-library';
-import { Slot } from '../../views/Navigator';
+import { router } from '../imperative-api';
+import { act, fireEvent, renderRouter, screen, within } from '../testing-library';
+import { Slot } from '../views/Navigator';
 
 test('given no routes, unmatched route', () => {
   renderRouter({
