@@ -44,6 +44,7 @@ const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const extractPathFromURL_1 = require("../fork/extractPathFromURL");
 const getStateFromPath_forks_1 = require("../fork/getStateFromPath-forks");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
@@ -157,7 +158,11 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
         const initialURL = linking?.getInitialURL?.();
         if (typeof initialURL === 'string') {
-            initialState = linking.getStateFromPath(initialURL, linking.config);
+            let initialPath = (0, extractPathFromURL_1.extractExpoPathFromURL)(linking.prefixes, initialURL);
+            // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
+            if (!initialPath.startsWith('/'))
+                initialPath = '/' + initialPath;
+            initialState = linking.getStateFromPath(initialPath, linking.config);
             const initialRouteInfo = (0, routeInfo_1.getRouteInfoFromState)(initialState);
             routeInfoCache.set(initialState, initialRouteInfo);
         }
