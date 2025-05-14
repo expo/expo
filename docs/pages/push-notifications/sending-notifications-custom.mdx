@@ -124,7 +124,7 @@ Communicating with APNs is a little more complicated than with FCM. Some librari
 
 ### Client APNs entitlement
 
-The steps below will only work if your iOS app has the APNs entitlement. For apps using [CNG](/workflow/continuous-native-generation/),
+Receiving push notifications only works if your iOS app has the APNs entitlement. For apps using [CNG](/workflow/continuous-native-generation/),
 the Expo config needs to be modified in one of two ways:
 
 - **Recommended**: Add the `expo-notifications` library to your app, and ensure that its plugin appears in the `plugins` array of your [app config](/workflow/configuration/):
