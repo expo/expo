@@ -15,14 +15,14 @@ async function checkCocoapodsVersionAsync(): Promise<string | null> {
     const cocoapodsVersionResponse = await spawnAsync('pod', ['--version']);
     const cocoapodsVersion = cocoapodsVersionResponse.stdout.trim();
     if (semver.satisfies(cocoapodsVersion, '1.15.0 || 1.15.1')) {
-      return `You are using Cocoapods version ${cocoapodsVersion}. There are known issues with this version and React Native projects. Upgrading to 1.15.2 or higher is recommended.`;
+      return `You are using CocoaPods version ${cocoapodsVersion}. There are known issues with this version and React Native projects. Upgrading to 1.15.2 or higher is recommended.`;
     } else if (semver.validRange(cocoapodsVersion) === null) {
       // the command works and does not fail but somehow doesn't report a valid version (is this possible?)
-      return `Cannot determine Cocoapods version. There may be an issue with your Cocoapods installation.`;
+      return `Cannot determine CocoaPods version. There may be an issue with your CocoaPods installation.`;
     }
   } catch {
     // no install detected / command failed
-    return `Cocoapods version check failed. Cocoapods may not be installed or there may be an issue with your Cocoapods installation. Installing version 1.15.2 or higher is recommended.`;
+    return `CocoaPods version check failed. CocoaPods may not be installed or there may be an issue with your CocoaPods installation. Installing version 1.15.2 or higher is recommended.`;
   }
   return null;
 }
