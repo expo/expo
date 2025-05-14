@@ -10,7 +10,7 @@ function _validate(taskName) {
     if (isRunningInExpoGo()) {
         if (!warnedAboutExpoGo) {
             const message = '`Background Task` functionality is not available in Expo Go:\n' +
-                'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+                'You can use this API and any others in a development build. Learn more: https://expo.fyi/dev-client.';
             console.warn(message);
             warnedAboutExpoGo = true;
         }
