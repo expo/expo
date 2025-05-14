@@ -121,10 +121,17 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
   debugOnly: boolean;
 }
 
+export interface DevToolsDirectCommand {
+  name: string;
+  description: string;
+  main: string;
+}
+
 export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
-  webpageRoot: string;
+  webpageRoot?: string;
+  entryPoint?: DevToolsDirectCommand;
 }
 
 export type ModuleDescriptor =
@@ -314,6 +321,10 @@ export interface RawExpoModuleConfig {
      * The webpage root directory for Expo CLI DevTools to serve the web resources.
      */
     webpageRoot: string;
+    /**
+     * An optional devtools command descriptor that can be provided to the Expo CLI DevTools to be installed as a menu item.
+     */
+    entryPoint?: DevToolsDirectCommand;
   };
 }
 

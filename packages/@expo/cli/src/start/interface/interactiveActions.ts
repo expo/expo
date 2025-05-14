@@ -141,22 +141,33 @@ export class DevServerManagerActions {
         { title: 'Reload app', value: 'reload' },
         // TODO: Maybe a "View Source" option to open code.
       ];
+
       const pluginMenuItems = (
         await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
       ).map((plugin) => ({
-        title: chalk`Open {bold ${plugin.packageName}}`,
+        title: plugin.webpageEndpoint
+          ? chalk`Open {bold ${plugin.packageName}}`
+          : chalk`{bold ${plugin.packageName}}`,
         value: `devtoolsPlugin:${plugin.packageName}`,
         action: async () => {
-          const url = new URL(
-            plugin.webpageEndpoint,
-            this.devServerManager
-              .getDefaultDevServer()
-              .getUrlCreator()
-              .constructUrl({ scheme: 'http' })
-          );
-          await openBrowserAsync(url.toString());
+          if (plugin.webpageEndpoint) {
+            const url = new URL(
+              plugin.webpageEndpoint,
+              this.devServerManager
+                .getDefaultDevServer()
+                .getUrlCreator()
+                .constructUrl({ scheme: 'http' })
+            );
+            await openBrowserAsync(url.toString());
+          } else {
+            // Plugin - get the entry point
+            if (plugin.action) {
+              await plugin.action();
+            }
+          }
         },
       }));
+
       const menuItems = [...defaultMenuItems, ...pluginMenuItems];
       const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
       const menuItem = menuItems.find((item) => item.value === value);
@@ -167,6 +178,7 @@ export class DevServerManagerActions {
       }
     } catch (error: any) {
       debug(error);
+      Log.error('Failed to open the dev tools menu.', error);
       // do nothing
     } finally {
       printHelp();

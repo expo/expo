@@ -54,10 +54,12 @@ export default async function prompt(
       },
       ...options,
     });
-
-    return results;
-  } finally {
+    // Call before returning to allow for nested prompts
     resumeInteractions();
+    return results;
+  } catch (e: any) {
+    resumeInteractions();
+    throw e;
   }
 }
 

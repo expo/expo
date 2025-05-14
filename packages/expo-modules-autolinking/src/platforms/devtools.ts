@@ -10,11 +10,13 @@ export async function resolveModuleAsync(
   if (devtoolsConfig == null) {
     return null;
   }
-
   return {
     packageName,
     packageRoot: revision.path,
-    webpageRoot: path.join(revision.path, devtoolsConfig.webpageRoot),
+    webpageRoot: devtoolsConfig.webpageRoot
+      ? path.join(revision.path, devtoolsConfig.webpageRoot)
+      : undefined,
+    entryPoint: devtoolsConfig.entryPoint ?? undefined,
   };
 }
 

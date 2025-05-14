@@ -6,14 +6,21 @@ const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
 
+interface AutoLinkingDirectCommand {
+  name: string;
+  description: string;
+  main: string;
+}
 interface AutolinkingPlugin {
   packageName: string;
   packageRoot: string;
-  webpageRoot: string;
+  webpageRoot?: string;
+  entryPoint?: AutoLinkingDirectCommand;
 }
 
 export interface DevToolsPlugin extends AutolinkingPlugin {
-  webpageEndpoint: string;
+  webpageEndpoint?: string;
+  action?: () => Promise<void>;
 }
 
 export default class DevToolsPluginManager {
@@ -25,10 +32,19 @@ export default class DevToolsPluginManager {
     if (this.plugins) {
       return this.plugins;
     }
-    const plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map((plugin) => ({
-      ...plugin,
-      webpageEndpoint: `${DevToolsPluginEndpoint}/${plugin.packageName}`,
-    }));
+    const plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map((plugin) => {
+      const actionPath = plugin.entryPoint
+        ? path.join(plugin.packageRoot, plugin.entryPoint.main)
+        : undefined;
+
+      return {
+        ...plugin,
+        webpageEndpoint: plugin.webpageRoot
+          ? `${DevToolsPluginEndpoint}/${plugin.packageName}`
+          : undefined,
+        action: actionPath ? require(actionPath).default : undefined,
+      };
+    });
     this.plugins = plugins;
     return this.plugins;
   }

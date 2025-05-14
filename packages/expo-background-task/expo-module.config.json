@@ -1,10 +1,17 @@
 {
-  "platforms": ["apple", "android"],
+  "platforms": [ "apple", "android", "devtools" ],
   "apple": {
-    "appDelegateSubscribers": ["BackgroundTaskAppDelegateSubscriber"],
-    "modules": ["BackgroundTaskModule"]
+    "appDelegateSubscribers": [ "BackgroundTaskAppDelegateSubscriber" ],
+    "modules": [ "BackgroundTaskModule" ]
   },
   "android": {
-    "modules": ["expo.modules.backgroundtask.BackgroundTaskModule"]
+    "modules": [ "expo.modules.backgroundtask.BackgroundTaskModule" ]
+  },
+  "devtools": {
+    "entryPoint": {
+      "name": "expo-background-task-devtools",
+      "description": "BackgroundTask DevTools",
+      "main": "devtools/dist/index.js"
+    }
   }
 }

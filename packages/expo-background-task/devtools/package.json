@@ -1,0 +1,17 @@
+{
+    "name": "expo-background-task-devtools",
+    "version": "0.0.1-private",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "dev": "tsc --project tsconfig.json --watch",
+        "build": "tsc --project tsconfig.json"
+    },
+    "dependencies": {
+        "prompts": "^2.4.2"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.3"
+    },
+    "private": true
+}
