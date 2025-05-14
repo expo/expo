@@ -66,42 +66,54 @@ function FileSystemView() {
       <FileItem node={child}/>
     </react_native_1.View>));
 }
-function FileItem({ node, level = 0, isInitial = false, }) {
-    const disabled = node.children.length > 0;
-    const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+function FileItem({ node, level = 0 }) {
+    const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);
+    const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+    if (isLayout) {
+        return <LayoutFileItem node={node} level={level} info={info}/>;
+    }
+    return <StandardFileItem node={node} level={level} info={info}/>;
+}
+function LayoutFileItem({ node, level, info }) {
     return (<>
-      {!node.isInternal && (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
-                if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
-                    // Ensure the modal pops
-                    imperative_api_1.router.back();
-                }
-            }} disabled={disabled} asChild 
-        // Ensure we replace the history so you can't go back to this page.
-        replace>
-          <Pressable_1.Pressable>
-            {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
-                    styles.itemPressable,
-                    {
-                        paddingLeft: INDENT + level * INDENT,
-                        backgroundColor: hovered ? '#202425' : 'transparent',
-                    },
-                    pressed && { backgroundColor: '#26292b' },
-                    disabled && { opacity: 0.4 },
-                ]}>
-                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {node.children.length ? <PkgIcon /> : <FileIcon />}
-                  <react_native_1.Text style={styles.filename}>{node.filename}</react_native_1.Text>
-                </react_native_1.View>
-
-                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {!!info && (<react_native_1.Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</react_native_1.Text>)}
-                  {!disabled && <ForwardIcon />}
-                </react_native_1.View>
-              </react_native_1.View>)}
-          </Pressable_1.Pressable>
-        </Link_1.Link>)}
-      {node.children.map((child) => (<FileItem key={child.contextKey} node={child} isInitial={child.isInitial} level={level + (child.isGenerated ? 0 : 1)}/>))}
+      <FileItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} filename={node.filename} level={level} info={info}/>
+      {node.children.map((child) => (<FileItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
     </>);
+}
+function StandardFileItem({ node, info, level }) {
+    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
+            if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
+                // Ensure the modal pops
+                imperative_api_1.router.back();
+            }
+        }} asChild 
+    // Ensure we replace the history so you can't go back to this page.
+    replace>
+      <FileItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
+    </Link_1.Link>);
+}
+function FileItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
+    return (<Pressable_1.Pressable {...pressableProps}>
+      {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
+                styles.itemPressable,
+                {
+                    paddingLeft: INDENT + level * INDENT,
+                    backgroundColor: hovered ? '#202425' : 'transparent',
+                },
+                pressed && { backgroundColor: '#26292b' },
+                style,
+            ]}>
+          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {leftIcon}
+            <react_native_1.Text style={styles.filename}>{filename}</react_native_1.Text>
+          </react_native_1.View>
+
+          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {!!info && <react_native_1.Text style={[styles.virtual, { marginRight: 8 }]}>{info}</react_native_1.Text>}
+            {rightIcon}
+          </react_native_1.View>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
 function FileIcon() {
     return <react_native_1.Image style={styles.image} source={require('expo-router/assets/file.png')}/>;

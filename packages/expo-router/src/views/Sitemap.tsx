@@ -3,10 +3,19 @@
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Platform,
+  StatusBar,
+  ViewStyle,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Pressable } from './Pressable';
+import { Pressable, PressableProps } from './Pressable';
 import { router } from '../imperative-api';
 import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
@@ -72,71 +81,108 @@ function FileSystemView() {
   ));
 }
 
-function FileItem({
-  node,
-  level = 0,
-  isInitial = false,
-}: {
+interface FileItemProps {
   node: SitemapType;
   level?: number;
-  isInitial?: boolean;
-}) {
-  const disabled = node.children.length > 0;
-  const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+  info?: string;
+}
+
+function FileItem({ node, level = 0 }: FileItemProps) {
+  const isLayout = React.useMemo(
+    () => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/),
+    [node]
+  );
+  const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+
+  if (isLayout) {
+    return <LayoutFileItem node={node} level={level} info={info} />;
+  }
+  return <StandardFileItem node={node} level={level} info={info} />;
+}
+function LayoutFileItem({ node, level, info }: Required<FileItemProps>) {
   return (
     <>
-      {!node.isInternal && (
-        <Link
-          accessibilityLabel={node.contextKey}
-          href={node.href}
-          onPress={() => {
-            if (Platform.OS !== 'web' && router.canGoBack()) {
-              // Ensure the modal pops
-              router.back();
-            }
-          }}
-          disabled={disabled}
-          asChild
-          // Ensure we replace the history so you can't go back to this page.
-          replace>
-          <Pressable>
-            {({ pressed, hovered }) => (
-              <View
-                testID="sitemap-item"
-                style={[
-                  styles.itemPressable,
-                  {
-                    paddingLeft: INDENT + level * INDENT,
-                    backgroundColor: hovered ? '#202425' : 'transparent',
-                  },
-                  pressed && { backgroundColor: '#26292b' },
-                  disabled && { opacity: 0.4 },
-                ]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {node.children.length ? <PkgIcon /> : <FileIcon />}
-                  <Text style={styles.filename}>{node.filename}</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {!!info && (
-                    <Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</Text>
-                  )}
-                  {!disabled && <ForwardIcon />}
-                </View>
-              </View>
-            )}
-          </Pressable>
-        </Link>
-      )}
+      <FileItemPressable
+        style={{ opacity: 0.4 }}
+        leftIcon={<PkgIcon />}
+        filename={node.filename}
+        level={level}
+        info={info}
+      />
       {node.children.map((child) => (
-        <FileItem
-          key={child.contextKey}
-          node={child}
-          isInitial={child.isInitial}
-          level={level + (child.isGenerated ? 0 : 1)}
-        />
+        <FileItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)} />
       ))}
     </>
+  );
+}
+
+function StandardFileItem({ node, info, level }: Required<FileItemProps>) {
+  return (
+    <Link
+      accessibilityLabel={node.contextKey}
+      href={node.href}
+      onPress={() => {
+        if (Platform.OS !== 'web' && router.canGoBack()) {
+          // Ensure the modal pops
+          router.back();
+        }
+      }}
+      asChild
+      // Ensure we replace the history so you can't go back to this page.
+      replace>
+      <FileItemPressable
+        leftIcon={<FileIcon />}
+        rightIcon={<ForwardIcon />}
+        filename={node.filename}
+        level={level}
+        info={info}
+      />
+    </Link>
+  );
+}
+
+function FileItemPressable({
+  style,
+  leftIcon,
+  rightIcon,
+  filename,
+  level,
+  info,
+  ...pressableProps
+}: {
+  style?: ViewStyle;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  filename: string;
+  level: number;
+  info?: string;
+} & Omit<PressableProps, 'style' | 'children'>) {
+  return (
+    <Pressable {...pressableProps}>
+      {({ pressed, hovered }) => (
+        <View
+          testID="sitemap-item"
+          style={[
+            styles.itemPressable,
+            {
+              paddingLeft: INDENT + level * INDENT,
+              backgroundColor: hovered ? '#202425' : 'transparent',
+            },
+            pressed && { backgroundColor: '#26292b' },
+            style,
+          ]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {leftIcon}
+            <Text style={styles.filename}>{filename}</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {!!info && <Text style={[styles.virtual, { marginRight: 8 }]}>{info}</Text>}
+            {rightIcon}
+          </View>
+        </View>
+      )}
+    </Pressable>
   );
 }
 

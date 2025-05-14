@@ -122,18 +122,17 @@ describe('links', () => {
     act(() => fireEvent.press(link));
     expect(screen).toHavePathname('/about');
   });
-  // The first link in the nested container is the layout route, which should not be clickable.
   describe('nested container', () => {
-    test('clicking the first link (nested _layout) within the nested container keeps the user on the sitemap', () => {
-      const links = within(containers[2]).getAllByRole('link');
-      const link = links[0];
-      expect(link).toHaveTextContent('nested/_layout.js');
-      act(() => fireEvent.press(link));
-      expect(screen).toHavePathname('/_sitemap');
+    let nestedContainer: ReturnType<typeof screen.getByTestId>;
+    beforeEach(() => {
+      nestedContainer = containers[2];
     });
-    test('clicking the second link (nested index) within the nested container navigates to the nested index page', () => {
-      const links = within(containers[2]).getAllByRole('link');
-      const link = links[1];
+    test('only one link is rendered in the nested container', () => {
+      const links = within(nestedContainer).getAllByRole('link');
+      expect(links).toHaveLength(1);
+    });
+    test('clicking the link within the nested container navigates to the nested index page', () => {
+      const link = within(nestedContainer).getByRole('link');
       expect(link).toHaveTextContent('index.js');
       act(() => fireEvent.press(link));
       expect(screen).toHavePathname('/nested');
