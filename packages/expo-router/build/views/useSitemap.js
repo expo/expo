@@ -39,7 +39,9 @@ const mapForRoute = (route, parents) => ({
     isVirtual: route.generated ?? false,
     isInternal: route.internal ?? false,
     isGenerated: route.generated ?? false,
-    children: route.children.sort(Route_1.sortRoutes).map((child) => mapForRoute(child, parents)),
+    children: route.children
+        .sort(Route_1.sortRoutes)
+        .map((child) => mapForRoute(child, routeSegments(route, parents))),
 });
 function useSitemap() {
     if (!router_store_1.store.routeNode)

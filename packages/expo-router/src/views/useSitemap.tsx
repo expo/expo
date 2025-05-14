@@ -55,7 +55,9 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
   isVirtual: route.generated ?? false,
   isInternal: route.internal ?? false,
   isGenerated: route.generated ?? false,
-  children: route.children.sort(sortRoutes).map((child: RouteNode) => mapForRoute(child, parents)),
+  children: route.children
+    .sort(sortRoutes)
+    .map((child: RouteNode) => mapForRoute(child, routeSegments(route, parents))),
 });
 
 export function useSitemap(): SitemapType | null {
