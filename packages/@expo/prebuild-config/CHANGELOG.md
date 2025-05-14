@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
