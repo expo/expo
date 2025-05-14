@@ -96,22 +96,27 @@ function SitemapItem({ node, level = 0 }: SitemapItemProps) {
   return <StandardSitemapItem node={node} level={level} info={info} />;
 }
 function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
+  const [isCollapsed, setIsCollapsed] = React.useState(true);
+
   return (
     <>
       <SitemapItemPressable
         style={{ opacity: 0.4 }}
         leftIcon={<PkgIcon />}
+        rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180} />}
         filename={node.filename}
         level={level}
         info={info}
+        onPress={() => setIsCollapsed((prev) => !prev)}
       />
-      {node.children.map((child) => (
-        <SitemapItem
-          key={child.contextKey}
-          node={child}
-          level={level + (node.isGenerated ? 0 : 1)}
-        />
-      ))}
+      {!isCollapsed &&
+        node.children.map((child) => (
+          <SitemapItem
+            key={child.contextKey}
+            node={child}
+            level={level + (node.isGenerated ? 0 : 1)}
+          />
+        ))}
     </>
   );
 }
@@ -194,6 +199,20 @@ function ForwardIcon() {
 
 function SitemapIcon() {
   return <Image style={styles.image} source={require('expo-router/assets/sitemap.png')} />;
+}
+
+function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
+  return (
+    <Image
+      style={[
+        styles.image,
+        {
+          transform: [{ rotate: `${rotation}deg` }],
+        },
+      ]}
+      source={require('expo-router/assets/arrow_down.png')}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
