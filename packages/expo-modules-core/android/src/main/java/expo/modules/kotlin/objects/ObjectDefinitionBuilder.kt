@@ -22,7 +22,6 @@ import expo.modules.kotlin.modules.convertEnumToString
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.TypeConverterProvider
 import expo.modules.kotlin.types.enforceType
-import expo.modules.kotlin.types.mergeWithDefault
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.full.declaredMemberProperties
