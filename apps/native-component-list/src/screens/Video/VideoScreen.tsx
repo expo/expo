@@ -13,6 +13,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Audio Tracks',
+    route: 'video/audio-tracks',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioTracksScreen'));
+    },
+  },
+  {
     name: 'Cache',
     route: 'video/cache',
     options: {},
@@ -74,14 +82,6 @@ export const VideoScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoSubtitlesScreen'));
-    },
-  },
-  {
-    name: 'Audio Tracks',
-    route: 'video/audio-tracks',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./VideoAudioTracksScreen'));
     },
   },
   {

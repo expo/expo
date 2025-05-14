@@ -265,7 +265,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
-    showsAudioTracksButton = player.audioTracks.availableAudioTracks.isNotEmpty()
+    showsAudioTracksButton = player.audioTracks.availableAudioTracks.size > 1
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
   }
