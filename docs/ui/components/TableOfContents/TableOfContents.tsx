@@ -1,4 +1,4 @@
-import { Button, mergeClasses } from '@expo/styleguide';
+import { Button, ButtonBase, mergeClasses } from '@expo/styleguide';
 import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
@@ -12,6 +12,7 @@ import {
   useRef,
   useImperativeHandle,
   useEffect,
+  SyntheticEvent,
 } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
@@ -166,7 +167,7 @@ export const TableOfContents = forwardRef<
     }
   }
 
-  const toggleH3 = (slug: string, event: MouseEvent) => {
+  const toggleH3 = (slug: string, event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
     setCollapsedH3s(prev => {
@@ -226,21 +227,31 @@ export const TableOfContents = forwardRef<
           key={heading.slug}
           className={mergeClasses(
             'flex items-center',
-            currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0'
+            currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0',
+            hasChildren && isVersioned && '-ml-2'
           )}>
           {hasChildren && isVersioned && (
-            <div
+            <ButtonBase
               onClick={event => {
                 toggleH3(heading.slug, event);
               }}
-              className="flex h-full cursor-pointer items-center justify-center self-start pt-[4px] hover:opacity-70">
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  toggleH3(heading.slug, event);
+                }
+              }}
+              aria-expanded={!collapsedH3s.has(heading.slug)}
+              aria-controls={`toc-section-${heading.slug}`}
+              className="-mr-2 flex h-full cursor-pointer items-center justify-center self-start pt-0.5 hocus:opacity-75"
+              aria-label={`${collapsedH3s.has(heading.slug) ? 'Expand' : 'Collapse'} section ${heading.title}`}>
               <ChevronDownIcon
                 className={mergeClasses(
-                  'icon-xs -mr-2 text-icon-secondary transition-transform',
+                  'icon-sm text-icon-secondary transition-transform',
                   collapsedH3s.has(heading.slug) ? '-rotate-90' : 'rotate-0'
                 )}
               />
-            </div>
+            </ButtonBase>
           )}
           <TableOfContentsLink
             heading={heading}
@@ -276,7 +287,7 @@ export const TableOfContents = forwardRef<
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-      {renderTOC()}
+      <div role="tree">{renderTOC()}</div>
     </nav>
   );
 });
