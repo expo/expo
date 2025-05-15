@@ -4,7 +4,9 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
+import { selectAsync } from '../prompts';
 
+jest.mock('../../utils/prompts');
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
@@ -75,7 +77,8 @@ describe(getCodeSigningInfoAsync, () => {
   });
 
   it('returns null when user is not logged in', async () => {
-    jest.mocked(getUserAsync).mockImplementation(async () => undefined);
+    jest.mocked(getUserAsync).mockImplementationOnce(async () => undefined);
+    jest.mocked(selectAsync).mockResolvedValueOnce(false);
 
     await expect(
       getCodeSigningInfoAsync(
@@ -84,6 +87,8 @@ describe(getCodeSigningInfoAsync, () => {
         undefined
       )
     ).resolves.toBeNull();
+
+    expect(selectAsync).toHaveBeenCalledTimes(1);
   });
 
   describe('expo-root keyid requested', () => {
