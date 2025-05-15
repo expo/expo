@@ -163,6 +163,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   internal var autoplay: Boolean = true
 
+  internal var lockResource: Boolean = false
+
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
@@ -181,7 +183,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   /**
    * Whether the image should be loaded again
    */
-  private var shouldRerender = false
+  internal var shouldRerender = false
 
   /**
    * Currently loaded source
@@ -477,8 +479,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) =
-    trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false, force: Boolean = false) =
+    trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize,force=$force)") {
+      if (lockResource && !force) {
+        return@trace
+      }
       val bestSource = bestSource
       val bestPlaceholder = bestPlaceholder
 
