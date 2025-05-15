@@ -1,8 +1,6 @@
 import { ViewProps } from 'react-native';
 interface HelpfulProps {
-    onWillAppear?: () => void;
     onAppear?: () => void;
-    onWillDisappear?: () => void;
     onDisappear?: () => void;
 }
 export interface RNSNativeTabsScreenProps extends HelpfulProps {

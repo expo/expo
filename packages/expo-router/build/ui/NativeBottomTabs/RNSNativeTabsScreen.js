@@ -5,10 +5,8 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 function RNSNativeTabsScreen(props) {
     (0, react_1.useEffect)(() => {
-        props.onWillAppear?.();
         props.onAppear?.();
         return () => {
-            props.onWillDisappear?.();
             props.onDisappear?.();
         };
     }, []);
