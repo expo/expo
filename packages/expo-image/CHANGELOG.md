@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add imperative api to lock/unlock/reload resource
+
 ### 🐛 Bug fixes
 
 - Fix React Server Components support. ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
