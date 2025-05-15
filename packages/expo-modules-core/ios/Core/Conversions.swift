@@ -307,7 +307,7 @@ public struct Conversions {
       "Provided hex color '\(param)' is invalid"
     }
   }
-  
+
   /**
    An exception used when the rgb color string is invalid.
    */
