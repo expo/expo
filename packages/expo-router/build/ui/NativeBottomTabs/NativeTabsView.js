@@ -11,7 +11,9 @@ const RNSNativeTabsScreen_1 = require("./RNSNativeTabsScreen");
 function NativeTabsView(props) {
     const { state, descriptors, navigation } = props.builder;
     const { routes } = state;
-    const children = routes.map((route, index) => {
+    const children = routes
+        .filter(({ key }) => descriptors[key].options?.tabBarItemStyle?.display !== 'none')
+        .map((route, index) => {
         const descriptor = descriptors[route.key];
         const isFocused = state.index === index;
         return (<RNSNativeTabsScreen_1.RNSNativeTabsScreen key={route.key} isFocused={isFocused} badgeValue={descriptor.route.name} onAppear={() => {
@@ -25,8 +27,8 @@ function NativeTabsView(props) {
                 }
                 navigation.dispatch(native_1.TabActions.jumpTo(route.name));
             }}>
-        {descriptor.render()}
-      </RNSNativeTabsScreen_1.RNSNativeTabsScreen>);
+          {descriptor.render()}
+        </RNSNativeTabsScreen_1.RNSNativeTabsScreen>);
     });
     return <RNSNativeTabs_1.RNSNativeTabs>{children}</RNSNativeTabs_1.RNSNativeTabs>;
 }
