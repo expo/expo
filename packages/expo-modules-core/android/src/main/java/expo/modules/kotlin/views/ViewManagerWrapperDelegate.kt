@@ -3,11 +3,10 @@ package expo.modules.kotlin.views
 import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.Dynamic
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
-import expo.modules.kotlin.exception.DynamicCastException
+import expo.modules.kotlin.exception.NullArgumentException
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
@@ -66,7 +65,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
       val key = item.key
       expoProps[key]?.let { expoProp ->
         try {
-          expoProp.set(item.value as? Dynamic ?: throw DynamicCastException("value"), view, moduleHolder.module._runtimeContext?.appContext)
+          expoProp.set(item.value as? Dynamic ?: throw NullArgumentException(), view, moduleHolder.module._runtimeContext?.appContext)
         } catch (exception: Throwable) {
           // The view wasn't constructed correctly, so errors are expected.
           // We can ignore them.
