@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add `placeholder` TextInput prop. ([#36590](https://github.com/expo/expo/pull/36590) by [@ramonfabrega](https://github.com/ramonfabrega))
+
 ### 💡 Others
 
 ## 0.1.1-alpha.7 — 2025-04-30

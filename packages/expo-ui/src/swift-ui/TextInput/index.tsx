@@ -19,6 +19,10 @@ export type TextInputProps = {
    */
   onChangeText: (value: string) => void;
   /**
+   * The string that will be rendered before text input has been entered.
+   */
+  placeholder?: string;
+  /**
    * If true, the text input can be multiple lines.
    * While the content will wrap, there's no keyboard button to insert a new line.
    */
