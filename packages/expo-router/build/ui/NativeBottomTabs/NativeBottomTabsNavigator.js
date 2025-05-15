@@ -15,6 +15,7 @@ function NativeTabsNavigator({ children }) {
     });
     return <NativeTabsView_1.NativeTabsView builder={builder}/>;
 }
+// export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 exports.NativeTabs = (0, __1.withLayoutContext)(NativeTabsNavigator, (screens) => {
     return screens;
 });

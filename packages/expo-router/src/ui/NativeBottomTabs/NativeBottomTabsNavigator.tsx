@@ -14,11 +14,14 @@ function NativeTabsNavigator({ children }: PropsWithChildren<NativeProps>) {
   return <NativeTabsView builder={builder} />;
 }
 
+// export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
+
 export const NativeTabs = withLayoutContext<
   NativeProps,
   typeof NativeTabsNavigator,
   NavigationState,
   {}
+  // >(createNativeTabNavigator().Navigator, (screens) => {
 >(NativeTabsNavigator, (screens) => {
   return screens;
 });
