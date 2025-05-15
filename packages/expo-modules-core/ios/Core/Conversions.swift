@@ -123,17 +123,17 @@ public struct Conversions {
       .compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
 
     guard components.count >= 3,
-          components[0] >= 0 && components[0] <= 255,
-          components[1] >= 0 && components[1] <= 255,
-          components[2] >= 0 && components[2] <= 255 else {
+      components[0] >= 0 && components[0] <= 255,
+      components[1] >= 0 && components[1] <= 255,
+      components[2] >= 0 && components[2] <= 255 else {
       throw InvalidRGBColorException(rgbString)
     }
 
     let alpha = components.count > 3 ? Double(components[3]) : 1.0
     return UIColor(red: CGFloat(components[0])/255.0,
-                   green: CGFloat(components[1])/255.0,
-                   blue: CGFloat(components[2])/255.0,
-                   alpha: alpha)
+      green: CGFloat(components[1])/255.0,
+      blue: CGFloat(components[2])/255.0,
+      alpha: alpha)
   }
   /**
    Converts an integer for ARGB color to `UIColor`. Since the alpha channel is represented by first 8 bits,
