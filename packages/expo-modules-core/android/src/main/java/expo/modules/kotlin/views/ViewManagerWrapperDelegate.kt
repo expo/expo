@@ -65,7 +65,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
       val key = item.key
       expoProps[key]?.let { expoProp ->
         try {
-          expoProp.set(item.value as? Dynamic ?: throw NullArgumentException(), view, moduleHolder.module._runtimeContext?.appContext)
+          expoProp.set(propsMap.getDynamic(key) ?: throw NullArgumentException(), view, moduleHolder.module._runtimeContext?.appContext)
         } catch (exception: Throwable) {
           // The view wasn't constructed correctly, so errors are expected.
           // We can ignore them.
