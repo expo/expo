@@ -23,7 +23,7 @@ import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermedi
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { getExpoHomeDirectory } from '../api/user/UserSettings';
-import { ensureLoggedInAsync } from '../api/user/actions';
+import { tryGetUserAsync } from '../api/user/actions';
 import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
@@ -385,7 +385,12 @@ function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuer
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   easProjectId: string
 ): Promise<CodeSigningInfo | null> {
-  const actor = await ensureLoggedInAsync();
+  const actor = await tryGetUserAsync();
+
+  if (!actor) {
+    return null;
+  }
+
   let app: AppByIdQuery['app']['byId'];
   try {
     app = await AppQuery.byIdAsync(easProjectId);
