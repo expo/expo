@@ -252,7 +252,8 @@ try {
       // Support auto-mocking of expo-modules that:
       // 1. have a mock in the `mocks` directory
       // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-      const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
+      const nativeModuleMock =
+        attemptLookup(name) ?? ExpoModulesCore.requireOptionalNativeModule(name);
       if (!nativeModuleMock) {
         return null;
       }

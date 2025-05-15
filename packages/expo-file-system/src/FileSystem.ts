@@ -286,7 +286,7 @@ export async function downloadAsync(
  *
  * **Server**
  *
- * Please refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
+ * Refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
  * @return Returns a Promise that resolves to `FileSystemUploadResult` object.
  */
 export async function uploadAsync(

@@ -155,11 +155,12 @@ Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/d
 - Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
 - Scheduled workflows may be delayed during periods of high load. High load times include the start of every hour. In rare circumstances, jobs may be skipped or run multiple times. Make sure that your workflows are idempotent and do not have harmful side effects.
 - A workflow can have multiple `cron` schedules.
+- Scheduled workflows run in the GMT time zone.
 
 ```yaml
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at midnight every day
+    - cron: '0 0 * * *' # Runs at midnight GMT every day
 ```
 
 ## `jobs`
@@ -645,6 +646,8 @@ This job outputs the following properties:
 
 Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
 
+> **important** Maestro tests are experimental and may experience flakiness.
+
 ```yaml
 jobs:
   my_job:
@@ -944,7 +947,7 @@ jobs:
 #### `eas/send_slack_message`
 
 Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
-With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: ${{ eas.job.expoBuildUrl }}`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
+With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: ${ eas.job.expoBuildUrl }`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`.
 Either "message" or "payload" has to be specified, but not both.
 
 ```yaml

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Disable default timeout for `expo/fetch` requests on iOS. ([#36838](https://github.com/expo/expo/pull/36838) by [@kudo](https://github.com/kudo))
+
 ## 53.0.9 — 2025-05-08
 
 ### 🐛 Bug fixes

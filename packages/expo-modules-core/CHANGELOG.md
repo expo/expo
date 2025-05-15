@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
+- [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

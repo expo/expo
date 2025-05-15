@@ -115,28 +115,44 @@ import * as Print from 'expo-print';
 
 ## Local images
 
-On iOS, printing from HTML source doesn't support local asset URLs (due to WKWebView limitations). Instead, images need to be converted to base64 and inlined into the HTML.
+On iOS, printing from HTML source doesn't support local asset URLs (due to `WKWebView` limitations). Instead, images need to be converted to base64 and inlined into the HTML.
 
-```js
+```tsx Example
 import { Asset } from 'expo-asset';
+import { useImageManipulator } from 'expo-image-manipulator';
 import { printAsync } from 'expo-print';
-import { manipulateAsync } from 'expo-image-manipulator';
+import { useEffect } from 'react';
 
-async function generateHTML() {
-  const asset = Asset.fromModule(require('../../assets/logo.png'));
-  const image = await manipulateAsync(asset.localUri ?? asset.uri, [], { base64: true });
-  return `
-    <html>
-      <img
-        src="data:image/jpeg;base64,${image.base64}"
-        style="width: 90vw;" />
-    </html>
-  `;
-}
+const IMAGE = Asset.fromModule(require('@/assets/images/icon.png'));
 
-async function print() {
-  const html = await generateHTML();
-  await printAsync({ html });
+export function ImageManipulatorExample() {
+  const context = useImageManipulator(IMAGE.uri);
+
+  useEffect(() => {
+    async function generateAndPrint() {
+      try {
+        await IMAGE.downloadAsync();
+        const manipulatedImage = await context.renderAsync();
+        const result = await manipulatedImage.saveAsync({ base64: true });
+
+        const html = `
+          <html>
+            <img
+              src="data:image/png;base64,${result.base64}"
+              style="width: 90vw;" />
+          </html>
+        `;
+
+        await printAsync({ html });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    generateAndPrint();
+  }, [context]);
+
+  return <>{/* Render UI */}</>;
 }
 ```
 

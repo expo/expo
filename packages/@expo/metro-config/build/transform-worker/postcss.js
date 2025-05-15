@@ -136,7 +136,7 @@ function pluginFactory() {
                 if (Array.isArray(plugin)) {
                     const [name, options] = plugin;
                     if (typeof name !== 'string') {
-                        throw new Error(`PostCSS plugin must be a string, but "${name}" was found. Please check your configuration.`);
+                        throw new Error(`PostCSS plugin must be a string, but "${name}" was found. Verify the configuration is correct.`);
                     }
                     listOfPlugins.set(name, options);
                 }

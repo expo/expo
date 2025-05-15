@@ -6,12 +6,23 @@
 
 ### 🎉 New features
 
+- Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Remove internal routes from sitemap and add unit tests for this screen ([#36856](https://github.com/expo/expo/pull/36856) by [@Ubax](https://github.com/Ubax))
+
+## 5.0.7 — 2025-05-13
+
 ### 🐛 Bug fixes
 
 - Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
 - Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
+- Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
+- Fix useLocalSearchParams returning "undefined" for deleted params ([#36811](https://github.com/expo/expo/pull/36811) by [@marklawlor](https://github.com/marklawlor))
 
 ## 5.0.6 — 2025-05-06
 
