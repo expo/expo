@@ -23,7 +23,7 @@ fun getFilteredReactStylesDiffMap(
 
   while (iterator.hasNext()) {
     val (key, value) = iterator.next()
-    if (key in filteredKeySet) {
+    if (key !in filteredKeySet) {
       when (value) {
         is HashMap<*, *> -> resultMap.putMap(key, inputMap.getMap(key))
         is ArrayList<*> -> resultMap.putArray(key, inputMap.getArray(key))
