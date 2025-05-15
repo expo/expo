@@ -3,7 +3,7 @@ import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
 const onClipboardEventName = 'onClipboardChanged';
 /**
- * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
+ * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
  *
  * @param options Options for the clipboard content to be retrieved.
@@ -100,8 +100,9 @@ export async function hasUrlAsync() {
     return await ExpoClipboard.hasUrlAsync();
 }
 /**
- * Gets the image from the user's clipboard and returns it in the specified format. Please note that calling
- * this method on web will prompt the user to grant your app permission to "see text and images copied to the clipboard."
+ * Gets the image from the user's clipboard and returns it in the specified
+ * format. Calling this method on web will prompt the user to grant your app
+ * permission to "see text and images copied to the clipboard."
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to

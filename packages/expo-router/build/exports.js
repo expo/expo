@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -62,6 +62,8 @@ var Unmatched_1 = require("./views/Unmatched");
 Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function () { return Unmatched_1.Unmatched; } });
 var Sitemap_1 = require("./views/Sitemap");
 Object.defineProperty(exports, "Sitemap", { enumerable: true, get: function () { return Sitemap_1.Sitemap; } });
+var useSitemap_1 = require("./views/useSitemap");
+Object.defineProperty(exports, "useSitemap", { enumerable: true, get: function () { return useSitemap_1.useSitemap; } });
 var ErrorBoundary_1 = require("./views/ErrorBoundary");
 Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return ErrorBoundary_1.ErrorBoundary; } });
 // Platform

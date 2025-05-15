@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
+
 ### 🐛 Bug fixes
 
+- Disable `minifyTypeofWindow` for Web to prevent breaking Web Worker targets ([#36773](https://github.com/expo/expo/pull/36773) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 13.1.11 — 2025-05-01
 

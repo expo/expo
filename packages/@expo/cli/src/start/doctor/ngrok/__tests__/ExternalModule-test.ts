@@ -226,7 +226,7 @@ describe('installAsync', () => {
     } as any);
 
     await expect(externalModule.installAsync({ autoInstall: true })).rejects.toThrowError(
-      /Please install .* and try again/
+      /Install .* and try again/
     );
 
     expect(externalModule.installAsync).toHaveBeenCalledTimes(2);
@@ -250,7 +250,7 @@ describe('installAsync', () => {
 
     await expect(
       externalModule.resolveAsync({ autoInstall: false, shouldPrompt: false })
-    ).rejects.toThrowError(/Please install .* and try again/);
+    ).rejects.toThrowError(/Install .* and try again/);
 
     // Only invoked once, since we're not prompting.
     expect(externalModule.installAsync).toHaveBeenCalledTimes(1);

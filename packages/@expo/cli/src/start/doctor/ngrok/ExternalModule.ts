@@ -133,10 +133,7 @@ export class ExternalModule<TModule> {
       return await this.resolveAsync({ shouldPrompt: false });
     }
 
-    throw new CommandError(
-      'EXTERNAL_MODULE_AVAILABILITY',
-      `Please install ${packageName} and try again`
-    );
+    throw new CommandError('EXTERNAL_MODULE_AVAILABILITY', `Install ${packageName} and try again`);
   }
 
   /** Get the module. */

@@ -128,10 +128,18 @@ export default function Page() {
         href={{
           pathname: '/user/[id]',
           params: { id: 'bacon' }
-        }}>
+        }}
+      >
         View user (id in params in href)
       </Link>
-      <Pressable onPress={() => router.navigate('/user', { id: 'bacon' })}>
+      <Pressable
+        onPress={() =>
+          router.navigate({
+            pathname: '/user',
+            params: { id: 'bacon' }
+          })
+        }
+      >
         <Text>View user (imperative)</Text>
       </Pressable>
     </View>

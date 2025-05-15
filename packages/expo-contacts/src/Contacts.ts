@@ -664,7 +664,7 @@ export async function getContactByIdAsync(
   }
 
   if (id == null) {
-    throw new Error('Error: Contacts.getContactByIdAsync: Please pass an ID as a parameter');
+    throw new Error('Error: Contacts.getContactByIdAsync: id is required');
   } else {
     const results = await ExpoContacts.getContactsAsync({
       pageSize: 1,

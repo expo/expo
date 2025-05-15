@@ -558,23 +558,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@expo/styleguide-icons@npm:2.2.0"
+"@expo/styleguide-icons@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@expo/styleguide-icons@npm:2.2.2"
   dependencies:
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/058085af3264149e1f842e003df3813f377f2b88b3b36b97d0e08c9f00bb76fc2a2b4274861a4bff88c1cf0277f556ecc3eb5b2a8953b8af0eb0bcbfaab94ce7
+  checksum: 10c0/df24b2c7652f4237eb6db9301cb58dbbe81bb955e94f69469a0e6e2668b9312828283f8dbbc3ae9382ac00a7ea6142222af553f80ba6443ddfca08d240b70948
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^2.3.4":
-  version: 2.3.4
-  resolution: "@expo/styleguide-search-ui@npm:2.3.4"
+"@expo/styleguide-search-ui@npm:^2.3.6":
+  version: 2.3.6
+  resolution: "@expo/styleguide-search-ui@npm:2.3.6"
   dependencies:
     "@expo/styleguide": "npm:^9.1.2"
-    "@expo/styleguide-icons": "npm:^2.2.0"
+    "@expo/styleguide-icons": "npm:^2.2.2"
     "@sanity/client": "npm:^6.28.3"
     "@sanity/image-url": "npm:^1.1.0"
     cmdk: "npm:^0.2.1"
@@ -582,7 +582,7 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/a435b89a12e2c19f39164cb510cc06be82f0fb80930db05abc36a162877b28ee0dace1225ccce7ed4fff69ac9ac5a5fbe95590b45c89e9ecf698698dd5fe742f
+  checksum: 10c0/23df44e28607a1c18f0a4cc7bbc1f36b0d9d3c871c7859e642044a37e990b33df379493d32d42b975b33986b1899a744ed0781e6c5b184e2e6c36a6dbdf4a939
   languageName: node
   linkType: hard
 
@@ -5719,8 +5719,8 @@ __metadata:
     "@expo/spawn-async": "npm:^1.7.2"
     "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-base": "npm:^2.0.3"
-    "@expo/styleguide-icons": "npm:^2.2.0"
-    "@expo/styleguide-search-ui": "npm:^2.3.4"
+    "@expo/styleguide-icons": "npm:^2.2.2"
+    "@expo/styleguide-search-ui": "npm:^2.3.6"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
@@ -12395,9 +12395,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.19.5":
-  version: 6.21.1
-  resolution: "undici@npm:6.21.1"
-  checksum: 10c0/d604080e4f8db89b35a63b483b5f96a5f8b19ec9f716e934639345449405809d2997e1dd7212d67048f210e54534143384d712bd9075e4394f0788895ef9ca8e
+  version: 6.21.3
+  resolution: "undici@npm:6.21.3"
+  checksum: 10c0/294da109853fad7a6ef5a172ad0ca3fb3f1f60cf34703d062a5ec967daf69ad8c03b52e6d536c5cba3bb65615769bf08e5b30798915cbccdddaca01045173dda
   languageName: node
   linkType: hard
 

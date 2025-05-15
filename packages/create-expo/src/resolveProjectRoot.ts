@@ -61,7 +61,7 @@ export async function resolveProjectRootAsync(input: string): Promise<string> {
   if (!name) {
     const selfCmd = formatSelfCommand();
     Log.log();
-    Log.log('Please choose your app name:');
+    Log.log('Choose a name for your app:');
     Log.log(chalk`  {dim $} {cyan ${selfCmd} <name>}`);
     Log.log();
     Log.log(`For more info, run:`);
