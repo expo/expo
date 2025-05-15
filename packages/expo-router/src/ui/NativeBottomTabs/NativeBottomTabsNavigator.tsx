@@ -1,8 +1,8 @@
 import { NavigationState, useNavigationBuilder } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
 
-import { NativeTabsView } from './NativeBottomTabs';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
 import { NativeProps } from './RNSNativeTabs';
 
