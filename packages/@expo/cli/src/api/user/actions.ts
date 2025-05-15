@@ -7,7 +7,7 @@ import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import promptAsync, { Question } from '../../utils/prompts';
+import promptAsync, { confirmAsync, Question, selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 
 /** Show login prompt while prompting for missing credentials. */
@@ -92,14 +92,31 @@ export async function showLoginPromptAsync({
 }
 
 export async function tryGetUserAsync(): Promise<Actor | null> {
-  const user = await getUserAsync().catch(() => null);
+  let user = await getUserAsync().catch(() => null);
 
   if (!user) {
-    Log.warn(
-      chalk.yellow`Proceeding anonymously. You may want to log in with "npx expo login"\n{dim ${learnMore(
-        'https://expo.fyi/cli-login'
-      )}}\n`
+    const choices = [
+      {
+        title: 'Log in',
+        value: true,
+      },
+      {
+        title: 'Proceed anonymously',
+        value: false,
+      },
+    ];
+
+    const value = await selectAsync(
+      chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
+        'https://expo.fyi/unverified-app-expo-go'
+      )}}\n`,
+      choices
     );
+
+    if (value === true) {
+      await showLoginPromptAsync({ printNewLine: true });
+      user = await getUserAsync();
+    }
   }
 
   return user ?? null;
