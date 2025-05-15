@@ -48,7 +48,7 @@ export async function promptTemplateAsync() {
 
   if (!answer) {
     console.log();
-    console.log(chalk`Please specify the template, example: {cyan --template expo-template-blank}`);
+    console.log(chalk`Specify the template name, example: {cyan --template expo-template-blank}`);
     console.log();
     process.exit(1);
   }

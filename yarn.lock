@@ -3822,13 +3822,6 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.14.tgz#319b63ad6df705ee2a65a73ef042c8271e696613"
   integrity sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==
 
-"@types/getenv@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@types/getenv/-/getenv-0.7.0.tgz#35147dcf91601e9cddb64b9e840dfc88a95fc27f"
-  integrity sha512-8lHVCNUJmULX+29shiBxOzlpwzfFvE0bI9Fe1OQ2GiZiJIsZwR1J49vbgeiZKYKRSOIGtmtwqRL1uDxLo8d0vw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/getenv@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/getenv/-/getenv-1.0.0.tgz#fa5e6901e9fb84bfb40205d4952fd06c8afcf006"
@@ -7737,10 +7730,10 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.4.0.tgz#1f83f948c3cf88e9fcc9829199a0bbcd031e0068"
-  integrity sha512-UFLN0o53yjooLjPj98+NGzWPAFvr917D+7nPEELW1qXuEj3X4eqrQUdrbckdpIFQz5ke0FK3TvmB5WR+to0JzQ==
+expo-atlas@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.4.1.tgz#0cbb4e6247a4b55ce86822f9e91de2550ae6872c"
+  integrity sha512-OMXrS6Us79jJga1LTwA/6BSUi/U70P77h9jfAG2ZpY0xRjroro+0D1/B84ECy0wNmCWDdYz3GSilaG3Da82vHA==
   dependencies:
     "@expo/server" "^0.5.0"
     arg "^5.0.2"
@@ -7749,7 +7742,7 @@ expo-atlas@^0.4.0:
     connect "^3.7.0"
     express "^4.19.2"
     freeport-async "^2.0.0"
-    getenv "^1.0.0"
+    getenv "^2.0.0"
     morgan "^1.10.0"
     open "^8.4.2"
     serve-static "^1.15.0"
@@ -8467,10 +8460,10 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
-getenv@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/getenv/-/getenv-1.0.0.tgz#874f2e7544fbca53c7a4738f37de8605c3fcfc31"
-  integrity sha512-7yetJWqbS9sbn0vIfliPsFgoXMKn/YMF+Wuiog97x+urnSRRRZ7xB+uVkwGKzRgq9CDFfMQnE9ruL5DHv9c6Xg==
+getenv@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/getenv/-/getenv-2.0.0.tgz#b1698c7b0f29588f4577d06c42c73a5b475c69e0"
+  integrity sha512-VilgtJj/ALgGY77fiLam5iD336eSWi96Q15JSAG1zi8NRBysm3LXKdGnHb4m5cuyxvOLQQKWpBZAT6ni4FI2iQ==
 
 github-from-package@0.0.0:
   version "0.0.0"

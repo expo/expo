@@ -383,6 +383,13 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     if let rows = statement.extraPointer {
       libsql_free_rows(rows)
       statement.extraPointer = nil

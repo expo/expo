@@ -111,7 +111,7 @@ export async function ensureDependenciesAsync(
 
   const disableMessage = warningMessage;
 
-  const solution = `Please install ${chalk.bold(
+  const solution = `Install ${chalk.bold(
     readableMissingPackages
   )} by running:\n\n  ${chalk.reset.bold(installCommand)}\n\n`;
 

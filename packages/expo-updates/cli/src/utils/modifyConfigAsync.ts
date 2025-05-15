@@ -31,7 +31,7 @@ function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<E
 }
 
 function notifyAboutManualConfigEdits(edits: Partial<ExpoConfig>) {
-  Log.log(chalk.cyan(`Please add the following to your Expo config`));
+  Log.log(chalk.cyan(`Add the following to your Expo config`));
   Log.log();
   Log.log(JSON.stringify(edits, null, 2));
   Log.log();

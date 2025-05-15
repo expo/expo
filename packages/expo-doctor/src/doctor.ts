@@ -53,7 +53,7 @@ export async function printCheckResultSummaryOnComplete(
     if (networkError) {
       Log.error(`${job.error.cause}`);
       Log.error(
-        'This check requires a connection to the Expo API. Please check your network connection.'
+        'This check requires a connection to the Expo API. Ensure your network connection is stable.'
       );
       if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
         Log.warn(
