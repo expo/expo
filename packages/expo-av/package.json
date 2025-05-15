@@ -1,6 +1,6 @@
 {
   "name": "expo-av",
-  "version": "15.1.2",
+  "version": "15.1.4",
   "description": "Expo universal module for Audio and Video playback",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/av/",
   "devDependencies": {
-    "expo-module-scripts": "^4.1.2"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*",

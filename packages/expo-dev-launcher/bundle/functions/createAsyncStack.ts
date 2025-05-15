@@ -35,7 +35,7 @@ export type StackState<T = any> = {
 
 export type Stack<T> = {
   push: (data?: T | undefined) => StackItem<T>;
-  pop: (amount?: number, startIndex?: number) => StackItem[];
+  pop: (amount?: number) => StackItem[];
   subscribe: (listener: (state: StackEvent<T>) => void) => () => void;
   getState: () => StackState;
 };

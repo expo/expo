@@ -1,7 +1,10 @@
+import { getConfig } from '@expo/config';
+
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
 import { isOSType } from '../../../start/platforms/ios/simctl';
+import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
 import { profile } from '../../../utils/profile';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import { BuildProps, Options } from '../XcodeBuild.types';
@@ -38,6 +41,13 @@ export async function resolveOptionsAsync(
 
   const isSimulator = isSimulatorDevice(device);
 
+  const projectConfig = getConfig(projectRoot);
+  const buildCacheProvider = await resolveBuildCacheProvider(
+    projectConfig.exp.experiments?.buildCacheProvider ??
+      projectConfig.exp.experiments?.remoteBuildCache?.provider,
+    projectRoot
+  );
+
   // This optimization skips resetting the Metro cache needlessly.
   // The cache is reset in `../node_modules/react-native/scripts/react-native-xcode.sh` when the
   // project is running in Debug and built onto a physical device. It seems that this is done because
@@ -55,5 +65,6 @@ export async function resolveOptionsAsync(
     shouldSkipInitialBundling,
     buildCache: options.buildCache !== false,
     scheme,
+    buildCacheProvider,
   };
 }

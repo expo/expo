@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `openBrowserAsync` doesn't surface exceptions. ([#36182](https://github.com/expo/expo/pull/36182) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 14.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.4 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Fixed `openBrowserAsync` doesn't surface exceptions. ([#36182](https://github.com/expo/expo/pull/36182) by [@lukmccall](https://github.com/lukmccall))
 
 ## 14.1.3 — 2025-04-14
 

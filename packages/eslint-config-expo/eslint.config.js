@@ -6,7 +6,10 @@ module.exports = [
   ...expoConfig,
   {
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
     },
   },
   eslintPluginPrettierRecommended,
@@ -14,5 +17,8 @@ module.exports = [
     rules: {
       'prettier/prettier': 'warn',
     },
+  },
+  {
+    ignores: ['**/__tests__/fixtures/*'],
   },
 ];

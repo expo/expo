@@ -7,11 +7,9 @@ import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';
-import { RouteNode } from '../Route';
-import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
+import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
-import { matchDeepDynamicRouteName } from '../matchers';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
 
 const INDENT = 20;
@@ -63,71 +61,34 @@ export function Sitemap() {
 }
 
 function FileSystemView() {
-  const routes = useExpoRouter().getSortedRoutes();
-  return routes.map((route) => (
-    <View key={route.contextKey} style={styles.itemContainer}>
-      <FileItem route={route} />
+  const sitemap = useSitemap();
+  // This shouldn't occur, as the user should be on the tutorial screen
+  if (!sitemap) return null;
+  const children = sitemap.children.filter(({ isInternal }) => !isInternal);
+  return children.map((child) => (
+    <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+      <FileItem node={child} />
     </View>
   ));
 }
 
 function FileItem({
-  route,
+  node,
   level = 0,
-  parents = [],
   isInitial = false,
 }: {
-  route: RouteNode;
+  node: SitemapType;
   level?: number;
-  parents?: string[];
   isInitial?: boolean;
 }) {
-  const disabled = route.children.length > 0;
-
-  const segments = React.useMemo(
-    () => [...parents, ...route.route.split('/')],
-    [parents, route.route]
-  );
-
-  const href = React.useMemo(() => {
-    return (
-      '/' +
-      segments
-        .map((segment) => {
-          // add an extra layer of entropy to the url for deep dynamic routes
-          if (matchDeepDynamicRouteName(segment)) {
-            return segment + '/' + Date.now();
-          }
-          // index must be erased but groups can be preserved.
-          return segment === 'index' ? '' : segment;
-        })
-        .filter(Boolean)
-        .join('/')
-    );
-  }, [segments, route.route]);
-
-  const filename = React.useMemo(() => {
-    const segments = route.contextKey.split('/');
-    // join last two segments for layout routes
-    if (route.contextKey.match(/_layout\.[jt]sx?$/)) {
-      return segments[segments.length - 2] + '/' + segments[segments.length - 1];
-    }
-
-    const routeSegmentsCount = route.route.split('/').length;
-
-    // Join the segment count in reverse order
-    // This presents files without layout routes as children with all relevant segments.
-    return segments.slice(-routeSegmentsCount).join('/');
-  }, [route]);
-
-  const info = isInitial ? 'Initial' : route.generated ? 'Virtual' : '';
-
+  const disabled = node.children.length > 0;
+  const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
   return (
     <>
-      {!route.internal && (
+      {!node.isInternal && (
         <Link
-          accessibilityLabel={route.contextKey}
-          href={href}
+          accessibilityLabel={node.contextKey}
+          href={node.href}
           onPress={() => {
             if (Platform.OS !== 'web' && router.canGoBack()) {
               // Ensure the modal pops
@@ -141,6 +102,7 @@ function FileItem({
           <Pressable>
             {({ pressed, hovered }) => (
               <View
+                testID="sitemap-item"
                 style={[
                   styles.itemPressable,
                   {
@@ -151,8 +113,8 @@ function FileItem({
                   disabled && { opacity: 0.4 },
                 ]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {route.children.length ? <PkgIcon /> : <FileIcon />}
-                  <Text style={styles.filename}>{filename}</Text>
+                  {node.children.length ? <PkgIcon /> : <FileIcon />}
+                  <Text style={styles.filename}>{node.filename}</Text>
                 </View>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -166,13 +128,12 @@ function FileItem({
           </Pressable>
         </Link>
       )}
-      {route.children.map((child) => (
+      {node.children.map((child) => (
         <FileItem
           key={child.contextKey}
-          route={child}
-          isInitial={route.initialRouteName === child.route}
-          parents={segments}
-          level={level + (route.generated ? 0 : 1)}
+          node={child}
+          isInitial={child.isInitial}
+          level={level + (child.isGenerated ? 0 : 1)}
         />
       ))}
     </>

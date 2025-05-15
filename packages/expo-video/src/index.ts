@@ -7,7 +7,7 @@ export {
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
-export { VideoContentFit, VideoViewProps } from './VideoView.types';
+export { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
 export { VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
@@ -26,6 +26,7 @@ export {
   VideoSize,
   SubtitleTrack,
   VideoTrack,
+  ContentType,
 } from './VideoPlayer.types';
 
 export {
@@ -37,4 +38,5 @@ export {
   MutedChangeEventPayload,
   TimeUpdateEventPayload,
   SourceChangeEventPayload,
+  SourceLoadEventPayload,
 } from './VideoPlayerEvents.types';

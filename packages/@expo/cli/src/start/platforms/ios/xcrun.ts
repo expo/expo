@@ -28,7 +28,7 @@ function throwXcrunError(e: any): never {
   if (isLicenseOutOfDate(e.stdout) || isLicenseOutOfDate(e.stderr)) {
     throw new CommandError(
       'XCODE_LICENSE_NOT_ACCEPTED',
-      'Xcode license is not accepted. Please run `sudo xcodebuild -license`.'
+      'Xcode license is not accepted. Run `sudo xcodebuild -license`.'
     );
   } else if (e.stderr?.includes('not a developer tool or in PATH')) {
     throw new CommandError(

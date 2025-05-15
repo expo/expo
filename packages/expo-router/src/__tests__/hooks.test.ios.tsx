@@ -12,7 +12,7 @@ import {
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import { act, renderRouter } from '../testing-library';
-import { inMemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 /*
  * Creates an Expo Router context around the hook, where every router renders the hook
@@ -25,7 +25,7 @@ function renderHook<T>(
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
-      const context = {};
+      const context: MemoryContext = {};
       for (const key of routes) {
         context[key] = () => <>{children}</>;
       }
@@ -315,6 +315,20 @@ describe(useLocalSearchParams, () => {
     const params = renderHookOnce(() => useLocalSearchParams<{ a: string }>());
     expectType<{ a?: string }>(params);
     expectType<string | undefined>(params.a);
+  });
+
+  it('does not return undefined search params', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1&test=2',
+    });
+
+    expect(result.current).toEqual({
+      test: ['1', '2'],
+    });
+
+    act(() => router.setParams({ test: undefined }));
+
+    expect(result.current).toEqual({});
   });
 });
 

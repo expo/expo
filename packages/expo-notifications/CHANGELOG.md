@@ -10,6 +10,45 @@
 
 ### 💡 Others
 
+- improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.31.2 — 2025-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.1 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.0 — 2025-04-25
+
+### 🛠 Breaking changes
+
+- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+
+## 0.30.7 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.6 — 2025-04-22
+
+### 🛠 Breaking changes
+
+- [Android] support action buttons when not in foreground. This is breaking because notification background tasks on Android run not only in response to an incoming notification but also in response to an action button press. ([#35295](https://github.com/expo/expo/pull/35295) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- correctly include `NotificationContent.data` in `NotificationHandler` ([#36195](https://github.com/expo/expo/pull/36195) by [@vonovak](https://github.com/vonovak))
+
+## 0.30.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.30.4 — 2025-04-14
 
 _This version does not introduce any user-facing changes._
@@ -634,9 +673,11 @@ _This version does not introduce any user-facing changes._
 - Changed class responsible for handling Firebase events from `FirebaseMessagingService` to `.service.NotificationsService` on Android. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override `FirebaseMessagingService` to implement some custom handling logic.
+
 - Changed how you can override ways in which a notification is reinterpreted from a [`StatusBarNotification`](https://developer.android.com/reference/android/service/notification/StatusBarNotification) and in which a [`Notification`](https://developer.android.com/reference/android/app/Notification.html?hl=en) is built from defining an `expo.modules.notifications#NotificationsScoper` meta-data value in `AndroidManifest.xml` to implementing a `BroadcastReceiver` subclassing `NotificationsService` delegating those responsibilities to your custom `PresentationDelegate` instance. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
+
 - Removed `removeAllNotificationListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addNotification…Listener`. ([#10883](https://github.com/expo/expo/pull/10883) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier being used to fetch Expo push token being backed up on Android which resulted in multiple devices having the same `deviceId` (and eventually, Expo push token). ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier used when fetching Expo push token being different than `Constants.installationId` in managed workflow apps which resulted in different Expo push tokens returned for the same experience across old and new Expo API and the device push token not being automatically updated on Expo push servers which lead to Expo push tokens corresponding to outdated Firebase tokens. ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))

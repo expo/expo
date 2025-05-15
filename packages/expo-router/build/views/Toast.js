@@ -29,7 +29,7 @@ function useFadeIn() {
     return value;
 }
 function ToastWrapper({ children }) {
-    const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
+    const inTabBar = react_1.default.use(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
     return (<Wrapper collapsable={false} style={{ flex: 1 }}>
       {children}

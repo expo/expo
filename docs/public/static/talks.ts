@@ -212,9 +212,24 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
+    event: 'Expo Live Stream',
+    videoId: 'XCTaMu0qnFY',
+  },
+  {
+    title: 'Best practices for using Unistyles 3.0 to style cross platform applications',
+    event: 'Expo Live Stream',
+    videoId: 'K3wZg-Pxt3k',
+  },
+  {
     title: 'How to build mobile apps without writing a line of code with Bolt and Expo',
     event: 'Expo Live Stream',
     videoId: 'dT7hlszpO04',
+  },
+  {
+    title: 'What is Legend List?',
+    event: 'Expo Live Stream',
+    videoId: 'XpZMveUCke8',
   },
   {
     title: 'How to add Apple home screen widgets to React apps',
@@ -316,6 +331,46 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Learn how to build with the new expo-maps library',
+    event: 'Expo Tutorials',
+    videoId: 'jDCuaIQ9vd0',
+  },
+  {
+    title: 'Building an Auth Flow with Expo Router',
+    event: 'Expo Tutorials',
+    videoId: 'yNaOaR2kIa0',
+  },
+  {
+    title: 'Using Modals with Expo Router',
+    event: 'Expo Tutorials',
+    videoId: 'gNzuJVRmyDk',
+  },
+  {
+    title: 'Using a Tab Navigator with Expo Router',
+    event: 'Expo Tutorials',
+    videoId: 'BElPB4Ai3j0',
+  },
+  {
+    title: 'Using a Stack Navigator with Expo Router',
+    event: 'Expo Tutorials',
+    videoId: 'izZv6a99Roo',
+  },
+  {
+    title: 'Introduction to Expo Router Layout Files',
+    event: 'Expo Tutorials',
+    videoId: 'Yh6Qlg2CYwQ',
+  },
+  {
+    title: 'Sign in with Apple and Expo Router Tutorial',
+    event: 'Expo Tutorials',
+    videoId: 'tqxTijhYhp8',
+  },
+  {
+    title: 'How to integrate Google Sign-In with Expo using Expo Router API Routes',
+    event: 'Expo Tutorials',
+    videoId: 'V2YdhR1hVNw',
+  },
   {
     title: 'Master Expo Router API Routes | Handle Requests & Stream Data',
     event: 'Expo Tutorials',

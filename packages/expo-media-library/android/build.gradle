@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '17.1.2'
+version = '17.1.6'
 
 android {
   namespace "expo.modules.medialibrary"
   defaultConfig {
     versionCode 37
-    versionName "17.1.2"
+    versionName "17.1.6"
   }
 }
 

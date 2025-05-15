@@ -70,17 +70,23 @@ Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in
 
 <Step label="2">
 
-Update your ESLint configuration to include the plugin:
+Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
 
 ```js .eslintrc.js
 // https://docs.expo.dev/guides/using-eslint/
-module.exports = {
-  extends: 'expo',
-  plugins: ['eslint-plugin-react-compiler'],
-  rules: {
-    'react-compiler/react-compiler': 'error',
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+
+module.exports = defineConfig([
+  expoConfig,
+  {
+    ignores: ['dist/*'],
+    plugins: ['react-compiler'],
+    rules: {
+      'react-compiler/react-compiler': 'error',
+    },
   },
-};
+]);
 ```
 
 </Step>

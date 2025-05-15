@@ -13,3 +13,6 @@ __rsc_tests__
 /babel.config.js
 /android/src/androidTest/
 /android/src/test/
+
+# Exclude testDebug variant
+/android/src/testDebug/

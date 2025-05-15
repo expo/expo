@@ -1,10 +1,11 @@
 {
   "name": "eslint-config-expo",
-  "version": "9.0.2",
+  "version": "9.2.0",
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,11 @@
     "flat",
     "utils"
   ],
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
+  },
   "author": "Expo",
   "license": "MIT",
   "bugs": {
@@ -33,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
     "eslint-import-resolver-typescript": "^3.6.3",
-    "eslint-plugin-expo": "^0.1.2",
+    "eslint-plugin-expo": "^0.1.4",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^5.1.0",
@@ -41,10 +47,11 @@
   },
   "devDependencies": {
     "eslint": "^9.18.0",
+    "eslint8": "npm:eslint@^8.57.1",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2"
   },
   "peerDependencies": {
-    "eslint": "^8 || ^9"
+    "eslint": ">=8.10"
   }
 }

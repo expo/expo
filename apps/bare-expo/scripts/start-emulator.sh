@@ -41,12 +41,12 @@ if [ "${CURRENT_ENV}" = "test" ]; then
         echo " ✅ Project is built for Android"
     else
         echo " ⚠️  Building the project..."
-        "${DIR}/start-android-e2e-test.ts --build"
+        "${DIR}/start-android-e2e-test.js --build"
     fi
 
     echo " ☛  Starting E2E tests"
     # Run our default E2E tests
-    "${DIR}/start-android-e2e-test.ts --test"
+    "${DIR}/start-android-e2e-test.js --test"
 else
     echo " ☛  Running the Android project..."
     npx expo run:android --port "${port}"

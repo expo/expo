@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '5.0.3'
+version = '5.0.7'
 
 android {
   namespace "expo.modules.systemui"
   defaultConfig {
     versionCode 1
-    versionName '5.0.3'
+    versionName '5.0.7'
   }
 }
 

@@ -114,6 +114,50 @@ Run the following command to submit a build to the Google Play Store:
 
 The command will lead you step by step through the process of submitting the app.
 
+## Build and submit automatically
+
+You can automatically create builds and submit them to the app stores with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/build-and-submit.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/build-and-submit.yml
+name: Build and submit
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS app
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android:
+    name: Submit Android
+    type: submit
+    needs: [build_android]
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+  submit_ios:
+    name: Submit iOS
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+The workflow above will create Android and iOS builds on every commit to your project's `main` branch, then submit them to the Google Play and Apple App Store respectively. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run build-and-submit.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
+
 ## Manual submission to app stores
 
 You can also submit your app manually to the Google Play Store and Apple App Store.

@@ -6,11 +6,55 @@
 
 ### 🎉 New features
 
+- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.0 — 2025-05-08
+
+### 🎉 New features
+
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+- Add circle rendering support on Android and iOS. ([#36439](https://github.com/expo/expo/pull/36439) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.9 — 2025-05-06
+
+### 🎉 New features
+
+- [iOS] Added Look Around support. ([#36415](https://github.com/expo/expo/pull/36415) by [@fobos531](https://github.com/fobos531))
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.8 — 2025-04-30
+
+### 🎉 New features
+
+- Added `id` property to markers and polylines. ([#36422](https://github.com/expo/expo/pull/36422) by [@fobos531](https://github.com/fobos531))
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+- Add polygons rendering support on Android and iOS. ([#36606](https://github.com/expo/expo/pull/36606) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.7 — 2025-04-28
+
+### 🎉 New features
+
+- Add polyline rendering support on Android and iOS. ([#36236](https://github.com/expo/expo/pull/36236) by [@fobos531](https://github.com/fobos531))
+
+## 0.9.6 — 2025-04-26
+
+### 💡 Others
+
+- [iOS] Lower minimum supported version to iOS 17. ([#36400](https://github.com/expo/expo/pull/36400) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.9.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.4 — 2025-04-21
+
 ### 🐛 Bug fixes
 
 - Exported missing config plugin. ([#36177](https://github.com/expo/expo/pull/36177) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 0.9.3 — 2025-04-14
 

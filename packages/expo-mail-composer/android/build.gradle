@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.1.2'
+version = '14.1.4'
 
 android {
   namespace "expo.modules.mailcomposer"
   defaultConfig {
     versionCode 17
-    versionName "14.1.2"
+    versionName "14.1.4"
   }
 }
 

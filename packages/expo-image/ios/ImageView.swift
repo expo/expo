@@ -244,7 +244,7 @@ public final class ImageView: ExpoView {
       return nil
     }()
 
-    if let path, let local = UIImage(named: path) {
+    if let path, !path.isEmpty, let local = UIImage(named: path) {
       renderSourceImage(local)
       return true
     }
@@ -332,7 +332,10 @@ public final class ImageView: ExpoView {
 
   // MARK: - Processing
 
-  private func createTransformPipeline() -> SDImagePipelineTransformer {
+  private func createTransformPipeline() -> SDImagePipelineTransformer? {
+    if blurRadius <= 0 {
+      return nil
+    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]

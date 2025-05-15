@@ -8,9 +8,76 @@
 
 ### 🐛 Bug fixes
 
+- Fix tree shaking overlapping exports ([#36717](https://github.com/expo/expo/pull/36717) by [@EvanBacon](https://github.com/EvanBacon))
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.20.14 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- Fix issue with HMR env vars in development not being readable in development. ([#36652](https://github.com/expo/expo/pull/36652) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.13 — 2025-05-03
+
+### 🐛 Bug fixes
+
+- Avoid mixing up ESM imports with non-ESM imports when collecting dependencies of single line files. ([#36594](https://github.com/expo/expo/pull/36594) by [@byCedric](https://github.com/byCedric))
+
+## 0.20.12 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Fix env vars when no .env files are defined. ([#36513](https://github.com/expo/expo/pull/36513) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.11 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.10 — 2025-04-30
+
+### 💡 Others
+
+- Pass `metroSourceType` from Babel transformer options via Babel caller ([#36463](https://github.com/expo/expo/pull/36463) by [@kitten](https://github.com/kitten))
+
+## 0.20.9 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.8 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix importing polyfills. ([#36406](https://github.com/expo/expo/pull/36406) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Move virtual rsc entry to expo ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+- Shim web streams API when bundling for native client environments. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.6 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.20.5 — 2025-04-21
+
+### 🐛 Bug fixes
+
 - Add `exporting` config option for serializer to generate correct entry bundle file name. ([#35563](https://github.com/expo/expo/pull/35563) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Collapse more unused stacks. ([#36272](https://github.com/expo/expo/pull/36272) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.20.4 — 2025-04-14
 
@@ -58,6 +125,10 @@ _This version does not introduce any user-facing changes._
 - Fix internal monorepo types on Metro require. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
 - Upgrade to `minimatch@9` ([#35313](https://github.com/expo/expo/pull/35313) by [@kitten](https://github.com/kitten))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.19.12 - 2025-03-11
 

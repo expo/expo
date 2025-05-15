@@ -1,8 +1,8 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.12.2",
+  "version": "0.12.5",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
-  "main": "build/Elements.js",
+  "main": "src/Elements.tsx",
   "types": "build/Elements.d.ts",
   "sideEffects": false,
   "scripts": {
@@ -37,6 +37,15 @@
   "jest": {
     "projects": [
       {
+        "preset": "jest-expo/web",
+        "setupFilesAfterEnv": [
+          "<rootDir>/jest-setup.js"
+        ],
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
+      },
+      {
         "preset": "jest-expo/ios",
         "modulePathIgnorePatterns": [
           "<rootDir>/babel/"
@@ -47,16 +56,13 @@
         "modulePathIgnorePatterns": [
           "<rootDir>/babel/"
         ]
-      },
-      {
-        "preset": "jest-expo/web",
-        "modulePathIgnorePatterns": [
-          "<rootDir>/babel/"
-        ]
       }
     ]
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.2"
+    "expo-module-scripts": "^4.1.7",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^13.1.0"
   }
 }

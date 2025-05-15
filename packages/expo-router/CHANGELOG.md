@@ -6,9 +6,72 @@
 
 ### 🎉 New features
 
+- Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Remove internal routes from sitemap and add unit tests for this screen ([#36856](https://github.com/expo/expo/pull/36856) by [@Ubax](https://github.com/Ubax))
+
+## 5.0.7 — 2025-05-13
+
+### 🐛 Bug fixes
+
+- Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
+- Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
+- Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
+- Fix useLocalSearchParams returning "undefined" for deleted params ([#36811](https://github.com/expo/expo/pull/36811) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.6 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- Fix <Tabs /> behaviour with replace and backHistory=order ([#36481](https://github.com/expo/expo/pull/36481) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.5 — 2025-05-02
+
+### 🐛 Bug fixes
+
+- Fix incorrect route info for nested tabs when navigating via touch ([#36558](https://github.com/expo/expo/pull/36558) by [@marklawlor](https://github.com/marklawlor))
+- Prevent incorrect warning when using custom navigators ([#36508](https://github.com/expo/expo/pull/36508) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Switch useContext to use ([#36414](https://github.com/expo/expo/pull/36414) by [@marklawlor](https://github.com/marklawlor))
+- Include tests in typecheck. Use seperate build tsconfig ([#36485](https://github.com/expo/expo/pull/36485) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.4 — 2025-05-01
+
+### 🐛 Bug fixes
+
+- Fix useNavigation() retrieving the incorrect parent for nested navigator ([#36509](https://github.com/expo/expo/pull/36509) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.3 — 2025-04-28
+
+### 💡 Others
+
+- Remove dev-only stack trace view from default error boundary. ([#36409](https://github.com/expo/expo/pull/36409) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.2 — 2025-04-28
+
+### 🎉 New features
+
+- Add <Screen.Protected /> ([#36243](https://github.com/expo/expo/pull/36243) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.2-preview.6 — 2025-04-25
+
+### 💡 Others
+
+- bump e2e tests to React 19 and fix lint ([#36344](https://github.com/expo/expo/pull/36344) by [@EvanBacon](https://github.com/EvanBacon))
+- Refactor route state to utilize useStateForPath() ([#36199](https://github.com/expo/expo/pull/36199) by [@marklawlor](https://github.com/marklawlor))
+- Cleanup router store after #36199 ([#36383](https://github.com/expo/expo/pull/36383) by [@marklawlor](https://github.com/marklawlor))
+- Fix require cycle in router store ([#36386](https://github.com/expo/expo/pull/36386) by [@marklawlor](https://github.com/marklawlor))
+
+## 5.0.2-preview.5 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
 
 ## 5.0.2-preview.4 — 2025-04-14
 

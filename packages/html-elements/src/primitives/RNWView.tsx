@@ -18,7 +18,6 @@ import { useLocaleContext, getLocaleDirection } from 'react-native-web/dist/modu
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 import usePlatformMethods from 'react-native-web/dist/modules/usePlatformMethods';
 import useResponderEvents from 'react-native-web/dist/modules/useResponderEvents';
-import { PlatformMethods } from 'react-native-web/dist/types';
 
 const forwardPropsList = Object.assign(
   {},
@@ -52,7 +51,7 @@ function pickProps(props: React.ComponentProps<any>) {
  * somewhere between 0.14...0.17.
  */
 
-const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, forwardedRef) => {
+function View(props: ViewProps) {
   const {
     __element,
     hrefAttrs,
@@ -73,6 +72,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
     onSelectionChangeShouldSetResponderCapture,
     onStartShouldSetResponder,
     onStartShouldSetResponderCapture,
+    ref: forwardedRef,
     ...rest
   } = props as any;
 
@@ -84,7 +84,7 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   //   });
   // }
 
-  const hasTextAncestor = React.useContext(TextAncestorContext);
+  const hasTextAncestor = React.use(TextAncestorContext);
   const hostRef = React.useRef(null);
   const { direction: contextDirection } = useLocaleContext();
 
@@ -117,7 +117,6 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   const supportedProps = pickProps(rest);
   supportedProps.dir = componentDirection;
   supportedProps.style = [styles.view$raw, hasTextAncestor && styles.inline, props.style];
-  // @ts-expect-error TODO(cedric): Property 'href' does not exist on type 'HTMLElement & PlatformMethods'
   if (props.href != null) {
     component = 'a';
     if (hrefAttrs != null) {
@@ -137,11 +136,16 @@ const View = React.forwardRef<ViewProps, HTMLElement & PlatformMethods>((props, 
   const platformMethodsRef = usePlatformMethods(supportedProps);
   const setRef = useMergeRefs(hostRef, platformMethodsRef, forwardedRef);
 
-  supportedProps.ref = setRef;
-
-  // @ts-expect-error TODO(cedric): 'writingDirection' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'
-  return createElement(component, supportedProps, { writingDirection });
-});
+  return createElement(
+    component,
+    {
+      ...supportedProps,
+      ref: setRef,
+    },
+    // @ts-expect-error TODO(cedric): 'writingDirection' does not exist in type 'ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<...>'
+    { writingDirection }
+  );
+}
 
 if (__DEV__) {
   View.displayName = 'View';

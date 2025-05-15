@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.1.3'
+version = '14.1.6'
 
 android {
   namespace "expo.modules.webbrowser"
   defaultConfig {
     versionCode 18
-    versionName '14.1.3'
+    versionName '14.1.6'
   }
 }
 

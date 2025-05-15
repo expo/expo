@@ -150,8 +150,10 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 
 **TL;DR:**
 
+Note: Running docs yarn commands requires a specific version of Node. You can find this version under the `volta` section in [./docs/package.json](./docs/package.json).
+
 1. Navigate to the **docs** directory and run `yarn`.
-2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
+2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`). Note: Requires Node `22.13.1` or higher. 
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
 4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 5. Package API docs are generated from sources. To regenerate the docs, run `et generate-docs-api-data -p <package-name>` (for the next SDK version) or `et generate-docs-api-data -p <package-name> -s <number>` (for a specific SDK version).

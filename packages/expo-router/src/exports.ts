@@ -24,6 +24,7 @@ export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { Sitemap } from './views/Sitemap';
+export { useSitemap, SitemapType } from './views/useSitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export type { ScreenProps } from './useScreens';
@@ -40,5 +41,6 @@ export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
 
 export type { RedirectConfig } from './getRoutesCore';
+export type { SingularOptions } from './useScreens';
 
 export type * from './types';

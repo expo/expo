@@ -58,7 +58,6 @@ describe('scheme', () => {
       {
         scheme: 'myapp',
         android: {
-          // @ts-ignore
           scheme: ['android-only'],
           package: 'com.demo.value',
         },
@@ -83,7 +82,7 @@ describe('scheme', () => {
       }
     }
 
-    expect(schemeIntent).toStrictEqual(['myapp', 'android-only', 'com.demo.value']);
+    expect(schemeIntent).toStrictEqual(['myapp', 'android-only']);
   });
 });
 

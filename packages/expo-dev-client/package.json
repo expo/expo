@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "5.1.2",
+  "version": "5.1.8",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -32,15 +32,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
-    "expo-dev-launcher": "5.1.3",
-    "expo-dev-menu": "6.1.3",
+    "expo-dev-launcher": "5.1.11",
+    "expo-dev-menu": "6.1.10",
     "expo-dev-menu-interface": "1.10.0",
-    "expo-manifests": "~0.16.1",
+    "expo-manifests": "~0.16.5",
     "expo-updates-interface": "~1.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.2",
-    "expo-test-runner": "0.2.2"
+    "expo-module-scripts": "^4.1.7",
+    "expo-test-runner": "0.2.5"
   },
   "peerDependencies": {
     "expo": "*"

@@ -66,9 +66,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
   };
 
   async componentDidMount() {
-    if (Platform.OS === 'ios') {
-      await this._loadAllVoices();
-    }
+    await this._loadAllVoices();
   }
 
   render() {
@@ -97,7 +95,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           </View>
         )}
 
-        {Platform.OS === 'ios' && this.state.voiceList && (
+        {this.state.voiceList && (
           <View>
             <Picker
               selectedValue={this.state.voice}

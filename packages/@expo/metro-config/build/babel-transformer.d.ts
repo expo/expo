@@ -1,5 +1,6 @@
 import type { TransformOptions } from './babel-core';
 export type ExpoBabelCaller = TransformOptions['caller'] & {
+    metroSourceType?: 'script' | 'module' | 'asset';
     supportsReactCompiler?: boolean;
     isReactServer?: boolean;
     isHMREnabled?: boolean;

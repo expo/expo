@@ -1,5 +1,5 @@
 import { NativeStackView as RNNativeStackView } from '@react-navigation/native-stack';
-import { ComponentProps, useContext, useMemo } from 'react';
+import { ComponentProps, use, useMemo } from 'react';
 
 import { RootModalContext, RootModalProvider } from '../../layouts/RootModal';
 
@@ -12,7 +12,7 @@ export function NativeStackView(props: ComponentProps<typeof RNNativeStackView>)
 }
 
 function NativeStackViewInner(props: ComponentProps<typeof RNNativeStackView>) {
-  const rootModals = useContext(RootModalContext);
+  const rootModals = use(RootModalContext);
 
   // Append the root modals to the state
   const state = useMemo(() => {

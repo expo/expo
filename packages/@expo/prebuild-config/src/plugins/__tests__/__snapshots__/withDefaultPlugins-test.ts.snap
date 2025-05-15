@@ -218,10 +218,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
       },
-      "expo-notifications": {
-        "name": "expo-notifications",
-        "version": "UNVERSIONED",
-      },
       "expo-splash-screen": {
         "name": "expo-splash-screen",
         "version": "UNVERSIONED",
@@ -479,12 +475,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
               },
             ],
           },
@@ -809,11 +799,6 @@ exports[`built-in plugins introspects mods 1`] = `
                               "android:scheme": "my-app-redirect",
                             },
                           },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
-                            },
-                          },
                         ],
                       },
                       {
@@ -875,18 +860,6 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
                     },
                   },
                   {
@@ -1396,10 +1369,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
       },
-      "expo-notifications": {
-        "name": "expo-notifications",
-        "version": "UNVERSIONED",
-      },
       "expo-splash-screen": {
         "name": "expo-splash-screen",
         "version": "UNVERSIONED",
@@ -1658,12 +1627,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "#ff0000",
               },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
-              },
             ],
           },
         },
@@ -1767,11 +1730,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                               "android:scheme": "my-app-redirect",
                             },
                           },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
-                            },
-                          },
                         ],
                       },
                       {
@@ -1833,18 +1791,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
                     },
                   },
                   {
@@ -2363,10 +2309,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
-        "version": "UNVERSIONED",
-      },
-      "expo-notifications": {
-        "name": "expo-notifications",
         "version": "UNVERSIONED",
       },
       "expo-splash-screen": {

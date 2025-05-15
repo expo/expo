@@ -3,10 +3,10 @@ title: Using ESLint and Prettier
 description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 [ESLint](https://eslint.org/) is a JavaScript linter that helps you find and fix errors in your code. It's a great tool to help you write better code and catch mistakes before they make it to production. In conjunction, you can use [Prettier](https://prettier.io/docs/en/), a code formatter that ensures all the code files follow a consistent styling.
@@ -17,75 +17,17 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 ### Setup
 
+> **info** **From SDK 53 onwards**, the default ESLint config file uses the [Flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. It also supports legacy config. **For SDK 52 and below**, the default ESLint config file uses legacy config and does not support Flat config.
+
 To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **eslint.config.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
 <Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
-
-> **info** From **SDK 53** onwards, the created ESLint config file will use the [Flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) format. However, legacy config will also be supported.
-
-<Collapsible summary="Setup instructions for SDK 50 and below">
-
-<Step label="1">
-
-Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo) in your project.
-
-<Tabs>
-
-<Tab label="macOS/Linux">
-
-<Terminal cmd={['$ npx expo install eslint@8 eslint-config-expo --dev']} />
-
-</Tab>
-
-<Tab label="Windows">
-
-<Terminal cmd={['$ npx expo install eslint@8 eslint-config-expo "--" --dev']} />
-
-</Tab>
-
-</Tabs>
-
-</Step>
-
-<Step label="2">
-
-Create an ESLint configuration file called **.eslintrc.js** at the root of your project. The configuration in **.eslintrc.js** extends [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
-
-```js .eslintrc.js
-module.exports = {
-  extends: 'expo',
-};
-```
-
-</Step>
-
-<Step label="3">
-
-Add a `script` to your **package.json** to run ESLint.
-
-```json package.json
-{
-  "scripts": {
-    "lint": "eslint ."
-  }
-}
-```
-
-You can replace the `.` with specific directories or files to lint. For example, if you use Expo Router, you can use the `eslint app` command to lint only your routes inside the **app** directory.
-
-</Step>
-
-</Collapsible>
 
 ### Usage
 
 > **info** **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
 
-You can lint your code manually from the command line with the `expo lint` script:
-
-<Tabs>
-
-<Tab label="For SDK 51 and above">
+You can lint your code manually from the command line with the `npx expo lint` script:
 
 <Terminal
   cmd={[
@@ -100,9 +42,6 @@ Running the above command will run the `lint` script from **package.json**.
   cmd={[
     '# Example output for npx expo lint command',
     '',
-    '$ npm run eslint .',
-    '/app/node_modules/.bin/eslint .',
-    '',
     '/app/components/HelloWave.tsx',
     '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
     '       Either include it or remove the dependency array react-hooks/exhaustive-deps',
@@ -110,16 +49,6 @@ Running the above command will run the `lint` script from **package.json**.
     '✖ 1 problem (0 errors, 1 warning)',
   ]}
 />
-
-</Tab>
-
-<Tab label="For SDK 50 and below">
-
-<Terminal cmd={['$ npm run lint']} />
-
-</Tab>
-
-</Tabs>
 
 ### Environment configuration
 
@@ -196,6 +125,7 @@ To integrate Prettier with ESlint, update your **.eslintrc.js**:
 ```js .eslintrc.js
 module.exports = {
   extends: ['expo', 'prettier'],
+  ignorePatterns: ['/dist/*'],
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',
@@ -217,6 +147,7 @@ To customize Prettier settings, create a **.prettierrc** file at the root of you
   title="Custom Prettier configuration"
   description="Learn more about customizing Prettier configuration."
   href="https://github.com/expo/expo/tree/main/packages/eslint-config-universe#customizing-prettier"
+  Icon={BookOpen02Icon}
 />
 
 ## Troubleshooting
