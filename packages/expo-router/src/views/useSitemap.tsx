@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { RouteNode, sortRoutes } from '../Route';
 import { store } from '../global-state/router-store';
 import { matchDeepDynamicRouteName } from '../matchers';
@@ -41,26 +43,30 @@ export type SitemapType = {
   filename: string;
   href: string | Href;
   isInitial: boolean;
-  isVirtual: boolean;
   isInternal: boolean;
   isGenerated: boolean;
   children: SitemapType[];
 };
 
-const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route, parents) => ({
+const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (
+  route,
+  parents
+): SitemapType => ({
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
   isInitial: route.initialRouteName === route.route,
-  isVirtual: route.generated ?? false,
   isInternal: route.internal ?? false,
   isGenerated: route.generated ?? false,
-  children: route.children
+  children: [...route.children]
     .sort(sortRoutes)
     .map((child: RouteNode) => mapForRoute(child, routeSegments(route, parents))),
 });
 
 export function useSitemap(): SitemapType | null {
-  if (!store.routeNode) return null;
-  return mapForRoute(store.routeNode, []);
+  const sitemap = useMemo(
+    () => (store.routeNode ? mapForRoute(store.routeNode, []) : null),
+    [store.routeNode]
+  );
+  return sitemap;
 }

@@ -68,7 +68,7 @@ function FileSystemView() {
 }
 function FileItem({ node, level = 0, isInitial = false, }) {
     const disabled = node.children.length > 0;
-    const info = isInitial ? 'Initial' : node.isVirtual ? 'Virtual' : '';
+    const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
     return (<>
       {!node.isInternal && (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
                 if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {

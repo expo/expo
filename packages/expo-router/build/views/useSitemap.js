@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSitemap = useSitemap;
+const react_1 = require("react");
 const Route_1 = require("../Route");
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
@@ -36,16 +37,14 @@ const mapForRoute = (route, parents) => ({
     filename: routeFilename(route),
     href: routeHref(route, parents),
     isInitial: route.initialRouteName === route.route,
-    isVirtual: route.generated ?? false,
     isInternal: route.internal ?? false,
     isGenerated: route.generated ?? false,
-    children: route.children
+    children: [...route.children]
         .sort(Route_1.sortRoutes)
         .map((child) => mapForRoute(child, routeSegments(route, parents))),
 });
 function useSitemap() {
-    if (!router_store_1.store.routeNode)
-        return null;
-    return mapForRoute(router_store_1.store.routeNode, []);
+    const sitemap = (0, react_1.useMemo)(() => (router_store_1.store.routeNode ? mapForRoute(router_store_1.store.routeNode, []) : null), [router_store_1.store.routeNode]);
+    return sitemap;
 }
 //# sourceMappingURL=useSitemap.js.map

@@ -82,7 +82,7 @@ function FileItem({
   isInitial?: boolean;
 }) {
   const disabled = node.children.length > 0;
-  const info = isInitial ? 'Initial' : node.isVirtual ? 'Virtual' : '';
+  const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
   return (
     <>
       {!node.isInternal && (

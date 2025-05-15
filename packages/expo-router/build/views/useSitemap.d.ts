@@ -4,7 +4,6 @@ export type SitemapType = {
     filename: string;
     href: string | Href;
     isInitial: boolean;
-    isVirtual: boolean;
     isInternal: boolean;
     isGenerated: boolean;
     children: SitemapType[];
