@@ -2,9 +2,12 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.ReactStylesDiffMap
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
@@ -53,16 +56,17 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
    *
    * @return A List of property names that were successfully updated.
    */
-  fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
+  fun updateProperties(view: View, propsMap: ReactStylesDiffMap): List<String> {
     val expoProps = props
     val handledProps = mutableListOf<String>()
-    val iterator = propsMap.keySetIterator()
+    val iterator = propsMap.toMap().iterator()
 
-    while (iterator.hasNextKey()) {
-      val key = iterator.nextKey()
+    while (iterator.hasNext()) {
+      val item = iterator.next()
+      val key = item.key
       expoProps[key]?.let { expoProp ->
         try {
-          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module._runtimeContext?.appContext)
+          expoProp.set(item.value as? Dynamic ?: throw DynamicCastException("value"), view, moduleHolder.module._runtimeContext?.appContext)
         } catch (exception: Throwable) {
           // The view wasn't constructed correctly, so errors are expected.
           // We can ignore them.

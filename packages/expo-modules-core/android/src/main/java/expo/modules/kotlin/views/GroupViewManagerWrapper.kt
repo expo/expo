@@ -6,7 +6,6 @@ import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
-import com.facebook.react.uimanager.getBackingMap
 import expo.modules.core.utilities.ifNull
 
 class GroupViewManagerWrapper(
@@ -18,14 +17,13 @@ class GroupViewManagerWrapper(
     viewWrapperDelegate.createView(reactContext) as ViewGroup
 
   override fun updateProperties(viewToUpdate: ViewGroup, props: ReactStylesDiffMap) {
-    val propsMap = props.getBackingMap()
     // Updates expo related properties.
-    val handledProps = viewWrapperDelegate.updateProperties(viewToUpdate, propsMap)
+    val handledProps = viewWrapperDelegate.updateProperties(viewToUpdate, props)
     // Updates remaining props using RN implementation.
     // To not triggered undefined setters we filtrated already handled properties.
     super.updateProperties(
       viewToUpdate,
-      ReactStylesDiffMap(FilteredReadableMap(propsMap, handledProps))
+      getFilteredReactStylesDiffMap(props, handledProps)
     )
   }
 
