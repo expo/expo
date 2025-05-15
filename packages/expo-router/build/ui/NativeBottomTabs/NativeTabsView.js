@@ -15,6 +15,14 @@ function NativeTabsView(props) {
         const descriptor = descriptors[route.key];
         const isFocused = state.index === index;
         return (<RNSNativeTabsScreen_1.RNSNativeTabsScreen key={route.key} isFocused={isFocused} badgeValue={descriptor.route.name} onAppear={() => {
+                const href = descriptor.options?.href;
+                if (href) {
+                    const newState = (0, native_1.getStateFromPath)(href);
+                    console.log(newState);
+                    if (newState && (0, native_1.getPathFromState)(newState) !== (0, native_1.getPathFromState)(state)) {
+                        return navigation.reset(newState);
+                    }
+                }
                 navigation.dispatch(native_1.TabActions.jumpTo(route.name));
             }}>
         {descriptor.render()}

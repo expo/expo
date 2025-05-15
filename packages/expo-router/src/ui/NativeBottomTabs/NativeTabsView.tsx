@@ -1,4 +1,4 @@
-import { TabActions } from '@react-navigation/native';
+import { getPathFromState, getStateFromPath, TabActions } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
 
 import { NativeTabsViewProps, RNSNativeTabs } from './RNSNativeTabs';
@@ -17,6 +17,14 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
         isFocused={isFocused}
         badgeValue={descriptor.route.name}
         onAppear={() => {
+          const href = descriptor.options?.href;
+          if (href) {
+            const newState = getStateFromPath(href);
+            console.log(newState);
+            if (newState && getPathFromState(newState) !== getPathFromState(state)) {
+              return navigation.reset(newState);
+            }
+          }
           navigation.dispatch(TabActions.jumpTo(route.name));
         }}>
         {descriptor.render()}
