@@ -57,7 +57,7 @@ export interface NativeSymbolViewProps extends ViewProps {
     scale?: SymbolScale;
     weight?: SymbolWeight;
     animated: boolean;
-    colors?: ColorValue | ColorValue[];
+    colors?: ColorValue[];
     tint?: ColorValue;
     resizeMode?: ContentMode;
     animationSpec?: AnimationSpec;
