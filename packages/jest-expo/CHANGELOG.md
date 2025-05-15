@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fix JSX and TSX files throwing errors when using `jest-expo/SUB-PKG` imports.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
