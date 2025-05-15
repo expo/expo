@@ -3,6 +3,8 @@ package expo.modules.kotlin.views
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import expo.modules.kotlin.exception.NullArgumentException
+import expo.modules.kotlin.types.MapTypeConverter
+import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.putGeneric
 
 fun getFilteredReactStylesDiffMap(
@@ -11,7 +13,8 @@ fun getFilteredReactStylesDiffMap(
 ) : ReactStylesDiffMap {
   val inputMap = map ?: throw NullArgumentException()
   val filteredKeySet = filteredKeys.toSet()
-  val inputKeySet = inputMap.toMap().keys
+  val convertedMap = inputMap.toMap()
+  val inputKeySet = convertedMap.keys
 
   // if the keys are equal, return the input map - no need to perform the copy operation.
   if (inputKeySet == filteredKeySet) {
@@ -19,7 +22,7 @@ fun getFilteredReactStylesDiffMap(
   }
 
   val resultMap = Arguments.createMap()
-  val iterator = inputMap.toMap().iterator()
+  val iterator = convertedMap.iterator()
 
   while (iterator.hasNext()) {
     val (key, value) = iterator.next()
