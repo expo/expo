@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Fix JSX and TSX files throwing errors when using `jest-expo/SUB-PKG` imports.
+- Fix JSX and TSX files throwing errors when using `jest-expo/SUB-PKG` imports. ([#36903](https://github.com/expo/expo/pull/36903) by [@crutchcorn](https://github.com/crutchcorn))
 
 ### 🛠 Breaking changes
 
