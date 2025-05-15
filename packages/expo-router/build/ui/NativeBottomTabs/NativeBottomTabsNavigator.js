@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NativeTabs = void 0;
+const native_1 = require("@react-navigation/native");
+const react_1 = __importDefault(require("react"));
+const NativeBottomTabs_1 = require("./NativeBottomTabs");
+const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
+const __1 = require("../..");
+function NativeTabsNavigator({ children }) {
+    const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
+        children,
+    });
+    return <NativeBottomTabs_1.NativeTabsView builder={builder}/>;
+}
+exports.NativeTabs = (0, __1.withLayoutContext)(NativeTabsNavigator, (screens) => {
+    return screens;
+});
+//# sourceMappingURL=NativeBottomTabsNavigator.js.map

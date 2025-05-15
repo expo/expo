@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeBottomTabsRouter.js","sourceRoot":"","sources":["../../../src/ui/NativeBottomTabs/NativeBottomTabsRouter.tsx"],"names":[],"mappings":";;;AAAA,qDAAqD;AAExC,QAAA,sBAAsB,GAAG,kBAAS,CAAC","sourcesContent":["import { TabRouter } from '@react-navigation/native';\n\nexport const NativeBottomTabsRouter = TabRouter;\n"]}

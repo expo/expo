@@ -1,13 +1,24 @@
-import { useNavigationBuilder } from '@react-navigation/native';
-import { PropsWithChildren } from 'react';
+import { NavigationState, useNavigationBuilder } from '@react-navigation/native';
+import React, { PropsWithChildren } from 'react';
 
-import { NativeProps, NativeTabsView } from './NativeBottomTabs';
+import { NativeTabsView } from './NativeBottomTabs';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { withLayoutContext } from '../..';
+import { NativeProps } from './RNSNativeTabs';
 
-export function NativeTabs({ children }: PropsWithChildren<NativeProps>) {
+function NativeTabsNavigator({ children }: PropsWithChildren<NativeProps>) {
   const builder = useNavigationBuilder(NativeBottomTabsRouter, {
     children,
   });
 
   return <NativeTabsView builder={builder} />;
 }
+
+export const NativeTabs = withLayoutContext<
+  NativeProps,
+  typeof NativeTabsNavigator,
+  NavigationState,
+  {}
+>(NativeTabsNavigator, (screens) => {
+  return screens;
+});

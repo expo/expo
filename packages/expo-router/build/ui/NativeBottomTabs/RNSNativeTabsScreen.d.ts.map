@@ -1,0 +1,1 @@
+{"version":3,"file":"RNSNativeTabsScreen.d.ts","sourceRoot":"","sources":["../../../src/ui/NativeBottomTabs/RNSNativeTabsScreen.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAQ,SAAS,EAAE,MAAM,cAAc,CAAC;AAE/C,MAAM,WAAW,wBAAwB;IACvC,QAAQ,EAAE,SAAS,CAAC,UAAU,CAAC,CAAC;IAChC,SAAS,CAAC,EAAE,OAAO,CAAC;IACpB,UAAU,CAAC,EAAE,MAAM,CAAC;CACrB;AAED,wBAAgB,mBAAmB,CAAC,KAAK,EAAE,wBAAwB,+BAElE"}

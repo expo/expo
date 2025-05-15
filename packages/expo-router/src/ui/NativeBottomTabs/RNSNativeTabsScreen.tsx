@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import { View, ViewProps } from 'react-native';
 
 export interface RNSNativeTabsScreenProps {
   children: ViewProps['children'];
@@ -7,5 +7,5 @@ export interface RNSNativeTabsScreenProps {
 }
 
 export function RNSNativeTabsScreen(props: RNSNativeTabsScreenProps) {
-  return null;
+  return <View style={{ flex: 1 }}>{props.children}</View>;
 }
