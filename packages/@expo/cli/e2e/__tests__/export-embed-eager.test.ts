@@ -75,6 +75,7 @@ it('runs `npx expo export:embed --platform ios --eager`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
