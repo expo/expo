@@ -130,9 +130,10 @@ public struct Conversions {
     }
 
     let alpha = components.count > 3 ? Double(components[3]) : 1.0
-    return UIColor(red: CGFloat(components[0])/255.0,
-      green: CGFloat(components[1])/255.0,
-      blue: CGFloat(components[2])/255.0,
+    return UIColor(
+      red: CGFloat(components[0]) / 255.0,
+      green: CGFloat(components[1]) / 255.0,
+      blue: CGFloat(components[2]) / 255.0,
       alpha: alpha)
   }
   /**
