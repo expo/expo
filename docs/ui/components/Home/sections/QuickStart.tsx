@@ -1,6 +1,8 @@
 import { RouterLogo, mergeClasses } from '@expo/styleguide';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
@@ -37,6 +39,53 @@ export function QuickStart() {
               <CALLOUT theme="secondary">
                 Then continue{' '}
                 <A href="/get-started/set-up-your-environment">setting up your environment</A>.
+              </CALLOUT>
+            </div>
+          </div>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
+            'max-md-gutters:min-h-[200px]'
+          )}>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-subtle from-15% to-[#21262d00]',
+              'dark:from-[#181a1b]'
+            )}
+          />
+          <div className="relative z-10 flex flex-col gap-4">
+            <RawH2 className="flex items-center gap-2 !font-bold">
+              <AppleIcon /> Deploy to TestFlight
+            </RawH2>
+            <div>
+              <Terminal cmd={['$ npx testflight']} />
+              <CALLOUT theme="secondary">
+                This is iOS only command that will upload your app to TestFlight.
+              </CALLOUT>
+            </div>
+          </div>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
+            'max-md-gutters:min-h-[200px]'
+          )}>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-subtle from-15% to-[#21262d00]',
+              'dark:from-[#181a1b]'
+            )}
+          />
+          <div className="relative z-10 flex flex-col gap-4">
+            <RawH2 className="flex items-center gap-2 !font-bold">
+              <Cloud01Icon /> Deploy your web app
+            </RawH2>
+            <div>
+              <Terminal cmd={['$ npx eas-cli deploy']} />
+              <CALLOUT theme="secondary">
+                For prerequisites and complete instructions, see{' '}
+                <A href="/deploy/web/#export-your-web-project/">Deploy web apps</A>.
               </CALLOUT>
             </div>
           </div>
