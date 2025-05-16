@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix update failure reason not populated on iOS. ([#36893](https://github.com/expo/expo/pull/36893) by [@brainbicycle](https://github.com/brainbicycle))
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
