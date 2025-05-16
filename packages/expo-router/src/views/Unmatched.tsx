@@ -7,10 +7,9 @@ import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
+import { useFocusEffect } from '../useFocusEffect';
 import { useNavigation } from '../useNavigation';
 import { Pressable } from '../views/Pressable';
-
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
 /**
  * Default screen for unmatched routes.
@@ -29,11 +28,11 @@ export function Unmatched() {
     setRender(true);
   }, []);
 
-  useLayoutEffect(() => {
+  useFocusEffect(() => {
     navigation.setOptions({
       title: 'Not Found',
     });
-  }, [navigation]);
+  });
 
   return (
     <View style={styles.container}>
