@@ -31,18 +31,18 @@ open class EmitterModule: Module, NotificationDelegate {
     }
 
     AsyncFunction("clearLastNotificationResponseAsync") {
-        lastNotificationResponse = nil
+      lastNotificationResponse = nil
     }
-      
+
     Function("getLastNotificationResponse") {() -> [String: Any]? in
-        if let lastResponse: UNNotificationResponse = lastNotificationResponse {
-          return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
-        }
-        return nil
+      if let lastResponse: UNNotificationResponse = lastNotificationResponse {
+        return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
+      }
+      return nil
     }
 
     Function("clearLastNotificationResponse") {
-        lastNotificationResponse = nil
+      lastNotificationResponse = nil
     }
   }
 
