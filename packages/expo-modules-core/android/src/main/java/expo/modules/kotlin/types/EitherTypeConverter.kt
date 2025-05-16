@@ -98,7 +98,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
     )
   }
 
-  override fun getCppRequiredTypes(): ExpectedType = firstType + secondType
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.merge(firstType, secondType)
 
   override fun isTrivial(): Boolean = false
 }
@@ -144,7 +144,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
     )
   }
 
-  override fun getCppRequiredTypes(): ExpectedType = firstType + secondType + thirdType
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.merge(firstType, secondType, thirdType)
 }
 
 @EitherType
@@ -194,5 +194,5 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
     )
   }
 
-  override fun getCppRequiredTypes(): ExpectedType = firstType + secondType + thirdType
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.merge(firstType, secondType, thirdType, fourthType)
 }

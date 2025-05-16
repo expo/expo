@@ -188,6 +188,27 @@ class SingleTestContext(
 }
 
 internal inline fun withSingleModule(
+  module: Module,
+  numberOfReloads: Int = 1,
+  block: SingleTestContext.() -> Unit
+) {
+  withJSIInterop(
+    module,
+    numberOfReloads = numberOfReloads,
+    block = { methodQueue ->
+      val appContext = runtimeContextHolder.get()?.appContext ?: throw IllegalStateException("AppContext is not available")
+      val moduleList = appContext.registry.registry.toList()
+      if (moduleList.size != 1) {
+        throw IllegalStateException("Module list should contain only one module")
+      }
+      val (moduleName) = moduleList.first()
+      val testContext = SingleTestContext(moduleName, this, methodQueue)
+      block.invoke(testContext)
+    }
+  )
+}
+
+internal inline fun withSingleModule(
   crossinline definition: ModuleDefinitionBuilder.() -> Unit = {},
   numberOfReloads: Int = 1,
   block: SingleTestContext.() -> Unit
