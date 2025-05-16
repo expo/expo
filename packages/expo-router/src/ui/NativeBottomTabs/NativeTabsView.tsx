@@ -34,6 +34,15 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
     .map((route, index) => {
       const descriptor = descriptors[route.key];
       const isFocused = state.index === index;
+      /**
+       * To get more tabs that feel more like iOS, we would need to add:
+       * - title
+       * - icon
+       *
+       * For icons I would propose either:
+       * - passing a string and then using SF Symbols or Material Icons (how to do this on Android?) - androidx.compose.material.Icon
+       *
+       */
       return (
         <BottomTabsScreen
           key={route.key}
