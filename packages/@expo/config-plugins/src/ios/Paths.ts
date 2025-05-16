@@ -19,6 +19,7 @@ type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 
 export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
+export type BridgingHeaderProjectFile = ProjectFile<AppleLanguage>;
 
 export function getAppDelegateHeaderFilePath(projectRoot: string): string {
   const [using, ...extra] = withSortedGlobResult(
@@ -65,6 +66,32 @@ export function getAppDelegateFilePath(projectRoot: string): string {
     warnMultipleFiles({
       tag: 'app-delegate',
       fileName: 'AppDelegate',
+      projectRoot,
+      using,
+      extra,
+    });
+  }
+
+  return using;
+}
+
+export function getBridgingHeaderFilePath(projectRoot: string): string {
+  const [using, ...extra] = withSortedGlobResult(
+    globSync('ios/*/*-Bridging-Header.h', {
+      absolute: true,
+      cwd: projectRoot,
+      ignore: ignoredPaths,
+    })
+  );
+
+  if (!using) {
+    throw new UnexpectedError(`Could not locate a valid BridgingHeader at root: "${projectRoot}"`);
+  }
+
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'bridging-header',
+      fileName: 'BridgingHeader',
       projectRoot,
       using,
       extra,
