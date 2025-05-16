@@ -93,11 +93,11 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.0.10",
-    "@types/react-test-renderer": "^19.0.0",
+    "@types/react-test-renderer": "^19.1.0",
     "expo-module-scripts": "^4.1.7",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native": "0.79.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.80.0-rc.1",
     "web-streams-polyfill": "^3.3.2",
     "ws": "^8.18.0"
   },
