@@ -41,9 +41,16 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether fullscreen mode is allowed or not.
+   *
+   * > Note: This option has been deprecated in favor of the `fullscreenOptions` prop and will be disabled in the future.
    * @default true
    */
   allowsFullscreen?: boolean;
+
+  /**
+   * Determines the fullscreen mode options.
+   */
+  fullscreenOptions?: FullscreenOptions;
 
   /**
    * Determines whether the timecodes should be displayed or not.
@@ -162,3 +169,53 @@ export interface VideoViewProps extends ViewProps {
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
 }
+
+/**
+ * Describes the orientation of the video in fullscreen mode. Available values are:
+ * - `default`: The video is displayed in any of the available device rotations.
+ * - `portrait`: The video is displayed in one of two available portrait orientations and rotates between them.
+ * - `portraitUp`: The video is displayed in the portrait orientation - the notch of the phone points upwards.
+ * - `portraitDown`: The video is displayed in the portrait orientation - the notch of the phone points downwards.
+ * - `landscape`: The video is displayed in one of two available landscape orientations and rotates between them.
+ * - `landscapeLeft`: The video is displayed in the left landscape orientation - the notch of the phone is in the left palm of the user.
+ * - `landscapeRight`: The video is displayed in the right landscape orientation - the notch of the phone is in the right palm of the user.
+ */
+export type FullscreenOrientation =
+  | 'default'
+  | 'portrait'
+  | 'portraitUp'
+  | 'portraitDown'
+  | 'landscape'
+  | 'landscapeLeft'
+  | 'landscapeRight';
+
+/**
+ * Describes the options for fullscreen video mode.
+ */
+export type FullscreenOptions = {
+  /**
+   * Specifies whether the fullscreen mode should be available to the user. When `false` the fullscreen button will be hidden in the player.
+   * Equivalent to the `allowsFullscreen` prop.
+   * @default true
+   */
+  enable: boolean;
+  /**
+   * Specifies the orientation of the video in fullscreen mode.
+   * @default 'default'
+   * @platform android
+   * @platform ios
+   */
+  orientation?: FullscreenOrientation;
+  /**
+   * Specifies whether the app should exit fullscreen mode when the device is rotated to a different orientation than the one specified in the `orientation` prop.
+   * For example, if the `orientation` prop is set to `landscape` and the device is rotated to `portrait`, the app will exit fullscreen mode.
+   *
+   * > This prop will have no effect if the `orientation` prop is set to `default`.
+   * > The `VideoView` will never auto-exit fullscreen when the device auto-rotate feature has been disabled in settings.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  autoExitOnRotate?: boolean;
+};

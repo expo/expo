@@ -20,6 +20,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
@@ -363,6 +364,11 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   }
   Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
     view.allowsFullscreen = allowsFullscreen ?: true
+  }
+  Prop("fullscreenOptions") { view: T, fullscreenOptions: FullscreenOptions? ->
+    if (fullscreenOptions != null) {
+      view.fullscreenOptions = fullscreenOptions
+    }
   }
   Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
     val linearPlayback = requiresLinearPlayback ?: false

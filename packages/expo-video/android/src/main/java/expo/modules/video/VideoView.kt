@@ -27,6 +27,7 @@ import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
+import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.utils.applyAutoEnterPiP
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculateRectHint
@@ -124,6 +125,17 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       field = value
     }
 
+  var fullscreenOptions: FullscreenOptions = FullscreenOptions()
+    set(value) {
+      field = value
+      if (value.enable) {
+        playerView.setFullscreenButtonClickListener { enterFullscreen() }
+      } else {
+        playerView.setFullscreenButtonClickListener(null)
+        playerView.setFullscreenButtonVisibility(false)
+      }
+    }
+
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
@@ -164,6 +176,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
     intent.putExtra(VideoManager.INTENT_PLAYER_KEY, videoViewId)
+    intent.putExtra(FullscreenPlayerActivity.INTENT_FULLSCREEN_OPTIONS_KEY, fullscreenOptions)
     // Set before starting the activity to avoid entering PiP unintentionally
     isInFullscreen = true
     currentActivity.startActivity(intent)

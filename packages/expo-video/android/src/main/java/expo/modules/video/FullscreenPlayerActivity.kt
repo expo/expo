@@ -1,6 +1,7 @@
 package expo.modules.video
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.FullscreenOptions
+import expo.modules.video.utils.FullscreenActivityOrientationHelper
 import expo.modules.video.utils.applyAutoEnterPiP
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculateRectHint
@@ -25,22 +28,49 @@ class FullscreenPlayerActivity : Activity() {
   private lateinit var videoView: VideoView
   private var didFinish = false
   private var wasAutoPaused = false
+  private lateinit var options: FullscreenOptions
+  private lateinit var orientationHelper: FullscreenActivityOrientationHelper
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.fullscreen_player_activity)
-    mContentView = findViewById(R.id.enclosing_layout)
-    playerView = findViewById(R.id.player_view)
 
     try {
       videoViewId = intent.getStringExtra(VideoManager.INTENT_PLAYER_KEY)
         ?: throw FullScreenVideoViewNotFoundException()
+
+      options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        intent.getSerializableExtra(INTENT_FULLSCREEN_OPTIONS_KEY, FullscreenOptions::class.java)
+          ?: throw FullScreenOptionsNotFoundException()
+      } else {
+        @Suppress("DEPRECATION")
+        intent.getSerializableExtra(INTENT_FULLSCREEN_OPTIONS_KEY) as? FullscreenOptions
+          ?: throw FullScreenOptionsNotFoundException()
+      }
+
       videoView = VideoManager.getVideoView(videoViewId)
+
+      orientationHelper = FullscreenActivityOrientationHelper(
+        this,
+        options,
+        onShouldAutoExit = {
+          finish()
+        },
+        onShouldReleaseOrientation = {
+          requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+      )
+      orientationHelper.startOrientationEventListener()
     } catch (e: CodedException) {
       Log.e("ExpoVideo", "${e.message}", e)
       finish()
       return
     }
+
+    setContentView(R.layout.fullscreen_player_activity)
+    mContentView = findViewById(R.id.enclosing_layout)
+    playerView = findViewById(R.id.player_view)
+    requestedOrientation = options.orientation.toActivityOrientation()
+
     videoPlayer = videoView.videoPlayer
     videoPlayer?.changePlayerView(playerView)
     VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
@@ -79,6 +109,7 @@ class FullscreenPlayerActivity : Activity() {
   }
 
   override fun onResume() {
+    orientationHelper.startOrientationEventListener()
     playerView.useController = videoView.useNativeControls
     super.onResume()
   }
@@ -91,6 +122,7 @@ class FullscreenPlayerActivity : Activity() {
         videoPlayer?.player?.pause()
       }
     }
+    orientationHelper.stopOrientationEventListener()
     super.onPause()
   }
 
@@ -98,6 +130,7 @@ class FullscreenPlayerActivity : Activity() {
     super.onDestroy()
     videoView.exitFullscreen()
     VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
+    orientationHelper.stopOrientationEventListener()
   }
 
   private fun setupFullscreenButton() {
@@ -137,5 +170,14 @@ class FullscreenPlayerActivity : Activity() {
           or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         )
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    orientationHelper.onConfigurationChanged(newConfig)
+  }
+
+  companion object {
+    const val INTENT_FULLSCREEN_OPTIONS_KEY = "fullscreen_options"
   }
 }
