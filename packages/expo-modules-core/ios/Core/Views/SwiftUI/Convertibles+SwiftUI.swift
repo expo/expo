@@ -72,7 +72,6 @@ extension Color: Convertible {
       return nil
     }
   }
-
 }
 
 extension UnitPoint: Convertible {
