@@ -41,7 +41,6 @@ public class NotificationCenterManager: NSObject,
   @objc
   public static let shared = NotificationCenterManager()
 
-  var lastResponse: UNNotificationResponse?
   var delegates: [NotificationDelegate] = []
   var pendingResponses: [UNNotificationResponse] = []
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()

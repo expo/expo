@@ -9,28 +9,40 @@ let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
 let onDidClearNotificationResponse = "onDidClearNotificationResponse"
 
 open class EmitterModule: Module, NotificationDelegate {
+  private var lastNotificationResponse: UNNotificationResponse?
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
     Events([onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse])
 
-    OnStartObserving {
+    OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
     }
 
-    OnStopObserving {
+    OnDestroy {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
     AsyncFunction("getLastNotificationResponseAsync") {() -> [String: Any]? in
-      if let lastResponse: UNNotificationResponse = NotificationCenterManager.shared.lastResponse {
+      if let lastResponse: UNNotificationResponse = lastNotificationResponse {
         return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
       }
       return nil
     }
 
     AsyncFunction("clearLastNotificationResponseAsync") {
-      NotificationCenterManager.shared.lastResponse = nil
+        lastNotificationResponse = nil
+    }
+      
+    Function("getLastNotificationResponse") {() -> [String: Any]? in
+        if let lastResponse: UNNotificationResponse = lastNotificationResponse {
+          return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
+        }
+        return nil
+    }
+
+    Function("clearLastNotificationResponse") {
+        lastNotificationResponse = nil
     }
   }
 
@@ -40,7 +52,7 @@ open class EmitterModule: Module, NotificationDelegate {
   }
 
   open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
-    NotificationCenterManager.shared.lastResponse = response
+    lastNotificationResponse = response
     self.sendEvent(onDidReceiveNotificationResponse, serializedResponse(response))
     completionHandler()
     return true
