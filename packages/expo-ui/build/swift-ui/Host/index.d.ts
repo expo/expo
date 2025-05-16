@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 export type HostProps = {
     /**
      * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
@@ -24,6 +24,10 @@ export type HostProps = {
             height: number;
         };
     }) => void;
+    /**
+     * The color scheme of the host view.
+     */
+    colorScheme?: ColorSchemeName;
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 };

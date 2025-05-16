@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import { useState } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
 export type HostProps = {
   /**
@@ -21,6 +21,11 @@ export type HostProps = {
    * Provides the current dimensions of the content, which may change as the content updates.
    */
   onLayoutContent?: (event: { nativeEvent: { width: number; height: number } }) => void;
+
+  /**
+   * The color scheme of the host view.
+   */
+  colorScheme?: ColorSchemeName;
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
