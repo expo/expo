@@ -13,6 +13,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Audio Tracks',
+    route: 'video/audio-tracks',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioTracksScreen'));
+    },
+  },
+  {
     name: 'Cache',
     route: 'video/cache',
     options: {},

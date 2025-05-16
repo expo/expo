@@ -20,6 +20,19 @@ internal struct SubtitleTrack: Record {
   }
 }
 
+internal struct AudioTrack: Record {
+  @Field var language: String? = nil
+  @Field var label: String? = nil
+
+  static func from(mediaSelectionOption option: AVMediaSelectionOption) -> AudioTrack? {
+    guard let identifier = option.locale?.identifier else {
+      return nil
+    }
+
+    return AudioTrack(language: identifier, label: option.displayName)
+  }
+}
+
 internal struct VideoTrack: Record, Equatable {
   @Field var id: String? = nil
   @Field var size: VideoSize? = nil

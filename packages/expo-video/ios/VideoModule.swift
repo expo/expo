@@ -271,6 +271,17 @@ public final class VideoModule: Module {
         player.subtitles.selectSubtitleTrack(subtitleTrack: subtitleTrack)
       }
 
+      Property("availableAudioTracks") { player -> [AudioTrack] in
+        return player.audioTracks.availableAudioTracks
+      }
+
+      Property("audioTrack") { player -> AudioTrack? in
+        return player.audioTracks.currentAudioTrack
+      }
+      .set { player, audioTrack in
+        player.audioTracks.selectAudioTrack(audioTrack: audioTrack)
+      }
+
       Function("play") { player in
         player.ref.play()
       }
