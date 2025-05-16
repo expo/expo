@@ -531,6 +531,10 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
+    params:
+      environment: production | preview | development # optional, defaults to production
+      env: # optional
+        APP_VARIANT: staging # just an example
 ```
 
 > **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
