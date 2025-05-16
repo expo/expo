@@ -1,9 +1,3 @@
-import {
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
 import React, { Children, useState } from 'react';
 import { View, Text, StyleSheet, type ColorValue, type ViewProps, Pressable } from 'react-native';
 import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
@@ -45,18 +39,6 @@ export interface NativeProps extends ViewProps {
   tabBarBackgroundColor?: ColorValue;
   tabBarBlurEffect?: WithDefault<BlurEffect, 'none'>;
 }
-
-export type NativeTabsViewProps = {
-  builder: ReturnType<
-    typeof useNavigationBuilder<
-      TabNavigationState<ParamListBase>,
-      TabRouterOptions,
-      Record<string, (...args: any) => void>,
-      {},
-      Record<string, any>
-    >
-  >;
-};
 
 export function RNSNativeTabs(props: NativeProps) {
   const [lastFocus, setLastFocus] = useState<number>(0);

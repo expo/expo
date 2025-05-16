@@ -1,7 +1,29 @@
+import {
+  DefaultRouterOptions,
+  ParamListBase,
+  TabNavigationState,
+  TabRouterOptions,
+  useNavigationBuilder,
+} from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
+import { BottomTabs } from 'react-native-screens';
+import BottomTabsScreen from 'react-native-screens/src/components/BottomTabsScreen';
 
-import { NativeTabsViewProps, RNSNativeTabs } from './RNSNativeTabs';
-import { RNSNativeTabsScreen } from './RNSNativeTabsScreen';
+export interface NativeTabProps extends DefaultRouterOptions {
+  label: string;
+}
+
+export type NativeTabsViewProps = {
+  builder: ReturnType<
+    typeof useNavigationBuilder<
+      TabNavigationState<ParamListBase>,
+      TabRouterOptions,
+      Record<string, (...args: any) => void>,
+      NativeTabProps,
+      Record<string, any>
+    >
+  >;
+};
 
 export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
   const { state, descriptors, navigation } = props.builder;
@@ -13,11 +35,12 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
       const descriptor = descriptors[route.key];
       const isFocused = state.index === index;
       return (
-        <RNSNativeTabsScreen
+        <BottomTabsScreen
           key={route.key}
           isFocused={isFocused}
-          badgeValue={descriptor.route.name}
-          onAppear={() => {
+          badgeValue={descriptor.options?.label ?? descriptor.route.name}
+          onWillAppear={() => {
+            console.log('On will appear');
             navigation.dispatch({
               type: 'JUMP_TO',
               target: state.key,
@@ -27,9 +50,9 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
             });
           }}>
           {descriptor.render()}
-        </RNSNativeTabsScreen>
+        </BottomTabsScreen>
       );
     });
 
-  return <RNSNativeTabs>{children}</RNSNativeTabs>;
+  return <BottomTabs>{children}</BottomTabs>;
 }

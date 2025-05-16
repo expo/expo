@@ -1,21 +1,18 @@
-import React from 'react';
-import { NativeProps } from './RNSNativeTabs';
-export declare const NativeTabs: React.ForwardRefExoticComponent<Omit<NativeProps & {
-    children?: React.ReactNode | undefined;
-}, "children"> & Partial<Pick<NativeProps & {
-    children?: React.ReactNode | undefined;
-}, "children">> & React.RefAttributes<unknown>> & {
-    Screen: (props: import("../..").ScreenProps<NativeProps, Readonly<{
+import { ParamListBase } from '@react-navigation/native';
+import React, { ComponentProps, PropsWithChildren } from 'react';
+import { NativeTabProps } from './NativeTabsView';
+declare function NativeTabsNavigator({ children }: PropsWithChildren): React.JSX.Element;
+export declare const createNativeTabNavigator: (config?: any) => any;
+export declare const NativeTabs: ((props: ComponentProps<typeof NativeTabsNavigator>) => React.JSX.Element) & {
+    Tab: (props: import("../..").ScreenProps<NativeTabProps, Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, {}>) => null;
-    Protected: typeof import("../../views/Protected").Protected;
-} & {
-    Tab: any;
 };
+export {};
 //# sourceMappingURL=NativeBottomTabsNavigator.d.ts.map

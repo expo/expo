@@ -31,7 +31,7 @@
     "@react-navigation/native-stack": "7.3.10",
     "@react-navigation/routers": "7.3.5",
     "@react-navigation/stack": "7.2.10",
-    "**/util": "~0.12.4"
+    "react-native-screens": "file:react-native-screens.tgz"
   },
   "dependencies": {
     "eslint": "^8.57.1",
@@ -46,5 +46,6 @@
   },
   "devDependencies": {
     "ts-node": "^10.9.2"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

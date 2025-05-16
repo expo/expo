@@ -1,4 +1,3 @@
-import { ParamListBase, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
 import React from 'react';
 import { type ColorValue, type ViewProps } from 'react-native';
 import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
@@ -11,9 +10,6 @@ export interface NativeProps extends ViewProps {
     tabBarBackgroundColor?: ColorValue;
     tabBarBlurEffect?: WithDefault<BlurEffect, 'none'>;
 }
-export type NativeTabsViewProps = {
-    builder: ReturnType<typeof useNavigationBuilder<TabNavigationState<ParamListBase>, TabRouterOptions, Record<string, (...args: any) => void>, {}, Record<string, any>>>;
-};
 export declare function RNSNativeTabs(props: NativeProps): React.JSX.Element;
 export {};
 //# sourceMappingURL=RNSNativeTabs.d.ts.map

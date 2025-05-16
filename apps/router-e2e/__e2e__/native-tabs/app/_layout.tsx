@@ -1,12 +1,11 @@
-import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/build/ui/NativeBottomTabs/NativeBottomTabsNavigator';
 
 export default function Layout() {
   return (
     <NativeTabs>
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="two" />
-      <Tabs.Screen name="three" options={{ href: '/three/apple' }} />
+      <NativeTabs.Tab name="index" options={{ label: 'Index@@' }} />
+      <NativeTabs.Tab name="two" options={{ label: 'TWOO' }} />
+      <NativeTabs.Tab name="three" options={{ label: 'Three' }} />
     </NativeTabs>
   );
 }
