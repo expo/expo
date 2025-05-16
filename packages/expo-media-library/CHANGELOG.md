@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `deleteAssetsAsync` not working on android 11 or above ([#33211](https://github.com/expo/expo/pull/33211) by [@Zeeshan404](https://github.com/Zeeshan404))
