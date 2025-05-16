@@ -108,6 +108,8 @@
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
     <key>NSUserTrackingUsageDescription</key>
     <string>Allow Expo projects to use data for tracking the user or the device</string>
+    <key>RCTNewArchEnabled</key>
+    <true/>
     <key>UIAppFonts</key>
     <array>
       <string>icomoon.ttf</string>
