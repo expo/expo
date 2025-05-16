@@ -15,5 +15,7 @@ export declare const NativeTabs: React.ForwardRefExoticComponent<Omit<NativeProp
         stale: false;
     }>, {}>) => null;
     Protected: typeof import("../../views/Protected").Protected;
+} & {
+    Tab: any;
 };
 //# sourceMappingURL=NativeBottomTabsNavigator.d.ts.map

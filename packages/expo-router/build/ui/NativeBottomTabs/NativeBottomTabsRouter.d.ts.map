@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeBottomTabsRouter.d.ts","sourceRoot":"","sources":["../../../src/ui/NativeBottomTabs/NativeBottomTabsRouter.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,0BAA0B,CAAC;AAErD,eAAO,MAAM,sBAAsB,kBAAY,CAAC"}
+{"version":3,"file":"NativeBottomTabsRouter.d.ts","sourceRoot":"","sources":["../../../src/ui/NativeBottomTabs/NativeBottomTabsRouter.tsx"],"names":[],"mappings":"AAAA,OAAO,EAEL,aAAa,EACb,MAAM,EACN,aAAa,EACb,kBAAkB,EAEnB,MAAM,0BAA0B,CAAC;AAElC,wBAAgB,sBAAsB,CAAC,OAAO,EAAE,GAAG,0IAWlD"}

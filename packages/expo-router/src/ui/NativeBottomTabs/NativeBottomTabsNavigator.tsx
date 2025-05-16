@@ -5,6 +5,7 @@ import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
 import { NativeProps } from './RNSNativeTabs';
+import { Screen } from '../../primitives';
 
 function NativeTabsNavigator({ children }: PropsWithChildren<NativeProps>) {
   const builder = useNavigationBuilder(NativeBottomTabsRouter, {
@@ -16,12 +17,15 @@ function NativeTabsNavigator({ children }: PropsWithChildren<NativeProps>) {
 
 // export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 
-export const NativeTabs = withLayoutContext<
-  NativeProps,
-  typeof NativeTabsNavigator,
-  NavigationState,
-  {}
-  // >(createNativeTabNavigator().Navigator, (screens) => {
->(NativeTabsNavigator, (screens) => {
-  return screens;
-});
+export const NativeTabs = Object.assign(
+  withLayoutContext<
+    NativeProps,
+    typeof NativeTabsNavigator,
+    NavigationState,
+    {}
+    // >(createNativeTabNavigator().Navigator, (screens) => {
+  >(NativeTabsNavigator, (screens) => {
+    return screens;
+  }),
+  { Tab: Screen }
+);

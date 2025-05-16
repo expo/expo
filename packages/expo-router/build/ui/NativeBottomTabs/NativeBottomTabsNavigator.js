@@ -9,6 +9,7 @@ const react_1 = __importDefault(require("react"));
 const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
 const NativeTabsView_1 = require("./NativeTabsView");
 const __1 = require("../..");
+const primitives_1 = require("../../primitives");
 function NativeTabsNavigator({ children }) {
     const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
@@ -16,7 +17,7 @@ function NativeTabsNavigator({ children }) {
     return <NativeTabsView_1.NativeTabsView builder={builder}/>;
 }
 // export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
-exports.NativeTabs = (0, __1.withLayoutContext)(NativeTabsNavigator, (screens) => {
+exports.NativeTabs = Object.assign((0, __1.withLayoutContext)(NativeTabsNavigator, (screens) => {
     return screens;
-});
+}), { Tab: primitives_1.Screen });
 //# sourceMappingURL=NativeBottomTabsNavigator.js.map

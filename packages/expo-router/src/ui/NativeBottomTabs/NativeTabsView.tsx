@@ -1,4 +1,3 @@
-import { getPathFromState, getStateFromPath, TabActions } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
 
 import { NativeTabsViewProps, RNSNativeTabs } from './RNSNativeTabs';
@@ -9,7 +8,7 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
   const { routes } = state;
 
   const children = routes
-    .filter(({ key }) => descriptors[key].options?.tabBarItemStyle?.display !== 'none')
+    .filter(({ key }) => (descriptors[key].options as any)?.tabBarItemStyle?.display !== 'none')
     .map((route, index) => {
       const descriptor = descriptors[route.key];
       const isFocused = state.index === index;
@@ -19,15 +18,13 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
           isFocused={isFocused}
           badgeValue={descriptor.route.name}
           onAppear={() => {
-            const href = descriptor.options?.href;
-            if (href) {
-              const newState = getStateFromPath(href);
-              console.log(newState);
-              if (newState && getPathFromState(newState) !== getPathFromState(state)) {
-                return navigation.reset(newState);
-              }
-            }
-            navigation.dispatch(TabActions.jumpTo(route.name));
+            navigation.dispatch({
+              type: 'JUMP_TO',
+              target: state.key,
+              payload: {
+                name: route.name,
+              },
+            });
           }}>
           {descriptor.render()}
         </RNSNativeTabsScreen>
