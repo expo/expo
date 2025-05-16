@@ -46,6 +46,15 @@ open class NotificationsEmitter : Module(), NotificationListener {
       lastNotificationResponseBundle = null
       null
     }
+
+    Function<Bundle?>("getLastNotificationResponse") {
+      lastNotificationResponseBundle
+    }
+
+    Function("clearLastNotificationResponse") {
+      lastNotificationResponseBundle = null
+      null
+    }
   }
 
   /**
