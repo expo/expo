@@ -1,1 +1,1 @@
-{"version":3,"file":"Form.d.ts","sourceRoot":"","sources":["../../src/swift-ui-primitives/Form.tsx"],"names":[],"mappings":"AAEA,MAAM,MAAM,SAAS,GAAG;IACtB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B,CAAC;AAIF,wBAAgB,IAAI,CAAC,KAAK,EAAE,SAAS,+BAEpC"}
+{"version":3,"file":"Form.d.ts","sourceRoot":"","sources":["../../src/swift-ui-primitives/Form.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,KAAK,uBAAuB,EAAE,MAAM,SAAS,CAAC;AAEvD,MAAM,WAAW,SAAU,SAAQ,uBAAuB;IACxD,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;IAE1B;;;;OAIG;IACH,aAAa,CAAC,EAAE,OAAO,CAAC;CACzB;AAID,wBAAgB,IAAI,CAAC,KAAK,EAAE,SAAS,+BAEpC"}

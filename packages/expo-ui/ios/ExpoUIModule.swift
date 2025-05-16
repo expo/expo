@@ -30,5 +30,9 @@ public final class ExpoUIModule: Module {
     View(VStackView.self)
     View(SectionPrimitiveView.self)
     View(TextView.self)
+    View(ImageView.self)
+    View(SpacerView.self)
+    View(GroupView.self)
+    View(DisclosureGroupView.self)
   }
 }

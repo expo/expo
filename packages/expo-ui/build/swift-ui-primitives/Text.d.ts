@@ -1,4 +1,5 @@
-export type TextProps = {
+import { type CommonViewModifierProps } from './types';
+export interface TextProps extends CommonViewModifierProps {
     children: string;
     /**
      * The font weight of the text.
@@ -18,6 +19,10 @@ export type TextProps = {
      * The line limit of the text.
      */
     lineLimit?: number;
-};
+    /**
+     * The color of the text.
+     */
+    color?: string;
+}
 export declare function Text(props: TextProps): import("react").JSX.Element;
 //# sourceMappingURL=Text.d.ts.map
