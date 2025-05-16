@@ -3,8 +3,23 @@
 import SwiftUI
 import ExpoModulesCore
 
+internal enum ExpoColorScheme: String, Enumerable {
+  case light
+  case dark
+
+  func toColorScheme() -> ColorScheme {
+    switch self {
+    case .light:
+      return .light
+    case .dark:
+      return .dark
+    }
+  }
+}
+
 internal final class HostViewProps: ExpoSwiftUI.ViewProps {
   @Field var useViewportSizeMeasurement: Bool = false
+  @Field var colorScheme: ExpoColorScheme?
   var onLayoutContent = EventDispatcher()
 }
 
@@ -27,12 +42,16 @@ internal struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         : AnyLayout(ZStackLayout(alignment: .topLeading))
       return HostLayout {
         Children()
-      }.modifier(GeometryChangeModifier(props: props))
+      }
+      .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(GeometryChangeModifier(props: props))
     }
 
     return ZStack(alignment: .topLeading) {
       Children()
-    }.modifier(GeometryChangeModifier(props: props))
+    }
+    .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+    .modifier(GeometryChangeModifier(props: props))
   }
 
   private func safeAreaSize() -> CGSize {
@@ -133,6 +152,18 @@ private struct GeometryChangeModifier: ViewModifier {
             .onChange(of: geometry.size) { dispatchOnLayoutContent($0) }
         }
       }
+    }
+  }
+}
+
+private struct ColorSchemeModifier: ViewModifier {
+  let colorScheme: ColorScheme?
+
+  func body(content: Content) -> some View {
+    if let colorScheme {
+      content.environment(\.colorScheme, colorScheme)
+    } else {
+      content
     }
   }
 }

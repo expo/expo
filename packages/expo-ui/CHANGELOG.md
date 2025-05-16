@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937) by [@kudo](https://github.com/kudo))
+
 ## 0.1.1-alpha.7 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

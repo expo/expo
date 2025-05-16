@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937) by [@kudo](https://github.com/kudo))
+
 ## 2.3.13 — 2025-05-08
 
 ### 🐛 Bug fixes
