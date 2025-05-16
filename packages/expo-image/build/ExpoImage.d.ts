@@ -4,6 +4,9 @@ import { ImageErrorEventData, ImageLoadEventData, ImageNativeProps, ImageProgres
 declare class ExpoImage extends React.PureComponent<ImageNativeProps> {
     startAnimating: () => Promise<unknown> | unknown;
     stopAnimating: () => Promise<unknown> | unknown;
+    lockResourceAsync: () => Promise<void>;
+    unlockResourceAsync: () => Promise<void>;
+    reloadAsync: () => Promise<void>;
     onLoadStart: () => void;
     onLoad: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
     onProgress: (event: NativeSyntheticEvent<ImageProgressEventData>) => void;

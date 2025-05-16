@@ -56,6 +56,8 @@ public final class ImageView: ExpoView {
 
   var allowDownscaling: Bool = true
 
+  var lockResource: Bool = false
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -118,7 +120,10 @@ public final class ImageView: ExpoView {
 
   // MARK: - Implementation
 
-  func reload() {
+  func reload(force: Bool = false) {
+    if lockResource && !force {
+      return
+    }
     if isViewEmpty {
       displayPlaceholderIfNecessary()
     }
