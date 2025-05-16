@@ -110,7 +110,7 @@ export default function SymbolImageScreen() {
         colors={['rgb(40, 186, 54)', 'rgb(21, 186, 212)', 'rgb(184, 10, 44)']}
         type="palette"
       />
-      <SymbolRow title="RGBA Color" tintColor="rgba(131, 8, 153, 0.7)" />
+      <SymbolRow title="RGBA Color" tintColor="rgba(131, 8, 153, 0.9)" />
       <SymbolRow title="Multicolor" type="multicolor" />
       <SymbolWeights title="Weights" tintColor="yellow" />
       <SymbolScales title="Scales" tintColor="cyan" />
