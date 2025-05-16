@@ -206,6 +206,35 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       });
     });
 
+    // https://github.com/expo/expo/issues/36863
+    it('Contacts.updateContactAsync() does not delete birthday', async () => {
+      const contactId = await createContact({
+        [Contacts.Fields.Birthday]: {
+          day: 30,
+          month: 2,
+          year: 1990,
+        },
+        [Contacts.Fields.FirstName]: 'Theman',
+        [Contacts.Fields.LastName]: 'Batholamew',
+      });
+      expect(typeof contactId).toBe('string');
+
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.Birthday]);
+      expect(contact.birthday).toBeDefined();
+      console.log('contact', contact);
+
+      const modifiedId = await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.IsFavorite]: false,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.Birthday,
+      ]);
+      console.log('modifiedContact', modifiedContact);
+      expect(modifiedContact.birthday).toBeDefined();
+      await Contacts.removeContactAsync(contactId);
+    });
+
     it('Contacts.updateContactAsync() with multiple urls / remove url', async () => {
       const contactId = await Contacts.addContactAsync({
         [Contacts.Fields.FirstName]: 'Ken',
