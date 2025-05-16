@@ -20,7 +20,9 @@
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "lint": "expo lint __e2e__"
+    "lint": "expo lint __e2e__",
+    "native_tabs:ios": "E2E_ROUTER_SRC=native-tabs E2E_ROUTER_JS_ENGINE=hermes yarn ios",
+    "native_tabs:start": "E2E_ROUTER_SRC=native-tabs E2E_ROUTER_JS_ENGINE=hermes yarn start"
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.4",
