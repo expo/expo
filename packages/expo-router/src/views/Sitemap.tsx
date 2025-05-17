@@ -3,11 +3,19 @@
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Platform,
+  StatusBar,
+  ViewStyle,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Pressable } from './Pressable';
-import { router } from '../imperative-api';
+import { Pressable, PressableProps } from './Pressable';
 import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
@@ -50,93 +58,125 @@ export function getNavOptions(): NativeStackNavigationOptions {
 }
 
 export function Sitemap() {
+  const sitemap = useSitemap();
+  const children = React.useMemo(
+    () => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [],
+    [sitemap]
+  );
   return (
     <View style={styles.container}>
       {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
       <ScrollView contentContainerStyle={styles.scroll}>
-        <FileSystemView />
+        {children.map((child) => (
+          <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+            <SitemapItem node={child} />
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
 }
 
-function FileSystemView() {
-  const sitemap = useSitemap();
-  // This shouldn't occur, as the user should be on the tutorial screen
-  if (!sitemap) return null;
-  const children = sitemap.children.filter(({ isInternal }) => !isInternal);
-  return children.map((child) => (
-    <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-      <FileItem node={child} />
-    </View>
-  ));
-}
-
-function FileItem({
-  node,
-  level = 0,
-  isInitial = false,
-}: {
+interface SitemapItemProps {
   node: SitemapType;
   level?: number;
-  isInitial?: boolean;
-}) {
-  const disabled = node.children.length > 0;
-  const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+  info?: string;
+}
+
+function SitemapItem({ node, level = 0 }: SitemapItemProps) {
+  const isLayout = React.useMemo(
+    () => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/),
+    [node]
+  );
+  const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+
+  if (isLayout) {
+    return <LayoutSitemapItem node={node} level={level} info={info} />;
+  }
+  return <StandardSitemapItem node={node} level={level} info={info} />;
+}
+function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
   return (
     <>
-      {!node.isInternal && (
-        <Link
-          accessibilityLabel={node.contextKey}
-          href={node.href}
-          onPress={() => {
-            if (Platform.OS !== 'web' && router.canGoBack()) {
-              // Ensure the modal pops
-              router.back();
-            }
-          }}
-          disabled={disabled}
-          asChild
-          // Ensure we replace the history so you can't go back to this page.
-          replace>
-          <Pressable>
-            {({ pressed, hovered }) => (
-              <View
-                testID="sitemap-item"
-                style={[
-                  styles.itemPressable,
-                  {
-                    paddingLeft: INDENT + level * INDENT,
-                    backgroundColor: hovered ? '#202425' : 'transparent',
-                  },
-                  pressed && { backgroundColor: '#26292b' },
-                  disabled && { opacity: 0.4 },
-                ]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {node.children.length ? <PkgIcon /> : <FileIcon />}
-                  <Text style={styles.filename}>{node.filename}</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {!!info && (
-                    <Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</Text>
-                  )}
-                  {!disabled && <ForwardIcon />}
-                </View>
-              </View>
-            )}
-          </Pressable>
-        </Link>
-      )}
+      <SitemapItemPressable
+        style={{ opacity: 0.4 }}
+        leftIcon={<PkgIcon />}
+        filename={node.filename}
+        level={level}
+        info={info}
+      />
       {node.children.map((child) => (
-        <FileItem
+        <SitemapItem
           key={child.contextKey}
           node={child}
-          isInitial={child.isInitial}
-          level={level + (child.isGenerated ? 0 : 1)}
+          level={level + (node.isGenerated ? 0 : 1)}
         />
       ))}
     </>
+  );
+}
+
+function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
+  return (
+    <Link
+      accessibilityLabel={node.contextKey}
+      href={node.href}
+      asChild
+      // Ensure we replace the history so you can't go back to this page.
+      replace>
+      <SitemapItemPressable
+        leftIcon={<FileIcon />}
+        rightIcon={<ForwardIcon />}
+        filename={node.filename}
+        level={level}
+        info={info}
+      />
+    </Link>
+  );
+}
+
+function SitemapItemPressable({
+  style,
+  leftIcon,
+  rightIcon,
+  filename,
+  level,
+  info,
+  ...pressableProps
+}: {
+  style?: ViewStyle;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  filename: string;
+  level: number;
+  info?: string;
+} & Omit<PressableProps, 'style' | 'children'>) {
+  return (
+    <Pressable {...pressableProps}>
+      {({ pressed, hovered }) => (
+        <View
+          testID="sitemap-item"
+          style={[
+            styles.itemPressable,
+            {
+              paddingLeft: INDENT + level * INDENT,
+              backgroundColor: hovered ? '#202425' : 'transparent',
+            },
+            pressed && { backgroundColor: '#26292b' },
+            style,
+          ]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {leftIcon}
+            <Text style={styles.filename}>{filename}</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {!!info && <Text style={[styles.virtual, { marginRight: 8 }]}>{info}</Text>}
+            {rightIcon}
+          </View>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
