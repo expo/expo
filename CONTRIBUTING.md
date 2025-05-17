@@ -33,6 +33,7 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
 4. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
 5. Install [Node LTS](https://nodejs.org/).
+6. Install [Yarn](https://yarnpkg.com/). You must use Yarn 1.x, building with later versions of Yarn causes problems.
 
 ### Set up documentation
 
