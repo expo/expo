@@ -71,28 +71,6 @@ export interface ExpoConfig {
     /**
      * Configuration for remote (push) notifications.
      */
-    notification?: {
-        /**
-         * (Android only) Local path or remote URL to an image to use as the icon for push notifications. 96x96 png grayscale with transparency. We recommend following [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles). If not provided, defaults to your app icon.
-         */
-        icon?: string;
-        /**
-         * (Android only) Tint color for the push notification image when it appears in the notification tray. Defaults to `#ffffff`
-         */
-        color?: string;
-        /**
-         * Whether or not to display notifications when the app is in the foreground on iOS. `_displayInForeground` option in the individual push notification message overrides this option. [Learn more.](https://docs.expo.dev/push-notifications/receiving-notifications/#foreground-notification-behavior) Defaults to `false`.
-         */
-        iosDisplayInForeground?: boolean;
-        /**
-         * Show each push notification individually (`default`) or collapse into one (`collapse`).
-         */
-        androidMode?: 'default' | 'collapse';
-        /**
-         * If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. For example, `'#{unread_notifications} new interactions'`.
-         */
-        androidCollapsedTitle?: string;
-    };
     /**
      * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
      */
