@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed isFavorite changes/updates nulling the rawDates/birthday for contacts ([#36863][https://github.com/expo/expo/issues/36863]) by [@NorseGaud](https://github.com/NorseGaud)
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
