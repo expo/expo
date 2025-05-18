@@ -6,7 +6,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.Columns
 import java.util.Locale
-
+import android.util.Log
 const val BIRTHDAY = "birthday"
 private const val ANNIVERSARY = "anniversary"
 private const val OTHER = "other"
