@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix @react-native-firebase/messaging overriding Expo Notifications ([#33666](https://github.com/expo/expo/pull/33666) by [@scarlac](https://github.com/scarlac))
+
 ### 💡 Others
 
 - improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
