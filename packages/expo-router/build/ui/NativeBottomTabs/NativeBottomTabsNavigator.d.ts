@@ -1,10 +1,10 @@
 import { ParamListBase } from '@react-navigation/native';
 import React, { ComponentProps, PropsWithChildren } from 'react';
-import { NativeTabProps } from './NativeTabsView';
+import { NativeTabOptions } from './NativeTabsView';
 declare function NativeTabsNavigator({ children }: PropsWithChildren): React.JSX.Element;
 export declare const createNativeTabNavigator: (config?: any) => any;
 export declare const NativeTabs: ((props: ComponentProps<typeof NativeTabsNavigator>) => React.JSX.Element) & {
-    Tab: (props: import("../..").ScreenProps<NativeTabProps, Readonly<{
+    Tab: (props: import("../..").ScreenProps<NativeTabOptions, Readonly<{
         key: string;
         index: number;
         routeNames: string[];

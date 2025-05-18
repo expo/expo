@@ -7,6 +7,7 @@ exports.NativeTabsView = NativeTabsView;
 const react_1 = __importDefault(require("react"));
 const react_native_screens_1 = require("react-native-screens");
 const BottomTabsScreen_1 = __importDefault(require("react-native-screens/src/components/BottomTabsScreen"));
+(0, react_native_screens_1.enableFreeze)(false);
 function NativeTabsView(props) {
     const { state, descriptors, navigation } = props.builder;
     const { routes } = state;
@@ -24,7 +25,10 @@ function NativeTabsView(props) {
          * - passing a string and then using SF Symbols or Material Icons (how to do this on Android?) - androidx.compose.material.Icon
          *
          */
-        return (<BottomTabsScreen_1.default key={route.key} isFocused={isFocused} badgeValue={descriptor.options?.label ?? descriptor.route.name} onWillAppear={() => {
+        const icon = descriptor.options?.icon;
+        const label = descriptor.options?.label;
+        const title = label ? label : !icon ? descriptor.route.name : undefined;
+        return (<BottomTabsScreen_1.default key={route.key} isFocused={isFocused} title={title} icon={icon} onWillAppear={() => {
                 console.log('On will appear');
                 navigation.dispatch({
                     type: 'JUMP_TO',
@@ -37,6 +41,6 @@ function NativeTabsView(props) {
           {descriptor.render()}
         </BottomTabsScreen_1.default>);
     });
-    return <react_native_screens_1.BottomTabs>{children}</react_native_screens_1.BottomTabs>;
+    return <react_native_screens_1.BottomTabs tabBarBackgroundColor="white">{children}</react_native_screens_1.BottomTabs>;
 }
 //# sourceMappingURL=NativeTabsView.js.map

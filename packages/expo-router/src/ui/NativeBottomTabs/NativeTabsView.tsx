@@ -6,11 +6,14 @@ import {
   useNavigationBuilder,
 } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
-import { BottomTabs } from 'react-native-screens';
+import { BottomTabs, enableFreeze } from 'react-native-screens';
 import BottomTabsScreen from 'react-native-screens/src/components/BottomTabsScreen';
 
-export interface NativeTabProps extends DefaultRouterOptions {
-  label: string;
+enableFreeze(false);
+
+export interface NativeTabOptions extends DefaultRouterOptions {
+  label?: string;
+  icon?: string;
 }
 
 export type NativeTabsViewProps = {
@@ -19,7 +22,7 @@ export type NativeTabsViewProps = {
       TabNavigationState<ParamListBase>,
       TabRouterOptions,
       Record<string, (...args: any) => void>,
-      NativeTabProps,
+      NativeTabOptions,
       Record<string, any>
     >
   >;
@@ -43,11 +46,15 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
        * - passing a string and then using SF Symbols or Material Icons (how to do this on Android?) - androidx.compose.material.Icon
        *
        */
+      const icon = descriptor.options?.icon;
+      const label = descriptor.options?.label;
+      const title = label ? label : !icon ? descriptor.route.name : undefined;
       return (
         <BottomTabsScreen
           key={route.key}
           isFocused={isFocused}
-          badgeValue={descriptor.options?.label ?? descriptor.route.name}
+          title={title}
+          icon={icon}
           onWillAppear={() => {
             console.log('On will appear');
             navigation.dispatch({
@@ -63,5 +70,5 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
       );
     });
 
-  return <BottomTabs>{children}</BottomTabs>;
+  return <BottomTabs tabBarBackgroundColor="white">{children}</BottomTabs>;
 }
