@@ -1,0 +1,1 @@
+{"version":3,"file":"IntegrityModule.types.js","sourceRoot":"","sources":["../src/IntegrityModule.types.ts"],"names":[],"mappings":"","sourcesContent":["import { NativeModule } from 'expo-modules-core/types';\n\nexport interface NativeIntegrityModule extends NativeModule {}\n"]}
