@@ -1,7 +1,6 @@
 import type { DynamicConvention, RouteNode } from './Route';
 import {
   matchArrayGroupName,
-  matchDeepDynamicRouteName,
   matchDynamicName,
   matchGroupName,
   matchLastGroupName,
@@ -659,12 +658,7 @@ export function generateDynamic(path: string): DynamicConvention[] | null {
           notFound: true,
         };
       }
-
-      const deepDynamicName = matchDeepDynamicRouteName(part);
-      const dynamicName = deepDynamicName ?? matchDynamicName(part);
-
-      if (!dynamicName) return null;
-      return { name: dynamicName, deep: !!deepDynamicName };
+      return matchDynamicName(part) ?? null;
     })
     .filter((part): part is DynamicConvention => !!part);
 
