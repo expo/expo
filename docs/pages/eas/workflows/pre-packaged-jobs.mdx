@@ -1,0 +1,968 @@
+---
+title: Pre-packaged jobs
+description: Learn how to set up and use pre-packaged jobs.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
+
+## Build
+
+Build your project into an Android or iOS app.
+
+### Syntax
+
+```yaml
+jobs:
+  build_app:
+    type: build
+    params:
+      platform: android | ios
+      profile: string
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                            |
+| --------- | ------ | ---------------------------------------------------------------------- |
+| platform  | string | Required. The platform to build for. Can be either `android` or `ios`. |
+| profile   | string | Optional. The build profile to use. Defaults to `production`.          |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output            | Type   | Description                                                 |
+| ----------------- | ------ | ----------------------------------------------------------- |
+| build_id          | string | The ID of the created build.                                |
+| app_build_version | string | The build version of the app.                               |
+| app_identifier    | string | The bundle identifier/package name of the app.              |
+| app_version       | string | The version of the app.                                     |
+| channel           | string | The update channel used for the build.                      |
+| distribution      | string | The distribution method used. Can be `internal` or `store`. |
+| fingerprint_hash  | string | The fingerprint hash of the build.                          |
+| git_commit_hash   | string | The git commit hash used for the build.                     |
+| platform          | string | The platform the build was created for.                     |
+| profile           | string | The build profile used.                                     |
+| runtime_version   | string | The runtime version used.                                   |
+| sdk_version       | string | The SDK version used.                                       |
+| simulator         | string | Whether the build is for simulator.                         |
+
+### Examples
+
+Here are some practical examples of using the build job:
+
+<Collapsible summary="Basic build for a specific platform">
+
+This workflow builds your iOS app whenever you push to the main branch.
+
+```yaml .eas/workflows/build-ios.yml
+name: Build iOS app
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build for both platforms in parallel">
+
+This workflow builds both Android and iOS apps in parallel when you push to the main branch.
+
+```yaml .eas/workflows/build-all.yml
+name: Build for all platforms
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build with environment variables">
+
+This workflow builds your Android app with custom environment variables that can be used during the build process.
+
+```yaml .eas/workflows/build-with-env.yml
+name: Build with environment variables
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    env:
+      APP_ENV: production
+      API_URL: https://api.example.com
+    params:
+      platform: android
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build with different profiles">
+
+This workflow creates two different Android builds using different profiles - one for internal distribution and one for store submission.
+
+```yaml .eas/workflows/build-profiles.yml
+name: Build with different profiles
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android_internal:
+    name: Build Android Internal
+    type: build
+    params:
+      platform: android
+      profile: internal
+
+  build_android_store:
+    name: Build Android Store
+    type: build
+    params:
+      platform: android
+      profile: store
+```
+
+</Collapsible>
+
+## Deploy
+
+Deploy your application using EAS Hosting.
+
+### Syntax
+
+```yaml
+jobs:
+  deploy_web:
+    type: deploy
+    params:
+      alias: string
+      prod: boolean
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type    | Description                                |
+| --------- | ------- | ------------------------------------------ |
+| alias     | string  | Optional. The alias to deploy to.          |
+| prod      | boolean | Optional. Whether to deploy to production. |
+
+### Examples
+
+Here are some practical examples of using the deploy job:
+
+<Collapsible summary="Basic deployment to production">
+
+This workflow deploys your application to production using EAS Hosting.
+
+```yaml .eas/workflows/deploy-basic.yml
+name: Basic Deployment
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Deployment with custom alias">
+
+This workflow deploys your application to a custom alias in production.
+
+```yaml .eas/workflows/deploy-alias.yml
+name: Deployment with Alias
+
+jobs:
+  deploy:
+    name: Deploy with Alias
+    type: deploy
+    params:
+      alias: my-custom-alias
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Deployment to preview environment">
+
+This workflow deploys your application to a preview environment using a custom alias.
+
+```yaml .eas/workflows/deploy-preview.yml
+name: Preview Deployment
+
+jobs:
+  deploy:
+    name: Deploy to Preview
+    type: deploy
+    params:
+      alias: preview
+      prod: false
+```
+
+</Collapsible>
+
+<Collapsible summary="Multi-alias deployment">
+
+This workflow deploys your application to both staging and production environments using different aliases.
+
+```yaml .eas/workflows/deploy-multi-alias.yml
+name: Multi-alias Deployment
+
+jobs:
+  deploy_staging:
+    name: Deploy to Staging
+    type: deploy
+    params:
+      alias: staging
+      prod: false
+
+  deploy_production:
+    name: Deploy to Production
+    type: deploy
+    params:
+      alias: production
+      prod: true
+```
+
+</Collapsible>
+
+## Fingerprint
+
+Calculate fingerprint of Android and iOS builds.
+
+> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+### Syntax
+
+```yaml
+jobs:
+  calculate_fingerprint:
+    type: fingerprint
+    params:
+      environment: production
+      env:
+        APP_VARIANT: staging
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                                                                   |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| environment | string | Optional. The environment to use. Can be `production`, `preview`, or `development`. Defaults to `production`. |
+| env         | object | Optional. Environment variables to use during fingerprint calculation.                                        |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                   | Type   | Description                       |
+| ------------------------ | ------ | --------------------------------- |
+| android_fingerprint_hash | string | The fingerprint hash for Android. |
+| ios_fingerprint_hash     | string | The fingerprint hash for iOS.     |
+
+### Examples
+
+Here are some practical examples of using the fingerprint job:
+
+<Collapsible summary="Basic fingerprint calculation">
+
+This workflow calculates fingerprints for both Android and iOS builds in the production environment.
+
+```yaml .eas/workflows/fingerprint-basic.yml
+name: Basic Fingerprint
+
+jobs:
+  fingerprint:
+    name: Calculate Fingerprints
+    type: fingerprint
+    params:
+      environment: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Fingerprint with environment variables">
+
+This workflow calculates fingerprints with custom environment variables that can affect the build configuration.
+
+```yaml .eas/workflows/fingerprint-with-env.yml
+name: Fingerprint with Environment Variables
+
+jobs:
+  fingerprint:
+    name: Calculate Fingerprints
+    type: fingerprint
+    params:
+      environment: production
+      env:
+        APP_VARIANT: staging
+        API_URL: https://api.staging.example.com
+```
+
+</Collapsible>
+
+## Get Build
+
+Retrieve an existing build from EAS that matches the provided parameters.
+
+### Syntax
+
+```yaml
+jobs:
+  get_build:
+    type: get-build
+    params:
+      platform: ios
+      profile: production
+      distribution: store
+      channel: production
+      app_identifier: com.example.app
+      app_build_version: 1
+      app_version: 1.0.0
+      git_commit_hash: abc123
+      fingerprint_hash: def456
+      sdk_version: 49.0.0
+      runtime_version: 1.0.0
+      simulator: false
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter         | Type    | Description                                                                    |
+| ----------------- | ------- | ------------------------------------------------------------------------------ |
+| platform          | string  | Optional. The platform to get the build for. Can be `ios` or `android`.        |
+| profile           | string  | Optional. The build profile to use.                                            |
+| distribution      | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`. |
+| channel           | string  | Optional. The update channel.                                                  |
+| app_identifier    | string  | Optional. The bundle identifier/package name.                                  |
+| app_build_version | string  | Optional. The build version.                                                   |
+| app_version       | string  | Optional. The app version.                                                     |
+| git_commit_hash   | string  | Optional. The git commit hash.                                                 |
+| fingerprint_hash  | string  | Optional. The fingerprint hash.                                                |
+| sdk_version       | string  | Optional. The SDK version.                                                     |
+| runtime_version   | string  | Optional. The runtime version.                                                 |
+| simulator         | boolean | Optional. Whether to get a simulator build.                                    |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output            | Type   | Description                                    |
+| ----------------- | ------ | ---------------------------------------------- |
+| build_id          | string | The ID of the retrieved build.                 |
+| app_build_version | string | The build version of the app.                  |
+| app_identifier    | string | The bundle identifier/package name of the app. |
+| app_version       | string | The version of the app.                        |
+| channel           | string | The update channel used for the build.         |
+| distribution      | string | The distribution method used.                  |
+| fingerprint_hash  | string | The fingerprint hash of the build.             |
+| git_commit_hash   | string | The git commit hash used for the build.        |
+| platform          | string | The platform the build was created for.        |
+| profile           | string | The build profile used.                        |
+| runtime_version   | string | The runtime version used.                      |
+| sdk_version       | string | The SDK version used.                          |
+| simulator         | string | Whether the build is for simulator.            |
+
+### Examples
+
+Here are some practical examples of using the get-build job:
+
+<Collapsible summary="Get latest production build">
+
+This workflow retrieves the latest production build for iOS from the store distribution channel.
+
+```yaml .eas/workflows/get-build-production.yml
+name: Get Production Build
+
+jobs:
+  get_build:
+    name: Get Latest Production Build
+    type: get-build
+    params:
+      platform: ios
+      profile: production
+      distribution: store
+      channel: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Get build by version">
+
+This workflow retrieves a specific version of an Android build by its app version and build version.
+
+```yaml .eas/workflows/get-build-version.yml
+name: Get Build by Version
+
+jobs:
+  get_build:
+    name: Get Specific Version Build
+    type: get-build
+    params:
+      platform: android
+      app_identifier: com.example.app
+      app_version: 1.0.0
+      app_build_version: 42
+```
+
+</Collapsible>
+
+<Collapsible summary="Get simulator build">
+
+This workflow retrieves a simulator build for iOS development.
+
+```yaml .eas/workflows/get-build-simulator.yml
+name: Get Simulator Build
+
+jobs:
+  get_build:
+    name: Get Simulator Build
+    type: get-build
+    params:
+      platform: ios
+      simulator: true
+      profile: development
+```
+
+</Collapsible>
+
+## Submit
+
+Submit an Android or iOS build to the app store using EAS Submit.
+
+> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+
+### Syntax
+
+```yaml
+jobs:
+  submit_to_store:
+    type: submit
+    params:
+      build_id: string
+      profile: production
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                    |
+| --------- | ------ | -------------------------------------------------------------- |
+| build_id  | string | Required. The ID of the build to submit.                       |
+| profile   | string | Optional. The submit profile to use. Defaults to `production`. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                       |
+| --------------------- | ------ | ------------------------------------------------- |
+| apple_app_id          | string | The Apple App ID of the submitted build.          |
+| ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
+| android_package_id    | string | The Android package ID of the submitted build.    |
+
+### Examples
+
+Here are some practical examples of using the submit job:
+
+<Collapsible summary="Submit iOS build">
+
+This workflow submits an iOS build to the App Store using the production submit profile.
+
+```yaml .eas/workflows/submit-ios.yml
+name: Submit iOS Build
+
+jobs:
+  submit:
+    name: Submit to App Store
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Submit Android build">
+
+This workflow submits an Android build to the Play Store using the production submit profile.
+
+```yaml .eas/workflows/submit-android.yml
+name: Submit Android Build
+
+jobs:
+  submit:
+    name: Submit to Play Store
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      profile: production
+```
+
+</Collapsible>
+
+## Update
+
+Publish an update using EAS Update.
+
+### Syntax
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+    params:
+      message: string
+      platform: all
+      branch: production
+      channel: production
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                                                                                                                                                                                          |
+| --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message   | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                           |
+| platform  | string | Optional. Platform to use for the update ("android", "ios" or "all").                                                                                                                                                                                |
+| branch    | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name }}`. Provide _either_ a branch or a channel, not both. |
+| channel   | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                           |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                                   |
+| --------------------- | ------ | ------------------------------------------------------------- |
+| first_update_group_id | string | The ID of the first update group.                             |
+| updates_json          | string | A JSON string containing information about all update groups. |
+
+### Examples
+
+Here are some practical examples of using the update job:
+
+<Collapsible summary="Basic update to production channel">
+
+This workflow publishes an update to the production channel whenever you push to the main branch, using the commit message as the update message.
+
+```yaml .eas/workflows/update-production.yml
+name: Update Production
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update_production:
+    name: Update Production Channel
+    type: update
+    params:
+      channel: production
+      message: 'Production update: ${{ github.event.head_commit.message }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Platform-specific updates">
+
+This workflow publishes separate updates for Android and iOS platforms, allowing for platform-specific changes.
+
+```yaml .eas/workflows/update-platforms.yml
+name: Platform-specific Updates
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update_android:
+    name: Update Android
+    type: update
+    params:
+      platform: android
+      channel: production
+      message: 'Android update: ${{ github.event.head_commit.message }}'
+
+  update_ios:
+    name: Update iOS
+    type: update
+    params:
+      platform: ios
+      channel: production
+      message: 'iOS update: ${{ github.event.head_commit.message }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Update with branch-based deployment">
+
+This workflow publishes updates based on the branch name, allowing for different environments (staging/production) based on the branch.
+
+```yaml .eas/workflows/update-branches.yml
+name: Branch-based Updates
+
+on:
+  push:
+    branches: ['main', 'staging']
+
+jobs:
+  update_branch:
+    name: Update Branch
+    type: update
+    params:
+      branch: ${{ github.ref_name }}
+      message: 'Update for branch: ${{ github.ref_name }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Update with custom message and platform targeting">
+
+This workflow allows manual triggering of updates with custom platform selection and message, useful for controlled deployments.
+
+```yaml .eas/workflows/update-custom.yml
+name: Custom Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to update'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+      message:
+        description: 'Update message'
+        required: true
+        type: string
+
+jobs:
+  update_custom:
+    name: Custom Update
+    type: update
+    params:
+      platform: ${{ github.event.inputs.platform }}
+      channel: production
+      message: ${{ github.event.inputs.message }}
+```
+
+</Collapsible>
+
+## Maestro
+
+Run Maestro tests on a build.
+
+> **important** Maestro tests are experimental and may experience flakiness.
+
+### Syntax
+
+```yaml
+jobs:
+  run_maestro_tests:
+    type: maestro
+    environment: preview
+    image: latest
+    params:
+      build_id: string
+      flow_path: string
+      shards: 1
+      retries: 1
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                            |
+| --------- | ------ | ---------------------------------------------------------------------- |
+| build_id  | string | Required. The ID of the build to test.                                 |
+| flow_path | string | Required. The path to the Maestro flow file(s) to run.                 |
+| shards    | number | Optional. The number of shards to split the tests into. Defaults to 1. |
+| retries   | number | Optional. The number of times to retry failed tests. Defaults to 1.    |
+
+### Examples
+
+Here are some practical examples of using the Maestro job:
+
+<Collapsible summary="Basic Maestro test">
+
+This workflow runs Maestro tests on an iOS build using the default settings.
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    image: latest
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      flow_path: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Maestro test with sharding">
+
+This workflow runs Maestro tests on an Android build with 4 shards and 2 retries for failed tests.
+
+```yaml .eas/workflows/maestro-sharded.yml
+name: Sharded Maestro Test
+
+jobs:
+  test:
+    name: Run Sharded Maestro Tests
+    type: maestro
+    environment: preview
+    image: latest
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      flow_path: ./maestro/flows
+      shards: 4
+      retries: 2
+```
+
+</Collapsible>
+
+## Slack
+
+Send a message to a Slack channel using a webhook URL.
+
+### Syntax
+
+```yaml
+jobs:
+  send_slack_notification:
+    type: slack
+    params:
+      webhook_url: string
+      message: string
+      payload: object
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                               |
+| ----------- | ------ | ------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to.                   |
+| message     | string | Required if payload is not provided. The message to send.                 |
+| payload     | object | Required if message is not provided. The Slack Block Kit payload to send. |
+
+### Examples
+
+Here are some practical examples of using the Slack job:
+
+<Collapsible summary="Simple build notification">
+
+This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
+
+```yaml .eas/workflows/slack-build-notification.yml
+name: Build Notification
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  notify_build:
+    name: Notify Build Status
+    needs: build_ios
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
+```
+
+</Collapsible>
+
+<Collapsible summary="Rich build notification with Block Kit">
+
+This workflow builds an Android app and sends a rich notification using the build job outputs.
+
+```yaml .eas/workflows/slack-rich-notification.yml
+name: Rich Build Notification
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  notify_build:
+    name: Notify Build Status
+    needs: build_android
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      payload:
+        blocks:
+          - type: header
+            text:
+              type: plain_text
+              text: 'Build Completed'
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*App:*\n${{ needs.build_android.outputs.app_identifier }}"
+              - type: mrkdwn
+                text: "*Version:*\n${{ needs.build_android.outputs.app_version }}"
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*Build ID:*\n${{ needs.build_android.outputs.build_id }}"
+              - type: mrkdwn
+                text: "*Platform:*\n${{ needs.build_android.outputs.platform }}"
+          - type: section
+            text:
+              type: mrkdwn
+              text: 'Distribution: ${{ needs.build_android.outputs.distribution }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Test results summary">
+
+This workflow builds an iOS app and sends a test results summary using the build job outputs.
+
+```yaml .eas/workflows/slack-test-results.yml
+name: Test Results Notification
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  notify_tests:
+    name: Notify Test Results
+    needs: build_ios
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      payload:
+        blocks:
+          - type: header
+            text:
+              type: plain_text
+              text: 'Test Results'
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*App:*\n${{ needs.build_ios.outputs.app_identifier }}"
+              - type: mrkdwn
+                text: "*Build ID:*\n${{ needs.build_ios.outputs.build_id }}"
+          - type: section
+            text:
+              type: mrkdwn
+              text: 'Platform: ${{ needs.build_ios.outputs.platform }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Deployment notification with environment">
+
+This workflow builds an Android app and sends a detailed deployment notification using the build job outputs.
+
+```yaml .eas/workflows/slack-deployment.yml
+name: Deployment Notification
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  notify_deployment:
+    name: Notify Deployment
+    needs: build_android
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      payload:
+        blocks:
+          - type: header
+            text:
+              type: plain_text
+              text: '🚀 Deployment Complete'
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*App:*\n${{ needs.build_android.outputs.app_identifier }}"
+              - type: mrkdwn
+                text: "*Version:*\n${{ needs.build_android.outputs.app_version }}"
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*Build ID:*\n${{ needs.build_android.outputs.build_id }}"
+              - type: mrkdwn
+                text: "*Platform:*\n${{ needs.build_android.outputs.platform }}"
+          - type: section
+            text:
+              type: mrkdwn
+              text: 'Distribution: ${{ needs.build_android.outputs.distribution }}'
+```
+
+</Collapsible>
