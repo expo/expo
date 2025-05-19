@@ -10,6 +10,10 @@
 
 ### 🐛 Bug fixes
 
+- Fix RSC middleware not requiring output modules from a stable base path resulting in missing modules ([#36819](https://github.com/expo/expo/pull/36819) by [@kitten](https://github.com/kitten))
+- Prioritize static routes over dynamic routes within same group ([#36765](https://github.com/expo/expo/pull/36765) by [@marklawlor](https://github.com/marklawlor))
+- Fix deep linking showing incorrect screen ([#36864](https://github.com/expo/expo/pull/36864) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
@@ -23,6 +27,7 @@
 - Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
 - Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
 - Fix useLocalSearchParams returning "undefined" for deleted params ([#36811](https://github.com/expo/expo/pull/36811) by [@marklawlor](https://github.com/marklawlor))
+- Fix `DefaultNavigator` insets being too large when the app is running in edge-to-edge mode. ([#36855](https://github.com/expo/expo/pull/36855) by [@behenate](https://github.com/behenate))
 
 ## 5.0.6 — 2025-05-06
 

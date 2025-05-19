@@ -360,6 +360,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/build-locally/': '/eas-update/standalone-service/',
   '/eas-update/updating-your-app/': '/eas-update/getting-started/',
   '/eas-update/develop-faster/': '/eas-update/preview/',
+  '/eas-update/continuous-deployment/': '/eas/workflows/examples/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/basics/layout/#root-layout',

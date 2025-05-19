@@ -165,10 +165,6 @@ export async function loadMetroConfigAsync(
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
-    isFabricEnabled: {
-      ios: exp.ios?.newArchEnabled ?? exp.newArchEnabled ?? true,
-      android: exp.android?.newArchEnabled ?? exp.newArchEnabled ?? true,
-    },
   });
 
   return {
