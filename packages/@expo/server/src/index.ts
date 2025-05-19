@@ -262,15 +262,8 @@ export function createRequestHandler(
 /** Match `[page]` -> `page` */
 // Ported from `expo-router/src/matchers.tsx`
 function matchDynamicName(name: string): string | undefined {
-  // Don't match `...` or `[` or `]` inside the brackets
-  // eslint-disable-next-line no-useless-escape
-  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
-}
-
-/** Match `[...page]` -> `page` */
-// Ported from `expo-router/src/matchers.tsx`
-function matchDeepDynamicRouteName(name: string): string | undefined {
-  return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+  // Don't match `[` or `]` inside the brackets
+  return name.match(/^\[([^[\]]+?)\]$/)?.[1];
 }
 
 function updateRequestWithConfig(
@@ -298,24 +291,19 @@ function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) 
   let location = route.page
     .split('/')
     .map((segment) => {
-      let match = matchDynamicName(segment);
-
-      if (match) {
-        const value = params[match];
-        delete params[match];
-        // If we are redirecting from a catch-all route, we need to remove the extra segments
+      let paramName = matchDynamicName(segment);
+      if (!paramName) {
+        return segment;
+      } else if (paramName.startsWith('...')) {
+        paramName = paramName.slice(3);
+        const value = params[paramName];
+        delete params[paramName];
+        return value;
+      } else {
+        const value = params[paramName];
+        delete params[paramName];
         return value?.split('/')[0];
       }
-
-      match = matchDeepDynamicRouteName(segment);
-
-      if (match) {
-        const value = params[match];
-        delete params[match];
-        return value;
-      }
-
-      return segment;
     })
     .join('/');
 
