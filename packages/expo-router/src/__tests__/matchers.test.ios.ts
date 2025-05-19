@@ -1,6 +1,5 @@
 import {
   matchDynamicName,
-  matchDeepDynamicRouteName,
   getNameFromFilePath,
   matchGroupName,
   stripGroupSegmentsFromPath,
@@ -73,22 +72,17 @@ describe(matchLastGroupName, () => {
   });
 });
 describe(matchDynamicName, () => {
-  it(`matches`, () => {
+  it(`matches dynamic names`, () => {
     expect(matchDynamicName('[[...foobar]]')).toEqual(undefined);
     expect(matchDynamicName('[[foobar]]')).toEqual(undefined);
-    expect(matchDynamicName('[...foobar]')).toEqual(undefined);
-    expect(matchDynamicName('[foobar]')).toEqual('foobar');
+    expect(matchDynamicName('[foobar]')).toEqual({ name: 'foobar', deep: false });
     expect(matchDynamicName('foobar')).toEqual(undefined);
   });
-});
 
-describe(matchDeepDynamicRouteName, () => {
-  it(`matches`, () => {
-    expect(matchDeepDynamicRouteName('[[...foobar]]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('[[foobar]]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('[...foobar]')).toEqual('foobar');
-    expect(matchDeepDynamicRouteName('[foobar]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('foobar')).toEqual(undefined);
+  it(`matches deep dynamic names`, () => {
+    expect(matchDynamicName('[[...foobar]]')).toEqual(undefined);
+    expect(matchDynamicName('[[foobar]]')).toEqual(undefined);
+    expect(matchDynamicName('[...foobar]')).toEqual({ name: 'foobar', deep: true });
   });
 });
 
