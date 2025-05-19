@@ -176,9 +176,7 @@ export function isDynamicPart(p: string) {
 
 function segmentMatchesConvention(segment: string): boolean {
   return (
-    segment === 'index' ||
-    matchGroupName(segment) != null ||
-    matchDynamicName(segment) != null
+    segment === 'index' || matchGroupName(segment) != null || matchDynamicName(segment) != null
   );
 }
 
