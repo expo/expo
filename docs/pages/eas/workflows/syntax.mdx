@@ -471,7 +471,7 @@ Learn about the different pre-packaged jobs below.
 
 #### `build`
 
-Creates an Android or iOS build of your project using [EAS Build](/build/introduction/).
+Creates an Android or iOS build of your project using [EAS Build](/build/introduction/). See [Build job documentation](/eas/workflows/pre-packaged-jobs#build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -504,11 +504,9 @@ This job outputs the following properties:
 }
 ```
 
-Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
-
 #### `deploy`
 
-Deploys your application using [EAS Hosting](/eas/hosting/introduction/).
+Deploys your application using [EAS Hosting](/eas/hosting/introduction/). See [Deploy job documentation](/eas/workflows/pre-packaged-jobs#deploy) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -523,7 +521,7 @@ jobs:
 
 #### `fingerprint`
 
-Calculates fingerprint of Android and iOS builds.
+Calculates a fingerprint of your project. See [Fingerprint job documentation](/eas/workflows/pre-packaged-jobs#fingerprint) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -537,8 +535,6 @@ jobs:
         APP_VARIANT: staging # just an example
 ```
 
-> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
-
 This job outputs the following properties:
 
 ```json
@@ -550,7 +546,7 @@ This job outputs the following properties:
 
 #### `get-build`
 
-Retrieves an existing build from EAS that matches the provided parameters.
+Retrieves an existing build from EAS that matches the provided parameters. See [Get Build job documentation](/eas/workflows/pre-packaged-jobs#get-build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -595,9 +591,7 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment`, it uses the same environment used to create the build referenced in `build_id`.
-
-> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). See [Submit job documentation](/eas/workflows/pre-packaged-jobs#submit) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -622,7 +616,7 @@ This job outputs the following properties:
 
 #### `update`
 
-Publishes an update using [EAS Update](/eas-update/introduction/).
+Publishes an update using [EAS Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -648,7 +642,7 @@ This job outputs the following properties:
 
 #### `maestro`
 
-Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
+Runs [Maestro](https://maestro.mobile.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
 
 > **important** Maestro tests are experimental and may experience flakiness.
 
@@ -669,7 +663,7 @@ jobs:
 
 #### `slack`
 
-Sends a message to a Slack channel using a webhook URL.
+Sends a message to a Slack channel using a webhook URL. See [Slack job documentation](/eas/workflows/pre-packaged-jobs#slack) for detailed information and examples.
 
 ```yaml
 jobs:
