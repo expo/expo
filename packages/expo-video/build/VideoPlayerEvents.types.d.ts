@@ -258,4 +258,5 @@ type AvailableAudioTracksChangeEventPayload = {
      */
     oldAvailableAudioTracks?: AudioTrack[];
 };
+export {};
 //# sourceMappingURL=VideoPlayerEvents.types.d.ts.map
