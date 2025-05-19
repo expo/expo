@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Correctly handle recording URL's and local assets in production. ([#36737](https://github.com/expo/expo/pull/36737) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Run player updates on the main thread in the `audioFocusChangeListener`.
 
 ## 0.4.4 — 2025-04-30
 
