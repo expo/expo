@@ -26,6 +26,8 @@ class ExpoUIModule : Module() {
       Events("onValueChanged")
     }
 
+    View(ShapeView::class)
+
     View(DateTimePickerView::class) {
       Events("onDateSelected")
     }
