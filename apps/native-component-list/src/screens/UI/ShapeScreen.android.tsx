@@ -1,9 +1,7 @@
 import { Shape } from '@expo/ui/jetpack-compose';
+import { duration } from 'moment';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-
-import { Page, Section } from '../../components/Page';
-import { duration } from 'moment';
 import Animated, {
   Easing,
   useSharedValue,
@@ -11,6 +9,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+
+import { Page, Section } from '../../components/Page';
 
 const AnimatedShape = Animated.createAnimatedComponent(Shape);
 
@@ -78,7 +78,7 @@ export default function UIScreen() {
         }}>
         <AnimatedShape
           style={{ width: 180, height: 180 }}
-          type={'POLYGON'}
+          type="POLYGON"
           smoothing={1}
           cornerRounding={zeroToPointTwo}
           verticesCount={3}
@@ -86,7 +86,7 @@ export default function UIScreen() {
         />
         <AnimatedShape
           style={{ width: 180, height: 180 }}
-          type={'STAR'}
+          type="STAR"
           innerRadius={oneToPointEight}
           smoothing={1}
           radius={1}
@@ -97,7 +97,7 @@ export default function UIScreen() {
         <View style={{ width: 180, height: 180, justifyContent: 'center' }}>
           <AnimatedShape
             style={{ width: 180, height: 100 }}
-            type={'PILL_STAR'}
+            type="PILL_STAR"
             radius={1}
             innerRadius={0.7}
             smoothing={1}
@@ -109,7 +109,7 @@ export default function UIScreen() {
 
         <AnimatedShape
           style={{ width: 180, height: 180 }}
-          type={'POLYGON'}
+          type="POLYGON"
           cornerRounding={zeroToPointTwo}
           smoothing={1}
           verticesCount={6}
@@ -118,7 +118,7 @@ export default function UIScreen() {
         <View style={{ width: 180, height: 180, alignItems: 'center' }}>
           <AnimatedShape
             style={{ width: 100, height: 180, transform: [{ rotate: '45deg' }] }}
-            type={'RECTANGLE'}
+            type="RECTANGLE"
             radius={1}
             innerRadius={0.7}
             smoothing={1}

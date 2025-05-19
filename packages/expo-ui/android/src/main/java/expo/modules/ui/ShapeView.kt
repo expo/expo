@@ -26,6 +26,7 @@ import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
 import expo.modules.kotlin.types.Enumerable
 import android.graphics.Color as GraphicsColor
+
 enum class ShapeType : Enumerable {
   STAR,
   PILL_STAR,
@@ -91,7 +92,7 @@ private fun createPolygonPath(size: Size, cornerRounding: Float, smoothing: Floa
   val centerY = size.height / 2
   val rounding = CornerRounding(size.minDimension * cornerRounding, smoothing = smoothing)
   return RoundedPolygon(
-    numVertices = verticesCount,
+    numVertices = verticesCount.coerceAtLeast(3),
     radius = size.minDimension / 2,
     centerX = centerX,
     centerY = centerY,
@@ -122,7 +123,6 @@ private fun createRectanglePath(size: Size, cornerRounding: Float, smoothing: Fl
     height = size.height,
   ).toPath().asComposePath()
 }
-
 
 class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext) {
   override val props = ShapeProps()
